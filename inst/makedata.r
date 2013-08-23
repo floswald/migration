@@ -9,76 +9,96 @@ rm(list=ls())
 
 # look into http://tinyurl.com/n33ojvy for a catalogue of variables
 
+# switches
+build.data <- FALSE # set TRUE if want to rebuild from raw data
+
+
+
 # Data from Family Files
 # ======================
 
-# download library catalogue from google docs
-# -------------------------------------------
+if (build.data){
 
-library(RCurl)
-myVars <- getURL("https://docs.google.com/spreadsheet/pub?key=0AnOrv_MIRexjdFl1cGFwajZLRzhpMks5VUh5ei03MkE&gid=1&output=csv")
+	# years to take
+	first.year <- 1994
 
-d           <- read.csv(textConnection(myVars),colClasses="character")
-d           <- d[-(27:33),]
-rownames(d) <- d$variable.label
-d           <- d[,-1]
-names(d)    <- substr(names(d),2,5)
+	# download variable catalogue from google docs
+	# -------------------------------------------
 
-# construct fam.vars data.frame for psidR
-# ---------------------------------------
+	library(RCurl)
+	myVars <- getURL("https://docs.google.com/spreadsheet/pub?key=0AnOrv_MIRexjdFl1cGFwajZLRzhpMks5VUh5ei03MkE&gid=1&output=csv")
 
-famv <- data.frame(year        = as.numeric(names(d)),
-				  age          = as.character(d["AGE OF HEAD",]),
-				  educ         = as.character(d["COMPLETED ED-HD",]),
-				  educOLD      = as.character(d["EDUCATION OLD",]),
-				  incomeHEAD   = as.character(d["HEAD LABOR INCOME",]),
-				  incomeWIFE   = as.character(d["WIFE LABOR INCOME",]),
-				  incomeFAM    = as.character(d["TOTAL FAMILY INCOME",]),
-				  Hvalue       = as.character(d["HOUSE VALUE (A16)",]),
-				  mort1        = as.character(d["A24 REM PRINCIPAL MOR 1",]),
-				  mort2        = as.character(d["A24 REM PRINCIPAL MOR 2",]),
-				  mort1.mnthly = as.character(d["A25 MNTHLY PMTS MOR   1",]),
-				  mort2.mnthly = as.character(d["A25 MNTHLY PMTS MOR   2",]),
-				  mort.annual  = as.character(d["ANN MOR PMTS",]),
-				  rent.annual  = as.character(d["ANN RENT (A27)",]),
-				  rent.per     = as.character(d["A31 DOLLARS RENT",]),
-				  rent.unit    = as.character(d["A31 DOLLLARS PER WHAT",]),
-				  empstat      = as.character(d["B1 EMPLOYMENT STATUS-HD",]),
-				  marstat      = as.character(d["HEAD MARITAL STATUS",]),
-				  numkids      = as.character(d["# CHILDREN IN FU",]),
-				  state        = as.character(d["CURRENT STATE FIPS",]),
-				  home         = as.character(d["STATE HD GREW UP",]),
-				  newhead      = as.character(d["WTR NEW HEAD",]),
-				  moved        = as.character(d["MOVED SINCE LAST YEAR?",]),
-				  why.moved    = as.character(d["WHY MOVED",]),
-				  likely.move  = as.character(d["LIKELIHOOD OF MOVING",]),
-				  wealth       = as.character(d["WEALTH W/O EQUITY",]),
-				  weight       = as.character(d["CORE FAMILY WEIGHT",]))
-				 
-# the wealth variables need to be merged from a supplementary dataset after we've merged family and individual
-# index file. so set wealth to NA whenever it has an "S" prefix.
+	d           <- read.csv(textConnection(myVars),colClasses="character")
+	d           <- d[-(27:33),]
+	rownames(d) <- d$variable.label
+	d           <- d[,-1]
+	names(d)    <- substr(names(d),2,5)
 
-famv$wealth[substr(famv$wealth,1,1)=="S"] <- NA
+	# construct fam.vars data.frame for psidR
+	# ---------------------------------------
 
+	famv <- data.frame(year        = as.numeric(names(d)),
+					  age          = as.character(d["AGE OF HEAD",]),
+					  educ         = as.character(d["COMPLETED ED-HD",]),
+					  educOLD      = as.character(d["EDUCATION OLD",]),
+					  incomeHEAD   = as.character(d["HEAD LABOR INCOME",]),
+					  incomeWIFE   = as.character(d["WIFE LABOR INCOME",]),
+					  incomeFAM    = as.character(d["TOTAL FAMILY INCOME",]),
+					  Hvalue       = as.character(d["HOUSE VALUE  (A16)",]),
+					  mort1        = as.character(d["A24 REM PRINCIPAL MOR 1",]),
+					  mort2        = as.character(d["A24 REM PRINCIPAL MOR 2",]),
+					  mort1.mnthly = as.character(d["A25 MNTHLY PMTS MOR   1",]),
+					  mort2.mnthly = as.character(d["A25 MNTHLY PMTS MOR   2",]),
+					  mort.annual  = as.character(d["ANN MOR PMTS",]),
+					  rent.annual  = as.character(d["ANN RENT (A27)",]),
+					  rent.per     = as.character(d["A31 DOLLARS RENT",]),
+					  rent.unit    = as.character(d["A31 DOLLLARS PER WHAT",]),
+					  empstat      = as.character(d["B1 EMPLOYMENT STATUS-HD",]),
+					  marstat      = as.character(d["HEAD MARITAL STATUS",]),
+					  numkids      = as.character(d["# CHILDREN IN FU",]),
+					  state        = as.character(d["CURRENT STATE FIPS",]),
+					  home         = as.character(d["STATE HD GREW UP",]),
+					  newhead      = as.character(d["WTR NEW HEAD",]),
+					  moved        = as.character(d["MOVED SINCE LAST YEAR?",]),
+					  why.moved    = as.character(d["WHY MOVED",]),
+					  likely.move  = as.character(d["LIKELIHOOD OF MOVING",]),
+					  wealth       = as.character(d["WEALTH W/O EQUITY",]),
+					  weight       = as.character(d["CORE FAMILY WEIGHT",]))
+					 
+	# the wealth variables need to be merged from a supplementary dataset after we've merged family and individual
+	# index file. so set wealth to NA whenever it has an "S" prefix.
 
-# merge family files to individual index.
-# =======================================
+	famv$wealth[substr(famv$wealth,1,1)=="S"] <- NA
 
-library(psidR)
-panel <- build.panel(datadir="~/datasets/PSID/fam-files",fam.vars=famv,verbose=TRUE,design=2)
-
-# some pid's exit and re-enter the panel: drop them.
-tmp <- copy(panel$data)
-tmp[,yeardiff := max(diff(year))>2,by=pid]
-dat <- copy(tmp[yeardiff==FALSE])
-dat[,yeardiff := NULL]
-
-rm(panel)
-gc()
+	famv <- subset(famv,year>=first.year)
+	rm(first.year)
 
 
-# state codes of HD GREW UP are not FIPS 
-# ======================================
+	# merge family files to individual index.
+	# =======================================
+
+	library(psidR)
+	panel <- build.panel(datadir="~/datasets/PSID/fam-files",fam.vars=famv,verbose=TRUE,design=2)
+
+	# some pid's exit and re-enter the panel: drop them.
+	tmp <- copy(panel$data)
+	tmp[,yeardiff := max(diff(year))>2,by=pid]
+	dat <- copy(tmp[yeardiff==FALSE])
+	dat[,yeardiff := NULL]
+
+	rm(panel)
+	gc()
+	save(dat,file="~/git/migration/data/psidraw.RData")
+} else {
+	load("~/git/migration/data/psidraw.RData")
+}
+
+# housing tenure indicator
+dat[,own := Hvalue!=0]
+
+
+# state codes of HD GREW UP are not FIPS  before 1994
+# ===================================================
 
 myVars <- getURL("https://docs.google.com/spreadsheet/pub?key=0AnOrv_MIRexjdFl1cGFwajZLRzhpMks5VUh5ei03MkE&single=true&gid=4&output=csv")
 st.psid <- read.csv(textConnection(myVars),colClasses="character")
@@ -87,36 +107,90 @@ st.psid <- data.table(st.psid,key="State")
 
 # load state abbreviations and merge onto st.psid
 load("~/git/Rdata/out/states-abbrev.RData")
-abbr[,FIPS := as.character(FIPS)]
 setkey(abbr,State)
 st.psid <- st.psid[abbr]
 st.psid <- st.psid[complete.cases(st.psid)]
 st.psid[,c("FIPS","Abbreviation.1") := NULL]
 setnames(st.psid,"FIPS.1","FIPS")
-st.psid[,psid_code:= as.character(psid_code)]
-st.psid <- rbind(st.psid,data.table(State=c("ABROAD","DK"),psid_code=c(0,99),Abbreviation=c(NA,NA),FIPS=c(0,99)))
+st.psid <- rbind(st.psid,data.table(State=c("ABROAD","DK"),psid_code=c(0,99),Abbreviation=c("ABROAD","DK"),FIPS=c(0,99)))
 
-# for all years < 1994, setkey to psid_code and merge
-setnames(st.psid,"psid_code","home")
-setkey(st.psid,home)
+# test missing homes
+dat[is.na(home),all( unique(year) %in% 1994:1996 )]	# only some years have no home info at all
 
-# state codes should be characters, not numbers
-dat[,state := as.character(state)]
-dat[,home  := as.character(home)]
+# quick check: how many people live in the state they were born?
+dat[,same:=home==state]
+dat[,table(same)]
+dat[,same := NULL]
 
-# merge FIPS code on home where home is the old psid_code
-setkey(dat,home)
-dat[year < 1994,homenew := st.psid[dat[year<1994]][,FIPS] ]
-dat[year < 1994,home := homenew]
+# drop all data earlier than 1994
+# -------------------------------
+
+dat <- copy(dat[year>1993])
+dat[,c("educOLD","mort.annual","rent.annual","newhead") := NULL]
+
+# what is the panel structure, i.e. how many new obs do we have each year, how many survive from previous year?
+dat[,firstyear := min(year),by=pid]
+dat[,table(firstyear)]
+dat[,firstyear := NULL]
+
+
+# home 1994-1996 is missing
+# =========================
+
+# drop observations who are new heads in 1994-1996 and do not survive until 1997
+# update "home" for the rest by carrying backward values after 1996
+setkey(dat,pid,year)
+dat[,concerned := year[1] %in% 1994:1996, by=pid]	# heads whose first year is either 94,95 or 96 are concerned.
+dat[,survive := TRUE]
+dat[concerned==TRUE,survive := 1997 %in% year, by=pid]	# if they have year 1997 in their record, they survive the hole.
+dat <- copy(dat[survive==TRUE])	# if they are around only during the hole, drop.
+dat[,c("concerned","survive") := NULL]	# clean up
+
+# great number of people born abroad
+dat[,table(home)]
+
+# for immigrants from abroad, 2 possibilities:
+# 1) for those home is abroad, and they are assumed to never move back home.
+# 2) for those home is first state they lived in.
+
+dat[,homeless := any(is.na(home)),by=pid]	# if home obs is missing, consider homeless
+# there seems to be some initial measurement error in home.
+# take latest available answer to the question.
+homeless <- dat[homeless==TRUE,list(newhome=tail(home[!is.na(home)],1)),by=pid]
+setkey(homeless,pid)
+dat <- copy(homeless[dat])
+
+# set home to newhome for homeless guys
+dat[homeless==TRUE,home := newhome]
+
+
+# drop observations with missing state
+dat <- copy(dat[state!="99"])
 
 # merge in state names for home and state
-setkey(dat,home)
-setkey(st.psid,FIPS)
-dat[,Home := st.psid[dat][,Abbreviation]]
 setkey(dat,state)
+setkey(st.psid,FIPS)
 dat[,State := st.psid[dat][,Abbreviation]]
-dat[,homenew := NULL]
+setkey(dat,home)
+dat[,Home := st.psid[dat][,Abbreviation]]
+dat[,newhome := NULL]
 
-dat[,same:=Home==State]
-dat[,table(same)]
+
+
+# create lagged state to detect interstate movers
+# first create a year index, since year are not equally spaced
+setkey(dat,year)
+yindex <- data.table(yid=1:dat[,length(unique(year))],year=dat[,list(V1=unique(year))][order(V1),V1],key="year")
+dat[,yid := dat[yindex][["yid"]] ]
+setkey(dat,pid,yid)
+dat[,state.l := dat[list(pid,yid-1)][["state"]] ]
+dat[,State.l := dat[list(pid,yid-1)][["State"]] ]
+
+# create interstate moving variable
+dat[,inter := FALSE]
+# when state is not equal to lagged state and lagged state is not NA, we have a state move
+dat[state != state.l & !(is.na(state.l)), inter := TRUE]	
+
+# save dataset
+save(dat,file="~/git/migration/data/psid.RData")
 
