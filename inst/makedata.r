@@ -1,5 +1,9 @@
 
 rm(list=ls())
+
+library(data.table)
+library(RCurl)
+
 # TODO
 # how to deal with missing grow up variable?
 # use labor income head or labor income head + wife?
@@ -7,7 +11,7 @@ rm(list=ls())
 # build dataset to explore.
 # variable catalogue: make sure we have a consistent set of variables in all years
 
-# look into http://tinyurl.com/n33ojvy for a catalogue of variables
+# look into http://bit.ly/1dF3TkQ for a google doc with all variable definitions
 
 # switches
 build.data <- FALSE # set TRUE if want to rebuild from raw data
@@ -94,7 +98,10 @@ if (build.data){
 }
 
 # housing tenure indicator
-dat[,own := Hvalue!=0]
+dat[Hvalue>9999996, Hvalue := NA]
+dat[mort1>9999996, mort1:= NA]
+dat[mort2>9999996, mort2:= NA]
+dat[,own := Hvalue!=0 & !is.na(Hvalue)]
 
 
 # state codes of HD GREW UP are not FIPS  before 1994
@@ -162,6 +169,7 @@ dat <- copy(homeless[dat])
 
 # set home to newhome for homeless guys
 dat[homeless==TRUE,home := newhome]
+dat[,homeless := NULL]
 
 
 # drop observations with missing state
@@ -174,6 +182,7 @@ dat[,State := st.psid[dat][,Abbreviation]]
 setkey(dat,home)
 dat[,Home := st.psid[dat][,Abbreviation]]
 dat[,newhome := NULL]
+
 
 
 
@@ -190,6 +199,78 @@ dat[,State.l := dat[list(pid,yid-1)][["State"]] ]
 dat[,inter := FALSE]
 # when state is not equal to lagged state and lagged state is not NA, we have a state move
 dat[state != state.l & !(is.na(state.l)), inter := TRUE]	
+
+# create general moving indicator
+dat[,moveYES := moved==1]
+
+# more lagged variables
+# =====================
+
+setkey(dat,pid,yid)
+dat[,marstat.l := dat[list(pid,yid-1)][["marstat"]] ]
+dat[,why.move.l := dat[list(pid,yid-1)][["why.moved"]] ]	# this tests consistency of estimate
+dat[,dnumkids := diff(numkids),by=pid]
+dat[,divorce := marstat==4&marstat.l==1]
+
+
+# merge in asset information
+# ==========================
+
+# TODO impute for 1995, 1996, 1997
+ 
+library(foreign)
+setkey(dat,year,interview)
+assvars <- c("S316","S416","S516","S616","S716","S816")
+idvars  <- c("S301","S401","S501","S601","S701","S801")
+assyrs <- c(1994,1999,seq(2001,2007,by=2))
+for (iy in 1:length(assyrs)){
+	tmp <- data.table(read.dta(file=paste0("~/datasets/PSID/fam-files/wlth",assyrs[iy],".dta")))
+	tmp[,year := assyrs[iy]]
+	setnames(tmp,idvars[iy],"interview")
+	setkey(tmp,year,interview)
+	dat[.(assyrs[iy]), wealth := tmp[dat][year==assyrs[iy]][[assvars[iy]]] ]
+}
+
+rm(assyrs,idvars,assvars)
+
+# merge in consumption
+# ====================
+
+idvars  <- paste0(c("CON99",paste0("CON0",c(1,3,5,7,9))),"_ID")
+consyrs <- c(1999,seq(2001,2009,by=2))
+for (iy in 1:length(consyrs)){
+	tmp <- data.table(read.dta(file=paste0("~/datasets/PSID/fam-files/cons",consyrs[iy],".dta")))
+	tmp[,year := consyrs[iy]]
+	setnames(tmp,idvars[iy],"interview")
+	setkey(tmp,year,interview)
+	dat[.(consyrs[iy]), cons := tmp[dat][year==consyrs[iy]][["cons"]] ]
+}
+dat[cons>9999999, cons := NA]	# they coded NA as 9,999,999 in cons data.
+
+
+
+
+
+# Factor Setup
+# ============
+
+# get uniform numerical codes across waves
+# see again http://bit.ly/1dF3TkQ
+
+# why.moved
+dat[year==2011&why.moved>9, why.moved := NA]
+dat[year!=2011&why.moved>8, why.moved := NA]
+dat[,why.moved := factor(why.moved,labels=c("not moved","new job","more housing","less housing","want to own","better area","forced","ambiguous","homeless","DK"))]
+
+# employment status
+dat[empstat<1|empstat>8,empstat := NA]
+dat[,empstat   := factor(empstat,labels=c("working","temp laid off","unemployed","retired","disabled","house keeping","student","other"))]
+
+# marital status
+dat[marstat<1|marstat>5,marstat := NA]
+dat[,marstat   := factor(marstat,labels=c("married","never married","widowed","divorced","separated"))]
+
+
 
 # save dataset
 save(dat,file="~/git/migration/data/psid.RData")

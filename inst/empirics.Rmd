@@ -1,0 +1,117 @@
+Empirical look at interstate migration PSID
+========================================================
+
+This is about PSID data 1994-2011.
+
+```{r,echo=FALSE,message=FALSE}
+library(data.table)
+library(ggplot2)
+load("~/git/migration/data/psid.RData")
+library(survey)
+des <- svydesign(id=~1,weights=~weight,data=dat)
+subdes <- svydesign(id=~1,weights=~weight,data=dat[inter==TRUE])
+# dat[inter==TRUE,image(table(state,state.l)>0,main="interstate moves. white is at least 1 moves")]
+tmp <- dat[inter==TRUE,data.frame(expand.grid(to=sort(dat[inter==TRUE,unique(State)]),from=sort(dat[inter==TRUE,unique(State.l)])),movers=as.numeric(table(state,state.l)))]
+tmp$movers <- cut(tmp$movers,breaks=c(-1,0,1,10,20),include.lowest=TRUE,labels=FALSE)
+tmp$movers <- factor(tmp$movers,labels=c("0","1","1-10","11+"))
+```
+
+## Overview
+
+Sample Characteristic | Value
+--------------------- | -------------------
+Number of unique inds | `r dat[,length(unique(pid))]`
+Number of years       | `r dat[,length(unique(year))]`
+range of years        | [`r dat[,range(year)]`]
+Number of ind-years   | `r nrow(dat)`
+
+## Statistics by year
+
+All in current dollars.
+
+```{r,echo=FALSE}
+s <- svyby(~incomeFAM + own + Hvalue + mort1 + moveYES + inter,des,FUN=svymean,by=~year,na.rm=TRUE)
+s <- s[,c(2,4,5,6,8,10)]
+names(s) <- c("y","prop.own","HValue","MDebt","moved","mvd.interstate")
+s
+```
+
+## Wealth and consumption by year
+
+Current Dollars.
+
+```{r,echo=FALSE}
+dat[,list(assets=weighted.mean(wealth,weight,na.rm=T),cons=weighted.mean(cons,weight,na.rm=T)),by=year]
+```
+
+
+## how many periods do people stay in the sample?
+
+```{r,results='hide',echo=FALSE}
+dat[,diff(range(year)),by=pid][,barplot(table(V1),xlab="number of periods",ylab="number of individuals")]
+```
+
+
+## Moving patterns
+
+```{r,echo=FALSE}
+#Palette <- c(NA, colors()[c(81,655,556)])
+Palette <- c(NA, "green","yellow","red")
+ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_manual(values=Palette) + theme(axis.text.x = element_text(angle=45,vjust=0.5) , panel.background = element_blank(), panel.grid.major = element_line(colour = "grey50"), panel.border= element_rect(color="black",fill=NA)) + ggtitle(sprintf("transition matrix of PSID interstate moves 1994-2011\nNumber of Moves: %d",dat[inter==TRUE,length(year)]))
+```
+
+## Determinants of interstate moves
+
+### Age and Tenure
+
+```{r,message=FALSE,echo=FALSE,cache=TRUE,cache.path='~/git/migration/data/cache'}
+library(splines)
+library(MASS)
+svymove <- svyby(~inter , by=~own + age,des,svymean)
+# ggplot(subset(svymove,age>25&age<60),aes(x=age,y=interTRUE,color=own)) + geom_point()+ geom_smooth(method="lm",formula=y~ns(x,3))
+ggplot(dat[age>25&age<60,list(sample.prop.interstate=mean(inter)),by=list(own,age)][order(age,own)],aes(x=age,y=sample.prop.interstate,color=own)) + geom_point() + geom_smooth(method="lm",formula=y~ns(x,3))
+```
+
+### Self-reported reasons of moves. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ why.moved + own,des,Ntotal=100))
+```
+
+### Self-reported reasons of interstate moves. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ why.moved + own,subdes,Ntotal=100))
+```
+
+### Interstate Moves vs employment. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ empstat + inter,des,Ntotal=100))
+```
+
+### Interstate Moves vs marital status. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ marstat + inter,des,Ntotal=100))
+```
+
+## Probit: Determinants of all moves. 
+
+```{r,cache=TRUE,cache.path='~/git/migration/data/cache',warning=FALSE,echo=FALSE}
+library(erer)
+library(texreg)
+s=svyglm(formula=moveYES ~ age + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
+Rsquared = 1-s$deviance/s$null.deviance
+screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
+cat('Rsquared: ',Rsquared)
+```
+
+## Probit: Determinants of interstate moves. 
+
+```{r,cache=TRUE,cache.path='~/git/migration/data/cache',warning=FALSE,echo=FALSE}
+s=svyglm(formula=inter ~ age + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
+Rsquared = 1-s$deviance/s$null.deviance
+screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
+cat('Rsquared: ',Rsquared)
+```
