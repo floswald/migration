@@ -10,8 +10,9 @@ load("~/git/migration/data/psid.RData")
 library(survey)
 des <- svydesign(id=~1,weights=~weight,data=dat)
 subdes <- svydesign(id=~1,weights=~weight,data=dat[inter==TRUE])
+subregdes <- svydesign(id=~1,weights=~weight,data=dat[interreg==TRUE])
 # dat[inter==TRUE,image(table(state,state.l)>0,main="interstate moves. white is at least 1 moves")]
-tmp <- dat[inter==TRUE,data.frame(expand.grid(to=sort(dat[inter==TRUE,unique(State)]),from=sort(dat[inter==TRUE,unique(State.l)])),movers=as.numeric(table(state,state.l)))]
+tmp <- dat[inter==TRUE,data.frame(expand.grid(to=sort(unique(State)),from=sort(unique(State.l))),movers=as.numeric(table(state,state.l)))]
 tmp$movers <- cut(tmp$movers,breaks=c(-1,0,1,10,20),include.lowest=TRUE,labels=FALSE)
 tmp$movers <- factor(tmp$movers,labels=c("0","1","1-10","11+"))
 ```
@@ -30,19 +31,30 @@ Number of ind-years   | `r nrow(dat)`
 All in current dollars.
 
 ```{r,echo=FALSE}
-s <- svyby(~incomeFAM + own + Hvalue + mort1 + moveYES + inter,des,FUN=svymean,by=~year,na.rm=TRUE)
-s <- s[,c(2,4,5,6,8,10)]
-names(s) <- c("y","prop.own","HValue","MDebt","moved","mvd.interstate")
+s <- svyby(~incomeFAM + own + Hvalue + mort1 + moveYES + inter + interreg,des,FUN=svymean,by=~year,na.rm=TRUE)
+s <- s[,c(2,4,5,6,8,10,12)]
+names(s) <- c("y","prop.own","HValue","MDebt","moved","mvd.state","mvd.region")
 s
 ```
 
-## Wealth and consumption by year
+## Median Wealth and consumption by year
 
 Current Dollars.
 
-```{r,echo=FALSE}
-dat[,list(assets=weighted.mean(wealth,weight,na.rm=T),cons=weighted.mean(cons,weight,na.rm=T)),by=year]
+```{r,echo=FALSE,results='hide'}
+dat[year<1999|year>2010,cons := 0]
+dat[year<1999&year>1994,wealth := 0]
 ```
+
+```{r,echo=FALSE}
+print(dat[,list(assets=Hmisc::wtd.quantile(wealth,weights=weight,probs=0.5),cons=Hmisc::wtd.quantile(cons,weights=weight,probs=0.5)),by=year])
+```
+
+```{r echo=FALSE,results='hide'}
+dat[year<1999|year>2010,cons :=NA]
+dat[year<1999&year>1994,wealth := NA]
+```
+
 
 
 ## how many periods do people stay in the sample?
@@ -52,27 +64,48 @@ dat[,diff(range(year)),by=pid][,barplot(table(V1),xlab="number of periods",ylab=
 ```
 
 
-## Moving patterns
+## Moving patterns by state
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,fig.width=10,fig.height=10}
 #Palette <- c(NA, colors()[c(81,655,556)])
 Palette <- c(NA, "green","yellow","red")
 ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_manual(values=Palette) + theme(axis.text.x = element_text(angle=45,vjust=0.5) , panel.background = element_blank(), panel.grid.major = element_line(colour = "grey50"), panel.border= element_rect(color="black",fill=NA)) + ggtitle(sprintf("transition matrix of PSID interstate moves 1994-2011\nNumber of Moves: %d",dat[inter==TRUE,length(year)]))
 ```
 
-## Determinants of interstate moves
+## Moving patterns by Region
 
-### Age and Tenure
-
-```{r,message=FALSE,echo=FALSE,cache=TRUE,cache.path='~/git/migration/data/cache'}
-library(splines)
-library(MASS)
-svymove <- svyby(~inter , by=~own + age,des,svymean)
-# ggplot(subset(svymove,age>25&age<60),aes(x=age,y=interTRUE,color=own)) + geom_point()+ geom_smooth(method="lm",formula=y~ns(x,3))
-ggplot(dat[age>25&age<60,list(sample.prop.interstate=mean(inter)),by=list(own,age)][order(age,own)],aes(x=age,y=sample.prop.interstate,color=own)) + geom_point() + geom_smooth(method="lm",formula=y~ns(x,3))
+```{r,echo=FALSE}
+#Palette <- c(NA, colors()[c(81,655,556)])
+Palette <- c(NA, "green","blue","yellow","red","black")
+tmp <- dat[interreg==TRUE,data.frame(expand.grid(to=sort(dat[,unique(region)]),from=sort(dat[,unique(region.l)])),movers=as.numeric(table(region,region.l)))]
+tmp$movers <- cut(tmp$movers,breaks=c(-1,0,1,10,20,40,98),include.lowest=TRUE,labels=FALSE)
+tmp$movers <- factor(tmp$movers,labels=c("0","1","1-10","11-20","21-40","41-97"))
+ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_manual(values=Palette) + theme(axis.text.x = element_text(angle=45,vjust=0.5) , panel.background = element_blank(), panel.grid.major = element_line(colour = "grey50"), panel.border= element_rect(color="black",fill=NA)) + ggtitle(sprintf("transition matrix of PSID interregional moves 1994-2011\nNumber of Moves: %d",dat[interreg==TRUE,length(year)]))
 ```
 
-### Self-reported reasons of moves. % of population
+
+## Determinants of interstate moves
+
+### Sample Proportion Interstate Move by Age and Tenure
+
+```{r,message=FALSE,echo=FALSE}
+library(splines)
+library(MASS)
+#svymove <- svyby(~inter , by=~own + age,des,svymean)
+#ggplot(subset(svymove,age>25&age<60),aes(x=age,y=interTRUE,color=own)) + geom_point()+ geom_smooth(method="lm",formula=y~ns(x,3))
+ggplot(dat[age>25&age<60,list(interstate=mean(inter)),by=list(own,age)][order(age,own)],aes(x=age,y=interstate,color=own)) + geom_point() + geom_smooth(method="lm",formula=y~ns(x,3))
+```
+
+### Sample Proportion InterREGIONAL Move by Age and Tenure
+
+```{r,message=FALSE,echo=FALSE}
+#svymove <- svyby(~interreg , by=~own + age,des,svymean)
+#ggplot(subset(svymove,age>25&age<60),aes(x=age,y=interregTRUE,color=own)) + geom_point()+ geom_smooth(method="lm",formula=y~ns(x,3))
+ggplot(dat[age>25&age<60,list(interregional=mean(interreg)),by=list(own,age)][order(age,own)],aes(x=age,y=interregional,color=own)) + geom_point() + geom_smooth(method="lm",formula=y~ns(x,3))
+```
+
+
+### Self-reported reasons of ALL moves. % of population
 
 ```{r,message=FALSE,echo=FALSE}
 ftable(svytable(~ why.moved + own,des,Ntotal=100))
@@ -84,11 +117,24 @@ ftable(svytable(~ why.moved + own,des,Ntotal=100))
 ftable(svytable(~ why.moved + own,subdes,Ntotal=100))
 ```
 
+### Self-reported reasons of interREGIONAL moves. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ why.moved + own,subregdes,Ntotal=100))
+```
+
 ### Interstate Moves vs employment. % of population
 
 ```{r,message=FALSE,echo=FALSE}
 ftable(svytable(~ empstat + inter,des,Ntotal=100))
 ```
+
+### Interregional Moves vs employment. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ empstat + interreg,des,Ntotal=100))
+```
+
 
 ### Interstate Moves vs marital status. % of population
 
@@ -96,12 +142,18 @@ ftable(svytable(~ empstat + inter,des,Ntotal=100))
 ftable(svytable(~ marstat + inter,des,Ntotal=100))
 ```
 
+### Interregional Moves vs marital status. % of population
+
+```{r,message=FALSE,echo=FALSE}
+ftable(svytable(~ marstat + interreg,des,Ntotal=100))
+```
+
 ## Probit: Determinants of all moves. 
 
-```{r,cache=TRUE,cache.path='~/git/migration/data/cache',warning=FALSE,echo=FALSE}
+```{r,warning=FALSE,echo=FALSE,message=FALSE}
 library(erer)
 library(texreg)
-s=svyglm(formula=moveYES ~ age + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
+s=svyglm(formula=moveYES ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
 Rsquared = 1-s$deviance/s$null.deviance
 screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
 cat('Rsquared: ',Rsquared)
@@ -109,9 +161,39 @@ cat('Rsquared: ',Rsquared)
 
 ## Probit: Determinants of interstate moves. 
 
-```{r,cache=TRUE,cache.path='~/git/migration/data/cache',warning=FALSE,echo=FALSE}
-s=svyglm(formula=inter ~ age + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
+```{r,warning=FALSE,echo=FALSE}
+s=svyglm(formula=inter ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
 Rsquared = 1-s$deviance/s$null.deviance
 screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
 cat('Rsquared: ',Rsquared)
+```
+
+## Probit: Determinants of interregional moves. 
+
+```{r,warning=FALSE,echo=FALSE}
+s=svyglm(formula=interreg ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
+Rsquared = 1-s$deviance/s$null.deviance
+screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
+cat('Rsquared: ',Rsquared)
+```
+
+## Average wage growth
+
+Wage growth is higher for movers.
+
+Sample | average wage growth
+------ | -------------------
+all    | `r dat[incomeFAM>0&incomeFAM.l>0,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+inter state    | `r dat[incomeFAM>0&incomeFAM.l>0&inter==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+all region   | `r dat[incomeFAM>0&incomeFAM.l>0&interreg==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+
+## Linear Wage Equation
+
+$$ \ln y_{it} = \beta_0 + \beta_1 \ln y_{it-1} + \beta_2 age_{it} + \beta_3 age^2_{it} + \beta_4 own_{it} + \beta_5 interreg_{it} + \gamma Z_{it} $$
+
+```{r,echo=FALSE,warning=FALSE}
+des = svydesign(ids=~1,weights=~weight,data=dat[incomeFAM>0&incomeFAM.l>0])
+m = svyglm(log(incomeFAM) ~ log(incomeFAM.l) + age + I(age^2) + own + wealth + interreg + empstat+marstat + factor(numkids) + State + factor(educ),des)
+screenreg(list(m),omit.coef="State|factor|empstat|marstat",digits=4)
+cat('controlling for State, education, employment status, marital status and number of kids\nRsquare = ',1-m$deviance/m$null.deviance)
 ```

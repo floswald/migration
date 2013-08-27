@@ -82,7 +82,7 @@ if (build.data){
 	# =======================================
 
 	library(psidR)
-	panel <- build.panel(datadir="~/datasets/PSID/fam-files",fam.vars=famv,verbose=TRUE,design=2)
+	panel <- build.panel(datadir="~/datasets/PSID/fam-files",fam.vars=famv,verbose=TRUE,design=2,core=FALSE)
 
 	# some pid's exit and re-enter the panel: drop them.
 	tmp <- copy(panel$data)
@@ -119,7 +119,7 @@ st.psid <- st.psid[abbr]
 st.psid <- st.psid[complete.cases(st.psid)]
 st.psid[,c("FIPS","Abbreviation.1") := NULL]
 setnames(st.psid,"FIPS.1","FIPS")
-st.psid <- rbind(st.psid,data.table(State=c("ABROAD","DK"),psid_code=c(0,99),Abbreviation=c("ABROAD","DK"),FIPS=c(0,99)))
+st.psid <- rbind(st.psid,data.table(State=c("ABROAD","DK"),psid_code=c(0,99),Abbreviation=c("ABROAD","DK"),region=c(NA,NA),FIPS=c(0,99)))
 
 # test missing homes
 dat[is.na(home),all( unique(year) %in% 1994:1996 )]	# only some years have no home info at all
@@ -173,18 +173,18 @@ dat[,homeless := NULL]
 
 
 # drop observations with missing state
-dat <- copy(dat[state!="99"])
+dat <- copy(dat[!(state==99 | state==15)])
 
-# merge in state names for home and state
+# drop also if have state==15, which is an inexistent FIPS code
+dat <- copy(dat[state!=15])
+
+# merge in state names for home and state, and merge region
 setkey(dat,state)
 setkey(st.psid,FIPS)
-dat[,State := st.psid[dat][,Abbreviation]]
+dat[,c("State","region") := st.psid[dat][,list(Abbreviation,region)]]
 setkey(dat,home)
 dat[,Home := st.psid[dat][,Abbreviation]]
 dat[,newhome := NULL]
-
-
-
 
 # create lagged state to detect interstate movers
 # first create a year index, since year are not equally spaced
@@ -198,10 +198,22 @@ dat[,State.l := dat[list(pid,yid-1)][["State"]] ]
 # create interstate moving variable
 dat[,inter := FALSE]
 # when state is not equal to lagged state and lagged state is not NA, we have a state move
-dat[state != state.l & !(is.na(state.l)), inter := TRUE]	
+dat[state != state.l & !(is.na(state.l)), inter := TRUE,by=pid]	
 
 # create general moving indicator
 dat[,moveYES := moved==1]
+
+# create lagged region to detect interregional moves
+dat[,region.l := dat[list(pid,yid-1)][["region"]] ]
+dat[,region.l := dat[list(pid,yid-1)][["region"]] ]
+
+# create interregion moving ind
+dat[,interreg := FALSE]
+dat[region != region.l & !is.na(region.l), interreg := TRUE,by=pid]
+
+# create lagged income
+dat[,incomeFAM.l := dat[list(pid,yid-1)][["incomeFAM"]] ]
+
 
 # more lagged variables
 # =====================
