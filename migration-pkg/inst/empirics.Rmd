@@ -77,11 +77,22 @@ ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_man
 ```{r,echo=FALSE}
 #Palette <- c(NA, colors()[c(81,655,556)])
 Palette <- c(NA, "green","blue","yellow","red","black")
-tmp <- dat[interreg==TRUE,data.frame(expand.grid(to=sort(dat[,unique(region)]),from=sort(dat[,unique(region.l)])),movers=as.numeric(table(region,region.l)))]
+tmp <- dat[interreg==TRUE,data.frame(expand.grid(to=sort(dat[,unique(region)]),from=sort(dat[,unique(region.from)])),movers=as.numeric(table(region,region.from)))]
 tmp$movers <- cut(tmp$movers,breaks=c(-1,0,1,10,20,40,98),include.lowest=TRUE,labels=FALSE)
 tmp$movers <- factor(tmp$movers,labels=c("0","1","1-10","11-20","21-40","41-97"))
 ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_manual(values=Palette) + theme(axis.text.x = element_text(angle=45,vjust=0.5) , panel.background = element_blank(), panel.grid.major = element_line(colour = "grey50"), panel.border= element_rect(color="black",fill=NA)) + ggtitle(sprintf("transition matrix of PSID interregional moves 1994-2011\nNumber of Moves: %d",dat[interreg==TRUE,length(year)]))
 ```
+
+
+## Return Migration
+
+What is the empirical distribution of frequency of moves?
+
+What is the average time between moves
+
+what is the proportion of movers moving back home
+
+What is the proportion of movers moving back to a previous location?
 
 
 ## Determinants of interstate moves
@@ -181,19 +192,42 @@ cat('Rsquared: ',Rsquared)
 
 Wage growth is higher for movers.
 
-Sample | average wage growth
------- | -------------------
-all    | `r dat[incomeFAM>0&incomeFAM.l>0,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
-inter state    | `r dat[incomeFAM>0&incomeFAM.l>0&inter==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
-all region   | `r dat[incomeFAM>0&incomeFAM.l>0&interreg==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+Sample |  growth movers (owner) | growth movers (renter)
+------ | ------------------------- | -------------------------
+all    | `r dat[incomeFAM>0&incomeFAM.l>0&own==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]` | `r dat[incomeFAM>0&incomeFAM.l>0&own==FALSE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+inter state    | `r dat[incomeFAM>0&incomeFAM.l>0&own==TRUE&inter==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]` | `r dat[incomeFAM>0&incomeFAM.l>0&own==FALSE&inter==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
+all region   | `r dat[incomeFAM>0&incomeFAM.l>0&own==TRUE&interreg==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]` | `r dat[incomeFAM>0&incomeFAM.l>0&own==FALSE&interreg==TRUE,weighted.mean(log(incomeFAM)-log(incomeFAM.l),weight,na.rm=T)]`
 
 ## Linear Wage Equation
 
 $$ \ln y_{it} = \beta_0 + \beta_1 \ln y_{it-1} + \beta_2 age_{it} + \beta_3 age^2_{it} + \beta_4 own_{it} + \beta_5 interreg_{it} + \gamma Z_{it} $$
 
-```{r,echo=FALSE,warning=FALSE}
-des = svydesign(ids=~1,weights=~weight,data=dat[incomeFAM>0&incomeFAM.l>0])
-m = svyglm(log(incomeFAM) ~ log(incomeFAM.l) + age + I(age^2) + own + wealth + interreg + empstat+marstat + factor(numkids) + State + factor(educ),des)
+```{r,echo=FALSE,warning=FALSE,results='hide',eval=FALSE}
+dat[,dinc := log(incomeFAM)-log(incomeFAM.l)]
+```
+```{r,echo=FALSE,eval=FALSE}
+des = svydesign(ids=~1,weights=~weight,data=dat[is.finite(dinc)&interreg==TRUE])
+m = svyglm(dinc ~ age + I(age^2) + own + wealth + empstat+marstat + factor(numkids) + State + factor(educ),des)
 screenreg(list(m),omit.coef="State|factor|empstat|marstat",digits=4)
 cat('controlling for State, education, employment status, marital status and number of kids\nRsquare = ',1-m$deviance/m$null.deviance)
+```
+
+
+## Price movement over time
+
+```{r,echo=FALSE,results='hide'}
+vals = dat[,list(House.value=weighted.mean(Hvalue,weight,na.rm=T)),by=list(region,year)]
+vals <- vals[complete.cases(vals)]
+vals[,rank := rank(House.value),by=year]
+```
+
+```{r,echo=FALSE}
+ggplot(vals,aes(x=year,y=House.value,color=region))+geom_line()
+```
+
+## Price ranking among states
+
+```{r,echo=FALSE}
+setkey(vals,year,region)
+ggplot(vals,aes(x=year,y=region,z=factor(rank),fill=factor(rank))) + geom_tile()
 ```

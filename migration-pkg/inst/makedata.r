@@ -183,8 +183,13 @@ setkey(dat,state)
 setkey(st.psid,FIPS)
 dat[,c("State","region") := st.psid[dat][,list(Abbreviation,region)]]
 setkey(dat,home)
-dat[,Home := st.psid[dat][,Abbreviation]]
+dat[,c("Home","Home.region") := st.psid[dat][,list(Abbreviation,region)]]
 dat[,newhome := NULL]
+
+
+
+# create lagged variables
+# ======================
 
 # create lagged state to detect interstate movers
 # first create a year index, since year are not equally spaced
@@ -203,20 +208,21 @@ dat[state != state.l & !(is.na(state.l)), inter := TRUE,by=pid]
 # create general moving indicator
 dat[,moveYES := moved==1]
 
-# create lagged region to detect interregional moves
-dat[,region.l := dat[list(pid,yid-1)][["region"]] ]
-dat[,region.l := dat[list(pid,yid-1)][["region"]] ]
+# create lag and lead value of region to detect interregional moves
+dat[,region.from := dat[list(pid,yid-1)][["region"]] ]
+dat[,region.to   := dat[list(pid,yid+1)][["region"]] ]
 
 # create interregion moving ind
 dat[,interreg := FALSE]
-dat[region != region.l & !is.na(region.l), interreg := TRUE,by=pid]
+dat[region != region.from & !is.na(region.from), interreg := TRUE,by=pid]
 
-# create lagged income
+# create lagged and leaded income
 dat[,incomeFAM.l := dat[list(pid,yid-1)][["incomeFAM"]] ]
+dat[,incomeFAM.next := dat[list(pid,yid+1)][["incomeFAM"]] ]
 
 
 # more lagged variables
-# =====================
+# ---------------------
 
 setkey(dat,pid,yid)
 dat[,marstat.l := dat[list(pid,yid-1)][["marstat"]] ]
@@ -283,7 +289,38 @@ dat[marstat<1|marstat>5,marstat := NA]
 dat[,marstat   := factor(marstat,labels=c("married","never married","widowed","divorced","separated"))]
 
 
+# make multinomial dataset
+# =======================
+
+# WNC <- dat[region=="West North Central"]
+# wnc=WNC[,c(1,3,4,7,8,15,17,28,32,39),with=FALSE]
+# wnc = wnc[!(is.na(region.to) | is.na(Home.region))]
+# 
+# setkey(wnc,pid,age)
+
+# assign a dummy distance
+# wnc[,region.to := factor(as.numeric(factor(region.to)),labels=paste0("R",1:8))]
+# wnc[,dist_R1 := (1 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R2 := (2 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R3 := (3 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R4 := (4 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R5 := (5 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R6 := (6 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R7 := (7 - 7)^2]	# 7 is numeric code of current loc
+# wnc[,dist_R8 := (8 - 7)^2]	# 7 is numeric code of current loc
+
+# mldata <- mlogit.data(data=wnc,varying=11:18,id.var="pid",choice="region.to",shape="wide",sep="_")
+
+# clogit <- mlogit(data=mldata,formula = region.to ~ 1 | incomeFAM + own + age,reflevel="R7")
+# clogit <- mlogit(data=mldata,formula = region.to ~ 1 | incomeFAM + Hvalue + empstat + factor(numkids) + own + Home.region,reflevel="R7")
+
 
 # save dataset
 save(dat,file="~/git/migration/data/psid.RData")
 
+
+
+# house price process
+vals = dat[,weighted.mean(Hvalue,weight,na.rm=T),by=list(region,year)]
+vals[,rank := rank(V1),by=year]
+setkey(vals,year,region)
