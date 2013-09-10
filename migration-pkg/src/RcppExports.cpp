@@ -20,3 +20,63 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// dev3
+Rcpp::List dev3(Rcpp::List data);
+RcppExport SEXP migration_dev3(SEXP dataSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::List data = Rcpp::as<Rcpp::List >(dataSEXP);
+        Rcpp::List __result = dev3(data);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// dev2
+Rcpp::List dev2(Rcpp::List data);
+RcppExport SEXP migration_dev2(SEXP dataSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::List data = Rcpp::as<Rcpp::List >(dataSEXP);
+        Rcpp::List __result = dev2(data);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// dev1
+Rcpp::List dev1(Rcpp::List data);
+RcppExport SEXP migration_dev1(SEXP dataSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::List data = Rcpp::as<Rcpp::List >(dataSEXP);
+        Rcpp::List __result = dev1(data);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// devC
+Rcpp::List devC(Rcpp::List data);
+RcppExport SEXP migration_devC(SEXP dataSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::List data = Rcpp::as<Rcpp::List >(dataSEXP);
+        Rcpp::List __result = devC(data);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
