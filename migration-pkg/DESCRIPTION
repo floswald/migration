@@ -6,9 +6,10 @@ Date: 2013-08-19
 Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
-License: What Licence is it under ?
+License: GPL-3
 Depends:
-    Rcpp (>= 0.10.3)
+    Rcpp (>= 0.10.3),
+    data.table
 LinkingTo: Rcpp
 Collate:
     'rcpp_hello_world.R'
