@@ -24,15 +24,6 @@ using namespace blitz;
 //' 
 //' # renter state: V = max( rent, buy )
 //' 
-//' # final period state space without savings
-//' sT <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p))
-//' sT[, cash := a + y + 0.3*nT]
-//' sT[cash>0, cashR := log(a + y + 0.3*nT)]
-//' sT[cash<0, cashR := dataR$myNA]
-//' sT[, cash := a + y + 0.3*nT + p]
-//' sT[cash>0, cashO := log(a + y + 0.3*nT + p)]
-//' sT[cash<0, cashO := dataR$myNA]
-//' 
 //' # sR means you are renter
 //' sR <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p,it=1:nT,save=grids$a))
 //' sR[,cons := a + y + 0.3*it - dataR$rent - dataR$R*save]
@@ -435,23 +426,23 @@ Rcpp::List dev5( Rcpp::List data ) {
 	Rcpp::NumericVector time(timer);
 
 	// create output list
-	Rcpp::List list = Rcpp::List::create( Rcpp::_["WO"] = WOout, 
-			                              Rcpp::_["DO"] = DOout, 
-			                              Rcpp::_["WR"] = WRout, 
-			                              Rcpp::_["DR"] = DRout, 
-										  Rcpp::_["CO"] = CO_out,
-										  Rcpp::_["CR"] = CR_out,
-										  Rcpp::_["CB"] = CB_out,
-										  Rcpp::_["CS"] = CS_out,
+	Rcpp::List list = Rcpp::List::create( Rcpp::_["WO"]    = WOout, 
+			                              Rcpp::_["DO"]    = DOout,
+			                              Rcpp::_["WR"]    = WRout,
+			                              Rcpp::_["DR"]    = DRout,
+										  Rcpp::_["CO"]    = CO_out,
+										  Rcpp::_["CR"]    = CR_out,
+										  Rcpp::_["CB"]    = CB_out,
+										  Rcpp::_["CS"]    = CS_out,
 										  Rcpp::_["saveO"] = saveOout,
 										  Rcpp::_["saveR"] = saveRout,
 										  Rcpp::_["saveB"] = saveBout,
 										  Rcpp::_["saveS"] = saveSout,
-										  Rcpp::_["VO"] = VOout,
-										  Rcpp::_["VR"] = VRout,
-										  Rcpp::_["VB"] = VBout,
-										  Rcpp::_["VS"] = VSout,
-										  Rcpp::_["time"] = time);
+										  Rcpp::_["VO"]    = VOout,
+										  Rcpp::_["VR"]    = VRout,
+										  Rcpp::_["VB"]    = VBout,
+										  Rcpp::_["VS"]    = VSout,
+										  Rcpp::_["time"]  = time);
     return list;
 }   
 
