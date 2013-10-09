@@ -6,11 +6,14 @@ This is about PSID data 1994-2011.
 ```{r,echo=FALSE,message=FALSE}
 library(data.table)
 library(ggplot2)
+# data prepared in ~/git/migration/migration-pkg/inst/makedata.r
 load("~/git/migration/data/psid.RData")
 library(survey)
 des <- svydesign(id=~1,weights=~weight,data=dat)
 subdes <- svydesign(id=~1,weights=~weight,data=dat[inter==TRUE])
+subdesNomove <- svydesign(id=~1,weights=~weight,data=dat[inter==TRUE&why.moved!="not moved"])
 subregdes <- svydesign(id=~1,weights=~weight,data=dat[interreg==TRUE])
+subregdesNomove <- svydesign(id=~1,weights=~weight,data=dat[interreg==TRUE&why.moved!="not moved"])
 # dat[inter==TRUE,image(table(state,state.l)>0,main="interstate moves. white is at least 1 moves")]
 tmp <- dat[inter==TRUE,data.frame(expand.grid(to=sort(unique(State)),from=sort(unique(State.l))),movers=as.numeric(table(state,state.l)))]
 tmp$movers <- cut(tmp$movers,breaks=c(-1,0,1,10,20),include.lowest=TRUE,labels=FALSE)
@@ -83,16 +86,45 @@ tmp$movers <- factor(tmp$movers,labels=c("0","1","1-10","11-20","21-40","41-97")
 ggplot(tmp,aes(x=from,y=to,z=movers,fill=movers)) + geom_tile() + scale_fill_manual(values=Palette) + theme(axis.text.x = element_text(angle=45,vjust=0.5) , panel.background = element_blank(), panel.grid.major = element_line(colour = "grey50"), panel.border= element_rect(color="black",fill=NA)) + ggtitle(sprintf("transition matrix of PSID interregional moves 1994-2011\nNumber of Moves: %d",dat[interreg==TRUE,length(year)]))
 ```
 
+### How many interstate moves are interregional?
+
+```{r,echo=FALSE}
+prop.table(svytable(~inter+interreg,design=des),margin=1)
+```
+
 
 ## Return Migration
 
-What is the empirical distribution of frequency of moves?
+* What is the empirical distribution of frequency of moves?
 
-What is the average time between moves
+```{r,echo=FALSE,results='hide'}
+dat[,list(freq=sum(interreg)),by=pid][freq>0,barplot(table(freq),ylab="number of households",xlab="number of interregional moves")]
+````
 
-what is the proportion of movers moving back home
 
-What is the proportion of movers moving back to a previous location?
+* What is the average time between moves
+
+```{r,echo=FALSE,results='hide'}
+dat[interreg==TRUE,diff(year),by=pid][,barplot(table(V1),ylab="number of households",xlab="years between interregional moves")]
+```
+
+* what is the proportion of movers moving back to home region
+
+```{r,echo=FALSE}
+dat[interreg==TRUE,prop.table(table(region==Home.region))]
+```
+
+* What is the proportion of movers moving back to a previous state?
+
+```{r,echo=FALSE}
+ss[,prop.table(table(state.back))]
+```
+
+* proportion of movers back to previous region
+
+```{r,echo=FALSE}
+rr[,prop.table(table(region.back))]
+```
 
 
 ## Determinants of interstate moves
@@ -116,52 +148,57 @@ ggplot(dat[age>25&age<60,list(interregional=mean(interreg)),by=list(own,age)][or
 ```
 
 
+
 ### Self-reported reasons of ALL moves. % of population
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ why.moved + own,des,Ntotal=100))
+options(scipen=3)
+options(digits=4)
+ftable(addmargins(svytable(~ why.moved + own,des,Ntotal=100)))
 ```
 
-### Self-reported reasons of interstate moves. % of population
+### Self-reported reasons of interstate moves. % of population who moved states
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ why.moved + own,subdes,Ntotal=100))
+ftable(addmargins(svytable(~ why.moved + own,subdesNomove,Ntotal=100)))
 ```
 
-### Self-reported reasons of interREGIONAL moves. % of population
+### Self-reported reasons of interREGIONAL moves. % of population who moved regions
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ why.moved + own,subregdes,Ntotal=100))
+ftable(addmargins(svytable(~ why.moved + own,subregdesNomove,Ntotal=100)))
 ```
 
 ### Interstate Moves vs employment. % of population
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ empstat + inter,des,Ntotal=100))
+ftable(addmargins(svytable(~ empstat + inter,des,Ntotal=100)))
 ```
 
 ### Interregional Moves vs employment. % of population
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ empstat + interreg,des,Ntotal=100))
+ftable(addmargins(svytable(~ empstat + interreg,des,Ntotal=100)))
 ```
 
 
 ### Interstate Moves vs marital status. % of population
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ marstat + inter,des,Ntotal=100))
+ftable(addmargins(svytable(~ marstat + inter,des,Ntotal=100)))
 ```
 
 ### Interregional Moves vs marital status. % of population
 
 ```{r,message=FALSE,echo=FALSE}
-ftable(svytable(~ marstat + interreg,des,Ntotal=100))
+ftable(addmargins(svytable(~ marstat + interreg,des,Ntotal=100)))
+options(scipen=0)
+options(digits=7)
 ```
 
 ## Probit: Determinants of all moves. 
 
-```{r,warning=FALSE,echo=FALSE,message=FALSE}
+```{r,warning=FALSE,echo=FALSE,message=FALSE,eval=FALSE}
 library(erer)
 library(texreg)
 s=svyglm(formula=moveYES ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
@@ -172,7 +209,7 @@ cat('Rsquared: ',Rsquared)
 
 ## Probit: Determinants of interstate moves. 
 
-```{r,warning=FALSE,echo=FALSE}
+```{r,warning=FALSE,echo=FALSE,eval=FALSE}
 s=svyglm(formula=inter ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
 Rsquared = 1-s$deviance/s$null.deviance
 screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
@@ -181,7 +218,7 @@ cat('Rsquared: ',Rsquared)
 
 ## Probit: Determinants of interregional moves. 
 
-```{r,warning=FALSE,echo=FALSE}
+```{r,warning=FALSE,echo=FALSE,eval=FALSE}
 s=svyglm(formula=interreg ~ age + I(age^2) + own + educ + incomeFAM + dnumkids + wealth + divorce,des,x=TRUE,family=quasibinomial(link="probit"))
 Rsquared = 1-s$deviance/s$null.deviance
 screenreg(list(s,maBina(s)),custom.model.names=c("estimates","marginal.effects"))
