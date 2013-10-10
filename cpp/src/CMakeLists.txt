@@ -1,1 +1,1 @@
-add_library(migration_library cowner.cpp)
+add_library(migration_library Cmig.cpp)

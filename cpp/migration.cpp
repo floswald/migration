@@ -1,44 +1,66 @@
 
 #include <iostream>
-#include "cowner.h"
+#include "CMig.h"
 #include <vector>
 
 int main(int argument_count, char ** command_line_arguments)
 { 
 	std::cout << "The main program is running" << std::endl;
 
-	double data[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	TinyVector<int,4> dims = shape(2,2,2,2);
-	TinyVector<int,3> dims2 = shape(2,2,2);
-
-	// create an instance of owner class
-	COwner4 t4(dims,dims2,data);
-	
-	std::cout << "An instance of an owner class was created:" << std::endl;
-	
-	t4.show();
-	std::cout << std::endl;
-	std::cout << "class type:" << std::endl;
-	t4.version();
-
-
-	// create instance of 5 dimesional thing
-	double data2[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+	double dstay[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
 	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-	double data3[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+	double dsell[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
 	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+	double drent[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+	double dbuy[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+					 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
 
-	TinyVector<int,5> dims3 = shape(2,2,2,2,2);
+
+	double trans[] = {0.9,0.1,0.1,0.9};
+
+	Parstruc pars;
+	pars.beta = 0.9;
+	pars.myNA = -99;
+	Parstruc* pp;
+	pp = &pars;
+
+    // create dimension vectors	                 
+	TinyVector<int,5> aypta = shape(2,2,2,2,2);
+	TinyVector<int,4> aypt  = shape(2,2,2,2);
+	TinyVector<int,4> aypa  = shape(2,2,2,2);
+	TinyVector<int,3> ayp   = shape(2,2,2);
+	TinyVector<int,2> y     = shape(2,2);
+
+	// create pointers to them
+	TinyVector<int,5> *paypta;
+	TinyVector<int,4> *paypt ;
+	TinyVector<int,4> *paypa ;
+	TinyVector<int,3> *payp  ;
+	TinyVector<int,2> *py  ;
+
+
+	// store address of dim vecs in pointers
+	paypta = &aypta;
+	paypt  = &aypt ;
+	paypa  = &aypa ;
+	payp   = &ayp  ;
+	py     = &y;
+
 
 	// create an instance of owner class
-	COwner5 t5(dims3,data2,data3);
+	CMig t5(paypta,paypt,paypa,payp,py,dstay,dsell,drent,dbuy,trans,pp);
 	
-	t5.show();
+	//t5.show();
+
+
+	t5.computePeriod( 2 );
+	t5.computePeriod( 1 );
+	
 	
 	std::cout << std::endl;
 	std::cout << "class type:" << std::endl;
 	t5.version();
-	
 	
 	return 0;
 }
