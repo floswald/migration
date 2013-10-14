@@ -1,5 +1,10 @@
 
+
+#ifdef RcppCompile
+#include "../../cpp/src/CMig.h"
+#else
 #include "CMig.h"		// include class declaration of owner class
+#endif
 
 using namespace blitz;
 using namespace std;
@@ -10,78 +15,180 @@ using namespace std;
 // of Migration class
 ///////////////////////
 
-// define constructor
-// this is a bit complicated, because I create the objects inside the class
-// and because they have to be allocated as FortranArrays
-// must pass dims and a pointer to dims
-CMig::CMig(TinyVector<int,5>* D_aypta,
-				 TinyVector<int,4>* D_aypt, 
-	             TinyVector<int,4>* D_aypa, 
-	             TinyVector<int,3>* D_ayp, 
-   				 TinyVector<int,2>* D_y, 
-	             double* Stay, 
-	             double* Sell,
-	             double* Rent, 
-	             double* Buy,
-	             double* Gdat,
-	             Parstruc* pars) : 
+// default constructor
+CMig::CMig():
 
-	ResStay(Stay,*D_aypta,neverDeleteData,FortranArray<5>()), 	//a1
-    ResSell(Sell,*D_aypta,neverDeleteData,FortranArray<5>()), 	//a2
-	ResRent(Rent,*D_aypta,neverDeleteData,FortranArray<5>()), 	//a3
-    ResBuy(Buy ,*D_aypta,neverDeleteData,FortranArray<5>()), 	//a4
+	// this is syntactic sugar. an initialiser list. 
 
-    v_stay(*D_aypt,FortranArray<4>()),	//b1
-    v_sell(*D_aypt,FortranArray<4>()),  //b2
-    v_rent(*D_aypt,FortranArray<4>()),	//b3
-    v_buy(*D_aypt,FortranArray<4>()),   //b4
-	c_stay(*D_aypt,FortranArray<4>()),	//b5
-	c_sell(*D_aypt,FortranArray<4>()),  //b6
-	c_rent(*D_aypt,FortranArray<4>()),	//b7
-	c_buy(*D_aypt,FortranArray<4>()),   //b8
-	Vown(*D_aypt,FortranArray<4>()),	//b9
-	Vrent(*D_aypt,FortranArray<4>()),	//b10
-	EVown(*D_aypt,FortranArray<4>()),	//b11
-	EVrent(*D_aypt,FortranArray<4>()),	//b12
-	ctmp(*D_aypa,FortranArray<4>()),  	//b13
-	xtmp(*D_aypa,FortranArray<4>()),  	//b14
+	ResStay(2,2,2,2,2,FortranArray<5>()),
+    ResSell(2,2,2,2,2,FortranArray<5>()),
+	ResRent(2,2,2,2,2,FortranArray<5>()),
+    ResBuy( 2,2,2,2,2,FortranArray<5>()),
 
-	s_stay(*D_aypt,FortranArray<4>()),  //c1
-	s_sell(*D_aypt,FortranArray<4>()),  //c2
-	s_rent(*D_aypt,FortranArray<4>()),  //c3
-	s_buy(*D_aypt,FortranArray<4>()),   //c4
-	Down(*D_aypt,FortranArray<4>()),    //c5
-	Drent(*D_aypt,FortranArray<4>()),   //c6
-	Dmax(*D_aypt,FortranArray<4>()),    //c7
+    v_stay(2,2,2,2,FortranArray<4>()),	
+    v_sell(2,2,2,2,FortranArray<4>()),  
+    v_rent(2,2,2,2,FortranArray<4>()),	
+    v_buy( 2,2,2,2,FortranArray<4>()),   
+	c_stay(2,2,2,2,FortranArray<4>()),	
+	c_sell(2,2,2,2,FortranArray<4>()),  
+	c_rent(2,2,2,2,FortranArray<4>()),	
+	c_buy( 2,2,2,2,FortranArray<4>()),   
+	Vown(  2,2,2,2,FortranArray<4>()),	
+	Vrent( 2,2,2,2,FortranArray<4>()),	
+	EVown( 2,2,2,2,FortranArray<4>()),	
+	EVrent(2,2,2,2,FortranArray<4>()),	
+	ctmp(  2,2,2,2,FortranArray<4>()),  	
+	xtmp(  2,2,2,2,FortranArray<4>()),  	
+
+	s_stay(2,2,2,2,FortranArray<4>()),  
+	s_sell(2,2,2,2,FortranArray<4>()),  
+	s_rent(2,2,2,2,FortranArray<4>()),  
+	s_buy( 2,2,2,2,FortranArray<4>()),  
+	Down(  2,2,2,2,FortranArray<4>()),  
+	Drent( 2,2,2,2,FortranArray<4>()),  
+	Dmax(  2,2,2,2,FortranArray<4>()),  
 	
-	vplustmp(*D_ayp,FortranArray<3>()), //d
-	G(Gdat,shape(2,2),neverDeleteData,FortranArray<2>()),         //d2
-    dim_aypt(*D_aypt) ,				    //e
-    dim_ayp(*D_ayp) ,				    //e2
-    p(*pars) {							//f				
+	vplustmp(2,2,2,FortranArray<3>()), 
+    dim_aypt(2,2,2,2) ,				   
+    dim_ayp(2,2,2), 				    
+	G(2,2,FortranArray<2>()) {
+		ResStay = 0.1;
+		ResSell = 0.2;
+		ResRent = 0.3;
+		ResBuy = 0.4;
+		v_stay = 1;
+		v_sell = 2;
+		v_rent = 3;
+		v_buy = 4;
+	    G = 0.9,0.3,0.1,0.7;
+		p.myNA = -99;
+		p.beta = 0.9;
+}
 
-			   Array<double,5> a1, a2, a3, a4;
-			   Array<double,4> b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14;
-			   Array<int   ,4> c1,c2,c3,c4,c5,c6,c7;
-			   Array<double,3> d;
-			   Array<double,2> d2;
-			   TinyVector<int,4> e;
-			   TinyVector<int,3> e2;
-			   Parstruc f;
+CMig::CMig(int x1,int x2, int x3,int x4, int x5):
+
+	// this is syntactic sugar. an initialiser list. 
+
+	ResStay(x1,x2,x3,x4,x5,FortranArray<5>()),
+    ResSell(x1,x2,x3,x4,x5,FortranArray<5>()),
+	ResRent(x1,x2,x3,x4,x5,FortranArray<5>()),
+    ResBuy( x1,x2,x3,x4,x5,FortranArray<5>()),
+
+    v_stay(x1,x2,x3,x4,FortranArray<4>()),	
+    v_sell(x1,x2,x3,x4,FortranArray<4>()),  
+    v_rent(x1,x2,x3,x4,FortranArray<4>()),	
+    v_buy( x1,x2,x3,x4,FortranArray<4>()),   
+	c_stay(x1,x2,x3,x4,FortranArray<4>()),	
+	c_sell(x1,x2,x3,x4,FortranArray<4>()),  
+	c_rent(x1,x2,x3,x4,FortranArray<4>()),	
+	c_buy( x1,x2,x3,x4,FortranArray<4>()),   
+	Vown(  x1,x2,x3,x4,FortranArray<4>()),	
+	Vrent( x1,x2,x3,x4,FortranArray<4>()),	
+	EVown( x1,x2,x3,x4,FortranArray<4>()),	
+	EVrent(x1,x2,x3,x4,FortranArray<4>()),	
+	ctmp(  x1,x2,x3,x4,FortranArray<4>()),  	
+	xtmp(  x1,x2,x3,x4,FortranArray<4>()),  	
+
+	s_stay(x1,x2,x3,x4,FortranArray<4>()),  
+	s_sell(x1,x2,x3,x4,FortranArray<4>()),  
+	s_rent(x1,x2,x3,x4,FortranArray<4>()),  
+	s_buy( x1,x2,x3,x4,FortranArray<4>()),  
+	Down(  x1,x2,x3,x4,FortranArray<4>()),  
+	Drent( x1,x2,x3,x4,FortranArray<4>()),  
+	Dmax(  x1,x2,x3,x4,FortranArray<4>()),  
+	
+	vplustmp(x1,x2,x3,FortranArray<3>()), 
+    dim_aypt(x1,x2,x3,x4) ,				   
+    dim_ayp(x1,x2,x3), 				    
+	G(x2,x2,FortranArray<2>()) {
+		ResStay = 0.1;
+		ResSell = 0.2;
+		ResRent = 0.3;
+		ResBuy = 0.4;
+		v_stay = 1;
+		v_sell = 2;
+		v_rent = 3;
+		v_buy = 4;
+	    G = 0.9,0.3,0.1,0.7;
+		p.myNA = -99;
+		p.beta = 0.9;
 }
 
 
+// constructor 3: data referenced 
+CMig::CMig(TinyVector<int,5> D_aypta,
+				 TinyVector<int,4> D_aypt, 
+	             TinyVector<int,4> D_aypa, 
+	             TinyVector<int,3> D_ayp, 
+   				 TinyVector<int,2> D_y, 
+				 Parstruc* pars,
+				 Array<double,5> data_stay,
+				 Array<double,5> data_sell,
+				 Array<double,5> data_rent,
+				 Array<double,5> data_buy,
+	             Array<double,2> data_G	) :
+
+	// this is syntactic sugar. an initialiser list. 
+
+	ResStay(D_aypta,FortranArray<5>()),
+    ResSell(D_aypta,FortranArray<5>()),
+	ResRent(D_aypta,FortranArray<5>()),
+    ResBuy( D_aypta,FortranArray<5>()),
+
+    v_stay(D_aypt,FortranArray<4>()),	
+    v_sell(D_aypt,FortranArray<4>()),  
+    v_rent(D_aypt,FortranArray<4>()),	
+    v_buy( D_aypt,FortranArray<4>()),   
+	c_stay(D_aypt,FortranArray<4>()),	
+	c_sell(D_aypt,FortranArray<4>()),  
+	c_rent(D_aypt,FortranArray<4>()),	
+	c_buy( D_aypt,FortranArray<4>()),   
+	Vown(  D_aypt,FortranArray<4>()),	
+	Vrent( D_aypt,FortranArray<4>()),	
+	EVown( D_aypt,FortranArray<4>()),	
+	EVrent(D_aypt,FortranArray<4>()),	
+	ctmp(  D_aypa,FortranArray<4>()),  	
+	xtmp(  D_aypa,FortranArray<4>()),  	
+
+	s_stay(D_aypt,FortranArray<4>()),  
+	s_sell(D_aypt,FortranArray<4>()),  
+	s_rent(D_aypt,FortranArray<4>()),  
+	s_buy( D_aypt,FortranArray<4>()),  
+	Down(  D_aypt,FortranArray<4>()),  
+	Drent( D_aypt,FortranArray<4>()),  
+	Dmax(  D_aypt,FortranArray<4>()),  
+	
+	vplustmp(D_ayp,FortranArray<3>()), //d
+	G(D_y,FortranArray<2>()),         //d2
+    dim_aypt(D_aypt) ,				    //e
+    dim_ayp(D_ayp) ,				    //e2
+    p(*pars) {							//f				
+		// reference the data
+		ResStay.reference(data_stay);
+		ResSell.reference(data_sell);
+		ResRent.reference(data_rent);
+		ResBuy.reference(data_buy );
+		G.reference(data_G);
+		v_stay = 1;
+		v_sell = 2;
+		v_rent = 3;
+		v_buy = 4;
+}
+
 // Define Getters
-Array<double,5> CMig::getResStay( void ){ return(ResStay); };
-Array<double,5> CMig::getResSell( void ){ return(ResSell); };
-Array<double,4> CMig::getVown( void ){ return(Vown); };
-Array<double,4> CMig::getVrent( void ){ return(Vrent); };
-Array<double,4> CMig::getEVown( void ){ return(EVown); };
-Array<double,4> CMig::getEVrent( void ){ return(EVrent); };
-Array<double,4> CMig::getv_stay( void ){ return(v_stay); };
-Array<double,4> CMig::getv_rent( void ){ return(v_rent); };
-Array<double,4> CMig::getv_sell( void ){ return(v_sell); };
-Array<double,4> CMig::getv_buy( void ){ return(v_buy); };
+Array<double,5> CMig::GetResStay( void ){ return(ResStay); };
+Array<double,5> CMig::GetResSell( void ){ return(ResSell); };
+Array<double,5> CMig::GetResBuy( void ){ return(ResStay); };
+Array<double,5> CMig::GetResRent( void ){ return(ResSell); };
+Array<double,4> CMig::GetVown( void ){ return(Vown); };
+Array<double,4> CMig::GetVrent( void ){ return(Vrent); };
+Array<double,4> CMig::GetEVown( void ){ return(EVown); };
+Array<double,4> CMig::GetEVrent( void ){ return(EVrent); };
+Array<double,4> CMig::Getv_stay( void ){ return(v_stay); };
+Array<double,4> CMig::Getv_rent( void ){ return(v_rent); };
+Array<double,4> CMig::Getv_sell( void ){ return(v_sell); };
+Array<double,4> CMig::Getv_buy( void ){ return(v_buy); };
+Array<double,2> CMig::GetG( void ){ return(G); };
 
 // Define show method
 void CMig::show(){
@@ -92,12 +199,16 @@ void CMig::show(){
 	cout <<  p.beta << endl;
 	cout << "we have myNA: " << endl;
 	cout <<  p.myNA << endl;
-	cout << "ResStay(0,0,0,0,0) = " << endl;
+	cout << "we have G: " << endl;
+	cout <<  G << endl;
+	cout << "ResStay(:,:,1,1,1) = " << endl;
 	cout << ResStay(Range::all(),Range::all(),1,1,1) << endl;
-	cout << "ResSell(0,0,0,0,0) = " << endl;
+	cout << "ResSell(:,:,1,1,1) = " << endl;
 	cout << ResSell(Range::all(),Range::all(),1,1,1) << endl;
-	cout << "Dmax = " << endl;
-	cout << Dmax << endl;
+	cout << "ResRent(:,:,1,1,1) = " << endl;
+	cout << ResRent(Range::all(),Range::all(),1,1,1) << endl;
+	cout << "ResBuy(:,:,1,1,1) = " << endl;
+	cout << ResBuy(Range::all(),Range::all(),1,1,1) << endl;
 	cout << "end of show method: " << endl;
 	cout << "===================" << endl;
 }
@@ -107,8 +218,41 @@ void CMig::version(){
 	cout << "The largest array in here has" << ResStay.dimensions() << "dimensions" << endl;
 }
 
+std::vector<double> CMig::GetResStayNumeric( void ) {
+	Array<double,5>::iterator iter;
+	std::vector<double> out;
+	for (iter = ResStay.begin() ; iter!=ResStay.end();++iter){
+		out.push_back(*iter);
+	}
+	return out;
+}
 
+std::vector<double> CMig::GetResSellNumeric( void ) {
+	Array<double,5>::iterator iter;
+	std::vector<double> out;
+	for (iter = ResSell.begin() ; iter!=ResSell.end();++iter){
+		out.push_back(*iter);
+	}
+	return out;
+}
 
+std::vector<double> CMig::GetResRentNumeric( void ) {
+	Array<double,5>::iterator iter;
+	std::vector<double> out;
+	for (iter = ResRent.begin() ; iter!=ResRent.end();++iter){
+		out.push_back(*iter);
+	}
+	return out;
+}
+
+std::vector<double> CMig::GetResBuyNumeric( void ) {
+	Array<double,5>::iterator iter;
+	std::vector<double> out;
+	for (iter = ResBuy.begin() ; iter!=ResBuy.end();++iter){
+		out.push_back(*iter);
+	}
+	return out;
+}
 
 
 // =====================================
@@ -189,7 +333,7 @@ void CMig::computeBuy(int age) {
 void CMig::computePeriod(int age){
 
 	// if final operiod, then precomputed resources are utility
-	if (age==2) {
+	if (age==dim_aypt(dim_aypt.length())) {
 
 		EVown(Range::all(),Range::all(),Range::all(),age) = ResStay(Range::all(),Range::all(),Range::all(),age,1);
 		EVrent(Range::all(),Range::all(),Range::all(),age) = ResRent(Range::all(),Range::all(),Range::all(),age,1);

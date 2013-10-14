@@ -7,17 +7,22 @@ int main(int argument_count, char ** command_line_arguments)
 { 
 	std::cout << "The main program is running" << std::endl;
 
-	double dstay[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-	double dsell[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double drent[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double dbuy[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-					 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
+	Array<double,5> stay(shape(2,2,2,2,2),FortranArray<5>());
+	Array<double,5> sell(shape(2,2,2,2,2),FortranArray<5>());
+	Array<double,5> rent(shape(2,2,2,2,2),FortranArray<5>());
+	Array<double,5> buy( shape(2,2,2,2,2),FortranArray<5>());
 
+	stay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+		   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+    sell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+    rent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+				17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+	buy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
 
-	double trans[] = {0.9,0.1,0.1,0.9};
+	Array<double,2> trans(shape(2,2),FortranArray<2>());
+	trans = 0.9,0.3,0.1,0.7;
 
 	Parstruc pars;
 	pars.beta = 0.9;
@@ -32,35 +37,28 @@ int main(int argument_count, char ** command_line_arguments)
 	TinyVector<int,3> ayp   = shape(2,2,2);
 	TinyVector<int,2> y     = shape(2,2);
 
-	// create pointers to them
-	TinyVector<int,5> *paypta;
-	TinyVector<int,4> *paypt ;
-	TinyVector<int,4> *paypa ;
-	TinyVector<int,3> *payp  ;
-	TinyVector<int,2> *py  ;
-
-
-	// store address of dim vecs in pointers
-	paypta = &aypta;
-	paypt  = &aypt ;
-	paypa  = &aypa ;
-	payp   = &ayp  ;
-	py     = &y;
-
-
 	// create an instance of owner class
-	CMig t5(paypta,paypt,paypa,payp,py,dstay,dsell,drent,dbuy,trans,pp);
-	
-	//t5.show();
+	CMig myMig( aypta,aypt, aypa, ayp, y, pp, stay, sell, rent, buy, trans);
+	myMig.show();
 
+	CMig migdef;
+	migdef.show();
 
-	t5.computePeriod( 2 );
-	t5.computePeriod( 1 );
+	CMig migc1(100,10,5,30,100);
+	
+    //Array<double,3> test(ayp,FortranArray<3>());
+	//Array<double,3> bout(ayp,FortranArray<3>());
+	//test = 1;
+	//bout = t5.integrate(test);
+	//cout << bout << endl;
+
+	//t5.computePeriod( 2 );
+	//t5.computePeriod( 1 );
 	
 	
-	std::cout << std::endl;
-	std::cout << "class type:" << std::endl;
-	t5.version();
+	//std::cout << std::endl;
+	//std::cout << "class type:" << std::endl;
+	//t5.version();
 	
 	return 0;
 }

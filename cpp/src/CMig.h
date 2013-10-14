@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <blitz/array.h>
 
 using namespace std;
@@ -20,6 +21,8 @@ struct EVstruc{
     Array<double,4> Vmax;
 };
 
+
+
 // Expectations computing function
 // takes the EV structure and computes
 // Array<double,3> computeExpectation(int age, EVstruc* EV, Array<double,2> G);
@@ -39,30 +42,46 @@ class CMig {
 		// private member functions
 
 	public: 
-		// constructor
-		CMig(TinyVector<int,5>* D_aypta,
-				TinyVector<int,4>* D_aypt, 
-				TinyVector<int,4>* D_aypa, 
-				TinyVector<int,3>* D_ayp, 
-				TinyVector<int,2>* D_y, 
-				double* Stay, 
-				double* Sell,
-				double* Rent, 
-				double* Buy,
-				double* Gdat,
-				Parstruc* pars);
+		// 3 constructors
+		CMig();
+		CMig(int x1,int x2, int x3, int x4, int x5);
+
+		CMig(TinyVector<int,5> D_aypta,
+				 TinyVector<int,4> D_aypt, 
+	             TinyVector<int,4> D_aypa, 
+	             TinyVector<int,3> D_ayp, 
+   				 TinyVector<int,2> D_y, 
+	             Parstruc* pars ,
+				 Array<double,5> data_stay,
+				 Array<double,5> data_sell,
+				 Array<double,5> data_rent,
+				 Array<double,5> data_buy,
+		         Array<double,2> G	);
 
 		// getters
-		Array<double,5> getResStay( void );
-		Array<double,5> getResSell( void );
-		Array<double,4> getVown( void );
-		Array<double,4> getVrent( void );
-		Array<double,4> getEVown( void );
-		Array<double,4> getEVrent( void );
-		Array<double,4> getv_stay( void );
-		Array<double,4> getv_rent( void );
-		Array<double,4> getv_sell( void );
-		Array<double,4> getv_buy( void );
+		Array<double,5> GetResStay( void );
+		Array<double,5> GetResSell( void );
+		Array<double,5> GetResBuy( void );
+		Array<double,5> GetResRent( void );
+		Array<double,4> GetVown( void );
+		Array<double,4> GetVrent( void );
+		Array<double,4> GetEVown( void );
+		Array<double,4> GetEVrent( void );
+		Array<double,4> Getv_stay( void );
+		Array<double,4> Getv_rent( void );
+		Array<double,4> Getv_sell( void );
+		Array<double,4> Getv_buy( void );
+		Array<double,2> GetG( void );
+		const TinyVector<int,3> GetDimAYP( void ) const { return dim_ayp;};
+
+		//setters
+		void ReferenceStay( Array<double,5> x ) { ResStay.reference( x ) ; }
+		void ReferenceSell( Array<double,5> x ) { ResSell.reference( x ) ; }
+		void ReferenceRent( Array<double,5> x ) { ResRent.reference( x ) ; }
+		void ReferenceBuy( Array<double,5> x ) { ResBuy.reference( x ) ; }
+		
+		void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
+		void SetP( Parstruc* par ) { p = *par ; }
 
 		// other member functions		
 		void show ( void );
@@ -75,6 +94,10 @@ class CMig {
 		void computeRent( int age );
 		void computeBuy( int age );
 		void computeDchoice( int age );
+		std::vector<double> GetResStayNumeric( void );
+		std::vector<double> GetResSellNumeric( void );
+		std::vector<double> GetResRentNumeric( void );
+		std::vector<double> GetResBuyNumeric( void );
 		
 		Array<double,3> dchoice3d(Array<double,3> one, Array<double,3> two);
 		Array<int   ,3> dchoiceID3d(Array<double,3> one, Array<double,3> two);

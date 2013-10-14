@@ -100,129 +100,141 @@ using namespace blitz;
 	
 // }
 
-TEST(CMigTest, ResContents) {
-	double dstay[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-	double dsell[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double drent[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double dbuy[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-					 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-
-
-	double trans[] = {0.9,0.1,0.1,0.9};
-
+class MigrationTest: public ::testing::Test {
+protected:
+	Array<double,5> tstay,tsell,trent,tbuy;	
+	Array<double,2> trans;
 	Parstruc pars;
-	pars.beta = 0.9;
-	pars.myNA = -99;
-	Parstruc* pp;
-	pp = &pars;
+	TinyVector<int,5> aypta;
+	TinyVector<int,4> aypt ;
+	TinyVector<int,4> aypa ;
+	TinyVector<int,3> ayp  ;
+	TinyVector<int,2> y    ;
 
-    // create dimension vectors	                 
-	TinyVector<int,5> aypta = shape(2,2,2,2,2);
-	TinyVector<int,4> aypt  = shape(2,2,2,2);
-	TinyVector<int,4> aypa  = shape(2,2,2,2);
-	TinyVector<int,3> ayp   = shape(2,2,2);
-	TinyVector<int,2> y     = shape(2,2);
+	CMig myMig;
 
-	// create pointers to them
-	TinyVector<int,5> *paypta;
-	TinyVector<int,4> *paypt ;
-	TinyVector<int,4> *paypa ;
-	TinyVector<int,3> *payp  ;
-	TinyVector<int,2> *py  ;
+	MigrationTest() {
+		pars.beta = 0.9;
+		pars.myNA = -99;
+
+		Array<double,2> trans(shape(2,2),FortranArray<2>());
+		trans = 0.9,0.3,0.1,0.7;
+
+		// create dimension vectors	                 
+		aypta = shape(2,2,2,2,2);
+		aypt  = shape(2,2,2,2);
+		aypa  = shape(2,2,2,2);
+		ayp   = shape(2,2,2);
+		y     = shape(2,2);
+		
+		Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
+		tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+			   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+		tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+		trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+				17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+		tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+
+	}
+};
 
 
-	// store address of dim vecs in pointers
-	paypta = &aypta;
-	paypt  = &aypt ;
-	paypa  = &aypa ;
-	payp   = &ayp  ;
-	py     = &y;
+TEST_F(MigrationTest, DefaultDimAYP){
 
+	std::vector<int> vec;
+	vec.push_back(2);
+	vec.push_back(2);
+	vec.push_back(2);
 
-	// create an instance of owner class
-	CMig t5(paypta,paypt,paypa,payp,py,dstay,dsell,drent,dbuy,trans,pp);
+	TinyVector<int,3> blitz;
+	blitz = myMig.GetDimAYP();
+	TinyVector<int,3>::iterator iter;
 
-	// get data
-	Array<double,5> dStay = t5.getResStay();
-	Array<double,5> dSell = t5.getResSell();
+	for (iter = blitz.begin(); iter!= blitz.end(); iter ++){
 
-	// define an iterator for a blitz array
-	Array<double,5>::iterator iter;
+		EXPECT_EQ(vec.at(iter-blitz.begin()), *iter);
+	}
+}
 
-	// define two std::vectors to take the values
+TEST_F(MigrationTest, TestDataPointers){
+	
+	// set some data
+	myMig.ReferenceStay( tstay );
+	myMig.ReferenceSell( tsell );
+	myMig.ReferenceRent( trent );
+	myMig.ReferenceBuy(  tbuy );
+	myMig.ReferenceG( trans );
+	myMig.SetP( &pars );
+
+	// expect same data address
+	EXPECT_EQ( tstay.data() , myMig.GetResStay().data() ) << "ResStay pointer has wrong value " << endl;
+	EXPECT_EQ( tsell.data() , myMig.GetResSell().data() ) << "ResSell pointer has wrong value " << endl ;
+	EXPECT_EQ( trent.data() , myMig.GetResRent().data() ) << "ResRent poiter has wrong value "  << endl;
+	EXPECT_EQ( tbuy.data()  , myMig.GetResBuy().data() )  << "ResBuy pointer has wrong value "  << endl;
+	EXPECT_EQ( trans.data()  , myMig.GetG().data() )  << "G pointer has wrong value "  << endl;
+}
+
+TEST_F(MigrationTest, CheckDataContents){
+	
+	// set some data
+	myMig.ReferenceStay( tstay );
+	myMig.ReferenceSell( tsell );
+	myMig.ReferenceRent( trent );
+	myMig.ReferenceBuy(  tbuy );
+
+	// now check it's the right data
 	std::vector<double> stayvec;
 	std::vector<double> sellvec;
+	std::vector<double> rentvec;
+	std::vector<double> buyvec;
+	std::vector<double> stayblitz;
+	std::vector<double> sellblitz;
+	std::vector<double> rentblitz;
+	std::vector<double> buyblitz;
 
-	// iterate over blitz and fill vector with values
-	for (iter = dStay.begin() ; iter!=dStay.end();++iter){
+	Array<double,5>::iterator iter;
+	for (iter = tstay.begin() ; iter!=tstay.end();++iter){
 		stayvec.push_back(*iter);
 	}
-
-	for (iter = dSell.begin() ; iter!=dSell.end();++iter){
+	for (iter = tsell.begin() ; iter!=tsell.end();++iter){
 		sellvec.push_back(*iter);
 	}
-
+	for (iter = trent.begin() ; iter!=trent.end();++iter){
+		rentvec.push_back(*iter);
+	}
+	for (iter = tbuy.begin() ; iter!=tbuy.end();++iter){
+		buyvec.push_back(*iter);
+	}
+ 
+	stayblitz = myMig.GetResStayNumeric();
+	sellblitz = myMig.GetResSellNumeric();
+	rentblitz = myMig.GetResRentNumeric();
+	buyblitz = myMig.GetResBuyNumeric();
 
 	for (int i=0; i<sellvec.size(); i++){
-		EXPECT_EQ(dstay[i],stayvec.at(i)) << "ResStay has wrong value at idx " << i;
-		EXPECT_EQ(dsell[i],sellvec.at(i)) << "ResSell has wrong value at idx " << i;
+		EXPECT_EQ(stayvec.at(i),stayblitz.at(i)) << "ResStay has wrong value at idx " << i;
+		EXPECT_EQ(sellvec.at(i),sellblitz.at(i)) << "ResSell has wrong value at idx " << i;
+		EXPECT_EQ(rentvec.at(i),rentblitz.at(i)) << "ResRent has wrong value at idx " << i;
+		EXPECT_EQ(buyvec.at(i),buyblitz.at(i))   << "ResBuy has wrong value at idx "  << i;
 	}
 }
 
 
-TEST(CMigTest, checkIntegration) {
-	double dstay[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-	double dsell[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double drent[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-	double dbuy[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-					 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-
-
-	double trans[] = {0.9,0.1,0.1,0.9};
-
-	Parstruc pars;
-	pars.beta = 0.9;
-	pars.myNA = -99;
-	Parstruc* pp;
-	pp = &pars;
-
-    // create dimension vectors	                 
-	TinyVector<int,5> aypta = shape(2,2,2,2,2);
-	TinyVector<int,4> aypt  = shape(2,2,2,2);
-	TinyVector<int,4> aypa  = shape(2,2,2,2);
-	TinyVector<int,3> ayp   = shape(2,2,2);
-	TinyVector<int,2> y     = shape(2,2);
-
-	// create pointers to them
-	TinyVector<int,5> *paypta;
-	TinyVector<int,4> *paypt ;
-	TinyVector<int,4> *paypa ;
-	TinyVector<int,3> *payp  ;
-	TinyVector<int,2> *py  ;
-
-
-	// store address of dim vecs in pointers
-	paypta = &aypta;
-	paypt  = &aypt ;
-	paypa  = &aypa ;
-	payp   = &ayp  ;
-	py     = &y;
-
+TEST(MigTestIndivid, checkIntegration) {
 
 	// create an instance of owner class
-	CMig t5(paypta,paypt,paypa,payp,py,dstay,dsell,drent,dbuy,trans,pp);
+	CMig myMig;
 
 	// get data
-	Array<double,3> test(ayp,FortranArray<3>());
-	Array<double,3> bout(ayp,FortranArray<3>());
+	Array<double,3> test(myMig.GetDimAYP(),FortranArray<3>());
+	Array<double,3> bout(myMig.GetDimAYP(),FortranArray<3>());
 	test = 1;
-	bout = t5.integrate(test);
+	bout = myMig.integrate(test);
 
 	std::vector<double> out;
 	// define an iterator for a blitz array
@@ -234,7 +246,73 @@ TEST(CMigTest, checkIntegration) {
 	}
 
 	for (int i=0; i<out.size(); i++){
-		EXPECT_EQ(1,out.at(i)) << "integration not 1 " << i;
+		EXPECT_EQ(1,out.at(i)) << "integration not 1 at index " << i;
+	}
+}
+
+TEST(MigTestIndivid,TestDchoice3d){
+
+	CMig myMig;
+
+	// setup test for dchoice3d
+	Array<double,3> one(myMig.GetDimAYP(),FortranArray<3>());
+	Array<double,3> two(myMig.GetDimAYP(),FortranArray<3>());
+	Array<double,3> ret(myMig.GetDimAYP(),FortranArray<3>());
+	one = 1;
+	two = 0,0,2,0,2,0,2,2;
+
+	std::vector<double> dchoice;
+	std::vector<double> vec;
+	dchoice.push_back(1);
+	dchoice.push_back(1);
+	dchoice.push_back(2);
+	dchoice.push_back(1);
+	dchoice.push_back(2);
+	dchoice.push_back(1);
+	dchoice.push_back(2);
+	dchoice.push_back(2);
+
+	ret = myMig.dchoice3d(one,two);
+	// define two std::vectors to take the values
+	//std::vector<double> vec;
+	Array<double,3>::iterator iter;
+
+	// iterate over blitz and fill vector with values
+	for (iter = ret.begin() ; iter!=ret.end();++iter){
+		vec.push_back(*iter);
+	}
+	for (int i=0; i<dchoice.size(); i++){
+		EXPECT_EQ(dchoice.at(i),vec.at(i)) << "at" << i << "dchoice is "<<dchoice.at(i)<<"and blitzchoice is " << vec.at(i);
+	}
+
+	
+}
+
+TEST(MigTestIndivid, TensorAddition ) {
+
+	Array<double,3> A(shape(2,2,2),FortranArray<3>());
+	A = 0.25; 
+
+	Array<double,2> B(shape(2,2),FortranArray<2>());
+	B = 0,0,1,1; 
+
+	firstIndex i;
+	secondIndex j;
+	thirdIndex k;
+
+	Array<double,3> C(A(i,j,k) + B(k,j));
+	Array<double,2> c;
+	Array<double,2>::iterator it;
+	
+	c = C(Range::all(),1,Range::all());
+
+	for (it = c.begin(); it != c.end(); it++){
+		EXPECT_EQ(0.25, *it);
+	}
+	c = C(Range::all(),2,Range::all());
+
+	for (it = c.begin(); it != c.end(); it++){
+		EXPECT_EQ(1.25, *it);
 	}
 }
 
