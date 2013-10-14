@@ -9,7 +9,8 @@ Description: More about what it does (maybe more than one line)
 License: GPL-3
 Depends:
     Rcpp (>= 0.10.3),
-    data.table
+    data.table,
+    rutils
 LinkingTo: Rcpp
 Collate:
     'rcpp_hello_world.R'

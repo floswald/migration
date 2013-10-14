@@ -1,14 +1,238 @@
-
-
-
-
-// developments
-
+// define Rcpp compiling switch
+#define RcppCompile TRUE
 #include <blitz/array.h>
 #include <Rcpp.h>
 #include <Rcpp/Benchmark/Timer.h>
+#include "../../cpp/src/CMig.cpp"
 
 using namespace blitz;
+ 
+//' dev6: discrete optimization, housing choice
+//' 
+//' @examples
+//' nA <- 50L; nY <- 5L; nT <- 5L; nH <- 2L; nP <- 3L
+//' 
+//' dataR <- list( dims = c(nA,nY,nP,nT),
+//'                theta = 1.2,beta=0.95,
+//'                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
+//'                G = as.numeric(rouwenhorst(rho=0.9,n=nY)$Pmat))
+//'                
+//' grids <- list()
+//' grids$p <- seq(1,10,length=nP)
+//' grids$a <- seq(-(1-dataR$down)*max(grids$p),10,length=nA)
+//' 
+//' # renter state: V = max( rent, buy )
+//' 
+//' # sR means you are renter
+//' sR <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p,it=1:nT,save=grids$a))
+//' sR[,cons := a + y + 0.3*it - dataR$rent - dataR$R*save]
+//' sR[it==nT & a>0,cons := log(a) ]
+//' sR[a<0, cons := dataR$myNA]
+//' sR[save<0, cons := dataR$myNA]
+//' 
+//' # sB is buyer: admissible savings depends on current house price.
+//' sB <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p,it=1:nT,save=grids$a))
+//' sB[,cons := a + y + 0.3*it - p - dataR$R*save]
+//' sB[a<0 & it!=nT ,cons := dataR$myNA]
+//' sB[save < -(1-dataR$down)*p, cons := dataR$myNA, by=list(y,p,it) ]
+//' 
+//' # owner state: V = max( stay , sell )
+//' 
+//' # sS means you are seller->renter
+//' sS <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p,it=1:nT,save=grids$a))
+//' sS[,cons := a + y + 0.3*it - dataR$rent + p - dataR$R*save]
+//' sS[save<0, cons := dataR$myNA]
+//' 
+//' # sO means you are owner
+//' sO <- data.table(expand.grid(a=grids$a,y=1:nY,p=grids$p,it=1:nT,save=grids$a))
+//' sO[,cons := a + y + 0.3*it - dataR$R*save]
+//' sO[it==nT & a+y+p>0,cons := log(a+y+p)]
+//' sO[it==nT & a+y+p<0,cons := dataR$myNA]
+//' 
+//' # tensors
+//' CR <- sR[,array(cons,c(dataR$dims,nA))]
+//' CB <- sB[,array(cons,c(dataR$dims,nA))]
+//' CS <- sS[,array(cons,c(dataR$dims,nA))]
+//' CO <- sO[,array(cons,c(dataR$dims,nA))]
+//' 
+//' xR = array(0,c(dataR$dims,nA))
+//' xB = array(0,c(dataR$dims,nA))
+//' xS = array(0,c(dataR$dims,nA))
+//' xO = array(0,c(dataR$dims,nA))
+//' 
+//' dataR$consR <- sR[,cons]
+//' dataR$consB <- sB[,cons]
+//' dataR$consS <- sS[,cons]
+//' dataR$consO <- sO[,cons]
+//' blitz <- dev5(data=dataR)
+//' 
+//' ######################################################
+//' # Calculating an R solution to this lifecycle
+//' ######################################################
+//' 
+//' Rtime <- proc.time()
+//' # envelopes of conditional values
+//' WO = array(0,dataR$dims)
+//' WR = array(0,dataR$dims)
+//' 
+//' # discrete choice amoung conditional values
+//' DO = array(0,dataR$dims)
+//' DR = array(0,dataR$dims)
+//' 
+//' # conditional values
+//' VR = array(0,dataR$dims)
+//' VB = array(0,dataR$dims)
+//' VS = array(0,dataR$dims)
+//' VO = array(0,dataR$dims)
+//' 
+//' # conditional savings functions
+//' saveR = array(0,dataR$dims)
+//' saveB = array(0,dataR$dims)
+//' saveS = array(0,dataR$dims)
+//' saveO = array(0,dataR$dims)
+//' 
+//' # conditional consumption functions
+//' consR = array(0,c(nA,nY,nP,nT-1))
+//' consB = array(0,c(nA,nY,nP,nT-1))
+//' consS = array(0,c(nA,nY,nP,nT-1))
+//' consO = array(0,c(nA,nY,nP,nT-1))
+//' 
+//' # final period values
+//' WR[ , , ,nT] <- sR[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
+//' WO[ , , ,nT] <- sO[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
+//' # WR[ , , ,nT] <- sT[,array(log(cashR),c(nA,nY,nP))]
+//' # WO[ , , ,nT] <- sT[,array(log(cashO),c(nA,nY,nP))]
+//' # WR[is.nan(WR)] <- dataR$myNA
+//' # WO[is.nan(WR)] <- dataR$myNA
+//' 
+//' for (ti in (nT-1):1) {
+//'     for (ia in 1:nA) {
+//'          for(iy in 1:nY) {
+//' 			 for (ip in 1:nP){
+//' 				 for (ja in 1:nA){
+//' 					 # renter
+//' 					 if (CR[ia,iy,ip,ti,ja] < 0 | !is.finite(CR[ia,iy,ip,ti,ja])){
+//' 						xR[ia,iy,ip,ti,ja] = dataR$myNA
+//' 					 } else {
+//' 						xR[ia,iy,ip,ti,ja] =  log(CR[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
+//' 					 }
+//' 					 # buyer
+//' 					 if (CB[ia,iy,ip,ti,ja] < 0 | !is.finite(CB[ia,iy,ip,ti,ja])){
+//' 						xB[ia,iy,ip,ti,ja] = dataR$myNA
+//' 					 } else {
+//' 						xB[ia,iy,ip,ti,ja] =  log(CB[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
+//' 					 }
+//' 					 # seller
+//' 					 if (CS[ia,iy,ip,ti,ja] < 0 | !is.finite(CS[ia,iy,ip,ti,ja])){
+//' 						xS[ia,iy,ip,ti,ja] = dataR$myNA
+//' 					 } else {
+//' 						xS[ia,iy,ip,ti,ja] =  log(CS[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
+//' 					 }
+//' 					 # owner
+//' 					 if (CO[ia,iy,ip,ti,ja] < 0 | !is.finite(CO[ia,iy,ip,ti,ja])){
+//' 						xO[ia,iy,ip,ti,ja] = dataR$myNA
+//' 					 } else {
+//' 						xO[ia,iy,ip,ti,ja] =  log(CO[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
+//' 					 }
+//' 				 }
+//' 
+//'     			 # renter state
+//' 				 # ============
+//' 
+//' 				 # conditional values renter state
+//' 				 VR[ia,iy,ip,ti] = max(xR[ia,iy,ip,ti, ])
+//' 				 VB[ia,iy,ip,ti] = max(xB[ia,iy,ip,ti, ])
+//' 				 # conditional savings renter state
+//' 				 saveR[ia,iy,ip,ti] = which.max(xR[ia,iy,ip,ti, ])
+//' 				 saveB[ia,iy,ip,ti] = which.max(xB[ia,iy,ip,ti, ])
+//' 				 # max val renter state
+//' 				 WR[ia,iy,ip,ti] = max(VR[ia,iy,ip,ti],VB[ia,iy,ip,ti])
+//' 				 DR[ia,iy,ip,ti] = which.max(c(VR[ia,iy,ip,ti],VB[ia,iy,ip,ti]))
+//' 
+//'     			 # owner state
+//' 				 # ============
+//' 
+//' 				 # conditional values owner state
+//' 				 VS[ia,iy,ip,ti] = max(xS[ia,iy,ip,ti, ])
+//' 				 VO[ia,iy,ip,ti] = max(xO[ia,iy,ip,ti, ])
+//' 				 # conditional savings owner state
+//' 				 saveO[ia,iy,ip,ti] = which.max(xO[ia,iy,ip,ti, ])
+//' 				 saveS[ia,iy,ip,ti] = which.max(xS[ia,iy,ip,ti, ])
+//' 				 # max val owner state
+//' 				 WO[ia,iy,ip,ti] = max(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti])
+//' 				 DO[ia,iy,ip,ti] = which.max(c(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti]))
+//' 
+//' 			 }
+//'          }
+//'      }
+//' }
+//' Rtime <- proc.time() - Rtime
+//' 
+//' # timings
+//' print(Rtime)
+//' print(sum(blitz$time/1e9))
+//' print(diff(blitz$time/1e9))
+//'
+//' # get conditional consumption functions
+//' # =====================================
+//' consR <- array(matrix(CR[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveR[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+//' consB <- array(matrix(CB[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveB[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+//' consS <- array(matrix(CS[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveS[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+//' consO <- array(matrix(CO[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveO[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+//' # =====================================
+//' print(all.equal(WO,blitz$WO))
+//' print(all.equal(WR,blitz$WR))
+//' print(all.equal(DO,blitz$DO))
+//' print(all.equal(DR,blitz$DR))
+//'
+//' print(all.equal(VO,blitz$VO))
+//' print(all.equal(VR,blitz$VR))
+//' print(all.equal(VS,blitz$VS))
+//' print(all.equal(VB,blitz$VB))
+//'
+//' print(all.equal(saveO,blitz$saveO))
+//' print(all.equal(saveR,blitz$saveR))
+//' print(all.equal(saveS,blitz$saveS))
+//' print(all.equal(saveB,blitz$saveB))
+// [[Rcpp::export]]
+
+Rcpp::List dev6( Rcpp::List data ) {
+
+// start timer
+	Rcpp::Timer timer;
+
+	// R array data
+	Rcpp::NumericVector R_CO = Rcpp::as<Rcpp::NumericVector>(data["consO"]);
+	Rcpp::NumericVector R_CR = Rcpp::as<Rcpp::NumericVector>(data["consR"]);
+	Rcpp::NumericVector R_CB = Rcpp::as<Rcpp::NumericVector>(data["consB"]);
+	Rcpp::NumericVector R_CS = Rcpp::as<Rcpp::NumericVector>(data["consS"]);
+	Rcpp::IntegerVector d    = Rcpp::as<Rcpp::IntegerVector>(data["dims"]);
+	Rcpp::NumericVector R_G  = Rcpp::as<Rcpp::NumericVector>(data["G"]);
+
+	// R parameter data
+	Parstruc p;
+	p.beta = Rcpp::as<double>(data["beta"]);
+	p.myNA = Rcpp::as<double>(data["myNA"]);
+
+	// map to blitz arrays
+	TinyVector<int,5> D_aypta(d(0),d(1),d(2),d(3),d(0));
+	TinyVector<int,4> D_aypt(d(0),d(1),d(2),d(3));
+	TinyVector<int,4> D_aypa(d(0),d(1),d(2),d(0));
+	TinyVector<int,3> D_ayp(d(0),d(1),d(2));
+	TinyVector<int,2> D_y(d(1),d(1));
+	Array<double,2> G(R_G.begin(),shape(d(1),d(1)),neverDeleteData,FortranArray<2>());
+	Array<double,5> stay(R_CO.begin(),D_aypta,neverDeleteData,FortranArray<5>());
+	Array<double,5> rent(R_CR.begin(),D_aypta,neverDeleteData,FortranArray<5>());
+	Array<double,5> buy( R_CB.begin(),D_aypta,neverDeleteData,FortranArray<5>());
+	Array<double,5> sell(R_CS.begin(),D_aypta,neverDeleteData,FortranArray<5>());
+
+	CMig mig(D_aypta,D_aypt,D_aypa,D_ayp,D_y, &p, stay,sell,rent,buy,G);
+
+
+	// create output list
+	Rcpp::List list = Rcpp::List::create( Rcpp::_["WO"]    = 1); 
+	return list;
+}   
 
 //' dev5: discrete optimization, housing choice
 //' 
@@ -253,7 +477,7 @@ Rcpp::List dev5( Rcpp::List data ) {
 	Array<double,4> ctmp(d(0),d(1),d(2),ns,FortranArray<4>());
 
 	// vplustmp
-	Array<double,3> vplustmp(d(0),d(1),ns,FortranArray<3>());
+	Array<double,3> vplustmp(d(0),d(1),d(2),FortranArray<3>());
 
 	// tensor index descriptors
 	firstIndex  i;	
@@ -991,8 +1215,6 @@ Rcpp::List dev3( Rcpp::List data ) {
 
 
 
-
-
 //' dev2
 //'
 //' @examples
@@ -1107,6 +1329,125 @@ Rcpp::List dev2( Rcpp::List data ) {
 	Out2 = V1;
 
 	Out2.attr("dim") = Rcpp::IntegerVector::create(d(0),d(1),d(2));
+	Rcpp::List list = Rcpp::List::create( Rcpp::_["V1"] = Out2);
+	return list;
+}
+
+
+
+//' dev2a
+//'
+//' @examples
+//' nA <- 5L; nY <- 3L; nT <- 3L
+//' s1 <- data.table(expand.grid(a=seq(0,10,length=nA),y=1:nY,it=1:nT))
+//' s1[,cash := a + y + 0.3*it]
+//' s2 <- copy(s1)
+//' s2[,cash := a + y + 0.2*it + 0.09*it^2]
+//' save <- seq(0,10,length=nA)
+//' dataR <- list( cash1 = s1[["cash"]],
+//'                cash2 = s2[["cash"]],
+//'                dims = c(nA,nY,nT),
+//'                savings = save,
+//'                theta = 1.2,beta=0.95,myNA=-99)
+//' blitz <- dev2a(data=dataR)
+//' V1_R = s1[,array(cash,c(nA,nY,nT))]
+//' V1_R[ , ,3] = log(V1_R[ , ,3])
+//' for (ti in 2:1) {
+//'     for (ia in 1:nA) {
+//'          for(iy in 1:nY) {
+//'				if (V1_R[ia,iy,ti]<0) {
+//'					V1_R[ia,iy,ti] <- dataR$myNA
+//'				} else {
+//'					V1_R[ia,iy,ti] = log(V1_R[ia,iy,ti]) + dataR$beta*V1_R[ia,iy,ti+1]
+//'				}
+//'          }
+//'      }
+//' }
+//' print(all.equal(V1_R,blitz$V1))
+// [[Rcpp::export]]
+Rcpp::List dev2a( Rcpp::List data ) {
+
+// current example: v(a,y,t) = max(v1(a,y,t),v2(a,y,t))
+// build consumption, evaluate utility
+
+
+	// R array data
+	Rcpp::NumericVector R_C1 = Rcpp::as<Rcpp::NumericVector>(data["cash1"]);
+	Rcpp::NumericVector R_C2 = Rcpp::as<Rcpp::NumericVector>(data["cash2"]);
+	Rcpp::NumericVector R_S  = Rcpp::as<Rcpp::NumericVector>(data["savings"]);
+	Rcpp::IntegerVector d    = Rcpp::as<Rcpp::IntegerVector>(data["dims"]);
+
+	// R parameter data
+	double theta = Rcpp::as<double>(data["theta"]);
+	double beta  = Rcpp::as<double>(data["beta"]);
+	double myNA  = Rcpp::as<double>(data["myNA"]);
+
+	int ns = R_S.size();
+	int nState = d(0) * d(1) * d(2);
+
+	// out objects 
+	Rcpp::NumericVector Vout(nState);
+	Rcpp::NumericVector Dout(nState);
+
+	// conditional value functions
+	Array<double,3> V1(d(0),d(1),d(2));
+	Array<double,3> V2(d(0),d(1),d(2));
+	V1 = 0;
+	V2 = 0;
+
+	// cash tensors
+	Array<double,3> Cash1(R_C1.begin(), shape(d(0),d(1),d(2)),neverDeleteData);
+	Array<double,3> Cash2(R_C2.begin(), shape(d(0),d(1),d(2)),neverDeleteData);
+
+	// savings tensor (just a vector)
+	Array<double,1> S( R_S.begin(),R_S.length(),neverDeleteData);
+
+	// consumption tensor
+	Array<double,4> Cons1(d(0),d(1),d(2),ns);
+	Array<double,4> Cons2(d(0),d(1),d(2),ns);
+	Cons1 = 0;
+	Cons2 = 0;
+
+
+	// tensor index descriptors
+	firstIndex  i;
+	secondIndex j;
+	thirdIndex  k;
+	fourthIndex l;
+
+	Cons1 = Cash1(i,j,k) - S(l);
+	Cons2 = Cash2(i,j,k) - S(l);
+
+	Rcpp::NumericVector Out(Cons1.size());
+
+	// loop over time
+	// final period: where cons is positive, say utility is log(cash)
+	
+	for (int t=d(2); t>0; t--){
+
+		// if final period
+		// V(a,y,T) = log( cash(a,y,T) )
+		if (t==d(2)){
+
+			V1(Range::all(),Range::all(),t) = log(Cash1(Range::all(),Range::all(),t));
+
+		// else
+		// if cash(a,y,t) > 0: V(a,y,t) = log( cash(a,y,t) ) + beta * V(a,y,t+1)
+		// if cash(a,y,t) < 0: V(a,y,t) = myNA               + beta * V(a,y,t+1)
+		} else {
+
+			V1(Range::all(),Range::all(),t) = where( Cash1(Range::all(),Range::all(),t) > 0, 
+													 log(Cash1(Range::all(),Range::all(),t)), 
+													 myNA ) 
+				                              + beta * V1(Range::all(),Range::all(),t+1);
+
+		}
+
+	}
+
+	Rcpp::NumericVector Out2(V1.size());
+	Out2 = V1;
+
 	Rcpp::List list = Rcpp::List::create( Rcpp::_["V1"] = Out2);
 	return list;
 }
