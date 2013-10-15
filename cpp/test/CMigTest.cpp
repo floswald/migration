@@ -6,100 +6,6 @@
 using namespace blitz;
 
 
-
-// TEST(CMigTest, ResPointersCorrect) {
-
-// 	double data2[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-// 	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-// 	double data3[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-// 	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-// 	double fake[] = {2};
-
-// 	Parstruc pars;
-// 	pars.beta = 0.9;
-// 	pars.myNA = -99;
-// 	Parstruc* pp;
-// 	pp = &pars;
-
-//     // create dimension vectors	                 
-// 	TinyVector<int,5> aypta = shape(2,2,2,2,2);
-// 	TinyVector<int,4> aypt  = shape(2,2,2,2);
-// 	TinyVector<int,4> aypa  = shape(2,2,2,2);
-// 	TinyVector<int,3> ayp   = shape(2,2,2);
-
-// 	// create pointers to them
-// 	TinyVector<int,5> *paypta;  paypta
-// 	TinyVector<int,4> *paypt ;  paypt 
-// 	TinyVector<int,4> *paypa ;  paypa 
-// 	TinyVector<int,3> *payp  ;  payp  
-
-// 	// store address of dim vecs in pointers
-// 	paypta = &aypta;
-// 	paypt  = &aypt ;
-// 	paypa  = &aypa ;
-// 	payp   = &ayp  ;
-
-
-// 	// create an instance of owner class
-// 	CMig t5(paypta,paypt,paypa,payp,data2,data3,pp);
-
-	
-// 	EXPECT_EQ(data2,t5.getResStay().data());	// expect that data fed to class is ok
-// 	EXPECT_EQ(data3,t5.getResSell().data());	// expect that data fed to class is ok
-//     EXPECT_NE(fake,t5.getResSell().data());		// expect not equal
-
-// }
-
-
-// TEST(CMigTest, ResAreFortranArrays) {
-// 	double data2[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-// 	                 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
-// 	double data3[] = {17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-// 	                 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-// 	Parstruc pars;
-// 	pars.beta = 0.9;
-// 	pars.myNA = -99;
-// 	Parstruc* pp;
-// 	pp = &pars;
-
-//     // create dimension vectors	                 
-// 	TinyVector<int,5> aypta = shape(2,2,2,2,2);
-// 	TinyVector<int,4> aypt  = shape(2,2,2,2);
-// 	TinyVector<int,4> aypa  = shape(2,2,2,2);
-// 	TinyVector<int,3> ayp   = shape(2,2,2);
-
-// 	// create pointers to them
-// 	TinyVector<int,5> *paypta;
-// 	TinyVector<int,4> *paypt ;
-// 	TinyVector<int,4> *paypa ;
-// 	TinyVector<int,3> *payp  ;
-
-// 	// store address of dim vecs in pointers
-// 	paypta = &aypta;
-// 	paypt  = &aypt ;
-// 	paypa  = &aypa ;
-// 	payp   = &ayp  ;
-
-
-// 	// create an instance of owner class
-// 	CMig t5(paypta,paypt,paypa,payp,data2,data3,pp);
-
-
-// 	// fortranArray has blitz::ordering() vector 0,1,...,blitz::rank()-1
-// 	// check last entry of that with
-// 	int storage[] = {0,1,2,3,4};	// fortran order
-// 	//int storage[] = {2,1,0};	// C order
-
-// 	TinyVector<int,5> stay = t5.getResStay().ordering();
-// 	TinyVector<int,5> sell = t5.getResSell().ordering();
-
-// 	for (int i=0;i<3;i++) {
-// 		EXPECT_EQ(storage[i],stay(i)) << "stay has wrong ordering at dim " << i;
-// 		EXPECT_EQ(storage[i],sell(i)) << "sell has wrong ordering at dim " << i;
-// 	}
-	
-// }
-
 class MigrationTest: public ::testing::Test {
 protected:
 	Array<double,5> tstay,tsell,trent,tbuy;	
@@ -108,6 +14,7 @@ protected:
 	TinyVector<int,5> aypta;
 	TinyVector<int,4> aypt ;
 	TinyVector<int,4> aypa ;
+	TinyVector<int,4> aypy ;
 	TinyVector<int,3> ayp  ;
 	TinyVector<int,2> y    ;
 
@@ -124,6 +31,7 @@ protected:
 		aypta = shape(2,2,2,2,2);
 		aypt  = shape(2,2,2,2);
 		aypa  = shape(2,2,2,2);
+		aypy  = shape(2,2,2,2);
 		ayp   = shape(2,2,2);
 		y     = shape(2,2);
 		
@@ -144,6 +52,8 @@ protected:
 };
 
 
+// test whether the default constructor allocates
+// a default array for DimAYP = {2,2,2}
 TEST_F(MigrationTest, DefaultDimAYP){
 
 	std::vector<int> vec;
@@ -161,6 +71,7 @@ TEST_F(MigrationTest, DefaultDimAYP){
 	}
 }
 
+// test whether pointers point to correct data in memory
 TEST_F(MigrationTest, TestDataPointers){
 	
 	// set some data
@@ -179,8 +90,22 @@ TEST_F(MigrationTest, TestDataPointers){
 	EXPECT_EQ( trans.data()  , myMig.GetG().data() )  << "G pointer has wrong value "  << endl;
 }
 
+// test whether allocate data contains same values 
+// as data to be allocated
 TEST_F(MigrationTest, CheckDataContents){
 	
+		Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
+		Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
+		tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+			   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+		tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+		trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+				17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+		tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
 	// set some data
 	myMig.ReferenceStay( tstay );
 	myMig.ReferenceSell( tsell );
@@ -225,6 +150,52 @@ TEST_F(MigrationTest, CheckDataContents){
 }
 
 
+
+// test whether referenced data is indeed 
+// stored in FortranArray mode
+TEST_F(MigrationTest, ResArraysAreFortranOrder) {
+	
+	Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
+	Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
+	Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
+	Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
+	tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+		   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+	tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+					 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+	trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+			17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
+	tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+					 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+
+	// set some data
+	myMig.ReferenceStay( tstay );
+	myMig.ReferenceSell( tsell );
+	myMig.ReferenceRent( trent );
+	myMig.ReferenceBuy(  tbuy );
+	 
+	// fortranArray has blitz::ordering() vector 0,1,...,blitz::rank()-1
+	 // check last entry of that with
+	 TinyVector<int,5> fortran;
+	 fortran = 0,1,2,3,4;
+	 //int storage[] = {2,1,0};	// C order
+
+	 TinyVector<int,5> stay = myMig.GetResStayOrder();
+	 TinyVector<int,5> sell = myMig.GetResSellOrder();
+	 TinyVector<int,5> rent = myMig.GetResRentOrder();
+	 TinyVector<int,5> buy  = myMig.GetResBuyOrder();
+
+	 for (int i=0;i<5;i++) {
+		 EXPECT_EQ(fortran(i),stay(i)) << "stay has wrong ordering at dim " << i;
+		 EXPECT_EQ(fortran(i),sell(i)) << "sell has wrong ordering at dim " << i;
+		 EXPECT_EQ(fortran(i),rent(i)) << "rent has wrong ordering at dim " << i;
+		 EXPECT_EQ(fortran(i),buy(i)) << "buy has wrong ordering at dim " << i;
+	 }
+}
+
+
+
+// test whether integration function is correct
 TEST(MigTestIndivid, checkIntegration) {
 
 	// create an instance of owner class
@@ -250,6 +221,9 @@ TEST(MigTestIndivid, checkIntegration) {
 	}
 }
 
+
+// check whether discrete choice function 
+// works correctly
 TEST(MigTestIndivid,TestDchoice3d){
 
 	CMig myMig;
@@ -288,6 +262,7 @@ TEST(MigTestIndivid,TestDchoice3d){
 	
 }
 
+
 TEST(MigTestIndivid, TensorAddition ) {
 
 	Array<double,3> A(shape(2,2,2),FortranArray<3>());
@@ -317,6 +292,33 @@ TEST(MigTestIndivid, TensorAddition ) {
 }
 
 
+// test whether tensor arithmetic in integration
+// is correct
+TEST(MigTestIndivid, CheckIntegration){
+     firstIndex i;
+     secondIndex j;
+     thirdIndex k;
+     fourthIndex l;
+
+     Array<double,3> A(2,2,2,FortranArray<3>());
+     Array<double,2> G(2,2,FortranArray<2>());
+     Array<double,3> R(2,2,2,FortranArray<3>());
+
+     A=1;
+     G = 0.3,0.4,0.7,0.6;
+     Array<double,4> C(2,2,2,2,FortranArray<4>());
+
+     C = A(i,j,k) * G(l,j);   // C(i,j,k,l)
+
+     R = sum(C(i,l,k,j),l);
+	
+	 Array<double,3>::iterator iter;
+	 for (iter = R.begin(); iter != R.end(); iter++){
+
+		 EXPECT_EQ( 1.0, *iter ) << "integrates not to one";
+
+	 }
+}	
 
 
 int main(int argc, char **argv) { // A main function scaffold to call the tests

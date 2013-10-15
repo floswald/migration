@@ -10,12 +10,12 @@ using namespace blitz;
 //' dev6: discrete optimization, housing choice
 //' 
 //' @examples
-//' nA <- 50L; nY <- 5L; nT <- 5L; nH <- 2L; nP <- 3L
-//' 
+//' nA <- 100L; nY <- 5L; nT <- 5L; nH <- 2L; nP <- 3L
+//' G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 //' dataR <- list( dims = c(nA,nY,nP,nT),
 //'                theta = 1.2,beta=0.95,
 //'                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
-//'                G = as.numeric(rouwenhorst(rho=0.9,n=nY)$Pmat))
+//'                G = as.numeric(rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat))
 //'                
 //' grids <- list()
 //' grids$p <- seq(1,10,length=nP)
@@ -64,7 +64,7 @@ using namespace blitz;
 //' dataR$consB <- sB[,cons]
 //' dataR$consS <- sS[,cons]
 //' dataR$consO <- sO[,cons]
-//' blitz <- dev5(data=dataR)
+//' blitz <- dev6(data=dataR)
 //' 
 //' ######################################################
 //' # Calculating an R solution to this lifecycle
@@ -74,16 +74,19 @@ using namespace blitz;
 //' # envelopes of conditional values
 //' WO = array(0,dataR$dims)
 //' WR = array(0,dataR$dims)
+//' # Their expected values
+//' EWO = array(0,dataR$dims)
+//' EWR = array(0,dataR$dims)
 //' 
 //' # discrete choice amoung conditional values
 //' DO = array(0,dataR$dims)
 //' DR = array(0,dataR$dims)
 //' 
 //' # conditional values
-//' VR = array(0,dataR$dims)
-//' VB = array(0,dataR$dims)
-//' VS = array(0,dataR$dims)
-//' VO = array(0,dataR$dims)
+//' VR = array(3,dataR$dims)
+//' VB = array(4,dataR$dims)
+//' VS = array(2,dataR$dims)
+//' VO = array(1,dataR$dims)
 //' 
 //' # conditional savings functions
 //' saveR = array(0,dataR$dims)
@@ -98,41 +101,38 @@ using namespace blitz;
 //' consO = array(0,c(nA,nY,nP,nT-1))
 //' 
 //' # final period values
-//' WR[ , , ,nT] <- sR[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
-//' WO[ , , ,nT] <- sO[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
-//' # WR[ , , ,nT] <- sT[,array(log(cashR),c(nA,nY,nP))]
-//' # WO[ , , ,nT] <- sT[,array(log(cashO),c(nA,nY,nP))]
-//' # WR[is.nan(WR)] <- dataR$myNA
-//' # WO[is.nan(WR)] <- dataR$myNA
-//' 
+//' EWR[ , , ,nT] <- sR[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
+//' EWO[ , , ,nT] <- sO[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
+//' integr <- tensorFunction(R[i,m,k] ~ V[i,j,k] * G[m,j] )
+//'                            
 //' for (ti in (nT-1):1) {
 //'     for (ia in 1:nA) {
-//'          for(iy in 1:nY) {
-//' 			 for (ip in 1:nP){
+//'			 for (ip in 1:nP){
+//' 	         for(iy in 1:nY) {
 //' 				 for (ja in 1:nA){
 //' 					 # renter
 //' 					 if (CR[ia,iy,ip,ti,ja] < 0 | !is.finite(CR[ia,iy,ip,ti,ja])){
 //' 						xR[ia,iy,ip,ti,ja] = dataR$myNA
 //' 					 } else {
-//' 						xR[ia,iy,ip,ti,ja] =  log(CR[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
+//' 						xR[ia,iy,ip,ti,ja] =  log(CR[ia,iy,ip,ti,ja])  + dataR$beta*EWR[ja,iy,ip,ti+1]
 //' 					 }
 //' 					 # buyer
 //' 					 if (CB[ia,iy,ip,ti,ja] < 0 | !is.finite(CB[ia,iy,ip,ti,ja])){
 //' 						xB[ia,iy,ip,ti,ja] = dataR$myNA
 //' 					 } else {
-//' 						xB[ia,iy,ip,ti,ja] =  log(CB[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
+//' 						xB[ia,iy,ip,ti,ja] =  log(CB[ia,iy,ip,ti,ja])  + dataR$beta*EWO[ja,iy,ip,ti+1]
 //' 					 }
 //' 					 # seller
 //' 					 if (CS[ia,iy,ip,ti,ja] < 0 | !is.finite(CS[ia,iy,ip,ti,ja])){
 //' 						xS[ia,iy,ip,ti,ja] = dataR$myNA
 //' 					 } else {
-//' 						xS[ia,iy,ip,ti,ja] =  log(CS[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
+//' 						xS[ia,iy,ip,ti,ja] =  log(CS[ia,iy,ip,ti,ja])  + dataR$beta*EWR[ja,iy,ip,ti+1]
 //' 					 }
 //' 					 # owner
 //' 					 if (CO[ia,iy,ip,ti,ja] < 0 | !is.finite(CO[ia,iy,ip,ti,ja])){
 //' 						xO[ia,iy,ip,ti,ja] = dataR$myNA
 //' 					 } else {
-//' 						xO[ia,iy,ip,ti,ja] =  log(CO[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
+//' 						xO[ia,iy,ip,ti,ja] =  log(CO[ia,iy,ip,ti,ja])  + dataR$beta*EWO[ja,iy,ip,ti+1]
 //' 					 }
 //' 				 }
 //' 
@@ -161,11 +161,18 @@ using namespace blitz;
 //' 				 # max val owner state
 //' 				 WO[ia,iy,ip,ti] = max(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti])
 //' 				 DO[ia,iy,ip,ti] = which.max(c(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti]))
-//' 
-//' 			 }
-//'          }
+//'					
+//'		 			}	
+//' 			}
+//'         }
+//' 	# integrate
+//' 	# =========
+//' 	
+//'		 tmpO = WO[ , , ,ti]
+//'		 tmpR = WR[ , , ,ti]
+//'		 EWO[ , , ,ti] = integr(tmpO, G)
+//'		 EWR[ , , ,ti] = integr(tmpR, G)
 //'      }
-//' }
 //' Rtime <- proc.time() - Rtime
 //' 
 //' # timings
@@ -182,20 +189,21 @@ using namespace blitz;
 //' # =====================================
 //' print(all.equal(WO,blitz$WO))
 //' print(all.equal(WR,blitz$WR))
+//' print(all.equal(EWO,blitz$EVown))
+//' print(all.equal(EWR,blitz$EVrent))
 //' print(all.equal(DO,blitz$DO))
 //' print(all.equal(DR,blitz$DR))
 //'
-//' print(all.equal(VO,blitz$VO))
-//' print(all.equal(VR,blitz$VR))
-//' print(all.equal(VS,blitz$VS))
-//' print(all.equal(VB,blitz$VB))
+//' print(all.equal(VO,blitz$vstay))
+//' print(all.equal(VR,blitz$vrent))
+//' print(all.equal(VS,blitz$vsell))
+//' print(all.equal(VB,blitz$vbuy))
 //'
 //' print(all.equal(saveO,blitz$saveO))
 //' print(all.equal(saveR,blitz$saveR))
 //' print(all.equal(saveS,blitz$saveS))
 //' print(all.equal(saveB,blitz$saveB))
 // [[Rcpp::export]]
-
 Rcpp::List dev6( Rcpp::List data ) {
 
 // start timer
@@ -215,9 +223,12 @@ Rcpp::List dev6( Rcpp::List data ) {
 	p.myNA = Rcpp::as<double>(data["myNA"]);
 
 	// map to blitz arrays
+	// ===================
+	
 	TinyVector<int,5> D_aypta(d(0),d(1),d(2),d(3),d(0));
 	TinyVector<int,4> D_aypt(d(0),d(1),d(2),d(3));
 	TinyVector<int,4> D_aypa(d(0),d(1),d(2),d(0));
+	TinyVector<int,4> D_aypy(d(0),d(1),d(2),d(1));
 	TinyVector<int,3> D_ayp(d(0),d(1),d(2));
 	TinyVector<int,2> D_y(d(1),d(1));
 	Array<double,2> G(R_G.begin(),shape(d(1),d(1)),neverDeleteData,FortranArray<2>());
@@ -226,18 +237,85 @@ Rcpp::List dev6( Rcpp::List data ) {
 	Array<double,5> buy( R_CB.begin(),D_aypta,neverDeleteData,FortranArray<5>());
 	Array<double,5> sell(R_CS.begin(),D_aypta,neverDeleteData,FortranArray<5>());
 
-	CMig mig(D_aypta,D_aypt,D_aypa,D_ayp,D_y, &p, stay,sell,rent,buy,G);
+	// create an instance of the migration class
+	// ===================================
+	
+	CMig mig(D_aypta,D_aypt,D_aypa,D_aypy,D_ayp,D_y, &p, stay,sell,rent,buy,G);
 
+	// call the show method
+	mig.show();
 
+	// time loop to compute backwards
+	// ===================================
+	
+	for (int it = d(3); it>0; it--) {
+		mig.ComputePeriod( it );
+	}
+
+	timer.step("end blitz");
+
+	// output results to R
+	// ===================
+	
+	Rcpp::IntegerVector dAYPT = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3));
+	Rcpp::IntegerVector dAYPTA = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3),d(0));
+
+	Rcpp::NumericVector Vown_out   ( mig.GetVown().size());
+	Rcpp::NumericVector Vrent_out  ( Vown_out.length());
+	Rcpp::NumericVector EVown_out  ( Vown_out.length());
+	Rcpp::NumericVector EVrent_out ( Vown_out.length());
+	Rcpp::NumericVector vstay_out  ( Vown_out.length());
+	Rcpp::NumericVector vsell_out  ( Vown_out.length());
+	Rcpp::NumericVector vrent_out  ( Vown_out.length());
+	Rcpp::NumericVector vbuy_out   ( Vown_out.length());
+	Rcpp::NumericVector sstay_out  ( Vown_out.length());
+	Rcpp::NumericVector ssell_out  ( Vown_out.length());
+	Rcpp::NumericVector srent_out  ( Vown_out.length());
+	Rcpp::NumericVector sbuy_out   ( Vown_out.length());
+
+	//Rcpp::NumericVector Vown_out2( mig.GetVown().data(), mig.GetVown().size() );
+	
+	// copy blitz to Rcpp::Numeric
+	Vown_out   = mig.GetVown();
+	Vrent_out  = mig.GetVrent();
+	EVown_out  = mig.GetEVown();
+	EVrent_out = mig.GetEVrent();
+	vstay_out  = mig.Getv_stay();
+	vsell_out  = mig.Getv_sell();
+	vbuy_out   = mig.Getv_buy();
+	vrent_out  = mig.Getv_rent();
+	
+	// attach dimension argument
+	Vown_out.attr("dim")   = dAYPT;
+	Vrent_out.attr("dim")  = dAYPT;
+	EVown_out.attr("dim")  = dAYPT;
+	EVrent_out.attr("dim") = dAYPT;
+	vstay_out.attr("dim")  = dAYPT;
+	vsell_out.attr("dim")  = dAYPT;
+	vbuy_out.attr("dim")   = dAYPT;
+	vrent_out.attr("dim")  = dAYPT;
+	
 	// create output list
-	Rcpp::List list = Rcpp::List::create( Rcpp::_["WO"]    = 1); 
+	Rcpp::List list = Rcpp::List::create( Rcpp::_["Vown"]   = Vown_out,
+										  Rcpp::_["Vrent"]  = Vrent_out,
+	                                      Rcpp::_["EVown"]  = EVown_out,
+										  Rcpp::_["EVrent"] = EVrent_out,
+										  Rcpp::_["vstay"]  = vstay_out,
+										  Rcpp::_["vsell"]  = vsell_out,
+										  Rcpp::_["vbuy"]   = vbuy_out ,
+										  Rcpp::_["vrent"]  = vrent_out,
+										  Rcpp::_["time"]   = timer);
+
+	// TODO want to do
+	//Rcpp::List list = mig.RcppExport();
+										   
 	return list;
 }   
 
 //' dev5: discrete optimization, housing choice
 //' 
 //' @examples
-//' nA <- 50L; nY <- 5L; nT <- 5L; nH <- 2L; nP <- 3L
+//' nA <- 100L; nY <- 5L; nT <- 5L; nH <- 2L; nP <- 3L
 //' 
 //' dataR <- list( dims = c(nA,nY,nP,nT),
 //'                theta = 1.2,beta=0.95,myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2)

@@ -50,6 +50,7 @@ CMig::CMig():
 	
 	vplustmp(2,2,2,FortranArray<3>()), 
     dim_aypt(2,2,2,2) ,				   
+    dim_aypy(2,2,2,2) ,				   
     dim_ayp(2,2,2), 				    
 	G(2,2,FortranArray<2>()) {
 		ResStay = 0.1;
@@ -99,6 +100,7 @@ CMig::CMig(int x1,int x2, int x3,int x4, int x5):
 	
 	vplustmp(x1,x2,x3,FortranArray<3>()), 
     dim_aypt(x1,x2,x3,x4) ,				   
+    dim_aypy(x1,x2,x3,x4) ,				   
     dim_ayp(x1,x2,x3), 				    
 	G(x2,x2,FortranArray<2>()) {
 		ResStay = 0.1;
@@ -119,6 +121,7 @@ CMig::CMig(int x1,int x2, int x3,int x4, int x5):
 CMig::CMig(TinyVector<int,5> D_aypta,
 				 TinyVector<int,4> D_aypt, 
 	             TinyVector<int,4> D_aypa, 
+	             TinyVector<int,4> D_aypy, 
 	             TinyVector<int,3> D_ayp, 
    				 TinyVector<int,2> D_y, 
 				 Parstruc* pars,
@@ -158,11 +161,12 @@ CMig::CMig(TinyVector<int,5> D_aypta,
 	Drent( D_aypt,FortranArray<4>()),  
 	Dmax(  D_aypt,FortranArray<4>()),  
 	
-	vplustmp(D_ayp,FortranArray<3>()), //d
-	G(D_y,FortranArray<2>()),         //d2
-    dim_aypt(D_aypt) ,				    //e
-    dim_ayp(D_ayp) ,				    //e2
-    p(*pars) {							//f				
+	vplustmp(D_ayp,FortranArray<3>()),
+	G(D_y,FortranArray<2>()),         
+    dim_aypt(D_aypt) ,				  
+    dim_aypy(D_aypy) ,				  
+    dim_ayp(D_ayp) ,				  
+    p(*pars) {						  
 		// reference the data
 		ResStay.reference(data_stay);
 		ResSell.reference(data_sell);
@@ -190,9 +194,54 @@ Array<double,4> CMig::Getv_sell( void ){ return(v_sell); };
 Array<double,4> CMig::Getv_buy( void ){ return(v_buy); };
 Array<double,2> CMig::GetG( void ){ return(G); };
 
+
+// if you are working from R
+#ifdef RcppCompile
+
+// Define show method
+// TODO should be Rprintf
+// TODO ask how to compile with R libraries
+void CMig::show(){
+	int ma = 10;
+	int my = 10;
+	ma = min(ma,dim_aypt(0));
+	my = min(my,dim_aypt(1));
+
+	Rcpp::Rcout << "CMig show() method: " << endl;
+	Rcpp::Rcout << "we have this dimension vector: " << endl;
+	Rcpp::Rcout <<  dim_aypt << endl;
+	Rcpp::Rcout << "we have beta: " << endl;
+	Rcpp::Rcout <<  p.beta << endl;
+	Rcpp::Rcout << "we have myNA: " << endl;
+	Rcpp::Rcout <<  p.myNA << endl;
+	Rcpp::Rcout << "we have G: " << endl;
+	Rcpp::Rcout <<  G << endl;
+	Rcpp::Rcout << "showing the first " << ma << " rows" << endl;
+	Rcpp::Rcout << "=======================" << endl;
+	Rcpp::Rcout <<  endl;
+	Rcpp::Rcout << "ResStay(:,:,1,1,1) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1) << endl;
+	Rcpp::Rcout << "ResSell(:,:,1,nT,nA) = " << endl;
+	Rcpp::Rcout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
+	Rcpp::Rcout << "ResRent(:,:,1,nT,nA) = " << endl;
+	Rcpp::Rcout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
+	Rcpp::Rcout << "ResBuy(:,:,1,nT,nA) = " << endl;
+	Rcpp::Rcout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
+	Rcpp::Rcout << "end of show method: " << endl;
+	Rcpp::Rcout << "===================" << endl;
+}
+
+
+#else   // if you are not in R and must print to stdout
+
 // Define show method
 void CMig::show(){
-	cout << "Start show method: " << endl;
+	int ma = 10;
+	int my = 10;
+	ma = min(ma,dim_aypt(0));
+	my = min(my,dim_aypt(1));
+
+	cout << "CMig show() method: " << endl;
 	cout << "we have this dimension vector: " << endl;
 	cout <<  dim_aypt << endl;
 	cout << "we have beta: " << endl;
@@ -201,17 +250,24 @@ void CMig::show(){
 	cout <<  p.myNA << endl;
 	cout << "we have G: " << endl;
 	cout <<  G << endl;
+	cout << "showing the first " << ma << " rows" << endl;
+	cout << "=======================" << endl;
+	cout <<  endl;
 	cout << "ResStay(:,:,1,1,1) = " << endl;
-	cout << ResStay(Range::all(),Range::all(),1,1,1) << endl;
-	cout << "ResSell(:,:,1,1,1) = " << endl;
-	cout << ResSell(Range::all(),Range::all(),1,1,1) << endl;
-	cout << "ResRent(:,:,1,1,1) = " << endl;
-	cout << ResRent(Range::all(),Range::all(),1,1,1) << endl;
-	cout << "ResBuy(:,:,1,1,1) = " << endl;
-	cout << ResBuy(Range::all(),Range::all(),1,1,1) << endl;
+	cout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1) << endl;
+	cout << "ResSell(:,:,1,nT,nA) = " << endl;
+	cout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
+	cout << "ResRent(:,:,1,nT,nA) = " << endl;
+	cout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
+	cout << "ResBuy(:,:,1,nT,nA) = " << endl;
+	cout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,dim_aypt(3),dim_aypt(0)) << endl;
 	cout << "end of show method: " << endl;
 	cout << "===================" << endl;
 }
+
+#endif // printing conditions
+
+
 
 void CMig::version(){
 	cout << "This is an object of type CMig" << endl;
@@ -260,7 +316,7 @@ std::vector<double> CMig::GetResBuyNumeric( void ) {
 // =====================================
 
 
-void CMig::computeStay(int age) {
+void CMig::ComputeStay(int age) {
 
 	firstIndex  i;	
 	secondIndex j;  
@@ -277,7 +333,7 @@ void CMig::computeStay(int age) {
 
 }
 
-void CMig::computeSell(int age) {
+void CMig::ComputeSell(int age) {
 
 	firstIndex  i;	
 	secondIndex j;  
@@ -294,7 +350,7 @@ void CMig::computeSell(int age) {
 
 }
 
-void CMig::computeRent(int age) {
+void CMig::ComputeRent(int age) {
 
 	firstIndex  i;	
 	secondIndex j;  
@@ -311,7 +367,7 @@ void CMig::computeRent(int age) {
 
 }
 
-void CMig::computeBuy(int age) {
+void CMig::ComputeBuy(int age) {
 
 	firstIndex  i;	
 	secondIndex j;  
@@ -330,22 +386,22 @@ void CMig::computeBuy(int age) {
 
 
 
-void CMig::computePeriod(int age){
+void CMig::ComputePeriod(int age){
 
-	// if final operiod, then precomputed resources are utility
-	if (age==dim_aypt(dim_aypt.length())) {
+	// if final operiod, then preComputed resources are utility
+	if (age==dim_aypt(dim_aypt.length()-1)) {
 
-		EVown(Range::all(),Range::all(),Range::all(),age) = ResStay(Range::all(),Range::all(),Range::all(),age,1);
-		EVrent(Range::all(),Range::all(),Range::all(),age) = ResRent(Range::all(),Range::all(),Range::all(),age,1);
+		EVown(Range::all(),Range::all(),Range::all(),age) = ResStay(Range::all(),Range::all(),Range::all(),age,dim_aypt(0));	//dim_aypt(0) is index of last element in savings vector.
+		EVrent(Range::all(),Range::all(),Range::all(),age) = ResRent(Range::all(),Range::all(),Range::all(),age,dim_aypt(0));
 
 	} else {
 
-		computeStay(age);		// get v_stay 
-		computeSell(age);		// get v_sell 	
-		computeRent(age);		// get v_rent 
-		computeBuy(age);		// get v_buy
-		computeDchoice(age);		// get Vmax = max(stay,sell,rent,buy)	
-		computeExpectations(age);	// get EVown and EVrent
+		ComputeStay(age);		// get v_stay 
+		ComputeSell(age);		// get v_sell 	
+		ComputeRent(age);		// get v_rent 
+		ComputeBuy(age);		// get v_buy
+		ComputeDchoice(age);		// get Vmax = max(stay,sell,rent,buy)	
+		ComputeExpectations(age);	// get EVown and EVrent
 	
 	}
 
@@ -370,7 +426,7 @@ Array<int,3> CMig::dchoiceID3d(Array<double,3> one, Array<double,3> two){
 	return(ret);
 }
 
-void CMig::computeDchoice( int age ){
+void CMig::ComputeDchoice( int age ){
 
 	Vown(Range::all(),Range::all(),Range::all(),age)  = dchoice3d( v_stay(Range::all(),Range::all(),Range::all(),age), v_sell(Range::all(),Range::all(),Range::all(),age));
 	Down(Range::all(),Range::all(),Range::all(),age)  = dchoiceID3d( v_stay(Range::all(),Range::all(),Range::all(),age), v_sell(Range::all(),Range::all(),Range::all(),age));
@@ -378,7 +434,7 @@ void CMig::computeDchoice( int age ){
 	Drent(Range::all(),Range::all(),Range::all(),age) = dchoiceID3d( v_rent(Range::all(),Range::all(),Range::all(),age), v_buy(Range::all(),Range::all(),Range::all(),age));
 }
 
-void CMig::computeExpectations( int age ){
+void CMig::ComputeExpectations( int age ){
 
 	EVown(Range::all(),Range::all(),Range::all(),age) = integrate(Vown(Range::all(),Range::all(),Range::all(),age));
 	EVrent(Range::all(),Range::all(),Range::all(),age) = integrate(Vrent(Range::all(),Range::all(),Range::all(),age));
@@ -387,18 +443,63 @@ void CMig::computeExpectations( int age ){
 
 Array<double,3> CMig::integrate(Array<double,3> tens){
 	
-	Array<double,3> ret(dim_ayp,FortranArray<3>());
 	firstIndex  i;	
 	secondIndex j;  
 	thirdIndex  k;
 	fourthIndex l;	
+	
+	Array<double,3> ret(dim_ayp,FortranArray<3>());
 
-	ret = sum(tens(i,k,j) * G(l,k),k);
+	Array<double,4> tmp(dim_aypy,FortranArray<4>());	// tmp(i,j,k,l)
+	tmp = tens(i,j,k) * G(l,j);
+	ret = sum( tmp(i,l,k,j), l);
 		  
 	return(ret);
 
 }
 
+//#ifdef RcppCompile
+
+	//Rcpp::List CMig::RcppExport( void ) {
+
+		//Rcpp::IntegerVector dAYPT = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3));
+		//Rcpp::IntegerVector dAYPTA = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3),d(0));
+
+		//// TODO Rcpp::List out = mig.RcppExporter();
+		//Rcpp::NumericVector Vown_out  ( Vown.size ( ));
+		//Rcpp::NumericVector Vrent_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector vstay_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector vsell_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector vrent_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector vbuy_out  ( Vown_out.length ( ));
+		//Rcpp::NumericVector sstay_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector ssell_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector srent_out ( Vown_out.length ( ));
+		//Rcpp::NumericVector sbuy_out  ( Vown_out.length ( ));
+
+		////Rcpp::NumericVector Vown_out2( mig.GetVown().data(), mig.GetVown().size() );
+		
+		//// copy blitz to Rcpp::Numeric
+		//Vown_out  = Vown;
+		//Vrent_out = Vrent;
+		//vstay_out = v_stay;
+		//vsell_out = v_sell;
+		//vbuy_out  = v_buy;
+		//vrent_out = v_rent;
+		
+		//// create output list
+		//Rcpp::List list = Rcpp::List::create( Rcpp::_["Vown"]    = Vown_out,
+											  //Rcpp::_["Vrent"]   = Vrent_out,
+											  //Rcpp::_["vstay"]   = vstay_out,
+											  //Rcpp::_["vsell"]   = vsell_out,
+											  //Rcpp::_["vbuy"]    = vbuy_out ,
+											  //Rcpp::_["vrent"]   = vrent_out);
+		//return list;
+	//}
+
+
+
+//#endif
 
 
 

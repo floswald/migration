@@ -5,7 +5,7 @@
 
 int main(int argument_count, char ** command_line_arguments)
 { 
-	std::cout << "The main program is running" << std::endl;
+	std::cout << "Boilerplate program is running" << std::endl;
 
 	Array<double,5> stay(shape(2,2,2,2,2),FortranArray<5>());
 	Array<double,5> sell(shape(2,2,2,2,2),FortranArray<5>());
@@ -34,31 +34,18 @@ int main(int argument_count, char ** command_line_arguments)
 	TinyVector<int,5> aypta = shape(2,2,2,2,2);
 	TinyVector<int,4> aypt  = shape(2,2,2,2);
 	TinyVector<int,4> aypa  = shape(2,2,2,2);
+	TinyVector<int,4> aypy  = shape(2,2,2,2);
 	TinyVector<int,3> ayp   = shape(2,2,2);
 	TinyVector<int,2> y     = shape(2,2);
 
 	// create an instance of owner class
-	CMig myMig( aypta,aypt, aypa, ayp, y, pp, stay, sell, rent, buy, trans);
+	CMig myMig( aypta,aypt, aypa, aypy,ayp, y, pp, stay, sell, rent, buy, trans);
 	myMig.show();
 
 	CMig migdef;
 	migdef.show();
 
 	CMig migc1(100,10,5,30,100);
-	
-    //Array<double,3> test(ayp,FortranArray<3>());
-	//Array<double,3> bout(ayp,FortranArray<3>());
-	//test = 1;
-	//bout = t5.integrate(test);
-	//cout << bout << endl;
-
-	//t5.computePeriod( 2 );
-	//t5.computePeriod( 1 );
-	
-	
-	//std::cout << std::endl;
-	//std::cout << "class type:" << std::endl;
-	//t5.version();
 	
 	return 0;
 }
