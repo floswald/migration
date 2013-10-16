@@ -11,25 +11,11 @@ using namespace blitz;
 
 //' Blitz mini discrete choice model
 //'
-//' @examples
-//' x  <- sample(1:120,size=120,replace=F)
-//' option1 <- array(x[1:60],c(2,5,6))
-//' option2 <- array(x[61:100],c(2,5,6))
-//' savings  <- array(runif(n=60),c(2,5,6))
-//' dataR <- list(option1 = option1, option2 = option2, savings=savings)
-//' blitz <- mini(data=dataR)
-//' print(blitz)
-//' r = list()
-//' As <- option1 - savings
-//' A2s <- option2 - savings
-//' V1 = apply(As,c(1,2),max)
-//' V2 = apply(A2s,c(1,2),max)
-//' V12 = array(c(V1,V2),c(2,5,2))
-//' r$vmax = apply(V12,c(1,2),max)
-//' r$dchoice = apply(V12,c(1,2),which.max)
-//'	print(all.equal(r,blitz))
+//' in this example we map actually arrays from R to C++
+//' Arrays are vectors with a dimension attribute
+//' @example examples/example-blitz1.r
 // [[Rcpp::export]]
-Rcpp::List mini( Rcpp::List data ) {
+Rcpp::List dev_blitz1( Rcpp::List data ) {
 
 	Rcpp::NumericVector A  = Rcpp::as<Rcpp::NumericVector>(data["option1"]);
 	Rcpp::NumericVector A2 = Rcpp::as<Rcpp::NumericVector>(data["option2"]);
@@ -92,3 +78,74 @@ Rcpp::List mini( Rcpp::List data ) {
 	return list;
 }
 
+
+
+
+//' Blitz mini discrete choice model 2
+//'
+//' in this example we map vectors to C
+//' @example examples/example-blitz2.r
+// [[Rcpp::export]]
+Rcpp::List dev_blitz2( Rcpp::List data ) {
+
+	Rcpp::NumericVector A  = Rcpp::as<Rcpp::NumericVector>(data["option1"]);
+	Rcpp::NumericVector A2 = Rcpp::as<Rcpp::NumericVector>(data["option2"]);
+	Rcpp::NumericVector S  = Rcpp::as<Rcpp::NumericVector>(data["savings"]);
+	Rcpp::IntegerVector d  = Rcpp::as<Rcpp::IntegerVector>(data["dims"]);
+
+	Rcpp::Rcout << d(0) << std::endl;
+	Rcpp::Rcout << d(1) << std::endl;
+	Rcpp::Rcout << d(2) << std::endl;
+	// out objects are defined on dims 1 and 2
+	Rcpp::NumericVector Vout(d(0) * d(1));
+	Rcpp::NumericVector Dout(d(0) * d(1));
+	Rcpp::NumericVector V1out(d(0) * d(1));
+	Rcpp::NumericVector V2out(d(0) * d(1));
+
+	 //create 2 blitz cubes B1 and B2
+	Array<double,3> B1(A.begin(), shape(d(0),d(1),d(2)), neverDeleteData );
+	Array<double,3> B2(A2.begin(), shape(d(0),d(1),d(2)), neverDeleteData);
+
+	 //create a blitz savings cube
+	 //has same dimensions as B1
+	Array<double,3> SS(S.begin(), shape(d(0),d(1),d(2)), neverDeleteData);
+
+	 //declare blitz dimension descriptors
+	thirdIndex  k;
+
+	 //compute U - savings for each option
+	B1 = B1 - SS;
+	B2 = B2 - SS;
+
+	// create to "value functions" to store values after maximizing
+	// over the third dimension of B1 and B2
+	Array<double,2> V1(d(0),d(1));
+	Array<double,2> V2(d(0),d(1));
+
+	// find maximal value
+	V1 = max(B1,k);
+	V2 = max(B2,k);
+
+	V1out = V1;
+	V2out = V2;
+
+	//// take discrete choice
+	Array<double,2> Vmax(shape(d(0),d(1)));
+	Array<double,2> Dmax(shape(d(0),d(1)));
+	Vmax = 0;
+	Dmax = 0;
+	Vmax = where(V1 > V2, V1, V2) ;
+	Dmax = where(V1 > V2, 1, 2) ;
+
+	//// copy to NumericVectors to return values
+	Vout = Vmax;
+	Dout = Dmax;
+
+	// add dimension attributes
+	// http://gallery.rcpp.org/articles/accessing-xts-api/
+	//Vout.attr("dim") = Rcpp::IntegerVector::create(d(0),d(1));
+	//Dout.attr("dim") = Rcpp::IntegerVector::create(d(0),d(1));
+	//Rcpp::List list = Rcpp::List::create( Rcpp::_["vmax"] = 1);
+	Rcpp::List list = Rcpp::List::create( Rcpp::_["vmax"] = Vout, Rcpp::_["dchoice"] = Dout, Rcpp::_["V1"] = V1out, Rcpp::_["V2"] = V2out );
+	return list;
+}
