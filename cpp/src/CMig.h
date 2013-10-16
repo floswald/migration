@@ -2,10 +2,8 @@
 #include <vector>
 #include <algorithm>	// using min in show method
 #include <blitz/array.h>
-//#include <Rcpp.h>
-//#include "/Library/Frameworks/R.framework/Versions/Current/Resources/include/R.h"
-#include <R.h>	// Rprintf 
-#include <Rcpp.h>	// Rprintf 
+#include <Rcpp.h>
+#include <R.h>	
 
 using namespace std;
 using namespace blitz;
@@ -17,6 +15,10 @@ using namespace blitz;
 struct Parstruc{
 	double beta;
 	double myNA;
+	double gamma;
+	double mgamma;
+	double imgamma;
+	double theta;
 };
 
 // struct to hold expected value functions
@@ -27,12 +29,15 @@ struct EVstruc{
 };
 
 
-// Expectations computing function
-// takes the EV structure and Computes
-// Array<double,3> ComputeExpectation(int age, EVstruc* EV, Array<double,2> G);
 
 
-//#ifdef RcppCompile
+// main class
+// ==========
+// notes:
+// 1) arrays are fortranArrays throughout. that means they are indexed 1,2,3,...,Rank in each dimension
+// 2) this is done purely for compatibility reasons with R. An array in R is in fortran order. 
+//    I want compatibility with the same computation in R in order to check the results. THIS MAY CHANGE IN THE FUTURE.
+// 3) unfortunately TinyVectors are not available as FortranArrays. Therefore, they are indexed as 0,1,...,Rank-1 .
 
 class CMig {
 	private:
@@ -41,7 +46,7 @@ class CMig {
 		Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,Vmax,ctmp,xtmp;
 		Array<double,3> vplustmp;
 		Array<double,2> G;
-		Array<int,4>    s_stay,s_sell,s_rent,s_buy,Dmax,Down,Drent;
+		Array<int,4>    s_stay,s_sell,s_rent,s_buy,Down,Drent;
 		TinyVector<int,4> dim_aypt;
 		TinyVector<int,4> dim_aypy;
 		TinyVector<int,3> dim_ayp;
@@ -73,12 +78,22 @@ class CMig {
 		Array<double,5> GetResRent( void );
 		Array<double,4> GetVown( void );
 		Array<double,4> GetVrent( void );
+		Array<int   ,4> GetDown( void );
+		Array<int   ,4> GetDrent( void );
 		Array<double,4> GetEVown( void );
 		Array<double,4> GetEVrent( void );
 		Array<double,4> Getv_stay( void );
 		Array<double,4> Getv_rent( void );
 		Array<double,4> Getv_sell( void );
 		Array<double,4> Getv_buy( void );
+		Array<int   ,4> Gets_stay( void );
+		Array<int   ,4> Gets_rent( void );
+		Array<int   ,4> Gets_sell( void );
+		Array<int   ,4> Gets_buy( void );
+		Array<double,4> Getc_stay( void );
+		Array<double,4> Getc_rent( void );
+		Array<double,4> Getc_sell( void );
+		Array<double,4> Getc_buy( void );
 		Array<double,2> GetG( void );
 		const TinyVector<int,3> GetDimAYP( void ) const { return dim_ayp;};
 		const TinyVector<int,5> GetResStayOrder( void ) const { return(ResStay.ordering()); };
@@ -115,6 +130,10 @@ class CMig {
 		void ComputeRent( int age );
 		void ComputeBuy( int age );
 		void ComputeDchoice( int age );
+		void FindStayCons( int age );
+		void FindSellCons( int age );
+		void FindRentCons( int age );
+		void FindBuyCons( int age );
 
 		std::vector<double> GetResStayNumeric( void );
 		std::vector<double> GetResSellNumeric( void );
@@ -124,6 +143,8 @@ class CMig {
 		Array<double,3> dchoice3d(Array<double,3> one, Array<double,3> two);
 		Array<int   ,3> dchoiceID3d(Array<double,3> one, Array<double,3> two);
 		Array<double,3> integrate(Array<double,3> tens);
+
+
 
 
 		//Rcpp::List RcppExport( void );	
@@ -140,7 +161,7 @@ class CMig {
 		//Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,Vmax,ctmp,xtmp;
 		//Array<double,3> vplustmp;
 		//Array<double,2> G;
-		//Array<int,4>    s_stay,s_sell,s_rent,s_buy,Dmax,Down,Drent;
+		//Array<int,4>    s_stay,s_sell,s_rent,s_buy,Down,Drent;
 		//TinyVector<int,4> dim_aypt;
 		//TinyVector<int,3> dim_ayp;
 		//Parstruc p;	

@@ -40,12 +40,20 @@ int main(int argument_count, char ** command_line_arguments)
 
 	// create an instance of owner class
 	CMig myMig( aypta,aypt, aypa, aypy,ayp, y, pp, stay, sell, rent, buy, trans);
-	myMig.show();
+	//myMig.show();
+	myMig.ComputePeriod(2);
+	myMig.ComputePeriod(1);
 
-	CMig migdef;
-	migdef.show();
+	cout << "c_stay " << endl;
+	cout << myMig.Getc_stay()  << endl;
 
-	CMig migc1(100,10,5,30,100);
+	cout << "s_stay " << endl;
+	cout << myMig.Gets_stay()  << endl;
+
+	//CMig migdef;
+	//migdef.show();
+
+	//CMig migc1(100,10,5,30,100);
 	
 	return 0;
 }
