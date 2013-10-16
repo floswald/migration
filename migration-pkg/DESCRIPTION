@@ -16,3 +16,4 @@ LinkingTo: Rcpp
 Collate:
     'rcpp_hello_world.R'
     'RcppExports.R'
+    'ufun.r'

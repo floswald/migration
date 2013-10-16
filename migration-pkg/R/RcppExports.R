@@ -3,25 +3,26 @@
 
 #' Blitz mini discrete choice model
 #'
-#' @examples
-#' x  <- sample(1:120,size=120,replace=F)
-#' option1 <- array(x[1:60],c(2,5,6))
-#' option2 <- array(x[61:100],c(2,5,6))
-#' savings  <- array(runif(n=60),c(2,5,6))
-#' dataR <- list(option1 = option1, option2 = option2, savings=savings)
-#' blitz <- mini(data=dataR)
-#' print(blitz)
-#' r = list()
-#' As <- option1 - savings
-#' A2s <- option2 - savings
-#' V1 = apply(As,c(1,2),max)
-#' V2 = apply(A2s,c(1,2),max)
-#' V12 = array(c(V1,V2),c(2,5,2))
-#' r$vmax = apply(V12,c(1,2),max)
-#' r$dchoice = apply(V12,c(1,2),which.max)
-#'	print(all.equal(r,blitz))
-mini <- function(data) {
-    .Call('migration_mini', PACKAGE = 'migration', data)
+#' in this example we map actually arrays from R to C++
+#' Arrays are vectors with a dimension attribute
+#' @example examples/example-blitz1.r
+dev_blitz1 <- function(data) {
+    .Call('migration_dev_blitz1', PACKAGE = 'migration', data)
+}
+
+#' Blitz mini discrete choice model 2
+#'
+#' in this example we map vectors to C
+#' @example examples/example-blitz2.r
+dev_blitz2 <- function(data) {
+    .Call('migration_dev_blitz2', PACKAGE = 'migration', data)
+}
+
+#' dev7: discrete optimization, housing choice, utility function
+#' 
+#' @example examples/example-dev7.r
+dev7 <- function(data) {
+    .Call('migration_dev7', PACKAGE = 'migration', data)
 }
 
 #' dev6: discrete optimization, housing choice
