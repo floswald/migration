@@ -2,8 +2,8 @@
 #include <vector>
 #include <algorithm>	// using min in show method
 #include <blitz/array.h>
-#include <Rcpp.h>
-#include <R.h>	
+//#include <Rcpp.h>
+//#include <R.h>	
 
 using namespace std;
 using namespace blitz;
@@ -21,18 +21,13 @@ struct Parstruc{
 	double theta;
 };
 
-// struct to hold expected value functions
-struct EVstruc{
-    Array<double,4> EVown;
-    Array<double,4> EVrent;
-    Array<double,4> Vmax;
-};
 
 
-
-
-// main class
-// ==========
+// Migration model class for 0 locations
+// =====================================
+//
+// Development only.
+//
 // notes:
 // 1) arrays are fortranArrays throughout. that means they are indexed 1,2,3,...,Rank in each dimension
 // 2) this is done purely for compatibility reasons with R. An array in R is in fortran order. 
@@ -43,7 +38,7 @@ class CMig {
 	private:
 		// private data objects
 		Array<double,5> ResStay, ResSell, ResRent, ResBuy;	
-		Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,Vmax,ctmp,xtmp;
+		Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,ctmp,xtmp;
 		Array<double,3> vplustmp;
 		Array<double,2> G;
 		Array<int,4>    s_stay,s_sell,s_rent,s_buy,Down,Drent;
@@ -121,7 +116,6 @@ class CMig {
 
 		// other member functions		
 		void show ( void );
-		void version ( void );
 		void ComputePeriod(int age);
 		void ComputeExpectations( int age );
 
@@ -158,7 +152,7 @@ class CMig {
 	//private:
 		//// private data objects
 		//Array<double,5> ResStay, ResSell, ResRent, ResBuy;	
-		//Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,Vmax,ctmp,xtmp;
+		//Array<double,4> EVown,EVrent,Vown,Vrent,v_stay,v_sell,v_rent,v_buy,c_stay,c_sell,c_rent,c_buy,ctmp,xtmp;
 		//Array<double,3> vplustmp;
 		//Array<double,2> G;
 		//Array<int,4>    s_stay,s_sell,s_rent,s_buy,Down,Drent;

@@ -211,25 +211,25 @@ for (ti in (nT-1):1) {
 					 }
 					 # maximize over location choice in each subproblem
 					 # ================================================
-					 VR[ia,iy,ip,here,ti]  <- max(VLR[ia,iy,ip,here, ,ti])
-					 DLR[ia,iy,ip,here,ti] <- which.max(VLR[ia,iy,ip,here, ,ti])
+					 VR[ia,iy,ip,here,ti]  <- max(VLR[ia,iy,ip,here, ,ti])			# what is the value of being here conditional on renting?
+					 DLR[ia,iy,ip,here,ti] <- which.max(VLR[ia,iy,ip,here, ,ti])	# where do you move to from here  conditional on renting?
 
-					 VB[ia,iy,ip,here,ti]  <- max(VLB[ia,iy,ip,here, ,ti])
-					 DLB[ia,iy,ip,here,ti] <- which.max(VLB[ia,iy,ip,here, ,ti])
+					 VB[ia,iy,ip,here,ti]  <- max(VLB[ia,iy,ip,here, ,ti])        	# what is the value of being here conditional on buying?
+					 DLB[ia,iy,ip,here,ti] <- which.max(VLB[ia,iy,ip,here, ,ti])  	# where do you move to from here  conditional on buying?
 
-					 VO[ia,iy,ip,here,ti]  <- max(VLO[ia,iy,ip,here, ,ti])
-					 DLO[ia,iy,ip,here,ti] <- which.max(VLO[ia,iy,ip,here, ,ti])
+					 VO[ia,iy,ip,here,ti]  <- max(VLO[ia,iy,ip,here, ,ti])          # what is the value of being here conditional on owning?
+					 DLO[ia,iy,ip,here,ti] <- which.max(VLO[ia,iy,ip,here, ,ti])    # where do you move to from here  conditional on owning?
 
-					 VS[ia,iy,ip,here,ti]  <- max(VLS[ia,iy,ip,here, ,ti])
-					 DLS[ia,iy,ip,here,ti] <- which.max(VLS[ia,iy,ip,here, ,ti])
+					 VS[ia,iy,ip,here,ti]  <- max(VLS[ia,iy,ip,here, ,ti])       	# what is the value of being here conditional on selling?
+					 DLS[ia,iy,ip,here,ti] <- which.max(VLS[ia,iy,ip,here, ,ti]) 	# where do you move to from here  conditional on selling?
 
 				 
 					 # in each location find maximal value
 					 # ===================================
 
 					 # max val renter state
-					 Vrent[ia,iy,ip,here,ti] = max(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti])
-					 DR[ia,iy,ip,here,ti]    = which.max(c(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti]))
+					 Vrent[ia,iy,ip,here,ti] = max(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti])			# Vrent = max(rent(here), buy(here))
+					 DR[ia,iy,ip,here,ti]    = which.max(c(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti]))	# Drent = which.max(rent(here), buy(here))
 
 
 					 # max val owner state

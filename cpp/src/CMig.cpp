@@ -366,11 +366,6 @@ void CMig::show(){
 
 
 
-void CMig::version(){
-	cout << "This is an object of type CMig" << endl;
-	cout << "The largest array in here has" << ResStay.dimensions() << "dimensions" << endl;
-}
-
 std::vector<double> CMig::GetResStayNumeric( void ) {
 	Array<double,5>::iterator iter;
 	std::vector<double> out;
@@ -412,7 +407,6 @@ std::vector<double> CMig::GetResBuyNumeric( void ) {
 // Computation of period value functions
 // =====================================
 
-// TODO check gamma!=1
 
 void CMig::ComputeStay(int age) {
 
