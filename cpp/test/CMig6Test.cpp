@@ -3,6 +3,7 @@
 #include <vector>
 #include <gtest/gtest.h> // Include the google test framework
 #include <random/uniform.h>
+#include <typeinfo>		// do some type testing
 
 
 
@@ -32,13 +33,19 @@ TEST(Mig6Test, TestReferenceConstructor) {
 	TinyVector<int,6> dim_ayp_here_there_a; 
 	TinyVector<int,5> dim_ayp_here_there; 
 	TinyVector<int,5> dim_ayp_here_t; 
+	TinyVector<int,5> dim_ayp_here_y; 
 	TinyVector<int,4> dim_ayp_here;      
-	TinyVector<int,4> D_aypy; 
 	TinyVector<int,3> D_ayp; 
 	TinyVector<int,2> D_y; 
 
     Array<double,2> trans(shape(2,2),FortranArray<2>());
 	trans = 0.9,0.3,0.1,0.7;
+
+    Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
+	MoveCost = 0,1,1,0;
+
+    Array<double,1> Amenity(2,FortranArray<1>());
+	Amenity = 1,2;
 
 	Parstruc pars;
 	pars.beta = 0.9;
@@ -51,43 +58,13 @@ TEST(Mig6Test, TestReferenceConstructor) {
 	dim_ayp_here_there_a  = 2,2,2,2,2,2; 
 	dim_ayp_here_there    = 2,2,2,2,2;
 	dim_ayp_here_t        = 2,2,2,2,2;
+	dim_ayp_here_y        = 2,2,2,2,2;
 	dim_ayp_here          = 2,2,2,2;   
-	D_aypy                = 2,2,2,2;
 	D_ayp                 = 2,2,2;
 	D_y                   = 2,2;
 
 
 	// get some data
-	double dstay[128], dsell[128], drent[128], dbuy[128];
-	// that's the C++11 way
-	//std::default_random_engine generator;
-	//std::uniform_real_distribution<double> distribution(1,128);
-
-	//double x;
-
-	//for (int i=0;i<128;i++){
-		//x = distribution( generator );
-		//dstay[i] = x;
-		//x = distribution( generator );
-		//dsell[i] = x;
-		//x = distribution( generator );
-		//drent[i] = x;
-		//x = distribution( generator );
-		//dbuy[i] = x;
-	//}
-	
-
-
-	for (int i=0;i<128;i++){
-		dstay[i] = rand(); 
-		dsell[i] = rand();
-		drent[i] = rand();
-		dbuy[i] = rand();
-	}
-
-	//pointers
-	
-
 
 	Array<double,7> tstay(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
 	Array<double,7> tsell(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
@@ -117,13 +94,137 @@ TEST(Mig6Test, TestReferenceConstructor) {
 	CMig6 myMig(dim_ayp_here_there_ta,          
 			    dim_ayp_here_there_t,
 				dim_ayp_here_there_a, 
+				dim_ayp_here_there, 
 				dim_ayp_here_t, 
+				dim_ayp_here_y, 
 				dim_ayp_here,      
-				D_aypy, 
 				D_ayp, 
 				D_y, 
 				pp,
-				tstay,tsell,trent,tbuy,trans);
+				tstay,tsell,trent,tbuy,trans,MoveCost,Amenity);
+
+	// is a CMig6 object?
+	EXPECT_EQ("CMig6", myMig.version());
+
+	// dimension of biggest array is ... ?
+	EXPECT_EQ(7 , myMig.MaxDim() );
+}
+
+// Test whether can GET various objects
+TEST(Mig6Test, TestGetters) {
+
+	CMig6 myMig;
+	Array<double,7> t_ResStay(2,2,2,2,2,2,2,FortranArray<7>());
+	Array<double,7> t_ResSell(2,2,2,2,2,2,2,FortranArray<7>());
+	Array<double,7> t_ResRent(2,2,2,2,2,2,2,FortranArray<7>());
+	Array<double,7> t_ResBuy (2,2,2,2,2,2,2,FortranArray<7>());
+
+
+	Array<double,6> c_loc_stay(2,2,2,2,2,2,FortranArray<6>());	
+	Array<double,6> c_loc_sell(2,2,2,2,2,2,FortranArray<6>());  
+	Array<double,6> c_loc_rent(2,2,2,2,2,2,FortranArray<6>());	
+	Array<double,6> c_loc_buy ( 2,2,2,2,2,2,FortranArray<6>());   
+
+	Array<int   ,5> Down(  2,2,2,2,2,FortranArray<5>());  
+	Array<int   ,5> Drent( 2,2,2,2,2,FortranArray<5>());
+
+	EXPECT_EQ( typeid( t_ResStay ), typeid( myMig.GetResStay() ) );
+	EXPECT_EQ( typeid( t_ResSell ), typeid( myMig.GetResSell() ) );
+	EXPECT_EQ( typeid( t_ResRent ), typeid( myMig.GetResRent() ) );
+	EXPECT_EQ( typeid( t_ResBuy  ), typeid( myMig.GetResBuy () ) );
+	
+	EXPECT_EQ( typeid( c_loc_stay ), typeid( myMig.Getc_loc_stay() ) );
+	EXPECT_EQ( typeid( c_loc_sell ), typeid( myMig.Getc_loc_sell() ) );
+	EXPECT_EQ( typeid( c_loc_rent ), typeid( myMig.Getc_loc_rent() ) );
+	EXPECT_EQ( typeid( c_loc_buy  ), typeid( myMig.Getc_loc_buy () ) );
+
+	// ordering() returns a TinyVector<int,7>. ckeck if last elt is equal
+	EXPECT_EQ( t_ResStay.ordering()(6),  myMig.GetResStay().ordering()(6) );
+	EXPECT_EQ( t_ResSell.ordering()(6) , myMig.GetResSell().ordering()(6) );
+	EXPECT_EQ( t_ResRent.ordering()(6) , myMig.GetResRent().ordering()(6) );
+	EXPECT_EQ(  t_ResBuy.ordering()(6) , myMig.GetResBuy ().ordering()(6) );
+
+}	
+
+
+// test computePeriod
+TEST(Mig6Test, TestComputePeriod) {
+
+	// dim vectors
+    TinyVector<int,7> dim_ayp_here_there_ta;
+	TinyVector<int,6> dim_ayp_here_there_t; 
+	TinyVector<int,6> dim_ayp_here_there_a; 
+	TinyVector<int,5> dim_ayp_here_there; 
+	TinyVector<int,5> dim_ayp_here_t; 
+	TinyVector<int,5> dim_ayp_here_y; 
+	TinyVector<int,4> dim_ayp_here;      
+	TinyVector<int,3> D_ayp; 
+	TinyVector<int,2> D_y; 
+
+    Array<double,2> trans(shape(2,2),FortranArray<2>());
+	trans = 0.9,0.3,0.1,0.7;
+
+    Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
+	MoveCost = 0,1,1,0;
+
+    Array<double,1> Amenity(2,FortranArray<1>());
+	Amenity = 1,2;
+
+	Parstruc pars;
+	pars.beta = 0.9;
+	pars.myNA = -99;
+	Parstruc* pp;
+	pp = &pars;
+
+    dim_ayp_here_there_ta = 2,2,2,2,2,2,2;
+	dim_ayp_here_there_t  = 2,2,2,2,2,2;
+	dim_ayp_here_there_a  = 2,2,2,2,2,2; 
+	dim_ayp_here_there    = 2,2,2,2,2;
+	dim_ayp_here_t        = 2,2,2,2,2;
+	dim_ayp_here_y        = 2,2,2,2,2;
+	dim_ayp_here          = 2,2,2,2;   
+	D_ayp                 = 2,2,2;
+	D_y                   = 2,2;
+
+
+	// get some data
+
+	Array<double,7> tstay(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> tsell(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> trent(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> tbuy( 2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+
+	//fill with random numbers
+	ranlib::Uniform<double> uniGen;
+	Array<double,7>::iterator it;
+
+	for (it = tstay.begin(); it!=tstay.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = tsell.begin(); it!=tsell.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = trent.begin(); it!=trent.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	
+
+
+	// create an instance of owner class
+	CMig6 myMig(dim_ayp_here_there_ta,          
+			    dim_ayp_here_there_t,
+				dim_ayp_here_there_a, 
+				dim_ayp_here_there, 
+				dim_ayp_here_t, 
+				dim_ayp_here_y, 
+				dim_ayp_here,      
+				D_ayp, 
+				D_y, 
+				pp,
+				tstay,tsell,trent,tbuy,trans,MoveCost,Amenity);
 
 	// is a CMig6 object?
 	EXPECT_EQ("CMig6", myMig.version());
@@ -134,7 +235,7 @@ TEST(Mig6Test, TestReferenceConstructor) {
 
 
 
-int main(int argc, char **argv) { // A main function scaffold to call the tests
+int main(int argc, char **argv) { 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

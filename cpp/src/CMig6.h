@@ -28,7 +28,7 @@ class CMig6 {
 		Array<double,6> ctmp,xtmp;	//(a,y,p,here,there,a')
 		Array<int   ,6> s_loc_stay,s_loc_sell,s_loc_rent,s_loc_buy;	//(a,y,p,here,there,age)
 		Array<int   ,5> move_stay,move_sell,move_rent,move_buy;	//(a,y,p,here,age) array where an entry is the index of the place one is moving TO.
-		Array<double,5> EVown,EVrent,Vown,Vrent;   //(a,y,p,here,age)
+		Array<double,5> EVown,EVrent,Vown,Vrent,v_loc_tmp,v_stay,v_sell,v_rent,v_buy;   //(a,y,p,here,age)
 		Array<int   ,5> Down,Drent;   //(a,y,p,here,age) array where an entry is 1 or 2. 1 is "stay" (stay owner or renter), 2 is "change" (seller or buyer)
 									  // then, conditional on 1 or 2 in this array, go to appropriate move_* array
 									  // for owner:
@@ -39,10 +39,13 @@ class CMig6 {
 									  // Drent = 2: go to move_buy
 		Array<double,4> vplustmp;
 		Array<double,2> G;
+		Array<double,2> MoveCost;
+		Array<double,1> Amenity;
 		TinyVector<int,6> dim_ayp_here_there_t;
 		TinyVector<int,5> dim_ayp_here_there;
 		TinyVector<int,5> dim_ayp_here_t;
-		TinyVector<int,4> dim_aypy;
+		TinyVector<int,5> dim_ayp_here_y;
+		TinyVector<int,4> dim_ayp_here;
 		TinyVector<int,3> dim_ayp;
 		Parstruc p;	
 	    const std::string name; // A member variable for the class to store the version 
@@ -50,101 +53,97 @@ class CMig6 {
 		// private member functions
 
 	public: 
-		// 3 constructors
+		// 2 constructors
 		CMig6();
-		//CMig6(int x1,int x2, int x3, int x4, int x5);
-
 		CMig6(TinyVector<int,7> dim_ayp_here_there_ta,
 			  TinyVector<int,6> dim_ayp_here_there_t, 
 			  TinyVector<int,6> dim_ayp_here_there_a, 
+			  TinyVector<int,5> dim_ayp_here_there, 
 			  TinyVector<int,5> dim_ayp_here_t, 
+			  TinyVector<int,5> dim_ayp_here_y, 
 	   	      TinyVector<int,4> dim_ayp_here,      
-			  TinyVector<int,4> dim_aypy, 
 			  TinyVector<int,3> dim_ayp, 
 			  TinyVector<int,2> dim_y, 
-			  Parstruc* pars ,
+			  Parstruc* pars,
 			  Array<double,7> data_stay,
 			  Array<double,7> data_sell,
 			  Array<double,7> data_rent,
 			  Array<double,7> data_buy,
-			  Array<double,2> G	);
+			  Array<double,2> G,	
+			  Array<double,2> MoveCost,
+			  Array<double,1> Amenity);
                   
 		const std::string version(){ return( name ); };
 		int MaxDim(){ return(ResStay.dimensions()); };
 			
 
 		// getters
-	   /* Array<double,5> GetResStay( void );*/
-		//Array<double,5> GetResSell( void );
-		//Array<double,5> GetResBuy( void );
-		//Array<double,5> GetResRent( void );
-		//Array<double,4> GetVown( void );
-		//Array<double,4> GetVrent( void );
-		//Array<int   ,4> GetDown( void );
-		//Array<int   ,4> GetDrent( void );
-		//Array<double,4> GetEVown( void );
-		//Array<double,4> GetEVrent( void );
-		//Array<double,4> Getv_stay( void );
-		//Array<double,4> Getv_rent( void );
-		//Array<double,4> Getv_sell( void );
-		//Array<double,4> Getv_buy( void );
-		//Array<int   ,4> Gets_stay( void );
-		//Array<int   ,4> Gets_rent( void );
-		//Array<int   ,4> Gets_sell( void );
-		//Array<int   ,4> Gets_buy( void );
-		//Array<double,4> Getc_stay( void );
-		//Array<double,4> Getc_rent( void );
-		//Array<double,4> Getc_sell( void );
-		//Array<double,4> Getc_buy( void );
-		//Array<double,2> GetG( void );
-		//const TinyVector<int,3> GetDimAYP( void ) const { return dim_ayp;};
-		//const TinyVector<int,5> GetResStayOrder( void ) const { return(ResStay.ordering()); };
-		//const TinyVector<int,5> GetResSellOrder( void ) const { return(ResSell.ordering()); };
-		//const TinyVector<int,5> GetResBuyOrder( void ) const { return(ResStay.ordering()); };
-		//const TinyVector<int,5> GetResRentOrder( void ) const { return(ResSell.ordering()); };
-		//const TinyVector<int,4> GetVownOrder( void ) const { return(Vown.ordering()); };
-		//const TinyVector<int,4> GetVrentOrder( void ) const { return(Vrent.ordering()); };
-		//const TinyVector<int,4> GetEVownOrder( void ) const { return(EVown.ordering()); };
-		//const TinyVector<int,4> GetEVrentOrder( void ) const { return(EVrent.ordering()); };
-		//const TinyVector<int,4> Getv_stayOrder( void ) const { return(v_stay.ordering()); };
-		//const TinyVector<int,4> Getv_rentOrder( void ) const { return(v_rent.ordering()); };
-		//const TinyVector<int,4> Getv_sellOrder( void ) const { return(v_sell.ordering()); };
-		//const TinyVector<int,4> Getv_buyOrder( void ) const { return(v_buy.ordering()); };
-		//const TinyVector<int,2> GetGOrder( void ) const { return(G.ordering()); };
+		Array<double,7> GetResStay(    void ) const {return(ResStay);};
+		Array<double,7> GetResSell(    void ) const {return(ResSell);};
+		Array<double,7> GetResBuy(     void ) const {return(ResBuy );};
+		Array<double,7> GetResRent(    void ) const {return(ResRent);};
+		Array<double,5> GetVown(       void ) const {return(Vown)   ;};
+		Array<double,5> GetVrent(      void ) const {return(Vrent)  ;};
+		Array<double,5> GetEVown(      void ) const {return(EVown)  ;};
+		Array<double,5> GetEVrent(     void ) const {return(EVrent) ;};
+		Array<int   ,5> GetDown(       void ) const {return(Down)   ;};
+		Array<int   ,5> GetDrent(      void ) const {return(Drent)   ;};
+		Array<double,5> Getv_stay(  void ) const {return(v_stay) ;};
+		Array<double,5> Getv_sell(  void ) const {return(v_sell) ;};
+		Array<double,5> Getv_rent(  void ) const {return(v_rent) ;};
+		Array<double,5> Getv_buy(   void ) const {return(v_buy)  ;};
+		Array<int   ,5> Getmove_stay(  void ) const {return(move_stay) ;};
+		Array<int   ,5> Getmove_sell(  void ) const {return(move_sell) ;};
+		Array<int   ,5> Getmove_rent(  void ) const {return(move_rent) ;};
+		Array<int   ,5> Getmove_buy(   void ) const {return(move_buy)  ;};
+		Array<double,6> Getv_loc_stay( void ) const {return(v_loc_stay);};
+		Array<double,6> Getv_loc_rent( void ) const {return(v_loc_rent);};
+		Array<double,6> Getv_loc_sell( void ) const {return(v_loc_sell);};
+		Array<double,6> Getv_loc_buy(  void ) const {return(v_loc_buy );};
+		Array<double,6> Getc_loc_stay( void ) const {return(c_loc_stay);};
+		Array<double,6> Getc_loc_rent( void ) const {return(c_loc_rent);};
+		Array<double,6> Getc_loc_sell( void ) const {return(c_loc_sell);};
+		Array<double,6> Getc_loc_buy(  void ) const {return(c_loc_buy );};
+		Array<int   ,6> Gets_loc_stay( void ) const {return(s_loc_stay);};
+		Array<int   ,6> Gets_loc_rent( void ) const {return(s_loc_rent);};
+		Array<int   ,6> Gets_loc_sell( void ) const {return(s_loc_sell);};
+		Array<int   ,6> Gets_loc_buy(  void ) const {return(s_loc_buy );};
+		Array<double,2> GetG(          void ) const {return(G);};
 
-		////setters
-		//void ReferenceStay( Array<double,5> x ) { ResStay.reference( x ) ; }
-		//void ReferenceSell( Array<double,5> x ) { ResSell.reference( x ) ; }
-		//void ReferenceRent( Array<double,5> x ) { ResRent.reference( x ) ; }
-		//void ReferenceBuy( Array<double,5> x ) { ResBuy.reference( x ) ; }
+
+		//setters
+		void ReferenceStay( Array<double,7> x ) { ResStay.reference( x ) ; }
+		void ReferenceSell( Array<double,7> x ) { ResSell.reference( x ) ; }
+		void ReferenceRent( Array<double,7> x ) { ResRent.reference( x ) ; }
+		void ReferenceBuy( Array<double,7> x ) { ResBuy.reference( x ) ; }
 		
-		//void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
-		//void SetP( Parstruc* par ) { p = *par ; }
+		void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
+		void SetP( Parstruc* par ) { p = *par ; }
 
 		//// other member functions		
-		//void show ( void );
-		//void version ( void );
-		//void ComputePeriod(int age);
-		//void ComputeExpectations( int age );
+		void show ( void );
+		void ComputePeriod(int age);
+		void ComputeExpectations( int age );
 
-		//void ComputeStay( int age );
-		//void ComputeSell( int age );
-		//void ComputeRent( int age );
-		//void ComputeBuy( int age );
-		//void ComputeDchoice( int age );
-		//void FindStayCons( int age );
-		//void FindSellCons( int age );
-		//void FindRentCons( int age );
-		//void FindBuyCons( int age );
+		void ComputeStay( int age );
+		void ComputeSell( int age );
+		void ComputeRent( int age );
+		void ComputeBuy( int age );
+		void ComputeLocationChoice( int age );
+		void ComputeDchoice( int age );
+		void FindStayCons( int age );
+		void FindSellCons( int age );
+		void FindRentCons( int age );
+		void FindBuyCons( int age );
 
 		//std::vector<double> GetResStayNumeric( void );
 		//std::vector<double> GetResSellNumeric( void );
 		//std::vector<double> GetResRentNumeric( void );
 		//std::vector<double> GetResBuyNumeric( void );
 		
-		//Array<double,3> dchoice3d(Array<double,3> one, Array<double,3> two);
-		//Array<int   ,3> dchoiceID3d(Array<double,3> one, Array<double,3> two);
-		//Array<double,3> integrate(Array<double,3> tens);
+		Array<double,4> dchoice4d(Array<double,4> one, Array<double,4> two);
+		Array<int   ,4> dchoiceID4d(Array<double,4> one, Array<double,4> two);
+		Array<double,4> integrate(Array<double,4> tens);
 
 
 

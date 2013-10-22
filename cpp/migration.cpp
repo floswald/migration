@@ -1,7 +1,9 @@
 
 #include <iostream>
 #include "CMig.h"
+#include "CMig6.h"
 #include <vector>
+#include <random/uniform.h>
 
 int main(int argument_count, char ** command_line_arguments)
 { 
@@ -27,6 +29,9 @@ int main(int argument_count, char ** command_line_arguments)
 	Parstruc pars;
 	pars.beta = 0.9;
 	pars.myNA = -99;
+	pars.gamma   = 1.4;
+	pars.mgamma  = 1 - pars.gamma;
+	pars.imgamma = 1/pars.mgamma;
 	Parstruc* pp;
 	pp = &pars;
 
@@ -49,6 +54,84 @@ int main(int argument_count, char ** command_line_arguments)
 
 	cout << "s_stay " << endl;
 	cout << myMig.Gets_stay()  << endl;
+
+	cout << endl;
+	cout << endl;
+	cout << "Boilerplate for CMig6 " << endl;
+	cout << "======================" << endl;
+	cout << endl;
+
+	// dim vectors
+    TinyVector<int,7> dim_ayp_here_there_ta;
+	TinyVector<int,6> dim_ayp_here_there_t; 
+	TinyVector<int,6> dim_ayp_here_there_a; 
+	TinyVector<int,5> dim_ayp_here_there; 
+	TinyVector<int,5> dim_ayp_here_t; 
+	TinyVector<int,5> dim_ayp_here_y; 
+	TinyVector<int,4> dim_ayp_here;      
+	TinyVector<int,3> D_ayp; 
+	TinyVector<int,2> D_y; 
+
+    dim_ayp_here_there_ta = 2,2,2,2,2,2,2;
+	dim_ayp_here_there_t  = 2,2,2,2,2,2;
+	dim_ayp_here_there_a  = 2,2,2,2,2,2; 
+	dim_ayp_here_there    = 2,2,2,2,2;
+	dim_ayp_here_t        = 2,2,2,2,2;
+	dim_ayp_here_y        = 2,2,2,2,2;
+	dim_ayp_here          = 2,2,2,2;   
+	D_ayp                 = 2,2,2;
+	D_y                   = 2,2;
+
+
+	// get some data
+
+	Array<double,7> tstay(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> tsell(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> trent(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> tbuy( 2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+
+	//fill with random numbers
+	ranlib::Uniform<double> uniGen;
+	Array<double,7>::iterator it;
+
+	for (it = tstay.begin(); it!=tstay.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = tsell.begin(); it!=tsell.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = trent.begin(); it!=trent.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+	for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		*it = uniGen.random() + 1;
+	}
+
+    Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
+	MoveCost = 0,1,1,0;
+
+    Array<double,1> Amenity(2,FortranArray<1>());
+	Amenity = 1,2;
+
+	CMig6 myMig6(dim_ayp_here_there_ta,          
+			    dim_ayp_here_there_t,
+				dim_ayp_here_there_a, 
+				dim_ayp_here_there, 
+				dim_ayp_here_t, 
+				dim_ayp_here_y, 
+				dim_ayp_here,      
+				D_ayp, 
+				D_y, 
+				pp,
+				tstay,tsell,trent,tbuy,trans, MoveCost, Amenity);
+
+
+	myMig6.show();
+
+	myMig6.ComputePeriod(2);
+	myMig6.ComputePeriod(1);
+
+	cout << "END OF Boilerplates " << endl;
 
 	//CMig migdef;
 	//migdef.show();

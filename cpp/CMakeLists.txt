@@ -12,15 +12,31 @@ include_directories(src) # This location "src" is added to the list of locations
 #include_directories(/Library/Frameworks/R.framework/Resources/include)
 #link_directories(/Library/Frameworks/R.framework/Resources/lib)
 
-add_subdirectory(src) # Look in the CMakeLists.txt file for explanation on how to build our library code
-add_executable(migration migration.cpp) # The executable to make is 
-									 # called "migration" and depends on the listed source files and libraries
-target_link_libraries(migration migration_library) # Add our library of reaction system code to the executable
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+
+# add boost
+find_package(Boost 1.53.0 )
+if(Boost_FOUND)
+	include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
+# add GSL
+find_package(GSL REQUIRED)
+include_directories(${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${GSL_LIBRARIES} ${GSLCBLAS_LIBRARIES})
+
+# add my cpp source files
+add_subdirectory(src) 
+add_executable(migration migration.cpp) 
+add_executable(migration2 migration2.cpp) 
+									
+target_link_libraries(migration migration_library ${LIBS}) # Add our library of reaction system code to the executable
+target_link_libraries(migration2 migration_library ${LIBS}) # Add our library of reaction system code to the executable
+#link_libraries( ${LIBS} )
 
 # Boilerplate to enable the Google testing framework
 INCLUDE(ExternalProject)
 set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 find_package(GTest)
 enable_testing()
 
