@@ -42,6 +42,8 @@ class CMig7 {
 		gsl_f_pars *p;
 		Array<double,1> agrid;	    //(a)
 		double root;
+		double verbose;
+
 
 		// GSL related members
 		//std::vector<double>::iterator eviter;
@@ -51,7 +53,7 @@ class CMig7 {
 	    const std::string name; // A member variable for the class to store the version 
 	public: 
 		// constructor
-		CMig7();
+		CMig7(double verb);
 
 		const std::string version(){ return( name ); };
 		int MaxDim(){ return(Res.dimensions()); };
@@ -59,12 +61,15 @@ class CMig7 {
 		double utility( double cons, double mgam ) { return( (1/mgam) * pow(cons,mgam) ) ;};
 		double mutility( double cons, double gam ) { return(  1 / pow(cons,gam) ) ;};
 
+		double dummyDV( double save ) { return( 1/save ); }
+
 		double obj(double x, void * par) ;
 		void setPars( gsl_f_pars * xp ) { p = xp; };
 
 		// getters
 		Array<double,3> GetResStay( void ) const {return(Res);};
 		Array<double,3> GetV( void ) const {return(V);};
+		Array<double,1> GetAgrid( void ) const {return(agrid);};
 
 		void ComputeSolution( int age );
 };
@@ -76,13 +81,16 @@ struct gsl_f_pars {
 	double beta;
 	double R;
 	double res;
-	std::vector<double> ev;
 	gsl_interp_accel *acc;
 	gsl_spline *spline;
+	gsl_function *F;
+	const gsl_interp_type *type; 
     CMig7 *pt_Class;	
+	const gsl_root_fsolver_type *T;
+	gsl_root_fsolver *sroot;
 };
 
 
 double gslClassWrapper(double x, void * pp) ; 
 
-double find_root(gsl_root_fsolver *RootFinder,  gsl_function * F, double x_lo, double x_hi) ;
+double find_root(gsl_root_fsolver *RootFinder,  gsl_function * F, double x_lo, double x_hi, double verbose) ;

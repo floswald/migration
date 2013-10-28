@@ -14,7 +14,7 @@ using namespace blitz;
 TEST(Mig7Test, TestDefaultConstructor) {
 
 	// create an instance of owner class
-	CMig7 myMig;
+	CMig7 myMig(1);
 
 	// is a CMig6 object?
 	EXPECT_EQ("CMig7", myMig.version());
