@@ -54,7 +54,7 @@ SS[it==nT & a+y+p>0,cstay := log(a+y+p) ]
 SS[it==nT & a+y+p<0,cstay := dataR$myNA ]
 #SS[here != there, cstay := a + y + 0.3*it + p[here] - p[there] - dataR$R*save ] # TODO
 #SS[here != there & save< -(1-dataR$down)*p[there], cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
-SS[here != there & save< -(1-dataR$down)*p, cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
+SS[here != there & save< -(1-dataR$down)*p & it!=nT, cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
 
 # buyer: cannot have negative assets
 # buyer: cannot borrow more than (1-down) times value of house
@@ -102,6 +102,9 @@ dataR$consB <- as.numeric(CB)
 dataR$consS <- as.numeric(CS)
 dataR$consO <- as.numeric(CO)
 
+dataR$MoveCost <- as.numeric(move.cost)
+dataR$Amenity  <- grids$L
+
 ######################################################
 # Calculating an R solution to this lifecycle problem
 ######################################################
@@ -115,10 +118,10 @@ EVown = array(0,dataR$dimshere)
 EVrent = array(0,dataR$dimshere)
 
 # discrete choice functions for location choice
-DLO <- array(0,dataR$dimshere)
-DLB <- array(0,dataR$dimshere)
-DLS <- array(0,dataR$dimshere)
-DLR <- array(0,dataR$dimshere)
+move_stay <- array(0,dataR$dimshere)
+move_buy <- array(0,dataR$dimshere)
+move_sell <- array(0,dataR$dimshere)
+move_rent <- array(0,dataR$dimshere)
 
 # discrete choice amoung conditional value
  							#             1       2     ...  J      J+1      J+2    ...   2J
@@ -138,10 +141,10 @@ VS = array(2,dataR$dimshere)
 VO = array(1,dataR$dimshere)
 
 # savings functions at each location
-saveLR = array(0,dataR$dims)
-saveLB = array(0,dataR$dims)
-saveLS = array(0,dataR$dims)
-saveLO = array(0,dataR$dims)
+saveLO = array(1,dataR$dims)
+saveLS = array(2,dataR$dims)
+saveLR = array(3,dataR$dims)
+saveLB = array(4,dataR$dims)
 
 # conditional consumption functions
 consR = array(0,dataR$dims)
@@ -150,8 +153,8 @@ consS = array(0,dataR$dims)
 consO = array(0,dataR$dims)
 
 # final period values
-EVrent[ , , , ,nT] <- SS[it==nT&save==grids$a[nA]&there==here,array(crent,c(nA,nY,nP,nL))]
-EVown[ , , , ,nT]  <- SS[it==nT&save==grids$a[nA]&there==here,array(cstay,c(nA,nY,nP,nL))]
+EVrent[ , , , ,nT] <- CR[ , , , ,1,nT,nA]
+EVown[ , , , ,nT]  <- CO[ , , , ,1,nT,nA]
 
 integr <- tensorFunction(R[i,m,k,l] ~ V[i,j,k,l] * G[m,j] )
                        
@@ -212,16 +215,16 @@ for (ti in (nT-1):1) {
 					 # maximize over location choice in each subproblem
 					 # ================================================
 					 VR[ia,iy,ip,here,ti]  <- max(VLR[ia,iy,ip,here, ,ti])			# what is the value of being here conditional on renting?
-					 DLR[ia,iy,ip,here,ti] <- which.max(VLR[ia,iy,ip,here, ,ti])	# where do you move to from here  conditional on renting?
+					 move_rent[ia,iy,ip,here,ti] <- which.max(VLR[ia,iy,ip,here, ,ti])	# where do you move to from here  conditional on renting?
 
 					 VB[ia,iy,ip,here,ti]  <- max(VLB[ia,iy,ip,here, ,ti])        	# what is the value of being here conditional on buying?
-					 DLB[ia,iy,ip,here,ti] <- which.max(VLB[ia,iy,ip,here, ,ti])  	# where do you move to from here  conditional on buying?
+					 move_buy[ia,iy,ip,here,ti] <- which.max(VLB[ia,iy,ip,here, ,ti])  	# where do you move to from here  conditional on buying?
 
 					 VO[ia,iy,ip,here,ti]  <- max(VLO[ia,iy,ip,here, ,ti])          # what is the value of being here conditional on owning?
-					 DLO[ia,iy,ip,here,ti] <- which.max(VLO[ia,iy,ip,here, ,ti])    # where do you move to from here  conditional on owning?
+					 move_stay[ia,iy,ip,here,ti] <- which.max(VLO[ia,iy,ip,here, ,ti])    # where do you move to from here  conditional on owning?
 
 					 VS[ia,iy,ip,here,ti]  <- max(VLS[ia,iy,ip,here, ,ti])       	# what is the value of being here conditional on selling?
-					 DLS[ia,iy,ip,here,ti] <- which.max(VLS[ia,iy,ip,here, ,ti]) 	# where do you move to from here  conditional on selling?
+					 move_sell[ia,iy,ip,here,ti] <- which.max(VLS[ia,iy,ip,here, ,ti]) 	# where do you move to from here  conditional on selling?
 
 				 
 					 # in each location find maximal value
@@ -248,24 +251,24 @@ for (ti in (nT-1):1) {
      }
 }
 
-stop()
 Rtime <- proc.time() - Rtime
 
 # Calculating the blitz solution to the equivalent
 # ================================================
       
-blitz <- dev7(data=dataR)
+blitz <- dev8(data=dataR)
 
 # timings
 print(Rtime)
 print(sum(blitz$time/1e9))
 
+
 # get conditional consumption functions
 # =====================================
-consR <- array(matrix(CR[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveR[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consB <- array(matrix(CB[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveB[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consS <- array(matrix(CS[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveS[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consO <- array(matrix(CStay[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveO[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+#consR <- array(matrix(CR[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveR[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+#consB <- array(matrix(CB[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveB[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+#consS <- array(matrix(CS[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveS[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
+#consO <- array(matrix(CStay[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveO[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
 # =====================================
 
 # check outputs
@@ -283,12 +286,12 @@ print(all.equal(VR,blitz$vrent))
 print(all.equal(VS,blitz$vsell))
 print(all.equal(VB,blitz$vbuy))
 
-print(all.equal(saveO,blitz$sstay))
-print(all.equal(saveR,blitz$srent))
-print(all.equal(saveS,blitz$ssell))
-print(all.equal(saveB,blitz$sbuy))
+print(all.equal(move_stay,blitz$move_stay))
+print(all.equal(move_sell,blitz$move_sell))
+print(all.equal(move_rent,blitz$move_rent))
+print(all.equal(move_buy ,blitz$move_buy ))
 
-print(all.equal(consO,blitz$cstay))
-print(all.equal(consR,blitz$crent))
-print(all.equal(consS,blitz$csell))
-print(all.equal(consB,blitz$cbuy))
+print(all.equal(saveLO,blitz$s_loc_stay))
+print(all.equal(saveLS,blitz$s_loc_sell))
+print(all.equal(saveLR,blitz$s_loc_rent))
+print(all.equal(saveLB,blitz$s_loc_buy ))

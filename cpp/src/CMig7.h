@@ -11,38 +11,67 @@
 
 using namespace blitz;
 
-// Migration model class for N locations and continuous optimization
+// Migration model class for N locations and continuous optimization on 3 state variables
 // =================================================================
 //
-// this version has location as a state variable "here" and "there", both can
-// take N values. 
-// If here =  there, no migration occurs. 
-// if here != there, there is a moving cost in terms of utility. There is NO difference
-// in prices (y,p) between locations as of yet.
-//
-//
-// notes:
-// 1) arrays are fortranArrays throughout. that means they are indexed 1,2,3,...,Rank in each dimension
-// 2) this is done purely for compatibility reasons with R. An array in R is in fortran order. 
-//    I want compatibility with the same computation in R in order to check the results. THIS MAY CHANGE IN THE FUTURE.
-// 3) unfortunately TinyVectors are not available as FortranArrays. Therefore, they are indexed as 0,1,...,Rank-1 .
 
 // define gsl parameter struct
 struct gsl_f_pars ;
 
-
+///////////////////////////////////////////////////////////////////////////////////
+// \brief Class for N locations and continuous optimization of migration model
+//
+// This class holds the entire solution to a migration model. it is initiated
+// on a default set of parameters, the data needs to be set manually. The 
+// use of this class is geared towards passing data from R to c++, then mapping
+// it to the class. the class uses Blitz++ quite extensively. Also GSL optimization
+// and spline interpolation is used.
+// this version has location as a state variable "here" and "there", both can
+// take N values. 
+// - If here =  there, no migration occurs. 
+// - if here != there, there is a moving cost in terms of utility. There is NO difference
+// in prices (y,p) between locations as of yet.
+//
+//
+// ## notes ##
+// 1. arrays are fortranArrays throughout. that means they are indexed 1,2,3,...,Rank in each dimension
+// 2. this is done purely for compatibility reasons with R. An array in R is in fortran order. 
+//    I want compatibility with the same computation in R in order to check the results. THIS MAY CHANGE IN THE FUTURE.
+// 3. unfortunately TinyVectors are not available as FortranArrays. Therefore, they are indexed as 0,1,...,Rank-1 .
+///////////////////////////////////////////////////////////////////////////////////
 class CMig7 {
 	private:
-		// private data objects
-		Array<double,3> Res;	//(a,y,age)
-		Array<double,3> V;	    //(a,y,age)
-		Array<double,3> C;	    //(a,y,age)
-		Array<double,3> S;	    //(a,y,age)
+		/**
+		 * Resource arrays. 
+		 * Contain available resources (cash on hand)
+		 * at each point in the state space. in final period
+		 * contains net wealth
+		 */
+		Array<double,3> ResStay, ResSell;	//(a,y,age)
+
+		/**
+		 * Conditional (expected) Value Functions
+		 * for each discrete choice, there is a value function
+		 */
+		Array<double,3> VStay, VSell;	    //(a,y,age)
+		Array<double,3> EVown, EVrent;	    //(a,y,age)
+		
+		/**
+		 * Conditional Cons and Save Functions
+		 * for each discrete choice, there is a policy function
+		 */
+		Array<double,3> CStay, CSell;	    //(a,y,age)
+		Array<double,3> SStay, SSell;	    //(a,y,age)
+
 		Array<double,1> evtmp;	    //(a)
+		TinyVector<int,3> bounds;	
+		TinyVector<int,3> dim;	
 		gsl_f_pars *p;
-		Array<double,1> agrid;	    //(a)
-		double root;
-		double verbose;
+		Array<double,1> agrid_own, agrid_rent;	    // asset grids to approximate EVown and EVrent
+		double root, hi, low;
+		double c_cutoff, gamma, mgamma, theta, diff, tmpu, dtmpu_dc, ddtmpu_dcc, myNA, R, beta;
+		int verbose;
+		Array<double,2> G;
 
 
 		// GSL related members
@@ -52,14 +81,32 @@ class CMig7 {
 
 	    const std::string name; // A member variable for the class to store the version 
 	public: 
-		// constructor
-		CMig7(double verb);
+		/**
+		 * default constructor
+		 */
+		CMig7();
+
+		/**
+		 * constructor to set up production
+		 * use this constructor to do some actual computation
+		 */
+		CMig7(TinyVector<int,3> dim_ay_t, 
+			  Array<double,3> data_stay,
+			  Array<double,3> data_sell,
+			  Array<double,2> G,
+			  Array<double,1> data_a_own,
+			  Array<double,1> data_a_rent,
+			  int verb,
+			  double d_cutoff,
+			  double d_gamma,
+			  double d_theta);
+			  
 
 		const std::string version(){ return( name ); };
-		int MaxDim(){ return(Res.dimensions()); };
+		int MaxDim(){ return(ResStay.dimensions()); };
 			
-		double utility( double cons, double mgam ) { return( (1/mgam) * pow(cons,mgam) ) ;};
-		double mutility( double cons, double gam ) { return(  1 / pow(cons,gam) ) ;};
+		double utility( double cons ) ;
+		double mutility( double cons );
 
 		double dummyDV( double save ) { return( 1/save ); }
 
@@ -67,23 +114,34 @@ class CMig7 {
 		void setPars( gsl_f_pars * xp ) { p = xp; };
 
 		// getters
-		Array<double,3> GetResStay( void ) const {return(Res);};
-		Array<double,3> GetV( void ) const {return(V);};
-		Array<double,1> GetAgrid( void ) const {return(agrid);};
+		Array<double,3> GetResStay( void ) const {return(ResStay);};
+		Array<double,3> GetVStay( void ) const {return(VStay);};
+		Array<double,3> GetVSell( void ) const {return(VSell);};
+		Array<double,1> GetAgrid_own( void ) const {return(agrid_own);};
+		Array<double,1> GetAgrid_rent( void ) const {return(agrid_rent);};
+		double GetCutoff( void ) const { return(c_cutoff); };
+		double GetGamma( void ) const { return(gamma); };
+		double GetMgamma( void ) const { return(mgamma); };
+		double GetTmpu( void ) const { return(tmpu); };
+		double GetDtmpu( void ) const { return(dtmpu_dc); };
+		double GetDdtmpu( void ) const { return(ddtmpu_dcc); };
 
-		void ComputeSolution( int age );
+		void ComputePeriod( int age );
+		void ComputeExpectations( int age );
+		void ComputeStay( int age );
+		void ComputeSell( int age );
+		Array<double,2> integrate(Array<double,2> tens);
+		bool StraddleZero(gsl_function *F, double hi, double low) ;
+		//Array<double,13> SplineTester( double data[] , int size );
+		//double SplineTesterDeriv( double data[] );
 };
 
 
 struct gsl_f_pars {
-	double gamma;
-	double mgamma;
-	double beta;
-	double R;
 	double res;
 	gsl_interp_accel *acc;
 	gsl_spline *spline;
-	gsl_function *F;
+	gsl_function F;
 	const gsl_interp_type *type; 
     CMig7 *pt_Class;	
 	const gsl_root_fsolver_type *T;
@@ -93,4 +151,7 @@ struct gsl_f_pars {
 
 double gslClassWrapper(double x, void * pp) ; 
 
-double find_root(gsl_root_fsolver *RootFinder,  gsl_function * F, double x_lo, double x_hi, double verbose) ;
+double find_root(gsl_root_fsolver *RootFinder,  gsl_function  F, double x_lo, double x_hi, int verb) ;
+
+// declare utility func as a Blitz function for final period
+//BZ_DECLARE_FUNCTION(CMig7::utility)

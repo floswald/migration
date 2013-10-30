@@ -7,18 +7,16 @@ int main(int argument_count, char ** command_line_arguments)
 	std::cout << "Boilerplate program 2 is running" << std::endl;
 
 
-	CMig7 myMig7(0);
+	CMig7 myMig7;
 
 	// allocate parameter struct
+
+
 	gsl_f_pars p;
-	p.gamma  = 1.4;
-	p.mgamma = 1-1.4;
-	p.beta   = 0.9;
-	p.R      = 1/1.04;
 	p.res    = 0;
 	p.type   = gsl_interp_cspline;
 	p.acc    = gsl_interp_accel_alloc ();
-	p.spline = gsl_spline_alloc (p.type, myMig7.GetAgrid().size());
+	p.spline = gsl_spline_alloc (p.type, myMig7.GetAgrid_own().size());
 	p.T      = gsl_root_fsolver_brent;
 	p.sroot  = gsl_root_fsolver_alloc (p.T);
 
@@ -26,9 +24,21 @@ int main(int argument_count, char ** command_line_arguments)
  
     myMig7.setPars( &p );	
       //std::cout << "current V " <<  myMig7.GetV() << std::endl;	
-	myMig7.ComputeSolution(2);
-	myMig7.ComputeSolution(1);
-	  std::cout << "current V " <<  myMig7.GetV() << std::endl;	
+	  //
+
+	myMig7.utility( -1 );
+
+	//double data[13] = {0.1,1,2,3,4,5,6,7,8,9,10,11,12};
+
+	//myMig7.SplineTester( data, 13 );
+
+
+	 
+
+	for (int ti=2; ti>0; ti--){
+		myMig7.ComputePeriod( ti );
+	}
+	  std::cout << "current Vstay " <<  myMig7.GetVStay() << std::endl;	
 	
 	return 0;
 }

@@ -11,8 +11,9 @@ Depends:
     Rcpp (>= 0.10.3),
     data.table,
     rutils,
-    RcppSimpleTensor
-LinkingTo: Rcpp
+    RcppSimpleTensor,
+    RcppGSL
+LinkingTo: Rcpp, RcppGSL
 Collate:
     'rcpp_hello_world.R'
     'RcppExports.R'
