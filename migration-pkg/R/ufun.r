@@ -42,7 +42,7 @@ R_ufun <- function(cons,gamma,theta) {
 #' @return list with utility and gradient
 R_ufun_neg <- function(cons,gamma,cutoff) {
 
-	if (cons<0){
+	if (cons<cutoff){
 
 		diff       <- cons - cutoff
 		tmpu       <- cutoff^(1-gamma)
@@ -68,13 +68,13 @@ R_ufun_neg <- function(cons,gamma,cutoff) {
 #' devel R euler equation
 #' u'(res - 1/R * save) = beta*R*V'(save)
 #' @return euler equation value
-R_objective <- function(save,res,R,beta,gamma,cutoff){
+R_objective <- function(save,res,R,beta,gamma,cutoff,evfun){
 
 	cons <- res - (1/R) * save
 	mu <- R_ufun_neg(cons=cons,gamma=gamma,cutoff=cutoff)$grad
 
 	# caution: will use the splinefun currently in scope.
-	ev <- splinefun( save, deriv=1 )
+	ev <- evfun( save, deriv=1 )
 
 	return( mu - beta * R * ev )
 }

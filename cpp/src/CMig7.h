@@ -72,6 +72,7 @@ class CMig7 {
 		double c_cutoff, gamma, mgamma, theta, diff, tmpu, dtmpu_dc, ddtmpu_dcc, myNA, R, beta;
 		int verbose;
 		Array<double,2> G;
+		int maxage;
 
 
 		// GSL related members
@@ -99,11 +100,13 @@ class CMig7 {
 			  int verb,
 			  double d_cutoff,
 			  double d_gamma,
-			  double d_theta);
+			  double d_theta,
+			  gsl_f_pars *gslpar);
 			  
 
 		const std::string version(){ return( name ); };
-		int MaxDim(){ return(ResStay.dimensions()); };
+		int GetMaxDim(){ return(ResStay.dimensions()); };
+		TinyVector<int,3> GetDim(){ return(dim); };
 			
 		double utility( double cons ) ;
 		double mutility( double cons );
@@ -131,7 +134,8 @@ class CMig7 {
 		void ComputeStay( int age );
 		void ComputeSell( int age );
 		Array<double,2> integrate(Array<double,2> tens);
-		bool StraddleZero(gsl_function *F, double hi, double low) ;
+		double Owner_blimit( int ix1, int ix2, int age);
+		int GetMaxage( void ) const {return(maxage);};
 		//Array<double,13> SplineTester( double data[] , int size );
 		//double SplineTesterDeriv( double data[] );
 };

@@ -14,7 +14,7 @@ using namespace blitz;
 
 //' dev9: continuous optimization, utility function
 //' 
-//' @example examples/example-dev10.r
+//' @example examples/example10.r
 // [[Rcpp::export]]
 Rcpp::List dev9( Rcpp::List data ) {
 
@@ -33,15 +33,6 @@ Rcpp::List dev9( Rcpp::List data ) {
 	double gamma  = Rcpp::as<double>(data["gamma"]);
 	double theta  = Rcpp::as<double>(data["theta"]);
 
-	// R parameter data
-	gsl_f_pars p;
-	p.res    = 0;
-	p.type   = gsl_interp_cspline;
-	p.acc    = gsl_interp_accel_alloc ();
-	p.spline = gsl_spline_alloc (p.type, d(0) );
-	p.T      = gsl_root_fsolver_brent;
-	p.sroot  = gsl_root_fsolver_alloc (p.T);
-
 	// map to blitz arrays
 	// ===================
 	
@@ -49,20 +40,43 @@ Rcpp::List dev9( Rcpp::List data ) {
 	Array<double,2> G(R_G.begin(),d(1),d(1),neverDeleteData,FortranArray<2>());
 	Array<double,3> stay(R_CO.begin(),D_ay_t,neverDeleteData,FortranArray<3>());
 	Array<double,3> sell(R_CS.begin(),D_ay_t,neverDeleteData,FortranArray<3>());
-	Array<double,1> aown(a_own.begin(),1,neverDeleteData);
-	Array<double,1> arent(a_rent.begin(),1,neverDeleteData);
+	Array<double,1> aown(a_own.begin(),d(0),neverDeleteData);
+	Array<double,1> arent(a_rent.begin(),d(0),neverDeleteData);
+
+	Rcpp::Rcout << "length of aown " << aown.size() << endl;
+	Rcpp::Rcout << "aown " << aown << endl;
+	Rcpp::Rcout << "a_own " << a_own.begin() << endl;
+
+	Rcpp::Rcout << "stay" << stay << endl;
+	Rcpp::Rcout << "sell" << sell << endl;
+
+
+
+	// make a gsl parameter struct
+	// ===========================
+	
+	gsl_f_pars p;
+	p.res    = 0;
+	//p.type   = gsl_interp_cspline;
+	p.type   = gsl_interp_linear;	// change interpolation type here.
+	p.acc    = gsl_interp_accel_alloc ();
+	p.spline = gsl_spline_alloc (p.type, aown.size());
+	p.T      = gsl_root_fsolver_brent;
+	p.sroot  = gsl_root_fsolver_alloc (p.T);
+
 
 	// create an instance of the migration class
 	// ===================================
-	CMig7 myMig(D_ay_t,          
-				stay,sell,G,aown,arent,0,cutoff,gamma,theta);
+	CMig7 myMig(D_ay_t,stay,sell,G,aown,arent,0,cutoff,gamma,theta,&p);
 
 	// time loop to compute backwards
 	// ===================================
 	
-   /* for (int it = d(5); it>0; it--) {*/
-		//mig6.ComputePeriod( it );
-	//}
+	for (int it = myMig.GetMaxage(); it>0; it--) {
+		myMig.ComputePeriod( it );
+	}
+
+	cout << "Computation done!" << endl;
 
 	//timer.step("end blitz");
 

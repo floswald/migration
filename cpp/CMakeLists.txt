@@ -29,9 +29,11 @@ set(LIBS ${LIBS} ${GSL_LIBRARIES} ${GSLCBLAS_LIBRARIES})
 add_subdirectory(src) 
 add_executable(migration migration.cpp) 
 add_executable(migration2 migration2.cpp) 
+add_executable(migration3 migration3.cpp) 
 									
 target_link_libraries(migration migration_library ${LIBS}) # Add our library of reaction system code to the executable
 target_link_libraries(migration2 migration_library ${LIBS}) # Add our library of reaction system code to the executable
+target_link_libraries(migration3 migration_library ${LIBS}) # Add our library of reaction system code to the executable
 #link_libraries( ${LIBS} )
 
 # Boilerplate to enable the Google testing framework

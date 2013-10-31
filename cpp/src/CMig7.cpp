@@ -6,7 +6,7 @@
 #include "CMig7.h"		// include class declaration of owner class
 #endif
 
-#define SIGN(X) (X>0?1:-1)
+#define _EPS 1.0e-9
 
 // Constructor
 CMig7::CMig7() :
@@ -57,6 +57,7 @@ CMig7::CMig7() :
 		evtmp = 0;
 		dim = ResStay.extent();	
 		bounds = ResStay.extent() + 1;	// shift this by one to get proper upper array bounds for fortran arrays
+		maxage = dim(2);
 		//p.gamma = 1.4;
 		//p.mgamma = 1-1.4;
 		//p.beta = 0.9;
@@ -72,7 +73,7 @@ CMig7::CMig7( TinyVector<int,3> Dim_ay_t,
 			  Array<double,1> data_a_own,
 			  Array<double,1> data_a_rent,
 			  int verb,
-			  double d_cutoff, double d_gamma, double d_theta) :
+			  double d_cutoff, double d_gamma, double d_theta, gsl_f_pars *gslpar) :
 
 	ResStay(Dim_ay_t,FortranArray<3>()),
 	ResSell(Dim_ay_t,FortranArray<3>()),
@@ -94,6 +95,7 @@ CMig7::CMig7( TinyVector<int,3> Dim_ay_t,
 	beta(0.9),
 	name("CMig7"),
 	dim(Dim_ay_t),
+	maxage(Dim_ay_t(2)),
 	G(Dim_ay_t(1),Dim_ay_t(1),FortranArray<2>()) ,
 	evtmp(Dim_ay_t(0)),
 	verbose(verb) {
@@ -118,6 +120,7 @@ CMig7::CMig7( TinyVector<int,3> Dim_ay_t,
 	    G     = 0.9,0.3,0.1,0.7;
 		evtmp = 0;
 		bounds = ResStay.extent() + 1;
+		p = gslpar;
 		//p.gamma = 1.4;
 		//p.mgamma = 1-1.4;
 		//p.beta = 0.9;
@@ -160,13 +163,18 @@ void CMig7::ComputeStay(int age) {
 	for (int i2=1;i2<bounds(1);++i2){		// y
 
 		evtmp = EVown(Range::all(),i2,age + 1);
-		gsl_spline_init( p->spline, agrid_own.data(), evtmp.data(), agrid_own.size() );
+		if (age==(maxage-1)){
+			// next period's EV is defined only over positive assets
+			gsl_spline_init( p->spline, agrid_rent.data(), evtmp.data(), agrid_rent.size() );
+		} else {
+			gsl_spline_init( p->spline, agrid_own.data(), evtmp.data(), agrid_own.size() );
+		}
 
 		if (verbose>1) cout << "evtmp owner = " << evtmp << endl;
 
 		for (int i1=1;i1<bounds(0);++i1){	// a
 		
-			if (verbose>1) cout << "asset idx = " << i1 << endl;
+			if (verbose>2) cout << "asset idx = " << i1 << endl;
 
 			// feasible?
 			if (ResStay(i1,i2,age) < 0) {
@@ -176,13 +184,29 @@ void CMig7::ComputeStay(int age) {
 				VStay(i1,i2,age) = myNA;
 
 			} else {
-
+				
 				p->res = ResStay(i1,i2,age);
-				hi     = p->res - 0.01;
-				low    = agrid_own(0);	// owner can borrow to the max
+				low    = Owner_blimit(i1,i2,age);	
+
+				if ((age==(maxage-1)) && (hi>max(agrid_rent) || low < min(agrid_rent))  ){
+					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+					hi     = min(p->res - _EPS, max(agrid_rent) );
+				}
+				if ((age<(maxage-1)) && (hi>max(agrid_own) || low < min(agrid_own))  ){
+					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+					hi     = min(p->res - _EPS, max(agrid_own) );
+				}
+
 
 				// find root of euler equation
 				root         = find_root(p->sroot,p->F, low , hi, verbose );
+				
+				if ((age==(maxage-1)) && (root>max(agrid_rent) || root < min(agrid_rent))  ){
+					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+				}
+				if ((age<(maxage-1)) && (root>max(agrid_own) || root < min(agrid_own))  ){
+					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+				}
 									 
 				CStay(i1,i2,age) = p->res - R * root;
 				SStay(i1,i2,age) = root;
@@ -190,13 +214,37 @@ void CMig7::ComputeStay(int age) {
 				//V(i1,i2,age) = utility(C(i1,i2,age), p->mgamma) + p.theta - MoveCost(i4,i5) + Amenity(i5) + beta * gsl_spline_eval(p->spline, root , p->acc);
 			}
 		}
-		gsl_interp_accel_reset( p->acc );
+		//gsl_interp_accel_reset( p->acc );
 	}
 }
 
+
+double CMig7::Owner_blimit( int ix1, int ix2, int age){
+
+	double lim;
+
+	if (age==(maxage-1)){
+
+		lim = 0.0;
+
+	} else {
+
+		lim = agrid_own(0);
+
+	}
+	return(lim);
+}
+		
+	
+
+
+
+
+
+
 void CMig7::ComputeSell(int age) {
 
-	// initiate GSL objects
+	// initiate gsl objects
 
 	p->pt_Class   = this;
 	p->F.params   = p;
@@ -222,12 +270,21 @@ void CMig7::ComputeSell(int age) {
 			} else {
 
 				p->res = ResSell(i1,i2,age);
-				hi     = p->res - 0.01;
+				hi     = min(p->res - _EPS, max(agrid_rent) );
 				low    = agrid_rent(0);	// seller cannot borrow
+
+				if (hi>max(agrid_rent) || low < min(agrid_rent) ){
+					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+				}
 
 				// find root of euler equation
 				root         = find_root(p->sroot,p->F, low , hi, verbose );
 
+				if (root>max(agrid_rent) || root < min(agrid_rent) ){
+
+					cout << "root outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
+
+				}
 
 				CSell(i1,i2,age) = p->res - R * root;
 				SSell(i1,i2,age) = root;
@@ -235,7 +292,7 @@ void CMig7::ComputeSell(int age) {
 				//V(i1,i2,age) = utility(C(i1,i2,age), p->mgamma) + p.theta - MoveCost(i4,i5) + Amenity(i5) + beta * gsl_spline_eval(p->spline, root , p->acc);
 			}
 		}
-		gsl_interp_accel_reset( p->acc );
+		//gsl_interp_accel_reset( p->acc );
 	}
 }
 
@@ -257,18 +314,22 @@ void CMig7::ComputeSell(int age) {
 
 
 void CMig7::ComputePeriod( int age ){
+			
+	if (verbose>1) cout << endl<< endl<< endl<< endl;
+	if (verbose>1) cout << "----------------------------" << endl;
+	if (verbose>1) cout << "in period = " << age << endl;
 
-	if (age==dim(2)) {
+	if (age==maxage) {
 
 		// TODO make sure ResStay(Range::all(),Range::all(),age=T) = a + p + y.
 
 
 		for (int i1=1;i1<bounds(0);++i1){		// a
 			for (int i2=1;i2<bounds(1);++i2){	// y
-			if (verbose>1) cout << "ResStay(:,iy,it) = " << ResStay(Range::all(),i2,age) << endl;
-			if (verbose>1) cout << "ResSell(:,iy,it) = " << ResSell(Range::all(),i2,age) << endl;
-				EVown(  i1, i2,age) = utility(ResStay(i1,1,age) );
-				EVrent( i1, i2,age) = utility(ResSell(i1,1,age) );
+			if (verbose>2) cout << "ResStay(:,iy,it) = " << ResStay(Range::all(),i2,age) << endl;
+			if (verbose>2) cout << "ResSell(:,iy,it) = " << ResSell(Range::all(),i2,age) << endl;
+				EVown(  i1, i2,age) = utility(ResStay(i1,i2,age) );
+				EVrent( i1, i2,age) = utility(ResSell(i1,i2,age) );
 			}
 		}
 
@@ -277,8 +338,12 @@ void CMig7::ComputePeriod( int age ){
 
 		ComputeStay( age );
 		ComputeSell( age );
+		if (verbose>1) cout << "VStay(:,:,it) = " << VStay(Range::all(),Range::all(),age) << endl;
+		if (verbose>1) cout << "VSell(:,:,it) = " << VSell(Range::all(),Range::all(),age) << endl;
 		//ComputeDchoice( age );
 		ComputeExpectations( age );
+		if (verbose>1) cout << "EVown(:,:,it) = " << EVown(Range::all(),Range::all(),age) << endl;
+		if (verbose>1) cout << "EVrent(:,:,it) = " << EVrent(Range::all(),Range::all(),age) << endl;
 
 		if (age==1) {
 			// clean up memory
@@ -306,7 +371,7 @@ Array<double,2> CMig7::integrate(Array<double,2> tens){
 	secondIndex  i2;    // y
 	thirdIndex   i3;	// y'
 	
-	Array<double,2> ret(dim(1),dim(1),FortranArray<2>());
+	Array<double,2> ret(dim(0),dim(1),FortranArray<2>());
 
 	Array<double,3> tmp(dim(0),dim(1),dim(1),FortranArray<3>());	// tmp(i1,i2,i3)
 	tmp = tens(i1,i2) * G(i3,i2);
@@ -315,7 +380,6 @@ Array<double,2> CMig7::integrate(Array<double,2> tens){
 	return(ret);
 
 }
-
 
 
 
@@ -374,7 +438,7 @@ double find_root(gsl_root_fsolver *RootFinder,  gsl_function F, double x_lo, dou
 
 	if (!straddle) { 
 	  
-		if (verb>1){
+		if (verb>2){
 			cout << "obj does not straddle zero. assign bound closest to zero." << endl;
 	 	 }
 
@@ -397,7 +461,7 @@ double find_root(gsl_root_fsolver *RootFinder,  gsl_function F, double x_lo, dou
 
 		//std::cout << "objective function value is " << GSL_FN_EVAL(F,2.0) << std::endl;
 		
-	  if (verb>0){
+	  if (verb>2){
 			cout << "in root finder." << endl;
 			printf ("%5s [%9s, %9s] %9s %9s\n",
 			  "iter", "lower", "upper", "root", 
@@ -413,7 +477,7 @@ double find_root(gsl_root_fsolver *RootFinder,  gsl_function F, double x_lo, dou
 			status = gsl_root_test_interval (x_lo, x_hi,0, 0.0001);
 
 
-			if (verb>0) {
+			if (verb>2) {
 				  printf ("%5d [%.7f, %.7f] %.7f %.7f\n",
 				  iter, x_lo, x_hi,
 				  r,  
