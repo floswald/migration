@@ -315,8 +315,63 @@ dat[,marstat   := factor(marstat,labels=c("married","never married","widowed","d
 # clogit <- mlogit(data=mldata,formula = region.to ~ 1 | incomeFAM + Hvalue + empstat + factor(numkids) + own + Home.region,reflevel="R7")
 
 
+# make a second dataset containing movers location history
+ss <- copy(dat[,list(inter,pid,state,yid)])
+setkey(ss,pid,yid)
+ss[,state.l2 := ss[list(pid,yid-2)][["state"]] ]
+ss[,state.l3 := ss[list(pid,yid-3)][["state"]] ]
+ss[,state.l4 := ss[list(pid,yid-4)][["state"]] ]
+ss[,state.l5 := ss[list(pid,yid-5)][["state"]] ]
+ss[is.na(state.l2),state.l2 := 999 ]
+ss[is.na(state.l3),state.l3 := 999 ]
+ss[is.na(state.l4),state.l4 := 999 ]
+ss[is.na(state.l5),state.l5 := 999 ]
+ss[inter==TRUE,state.back := ((state==state.l2)|(state==state.l3)|(state==state.l4)|(state==state.l5))]
+
+rr <- copy(dat[,list(interreg,pid,region,Home.region,yid)])
+rr[is.na(Home.region),Home.region := "999"]
+setkey(rr,pid,yid)
+
+rr[,region.l2 := rr[list(pid,yid-2)][["region"]] ]
+rr[,region.l3 := rr[list(pid,yid-3)][["region"]] ]
+rr[,region.l4 := rr[list(pid,yid-4)][["region"]] ]
+rr[,region.l5 := rr[list(pid,yid-5)][["region"]] ]
+rr[,region.l6 := rr[list(pid,yid-6)][["region"]] ]
+rr[,region.l7 := rr[list(pid,yid-7)][["region"]] ]
+rr[,region.l8 := rr[list(pid,yid-8)][["region"]] ]
+rr[,region.l9 := rr[list(pid,yid-9)][["region"]] ]
+rr[,region.l10 := rr[list(pid,yid-10)][["region"]] ]
+rr[,region.l11 := rr[list(pid,yid-11)][["region"]] ]
+rr[,region.l12 := rr[list(pid,yid-12)][["region"]] ]
+rr[,region.l13 := rr[list(pid,yid-13)][["region"]] ]
+rr[,region.l14 := rr[list(pid,yid-14)][["region"]] ]
+rr[,region.l15 := rr[list(pid,yid-15)][["region"]] ]
+rr[,region.l16 := rr[list(pid,yid-16)][["region"]] ]
+rr[,region.l17 := rr[list(pid,yid-17)][["region"]] ]
+
+rr[is.na(region.l2),region.l2 := "999" ]
+rr[is.na(region.l3),region.l3 := "999" ]
+rr[is.na(region.l4),region.l4 := "999" ]
+rr[is.na(region.l5),region.l5 := "999" ]
+rr[is.na(region.l6 ),region.l6  := "999" ]
+rr[is.na(region.l7 ),region.l7  := "999" ]
+rr[is.na(region.l8 ),region.l8  := "999" ]
+rr[is.na(region.l9 ),region.l9  := "999" ]
+rr[is.na(region.l10),region.l10 := "999" ]
+rr[is.na(region.l11),region.l11 := "999" ]
+rr[is.na(region.l12),region.l12 := "999" ]
+rr[is.na(region.l13),region.l13 := "999" ]
+rr[is.na(region.l14),region.l14 := "999" ]
+rr[is.na(region.l15),region.l15 := "999" ]
+rr[is.na(region.l16),region.l16 := "999" ]
+rr[is.na(region.l17),region.l17 := "999" ]
+rr[interreg==TRUE,region.back := ((region==region.l2)|(region==region.l3)|(region==region.l4)|(region==region.l5)|(region==region.l6)|(region==region.l7)|(region==region.l8)|(region==region.l9)|(region==region.l10)|(region==region.l11)|(region==region.l12)|(region==region.l13)|(region==region.l14)|(region==region.l15)|(region==region.l16)|(region==region.l17))]
+rr[interreg==TRUE,region.home := (region==Home.region)]
+
+
+
 # save dataset
-save(dat,file="~/git/migration/data/psid.RData")
+save(dat,ss,rr,file="~/git/migration/data/psid.RData")
 
 
 
