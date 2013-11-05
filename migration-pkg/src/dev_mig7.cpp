@@ -32,6 +32,7 @@ Rcpp::List dev9( Rcpp::List data ) {
 	double cutoff = Rcpp::as<double>(data["cutoff"]);
 	double gamma  = Rcpp::as<double>(data["gamma"]);
 	double theta  = Rcpp::as<double>(data["theta"]);
+	int verbose   = Rcpp::as<int   >(data["verbose"]);
 
 	// map to blitz arrays
 	// ===================
@@ -43,12 +44,6 @@ Rcpp::List dev9( Rcpp::List data ) {
 	Array<double,1> aown(a_own.begin(),d(0),neverDeleteData);
 	Array<double,1> arent(a_rent.begin(),d(0),neverDeleteData);
 
-	Rcpp::Rcout << "length of aown " << aown.size() << endl;
-	Rcpp::Rcout << "aown " << aown << endl;
-	Rcpp::Rcout << "a_own " << a_own.begin() << endl;
-
-	Rcpp::Rcout << "stay" << stay << endl;
-	Rcpp::Rcout << "sell" << sell << endl;
 
 
 
@@ -67,10 +62,17 @@ Rcpp::List dev9( Rcpp::List data ) {
 
 	// create an instance of the migration class
 	// ===================================
-	CMig7 myMig(D_ay_t,stay,sell,G,aown,arent,0,cutoff,gamma,theta,&p);
+	CMig7 myMig(D_ay_t,stay,sell,G,aown,arent,verbose,cutoff,gamma,theta,&p);
 
 	// time loop to compute backwards
 	// ===================================
+	
+	//Rcpp::Rcout << "length of aown " << aown.size() << endl;
+	//Rcpp::Rcout << "aown " << aown << endl;
+	//Rcpp::Rcout << "a_own " << a_own.begin() << endl;
+
+	Rcpp::Rcout << "stay(:,:,nT)" << stay(Range::all(),Range::all(),myMig.GetMaxage()) << endl;
+	Rcpp::Rcout << "stay(:,:,nT-1)" << stay(Range::all(),Range::all(),myMig.GetMaxage()-1) << endl;
 	
 	for (int it = myMig.GetMaxage(); it>0; it--) {
 		myMig.ComputePeriod( it );
@@ -78,35 +80,35 @@ Rcpp::List dev9( Rcpp::List data ) {
 
 	cout << "Computation done!" << endl;
 
-	//timer.step("end blitz");
+	timer.step("end blitz");
 
-	//// output results to R
-	//// ===================
-	//// TODO want to do
-	////Rcpp::List list = mig.RcppExport();
-	
-	//Rcpp::IntegerVector dAYPHereT = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3),d(5));
-	//Rcpp::IntegerVector dAYPHereThereT = Rcpp::IntegerVector::create(d(0),d(1),d(2),d(3),d(4),d(5));
+	// output results to R
+	// ===================
+	// TODO want to do
+	//Rcpp::List list = mig.RcppExport();
+	Rcpp::IntegerVector dAYT = Rcpp::IntegerVector::create(d(0),d(1),d(2));
 
-	//Rcpp::NumericVector Vown_out   ( mig6.GetVown().size());
-	//Rcpp::NumericVector Vrent_out  ( Vown_out.length());
-	//Rcpp::NumericVector EVown_out  ( Vown_out.length());
-	//Rcpp::NumericVector EVrent_out ( Vown_out.length());
+	Rcpp::NumericVector VStay_out   ( myMig.GetVStay().size());
+	Rcpp::NumericVector VSell_out  ( VStay_out.length());
+	Rcpp::NumericVector EVown_out  ( VStay_out.length());
+	Rcpp::NumericVector EVrent_out (VStay_out.length());
 	//Rcpp::NumericVector Down_out  ( Vown_out.length());
 	//Rcpp::NumericVector Drent_out ( Vown_out.length());
-	//Rcpp::NumericVector vstay_out  ( Vown_out.length());
-	//Rcpp::NumericVector vsell_out  ( Vown_out.length());
+	Rcpp::NumericVector SStay_out  ( VStay_out.length());
+	Rcpp::NumericVector SSell_out  ( VStay_out.length());
+	Rcpp::NumericVector CStay_out  ( VStay_out.length());
+	Rcpp::NumericVector CSell_out  ( VStay_out.length());
 	//Rcpp::NumericVector vrent_out  ( Vown_out.length());
 	//Rcpp::NumericVector vbuy_out   ( Vown_out.length());
 	//Rcpp::NumericVector move_stay_out  ( Vown_out.length());
 	//Rcpp::NumericVector move_sell_out  ( Vown_out.length());
 	//Rcpp::NumericVector move_rent_out  ( Vown_out.length());
 	//Rcpp::NumericVector move_buy_out   ( Vown_out.length());
-	//Rcpp::NumericVector s_loc_stay_out  ( mig6.Getv_loc_stay().size());
+	//Rcpp::NumericVector s_loc_stay_out  ( myMig.Getv_loc_stay().size());
 	//Rcpp::NumericVector s_loc_sell_out  ( s_loc_stay_out.length());
 	//Rcpp::NumericVector s_loc_rent_out  ( s_loc_stay_out.length());
 	//Rcpp::NumericVector s_loc_buy_out   ( s_loc_stay_out.length());
-	//Rcpp::NumericVector v_loc_stay_out  ( mig6.Getv_loc_stay().size());
+	//Rcpp::NumericVector v_loc_stay_out  ( myMig.Getv_loc_stay().size());
 	//Rcpp::NumericVector v_loc_sell_out  ( s_loc_stay_out.length());
 	//Rcpp::NumericVector v_loc_rent_out  ( s_loc_stay_out.length());
 	//Rcpp::NumericVector v_loc_buy_out   ( s_loc_stay_out.length());
@@ -115,14 +117,18 @@ Rcpp::List dev9( Rcpp::List data ) {
 	//Rcpp::NumericVector c_loc_rent_out  ( s_loc_stay_out.length());
 	//Rcpp::NumericVector c_loc_buy_out   ( s_loc_stay_out.length());
 
-	////Rcpp::NumericVector Vown_out2( mig.GetVown().data(), mig.GetVown().size() );
+	//Rcpp::NumericVector Vown_out2( mig.GetVown().data(), mig.GetVown().size() );
 	
-	//// copy blitz to Rcpp::Numeri[>c<]
-	//Vown_out       = mig6.GetVown();
-	//Vrent_out      = mig6.GetVrent();
-	//EVown_out      = mig6.GetEVown();
-	//EVrent_out     = mig6.GetEVrent();
-	//Down_out       = mig6.GetDown();
+	// copy blitz to Rcpp::Numeri[>c<]
+	VStay_out      = myMig.GetVStay();
+	VSell_out      = myMig.GetVSell();
+	SStay_out      = myMig.GetSStay();
+	SSell_out      = myMig.GetSSell();
+	CStay_out      = myMig.GetCStay();
+	CSell_out      = myMig.GetCSell();
+	EVown_out      = myMig.GetEVown();
+	EVrent_out     = myMig.GetEVrent();
+	    
 	//Drent_out      = mig6.GetDrent();
 
 	//vstay_out      = mig6.Getv_stay();
@@ -149,8 +155,22 @@ Rcpp::List dev9( Rcpp::List data ) {
 	//c_loc_buy_out  = mig6.Getc_loc_buy();
 	//c_loc_rent_out = mig6.Getc_loc_rent();
 	
-	//// attach dimension argument
-	//Vown_out.attr("dim")       = dAYPHereT;
+	// attach dimension argument
+	VStay_out.attr("dim")       = dAYT;
+    VSell_out.attr("dim")       = dAYT; 
+    SStay_out.attr("dim")       = dAYT; 
+    SSell_out.attr("dim")       = dAYT; 
+    CStay_out.attr("dim")       = dAYT; 
+    CSell_out.attr("dim")       = dAYT; 
+    EVown_out.attr("dim")       = dAYT; 
+    EVrent_out.attr("dim")      = dAYT;
+
+
+
+
+
+
+	//Vown_out.attr("dim")       = daypheret;
 	//Vrent_out.attr("dim")      = dAYPHereT;
 	//EVown_out.attr("dim")      = dAYPHereT;
 	//EVrent_out.attr("dim")     = dAYPHereT;
@@ -178,35 +198,31 @@ Rcpp::List dev9( Rcpp::List data ) {
 	/*c_loc_rent_out.attr("dim") = dAYPHereThereT;*/
 	
 	// create output list
-	Rcpp::List list = Rcpp::List::create( Rcpp::_["Vown"]   = 1);
-	//Rcpp::List list = Rcpp::List::create( Rcpp::_["Vown"]   = Vown_out,
-										  //Rcpp::_["Vrent"]  = Vrent_out,
-										  //Rcpp::_["EVown"]  = EVown_out,
-										  //Rcpp::_["EVrent"] = EVrent_out,
-										  //Rcpp::_["Down"]   = Down_out,
-										  //Rcpp::_["Drent"]  = Drent_out,
-										  //Rcpp::_["vstay"]  = vstay_out,
-										  //Rcpp::_["vsell"]  = vsell_out,
-										  //Rcpp::_["vbuy"]   = vbuy_out ,
-										  //Rcpp::_["vrent"]  = vrent_out,
-										  //Rcpp::_["move_stay"]  = move_stay_out,
-										  //Rcpp::_["move_sell"]  = move_sell_out,
-										  //Rcpp::_["move_buy"]   = move_buy_out ,
-										  //Rcpp::_["move_rent"]  = move_rent_out,
-										  //Rcpp::_["s_loc_stay"]  = s_loc_stay_out,
-										  //Rcpp::_["s_loc_sell"]  = s_loc_sell_out,
-										  //Rcpp::_["s_loc_buy"]   = s_loc_buy_out ,
-										  //Rcpp::_["s_loc_rent"]  = s_loc_rent_out,
-										  ////Rcpp::_["v_loc_stay"]  = v_loc_stay_out,
-										  ////Rcpp::_["v_loc_sell"]  = v_loc_sell_out,
-										  ////Rcpp::_["v_loc_buy"]   = v_loc_buy_out ,
-										  ////Rcpp::_["v_loc_rent"]  = v_loc_rent_out,
-										  ////Rcpp::_["c_loc_stay"]  = c_loc_stay_out,
-										  ////Rcpp::_["c_loc_sell"]  = c_loc_sell_out,
-										  ////Rcpp::_["c_loc_buy"]   = c_loc_buy_out ,
-										  ////Rcpp::_["c_loc_rent"]  = c_loc_rent_out,
-										  //Rcpp::_["time"]   = timer);
+	Rcpp::List bigL;
+	Rcpp::List Values = Rcpp::List::create( Rcpp::_["VStay"]   = VStay_out,
+											Rcpp::_["VSell"]  = VSell_out,
+											Rcpp::_["EVown"]  = EVown_out,
+											Rcpp::_["EVrent"] = EVrent_out);
+	//Rcpp::List Moving = Rcpp::List::create( Rcpp::_["move_stay"]   = move_stay_out,
+											//Rcpp::_["move_sell"]  = move_sell_out,
+											//Rcpp::_["move_buy"]   = move_buy_out ,
+											//Rcpp::_["move_rent"]  = move_rent_out);
+	//Rcpp::List Dchoice = Rcpp::List::create( Rcpp::_["Vown"]   = Down_out,
+											 //Rcpp::_["Drent"]  = Drent_out);
+	Rcpp::List policies = Rcpp::List::create( Rcpp::_["SStay"]   = SStay_out,
+											  Rcpp::_["SSell"]  = SSell_out,
+	                                          Rcpp::_["CStay"]   = CStay_out,
+											  Rcpp::_["CSell"]   = CSell_out);
+											  //Rcpp::_["s_loc_rent"]  = s_loc_rent_out,
+											  //Rcpp::_["c_loc_stay"]  = c_loc_stay_out,
+											  //Rcpp::_["c_loc_sell"]  = c_loc_sell_out,
+											  //Rcpp::_["c_loc_buy"]   = c_loc_buy_out ,
+											  //Rcpp::_["c_loc_rent"]  = c_loc_rent_out,
+											  //Rcpp::_["time"]   = timer);
+
+	bigL = Rcpp::List::create( Rcpp::_["Values"] = Values,Rcpp::_["policies"] = policies);
+	//bigL = Rcpp::List::create( Rcpp::_["Values"] = Values, Rcpp::_["Moving"] = Moving,Rcpp::_["Dchoice"] = Dchoice,Rcpp::_["policies"] = policies);
 
 										   
-	return list;
+	return bigL;
 }   

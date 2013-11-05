@@ -129,80 +129,6 @@ TEST(Mig7Test, TestReferencedConstructor) {
 // and compute a period
 TEST(Mig7Test, TestComputePeriod) {
 
-	// dim vectors
-    TinyVector<int,3> dim_ay_t;
-
-	int na = 20;
-    Array<double,2> trans(shape(2,2),FortranArray<2>());
-	trans = 0.9,0.3,0.1,0.7;
-
-    dim_ay_t = na,2,2;
-
-	// get some data
-
-	Array<double,3> tstay(na,2,2,neverDeleteData,FortranArray<3>());	
-	Array<double,3> tsell(na,2,2,neverDeleteData,FortranArray<3>());	
-
-	//fill with random numbers
-	ranlib::Uniform<double> uniGen;
-	Array<double,3>::iterator it;
-
-	for (it = tstay.begin(); it!=tstay.end(); it++) {
-		*it = uniGen.random() + 1;
-	}
-	for (it = tsell.begin(); it!=tsell.end(); it++) {
-		*it = uniGen.random();
-	}
-
-	// get two savings spaces
-	Array<double,1> a_own(na);
-	Array<double,1> a_rent(na);
-	a_own(0) = -2;
-	a_rent(0) = 0;
-	a_own(na-1) = 3;
-	a_rent(na-1) = 3;
-
-	double step_own = (a_own(na-1)-a_own(0)) / na;
-	double step_rent = (a_rent(na-1)-a_rent(0)) / na;
-	for (int i=1;i<na;i++) a_own(i) = a_own(i-1) + step_own;
-	for (int i=1;i<na;i++) a_rent(i) = a_rent(i-1) + step_rent;
-
-	double cutoff, gamma, theta;
-	cutoff = 0.1;
-	gamma = 1.5;
-	theta = 0.3;
-
-	gsl_f_pars p;
-	p.res    = 0;
-	//p.type   = gsl_interp_cspline;
-	p.type   = gsl_interp_linear;	// change interpolation type here.
-	p.acc    = gsl_interp_accel_alloc ();
-	p.spline = gsl_spline_alloc (p.type, a_own.size());
-	p.T      = gsl_root_fsolver_brent;
-	p.sroot  = gsl_root_fsolver_alloc (p.T);
-
-	// create an instance of owner class
-	CMig7 myMig(dim_ay_t,          
-				tstay,tsell,trans,a_own,a_rent,0,cutoff,gamma,theta,&p);
-
- 
-	EXPECT_DOUBLE_EQ(1.5, myMig.GetGamma());
-
-	// can compute a period?
-	myMig.ComputePeriod(2);
-	myMig.ComputePeriod(1);
-
-	// is a CMig6 object?
-	EXPECT_EQ("CMig7", myMig.version());
-
-	//// dimension of biggest array is ... ?
-	EXPECT_EQ(3 , myMig.GetMaxDim() );
-}
-
-
-// test can construct the referenced object with param data
-// and compute a many periods 
-TEST(Mig7Test, TestReferencedWithComputatoin) {
 
 	// dim vectors
     TinyVector<int,3> dim_ay_t;
@@ -257,17 +183,19 @@ TEST(Mig7Test, TestReferencedWithComputatoin) {
 	p.T      = gsl_root_fsolver_brent;
 	p.sroot  = gsl_root_fsolver_alloc (p.T);
 
+	int verbose = 2;
+
 	// create an instance of owner class
-	CMig7 myMig(dim_ay_t,tstay,tsell,trans,a_own,a_rent,0,cutoff,gamma,theta,&p);
+	CMig7 myMig(dim_ay_t,tstay,tsell,trans,a_own,a_rent,verbose,cutoff,gamma,theta,&p);
 
  
-	EXPECT_DOUBLE_EQ(1.5, myMig.GetGamma());
+	// TODO
+	EXPECT_NEAR(1.5, myMig.GetGamma(), 0.000001);
 
 	// can compute a period?
 	for (int ti=myMig.GetMaxage(); ti>0; ti--){
 		myMig.ComputePeriod( ti );
 	}
-	//myMig.ComputePeriod(nT-1);
 
 	// is a CMig6 object?
 	EXPECT_EQ("CMig7", myMig.version());
@@ -275,6 +203,8 @@ TEST(Mig7Test, TestReferencedWithComputatoin) {
 	//// dimension of biggest array is ... ?
 	EXPECT_EQ(3 , myMig.GetMaxDim() );
 }
+
+
 TEST(Mig7Test, TestUtilityParameters){
 
 	CMig7 myMig;

@@ -120,6 +120,12 @@ class CMig7 {
 		Array<double,3> GetResStay( void ) const {return(ResStay);};
 		Array<double,3> GetVStay( void ) const {return(VStay);};
 		Array<double,3> GetVSell( void ) const {return(VSell);};
+		Array<double,3> GetSStay( void ) const {return(SStay);};
+		Array<double,3> GetSSell( void ) const {return(SSell);};
+		Array<double,3> GetCStay( void ) const {return(CStay);};
+		Array<double,3> GetCSell( void ) const {return(CSell);};
+		Array<double,3> GetEVown( void ) const {return(EVown);};
+		Array<double,3> GetEVrent( void ) const {return(EVrent);};
 		Array<double,1> GetAgrid_own( void ) const {return(agrid_own);};
 		Array<double,1> GetAgrid_rent( void ) const {return(agrid_rent);};
 		double GetCutoff( void ) const { return(c_cutoff); };
@@ -135,6 +141,7 @@ class CMig7 {
 		void ComputeSell( int age );
 		Array<double,2> integrate(Array<double,2> tens);
 		double Owner_blimit( int ix1, int ix2, int age);
+		double bequest( double money, double beq ){ return( pow(money, beq)) ;};
 		int GetMaxage( void ) const {return(maxage);};
 		//Array<double,13> SplineTester( double data[] , int size );
 		//double SplineTesterDeriv( double data[] );

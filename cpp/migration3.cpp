@@ -12,6 +12,7 @@ int main(int argument_count, char ** command_line_arguments)
 	std::cout <<  std::endl;
 	std::cout <<  std::endl;
 	std::cout <<  std::endl;
+	std::cout << "Don't expect any sensible output, as resources are random." << std::endl;
 
 
 
@@ -78,10 +79,11 @@ int main(int argument_count, char ** command_line_arguments)
 	for (int ti=myMig.GetMaxage(); ti>0; ti--){
 		myMig.ComputePeriod( ti );
 	}
-	Array<double,3> out(myMig.GetVStay());
-	  std::cout << "current Vstay " << out  << std::endl;	
-	  std::cout << "current Vstay(:,1,1) " << out(Range::all(),1,1)  << std::endl;	
-	  std::cout << "current Vstay(:,2,1) " << out(Range::all(),2,1)  << std::endl;	
+	Array<double,3> out(myMig.GetSStay());
+	  std::cout << "current Sstay " << out  << std::endl;	
+	  std::cout << "current Sstay(:,:,1) " << out(Range::all(),Range::all(),1)  << std::endl;	
+	  std::cout << "current Sstay(:,:,2) " << out(Range::all(),Range::all(),2)  << std::endl;	
+	  std::cout << "current Sstay(:,:,myMig.GetMaxage()-1) " << out(Range::all(),Range::all(),myMig.GetMaxage()-1)  << std::endl;	
 	
 	return 0;
 }

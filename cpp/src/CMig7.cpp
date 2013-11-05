@@ -163,38 +163,66 @@ void CMig7::ComputeStay(int age) {
 	for (int i2=1;i2<bounds(1);++i2){		// y
 
 		evtmp = EVown(Range::all(),i2,age + 1);
+
 		if (age==(maxage-1)){
 			// next period's EV is defined only over positive assets
 			gsl_spline_init( p->spline, agrid_rent.data(), evtmp.data(), agrid_rent.size() );
+			if (verbose>0) {
+				cout << "evtmp owner in period " << age << " at state " << i2 << endl;
+				cout << evtmp;
+				cout << "approximation to evtmp owner in period " << age << " at state " << i2 << endl;
+				for (int i=0;i<agrid_own.size();i++) evtmp(i) = gsl_spline_eval( p->spline, agrid_rent(i), p->acc);
+				cout << evtmp;
+				cout << "approximation to deriv evtmp owner in period " << age << " at state " << i2 << endl;
+				for (int i=0;i<agrid_own.size();i++) evtmp(i) = gsl_spline_eval_deriv( p->spline, agrid_rent(i), p->acc);
+				cout << evtmp;
+			}
 		} else {
 			gsl_spline_init( p->spline, agrid_own.data(), evtmp.data(), agrid_own.size() );
+			if (verbose>0) {
+				cout << "evtmp owner in period " << age << " at state " << i2 << endl;
+				cout << evtmp;
+				cout << "approximation to evtmp owner in period " << age << " at state " << i2 << endl;
+				for (int i=0;i<agrid_own.size();i++) evtmp(i) = gsl_spline_eval( p->spline, agrid_own(i), p->acc);
+				cout << evtmp;
+				cout << "approximation to deriv evtmp owner in period " << age << " at state " << i2 << endl;
+				for (int i=0;i<agrid_own.size();i++) evtmp(i) = gsl_spline_eval_deriv( p->spline, agrid_own(i), p->acc);
+				cout << evtmp;
+			}
 		}
 
-		if (verbose>1) cout << "evtmp owner = " << evtmp << endl;
+
 
 		for (int i1=1;i1<bounds(0);++i1){	// a
 		
 			if (verbose>2) cout << "asset idx = " << i1 << endl;
 
-			// feasible?
-			if (ResStay(i1,i2,age) < 0) {
+			// feasible if Res(i1,i2,age) + 1/R max.borrow > 0
+			// ie if max.borrow > -income(i2) * R/(R-1)
+			// ie if -2 > -1 * 26 = -26
+			// myfun = function(x){-1 * (1+x)/x}
+			// curve(myfun)
+			//
+			//TODO
+			//if (min(agrid_own) < -1 * (R/(R-1))) {
+				//cout << "infeasible state at " << i1 << endl;
 			
-				CStay(i1,i2,age) = myNA;
-				SStay(i1,i2,age) = myNA;
-				VStay(i1,i2,age) = myNA;
+				//CStay(i1,i2,age) = myNA;
+				//SStay(i1,i2,age) = myNA;
+				//VStay(i1,i2,age) = myNA;
 
-			} else {
+			//} else {
 				
 				p->res = ResStay(i1,i2,age);
 				low    = Owner_blimit(i1,i2,age);	
 
 				if ((age==(maxage-1)) && (hi>max(agrid_rent) || low < min(agrid_rent))  ){
 					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
-					hi     = min(p->res - _EPS, max(agrid_rent) );
+					hi     = max(agrid_rent) ;
 				}
 				if ((age<(maxage-1)) && (hi>max(agrid_own) || low < min(agrid_own))  ){
 					cout << "hi or low are outside asset grid at ia = " << i1 << ", iy = " << i2 << endl;
-					hi     = min(p->res - _EPS, max(agrid_own) );
+					hi     = max(agrid_own) ;
 				}
 
 
@@ -212,7 +240,7 @@ void CMig7::ComputeStay(int age) {
 				SStay(i1,i2,age) = root;
 				VStay(i1,i2,age) = utility(CStay(i1,i2,age)) + theta + beta * gsl_spline_eval(p->spline, root , p->acc);
 				//V(i1,i2,age) = utility(C(i1,i2,age), p->mgamma) + p.theta - MoveCost(i4,i5) + Amenity(i5) + beta * gsl_spline_eval(p->spline, root , p->acc);
-			}
+			//}
 		}
 		//gsl_interp_accel_reset( p->acc );
 	}
@@ -261,13 +289,13 @@ void CMig7::ComputeSell(int age) {
 		for (int i1=1;i1<bounds(0);++i1){	// a
 
 			// feasible?
-			if (ResSell(i1,i2,age) < 0) {
+			//if (ResSell(i1,i2,age) < 0) {
 			
-				CSell(i1,i2,age) = myNA;
-				SSell(i1,i2,age) = myNA;
-				SSell(i1,i2,age) = myNA;
+				//CSell(i1,i2,age) = myNA;
+				//SSell(i1,i2,age) = myNA;
+				//SSell(i1,i2,age) = myNA;
 
-			} else {
+			//} else {
 
 				p->res = ResSell(i1,i2,age);
 				hi     = min(p->res - _EPS, max(agrid_rent) );
@@ -290,7 +318,7 @@ void CMig7::ComputeSell(int age) {
 				SSell(i1,i2,age) = root;
 				VSell(i1,i2,age) = utility(CSell(i1,i2,age)) +    0    + beta * gsl_spline_eval(p->spline, root , p->acc);
 				//V(i1,i2,age) = utility(C(i1,i2,age), p->mgamma) + p.theta - MoveCost(i4,i5) + Amenity(i5) + beta * gsl_spline_eval(p->spline, root , p->acc);
-			}
+			//}
 		}
 		//gsl_interp_accel_reset( p->acc );
 	}
@@ -328,6 +356,8 @@ void CMig7::ComputePeriod( int age ){
 			for (int i2=1;i2<bounds(1);++i2){	// y
 			if (verbose>2) cout << "ResStay(:,iy,it) = " << ResStay(Range::all(),i2,age) << endl;
 			if (verbose>2) cout << "ResSell(:,iy,it) = " << ResSell(Range::all(),i2,age) << endl;
+				//EVown(  i1, i2,age) = bequest(ResStay(i1,i2,age) ,-3);
+				//EVrent( i1, i2,age) = bequest(ResSell(i1,i2,age) ,-3);
 				EVown(  i1, i2,age) = utility(ResStay(i1,i2,age) );
 				EVrent( i1, i2,age) = utility(ResSell(i1,i2,age) );
 			}
@@ -338,12 +368,12 @@ void CMig7::ComputePeriod( int age ){
 
 		ComputeStay( age );
 		ComputeSell( age );
-		if (verbose>1) cout << "VStay(:,:,it) = " << VStay(Range::all(),Range::all(),age) << endl;
-		if (verbose>1) cout << "VSell(:,:,it) = " << VSell(Range::all(),Range::all(),age) << endl;
+		if (verbose>2) cout << "VStay(:,:,it) = " << VStay(Range::all(),Range::all(),age) << endl;
+		if (verbose>2) cout << "VSell(:,:,it) = " << VSell(Range::all(),Range::all(),age) << endl;
 		//ComputeDchoice( age );
 		ComputeExpectations( age );
-		if (verbose>1) cout << "EVown(:,:,it) = " << EVown(Range::all(),Range::all(),age) << endl;
-		if (verbose>1) cout << "EVrent(:,:,it) = " << EVrent(Range::all(),Range::all(),age) << endl;
+		if (verbose>2) cout << "EVown(:,:,it) = " << EVown(Range::all(),Range::all(),age) << endl;
+		if (verbose>2) cout << "EVrent(:,:,it) = " << EVrent(Range::all(),Range::all(),age) << endl;
 
 		if (age==1) {
 			// clean up memory
@@ -391,9 +421,9 @@ double CMig7::obj(double x, void * par) {
 
 	double dev = gsl_spline_eval_deriv(p->spline, x, p->acc); 
 
-	double cons = p->res - R * x;
+	double cons = p->res - 1/R * x;
 	double mu   = mutility( cons );
-	const double out = mu - beta * R * dev;
+	const double out = mu - beta * dev;
 
 	if (verbose>2){
 		cout << "in objective function:" << endl;
@@ -408,6 +438,31 @@ double CMig7::obj(double x, void * par) {
 }
 
 
+//double CMig7::obj_min(double x, void * par) {
+
+	//gsl_f_pars *p = (gsl_f_pars *)par;
+	//// obtain interpolation
+
+	//double ev = gsl_spline_eval(p->spline, x, p->acc); 
+
+	//double cons = p->res - R * x;
+	//double u   = utility( cons );
+	//const double out = u + beta * ev;
+
+	//if (verbose>2){
+		//cout << "in objective function:" << endl;
+		//cout << "======================" << endl;
+		//cout << "x = " << x << endl;
+		//cout << "ev = " << ev << endl;
+		//cout << "u = " << u << endl;
+		//cout << "objective " << out << endl;
+	//}
+
+	//return (-1) * out;
+//}
+
+
+
 
 
 // Wrapper that points to member function
@@ -418,6 +473,13 @@ double gslClassWrapper(double x, void * pp) {
 	gsl_f_pars *p = (gsl_f_pars *)pp;
 	return p->pt_Class->obj(x,p);
 }
+
+//double gslClassWrapperMin(double x, void * pp) {
+	//gsl_f_pars *p = (gsl_f_pars *)pp;
+	//return p->pt_Class->obj_min(x,p);
+//}
+
+
 
 // helper function for GSL root finder
 // ===================================
@@ -488,7 +550,74 @@ double find_root(gsl_root_fsolver *RootFinder,  gsl_function F, double x_lo, dou
 	}
 }
 
+// helper function for GSL max finder
+// ===================================
+  
+/*double find_max(gsl_min_fminimizer *MinFinder,  gsl_function F, double x_lo, double x_hi,int verb) {*/
+	
+      //int iter = 0,status;
+      //int maxiter = 100;
+      //double r;
 
+	//// check if straddle zero
+	//bool straddle = false;
+
+	//double up   = GSL_FN_EVAL( &F, x_hi );
+	//double down = GSL_FN_EVAL( &F, x_lo );
+
+	//straddle = (up * down < 0);
+
+	//if (!straddle) { 
+	  
+		//if (verb>2){
+			//cout << "obj does not straddle zero. assign bound closest to zero." << endl;
+		  //}
+
+		//// if distance from zero is smaller 
+		//// at upper bound, pick upper bound
+		//if (abs(up) < abs(down)) {
+
+			//r = x_hi;
+
+		//} else {
+
+			//r = x_lo;
+
+		//}
+		//return(r) ;
+
+	//} else {
+
+	  //gsl_root_fsolver_set (RootFinder, &F, x_lo , x_hi );
+
+		////std::cout << "objective function value is " << GSL_FN_EVAL(F,2.0) << std::endl;
+		
+	  //if (verb>2){
+			//cout << "in root finder." << endl;
+			//printf ("%5s [%9s, %9s] %9s %9s\n",
+			  //"iter", "lower", "upper", "root", 
+			   //"err(est)");
+	  //}
+
+	  //do {
+			//iter++;
+			//status = gsl_root_fsolver_iterate (RootFinder);
+			//r      = gsl_root_fsolver_root    (RootFinder);
+			//x_lo   = gsl_root_fsolver_x_lower (RootFinder);
+			//x_hi   = gsl_root_fsolver_x_upper (RootFinder);
+			//status = gsl_root_test_interval (x_lo, x_hi,0, 0.0001);
+
+
+			//if (verb>2) {
+				  //printf ("%5d [%.7f, %.7f] %.7f %.7f\n",
+				  //iter, x_lo, x_hi,
+				  //r,  
+				  //x_hi - x_lo);
+			//}
+	  //} while (status == GSL_CONTINUE && iter < maxiter);
+	  //return(r);
+	//}
+/*}*/
 
 
 // TODO make log utility switch for gamma==1

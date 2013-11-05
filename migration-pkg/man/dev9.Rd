@@ -1,3 +1,13 @@
+\name{dev9}
+\alias{dev9}
+\title{dev9: continuous optimization, utility function}
+\usage{
+  dev9(data)
+}
+\description{
+  dev9: continuous optimization, utility function
+}
+\examples{
 
 
 # example for dev9
@@ -59,4 +69,6 @@ dataR$agrid_rent <- grids$arent
 
 d <- dev9(dataR)
 
+
+}
 

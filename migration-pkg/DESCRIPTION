@@ -12,7 +12,7 @@ Depends:
     data.table,
     rutils,
     RcppSimpleTensor,
-    RcppGSL
+    RcppGSL,gridR
 LinkingTo: Rcpp, RcppGSL
 Collate:
     'rcpp_hello_world.R'
