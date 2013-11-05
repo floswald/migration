@@ -1,13 +1,17 @@
 
 
+# documentation of data at http://www.nber.org/cps/cpsmar13.pdf
+
 library(data.table)
 library(foreign)
-setwd("~/datasets/CPS/outdata")
+library(ggplot2)
+library(reshape2)
+library(xtable)
 
-d <- data.table(read.dta("selected.dta"))
+d <- data.table(read.dta("~/datasets/CPS/outdata/selected.dta"))
 
 # adjust data for shift in coding of NXTRES
-d[h_year<2013& nxtres>12, nxtres := nxtres + 1L]
+d[h_year<2011& nxtres>12, nxtres := nxtres + 1L]
 d[,nxtres.2 := nxtres]
 d[nxtres %in% c(2L,9:14) ,nxtres.2 := 100L]	# housing
 d[nxtres %in% c(1L,3L)    ,nxtres.2 := 200L]	# family 
@@ -16,7 +20,9 @@ d[nxtres %in% 15:19     ,nxtres.2 := 400L]	# other
 
 d[, nxtresf := factor(nxtres, labels=c("NIU","change marstat","estab. own household","other fam reason","new job/job transfer","look for job","closer to work","retired","other job reason","want to own","better house","better neighborhood","cheaper housing","foreclosure","other housing","attend/leave college","climate change","health","natural disaster","other"))]
 
-d[, nxtres2f := factor(nxtres.2, labels=c("NIU","housing","family","work","other"))]
+levels(d$migsame) <- c("NIU","yes (nonmover)","no, different US","no, different foreign")
+
+d[, main.reason := factor(nxtres.2, labels=c("NIU","housing","family","work","other"))]
 
 library(survey)
 des <- svydesign(ids=~1,weights=~fsup_wgt,data=d)
@@ -27,15 +33,33 @@ desmv.st <- subset(des,as.numeric(mig_mtr3) > 2 & as.numeric(mig_mtr3) < 7)		# m
 # 1) did move at all?
 # notice that tenure is CURRENT tenure. 
 # those stats tell you how many migrants ended up as owners, not how many owners migrated.
-mv1 <- svytable(formula=~migsame+h_tenure, des,N=100)
+
+tabs <- list()
+
+tabs$mv1 <- data.frame(svytable(formula=~migsame, des,N=100,exclude="NIU"))
+names(tabs$mv1) <- c("same address last year?","Percent")
 
 # 2) did move to another state?
-mv2 <- svytable(formula=~mig_mtr3+h_tenure, des,N=100)
+tabs$mv2 <- data.frame(svytable(formula=~mig_mtr3, des,N=100,exclude="Not in universe (children under"))
+names(tabs$mv2) <- c("where did you move?","Percent")
 
 # 3) what was main reason for moving across state line?
-mv3 <- data.frame(round(svytable(~nxtresf, desmv.st, N=100,exclude="NIU"),1))
-mv4 <- data.frame(round(svytable(~nxtres2f, desmv.st, N=100,exclude="NIU"),1))
-names(mv4) <- c("main reason for moving","Percent")
-mv4 <- mv4[order(mv4$Percent,decreasing=TRUE),]
+tabs$mv3 <- data.frame(round(svytable(~nxtresf, desmv.st, N=100,exclude="NIU"),1))
+tabs$mv4 <- data.frame(round(svytable(~main.reason, desmv.st, N=100,exclude="NIU"),1))
+namestabs$(mv4) <- c("main reason for moving","Percent")
+tabs$mv4 <- tabs$mv4[order(tabs$mv4$Percent,decreasing=TRUE),]
+
+names(tabs$mv3) <- c("main reason for moving","Percent")
+tabs$mv3 <- tabs$mv3[order(tabs$mv3$Percent,decreasing=TRUE),]
+
+
+# 4) trend in moving across state lines
+tabs$mv5 <- data.frame(round(svytable(~main.reason + h_year, desmv.st, N=100,exclude="NIU"),1))
+tabs$mv6 <- dcast(tabs$mv5,main.reason~ h_year)
+
+p <- list()
+p$move.trend <- ggplot(mv5,aes(x=h_year,y=Freq,color=main.reason,group=main.reason)) + geom_line(size=1.1) + ggtitle('main reason for moving across states') + scale_y_continuous(name="percent of population") + theme_bw()
+ggsave(p$move.trend, file="~/git/migration/data/output/CPS/trend.pdf",width=8,height=7)
+
 
 
