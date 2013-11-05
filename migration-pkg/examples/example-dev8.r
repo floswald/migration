@@ -7,6 +7,7 @@
 # housing: yes/no
 # utility: CRRA with housing utility
 # location: discrete choice over locations
+# locations differ only by amenity
 # moving cost: dist(here,there)
 
 # assume for this example that locations differ only by a fixed
@@ -43,8 +44,8 @@ SS[,p:=grids$p[ip] ]
 # for now no location specific costs/differences in prices. add that later
 SS[,cstay := a + y + 0.3*it - dataR$R*save]	
 SS[,cbuy  := a + y + 0.3*it - p - dataR$R*save ]
-SS[,csell := a + y + 0.3*it - dataR$rent + p - dataR$R*save ]
-SS[,crent := a + y + 0.3*it - dataR$rent     - dataR$R*save ]
+SS[,csell := a + y + 0.3*it - dataR$rent*p + p - dataR$R*save ]
+SS[,crent := a + y + 0.3*it - dataR$rent*p     - dataR$R*save ]
 
 # restrictions
 # ============

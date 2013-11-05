@@ -228,11 +228,19 @@ void CMig6::show(){
 	Rcpp::Rcout <<  p.myNA << endl;
 	Rcpp::Rcout << "we have G: " << endl;
 	Rcpp::Rcout <<  G << endl;
+	Rcpp::Rcout << "we have MoveCost: " << endl;
+	Rcpp::Rcout <<  MoveCost << endl;
 	Rcpp::Rcout << "showing the first " << ma << " rows" << endl;
 	Rcpp::Rcout << "=======================" << endl;
 	Rcpp::Rcout <<  endl;
-	Rcpp::Rcout << "ResStay(:,:,1,1,1,nT,nA) = " << endl;
-	Rcpp::Rcout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	Rcpp::Rcout << "ResStay(:,1,1,:,1,nT,nA) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	Rcpp::Rcout << "ResStay(:,1,1,1,:,nT,nA) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	Rcpp::Rcout << "ResStay(:,1,1,:,1,1,1) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,1,1) << endl;
+	Rcpp::Rcout << "ResStay(:,1,1,1,:,1,1) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),1,1) << endl;
 	Rcpp::Rcout << "ResSell(:,:,1,1,1,nT,nA) = " << endl;
 	Rcpp::Rcout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
 	Rcpp::Rcout << "ResRent(:,:,1,1,1,nT,nA) = " << endl;
@@ -385,7 +393,6 @@ void CMig6::ComputeRent(int age) {
 	FindRentCons( age );	
 
 }
-
 
 void CMig6::ComputeBuy(int age) {
 

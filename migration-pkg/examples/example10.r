@@ -11,7 +11,7 @@
 
 library(migration)
 
-nA <- 50L; nY <- 2L; nT <- 10L
+nA <- 50L; nY <- 2L; nT <- 20L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 dims <- c(nA,nY,nT)
 names(dims) <- c("a","y","age")
@@ -23,12 +23,13 @@ dataR <- list( dims=dims,
 grids <- list()
 grids$a <- grid.maker(bounds=c(-2,10),num.points = nA,spacing = "log.g2")
 grids$arent <- grid.maker(bounds=c(0,10),num.points = nA,spacing = "log.g2")
+grids$y <- seq(1,2,length=nY)
 
 # OTHER's statespace: add dimension "here" AND "there".
 
 # owner neg and pos assets, renter only pos
-SSo <- data.table(rbind(expand.grid(a=grids$a,y=1:nY,it=1:(nT-1)),expand.grid(a=grids$arent,y=1:nY,it=nT)))
-SSr <- data.table(expand.grid(a=grids$arent,y=1:nY,it=1:nT))
+SSo <- data.table(rbind(expand.grid(a=grids$a,y=grids$y,it=1:(nT-1)),expand.grid(a=grids$arent,y=grids$y,it=nT)))
+SSr <- data.table(expand.grid(a=grids$arent,y=grids$y,it=1:nT))
 
 # both income and prices are mappings from here and there to y and p.
 # for now no location specific costs/differences in prices. add that later

@@ -92,6 +92,7 @@ class CMig6 {
 		Array<double,5> Getv_sell(  void ) const {return(v_sell) ;};
 		Array<double,5> Getv_rent(  void ) const {return(v_rent) ;};
 		Array<double,5> Getv_buy(   void ) const {return(v_buy)  ;};
+		//Array<double,2> GetmoveCost(  void ) const {return(MoveCost) ;};
 		Array<int   ,5> Getmove_stay(  void ) const {return(move_stay) ;};
 		Array<int   ,5> Getmove_sell(  void ) const {return(move_sell) ;};
 		Array<int   ,5> Getmove_rent(  void ) const {return(move_rent) ;};

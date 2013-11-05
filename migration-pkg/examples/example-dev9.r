@@ -28,10 +28,9 @@ library(migration)
 
 cat("start building state space\n")
 
-nA <- 50L; nY <- 2L; nT <- 30L; nP <- 3L; nL <- 10L
+nA <- 50L; nY <- 2L; nT <- 20L; nP <- 3L; nL <- 10L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 dims <- c(nA,nY,nP,nL,nL,nT)
-cat('trying to allocate a data.table with',prod(dims)*nA,'rows\n')
 cat('trying to allocate a data.table with',prod(dims)*nA,'rows\n')
 names(dims) <- c("a","y","p","here","there","age")
 dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),

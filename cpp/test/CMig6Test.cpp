@@ -233,6 +233,45 @@ TEST(Mig6Test, TestComputePeriod) {
 	EXPECT_EQ(7 , myMig.MaxDim() );
 }
 
+/*// check whether discrete choice function */
+//// works correctly
+//TEST(Mig6Test,TestDchoice3d){
+
+	//CMig myMig;
+
+	//// setup test for dchoice3d
+	//Array<double,3> one(myMig.GetDimAYP(),FortranArray<3>());
+	//Array<double,3> two(myMig.GetDimAYP(),FortranArray<3>());
+	//Array<double,3> ret(myMig.GetDimAYP(),FortranArray<3>());
+	//one = 1;
+	//two = 0,0,2,0,2,0,2,2;
+
+	//std::vector<double> dchoice;
+	//std::vector<double> vec;
+	//dchoice.push_back(1);
+	//dchoice.push_back(1);
+	//dchoice.push_back(2);
+	//dchoice.push_back(1);
+	//dchoice.push_back(2);
+	//dchoice.push_back(1);
+	//dchoice.push_back(2);
+	//dchoice.push_back(2);
+
+	//ret = myMig.dchoice3d(one,two);
+	//// define two std::vectors to take the values
+	////std::vector<double> vec;
+	//Array<double,3>::iterator iter;
+
+	//// iterate over blitz and fill vector with values
+	//for (iter = ret.begin() ; iter!=ret.end();++iter){
+		//vec.push_back(*iter);
+	//}
+	//for (int i=0; i<dchoice.size(); i++){
+		//EXPECT_EQ(dchoice.at(i),vec.at(i)) << "at" << i << "dchoice is "<<dchoice.at(i)<<"and blitzchoice is " << vec.at(i);
+	//}
+
+	
+/*}*/
 
 
 int main(int argc, char **argv) { 
