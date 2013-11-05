@@ -76,6 +76,7 @@ CMig6::CMig6():
     dim_ayp(2,2,2), 
 	name("CMig6"),	
 	G(2,2,FortranArray<2>()) ,
+	Gp(2,2,FortranArray<2>()) ,
 	MoveCost(2,2,FortranArray<2>()) ,
 	Amenity(2,FortranArray<1>()) {
 		ResStay    = 0.1;
@@ -95,6 +96,7 @@ CMig6::CMig6():
 		move_rent = 0;
 		move_buy  = 0;
 	    G          = 0.9,0.3,0.1,0.7;
+	    Gp         = 0.8,0.4,0.2,0.6;
 	    MoveCost   = 0,1,1,0;
 	    Amenity    = 1,2;
 		p.myNA     = -99;
@@ -117,6 +119,7 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 	   	     Array<double,7> data_rent,             
 	   	     Array<double,7> data_buy,              
 	   	     Array<double,2> data_G	 ,              
+	   	     Array<double,2> data_Gp ,              
 	   	     Array<double,2> data_MoveC	,              
 	   	     Array<double,1> data_Amenity)  :              
 	   	  
@@ -169,6 +172,7 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
     dim_ayp(D_ayp), 
 	name("CMig6"),	
 	G(D_y,FortranArray<2>()) ,
+	Gp(D_ayp_here(2),D_ayp_here(2),FortranArray<2>()) ,
 	MoveCost(D_ayp_here(3),D_ayp_here(3),FortranArray<2>()) ,
 	Amenity(D_ayp_here(3),FortranArray<1>()) ,
 	p(*pars) {						  
@@ -178,6 +182,7 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 		ResRent.reference(data_rent);
 		ResBuy.reference(data_buy );
 		G.reference(data_G);
+		Gp.reference(data_Gp);
 		MoveCost.reference(data_MoveC);
 		Amenity.reference(data_Amenity);
 		Vown = 0;
@@ -228,6 +233,8 @@ void CMig6::show(){
 	Rcpp::Rcout <<  p.myNA << endl;
 	Rcpp::Rcout << "we have G: " << endl;
 	Rcpp::Rcout <<  G << endl;
+	Rcpp::Rcout << "we have Gp: " << endl;
+	Rcpp::Rcout <<  Gp << endl;
 	Rcpp::Rcout << "we have MoveCost: " << endl;
 	Rcpp::Rcout <<  MoveCost << endl;
 	Rcpp::Rcout << "showing the first " << ma << " rows" << endl;
@@ -270,6 +277,8 @@ void CMig6::show(){
 	cout <<  p.myNA << endl;
 	cout << "we have G: " << endl;
 	cout <<  G << endl;
+	cout << "we have Gp: " << endl;
+	cout <<  Gp << endl;
 	cout << "we have MoveCost: " << endl;
 	cout <<  MoveCost << endl;
 	cout << "showing the first " << ma << " rows" << endl;

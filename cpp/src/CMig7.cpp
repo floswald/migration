@@ -117,7 +117,6 @@ CMig7::CMig7( TinyVector<int,3> Dim_ay_t,
 		tmpu       = pow(c_cutoff,mgamma);
 		dtmpu_dc   = tmpu / c_cutoff;
 		ddtmpu_dcc = -gamma * (dtmpu_dc / c_cutoff );
-	    G     = 0.9,0.3,0.1,0.7;
 		evtmp = 0;
 		bounds = ResStay.extent() + 1;
 		p = gslpar;

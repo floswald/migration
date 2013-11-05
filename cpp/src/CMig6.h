@@ -7,12 +7,13 @@
 // Migration model class for N locations
 // =====================================
 //
+// version 1.1
+//
 // this version has location as a state variable "here" and "there", both can
 // take N values. 
 // If here =  there, no migration occurs. 
-// if here != there, there is a moving cost in terms of utility. There is NO difference
-// in prices (y,p) between locations as of yet.
-//
+// if here != there, there is a moving cost in terms of utility. 
+// does have integration over house prices as well.
 //
 // notes:
 // 1) arrays are fortranArrays throughout. that means they are indexed 1,2,3,...,Rank in each dimension
@@ -38,7 +39,7 @@ class CMig6 {
 									  // Drent = 1: go to move_rent
 									  // Drent = 2: go to move_buy
 		Array<double,4> vplustmp;
-		Array<double,2> G;
+		Array<double,2> G, Gp;
 		Array<double,2> MoveCost;
 		Array<double,1> Amenity;
 		TinyVector<int,6> dim_ayp_here_there_t;
@@ -70,6 +71,7 @@ class CMig6 {
 			  Array<double,7> data_rent,
 			  Array<double,7> data_buy,
 			  Array<double,2> G,	
+			  Array<double,2> Gp,	
 			  Array<double,2> MoveCost,
 			  Array<double,1> Amenity);
                   
@@ -110,6 +112,7 @@ class CMig6 {
 		Array<int   ,6> Gets_loc_sell( void ) const {return(s_loc_sell);};
 		Array<int   ,6> Gets_loc_buy(  void ) const {return(s_loc_buy );};
 		Array<double,2> GetG(          void ) const {return(G);};
+		Array<double,2> GetGp(          void ) const {return(Gp);};
 
 
 		//setters
@@ -119,6 +122,7 @@ class CMig6 {
 		void ReferenceBuy( Array<double,7> x ) { ResBuy.reference( x ) ; }
 		
 		void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
+		void ReferenceGp( Array<double,2> x ) { Gp.reference( x ) ; }
 		void SetP( Parstruc* par ) { p = *par ; }
 
 		//// other member functions		

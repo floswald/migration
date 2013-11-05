@@ -112,6 +112,9 @@ int main(int argument_count, char ** command_line_arguments)
 
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
+	
+	Array<double,2> transP(shape(2,2),FortranArray<2>());
+	transP = 0.8,0.4,0.2,0.6;
 
 	CMig6 myMig6(dim_ayp_here_there_ta,          
 			    dim_ayp_here_there_t,
@@ -123,7 +126,7 @@ int main(int argument_count, char ** command_line_arguments)
 				D_ayp, 
 				D_y, 
 				pp,
-				tstay,tsell,trent,tbuy,trans, MoveCost, Amenity);
+				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity);
 
 
 	myMig6.show();
