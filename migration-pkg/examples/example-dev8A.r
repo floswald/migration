@@ -1,38 +1,23 @@
-\name{dev8}
-\alias{dev8}
-\title{dev8: discrete optimization, housing choice, utility function, location choice}
-\usage{
-  dev8(data)
-}
-\description{
-  dev8: discrete optimization, housing choice, utility
-  function, location choice
-}
-\examples{
+
+library(migration)
 
 
-# example for dev8
-# ================
+# example for dev8 with location attributes
+# =========================================
 
 # savings: grid search
 # housing: yes/no
 # utility: CRRA with housing utility
 # location: discrete choice over locations
-# locations differ only by amenity
+# locations differ by amenity, price and income distributions
 # moving cost: dist(here,there)
 
-# assume for this example that locations differ only by a fixed
-# number. i.e. locations are ordered from 1:nL and nL gives biggest
-# value. the moving cost is just the distance in the indices.
-
-# this problem adds two dimension so previous versions: here and there.
-# 1) moving from here to here is of course the same as staying. 
-# 2) one cannot stay from here to there, one must sell here and buy or rent there.
+# assume for this example that locations differ by amenity, house price and incomce supports
 
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nT <- 3L; nH <- 2L; nP <- 3L; nL <- 2L
+nA <- 10L; nY <- 2L; nT <- 3L; nH <- 2L; nP <- 3L; nL <- 4L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 dims <- c(nA,nY,nP,nL,nL,nT)
 names(dims) <- c("a","y","p","here","there","age")
@@ -41,15 +26,19 @@ dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
                G = as.numeric(rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat))
                
+idx <- list()
+idx$L <- 1:nL
 grids <- list()
-grids$p <- seq(1,10,length=nP)
+grids$L <- seq(0.1,2,length=nL)	# cities can be 10% or 200% of baseline city
+grids$p <- matrix(seq(1,10,le=nP),nP,nL) + matrix(seq(0,3,le=nL),nP,nL,byrow=T)
+grids$y <- matrix(seq(1,3,le=nY),nY,nL) + matrix(seq(0,2,le=nL),nY,nL,byrow=T)
 grids$a <- seq(-(1-dataR$down)*max(grids$p),10,length=nA)
-grids$L <- seq(1,3,length=nL)
 
 # OTHER's statespace: add dimension "here" AND "there".
 
-SS <- data.table(expand.grid(a=grids$a,y=1:nY,ip=1:nP,here=grids$L,there=grids$L,it=1:nT,save=grids$a))
-SS[,p:=grids$p[ip] ]
+SS <- data.table(expand.grid(a=grids$a,iy=1:nY,ip=1:nP,here=idx$L,there=idx$L,it=1:nT,save=grids$a))
+for (yl in 1:nL) SS[here==yl, y:= grids$y[iy,yl] ]
+for (pl in 1:nL) SS[here==pl, p:= grids$p[ip,pl] ]
 
 # both income and prices are mappings from here and there to y and p.
 # for now no location specific costs/differences in prices. add that later
@@ -94,7 +83,7 @@ move.cost <- SS.loc[,matrix(mcost,nL,nL,)]
 rownames(move.cost) <- paste0("here",1:nL)
 colnames(move.cost) <- paste0("there",1:nL)
 
-amenity <- grids$L
+amenity <- rev(grids$L)
 
 # tensors
 # =======
@@ -115,7 +104,7 @@ dataR$consS <- as.numeric(CS)
 dataR$consO <- as.numeric(CO)
 
 dataR$MoveCost <- as.numeric(move.cost)
-dataR$Amenity  <- grids$L
+dataR$Amenity  <- amenity
 
 ######################################################
 # Calculating an R solution to this lifecycle problem
@@ -286,26 +275,24 @@ print(sum(blitz$time/1e9))
 # check outputs
 # =============
 
-print(all.equal(Vown,blitz$Vown))
-print(all.equal(Vrent,blitz$Vrent))
-print(all.equal(EVown,blitz$EVown))
-print(all.equal(EVrent,blitz$EVrent))
-print(all.equal(DO,blitz$Down))
-print(all.equal(DR,blitz$Drent))
+print(all.equal(Vown,blitz$Values$Vown))
+print(all.equal(Vrent,blitz$Values$Vrent))
+print(all.equal(EVown,blitz$Values$EVown))
+print(all.equal(EVrent,blitz$Values$EVrent))
+print(all.equal(DO,blitz$policies$Down))
+print(all.equal(DR,blitz$policies$Drent))
 
-print(all.equal(VO,blitz$vstay))
-print(all.equal(VR,blitz$vrent))
-print(all.equal(VS,blitz$vsell))
-print(all.equal(VB,blitz$vbuy))
+print(all.equal(VO,blitz$Values$vstay))
+print(all.equal(VR,blitz$Values$vrent))
+print(all.equal(VS,blitz$Values$vsell))
+print(all.equal(VB,blitz$Values$vbuy))
 
-print(all.equal(move_stay,blitz$move_stay))
-print(all.equal(move_sell,blitz$move_sell))
-print(all.equal(move_rent,blitz$move_rent))
-print(all.equal(move_buy ,blitz$move_buy ))
+print(all.equal(move_stay,blitz$policies$move_stay))
+print(all.equal(move_sell,blitz$policies$move_sell))
+print(all.equal(move_rent,blitz$policies$move_rent))
+print(all.equal(move_buy ,blitz$policies$move_buy ))
 
-print(all.equal(saveLO,blitz$s_loc_stay))
-print(all.equal(saveLS,blitz$s_loc_sell))
-print(all.equal(saveLR,blitz$s_loc_rent))
-print(all.equal(saveLB,blitz$s_loc_buy ))
-}
-
+print(all.equal(saveLO,blitz$policies$s_loc_stay))
+print(all.equal(saveLS,blitz$policies$s_loc_sell))
+print(all.equal(saveLR,blitz$policies$s_loc_rent))
+print(all.equal(saveLB,blitz$policies$s_loc_buy ))

@@ -55,9 +55,10 @@ Rcpp::List dev8( Rcpp::List data ) {
 	TinyVector<int,4> D_ayp_here(d(0),d(1),d(2),d(3));
 	TinyVector<int,3> D_ayp(d(0),d(1),d(2));
 	TinyVector<int,2> D_y(d(1),d(1));
+	TinyVector<int,2> D_M(d(3),d(3));
 
 	Array<double,2> G(R_G.begin(),D_y,neverDeleteData,FortranArray<2>());
-	Array<double,2> MoveCost(R_M.begin(),d(3),d(3),neverDeleteData,FortranArray<2>());
+	Array<double,2> MoveCost(R_M.begin(),D_M,neverDeleteData,FortranArray<2>());
 	Array<double,1> Amenity(R_A.begin(),d(3),neverDeleteData,FortranArray<1>());
 	Array<double,7> stay(R_CO.begin(),D_ayp_here_there_ta,neverDeleteData,FortranArray<7>());
 	Array<double,7> rent(R_CR.begin(),D_ayp_here_there_ta,neverDeleteData,FortranArray<7>());
@@ -195,16 +196,21 @@ Rcpp::List dev8( Rcpp::List data ) {
 	c_loc_rent_out.attr("dim") = dAYPHereThereT;
 	
 	// create output list
-	Rcpp::List list = Rcpp::List::create( Rcpp::_["Vown"]   = Vown_out,
+	Rcpp::List bigL;
+	Rcpp::List Values = Rcpp::List::create( Rcpp::_["Vown"]   = Vown_out,
 										  Rcpp::_["Vrent"]  = Vrent_out,
 	                                      Rcpp::_["EVown"]  = EVown_out,
 										  Rcpp::_["EVrent"] = EVrent_out,
-	                                      Rcpp::_["Down"]   = Down_out,
-										  Rcpp::_["Drent"]  = Drent_out,
 										  Rcpp::_["vstay"]  = vstay_out,
 										  Rcpp::_["vsell"]  = vsell_out,
 										  Rcpp::_["vbuy"]   = vbuy_out ,
 										  Rcpp::_["vrent"]  = vrent_out,
+										  Rcpp::_["v_loc_stay"]  = v_loc_stay_out,
+										  Rcpp::_["v_loc_sell"]  = v_loc_sell_out,
+										  Rcpp::_["v_loc_buy"]   = v_loc_buy_out ,
+										  Rcpp::_["v_loc_rent"]  = v_loc_rent_out);
+	Rcpp::List policies = Rcpp::List::create( Rcpp::_["Down"]   = Down_out,
+										  Rcpp::_["Drent"]  = Drent_out,
 										  Rcpp::_["move_stay"]  = move_stay_out,
 										  Rcpp::_["move_sell"]  = move_sell_out,
 										  Rcpp::_["move_buy"]   = move_buy_out ,
@@ -213,16 +219,15 @@ Rcpp::List dev8( Rcpp::List data ) {
 										  Rcpp::_["s_loc_sell"]  = s_loc_sell_out,
 										  Rcpp::_["s_loc_buy"]   = s_loc_buy_out ,
 										  Rcpp::_["s_loc_rent"]  = s_loc_rent_out,
-										  //Rcpp::_["v_loc_stay"]  = v_loc_stay_out,
-										  //Rcpp::_["v_loc_sell"]  = v_loc_sell_out,
-										  //Rcpp::_["v_loc_buy"]   = v_loc_buy_out ,
-										  //Rcpp::_["v_loc_rent"]  = v_loc_rent_out,
-										  //Rcpp::_["c_loc_stay"]  = c_loc_stay_out,
-										  //Rcpp::_["c_loc_sell"]  = c_loc_sell_out,
-										  //Rcpp::_["c_loc_buy"]   = c_loc_buy_out ,
-										  //Rcpp::_["c_loc_rent"]  = c_loc_rent_out,
+										  Rcpp::_["c_loc_stay"]  = c_loc_stay_out,
+										  Rcpp::_["c_loc_sell"]  = c_loc_sell_out,
+										  Rcpp::_["c_loc_buy"]   = c_loc_buy_out ,
+										  Rcpp::_["c_loc_rent"]  = c_loc_rent_out,
 										  Rcpp::_["time"]   = timer);
 
+
+	bigL = Rcpp::List::create( Rcpp::_["Values"] = Values,Rcpp::_["policies"] = policies);
+
 										   
-	return list;
+	return bigL;
 }   

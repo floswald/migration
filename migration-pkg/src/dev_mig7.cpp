@@ -54,6 +54,7 @@ Rcpp::List dev9( Rcpp::List data ) {
 	p.res    = 0;
 	//p.type   = gsl_interp_cspline;
 	p.type   = gsl_interp_linear;	// change interpolation type here.
+	//p.type   = gsl_interp_cspline;	// change interpolation type here.
 	p.acc    = gsl_interp_accel_alloc ();
 	p.spline = gsl_spline_alloc (p.type, aown.size());
 	p.T      = gsl_root_fsolver_brent;
