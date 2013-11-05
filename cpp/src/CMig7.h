@@ -11,8 +11,8 @@
 
 using namespace blitz;
 
-// Migration model class for N locations and continuous optimization on 3 state variables
-// =================================================================
+// Migration model class for 1 location and continuous optimization on 3 state variables (a,y,t)
+// =============================================================================================
 //
 
 // define gsl parameter struct
