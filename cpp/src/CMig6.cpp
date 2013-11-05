@@ -270,6 +270,8 @@ void CMig6::show(){
 	cout <<  p.myNA << endl;
 	cout << "we have G: " << endl;
 	cout <<  G << endl;
+	cout << "we have MoveCost: " << endl;
+	cout <<  MoveCost << endl;
 	cout << "showing the first " << ma << " rows" << endl;
 	cout << "=======================" << endl;
 	cout <<  endl;
