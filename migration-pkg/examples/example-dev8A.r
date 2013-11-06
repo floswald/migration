@@ -17,7 +17,7 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nT <- 10L; nH <- 2L; nP <- 3L; nL <- 4L
+nA <- 10L; nY <- 2L; nT <- 4L; nH <- 2L; nP <- 3L; nL <- 4L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 Gp <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
 dims <- c(nA,nY,nP,nL,nL,nT)
@@ -39,32 +39,76 @@ grids$a <- seq(-(1-dataR$down)*max(grids$p),10,length=nA)
 # OTHER's statespace: add dimension "here" AND "there".
 
 SS <- data.table(expand.grid(a=grids$a,iy=1:nY,ip=1:nP,here=idx$L,there=idx$L,it=1:nT,save=grids$a))
-for (yl in 1:nL) SS[here==yl, y:= grids$y[iy,yl] ]
-for (pl in 1:nL) SS[here==pl, p:= grids$p[ip,pl] ]
+for (yl in 1:nL) SS[here==yl, yhere:= grids$y[iy,yl] ]
+for (pl in 1:nL) SS[here==pl, phere:= grids$p[ip,pl] ]
+for (yl in 1:nL) SS[there==yl, ythere:= grids$y[iy,yl] ]
+for (pl in 1:nL) SS[there==pl, pthere:= grids$p[ip,pl] ]
 
-# both income and prices are mappings from here and there to y and p.
-# for now no location specific costs/differences in prices. add that later
-SS[,cstay := a + y + 0.3*it - dataR$R*save]	
-SS[,cbuy  := a + y + 0.3*it - p - dataR$R*save ]
-SS[,csell := a + y + 0.3*it - dataR$rent*p + p - dataR$R*save ]
-SS[,crent := a + y + 0.3*it - dataR$rent*p     - dataR$R*save ]
+
+# We compute available resources at each state (a,y,p,here,there,age) here.
+# we code r for 'resources'
+
+SS[,rstay := a + yhere + 0.3*it ]	
+SS[,rbuy  := a + yhere + 0.3*it - phere ]
+SS[,rsell := a + yhere + 0.3*it - dataR$rent*phere + phere]
+SS[,rrent := a + yhere + 0.3*it - dataR$rent*phere ]
 
 # restrictions
 # ============
 
-# stayer: 
-#SS[it==nT & a+y+p>0,cstay := log(a+y+p) ]
-#SS[it==nT & a+y+p<0,cstay := dataR$myNA ]
-SS[it==nT & a>0,cstay := log(a) ]
-SS[it==nT & a<0,cstay := dataR$myNA ]
-#SS[here != there, cstay := a + y + 0.3*it + p[here] - p[there] - dataR$R*save ] # TODO
-#SS[here != there & save< -(1-dataR$down)*p[there], cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
-SS[here != there & save< -(1-dataR$down)*p & it!=nT, cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
+# I enforce restrictions on the state space by assigning a 
+# large negative number "myNA" to illegal states.
+
+
+# final period restricion owner:
+# net wealth
+SS[it==nT & a>0,rstay := log(a) ]
+SS[it==nT & a<0,rstay := dataR$myNA ]
+for (ih in 1:nL){
+	for (ith in 1:nL){
+
+		# if here is not there
+		if (ih !=ith){
+
+				# stayer: 
+				SS[here==ih & there==ith, cstay := a + ythere + 0.3*it + phere - pthere - dataR$R*save ]		# 
+				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cstay := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+
+				# seller:
+				SS[here==ih & there==ith, csell := a + ythere + 0.3*it + phere - pthere*dataR$rent - dataR$R*save ]		 
+
+				# renter:
+				SS[here==ih & there==ith, crent := a + ythere + 0.3*it         - pthere*dataR$rent - dataR$R*save ]		
+				
+				# buyer:
+				SS[here==ih & there==ith, cbuy  := a + ythere + 0.3*it         - pthere            - dataR$R*save ]		
+				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cbuy := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+		}
+
+	}
+}
+
+
+# remove "save" dimension from R.
+# ===============================
+
+# this borrowing limit function is identical for owners and buyer alike
+iborrow.own <- array(-1,c(nL,nL,nP))	# set illegal index
+for (here in 1:nL){
+	for (there in 1:nL){
+		for (ip in 1:nP){
+			# owner moving from here to there
+			idx <- which(grids$a < -(1-dataR$down)*grids$p[ip,there])
+			if (length(idx)>0) iborrow.own[here,there,ip] <- max(idx)	# which is the largest savings index s.t. lower than borrowing limit. next index is legal.
+		}
+	}
+}
+
+iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
+
 
 # buyer: cannot have negative assets
-# buyer: cannot borrow more than (1-down) times value of house
 SS[a<0 & it!=nT,             cbuy  := dataR$myNA]
-SS[save < -(1-dataR$down)*p, cbuy  := dataR$myNA]
 
 # renter: cannot have negative assets
 # renter: cannot borrow
