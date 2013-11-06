@@ -624,20 +624,19 @@ Array<double,4> CMig6::integrate(Array<double,4> tens){
 	Array<double,4> ret(dim_ayp_here,FortranArray<4>());
 
 	//Array<double,5> tmp(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
-	Array<double,6> tmpyp(dim_ayp_here_yp,FortranArray<6>());	// tmp(i1,i2,i3,i4,i5,i6)
-	Array<double,5> tmpy(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
+	//
+	//
+	//Array<double,6> tmpyp(dim_ayp_here_yp,FortranArray<6>());	// tmp(i1,i2,i3,i4,i5,i6)
+	//Array<double,5> tmpy(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
 	
-	tmpy = tens(i1,i2,i3,i4) * G(i5,i2);
-	tmpyp = tmpy(i1,i2,i3,i4,i5) * Gp(i6,i3);
+	//tmpy = tens(i1,i2,i3,i4) * G(i5,i2);
+	//tmpyp = tmpy(i1,i2,i3,i4,i5) * Gp(i6,i3);
 	
-	tmpy = sum( tmpyp(i1,i2,i6,i4,i5,i3), i6 ) ;// integrate out p'
+	//tmpy = sum( tmpyp(i1,i2,i6,i4,i5,i3), i6 ) ;// integrate out p'
 
-
-	//tmpy = tmpy(i1,i2,i3,i4,i5);	// reorder indices
-
-	ret = sum( tmpy(i1,i5,i3,i4,i2), i5);	// integrate out y
+	//ret = sum( tmpy(i1,i5,i3,i4,i2), i5);	// integrate out y
 		  
-	//ret = sum( sum(   tens(i1,i5,i6,i4) * G(i5,i2) * Gp(i6,i3) , i6) ,i5);
+	ret = sum( sum(   tens(i1,i5,i6,i4) * G(i2,i5) * Gp(i3,i6) , i6) ,i5);
 
 	if (verbose>1) {
 		cout << endl;
