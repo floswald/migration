@@ -216,10 +216,10 @@ saveLR = array(3,dataR$dims)
 saveLB = array(4,dataR$dims)
 
 # conditional consumption functions
-consR = array(0,dataR$dims)
-consB = array(0,dataR$dims)
-consS = array(0,dataR$dims)
-consO = array(0,dataR$dims)
+consLR = array(0,dataR$dims)
+consLB = array(0,dataR$dims)
+consLS = array(0,dataR$dims)
+consLO = array(0,dataR$dims)
 
 # final period values
 EVrent[ , , , ,nT] <- SS[it==nT,array(rrent,dataR$dimshere[-5])]
@@ -307,14 +307,20 @@ for (ti in (nT-1):1) {
 						 VLB[ia,iy,ip,here,there,ti] = max(xB[ia,iy,ip,here,there,ti, ])
 						 # conditional savings renter state
 						 saveLR[ia,iy,ip,here,there,ti] = which.max(xR[ia,iy,ip,here,there,ti, ])
+						 consLR[ia,iy,ip,here,there,ti] = CR[ia,iy,ip,here,there,ti,saveLR[ia,iy,ip,here,there,ti]]
+
 						 saveLB[ia,iy,ip,here,there,ti] = which.max(xB[ia,iy,ip,here,there,ti, ])
+						 consLB[ia,iy,ip,here,there,ti] = CB[ia,iy,ip,here,there,ti,saveLB[ia,iy,ip,here,there,ti]]
 						 
 						 # conditional values owner state
 						 VLS[ia,iy,ip,here,there,ti] = max(xS[ia,iy,ip,here,there,ti, ])
 						 VLO[ia,iy,ip,here,there,ti] = max(xO[ia,iy,ip,here,there,ti, ])
 						 # conditional savings owner state
 						 saveLO[ia,iy,ip,here,there,ti] = which.max(xO[ia,iy,ip,here,there,ti, ])
+						 consLO[ia,iy,ip,here,there,ti] = CO[ia,iy,ip,here,there,ti,saveLO[ia,iy,ip,here,there,ti]]
+
 						 saveLS[ia,iy,ip,here,there,ti] = which.max(xS[ia,iy,ip,here,there,ti, ])
+						 consLS[ia,iy,ip,here,there,ti] = CS[ia,iy,ip,here,there,ti,saveLS[ia,iy,ip,here,there,ti]]
 
 					 }
 					 # maximize over location choice in each subproblem
@@ -367,14 +373,6 @@ blitz <- dev8(data=dataR)
 print(Rtime)
 print(sum(blitz$time/1e9))
 
-
-# get conditional consumption functions
-# =====================================
-#consR <- array(matrix(CR[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveR[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-#consB <- array(matrix(CB[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveB[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-#consS <- array(matrix(CS[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveS[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-#consO <- array(matrix(CStay[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveO[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-# =====================================
 
 # check outputs
 # =============
