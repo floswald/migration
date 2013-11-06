@@ -38,8 +38,6 @@ int main(int argument_count, char ** command_line_arguments)
 	pars.gamma   = 1.4;
 	pars.mgamma  = 1 - pars.gamma;
 	pars.imgamma = 1/pars.mgamma;
-	Parstruc* pp;
-	pp = &pars;
 
     // create dimension vectors	                 
 	TinyVector<int,5> aypta = shape(2,2,2,2,2);
@@ -50,7 +48,7 @@ int main(int argument_count, char ** command_line_arguments)
 	TinyVector<int,2> y     = shape(2,2);
 
 	// create an instance of owner class
-	CMig myMig( aypta,aypt, aypa, aypy,ayp, y, pp, stay, sell, rent, buy, trans);
+	CMig myMig( aypta,aypt, aypa, aypy,ayp, y, &pars, stay, sell, rent, buy, trans);
 	//myMig.show();
 	myMig.ComputePeriod(2);
 	myMig.ComputePeriod(1);
@@ -127,6 +125,12 @@ int main(int argument_count, char ** command_line_arguments)
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
 	
+	PStruct pars2;
+	pars2.beta = 0.9;
+	pars2.myNA = -99;
+	pars2.gamma   = 1.4;
+	pars2.mgamma  = 1 - pars2.gamma;
+	pars2.imgamma = 1/pars2.mgamma;
 
 	CMig6 myMig6(dim_ayp_here_there_ta,                                          
 			    dim_ayp_here_there_t,
@@ -137,7 +141,7 @@ int main(int argument_count, char ** command_line_arguments)
 				dim_ayp_here,      
 				D_ayp, 
 				D_y, 
-				pp,
+				&pars2,
 				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity,1);
         
 

@@ -1,13 +1,20 @@
 
 
-#include "CMig.h"	// include here to get Parstruc 
+#include <iostream>
+#include <vector>
+#include <algorithm>	// using min in show method
+#include <blitz/array.h>
 #include <string>
 
+using namespace blitz;
 
 // Migration model class for N locations
 // =====================================
 //
 // version 1.1
+//
+// Consumption is built and passed from R.
+// HUGE capacity constraint, as R will run out of memory for 100 points in assets.
 //
 // this version has location as a state variable "here" and "there", both can
 // take N values. 
@@ -20,6 +27,17 @@
 // 2) this is done purely for compatibility reasons with R. An array in R is in fortran order. 
 //    I want compatibility with the same computation in R in order to check the results. THIS MAY CHANGE IN THE FUTURE.
 // 3) unfortunately TinyVectors are not available as FortranArrays. Therefore, they are indexed as 0,1,...,Rank-1 .
+
+// struct to hold parameters
+struct PStruct{
+	double beta;
+	double myNA;
+	double gamma;
+	double mgamma;
+	double imgamma;
+	double theta;
+};
+
 
 class CMig6 {
 	private:
@@ -49,7 +67,7 @@ class CMig6 {
 		TinyVector<int,6> dim_ayp_here_yp;
 		TinyVector<int,4> dim_ayp_here;
 		TinyVector<int,3> dim_ayp;
-		Parstruc p;	
+		PStruct p;	
 		int maxage, verbose;
 	    const std::string name; // A member variable for the class to store the version 
 		
@@ -67,7 +85,7 @@ class CMig6 {
 	   	      TinyVector<int,4> dim_ayp_here,      
 			  TinyVector<int,3> dim_ayp, 
 			  TinyVector<int,2> dim_y, 
-			  Parstruc* pars,
+			  PStruct * pars,
 			  Array<double,7> data_stay,
 			  Array<double,7> data_sell,
 			  Array<double,7> data_rent,
@@ -128,7 +146,7 @@ class CMig6 {
 		
 		void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
 		void ReferenceGp( Array<double,2> x ) { Gp.reference( x ) ; }
-		void SetP( Parstruc* par ) { p = *par ; }
+		void SetP( PStruct* par ) { p = *par ; }
 
 		//// other member functions		
 		void show ( void );
