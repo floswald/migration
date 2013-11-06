@@ -59,6 +59,15 @@ SS[,rrent := a + yhere + 0.3*it - dataR$rent*phere ]
 # I enforce restrictions on the state space by assigning a 
 # large negative number "myNA" to illegal states.
 
+# final period values:
+# in the final period, you are either owner or
+# renter. Currently, both have the same final value
+# i.e. only a function of assets. 
+# * This makes a "repayment mortgage" of the current setup.
+# * allowing owners to check out of the model with a + p > 0
+#     would imply that they only have to make interest payments 
+#     over the lifecycle and can hand back the capital at the end of life
+# * this is more like a interest only mortgage
 
 # final period restricion owner:
 # net wealth
@@ -71,18 +80,16 @@ for (ih in 1:nL){
 		if (ih !=ith){
 
 				# stayer: 
-				SS[here==ih & there==ith, cstay := a + ythere + 0.3*it + phere - pthere - dataR$R*save ]		# 
-				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cstay := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+				SS[here==ih & there==ith, rstay := a + ythere + 0.3*it + phere - pthere]		# 
 
 				# seller:
-				SS[here==ih & there==ith, csell := a + ythere + 0.3*it + phere - pthere*dataR$rent - dataR$R*save ]		 
+				SS[here==ih & there==ith, rsell := a + ythere + 0.3*it + phere - pthere*dataR$rent]		 
 
 				# renter:
-				SS[here==ih & there==ith, crent := a + ythere + 0.3*it         - pthere*dataR$rent - dataR$R*save ]		
+				SS[here==ih & there==ith, rrent := a + ythere + 0.3*it         - pthere*dataR$rent]		
 				
 				# buyer:
-				SS[here==ih & there==ith, cbuy  := a + ythere + 0.3*it         - pthere            - dataR$R*save ]		
-				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cbuy := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+				SS[here==ih & there==ith, rbuy  := a + ythere + 0.3*it         - pthere  ]		
 		}
 
 	}
@@ -108,18 +115,18 @@ iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
 
 
 # buyer: cannot have negative assets
-SS[a<0 & it!=nT,             cbuy  := dataR$myNA]
+SS[a<0 & it!=nT,             rbuy  := dataR$myNA]
 
 # renter: cannot have negative assets
 # renter: cannot borrow
 # renter: final utility
-SS[a<0         , crent := dataR$myNA]
-SS[save<0      , crent := dataR$myNA]
-SS[a>0 & it==nT, crent := log(a)    ]
+SS[a<0         , rrent := dataR$myNA]
+#SS[save<0      , crent := dataR$myNA]
+SS[a>0 & it==nT, rrent := log(a)    ]
 
 # seller: can have negative assets
 # seller: but cannot borrow. must pay off housing debt upon sale.
-SS[save<0, csell := dataR$myNA]
+#SS[save<0, csell := dataR$myNA]
 
 # LOCATION statespace
 # ============
@@ -133,23 +140,18 @@ colnames(move.cost) <- paste0("there",1:nL)
 
 amenity <- rev(grids$L)
 
-# tensors
-# =======
+# tensors of resources at each state
+# ==================================
 
-CR <- SS[,array(crent,c(dataR$dims,nA))]
-CB <- SS[,array(cbuy,c(dataR$dims,nA))]
-CS <- SS[,array(csell,c(dataR$dims,nA))]
-CO <- SS[,array(cstay,c(dataR$dims,nA))]	# "O" is for "Owner", i.e. "stay"
+RR <- SS[,array(rrent,c(dataR$dims))]	# rent
+RB <- SS[,array(rbuy,c(dataR$dims))]		# buy
+RS <- SS[,array(rsell,c(dataR$dims))]	# sell
+RO <- SS[,array(rstay,c(dataR$dims))]	# "O" is for "Owner", i.e. "stay"
 
-xR = array(0,c(dataR$dims,nA))
-xB = array(0,c(dataR$dims,nA))
-xS = array(0,c(dataR$dims,nA))
-xO = array(0,c(dataR$dims,nA))
-
-dataR$consR <- as.numeric(CR)
-dataR$consB <- as.numeric(CB)
-dataR$consS <- as.numeric(CS)
-dataR$consO <- as.numeric(CO)
+dataR$resR <- as.numeric(RR)
+dataR$resB <- as.numeric(RB)
+dataR$resS <- as.numeric(RS)
+dataR$resO <- as.numeric(RO)
 
 dataR$MoveCost <- as.numeric(move.cost)
 dataR$Amenity  <- amenity
@@ -159,6 +161,18 @@ dataR$Amenity  <- amenity
 ######################################################
 
 Rtime <- proc.time()
+
+# consumption tensors for R
+CR <- array(0,c(dataR$dims,nA))	# rent
+CB <- array(0,c(dataR$dims,nA))		# buy
+CS <- array(0,c(dataR$dims,nA))	# sell
+CO <- array(0,c(dataR$dims,nA))	# "O" is for "Owner", i.e. "stay"
+
+xR = array(0,c(dataR$dims,nA))
+xB = array(0,c(dataR$dims,nA))
+xS = array(0,c(dataR$dims,nA))
+xO = array(0,c(dataR$dims,nA))
+
 # envelopes of conditional values
 Vown = array(0,dataR$dimshere)
 Vrent = array(0,dataR$dimshere)
@@ -207,40 +221,75 @@ EVown[ , , , ,nT]  <- CO[ , , , ,1,nT,nA]
 
 #            dimensions    a y p h      a y p h      y y'     p p'
 integr <- tensorFunction(R[i,m,n,l] ~ V[i,j,k,l] * G[m,j] * X[n,k] )
-                       
+         
+# temporary consumption value
+ctmp <- 0
+
 # loop over STATES
 for (ti in (nT-1):1) {
     for (ia in 1:nA) {
 		 for(iy in 1:nY) {
 			 for (ip in 1:nP){
 				 for(here in 1:nL){
+
 					 # loop over CHOICES
 					 for (there in 1:nL) {
 						 # savings options at each (here,there) combination
 						 for (ja in 1:nA){
+
+							 # renter and seller
+							 # =================
+
 							 # renter
-							 if (CR[ia,iy,ip,here,there,ti,ja] < 0 | !is.finite(CR[ia,iy,ip,here,there,ti,ja])){
+							 # ------
+
+							 # compute consumption at that savigns choice
+							 CR[ia,iy,ip,here,there,ti,ja] <- ctmp <- RR[ia,iy,ip,here,there,ti] - dataR$R*grids$a[ ja ]
+							  
+							 # check feasibility of that savings choice by looking at implied consumption 
+							 # and if index of savings is below constraint value
+							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.rent ){
 								xR[ia,iy,ip,here,there,ti,ja] = dataR$myNA
 							 } else {
-								xR[ia,iy,ip,here,there,ti,ja] =  R_ufun(CR[ia,iy,ip,here,there,ti,ja],dataR$gamma,0) + dataR$beta*EVrent[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
+								xR[ia,iy,ip,here,there,ti,ja] =  R_ufun(ctmp,dataR$gamma,0) + dataR$beta*EVrent[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
 							 }
-							 # buyer
-							 if (CB[ia,iy,ip,here,there,ti,ja] < 0 | !is.finite(CB[ia,iy,ip,here,there,ti,ja])){
-								xB[ia,iy,ip,here,there,ti,ja] = dataR$myNA
-							 } else {
-								xB[ia,iy,ip,here,there,ti,ja] =  R_ufun(CB[ia,iy,ip,here,there,ti,ja],dataR$gamma,dataR$theta) + dataR$beta*EVown[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
-							 }
-							 # seller
-							 if (CS[ia,iy,ip,here,there,ti,ja] < 0 | !is.finite(CS[ia,iy,ip,here,there,ti,ja])){
+						 
+							 # seller 
+							 # ------
+							 
+							 CS[ia,iy,ip,here,there,ti,ja] <- ctmp <- RS[ia,iy,ip,here,there,ti] - dataR$R*grids$a[ ja ]
+
+							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.rent ){
 								xS[ia,iy,ip,here,there,ti,ja] = dataR$myNA
 							 } else {
-								xS[ia,iy,ip,here,there,ti,ja] =  R_ufun(CS[ia,iy,ip,here,there,ti,ja],dataR$gamma,0) + dataR$beta*EVrent[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
+								xS[ia,iy,ip,here,there,ti,ja] =  R_ufun(ctmp,dataR$gamma,0) + dataR$beta*EVrent[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
 							 }
-							 # owner
-							 if (CO[ia,iy,ip,here,there,ti,ja] < 0 | !is.finite(CO[ia,iy,ip,here,there,ti,ja])){
+
+							 # owner and buyer
+							 # ===============
+
+							 # buyer
+							 # -----
+
+							 # compute consumption at that savigns choice
+							 CB[ia,iy,ip,here,there,ti,ja] <- ctmp <- RB[ia,iy,ip,here,there,ti] - dataR$R*grids$a[ ja ]
+
+							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.own[here,there,ip] ){
+								xB[ia,iy,ip,here,there,ti,ja] = dataR$myNA
+							 } else {
+								xB[ia,iy,ip,here,there,ti,ja] =  R_ufun(ctmp,dataR$gamma,dataR$theta) + dataR$beta*EVown[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
+							 }
+							 
+							 # owner 
+							 # -----
+
+							 # compute consumption at that savigns choice
+							 CO[ia,iy,ip,here,there,ti,ja] <- ctmp <- RO[ia,iy,ip,here,there,ti] - dataR$R*grids$a[ ja ]
+							 
+							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.own[here,there,ip] ){
 								xO[ia,iy,ip,here,there,ti,ja] = dataR$myNA
 							 } else {
-								xO[ia,iy,ip,here,there,ti,ja] =  R_ufun(CO[ia,iy,ip,here,there,ti,ja],dataR$gamma,dataR$theta) + dataR$beta*EVown[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
+								xO[ia,iy,ip,here,there,ti,ja] =  R_ufun(ctmp,dataR$gamma,dataR$theta) + dataR$beta*EVown[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
 							 }
 						 }
 
@@ -302,7 +351,7 @@ for (ti in (nT-1):1) {
 }
 
 Rtime <- proc.time() - Rtime
-
+stop()
 # Calculating the blitz solution to the equivalent
 # ================================================
 
