@@ -6,7 +6,7 @@ library(migration)
 # =========================================
 
 # savings: grid search
-# housing: yes/no
+# housing: yes/no. adding house price uncertainty now.
 # utility: CRRA with housing utility
 # location: discrete choice over locations
 # locations differ by amenity, price and income distributions
@@ -17,14 +17,16 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nT <- 3L; nH <- 2L; nP <- 3L; nL <- 4L
+nA <- 10L; nY <- 2L; nT <- 10L; nH <- 2L; nP <- 3L; nL <- 4L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
+Gp <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
 dims <- c(nA,nY,nP,nL,nL,nT)
 names(dims) <- c("a","y","p","here","there","age")
 dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                theta = 0.2,beta=0.95,gamma=1.4,
                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
-               G = as.numeric(rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat))
+               G = as.numeric(G),
+               Gp = as.numeric(Gp));
                
 idx <- list()
 idx$L <- 1:nL
@@ -157,7 +159,8 @@ consO = array(0,dataR$dims)
 EVrent[ , , , ,nT] <- CR[ , , , ,1,nT,nA]
 EVown[ , , , ,nT]  <- CO[ , , , ,1,nT,nA]
 
-integr <- tensorFunction(R[i,m,k,l] ~ V[i,j,k,l] * G[m,j] )
+#            dimensions    a y p h      a y p h      y y'     p p'
+integr <- tensorFunction(R[i,m,n,l] ~ V[i,j,k,l] * G[m,j] * X[n,k] )
                        
 # loop over STATES
 for (ti in (nT-1):1) {
@@ -247,8 +250,8 @@ for (ti in (nT-1):1) {
 	
 		 tmpO = Vown[ , , , ,ti]
 		 tmpR = Vrent[ , , , ,ti]
-		 EVown[ , , , ,ti] = integr(tmpO, G)
-		 EVrent[ , , , ,ti] = integr(tmpR, G)
+		 EVown[ , , , ,ti] = integr(tmpO, G, Gp)
+		 EVrent[ , , , ,ti] = integr(tmpR, G, Gp)
      }
 }
 
@@ -256,7 +259,7 @@ Rtime <- proc.time() - Rtime
 
 # Calculating the blitz solution to the equivalent
 # ================================================
-      
+
 blitz <- dev8(data=dataR)
 
 # timings

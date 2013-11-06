@@ -24,6 +24,7 @@ Rcpp::List dev8( Rcpp::List data ) {
 	Rcpp::NumericVector R_CS = Rcpp::as<Rcpp::NumericVector>(data["consS"]);
 	Rcpp::IntegerVector d    = Rcpp::as<Rcpp::IntegerVector>(data["dims"]);
 	Rcpp::NumericVector R_G  = Rcpp::as<Rcpp::NumericVector>(data["G"]);
+	Rcpp::NumericVector R_Gp  = Rcpp::as<Rcpp::NumericVector>(data["Gp"]);
 	Rcpp::NumericVector R_M  = Rcpp::as<Rcpp::NumericVector>(data["MoveCost"]);
 	Rcpp::NumericVector R_A  = Rcpp::as<Rcpp::NumericVector>(data["Amenity"]);
 
@@ -56,8 +57,10 @@ Rcpp::List dev8( Rcpp::List data ) {
 	TinyVector<int,3> D_ayp(d(0),d(1),d(2));
 	TinyVector<int,2> D_y(d(1),d(1));
 	TinyVector<int,2> D_M(d(3),d(3));
+	TinyVector<int,2> D_P(d(2),d(2));
 
 	Array<double,2> G(R_G.begin(),D_y,neverDeleteData,FortranArray<2>());
+	Array<double,2> Gp(R_Gp.begin(),D_P,neverDeleteData,FortranArray<2>());
 	Array<double,2> MoveCost(R_M.begin(),D_M,neverDeleteData,FortranArray<2>());
 	Array<double,1> Amenity(R_A.begin(),d(3),neverDeleteData,FortranArray<1>());
 	Array<double,7> stay(R_CO.begin(),D_ayp_here_there_ta,neverDeleteData,FortranArray<7>());
@@ -82,8 +85,9 @@ Rcpp::List dev8( Rcpp::List data ) {
 	   	     rent,             
 	   	     buy,              
 	   	     G,
+	   	     Gp,
 			 MoveCost,
-			 Amenity	) ;             
+			 Amenity,1	) ;             
 	
 
 	// call the show method
@@ -92,7 +96,7 @@ Rcpp::List dev8( Rcpp::List data ) {
 	// time loop to compute backwards
 	// ===================================
 	
-	for (int it = d(5); it>0; it--) {
+	for (int it = mig6.GetMaxage(); it>0; it--) {
 		mig6.ComputePeriod( it );
 	}
 

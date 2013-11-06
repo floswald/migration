@@ -40,6 +40,8 @@ TEST(Mig6Test, TestReferenceConstructor) {
 
     Array<double,2> trans(shape(2,2),FortranArray<2>());
 	trans = 0.9,0.3,0.1,0.7;
+	Array<double,2> transP(shape(2,2),FortranArray<2>());
+	transP = 0.8,0.4,0.2,0.6;
 
     Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
 	MoveCost = 0,1,1,0;
@@ -88,6 +90,7 @@ TEST(Mig6Test, TestReferenceConstructor) {
 		*it = uniGen.random() + 1;
 	}
 	
+	int verbose = 1;
 
 
 	// create an instance of owner class
@@ -101,7 +104,7 @@ TEST(Mig6Test, TestReferenceConstructor) {
 				D_ayp, 
 				D_y, 
 				pp,
-				tstay,tsell,trent,tbuy,trans,MoveCost,Amenity);
+				tstay,tsell,trent,tbuy,trans,transP,MoveCost,Amenity,verbose);
 
 	// is a CMig6 object?
 	EXPECT_EQ("CMig6", myMig.version());
@@ -163,6 +166,8 @@ TEST(Mig6Test, TestComputePeriod) {
 
     Array<double,2> trans(shape(2,2),FortranArray<2>());
 	trans = 0.9,0.3,0.1,0.7;
+	Array<double,2> transP(shape(2,2),FortranArray<2>());
+	transP = 0.8,0.4,0.2,0.6;
 
     Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
 	MoveCost = 0,1,1,0;
@@ -212,6 +217,7 @@ TEST(Mig6Test, TestComputePeriod) {
 	}
 	
 
+	int verbose = 1;
 
 	// create an instance of owner class
 	CMig6 myMig(dim_ayp_here_there_ta,          
@@ -224,7 +230,7 @@ TEST(Mig6Test, TestComputePeriod) {
 				D_ayp, 
 				D_y, 
 				pp,
-				tstay,tsell,trent,tbuy,trans,MoveCost,Amenity);
+				tstay,tsell,trent,tbuy,trans,transP,MoveCost,Amenity,verbose);
 
 	// is a CMig6 object?
 	EXPECT_EQ("CMig6", myMig.version());
@@ -232,6 +238,36 @@ TEST(Mig6Test, TestComputePeriod) {
 	// dimension of biggest array is ... ?
 	EXPECT_EQ(7 , myMig.MaxDim() );
 }
+
+
+// test whether integration function is correct
+TEST(Mig6Test, checkIntegration) {
+
+	// create an instance of owner class
+	CMig6 myMig;
+
+	// get data
+	Array<double,4> test(myMig.GetDim_ayp_here(),FortranArray<4>());
+	Array<double,4> bout(myMig.GetDim_ayp_here(),FortranArray<4>());
+	test = 1;
+	bout = myMig.integrate(test);
+
+	std::vector<double> out;
+	// define an iterator for a blitz array
+	Array<double,4>::iterator iter;
+
+	// iterate over blitz and fill vector with values
+	for (iter = bout.begin() ; iter!=bout.end();++iter){
+		out.push_back(*iter);
+	}
+
+	for (int i=0; i<out.size(); i++){
+		EXPECT_DOUBLE_EQ(1,out.at(i)) << "integration not 1 at index " << i;
+	}
+}
+
+
+
 
 /*// check whether discrete choice function */
 //// works correctly

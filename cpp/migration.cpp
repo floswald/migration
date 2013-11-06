@@ -7,7 +7,13 @@
 
 int main(int argument_count, char ** command_line_arguments)
 { 
+	std::cout <<  std::endl;
+	std::cout <<  std::endl;
 	std::cout << "Boilerplate program is running" << std::endl;
+	std::cout <<  std::endl;
+	std::cout <<  std::endl;
+	std::cout <<  std::endl;
+	std::cout << "Don't expect any sensible output, as resources are random." << std::endl;
 
 	Array<double,5> stay(shape(2,2,2,2,2),FortranArray<5>());
 	Array<double,5> sell(shape(2,2,2,2,2),FortranArray<5>());
@@ -72,23 +78,31 @@ int main(int argument_count, char ** command_line_arguments)
 	TinyVector<int,3> D_ayp; 
 	TinyVector<int,2> D_y; 
 
-    dim_ayp_here_there_ta = 2,2,2,2,2,2,2;
-	dim_ayp_here_there_t  = 2,2,2,2,2,2;
-	dim_ayp_here_there_a  = 2,2,2,2,2,2; 
-	dim_ayp_here_there    = 2,2,2,2,2;
-	dim_ayp_here_t        = 2,2,2,2,2;
-	dim_ayp_here_y        = 2,2,2,2,2;
-	dim_ayp_here          = 2,2,2,2;   
-	D_ayp                 = 2,2,2;
+	int nT = 3;
+	int nL = 4;
+	int nP = 3;
+
+    dim_ayp_here_there_ta = 2,2,nP,nL,nL,nT,2;
+	dim_ayp_here_there_t  = 2,2,nP,nL,nL,nT;
+	dim_ayp_here_there_a  = 2,2,nP,nL,nL,2; 
+	dim_ayp_here_there    = 2,2,nP,nL,nL;
+	dim_ayp_here_t        = 2,2,nP,nL,nT;
+	dim_ayp_here_y        = 2,2,nP,nL,2;
+	dim_ayp_here          = 2,2,nP,nL;   
+	D_ayp                 = 2,2,nP;
 	D_y                   = 2,2;
 
+	Array<double,2> transP(nP,nP,FortranArray<2>());
+	transP = 0.9025,0.0475,0.0025,
+		     0.095,0.905,0.095,
+			 0.0025,0.0475,0.9025;
 
 	// get some data
 
-	Array<double,7> tstay(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
-	Array<double,7> tsell(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
-	Array<double,7> trent(2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
-	Array<double,7> tbuy( 2,2,2,2,2,2,2,neverDeleteData,FortranArray<7>());	
+	Array<double,7> tstay(dim_ayp_here_there_ta,FortranArray<7>());	
+	Array<double,7> tsell(dim_ayp_here_there_ta,FortranArray<7>());	
+	Array<double,7> trent(dim_ayp_here_there_ta,FortranArray<7>());	
+	Array<double,7> tbuy( dim_ayp_here_there_ta,FortranArray<7>());	
 
 	//fill with random numbers
 	ranlib::Uniform<double> uniGen;
@@ -113,10 +127,8 @@ int main(int argument_count, char ** command_line_arguments)
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
 	
-	Array<double,2> transP(shape(2,2),FortranArray<2>());
-	transP = 0.8,0.4,0.2,0.6;
 
-	CMig6 myMig6(dim_ayp_here_there_ta,          
+	CMig6 myMig6(dim_ayp_here_there_ta,                                          
 			    dim_ayp_here_there_t,
 				dim_ayp_here_there_a, 
 				dim_ayp_here_there, 
@@ -126,14 +138,23 @@ int main(int argument_count, char ** command_line_arguments)
 				D_ayp, 
 				D_y, 
 				pp,
-				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity);
-
+				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity,1);
+        
 
 	myMig6.show();
 
-	myMig6.ComputePeriod(2);
-	myMig6.ComputePeriod(1);
+	// can compute a period?
+	for (int ti=myMig6.GetMaxage(); ti>0; ti--){
+		myMig6.ComputePeriod( ti );
+	}
 
+	Array<double,5> ret = myMig6.GetEVown();
+	cout << "EVown(:,:,:,:,nT-1) is = " << endl;
+	cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),myMig6.GetMaxage()-1) << endl;
+	cout << "EVown(:,:,:,:,2) is = " << endl;
+	cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),2) << endl;
+	cout << "EVown(:,:,:,:,1) is = " << endl;
+	cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),1) << endl;
 	cout << "END OF Boilerplates " << endl;
 
 	//CMig migdef;

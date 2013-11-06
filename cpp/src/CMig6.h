@@ -46,9 +46,11 @@ class CMig6 {
 		TinyVector<int,5> dim_ayp_here_there;
 		TinyVector<int,5> dim_ayp_here_t;
 		TinyVector<int,5> dim_ayp_here_y;
+		TinyVector<int,6> dim_ayp_here_yp;
 		TinyVector<int,4> dim_ayp_here;
 		TinyVector<int,3> dim_ayp;
 		Parstruc p;	
+		int maxage, verbose;
 	    const std::string name; // A member variable for the class to store the version 
 		
 		// private member functions
@@ -73,7 +75,8 @@ class CMig6 {
 			  Array<double,2> G,	
 			  Array<double,2> Gp,	
 			  Array<double,2> MoveCost,
-			  Array<double,1> Amenity);
+			  Array<double,1> Amenity,
+			  int verbose);
                   
 		const std::string version(){ return( name ); };
 		int MaxDim(){ return(ResStay.dimensions()); };
@@ -113,6 +116,8 @@ class CMig6 {
 		Array<int   ,6> Gets_loc_buy(  void ) const {return(s_loc_buy );};
 		Array<double,2> GetG(          void ) const {return(G);};
 		Array<double,2> GetGp(          void ) const {return(Gp);};
+		TinyVector<int,4> GetDim_ayp_here(    void ) const {return(dim_ayp_here);};
+		int GetMaxage( void ) const {return(maxage);};
 
 
 		//setters

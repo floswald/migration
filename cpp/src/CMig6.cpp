@@ -72,8 +72,10 @@ CMig6::CMig6():
     dim_ayp_here_there(2,2,2,2,2) ,				   
     dim_ayp_here_t(2,2,2,2,2) ,				   
     dim_ayp_here_y(2,2,2,2,2) ,				   
+    dim_ayp_here_yp(2,2,2,2,2,2) ,				   
     dim_ayp_here(2,2,2,2) ,				   
     dim_ayp(2,2,2), 
+	verbose(1),
 	name("CMig6"),	
 	G(2,2,FortranArray<2>()) ,
 	Gp(2,2,FortranArray<2>()) ,
@@ -100,6 +102,7 @@ CMig6::CMig6():
 	    MoveCost   = 0,1,1,0;
 	    Amenity    = 1,2;
 		p.myNA     = -99;
+		maxage = dim_ayp_here_t(4);
 		p.beta     = 0.9;
 }
 
@@ -121,7 +124,8 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 	   	     Array<double,2> data_G	 ,              
 	   	     Array<double,2> data_Gp ,              
 	   	     Array<double,2> data_MoveC	,              
-	   	     Array<double,1> data_Amenity)  :              
+	   	     Array<double,1> data_Amenity,
+			 int verbose)  :              
 	   	  
 	// this is syntactic sugar. an initialiser list. 
 
@@ -168,8 +172,10 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 	dim_ayp_here_there(D_ayp_here_there) ,				   
     dim_ayp_here_t(D_ayp_here_t) ,				   
     dim_ayp_here_y(D_ayp_here_y) ,				   
+    dim_ayp_here_yp(D_ayp_here(0),D_ayp_here(1),D_ayp_here(2),D_ayp_here(3),D_ayp_here(1),D_ayp_here(2)) ,				   
     dim_ayp_here(D_ayp_here) ,				   
     dim_ayp(D_ayp), 
+	verbose(verbose),
 	name("CMig6"),	
 	G(D_y,FortranArray<2>()) ,
 	Gp(D_ayp_here(2),D_ayp_here(2),FortranArray<2>()) ,
@@ -185,6 +191,7 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 		Gp.reference(data_Gp);
 		MoveCost.reference(data_MoveC);
 		Amenity.reference(data_Amenity);
+		maxage = dim_ayp_here_t(4);
 		Vown = 0;
 		Vrent = 0;
 		Down = 0;
@@ -242,20 +249,20 @@ void CMig6::show(){
 	Rcpp::Rcout <<  endl;
 	Rcpp::Rcout << "ResStay(:,1,1,:,1,nT,nA) = " << endl;
 	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	Rcpp::Rcout << "ResStay(:,1,1,1,:,nT,nA) = " << endl;
-	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	Rcpp::Rcout << "ResStay(:,1,1,:,1,1,1) = " << endl;
-	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,1,1) << endl;
-	Rcpp::Rcout << "ResStay(:,1,1,1,:,1,1) = " << endl;
-	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),1,1) << endl;
-	Rcpp::Rcout << "ResSell(:,:,1,1,1,nT,nA) = " << endl;
-	Rcpp::Rcout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	Rcpp::Rcout << "ResRent(:,:,1,1,1,nT,nA) = " << endl;
-	Rcpp::Rcout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	Rcpp::Rcout << "ResBuy(:,:,1,1,1,nT,nA) = " << endl;
-	Rcpp::Rcout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	Rcpp::Rcout << "end of show method: " << endl;
-	Rcpp::Rcout << "===================" << endl;
+	//Rcpp::Rcout << "ResStay(:,1,1,1,:,nT,nA) = " << endl;
+	//Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	//Rcpp::Rcout << "ResStay(:,1,1,:,1,1,1) = " << endl;
+	//Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,1,1) << endl;
+	//Rcpp::Rcout << "ResStay(:,1,1,1,:,1,1) = " << endl;
+	//Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),1,1) << endl;
+	//Rcpp::Rcout << "ResSell(:,:,1,1,1,nT,nA) = " << endl;
+	//Rcpp::Rcout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	//Rcpp::Rcout << "ResRent(:,:,1,1,1,nT,nA) = " << endl;
+	//Rcpp::Rcout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	//Rcpp::Rcout << "ResBuy(:,:,1,1,1,nT,nA) = " << endl;
+	//Rcpp::Rcout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	//Rcpp::Rcout << "end of show method: " << endl;
+	//Rcpp::Rcout << "===================" << endl;
 }
 
 
@@ -509,9 +516,10 @@ void CMig6::FindBuyCons( int age ){
 
 void CMig6::ComputePeriod(int age){
 
+	cout << "age is " << age << std::endl;
 	// if final operiod, then preComputed resources are utility
 	// unfortunately TinyVector dim_ayp_here_t only available as C++ array, so different indexing for those.
-	if (age==dim_ayp_here_t(4)) {
+	if (age==maxage) {
 		// EV(a,y,p,here,age)
 		EVown( Range::all(),Range::all(),Range::all(),Range::all(),age) = ResStay(Range::all(),Range::all(),Range::all(),Range::all(),1,age,dim_ayp_here_t(0));	//dim_ayp_here_t(0) is index of last element in savings vector.
 		EVrent(Range::all(),Range::all(),Range::all(),Range::all(),age) = ResRent(Range::all(),Range::all(),Range::all(),Range::all(),1,age,dim_ayp_here_t(0));
@@ -590,26 +598,54 @@ void CMig6::ComputeDchoice( int age ){
 }
 
 void CMig6::ComputeExpectations( int age ){
-
+	
 	EVown( Range::all(),Range::all(),Range::all(),Range::all(),age) = integrate(Vown( Range::all(),Range::all(),Range::all(),Range::all(),age));
 	EVrent(Range::all(),Range::all(),Range::all(),Range::all(),age) = integrate(Vrent(Range::all(),Range::all(),Range::all(),Range::all(),age));
 
 }
 
 Array<double,4> CMig6::integrate(Array<double,4> tens){
+
+	if (verbose>1){
 	
+		cout << "in integrate now. tensor is :" << endl;
+		cout << tens << endl;
+		cout << "dim_ayp_here_yp is :" << endl;
+		cout << dim_ayp_here_yp << endl;
+	}
+
 	firstIndex   i1;	// a
 	secondIndex  i2;    // y
 	thirdIndex   i3;	// p
 	fourthIndex  i4;	// here
-	fifthIndex   i5;	// there
+	fifthIndex   i5;	// y'
+	sixthIndex   i6;	// p'
 	
 	Array<double,4> ret(dim_ayp_here,FortranArray<4>());
 
-	Array<double,5> tmp(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
-	tmp = tens(i1,i2,i3,i4) * G(i5,i2);
-	ret = sum( tmp(i1,i5,i3,i4,i2), i5);
+	//Array<double,5> tmp(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
+	Array<double,6> tmpyp(dim_ayp_here_yp,FortranArray<6>());	// tmp(i1,i2,i3,i4,i5,i6)
+	Array<double,5> tmpy(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
+	
+	tmpy = tens(i1,i2,i3,i4) * G(i5,i2);
+	tmpyp = tmpy(i1,i2,i3,i4,i5) * Gp(i6,i3);
+	
+	tmpy = sum( tmpyp(i1,i2,i6,i4,i5,i3), i6 ) ;// integrate out p'
+
+
+	//tmpy = tmpy(i1,i2,i3,i4,i5);	// reorder indices
+
+	ret = sum( tmpy(i1,i5,i3,i4,i2), i5);	// integrate out y
 		  
+	//ret = sum( sum(   tens(i1,i5,i6,i4) * G(i5,i2) * Gp(i6,i3) , i6) ,i5);
+
+	if (verbose>1) {
+		cout << endl;
+		cout << "in integrate now. ret is :" << endl;
+		cout << ret << endl;
+	}
+	//tmp = tens(i1,i2,i3,i4) * G(i5,i2);
+	//ret = sum( tmp(i1,i5,i3,i4,i2), i5);
 	return(ret);
 
 }
