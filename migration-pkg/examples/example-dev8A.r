@@ -38,7 +38,7 @@ grids$a <- seq(-(1-dataR$down)*max(grids$p),10,length=nA)
 
 # OTHER's statespace: add dimension "here" AND "there".
 
-SS <- data.table(expand.grid(a=grids$a,iy=1:nY,ip=1:nP,here=idx$L,there=idx$L,it=1:nT,save=grids$a))
+SS <- data.table(expand.grid(a=grids$a,iy=1:nY,ip=1:nP,here=idx$L,there=idx$L,it=1:nT))
 for (yl in 1:nL) SS[here==yl, yhere:= grids$y[iy,yl] ]
 for (pl in 1:nL) SS[here==pl, phere:= grids$p[ip,pl] ]
 for (yl in 1:nL) SS[there==yl, ythere:= grids$y[iy,yl] ]
@@ -69,10 +69,7 @@ SS[,rrent := a + yhere + 0.3*it - dataR$rent*phere ]
 #     over the lifecycle and can hand back the capital at the end of life
 # * this is more like a interest only mortgage
 
-# final period restricion owner:
 # net wealth
-SS[it==nT & a>0,rstay := log(a) ]
-SS[it==nT & a<0,rstay := dataR$myNA ]
 for (ih in 1:nL){
 	for (ith in 1:nL){
 
@@ -96,22 +93,12 @@ for (ih in 1:nL){
 }
 
 
-# remove "save" dimension from R.
+# final period restricion owner:
 # ===============================
+SS[it==nT & a>0,rstay := log(a) ]
+SS[it==nT & a<0,rstay := dataR$myNA ]
 
-# this borrowing limit function is identical for owners and buyer alike
-iborrow.own <- array(-1,c(nL,nL,nP))	# set illegal index
-for (here in 1:nL){
-	for (there in 1:nL){
-		for (ip in 1:nP){
-			# owner moving from here to there
-			idx <- which(grids$a < -(1-dataR$down)*grids$p[ip,there])
-			if (length(idx)>0) iborrow.own[here,there,ip] <- max(idx)	# which is the largest savings index s.t. lower than borrowing limit. next index is legal.
-		}
-	}
-}
 
-iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
 
 
 # buyer: cannot have negative assets
@@ -128,8 +115,10 @@ SS[a>0 & it==nT, rrent := log(a)    ]
 # seller: but cannot borrow. must pay off housing debt upon sale.
 #SS[save<0, csell := dataR$myNA]
 
+
 # LOCATION statespace
-# ============
+# ===================
+
 # this table will hold amenity values at each location as well as
 # utility moving costs from here to there.
 SS.loc <- data.table(expand.grid(here=grids$L,there=grids$L))
@@ -139,6 +128,23 @@ rownames(move.cost) <- paste0("here",1:nL)
 colnames(move.cost) <- paste0("there",1:nL)
 
 amenity <- rev(grids$L)
+
+# borrowing limits 
+# ================
+
+# this borrowing limit function is identical for owners and buyer alike
+iborrow.own <- array(-1,c(nL,nL,nP))	# set illegal index
+for (here in 1:nL){
+	for (there in 1:nL){
+		for (ip in 1:nP){
+			# owner moving from here to there
+			idx <- which(grids$a < -(1-dataR$down)*grids$p[ip,there])
+			if (length(idx)>0) iborrow.own[here,there,ip] <- max(idx)	# which is the largest savings index s.t. lower than borrowing limit. next index is legal.
+		}
+	}
+}
+
+iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
 
 # tensors of resources at each state
 # ==================================
@@ -216,8 +222,8 @@ consS = array(0,dataR$dims)
 consO = array(0,dataR$dims)
 
 # final period values
-EVrent[ , , , ,nT] <- CR[ , , , ,1,nT,nA]
-EVown[ , , , ,nT]  <- CO[ , , , ,1,nT,nA]
+EVrent[ , , , ,nT] <- SS[it==nT,array(rrent,dataR$dimshere[-5])]
+EVown[ , , , ,nT]  <- SS[it==nT,array(rstay,dataR$dimshere[-5])]
 
 #            dimensions    a y p h      a y p h      y y'     p p'
 integr <- tensorFunction(R[i,m,n,l] ~ V[i,j,k,l] * G[m,j] * X[n,k] )
