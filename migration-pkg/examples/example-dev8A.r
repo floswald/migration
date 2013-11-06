@@ -53,8 +53,10 @@ SS[,crent := a + y + 0.3*it - dataR$rent*p     - dataR$R*save ]
 # ============
 
 # stayer: 
-SS[it==nT & a+y+p>0,cstay := log(a+y+p) ]
-SS[it==nT & a+y+p<0,cstay := dataR$myNA ]
+#SS[it==nT & a+y+p>0,cstay := log(a+y+p) ]
+#SS[it==nT & a+y+p<0,cstay := dataR$myNA ]
+SS[it==nT & a>0,cstay := log(a) ]
+SS[it==nT & a<0,cstay := dataR$myNA ]
 #SS[here != there, cstay := a + y + 0.3*it + p[here] - p[there] - dataR$R*save ] # TODO
 #SS[here != there & save< -(1-dataR$down)*p[there], cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
 SS[here != there & save< -(1-dataR$down)*p & it!=nT, cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
