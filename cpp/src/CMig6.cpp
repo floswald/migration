@@ -614,17 +614,16 @@ Array<double,4> CMig6::integrate(Array<double,4> tens){
 		cout << dim_ayp_here_yp << endl;
 	}
 
-	firstIndex   i1;	// a
-	secondIndex  i2;    // y
-	thirdIndex   i3;	// p
-	fourthIndex  i4;	// here
-	fifthIndex   i5;	// y'
-	sixthIndex   i6;	// p'
+	firstIndex   a;	
+	secondIndex  y; 
+	thirdIndex   p;	
+	fourthIndex  here;	
+	fifthIndex   yp;	
+	sixthIndex   pp;	
 	
 	Array<double,4> ret(dim_ayp_here,FortranArray<4>());
 
-	//Array<double,5> tmp(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
-	//
+	// this is my version:
 	//
 	//Array<double,6> tmpyp(dim_ayp_here_yp,FortranArray<6>());	// tmp(i1,i2,i3,i4,i5,i6)
 	//Array<double,5> tmpy(dim_ayp_here_y,FortranArray<5>());	// tmp(i1,i2,i3,i4,i5)
@@ -636,7 +635,12 @@ Array<double,4> CMig6::integrate(Array<double,4> tens){
 
 	//ret = sum( tmpy(i1,i5,i3,i4,i2), i5);	// integrate out y
 		  
-	ret = sum( sum(   tens(i1,i5,i6,i4) * G(i2,i5) * Gp(i3,i6) , i6) ,i5);
+	//ret = sum( sum(   tens(i1,i5,i6,i4) * G(i2,i5) * Gp(i3,i6) , i6) ,i5);
+	//
+	//
+	//and this is tibo's version:
+	//
+	ret = sum( sum(   tens(a,yp,pp,here) * G(y,yp) * Gp(p,pp) , pp) ,yp );
 
 	if (verbose>1) {
 		cout << endl;
