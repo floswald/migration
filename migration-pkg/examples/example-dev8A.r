@@ -17,7 +17,7 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nT <- 10L; nH <- 2L; nP <- 3L; nL <- 4L
+nA <- 10L; nY <- 2L; nT <- 4L; nH <- 2L; nP <- 3L; nL <- 4L
 G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 Gp <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
 dims <- c(nA,nY,nP,nL,nL,nT)
@@ -39,30 +39,49 @@ grids$a <- seq(-(1-dataR$down)*max(grids$p),10,length=nA)
 # OTHER's statespace: add dimension "here" AND "there".
 
 SS <- data.table(expand.grid(a=grids$a,iy=1:nY,ip=1:nP,here=idx$L,there=idx$L,it=1:nT,save=grids$a))
-for (yl in 1:nL) SS[here==yl, y:= grids$y[iy,yl] ]
-for (pl in 1:nL) SS[here==pl, p:= grids$p[ip,pl] ]
+for (yl in 1:nL) SS[here==yl, yhere:= grids$y[iy,yl] ]
+for (pl in 1:nL) SS[here==pl, phere:= grids$p[ip,pl] ]
+for (yl in 1:nL) SS[there==yl, ythere:= grids$y[iy,yl] ]
+for (pl in 1:nL) SS[there==pl, pthere:= grids$p[ip,pl] ]
 
 # both income and prices are mappings from here and there to y and p.
 # for now no location specific costs/differences in prices. add that later
-SS[,cstay := a + y + 0.3*it - dataR$R*save]	
-SS[,cbuy  := a + y + 0.3*it - p - dataR$R*save ]
-SS[,csell := a + y + 0.3*it - dataR$rent*p + p - dataR$R*save ]
-SS[,crent := a + y + 0.3*it - dataR$rent*p     - dataR$R*save ]
+SS[,cstay := a + yhere + 0.3*it - dataR$R*save]	
+SS[,cbuy  := a + yhere + 0.3*it - phere - dataR$R*save ]
+SS[,csell := a + yhere + 0.3*it - dataR$rent*phere + phere - dataR$R*save ]
+SS[,crent := a + yhere + 0.3*it - dataR$rent*phere     - dataR$R*save ]
 
 # restrictions
 # ============
 
-# stayer: 
-SS[it==nT & a+y+p>0,cstay := log(a+y+p) ]
-SS[it==nT & a+y+p<0,cstay := dataR$myNA ]
-#SS[here != there, cstay := a + y + 0.3*it + p[here] - p[there] - dataR$R*save ] # TODO
-#SS[here != there & save< -(1-dataR$down)*p[there], cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
-SS[here != there & save< -(1-dataR$down)*p & it!=nT, cstay := dataR$myNA ] # if you are an owner moving, you must buy a new house and the borrowing constraint applies
+SS[it==nT & a+yhere+phere>0,cstay := log(a+yhere+phere) ]
+SS[it==nT & a+yhere+phere<0,cstay := dataR$myNA ]
+for (ih in 1:nL){
+	for (ith in 1:nL){
+
+		# if here is not there
+		if (ih !=ith){
+
+				# stayer: 
+				SS[here==ih & there==ith, cstay := a + ythere + 0.3*it + phere - pthere - dataR$R*save ]		# 
+				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cstay := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+
+				# seller:
+				SS[here==ih & there==ith, csell := a + ythere + 0.3*it + phere - pthere*dataR$rent - dataR$R*save ]		 
+
+				# renter:
+				SS[here==ih & there==ith, crent := a + ythere + 0.3*it         - pthere*dataR$rent - dataR$R*save ]		
+				
+				# buyer:
+				SS[here==ih & there==ith, cbuy  := a + ythere + 0.3*it         - pthere            - dataR$R*save ]		
+				SS[here==ih & there==ith & save < -(1-dataR$down)*pthere , cbuy := dataR$myNA ]		# if you move and buy at the new place, must observe the borrowing constraint
+		}
+
+	}
+}
 
 # buyer: cannot have negative assets
-# buyer: cannot borrow more than (1-down) times value of house
 SS[a<0 & it!=nT,             cbuy  := dataR$myNA]
-SS[save < -(1-dataR$down)*p, cbuy  := dataR$myNA]
 
 # renter: cannot have negative assets
 # renter: cannot borrow
