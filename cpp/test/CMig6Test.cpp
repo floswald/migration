@@ -49,10 +49,10 @@ TEST(Mig6Test, TestReferenceConstructor) {
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
 
-	Parstruc pars;
+	PStruct pars;
 	pars.beta = 0.9;
 	pars.myNA = -99;
-	Parstruc* pp;
+	PStruct* pp;
 	pp = &pars;
 
     dim_ayp_here_there_ta = 2,2,2,2,2,2,2;
@@ -175,10 +175,10 @@ TEST(Mig6Test, TestComputePeriod) {
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
 
-	Parstruc pars;
+	PStruct pars;
 	pars.beta = 0.9;
 	pars.myNA = -99;
-	Parstruc* pp;
+	PStruct* pp;
 	pp = &pars;
 
     dim_ayp_here_there_ta = 2,2,2,2,2,2,2;
