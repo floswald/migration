@@ -29,10 +29,10 @@ CMig6::CMig6():
 
 	// this is syntactic sugar. an initialiser list. 
 
-	ResStay(2,2,2,2,2,2,2,FortranArray<7>()),
-    ResSell(2,2,2,2,2,2,2,FortranArray<7>()),
-	ResRent(2,2,2,2,2,2,2,FortranArray<7>()),
-    ResBuy( 2,2,2,2,2,2,2,FortranArray<7>()),
+	ResStay(2,2,2,2,2,2,FortranArray<6>()),
+    ResSell(2,2,2,2,2,2,FortranArray<6>()),
+	ResRent(2,2,2,2,2,2,FortranArray<6>()),
+    ResBuy( 2,2,2,2,2,2,FortranArray<6>()),
 
     v_loc_stay(2,2,2,2,2,2,FortranArray<6>()),	
     v_loc_sell(2,2,2,2,2,2,FortranArray<6>()),  
@@ -48,6 +48,7 @@ CMig6::CMig6():
 	s_loc_buy( 2,2,2,2,2,2,FortranArray<6>()), 
 	ctmp(      2,2,2,2,2,2,FortranArray<6>()),  	
 	xtmp(      2,2,2,2,2,2,FortranArray<6>()),  	
+	restmp(      2,2,2,2,2,FortranArray<5>()),  	
 
 	move_stay(2,2,2,2,2,FortranArray<5>()),
 	move_sell(2,2,2,2,2,FortranArray<5>()),
@@ -76,15 +77,20 @@ CMig6::CMig6():
     dim_ayp_here(2,2,2,2) ,				   
     dim_ayp(2,2,2), 
 	verbose(1),
+	agrid(2),
 	name("CMig6"),	
 	G(2,2,FortranArray<2>()) ,
 	Gp(2,2,FortranArray<2>()) ,
 	MoveCost(2,2,FortranArray<2>()) ,
+	blimit_own(2,2,2,FortranArray<3>()) ,
+	blimit_buy(2,2,FortranArray<2>()) ,
+	blimit_rent(1),
 	Amenity(2,FortranArray<1>()) {
 		ResStay    = 0.1;
 		ResSell    = 0.2;
 		ResRent    = 0.3;
 		ResBuy     = 0.4;
+		dim = ResStay.extent();
 		v_loc_stay = 1;
 		v_loc_sell = 2;
 		v_loc_rent = 3;
@@ -94,6 +100,7 @@ CMig6::CMig6():
 		s_loc_rent = 3;
 		s_loc_buy  = 4;
 		move_stay = 0;
+		agrid = -1.5,2;
 		move_sell = 0;
 		move_rent = 0;
 		move_buy  = 0;
@@ -104,35 +111,44 @@ CMig6::CMig6():
 		p.myNA     = -99;
 		maxage = dim_ayp_here_t(4);
 		p.beta     = 0.9;
+		xtmp      = 0;
+		ctmp      = 0;
+		restmp      = 0;
+		blimit_own = 0;
+		blimit_buy = 0;
+		blimit_rent = 0;
 }
 
 // constructor 2: data referenced 
-CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,		
-	         TinyVector<int,6> D_ayp_here_there_t,   
-	         TinyVector<int,6> D_ayp_here_there_a,   
-	         TinyVector<int,5> D_ayp_here_there,   
-	   	     TinyVector<int,5> D_ayp_here_t,      
-	   	     TinyVector<int,5> D_ayp_here_y,      
+CMig6::CMig6(TinyVector<int,6> D_ayp_here_there_t, 
+	         TinyVector<int,6> D_ayp_here_there_a, 
+	         TinyVector<int,5> D_ayp_here_there, 
+	         TinyVector<int,5> D_ayp_here_t, 
+	   	     TinyVector<int,5> D_ayp_here_y, 
 	   	     TinyVector<int,4> D_ayp_here,      
-	   	     TinyVector<int,3> D_ayp,               
-	   	     TinyVector<int,2> D_y,                 
-	   	     PStruct* pars ,                       
-	   	     Array<double,7> data_stay,             
-	   	     Array<double,7> data_sell,             
-	   	     Array<double,7> data_rent,             
-	   	     Array<double,7> data_buy,              
-	   	     Array<double,2> data_G	 ,              
-	   	     Array<double,2> data_Gp ,              
-	   	     Array<double,2> data_MoveC	,              
+	   	     TinyVector<int,3> D_ayp, 
+	   	     TinyVector<int,2> D_y, 
+	   	     PStruct * pars,
+	   	     Array<double,6> data_stay,
+	   	     Array<double,6> data_sell,
+	   	     Array<double,6> data_rent,
+	   	     Array<double,6> data_buy,
+	   	     Array<double,2> data_G,	
+	   	     Array<double,2> data_Gp,	
+	   	     Array<double,2> data_MoveCost,
 	   	     Array<double,1> data_Amenity,
+	   	     Array<double,1> data_agrid,
+	   	     Array<int   ,3> data_blimit_own,
+	   	     Array<int   ,2> data_blimit_buy,
+			 int data_blimit_rent,
 			 int verbose)  :              
 	   	  
 	// this is syntactic sugar. an initialiser list. 
 
-	ResStay(D_ayp_here_there_ta,FortranArray<7>()),
-	ResSell(D_ayp_here_there_ta,FortranArray<7>()),
-	ResRent(D_ayp_here_there_ta,FortranArray<7>()),
-	ResBuy( D_ayp_here_there_ta,FortranArray<7>()),
+	ResStay(D_ayp_here_there_t,FortranArray<6>()),
+	ResSell(D_ayp_here_there_t,FortranArray<6>()),
+	ResRent(D_ayp_here_there_t,FortranArray<6>()),
+	ResBuy( D_ayp_here_there_t,FortranArray<6>()),
 
     v_loc_stay(D_ayp_here_there_t,FortranArray<6>()),	
     v_loc_sell(D_ayp_here_there_t,FortranArray<6>()),  
@@ -148,6 +164,7 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 	s_loc_buy( D_ayp_here_there_t,FortranArray<6>()), 
 	ctmp(      D_ayp_here_there_a,FortranArray<6>()),  	
 	xtmp(      D_ayp_here_there_a,FortranArray<6>()),  	
+	restmp(      D_ayp_here_there,FortranArray<5>()),  	
 
 	move_stay(D_ayp_here_t,FortranArray<5>()),
 	move_sell(D_ayp_here_t,FortranArray<5>()),
@@ -176,10 +193,14 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
     dim_ayp_here(D_ayp_here) ,				   
     dim_ayp(D_ayp), 
 	verbose(verbose),
+	agrid(data_agrid),
 	name("CMig6"),	
 	G(D_y,FortranArray<2>()) ,
 	Gp(D_ayp_here(2),D_ayp_here(2),FortranArray<2>()) ,
 	MoveCost(D_ayp_here(3),D_ayp_here(3),FortranArray<2>()) ,
+	blimit_own(D_ayp_here(3),D_ayp_here(3),D_ayp_here(2),FortranArray<3>()) ,
+	blimit_buy(D_ayp_here(3),D_ayp_here(2),FortranArray<2>()) ,
+	blimit_rent(data_blimit_rent) ,
 	Amenity(D_ayp_here(3),FortranArray<1>()) ,
 	p(*pars) {						  
 		// reference the data
@@ -189,7 +210,9 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 		ResBuy.reference(data_buy );
 		G.reference(data_G);
 		Gp.reference(data_Gp);
-		MoveCost.reference(data_MoveC);
+		MoveCost.reference(data_MoveCost);
+		blimit_own.reference(data_blimit_own);
+		blimit_buy.reference(data_blimit_buy);
 		Amenity.reference(data_Amenity);
 		maxage = dim_ayp_here_t(4);
 		Vown = 0;
@@ -212,6 +235,9 @@ CMig6::CMig6(TinyVector<int,7> D_ayp_here_there_ta,
 		move_sell = 0;
 		move_rent = 0;
 		move_buy  = 0;
+		ctmp = 0;
+		xtmp = 0;
+		restmp = 0;
 }
 
 
@@ -247,8 +273,8 @@ void CMig6::show(){
 	Rcpp::Rcout << "showing the first " << ma << " rows" << endl;
 	Rcpp::Rcout << "=======================" << endl;
 	Rcpp::Rcout <<  endl;
-	Rcpp::Rcout << "ResStay(:,1,1,:,1,nT,nA) = " << endl;
-	Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,Range(fromStart,my),1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	Rcpp::Rcout << "ResStay(:,:,1,1,1,nT) = " << endl;
+	Rcpp::Rcout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1,1) << endl;
 	//Rcpp::Rcout << "ResStay(:,1,1,1,:,nT,nA) = " << endl;
 	//Rcpp::Rcout << ResStay(Range(fromStart,ma),1,1,1,Range(fromStart,my),dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
 	//Rcpp::Rcout << "ResStay(:,1,1,:,1,1,1) = " << endl;
@@ -286,19 +312,23 @@ void CMig6::show(){
 	cout <<  G << endl;
 	cout << "we have Gp: " << endl;
 	cout <<  Gp << endl;
+	cout << "we have blimit_own: " << endl;
+	cout <<  blimit_own << endl;
+	cout << "we have blimit_buy: " << endl;
+	cout <<  blimit_buy << endl;
 	cout << "we have MoveCost: " << endl;
 	cout <<  MoveCost << endl;
 	cout << "showing the first " << ma << " rows" << endl;
 	cout << "=======================" << endl;
 	cout <<  endl;
-	cout << "ResStay(:,:,1,1,1,nT,nA) = " << endl;
-	cout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	cout << "ResSell(:,:,1,1,1,nT,nA) = " << endl;
-	cout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	cout << "ResRent(:,:,1,1,1,nT,nA) = " << endl;
-	cout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
-	cout << "ResBuy(:,:,1,1,1,nT,nA) = " << endl;
-	cout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,1,1,dim_ayp_here_t(4),dim_ayp_here_t(0)) << endl;
+	cout << "ResStay(:,:,1,1,1,1) = " << endl;
+	cout << ResStay(Range(fromStart,ma),Range(fromStart,my),1,1,1,1) << endl;
+	cout << "ResSell(:,:,1,1,1,1) = " << endl;
+	cout << ResSell(Range(fromStart,ma),Range(fromStart,my),1,1,1,1) << endl;
+	cout << "ResRent(:,:,1,1,1,1) = " << endl;
+	cout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,1,1,1) << endl;
+	cout << "ResBuy(:,:,1,1,1,1) = " << endl;
+	cout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,1,1,1) << endl;
 	cout << "end of show method: " << endl;
 	cout << "===================" << endl;
 }
@@ -348,88 +378,154 @@ void CMig6::show(){
 //// =====================================
 
 
+
+void CMig6::LimitOwner( void ) {
+
+	for (int ihere=1;ihere<dim_ayp_here(3)+1; ihere++){
+
+		for (int ithere=1;ithere<dim_ayp_here(3)+1; ithere++){
+
+			if (ihere != ithere ){
+				// enforce the borrowing limit: here's an owner who is moving to buy.
+
+				for (int ip=1; ip<dim_ayp_here(2)+1; ip++) {
+					
+					// if there was a limit specified for this combination (i.e. pos index)
+					// set all consumption indices up to THAT one to NA
+					if (blimit_own(ihere,ithere,ip) > 0) ctmp(Range::all(),Range::all(),Range::all(),ihere,ithere,Range(fromStart,blimit_own(ihere,ithere,ip)) ) = p.myNA;
+
+				}
+			}
+		}
+	}
+}
+
+void CMig6::LimitBuyer( void ) {
+
+	for (int ithere=1;ithere<dim_ayp_here(3)+1; ithere++){
+
+			for (int ip=1; ip<dim_ayp_here(2)+1; ip++) {
+				
+				// if there was a limit specified for this combination (i.e. pos index)
+				// set all consumption indices up to THAT one to NA
+				if (blimit_buy(ithere,ip) > 0) ctmp(Range::all(),Range::all(),Range::all(),Range::all(),ithere,Range(fromStart,blimit_buy(ithere,ip)) ) = p.myNA;
+
+			}
+		}
+}
+
+
+
 void CMig6::ComputeStay(int age) {
 
-	firstIndex   i1;	// a
-	secondIndex  i2;    // y
-	thirdIndex   i3;	// p
-	fourthIndex  i4;	// here
-	fifthIndex   i5;	// there
-	sixthIndex   i6;	// save
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
+	sixthIndex   save;
 
 	vplustmp = EVown(Range::all(),Range::all(),Range::all(),Range::all(),age+1);	// EV(a,y,p,here,age)
 	// get consumption at all states,savings combinations
-	ctmp     = ResStay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age,Range::all());	// ResStay(a,y,p,here,there,age,saving)
-	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(i1,i2,i3,i4,i5,i6),p.mgamma)) + p.theta + p.beta * vplustmp(i6,i2,i3,i5) - MoveCost(i4,i5) + Amenity(i5), p.myNA);	//vplustmp(save,y,p,there)
-	// get value of being an owner in all locations (here,there)
-	v_loc_stay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, i6);
-	s_loc_stay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, i6);
+	
+	// build consumption tensor here. that is c = Res - save
+	// complication: different borrowing constraints
+	restmp   = ResStay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age); // EV(a,y,p,here,there)
 
-	// that would be perfect. unfortunately cannot mix index placeholders with fixed indices (like 'age' here)
-	//c_loc_tmp(i1,i2,i3,i4,i5) = ctmp(i1,i2,i3,i4,i5, s_loc_stay(i1,i2,i3,i4,i5,age) );
-	//c_loc_stay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = c_loc_tmp;
-	// instead gotta do that:
+	ctmp     = restmp(a,y,pr,here,there) - p.R * agrid(save);
+	
+	// enforce the borrowing limit for moving owners.
+	LimitOwner() ;
+	
+	// taking care of infeasible consumption values here
+
+	xtmp     = where(ctmp > 0, p.imgamma*( pow(ctmp(a,y,pr,here,there,save),p.mgamma) ) + p.theta + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
+	// get value of being an owner in all locations (here,there)
+	v_loc_stay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, save);
+	s_loc_stay(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, save);
+
 	FindStayCons( age );	
 }
 
+
+
+void CMig6::ComputeBuy(int age) {
+
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
+	sixthIndex   save;
+
+	vplustmp = EVown(Range::all(),Range::all(),Range::all(),Range::all(),age+1);	// EV(a,y,p,here,age)
+	// get consumption at all states,savings combinations
+	restmp   = ResBuy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age);
+	
+	ctmp     = restmp(a,y,pr,here,there) - p.R * agrid(save);
+	
+	LimitBuyer();
+	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(a,y,pr,here,there,save),p.mgamma)) + p.theta + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
+	// get value of staying
+	v_loc_buy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, save);
+	s_loc_buy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, save);
+	FindBuyCons( age );	
+}
+
+
+
 void CMig6::ComputeSell(int age) {
 
-	firstIndex   i1;	// a
-	secondIndex  i2;    // y
-	thirdIndex   i3;	// p
-	fourthIndex  i4;	// here
-	fifthIndex   i5;	// there
-	sixthIndex   i6;	// save
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
+	sixthIndex   save;
 
 	vplustmp = EVrent(Range::all(),Range::all(),Range::all(),Range::all(),age+1);	// EV(a,y,p,here,age)
-	// get consumption at all states,savings combinations
-	ctmp     = ResSell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age,Range::all());	// ResStay(a,y,p,here,there,age,saving)
-	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(i1,i2,i3,i4,i5,i6),p.mgamma)) +    0    + p.beta * vplustmp(i6,i2,i3,i5) - MoveCost(i4,i5) + Amenity(i5), p.myNA);	//vplustmp(save,y,p,there)
+	restmp   = ResSell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age);
+	
+	ctmp     = restmp(a,y,pr,here,there) - p.R * agrid(save);
+
+	// no borrowing for seller
+	ctmp(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),Range(fromStart,blimit_rent) ) = p.myNA;
+	
+	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(a,y,pr,here,there,save),p.mgamma)) +    0    + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
 	// get value of selling at combo (here,there)
-	v_loc_sell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, i6);
-	s_loc_sell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, i6);
+	v_loc_sell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, save);
+	s_loc_sell(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, save);
 	FindSellCons( age );	
 
 }
 
 void CMig6::ComputeRent(int age) {
 
-	firstIndex   i1;	// a
-	secondIndex  i2;    // y
-	thirdIndex   i3;	// p
-	fourthIndex  i4;	// here
-	fifthIndex   i5;	// there
-	sixthIndex   i6;	// save
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
+	sixthIndex   save;
 
 	vplustmp = EVrent(Range::all(),Range::all(),Range::all(),Range::all(),age+1);	// EV(a,y,p,here,age)
 	// get consumption at all states,savings combinations
-	ctmp     = ResRent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age,Range::all());
-	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(i1,i2,i3,i4,i5,i6),p.mgamma)) +    0    + p.beta * vplustmp(i6,i2,i3,i5) - MoveCost(i4,i5) + Amenity(i5), p.myNA);	//vplustmp(save,y,p,there)
+	restmp   = ResRent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age);
+	
+	ctmp     = restmp(a,y,pr,here,there) - p.R * agrid(save);
+
+	// no borrowing for renter
+	ctmp(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),Range(fromStart,blimit_rent) ) = p.myNA;
+
+
+	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(a,y,pr,here,there,save),p.mgamma)) +    0    + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
 	// get value of staying
-	v_loc_rent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, i6);
-	s_loc_rent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, i6);
+	v_loc_rent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, save);
+	s_loc_rent(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, save);
 	FindRentCons( age );	
 
 }
 
-void CMig6::ComputeBuy(int age) {
-
-	firstIndex   i1;	// a
-	secondIndex  i2;    // y
-	thirdIndex   i3;	// p
-	fourthIndex  i4;	// here
-	fifthIndex   i5;	// there
-	sixthIndex   i6;	// save
-
-	vplustmp = EVown(Range::all(),Range::all(),Range::all(),Range::all(),age+1);	// EV(a,y,p,here,age)
-	// get consumption at all states,savings combinations
-	ctmp     = ResBuy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age,Range::all());
-	xtmp     = where(ctmp > 0, p.imgamma*(pow(ctmp(i1,i2,i3,i4,i5,i6),p.mgamma)) + p.theta + p.beta * vplustmp(i6,i2,i3,i5) - MoveCost(i4,i5) + Amenity(i5), p.myNA);	//vplustmp(save,y,p,there)
-	// get value of staying
-	v_loc_buy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = max(xtmp, i6);
-	s_loc_buy(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) = maxIndex(xtmp, i6);
-	FindBuyCons( age );	
-}
 
 
 

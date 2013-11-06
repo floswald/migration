@@ -11,10 +11,9 @@ using namespace blitz;
 // Migration model class for N locations
 // =====================================
 //
-// version 1.1
+// version 2.0
 //
-// Consumption is built and passed from R.
-// HUGE capacity constraint, as R will run out of memory for 100 points in assets.
+// pass borrowing limits and built consumption in C
 //
 // this version has location as a state variable "here" and "there", both can
 // take N values. 
@@ -36,15 +35,17 @@ struct PStruct{
 	double mgamma;
 	double imgamma;
 	double theta;
+	double R;
 };
 
 
 class CMig6 {
 	private:
 		// private data objects
-		Array<double,7> ResStay, ResSell, ResRent, ResBuy;	//(a,y,p,here,there,age,a')
+		Array<double,6> ResStay, ResSell, ResRent, ResBuy;	//(a,y,p,here,there,age)
 		Array<double,6> v_loc_stay,v_loc_sell,v_loc_rent,v_loc_buy,c_loc_stay,c_loc_sell,c_loc_rent,c_loc_buy;	//(a,y,p,here,there,age)
 		Array<double,6> ctmp,xtmp;	//(a,y,p,here,there,a')
+		Array<double,5> restmp;	//(a,y,p,here,there)
 		Array<int   ,6> s_loc_stay,s_loc_sell,s_loc_rent,s_loc_buy;	//(a,y,p,here,there,age)
 		Array<int   ,5> move_stay,move_sell,move_rent,move_buy;	//(a,y,p,here,age) array where an entry is the index of the place one is moving TO.
 		Array<double,5> EVown,EVrent,Vown,Vrent,v_loc_tmp,v_stay,v_sell,v_rent,v_buy;   //(a,y,p,here,age)
@@ -59,7 +60,11 @@ class CMig6 {
 		Array<double,4> vplustmp;
 		Array<double,2> G, Gp;
 		Array<double,2> MoveCost;
+		Array<int   ,3> blimit_own;
+		Array<int   ,2> blimit_buy;
 		Array<double,1> Amenity;
+		Array<double,1> agrid;
+		TinyVector<int,6> dim;
 		TinyVector<int,6> dim_ayp_here_there_t;
 		TinyVector<int,5> dim_ayp_here_there;
 		TinyVector<int,5> dim_ayp_here_t;
@@ -68,16 +73,18 @@ class CMig6 {
 		TinyVector<int,4> dim_ayp_here;
 		TinyVector<int,3> dim_ayp;
 		PStruct p;	
-		int maxage, verbose;
+		int maxage, verbose, blimit_rent;
 	    const std::string name; // A member variable for the class to store the version 
 		
 		// private member functions
 
 	public: 
 		// 2 constructors
+		// you build the arrays before you initiate
+		// the class. the class is referenced to those
+		// data arrays
 		CMig6();
-		CMig6(TinyVector<int,7> dim_ayp_here_there_ta,
-			  TinyVector<int,6> dim_ayp_here_there_t, 
+		CMig6(TinyVector<int,6> dim_ayp_here_there_t, 
 			  TinyVector<int,6> dim_ayp_here_there_a, 
 			  TinyVector<int,5> dim_ayp_here_there, 
 			  TinyVector<int,5> dim_ayp_here_t, 
@@ -86,14 +93,18 @@ class CMig6 {
 			  TinyVector<int,3> dim_ayp, 
 			  TinyVector<int,2> dim_y, 
 			  PStruct * pars,
-			  Array<double,7> data_stay,
-			  Array<double,7> data_sell,
-			  Array<double,7> data_rent,
-			  Array<double,7> data_buy,
-			  Array<double,2> G,	
-			  Array<double,2> Gp,	
-			  Array<double,2> MoveCost,
-			  Array<double,1> Amenity,
+			  Array<double,6> data_stay,
+			  Array<double,6> data_sell,
+			  Array<double,6> data_rent,
+			  Array<double,6> data_buy,
+			  Array<double,2> data_G,	
+			  Array<double,2> data_Gp,	
+			  Array<double,2> data_MoveCost,
+			  Array<double,1> data_Amenity,
+			  Array<double,1> data_agrid,
+			  Array<int   ,3> data_blimit_own,
+			  Array<int   ,2> data_blimit_buy,
+			  int data_blimit_rent,
 			  int verbose);
                   
 		const std::string version(){ return( name ); };
@@ -101,10 +112,10 @@ class CMig6 {
 			
 
 		// getters
-		Array<double,7> GetResStay(    void ) const {return(ResStay);};
-		Array<double,7> GetResSell(    void ) const {return(ResSell);};
-		Array<double,7> GetResBuy(     void ) const {return(ResBuy );};
-		Array<double,7> GetResRent(    void ) const {return(ResRent);};
+		Array<double,6> GetResStay(    void ) const {return(ResStay);};
+		Array<double,6> GetResSell(    void ) const {return(ResSell);};
+		Array<double,6> GetResBuy(     void ) const {return(ResBuy );};
+		Array<double,6> GetResRent(    void ) const {return(ResRent);};
 		Array<double,5> GetVown(       void ) const {return(Vown)   ;};
 		Array<double,5> GetVrent(      void ) const {return(Vrent)  ;};
 		Array<double,5> GetEVown(      void ) const {return(EVown)  ;};
@@ -139,10 +150,10 @@ class CMig6 {
 
 
 		//setters
-		void ReferenceStay( Array<double,7> x ) { ResStay.reference( x ) ; }
-		void ReferenceSell( Array<double,7> x ) { ResSell.reference( x ) ; }
-		void ReferenceRent( Array<double,7> x ) { ResRent.reference( x ) ; }
-		void ReferenceBuy( Array<double,7> x ) { ResBuy.reference( x ) ; }
+		void ReferenceStay( Array<double,6> x ) { ResStay.reference( x ) ; }
+		void ReferenceSell( Array<double,6> x ) { ResSell.reference( x ) ; }
+		void ReferenceRent( Array<double,6> x ) { ResRent.reference( x ) ; }
+		void ReferenceBuy( Array<double,6> x ) { ResBuy.reference( x ) ; }
 		
 		void ReferenceG( Array<double,2> x ) { G.reference( x ) ; }
 		void ReferenceGp( Array<double,2> x ) { Gp.reference( x ) ; }
@@ -150,6 +161,8 @@ class CMig6 {
 
 		//// other member functions		
 		void show ( void );
+		void LimitOwner( void ) ;
+		void LimitBuyer( void ) ;
 		void ComputePeriod(int age);
 		void ComputeExpectations( int age );
 

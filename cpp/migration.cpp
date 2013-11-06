@@ -66,7 +66,6 @@ int main(int argument_count, char ** command_line_arguments)
 	cout << endl;
 
 	// dim vectors
-    TinyVector<int,7> dim_ayp_here_there_ta;
 	TinyVector<int,6> dim_ayp_here_there_t; 
 	TinyVector<int,6> dim_ayp_here_there_a; 
 	TinyVector<int,5> dim_ayp_here_there; 
@@ -79,15 +78,15 @@ int main(int argument_count, char ** command_line_arguments)
 	int nT = 3;
 	int nL = 4;
 	int nP = 3;
+	int nA = 11;
 
-    dim_ayp_here_there_ta = 2,2,nP,nL,nL,nT,2;
-	dim_ayp_here_there_t  = 2,2,nP,nL,nL,nT;
-	dim_ayp_here_there_a  = 2,2,nP,nL,nL,2; 
-	dim_ayp_here_there    = 2,2,nP,nL,nL;
-	dim_ayp_here_t        = 2,2,nP,nL,nT;
-	dim_ayp_here_y        = 2,2,nP,nL,2;
-	dim_ayp_here          = 2,2,nP,nL;   
-	D_ayp                 = 2,2,nP;
+	dim_ayp_here_there_t  = nA,2,nP,nL,nL,nT;
+	dim_ayp_here_there_a  = nA,2,nP,nL,nL,2; 
+	dim_ayp_here_there    = nA,2,nP,nL,nL;
+	dim_ayp_here_t        = nA,2,nP,nL,nT;
+	dim_ayp_here_y        = nA,2,nP,nL,2;
+	dim_ayp_here          = nA,2,nP,nL;   
+	D_ayp                 = nA,2,nP;
 	D_y                   = 2,2;
 
 	Array<double,2> transP(nP,nP,FortranArray<2>());
@@ -97,14 +96,15 @@ int main(int argument_count, char ** command_line_arguments)
 
 	// get some data
 
-	Array<double,7> tstay(dim_ayp_here_there_ta,FortranArray<7>());	
-	Array<double,7> tsell(dim_ayp_here_there_ta,FortranArray<7>());	
-	Array<double,7> trent(dim_ayp_here_there_ta,FortranArray<7>());	
-	Array<double,7> tbuy( dim_ayp_here_there_ta,FortranArray<7>());	
+	Array<double,6> tstay(dim_ayp_here_there_t,FortranArray<6>());	
+	Array<double,6> tsell(dim_ayp_here_there_t,FortranArray<6>());	
+	Array<double,6> trent(dim_ayp_here_there_t,FortranArray<6>());	
+	Array<double,6> tbuy( dim_ayp_here_there_t,FortranArray<6>());	
+
 
 	//fill with random numbers
 	ranlib::Uniform<double> uniGen;
-	Array<double,7>::iterator it;
+	Array<double,6>::iterator it;
 
 	for (it = tstay.begin(); it!=tstay.end(); it++) {
 		*it = uniGen.random() + 1;
@@ -119,11 +119,27 @@ int main(int argument_count, char ** command_line_arguments)
 		*it = uniGen.random() + 1;
 	}
 
+	// savings grid
+	Array<double,1> agrid(nA,FortranArray<1>());
+	agrid(1) = -2;
+	agrid(nA) = 3;
+
+	double step_own = (agrid(nA)-agrid(1)) / nA;
+	for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
+
     Array<double,2> MoveCost(shape(2,2),FortranArray<2>());
 	MoveCost = 0,1,1,0;
 
     Array<double,1> Amenity(2,FortranArray<1>());
 	Amenity = 1,2;
+
+	Array<int,3> blim_own(nL,nL,nP,FortranArray<3>());
+	Array<int,2> blim_buy(nL,nP,FortranArray<2>());
+	int blim_rent = nA-1;
+	blim_own = 3;
+	blim_buy = 4;
+
+	int verbose = 1;
 	
 	PStruct pars2;
 	pars2.beta = 0.9;
@@ -132,8 +148,7 @@ int main(int argument_count, char ** command_line_arguments)
 	pars2.mgamma  = 1 - pars2.gamma;
 	pars2.imgamma = 1/pars2.mgamma;
 
-	CMig6 myMig6(dim_ayp_here_there_ta,                                          
-			    dim_ayp_here_there_t,
+	CMig6 myMig6(dim_ayp_here_there_t,                                          
 				dim_ayp_here_there_a, 
 				dim_ayp_here_there, 
 				dim_ayp_here_t, 
@@ -142,9 +157,8 @@ int main(int argument_count, char ** command_line_arguments)
 				D_ayp, 
 				D_y, 
 				&pars2,
-				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity,1);
+				tstay,tsell,trent,tbuy,trans, transP, MoveCost, Amenity, agrid, blim_own, blim_buy, blim_rent, verbose);
         
-
 	myMig6.show();
 
 	// can compute a period?
