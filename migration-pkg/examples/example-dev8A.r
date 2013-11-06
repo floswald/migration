@@ -44,18 +44,26 @@ for (pl in 1:nL) SS[here==pl, phere:= grids$p[ip,pl] ]
 for (yl in 1:nL) SS[there==yl, ythere:= grids$y[iy,yl] ]
 for (pl in 1:nL) SS[there==pl, pthere:= grids$p[ip,pl] ]
 
-# both income and prices are mappings from here and there to y and p.
-# for now no location specific costs/differences in prices. add that later
-SS[,cstay := a + yhere + 0.3*it - dataR$R*save]	
-SS[,cbuy  := a + yhere + 0.3*it - phere - dataR$R*save ]
-SS[,csell := a + yhere + 0.3*it - dataR$rent*phere + phere - dataR$R*save ]
-SS[,crent := a + yhere + 0.3*it - dataR$rent*phere     - dataR$R*save ]
+
+# We compute available resources at each state (a,y,p,here,there,age) here.
+# we code r for 'resources'
+
+SS[,rstay := a + yhere + 0.3*it ]	
+SS[,rbuy  := a + yhere + 0.3*it - phere ]
+SS[,rsell := a + yhere + 0.3*it - dataR$rent*phere + phere]
+SS[,rrent := a + yhere + 0.3*it - dataR$rent*phere ]
 
 # restrictions
 # ============
 
-SS[it==nT & a+yhere+phere>0,cstay := log(a+yhere+phere) ]
-SS[it==nT & a+yhere+phere<0,cstay := dataR$myNA ]
+# I enforce restrictions on the state space by assigning a 
+# large negative number "myNA" to illegal states.
+
+
+# final period restricion owner:
+# net wealth
+SS[it==nT & a+yhere+phere>0,rstay := log(a+yhere+phere) ]
+SS[it==nT & a+yhere+phere<0,rstay := dataR$myNA ]
 for (ih in 1:nL){
 	for (ith in 1:nL){
 
@@ -79,6 +87,25 @@ for (ih in 1:nL){
 
 	}
 }
+
+
+# remove "save" dimension from R.
+# ===============================
+
+# this borrowing limit function is identical for owners and buyer alike
+iborrow.own <- array(-1,c(nL,nL,nP))	# set illegal index
+for (here in 1:nL){
+	for (there in 1:nL){
+		for (ip in 1:nP){
+			# owner moving from here to there
+			idx <- which(grids$a < -(1-dataR$down)*grids$p[ip,there])
+			if (length(idx)>0) iborrow.own[here,there,ip] <- max(idx)	# which is the largest savings index s.t. lower than borrowing limit. next index is legal.
+		}
+	}
+}
+
+iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
+
 
 # buyer: cannot have negative assets
 SS[a<0 & it!=nT,             cbuy  := dataR$myNA]
