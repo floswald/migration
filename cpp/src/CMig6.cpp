@@ -103,6 +103,8 @@ CMig6::CMig6() :
 		xtmp            = 1;
 		ctmp            = 2;
 		restmp          = 3;
+		W_loc_rent = 0;
+		W_loc_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -173,7 +175,7 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 	Location_own( nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
-	v_loc_tmp( nA,nY,nP,nL,nT,   FortranArray<5>()),
+	v_loc_tmp( nA,nY,nP,nL,nL,   FortranArray<5>()),
 
 	vplustmp(  nA,nY,nP,nL,      FortranArray<4>()), 	// (a,y,p,here)
 	blimit_own(nL,nL,nP,         FortranArray<3>()) ,	// (here,there,p)
@@ -208,6 +210,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 		xtmp            = 1;
 		ctmp            = 2;
 		restmp          = 3;
+		W_loc_rent = 0;
+		W_loc_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -291,7 +295,7 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 	Location_own( nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
-	v_loc_tmp( nA,nY,nP,nL,nT,   FortranArray<5>()),
+	v_loc_tmp( nA,nY,nP,nL,nL,   FortranArray<5>()),
 	
 	vplustmp(  nA,nY,nP,nL,      FortranArray<4>()), 	// (a,y,p,here)
 	blimit_own(nL,nL,nP,         FortranArray<3>()) ,	// (here,there,p)
@@ -323,6 +327,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 		blimit_buy.reference(data_blimit_buy);
 		Amenity.reference(data_Amenity);
 		agrid.reference(data_agrid);
+		W_loc_rent = 0;
+		W_loc_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -802,6 +808,7 @@ void CMig6::ComputeLocationChoice( int age ){
 	fifthIndex   there;	
 	Range all = Range::all();
 
+	// v_loc_tmp is (a,y,p,here,there,age)!!
 	v_loc_tmp = W_loc_own(all,all,all,all,all,age);
 	Vown(        all,all,all,all,age) = max(      v_loc_tmp, there );
 	Location_own(all,all,all,all,age) = maxIndex( v_loc_tmp, there );

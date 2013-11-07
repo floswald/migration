@@ -65,7 +65,7 @@ class CMig6 {
 		Array<int   ,5> Location_own, Location_rent;   //(a,y,p,here,age)
 
 		// (IV) auxiliary member arrays
-		Array<double,5> v_loc_tmp;   //(a,y,p,here,age)
+		Array<double,5> v_loc_tmp;   //(a,y,p,here,there)
 
 		Array<double,6> ctmp,xtmp;	//(a,y,p,here,there,a')
 		Array<double,5> restmp;	//(a,y,p,here,there)
