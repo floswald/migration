@@ -17,7 +17,7 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nP <- 3L; nL <- 4L; nT <- 4L
+nA <- 10L; nY <- 4L; nP <- 3L; nL <- 5L; nT <- 5L
 
 G           <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 Gp          <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
@@ -28,7 +28,7 @@ dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                theta = 0.2,beta=0.95,gamma=1.4,
                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
                G = as.numeric(G),
-               Gp = as.numeric(Gp),verbose=0L);
+               Gp = as.numeric(Gp),verbose=1L);
                
 idx <- list()
 idx$L <- 1:nL
