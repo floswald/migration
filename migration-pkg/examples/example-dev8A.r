@@ -17,16 +17,18 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 10L; nY <- 2L; nT <- 4L; nH <- 2L; nP <- 3L; nL <- 4L
-G <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
-Gp <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
-dims <- c(nA,nY,nP,nL,nL,nT)
+nA <- 10L; nY <- 2L; nP <- 3L; nL <- 4L; nT <- 4L
+
+G           <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
+Gp          <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
+dims        <- c(nA,nY,nP,nL,nL,nT)
 names(dims) <- c("a","y","p","here","there","age")
+
 dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                theta = 0.2,beta=0.95,gamma=1.4,
                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
                G = as.numeric(G),
-               Gp = as.numeric(Gp));
+               Gp = as.numeric(Gp),verbose=0L);
                
 idx <- list()
 idx$L <- 1:nL
@@ -69,7 +71,6 @@ SS[,rrent := a + yhere + 0.3*it - dataR$rent*phere ]
 #     over the lifecycle and can hand back the capital at the end of life
 # * this is more like a interest only mortgage
 
-# net wealth
 for (ih in 1:nL){
 	for (ith in 1:nL){
 
@@ -93,34 +94,35 @@ for (ih in 1:nL){
 }
 
 
-# final period restricion owner:
-# ===============================
+# final period restricions
+# ========================
+
+# I use the resources of stay and rent
+# to precompute and pass final period 
+# values to the routine.
+# owner:
 SS[it==nT & a>0,rstay := log(a) ]
 SS[it==nT & a<0,rstay := dataR$myNA ]
 
+# renter:
+SS[a>0 & it==nT, rrent := log(a)    ]
 
-
+# other restrictions on asset space:
+# ----------------------------------
 
 # buyer: cannot have negative assets
 SS[a<0 & it!=nT,             rbuy  := dataR$myNA]
 
 # renter: cannot have negative assets
-# renter: cannot borrow
-# renter: final utility
 SS[a<0         , rrent := dataR$myNA]
-#SS[save<0      , crent := dataR$myNA]
-SS[a>0 & it==nT, rrent := log(a)    ]
 
 # seller: can have negative assets
-# seller: but cannot borrow. must pay off housing debt upon sale.
-#SS[save<0, csell := dataR$myNA]
 
 
 # LOCATION statespace
 # ===================
 
-# this table will hold amenity values at each location as well as
-# utility moving costs from here to there.
+# this table holds utility moving costs from here to there.
 SS.loc <- data.table(expand.grid(here=grids$L,there=grids$L))
 SS.loc[,mcost := abs(here-there)]
 move.cost <- SS.loc[,matrix(mcost,nL,nL,)]
@@ -132,19 +134,26 @@ amenity <- rev(grids$L)
 # borrowing limits 
 # ================
 
-# this borrowing limit function is identical for owners and buyer alike
-iborrow.own <- array(-1,c(nL,nL,nP))	# set illegal index
+# borrowing limit function for owners: whenever here != there, you are considered an owner moving, so you are constrained
+# borrowing limit function for buyers: it does not matter where you are (here irrelevant), you always are constrained
+iborrow.own <- array(-1,c(nL,nL,nP))	# set to illegal index
+iborrow.buy <- array(-1,c(nL,nP))	
 for (here in 1:nL){
 	for (there in 1:nL){
 		for (ip in 1:nP){
 			# owner moving from here to there
 			idx <- which(grids$a < -(1-dataR$down)*grids$p[ip,there])
-			if (length(idx)>0) iborrow.own[here,there,ip] <- max(idx)	# which is the largest savings index s.t. lower than borrowing limit. next index is legal.
+			if (length(idx)>0) iborrow.buy[there,ip] <- max(idx)	# buyer's here location is irrelevant
+			if (length(idx)>0 & here!=there ) iborrow.own[here,there,ip] <- max(idx)	# owner is only constrained if he actually moves to buy. if stays here, he is not moving, thus not constrained.
 		}
 	}
 }
 
 iborrow.rent <- max(which(grids$a < 0))	# iborrow.rent + 1 is first legal index
+
+dataR$blim_own <- as.numeric(iborrow.own)
+dataR$blim_buy <- as.numeric(iborrow.buy)
+dataR$blim_rent <- iborrow.rent 
 
 # tensors of resources at each state
 # ==================================
@@ -161,6 +170,7 @@ dataR$resO <- as.numeric(RO)
 
 dataR$MoveCost <- as.numeric(move.cost)
 dataR$Amenity  <- amenity
+dataR$agrid    <- grids$a
 
 ######################################################
 # Calculating an R solution to this lifecycle problem
@@ -179,35 +189,35 @@ xB = array(0,c(dataR$dims,nA))
 xS = array(0,c(dataR$dims,nA))
 xO = array(0,c(dataR$dims,nA))
 
-# envelopes of conditional values
-Vown = array(0,dataR$dimshere)
-Vrent = array(0,dataR$dimshere)
+# upper most envelopes of conditional values: given all the rest, which location?
+# ===============================================================================
+
+Vown = array(1,dataR$dimshere)
+Vrent = array(2,dataR$dimshere)
 # Their expected values
 EVown = array(0,dataR$dimshere)
 EVrent = array(0,dataR$dimshere)
+# and associated indicator functions
+LocationO <- array(0,dataR$dimshere)
+LocationR <- array(0,dataR$dimshere)
 
-# discrete choice functions for location choice
-move_stay <- array(0,dataR$dimshere)
-move_buy <- array(0,dataR$dimshere)
-move_sell <- array(0,dataR$dimshere)
-move_rent <- array(0,dataR$dimshere)
+# value functions conditional on (here,there)
+# ===========================================
 
-# discrete choice amoung conditional value
- 							#             1       2     ...  J      J+1      J+2    ...   2J
-DO = array(0,dataR$dimshere)	# which.max( stay_i,stay_j, ... stay_J, sell_i, sell_j, ... ,sell_J ) is an integer in {1,...,2J} and we ComputeStay, ComputeSell, then partial reduce along "there" dim
-DR = array(0,dataR$dimshere)    # which.max( rent_i,rent_j, ... rent_J, buy_i, buy_j, ... ,buy_J )
+Wrent <- array(0,dataR$dims)
+Wown  <- array(0,dataR$dims)
+# and associated indicator functions
+TenureO <- array(0,dataR$dims)
+TenureR <- array(0,dataR$dims)
+
+# value functions conditional on (here,there) and tenure
+# ======================================================
 
 # values at all Locatoin combinations (here,there)
 VLR = array(3,dataR$dims)
 VLB = array(4,dataR$dims)
 VLS = array(2,dataR$dims)
 VLO = array(1,dataR$dims)
-
-# values conditional on maximal choice over "there" 
-VR = array(3,dataR$dimshere)
-VB = array(4,dataR$dimshere)
-VS = array(2,dataR$dimshere)
-VO = array(1,dataR$dimshere)
 
 # savings functions at each location
 saveLO = array(1,dataR$dims)
@@ -280,7 +290,7 @@ for (ti in (nT-1):1) {
 							 # compute consumption at that savigns choice
 							 CB[ia,iy,ip,here,there,ti,ja] <- ctmp <- RB[ia,iy,ip,here,there,ti] - dataR$R*grids$a[ ja ]
 
-							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.own[here,there,ip] ){
+							 if (ctmp < 0 | !is.finite(ctmp) | ja <= iborrow.buy[there,ip] ){
 								xB[ia,iy,ip,here,there,ti,ja] = dataR$myNA
 							 } else {
 								xB[ia,iy,ip,here,there,ti,ja] =  R_ufun(ctmp,dataR$gamma,dataR$theta) + dataR$beta*EVown[ja,iy,ip,there,ti+1] - move.cost[here,there] + amenity[there]
@@ -322,33 +332,32 @@ for (ti in (nT-1):1) {
 						 saveLS[ia,iy,ip,here,there,ti] = which.max(xS[ia,iy,ip,here,there,ti, ])
 						 consLS[ia,iy,ip,here,there,ti] = CS[ia,iy,ip,here,there,ti,saveLS[ia,iy,ip,here,there,ti]]
 
+						 # in each location, find discrete choice between (rent,buy) for renter and (stay,sell) for owners
+						 # ===============================================================================================
+
+						 # max val renter at each location (here,there)
+						 Wrent[ia,iy,ip,here,there,ti]   = max(VLR[ia,iy,ip,here,there,ti],VLB[ia,iy,ip,here,there,ti])			# Vrent = max(rent(here,there), buy(here,there))
+						 TenureR[ia,iy,ip,here,there,ti] = which.max(c(VLR[ia,iy,ip,here,there,ti],VLB[ia,iy,ip,here,there,ti]))	# Drent = which.max(rent(here), buy(here))
+					 
+						 # max val owner state
+						 Wown[ia,iy,ip,here,there,ti]    = max(VLO[ia,iy,ip,here,there,ti],VLS[ia,iy,ip,here,there,ti])
+						 TenureO[ia,iy,ip,here,there,ti] = which.max(c(VLO[ia,iy,ip,here,there,ti],VLS[ia,iy,ip,here,there,ti]))
+
 					 }
+
+
 					 # maximize over location choice in each subproblem
 					 # ================================================
-					 VR[ia,iy,ip,here,ti]  <- max(VLR[ia,iy,ip,here, ,ti])			# what is the value of being here conditional on renting?
-					 move_rent[ia,iy,ip,here,ti] <- which.max(VLR[ia,iy,ip,here, ,ti])	# where do you move to from here  conditional on renting?
 
-					 VB[ia,iy,ip,here,ti]  <- max(VLB[ia,iy,ip,here, ,ti])        	# what is the value of being here conditional on buying?
-					 move_buy[ia,iy,ip,here,ti] <- which.max(VLB[ia,iy,ip,here, ,ti])  	# where do you move to from here  conditional on buying?
+					 # here you will need a "there"-specific vector of logit shocks applied to Vrent and Vown
+					 # it will be common to all discrete choices, varying only by location "there"
 
-					 VO[ia,iy,ip,here,ti]  <- max(VLO[ia,iy,ip,here, ,ti])          # what is the value of being here conditional on owning?
-					 move_stay[ia,iy,ip,here,ti] <- which.max(VLO[ia,iy,ip,here, ,ti])    # where do you move to from here  conditional on owning?
+					 Vrent[ia,iy,ip,here,ti]  <- max(Wrent[ia,iy,ip,here, ,ti])			
+					 LocationR[ia,iy,ip,here,ti] <- which.max(Wrent[ia,iy,ip,here, ,ti])
 
-					 VS[ia,iy,ip,here,ti]  <- max(VLS[ia,iy,ip,here, ,ti])       	# what is the value of being here conditional on selling?
-					 move_sell[ia,iy,ip,here,ti] <- which.max(VLS[ia,iy,ip,here, ,ti]) 	# where do you move to from here  conditional on selling?
+					 Vown[ia,iy,ip,here,ti]  <- max(Wown[ia,iy,ip,here, ,ti])        	
+					 LocationO[ia,iy,ip,here,ti] <- which.max(Wown[ia,iy,ip,here, ,ti])
 
-				 
-					 # in each location find maximal value
-					 # ===================================
-
-					 # max val renter state
-					 Vrent[ia,iy,ip,here,ti] = max(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti])			# Vrent = max(rent(here), buy(here))
-					 DR[ia,iy,ip,here,ti]    = which.max(c(VR[ia,iy,ip,here,ti],VB[ia,iy,ip,here,ti]))	# Drent = which.max(rent(here), buy(here))
-
-
-					 # max val owner state
-					 Vown[ia,iy,ip,here,ti]  = max(VO[ia,iy,ip,here,ti],VS[ia,iy,ip,here,ti])
-					 DO[ia,iy,ip,here,ti]    = which.max(c(VO[ia,iy,ip,here,ti],VS[ia,iy,ip,here,ti]))
 				 }
 			 }
 		 }
@@ -363,7 +372,7 @@ for (ti in (nT-1):1) {
 }
 
 Rtime <- proc.time() - Rtime
-stop()
+      
 # Calculating the blitz solution to the equivalent
 # ================================================
 
@@ -377,22 +386,19 @@ print(sum(blitz$time/1e9))
 # check outputs
 # =============
 
-print(all.equal(Vown,blitz$Values$Vown))
-print(all.equal(Vrent,blitz$Values$Vrent))
+print(all.equal(Vown,blitz$Values$Vown,tolerance=1e-15))
+print(all.equal(Vrent,blitz$Values$Vrent,tolerance=1e-15))
 print(all.equal(EVown,blitz$Values$EVown))
 print(all.equal(EVrent,blitz$Values$EVrent))
-print(all.equal(DO,blitz$policies$Down))
-print(all.equal(DR,blitz$policies$Drent))
 
-print(all.equal(VO,blitz$Values$vstay))
-print(all.equal(VR,blitz$Values$vrent))
-print(all.equal(VS,blitz$Values$vsell))
-print(all.equal(VB,blitz$Values$vbuy))
+print(all.equal(TenureR,blitz$policies$TenureRent))
+print(all.equal(TenureO,blitz$policies$TenureOwn))
 
-print(all.equal(move_stay,blitz$policies$move_stay))
-print(all.equal(move_sell,blitz$policies$move_sell))
-print(all.equal(move_rent,blitz$policies$move_rent))
-print(all.equal(move_buy ,blitz$policies$move_buy ))
+print(all.equal(LocationR,blitz$policies$LocationRent))
+print(all.equal(LocationO,blitz$policies$LocationOwn))
+
+print(all.equal(Wown,blitz$Values$Wown))
+print(all.equal(Wrent,blitz$Values$Wrent))
 
 print(all.equal(saveLO,blitz$policies$s_loc_stay))
 print(all.equal(saveLS,blitz$policies$s_loc_sell))
