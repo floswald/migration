@@ -52,11 +52,11 @@ TEST(MigrationTest, CanSetGetCtmp){
 
 TEST(MigrationTest, Blimit_ownWorks){
 	
-	int nA = 2;
-	int nY = 2;
-	int nP = 3;
-	int nL = 2;
-	int nT = 3;
+	int nA = 30;
+	int nY = 4;
+	int nP = 5;
+	int nL = 9;
+	int nT = 4;
 
 	Array<double,2> trans(nY,nY,FortranArray<2>());
 	trans = 0.9,0.3,0.1,0.7;

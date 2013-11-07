@@ -4,6 +4,7 @@
 #include "CMig6.h"
 #include <vector>
 #include <random/uniform.h>
+#include <random/discrete-uniform.h>
 
 int main(int argument_count, char ** command_line_arguments)
 { 
@@ -25,10 +26,10 @@ int main(int argument_count, char ** command_line_arguments)
 	cout << "======================" << endl;
 	cout << endl;
 
-	int nA = 5;
+	int nA = 8;
 	int nY = 2;
 	int nP = 3;
-	int nL = 4;
+	int nL = 5;
 	int nT = 3;
 
 	CMig6 defmig(nA,nY,nP,nL,nT);
@@ -90,9 +91,17 @@ int main(int argument_count, char ** command_line_arguments)
 	Array<int,3> blim_own(nL,nL,nP,FortranArray<3>());
 	Array<int,2> blim_buy(nL,nP,FortranArray<2>());
 	int blim_rent = nA-1;
-	blim_own = 3;
-	blim_buy = 4;
+	blim_buy = nA-1;
 
+
+	// create borrowing limits are random indices
+	ranlib::DiscreteUniform<int> Disc( nA );
+	Array<int,3>::iterator it3;
+	for (it3 = blim_own.begin();
+	     it3 != blim_own.end();
+		 it3 ++){
+		*it3 = Disc.random() + 1;
+	}
 	int verbose = 1;
 	
 	PStruct pars2;
@@ -102,7 +111,7 @@ int main(int argument_count, char ** command_line_arguments)
 	pars2.mgamma  = 1 - pars2.gamma;
 	pars2.imgamma = 1/pars2.mgamma;
 
-	CMig6 myMig_ref(10, 3, 3, 4, 5,
+	CMig6 myMig_ref(nA,nY,nP,nL,nT,
 			    &pars2, tstay, tsell, trent, tbuy, trans,
 				transP, MoveCost, Amenity, agrid, blim_own, blim_buy,
 				blim_rent, verbose);
@@ -113,20 +122,30 @@ int main(int argument_count, char ** command_line_arguments)
 	for (int ti=myMig_ref.GetMaxage(); ti>0; ti--){
 		myMig_ref.ComputePeriod( ti );
 	}
+   
+	//myMig_ref.LimitOwner();
+	//Array<double,6> myctmp(nA, nY, nP, nL, nL ,nA, FortranArray<6>());
+	//myctmp = myMig_ref.GetCtmp() ;
 
-	//Array<double,5> ret = myMig6.GetEVown();
-	//cout << "EVown(:,:,:,:,nT-1) is = " << endl;
-	//cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),myMig6.GetMaxage()-1) << endl;
-	//cout << "EVown(:,:,:,:,2) is = " << endl;
-	//cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),2) << endl;
-	//cout << "EVown(:,:,:,:,1) is = " << endl;
-	//cout << ret(Range::all(),Range::all(),Range::all(),Range::all(),1) << endl;
-	//cout << "END OF Boilerplates " << endl;
+	//for (int ia=1;ia<nA+1; ia++){
+		//for (int iy=1;iy<nY+1; iy++){
+			//for (int ip=1;ip<nP+1; ip++){
+				//for (int ih=1;ih<nL+1; ih++){
+					//for (int it=1;it<nL+1; it++){
+							
+						//for (int is=1;is<nA+1; is++){
 
-	//CMig migdef;
-	//migdef.show();
+							//// at all savings indices greater than the blimit index, 
+							//// ctmp should be a positive number
 
-	//CMig migc1(100,10,5,30,100);
+								//cout << "ctmp = " << myctmp(ia,iy,ip,ih,it,is) << " at " << ia << iy << ip << ih << it << is << ", blim is " << blim_own(ih,it,ip) << endl;
+
+						//}
+					//}
+				//}
+			//}
+		//}
+	//}
 	
 	return 0;
 }
