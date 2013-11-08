@@ -108,6 +108,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 	Rcpp::NumericVector Vrent_out        ( Vown_out.length());
 	Rcpp::NumericVector EVown_out        ( Vown_out.length());
 	Rcpp::NumericVector EVrent_out       ( Vown_out.length());
+	Rcpp::NumericVector Vbar_own_out      ( Vown_out.length());
+	Rcpp::NumericVector Vbar_rent_out     ( Vown_out.length());
 	Rcpp::NumericVector LocationOwn_out  ( Vown_out.length());
 	Rcpp::NumericVector LocationRent_out ( Vown_out.length());
 
@@ -137,6 +139,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 	Vrent_out        = myMig_ref.GetVrent();
 	EVown_out        = myMig_ref.GetEVown();
 	EVrent_out       = myMig_ref.GetEVrent();
+	Vbar_own_out     = myMig_ref.GetVbarOwn();
+	Vbar_rent_out    = myMig_ref.GetVbarRent();
 	LocationOwn_out  = myMig_ref.GetLocationOwn();
 	LocationRent_out = myMig_ref.GetLocationRent();
                     
@@ -163,6 +167,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 	Vrent_out.attr("dim")        = dAYPHereT;
 	EVown_out.attr("dim")        = dAYPHereT;
 	EVrent_out.attr("dim")       = dAYPHereT;
+	Vbar_own_out.attr("dim")     = dAYPHereT;
+	Vbar_rent_out.attr("dim")    = dAYPHereT;
 	LocationOwn_out.attr("dim")  = dAYPHereT;
 	LocationRent_out.attr("dim") = dAYPHereT;
 
@@ -190,6 +196,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 										    Rcpp::_["Vrent"]      = Vrent_out,
 										    Rcpp::_["EVown"]      = EVown_out,
 										    Rcpp::_["EVrent"]     = EVrent_out,
+										    Rcpp::_["Vbar_own"]   = Vbar_own_out,
+										    Rcpp::_["Vbar_rent"]  = Vbar_rent_out,
 										    Rcpp::_["Wown"]      = W_loc_own_out,
 										    Rcpp::_["Wrent"]     = W_loc_rent_out,
 										    Rcpp::_["v_loc_stay"] = v_loc_stay_out,

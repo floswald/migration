@@ -64,6 +64,8 @@ CMig6::CMig6() :
 	Vrent(     2,2,2,2,2,   FortranArray<5>()),
 	EVown(     2,2,2,2,2,   FortranArray<5>()),
 	EVrent(    2,2,2,2,2,   FortranArray<5>()),
+	Vbar_own(     2,2,2,2,2,   FortranArray<5>()),
+	Vbar_rent(    2,2,2,2,2,   FortranArray<5>()),
 	Location_own(      2,2,2,2,2,   FortranArray<5>()),
 	Location_rent(     2,2,2,2,2,   FortranArray<5>()),
 
@@ -172,6 +174,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 	Vrent( 	   nA,nY,nP,nL,nT,   FortranArray<5>()),
 	EVown( 	   nA,nY,nP,nL,nT,   FortranArray<5>()),
 	EVrent(	   nA,nY,nP,nL,nT,   FortranArray<5>()),
+	Vbar_own( 	   nA,nY,nP,nL,nT,   FortranArray<5>()),
+	Vbar_rent(	   nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_own( nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
@@ -292,6 +296,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 	Vrent( 	   nA,nY,nP,nL,nT,   FortranArray<5>()),
 	EVown( 	   nA,nY,nP,nL,nT,   FortranArray<5>()),
 	EVrent(	   nA,nY,nP,nL,nT,   FortranArray<5>()),
+	Vbar_own(  nA,nY,nP,nL,nT,   FortranArray<5>()),
+	Vbar_rent( nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_own( nA,nY,nP,nL,nT,   FortranArray<5>()),
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
@@ -329,6 +335,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 		agrid.reference(data_agrid);
 		W_loc_rent = 0;
 		W_loc_own  = 0;
+		Vbar_rent = 0;
+		Vbar_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -553,6 +561,10 @@ void CMig6::ComputeStay(int age) {
 	// complication: different borrowing constraints
 	restmp   = ResStay(all,all,all,all,all,age); // EV(a,y,p,here,there)
 
+	// TODO: ALTERNATIVE to this formulation
+	// is to compute the entire tensor for savings once for buyer
+	// owner and renter (a.k.a. seller), and set restricted borrowing
+	// values to +99. They never change over the lifecycle.
 	ctmp     = restmp(a,y,pr,here,there) - p.R * agrid(save);
 	
 	// enforce the borrowing limit for moving owners.
@@ -800,6 +812,12 @@ Array<int,5> CMig6::dchoiceID5d(Array<double,5> one, Array<double,5> two){
  * i.e. having maxed over tenure at each location)
  * compute the upper envelope of all location-specific
  * value funcitons and their indicators
+ * NOTE: if I do logit shocks, this function is 
+ * irrelevant for the model solution, as Vown and Vrent
+ * are not used anywhere. the Vbar formulation gets
+ * around that. This should be used in SIMULATION,
+ * where it depends on a parameter \sigma which is the
+ * variance of the logit shock. 
  */
 void CMig6::ComputeLocationChoice( int age ){
 	// source format: (a,y,p,here,there,age)
@@ -810,6 +828,10 @@ void CMig6::ComputeLocationChoice( int age ){
 
 	// v_loc_tmp is (a,y,p,here,there,age)!!
 	v_loc_tmp = W_loc_own(all,all,all,all,all,age);
+
+	// NOTE: simulation. when using this in simulation, here add
+	// a vector \xi of dimension (there,1) to each slice of W_loc_own
+	// in the "there" dimension before taking the discrete choice.
 	Vown(        all,all,all,all,age) = max(      v_loc_tmp, there );
 	Location_own(all,all,all,all,age) = maxIndex( v_loc_tmp, there );
 
@@ -841,10 +863,21 @@ void CMig6::ComputeTenureChoice( int age ){
 
 
 void CMig6::ComputeExpectations( int age ){
-	
+
 	Range all = Range::all();
-	EVown( all,all,all,all,age) = integrate(Vown( all,all,all,all,age));
-	EVrent(all,all,all,all,age) = integrate(Vrent(all,all,all,all,age));
+	fifthIndex   there;	
+	// compute Vbar first
+	
+	v_loc_tmp = W_loc_own(all,all,all,all,all,age);  // a,y,p,here,there
+	Vbar_own( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
+	
+	v_loc_tmp = W_loc_rent(all,all,all,all,all,age);  // a,y,p,here,there
+	Vbar_rent( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
+
+	// then integrate over Vbar
+	
+	EVown( all,all,all,all,age) = integrate(Vbar_own( all,all,all,all,age));
+	EVrent(all,all,all,all,age) = integrate(Vbar_rent(all,all,all,all,age));
 
 }
 

@@ -29,6 +29,8 @@ dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                myNA=-99,rent=0.05,R=1/(1+0.04),down=0.2,
                G = as.numeric(G),
                Gp = as.numeric(Gp),verbose=1L);
+
+mascheroni_euler <- 0.5772
                
 idx <- list()
 idx$L <- 1:nL
@@ -194,6 +196,8 @@ xO = array(0,c(dataR$dims,nA))
 
 Vown = array(1,dataR$dimshere)
 Vrent = array(2,dataR$dimshere)
+Vbar_own = array(0,dataR$dimshere)
+Vbar_rent = array(0,dataR$dimshere)
 # Their expected values
 EVown = array(0,dataR$dimshere)
 EVrent = array(0,dataR$dimshere)
@@ -237,6 +241,8 @@ EVown[ , , , ,nT]  <- SS[it==nT,array(rstay,dataR$dimshere[-5])]
 
 #            dimensions    a y p h      a y p h      y y'     p p'
 integr <- tensorFunction(R[i,m,n,l] ~ V[i,j,k,l] * G[m,j] * X[n,k] )
+
+sumthere <- tensorFunction( R[a,y,p,h] ~ V[a,y,p,h,t] )	# sum over there.
          
 # temporary consumption value
 ctmp <- 0
@@ -364,12 +370,21 @@ for (ti in (nT-1):1) {
 		 # integrate
 		 # =========
 	
-		 tmpO = Vown[ , , , ,ti]
-		 tmpR = Vrent[ , , , ,ti]
+		# integrate out logit shocks
+		 Vbar_own[ , , , ,ti]  <- log( sumthere( exp(  Wown[ , , , , ,ti] ) ) ) + mascheroni_euler
+		 Vbar_rent[ , , , ,ti] <- log( sumthere( exp( Wrent[ , , , , ,ti]) ) )  + mascheroni_euler
+
+		 
+
+		 tmpO = Vbar_own[ , , , ,ti]
+		 tmpR = Vbar_rent[ , , , ,ti]
+		
+		 # integrate out state variables laws of motion
 		 EVown[ , , , ,ti] = integr(tmpO, G, Gp)
 		 EVrent[ , , , ,ti] = integr(tmpR, G, Gp)
      }
 }
+
 
 Rtime <- proc.time() - Rtime
       
@@ -390,6 +405,9 @@ print(all.equal(Vown,blitz$Values$Vown,tolerance=1e-15))
 print(all.equal(Vrent,blitz$Values$Vrent,tolerance=1e-15))
 print(all.equal(EVown,blitz$Values$EVown))
 print(all.equal(EVrent,blitz$Values$EVrent))
+
+print(all.equal(Vbar_own,blitz$Values$Vbar_own,tolerance=1e-15))
+print(all.equal(Vbar_rent,blitz$Values$Vbar_rent,tolerance=1e-15))
 
 print(all.equal(TenureR,blitz$policies$TenureRent))
 print(all.equal(TenureO,blitz$policies$TenureOwn))

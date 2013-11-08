@@ -6,6 +6,10 @@
 #include <blitz/array.h>
 #include <string>
 
+// defined the euler mascheroni constant
+// http://en.wikipedia.org/wiki/Gumbel_distribution
+#define euler_mascheroni 0.5772
+
 using namespace blitz;
 
 // Migration model class for N locations
@@ -60,7 +64,7 @@ class CMig6 {
 		// Vown  = max( W_loc_own,  there)
 		// Vrent = max( W_loc_rent, there)
 		// expectations thereof
-		Array<double,5> EVown,EVrent,Vown,Vrent;   //(a,y,p,here,age)
+		Array<double,5> EVown, EVrent, Vown, Vrent, Vbar_own, Vbar_rent;   //(a,y,p,here,age)
 		// indicators
 		Array<int   ,5> Location_own, Location_rent;   //(a,y,p,here,age)
 
@@ -118,6 +122,8 @@ class CMig6 {
 		Array<double,5> GetVown(       void ) const {return(Vown)   ;};
 		Array<double,5> GetVrent(      void ) const {return(Vrent)  ;};
 		Array<double,5> GetEVown(      void ) const {return(EVown)  ;};
+		Array<double,5> GetVbarRent(     void ) const {return(Vbar_rent) ;};
+		Array<double,5> GetVbarOwn(     void ) const {return(Vbar_own) ;};
 		Array<double,5> GetEVrent(     void ) const {return(EVrent) ;};
 		Array<int   ,5> GetLocationOwn( void ) const {return(Location_own)   ;};
 		Array<int   ,5> GetLocationRent(void ) const {return(Location_rent)   ;};
