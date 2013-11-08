@@ -164,7 +164,7 @@ TEST(MigrationTest, Blimit_ownWorks){
 				for (int ih=1;ih<nL+1; ih++){
 					for (int it=1;it<nL+1; it++){
 							
-						for (int is=1;is<nL+1; is++){
+						for (int is=1;is<nA+1; is++){
 
 							// at all savings indices greater than the blimit index, 
 							// ctmp should be a positive number
@@ -304,7 +304,7 @@ TEST(MigrationTest, Blimit_buyWorks){
 				for (int ih=1;ih<nL+1; ih++){
 					for (int it=1;it<nL+1; it++){
 							
-						for (int is=1;is<nL+1; is++){
+						for (int is=1;is<nA+1; is++){
 
 							// at all savings indices greater than the blimit index, 
 							// ctmp should be a positive number
