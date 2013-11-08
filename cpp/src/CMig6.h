@@ -56,7 +56,7 @@ class CMig6 {
 		// (II) envelope and indicators over (I)
 		// W_loc_own  = max( v_loc_stay, v_loc_sell )
 		// W_loc_rent = max( v_loc_rent, v_loc_buy  )
-		Array<double,6> W_loc_own, W_loc_rent;	 //(a,y,p,here,there,age)
+		Array<double,6> W_loc_own, W_loc_rent, rho_own, rho_rent;	 //(a,y,p,here,there,age)
 		Array<int   ,6> Tenure_loc_own, Tenure_loc_rent;	 //(a,y,p,here,there,age)
 
 		// (III) values/indicators conditional on here only
@@ -70,6 +70,7 @@ class CMig6 {
 
 		// (IV) auxiliary member arrays
 		Array<double,5> v_loc_tmp;   //(a,y,p,here,there)
+		Array<double,4> vbar_tmp;   //(a,y,p,here)
 
 		Array<double,6> ctmp,xtmp;	//(a,y,p,here,there,a')
 		Array<double,5> restmp;	//(a,y,p,here,there)
@@ -130,6 +131,10 @@ class CMig6 {
 
 		Array<double,6> GetW_loc_own( void ) const {return(W_loc_own);};
 		Array<double,6> GetW_loc_rent( void ) const {return(W_loc_rent);};
+		
+		Array<double,6> Getrho_own( void ) const {return(rho_own);};
+		Array<double,6> Getrho_rent( void ) const {return(rho_rent);};
+
 		Array<int   ,6> GetTenure_loc_own(  void ) const {return(Tenure_loc_own);};
 		Array<int   ,6> GetTenure_loc_rent( void ) const {return(Tenure_loc_rent);};
 

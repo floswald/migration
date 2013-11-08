@@ -49,6 +49,8 @@ CMig6::CMig6() :
 	
 	W_loc_rent(     2,2,2,2,2,2,FortranArray<6>()), 
 	W_loc_own(      2,2,2,2,2,2,FortranArray<6>()), 
+	rho_rent(       2,2,2,2,2,2,FortranArray<6>()), 
+	rho_own(        2,2,2,2,2,2,FortranArray<6>()), 
 	Tenure_loc_rent(2,2,2,2,2,2,FortranArray<6>()), 
 	Tenure_loc_own( 2,2,2,2,2,2,FortranArray<6>()), 
 
@@ -70,6 +72,7 @@ CMig6::CMig6() :
 	Location_rent(     2,2,2,2,2,   FortranArray<5>()),
 
 	v_loc_tmp( 2,2,2,2,2,   FortranArray<5>()),	
+	vbar_tmp(  2,2,2,2,   FortranArray<4>()),	
 
 	
 	vplustmp(  2,2,2,2,      FortranArray<4>()), 	// (a,y,p,here)
@@ -107,6 +110,8 @@ CMig6::CMig6() :
 		restmp          = 3;
 		W_loc_rent = 0;
 		W_loc_own  = 0;
+		rho_rent = 0;
+		rho_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -159,6 +164,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 	
 	W_loc_rent(     nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	W_loc_own(      nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
+	rho_rent(     nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
+	rho_own(      nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	Tenure_loc_rent(nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	Tenure_loc_own( nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 
@@ -180,6 +187,7 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
 	v_loc_tmp( nA,nY,nP,nL,nL,   FortranArray<5>()),
+	vbar_tmp( nA,nY,nP,nL,       FortranArray<4>()),
 
 	vplustmp(  nA,nY,nP,nL,      FortranArray<4>()), 	// (a,y,p,here)
 	blimit_own(nL,nL,nP,         FortranArray<3>()) ,	// (here,there,p)
@@ -216,6 +224,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT):
 		restmp          = 3;
 		W_loc_rent = 0;
 		W_loc_own  = 0;
+		rho_rent = 0;
+		rho_own  = 0;
 		Tenure_loc_rent = 0;
 		Tenure_loc_own  = 0;
 		Location_own    = 0;
@@ -281,6 +291,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 	
 	W_loc_rent(     nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	W_loc_own(      nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
+	rho_rent(     nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
+	rho_own(      nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	Tenure_loc_rent(nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 	Tenure_loc_own( nA,nY,nP,nL,nL,nT,FortranArray<6>()), 
 
@@ -302,6 +314,7 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 	Location_rent(nA,nY,nP,nL,nT,   FortranArray<5>()),
 
 	v_loc_tmp( nA,nY,nP,nL,nL,   FortranArray<5>()),
+	vbar_tmp(  nA,nY,nP,nL,      FortranArray<4>()),
 	
 	vplustmp(  nA,nY,nP,nL,      FortranArray<4>()), 	// (a,y,p,here)
 	blimit_own(nL,nL,nP,         FortranArray<3>()) ,	// (here,there,p)
@@ -335,6 +348,8 @@ CMig6::CMig6(int nA, int nY, int nP, int nL, int nT,
 		agrid.reference(data_agrid);
 		W_loc_rent = 0;
 		W_loc_own  = 0;
+		rho_rent = 0;
+		rho_own  = 0;
 		Vbar_rent = 0;
 		Vbar_own  = 0;
 		Tenure_loc_rent = 0;
@@ -862,19 +877,41 @@ void CMig6::ComputeTenureChoice( int age ){
 }
 
 
+/** Expectations and Conditional Choice Probabilities
+ * compute vbar, EV and rho
+ */
 void CMig6::ComputeExpectations( int age ){
 
 	Range all = Range::all();
-	fifthIndex   there;	
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
 	// compute Vbar first
+	
+	// owner
+	// =====
 	
 	v_loc_tmp = W_loc_own(all,all,all,all,all,age);  // a,y,p,here,there
 	Vbar_own( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
+
+	// compute CCP aka rho
+	vbar_tmp = Vbar_own(all,all,all,all,age);  // a,y,p,here
+	rho_own( all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,here,there) - vbar_tmp(a,y,pr,here) );
+	
+
+	//renter  
+	// =====
 	
 	v_loc_tmp = W_loc_rent(all,all,all,all,all,age);  // a,y,p,here,there
 	Vbar_rent( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
 
-	// then integrate over Vbar
+	// compute CCP aka rho
+	vbar_tmp = Vbar_rent(all,all,all,all,age);  // a,y,p,here
+	rho_rent( all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,here,there) - vbar_tmp(a,y,pr,here) );
+
+	// then integrate over Vbar to account for laws of motion of y and p.
 	
 	EVown( all,all,all,all,age) = integrate(Vbar_own( all,all,all,all,age));
 	EVrent(all,all,all,all,age) = integrate(Vbar_rent(all,all,all,all,age));

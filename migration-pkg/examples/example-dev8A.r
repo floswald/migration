@@ -30,7 +30,7 @@ dataR <- list( dims=dims,dimshere = c(nA,nY,nP,nL,nT),
                G = as.numeric(G),
                Gp = as.numeric(Gp),verbose=1L);
 
-mascheroni_euler <- 0.5772
+euler_mascheroni <- 0.5772
                
 idx <- list()
 idx$L <- 1:nL
@@ -210,6 +210,8 @@ LocationR <- array(0,dataR$dimshere)
 
 Wrent <- array(0,dataR$dims)
 Wown  <- array(0,dataR$dims)
+rho_rent <- array(0,dataR$dims)
+rho_own  <- array(0,dataR$dims)
 # and associated indicator functions
 TenureO <- array(0,dataR$dims)
 TenureR <- array(0,dataR$dims)
@@ -243,6 +245,8 @@ EVown[ , , , ,nT]  <- SS[it==nT,array(rstay,dataR$dimshere[-5])]
 integr <- tensorFunction(R[i,m,n,l] ~ V[i,j,k,l] * G[m,j] * X[n,k] )
 
 sumthere <- tensorFunction( R[a,y,p,h] ~ V[a,y,p,h,t] )	# sum over there.
+
+minTens <- tensorFunction(R[a,y,p,h,t] ~ A[a,y,p,h,t] - B[a,y,p,h] )
          
 # temporary consumption value
 ctmp <- 0
@@ -364,27 +368,28 @@ for (ti in (nT-1):1) {
 					 Vown[ia,iy,ip,here,ti]  <- max(Wown[ia,iy,ip,here, ,ti])        	
 					 LocationO[ia,iy,ip,here,ti] <- which.max(Wown[ia,iy,ip,here, ,ti])
 
-				 }
-			 }
-		 }
-		 # integrate
-		 # =========
+				 }	# loop here
+			 } 	# loop p
+		 }	# loop y
+     }	# loop a
+	 # integrate
+	 # =========
+
+	# integrate out logit shocks
+	 Vbar_own[ , , , ,ti]  <- log( sumthere( exp(  Wown[ , , , , ,ti] ) ) ) + mascheroni_euler
+	 Vbar_rent[ , , , ,ti] <- log( sumthere( exp( Wrent[ , , , , ,ti]) ) )  + mascheroni_euler
+
+	 # compute probability of moving from here to there
+	 rho_own[ , , , , ,ti]  <- exp( euler_mascheroni + minTens( Wown[ , , , , ,ti],  Vbar_own[ , , , ,ti]) )
+	 rho_rent[ , , , , ,ti] <- exp( euler_mascheroni + minTens( Wrent[ , , , , ,ti], Vbar_rent[ , , , ,ti]) )
+
+	 tmpO = Vbar_own[ , , , ,ti]
+	 tmpR = Vbar_rent[ , , , ,ti]
 	
-		# integrate out logit shocks
-		 Vbar_own[ , , , ,ti]  <- log( sumthere( exp(  Wown[ , , , , ,ti] ) ) ) + mascheroni_euler
-		 Vbar_rent[ , , , ,ti] <- log( sumthere( exp( Wrent[ , , , , ,ti]) ) )  + mascheroni_euler
-
-		 
-
-		 tmpO = Vbar_own[ , , , ,ti]
-		 tmpR = Vbar_rent[ , , , ,ti]
-		
-		 # integrate out state variables laws of motion
-		 EVown[ , , , ,ti] = integr(tmpO, G, Gp)
-		 EVrent[ , , , ,ti] = integr(tmpR, G, Gp)
-     }
+	 # integrate out state variables laws of motion
+	 EVown[ , , , ,ti] = integr(tmpO, G, Gp)
+	 EVrent[ , , , ,ti] = integr(tmpR, G, Gp)
 }
-
 
 Rtime <- proc.time() - Rtime
       
@@ -417,6 +422,9 @@ print(all.equal(LocationO,blitz$policies$LocationOwn))
 
 print(all.equal(Wown,blitz$Values$Wown))
 print(all.equal(Wrent,blitz$Values$Wrent))
+
+print(all.equal(rho_own,blitz$policies$rho_own))
+print(all.equal(rho_rent,blitz$policies$rho_rent))
 
 print(all.equal(saveLO,blitz$policies$s_loc_stay))
 print(all.equal(saveLS,blitz$policies$s_loc_sell))

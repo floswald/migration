@@ -118,6 +118,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 	Rcpp::NumericVector TenureRent_out   ( TenureOwn_out.length());
 	Rcpp::NumericVector W_loc_own_out    ( TenureOwn_out.length());
 	Rcpp::NumericVector W_loc_rent_out   ( TenureOwn_out.length());
+	Rcpp::NumericVector rho_own_out    ( TenureOwn_out.length());
+	Rcpp::NumericVector rho_rent_out   ( TenureOwn_out.length());
 
 	Rcpp::NumericVector s_loc_stay_out  ( TenureOwn_out.length());
 	Rcpp::NumericVector s_loc_sell_out  ( TenureOwn_out.length());
@@ -148,6 +150,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 	TenureRent_out   = myMig_ref.GetTenure_loc_rent();
 	W_loc_own_out    = myMig_ref.GetW_loc_own();
 	W_loc_rent_out   = myMig_ref.GetW_loc_rent();
+	rho_own_out    = myMig_ref.Getrho_own();
+	rho_rent_out   = myMig_ref.Getrho_rent();
 	                
 	s_loc_stay_out   = myMig_ref.Gets_loc_stay();
 	s_loc_sell_out   = myMig_ref.Gets_loc_sell();
@@ -174,6 +178,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 
 	W_loc_own_out.attr("dim")  = dAYPHereThereT;
 	W_loc_rent_out.attr("dim") = dAYPHereThereT;
+	rho_own_out.attr("dim")  = dAYPHereThereT;
+	rho_rent_out.attr("dim") = dAYPHereThereT;
 	TenureOwn_out.attr("dim")  = dAYPHereThereT;
 	TenureRent_out.attr("dim") = dAYPHereThereT;
 
@@ -209,6 +215,8 @@ Rcpp::List dev8( Rcpp::List data ) {
 											  Rcpp::_["TenureRent"]    = TenureRent_out,
 											  Rcpp::_["LocationOwn"]   = LocationOwn_out,
 											  Rcpp::_["LocationRent"] = LocationRent_out,
+											  Rcpp::_["rho_own"]   = rho_own_out,
+											  Rcpp::_["rho_rent"] =  rho_rent_out,
 											  Rcpp::_["s_loc_stay"]    = s_loc_stay_out,
 											  Rcpp::_["s_loc_sell"]    = s_loc_sell_out,
 											  Rcpp::_["s_loc_buy"]     = s_loc_buy_out ,
