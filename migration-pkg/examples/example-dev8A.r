@@ -163,10 +163,10 @@ RB <- SS[,array(rbuy,c(dataR$dims))]		# buy
 RS <- SS[,array(rsell,c(dataR$dims))]	# sell
 RO <- SS[,array(rstay,c(dataR$dims))]	# "O" is for "Owner", i.e. "stay"
 
-dataR$resR <- as.numeric(RR)
-dataR$resB <- as.numeric(RB)
-dataR$resS <- as.numeric(RS)
-dataR$resO <- as.numeric(RO)
+dataR$resR <- SS[,rrent]	# rent
+dataR$resB <- SS[,rbuy]		# buy
+dataR$resS <- SS[,rsell]	# sell
+dataR$resO <- SS[,rstay]	# "O" is for "Owner", i.e. "stay"
 
 dataR$MoveCost <- as.numeric(move.cost)
 dataR$Amenity  <- amenity

@@ -20,7 +20,11 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-nA <- 100L; nY <- 4L; nP <- 3L; nL <- 10L; nT <- 30L
+cat('START building the state space\n')
+
+Rtime <- proc.time()
+
+nA <- 50L; nY <- 4L; nP <- 3L; nL <- 10L; nT <- 30L
 
 G           <- rouwenhorst(rho=0.9,n=nY,sigma=0.1)$Pmat
 Gp          <- rouwenhorst(rho=0.9,n=nP,sigma=0.16)$Pmat
@@ -168,11 +172,12 @@ dataR$MoveCost <- as.numeric(move.cost)
 dataR$Amenity  <- amenity
 dataR$agrid    <- grids$a
 
-stop()
 # free some memory
 rm(SS,SS.loc)
 gc()
 
+Rtime <- proc.time() - Rtime
+cat(sprintf('FINISHED building the state space after %g seconds.\nSending off to C++ now.',Rtime[3]) )
 
 # Calculating the blitz solution to the equivalent
 # ================================================
@@ -181,6 +186,6 @@ b <- dev8(data=dataR)
 
 # timings
 print("blitz time:")
-print(sum(blitz$time/1e9))
+print(sum(b$policies$time/1e9))
 
 
