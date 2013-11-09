@@ -20,7 +20,12 @@ library(migration)
 # renter state: V = max( rent, buy )
 # owner state: V = max( stay , sell )
 
-cat('START building the state space\n')
+
+Zero.MoveCost <- FALSE 
+Zero.Amenity <-TRUE 
+
+cat(sprintf('START building the state space with\n\nZero.MoveCost %s and \nZero.Amenity %s',Zero.MoveCost,Zero.Amenity))
+
 
 Rtime <- proc.time()
 
@@ -41,25 +46,33 @@ G           <- rouwenhorst(rho=0.9,n=m$nY,sigma=0.1)$Pmat
 Gp          <- rouwenhorst(rho=0.9,n=m$nP,sigma=0.16)$Pmat
 
 m$dimshere = m$dims
-m$theta    = 0.2
+m$theta    = 0.05
 m$beta     = 0.95
 m$gamma    = 1.4
 m$myNA     = -99
-m$rent     = 0.05
+m$rent     = 0.01
 m$R        = 1/(1+0.04)
 m$down     = 0.2
 m$G        = as.numeric(G)
 m$Gp       = as.numeric(Gp)
 m$verbose  = 1L
+m$Zero <- list()
+m$Zero$amenity <- Zero.Amenity
+m$Zero$movecost <- Zero.MoveCost
                
 idx       <- list()
 idx$L     <- 1:m$nL
 m$grids   <- list()
 m$grids$L <- seq(0.1,2,length=m$nL)	# cities can be 10% or 200% of baseline city
-m$grids$p <- with(m, matrix(seq(1,10,le=nP),nP,nL) + matrix(seq(0,3,le=nL),nP,nL,byrow=T))
+m$grids$p <- with(m, matrix(seq(4,15,le=nP),nP,nL) + matrix(seq(0,8,le=nL),nP,nL,byrow=T))
 m$grids$y <- with(m, matrix(seq(1,3,le=nY),nY,nL) + matrix(seq(0,2,le=nL),nY,nL,byrow=T))
-#grids$a  <- seq(-(1-m$down)*max(grids$p),1.5*max(grids$p),length=nA)
-m$grids$a <- with(m, grid.maker(bounds = c(-(1-m$down)*max(grids$p),1.5*max(grids$p)),num.points=nA, spacing="log.g"))
+m$grids$a  <- seq(-(1-m$down)*max(m$grids$p),max(m$grids$p),length=m$nA)
+m$grids$apos <- m$grids$a[m$grids$a>0]
+m$grids$azero <- min(which(m$grids$a>0))
+m$idx <- list()
+m$idx$apos <- which(m$grids$a>0)
+
+# m$grids$a <- with(m, grid.maker(bounds = c(-(1-m$down)*max(grids$p),max(grids$p)),num.points=nA, spacing="log.g"))
 
 # OTHER's statespace: add dimension "here" AND "there".
 
@@ -135,6 +148,8 @@ SS[a>0 & it==m$nT, rrent := log(a)    ]
 
 # buyer: cannot have negative assets
 SS[a<0 & it!=m$nT,             rbuy  := m$myNA]
+# buyer: if 
+SS[a<0 & it!=m$nT,             rbuy  := m$myNA]
 
 # renter: cannot have negative assets
 SS[a<0         , rrent := m$myNA]
@@ -147,12 +162,22 @@ SS[a<0         , rrent := m$myNA]
 
 # this table holds utility moving costs from here to there.
 SS.loc <- with(m, data.table(expand.grid(here=grids$L,there=grids$L)))
-SS.loc[,mcost := abs(here-there)]
+
+if (Zero.MoveCost){
+	SS.loc[,mcost := 0]
+} else {
+	SS.loc[,mcost := abs(here-there)]
+}
+
 m$R_move.cost <- with(m, SS.loc[,matrix(mcost,nL,nL,)])
 rownames(m$R_move.cost) <- paste0("here",1:m$nL)
 colnames(m$R_move.cost) <- paste0("there",1:m$nL)
 
-amenity <- rev(m$grids$L)
+if (Zero.Amenity){
+	amenity <- rep(0,m$nL)
+} else {
+	amenity <- rev(m$grids$L)
+}
 
 # borrowing limits 
 # ================
@@ -204,6 +229,8 @@ b <- dev8(data=m)
 print("blitz time:")
 print(sum(b$policies$time/1e9))
 
-save(b,m,file='example11.RData')
+#save(b,m,file='example11.RData')
+
+plot.CCPmoving(m,b)
 
 
