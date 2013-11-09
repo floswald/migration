@@ -35,6 +35,7 @@ desmv.st <- subset(des,as.numeric(mig_mtr3) > 2 & as.numeric(mig_mtr3) < 7)		# m
 # those stats tell you how many migrants ended up as owners, not how many owners migrated.
 
 tabs <- list()
+tabs$all <- prop.table(round(svytable(~main.reason , des),3))
 
 tabs$mv1 <- data.frame(svytable(formula=~migsame, des,N=100,exclude="NIU"))
 names(tabs$mv1) <- c("same address last year?","Percent")
@@ -43,22 +44,28 @@ names(tabs$mv1) <- c("same address last year?","Percent")
 tabs$mv2 <- data.frame(svytable(formula=~mig_mtr3, des,N=100,exclude="Not in universe (children under"))
 names(tabs$mv2) <- c("where did you move?","Percent")
 
-# 3) what was main reason for moving across state line?
-tabs$mv3 <- data.frame(round(svytable(~nxtresf, desmv.st, N=100,exclude="NIU"),1))
-tabs$mv4 <- data.frame(round(svytable(~main.reason, desmv.st, N=100,exclude="NIU"),1))
-namestabs$(mv4) <- c("main reason for moving","Percent")
-tabs$mv4 <- tabs$mv4[order(tabs$mv4$Percent,decreasing=TRUE),]
-
+# 3)for all X state movers, what was main reason for moving ?
+tabs$mv3 <- data.frame(round(svytable(~nxtresf, desmv.st, N=100),1))
 names(tabs$mv3) <- c("main reason for moving","Percent")
 tabs$mv3 <- tabs$mv3[order(tabs$mv3$Percent,decreasing=TRUE),]
 
+# 4) aggregated up of 3)
+tabs$mv4 <- data.frame(round(svytable(~main.reason, desmv.st, N=100),1))
+names(tabs$mv4) <- c("main reason for moving","Percent")
+tabs$mv4 <- tabs$mv4[order(tabs$mv4$Percent,decreasing=TRUE),]
+
+# print to tables
+print(xtable(tabs$mv1,align=c("rr|r")),file="~/git/migration/data/output/CPS/mv1.tex",floating=FALSE,include.rownames=FALSE)
+print(xtable(tabs$mv2,align=c("rr|r")),file="~/git/migration/data/output/CPS/mv2.tex",floating=FALSE,include.rownames=FALSE)
+print(xtable(tabs$mv3,align=c("rr|r")),file="~/git/migration/data/output/CPS/mv3.tex",floating=FALSE,include.rownames=FALSE)
+print(xtable(tabs$mv4,align=c("rr|r")),file="~/git/migration/data/output/CPS/mv4.tex",floating=FALSE,include.rownames=FALSE)
 
 # 4) trend in moving across state lines
-tabs$mv5 <- data.frame(round(svytable(~main.reason + h_year, desmv.st, N=100,exclude="NIU"),1))
+tabs$mv5 <- data.frame(round(prop.table(svytable(~main.reason + h_year, des),2),3))
 tabs$mv6 <- dcast(tabs$mv5,main.reason~ h_year)
 
 p <- list()
-p$move.trend <- ggplot(mv5,aes(x=h_year,y=Freq,color=main.reason,group=main.reason)) + geom_line(size=1.1) + ggtitle('main reason for moving across states') + scale_y_continuous(name="percent of population") + theme_bw()
+p$move.trend <- ggplot(subset(tabs$mv5,main.reason!="NIU"),aes(x=h_year,y=Freq,color=main.reason,group=main.reason)) + geom_line(size=1.1) + ggtitle('main reason for moving across states') + scale_y_continuous(name="percent of population") + theme_bw()
 ggsave(p$move.trend, file="~/git/migration/data/output/CPS/trend.pdf",width=8,height=7)
 
 

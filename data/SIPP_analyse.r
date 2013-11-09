@@ -76,10 +76,14 @@ if( !file.exists( "SIPP2008.RData" ) ){
 
 	save(d,f, file="SIPP2008.RData")
 
-} 
+} else {
+	load("SIPP2008.RData")
+}
 
-# if you want to plot, 
-	#load("SIPP2008.RData")
+
+
+f[age>25&age<65,list(moved.X.state=weighted.mean(S2S,famweight))]
+
 
 # plot of family heads moving or not
 p <- list()
