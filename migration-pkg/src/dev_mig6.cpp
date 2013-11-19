@@ -10,7 +10,7 @@ using namespace blitz;
 
 //' dev8: discrete optimization, housing choice, utility function, location choice
 //' 
-//' @example examples/example-dev8.r
+//' @example examples/example11.r
 // [[Rcpp::export]]
 Rcpp::List dev8( Rcpp::List data ) {
 

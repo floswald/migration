@@ -167,12 +167,46 @@ plot.ypgrids <- function( m, path="~/git/migration/output/mgraphs" ){
 #' @param b blitz solution list
 #' @param at at which slice to plotpath="~/git/migration/output/mgraphs/"
 #' @param path="~/git/migration/output/mgraphs/"
-plot.CCPmoving <- function( m, b, path="~/git/migration/output/mgraphs" ){
+plot.CCPmoving <- function( m, b, path="~/Dropbox/mobility/output/model/solution" ){
 
 
-	trellis.device(device=pdf,file=file.path(path,"CCP_move_1_2.pdf"))
-	wireframe(b$policies$rho_own[ ,3, ,1,2,1],scales=list(arrows=FALSE),aspect=c(1,1),drape=TRUE,screen=list(z=30,x=-60),main="Owners Probability of moving from 1 to 2",row.values=m$grids$a,column.values=1:m$nP,xlab="assets",ylab="prices",zlab="Probability")
+	tmp <- apply(b$policies$rho_own[ , , , , ,1],c(4,5),mean)	# calculate mean prob over all states given here,there
+	trellis.device(device=pdf,file=file.path(path,"CCP_owner_wire.pdf"))
+	print(	wireframe(tmp,scales=list(arrows=FALSE),xlab="here",ylab="there",zlab="Probability",screen=list(z=230,x=-60),main="Aggregate Moving Probability Owners at age 1"))
+	#print(wireframe(b$policies$rho_own[ ,3, ,1,2,1],scales=list(arrows=FALSE),aspect=c(1,1),drape=TRUE,screen=list(z=30,x=-60),main="Owners Probability of moving from 1 to 2",row.values=m$grids$a,column.values=1:m$nP,xlab="assets",ylab="prices",zlab="Probability"))
 	dev.off()
+
+	# print image of that
+	pdf(file=file.path(path,"CCP_owner_image.pdf"))
+	image(z=tmp,x=1:10,y=1:10,xlab="here",ylab="there",main="moving tendencies",col=heat.colors(30))
+	dev.off()
+
+	pdf(file=file.path(path,"CCP_owner_image2.pdf"))
+	image(z=tmp,x=1:10,y=1:10,xlab="here",ylab="there",main="moving tendencies",col=heat.colors(30))
+	abline(v=6,lwd=2)
+	abline(h=6,lwd=2)
+	dev.off()
+
+	# print probs over age
+	tmp <- apply(b$policies$rho_own,c(4,5,6),mean)	# calculate mean prob over all states given here,there,age
+	t1 <- wireframe(tmp[ , ,1],scales=list(arrows=FALSE),xlab="here",ylab="there",zlab="",screen=list(z=230,x=-60),zlim=c(0,0.5),main="age = 1")
+	t2 <- wireframe(tmp[ , ,5],scales=list(arrows=FALSE),xlab="here",ylab="there",zlab="",screen=list(z=230,x=-60),zlim=c(0,0.5),main="age = 5")
+	t3 <- wireframe(tmp[ , ,15],scales=list(arrows=FALSE),xlab="here",ylab="there",zlab="",screen=list(z=230,x=-60),zlim=c(0,0.5),main="age = 15")
+	t4 <- wireframe(tmp[ , ,29],scales=list(arrows=FALSE),xlab="here",ylab="there",zlab="",screen=list(z=230,x=-60),zlim=c(0,0.5),main="age = 29")
+	trellis.device(device=pdf,file=file.path(path,"CCP_owner_wire_age.pdf"))
+	print(t1,split=c(1,1,2,2), more=TRUE)
+	print(t2,split=c(2,1,2,2), more=TRUE)
+	print(t3,split=c(1,2,2,2), more=TRUE)
+	print(t4,split=c(2,2,2,2))
+	dev.off()
+
+	# in another way
+	df <- data.frame(expand.grid(here=factor(1:m$nL),there=factor(1:m$nL),age=paste0("age:",1:m$nT)),prob=as.numeric(tmp))
+	ggplot(subset(df,age %in% c("age:1","age:10","age:29")),aes(x=there,y=prob,color=here,group=here)) + geom_line(size=1) + facet_wrap(~age) + theme_bw()
+	ggsave(file.path(path,"CCP_owner_ggplot_age.pdf"),width=10,height=6)
+
+
+
 
 	X  <- data.frame(expand.grid(assets=m$grids$apos,location=factor(1:m$nL)),probability=as.numeric(b$policies$rho_rent[m$idx$apos,1,4 ,1, ,1]))
 	ggplot(X,aes(x=assets,color=location,y=probability)) + geom_line(size=1) + ggtitle('Renter probability of moving from 1 to x, age 1')  + theme_bw()

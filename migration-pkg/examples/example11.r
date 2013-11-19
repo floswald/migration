@@ -8,12 +8,16 @@ library(migration)
 
 # LARGE STATE SPACE. NO R COMPUTATION.
 
+# version: 2.1
+
+# Aggregate uncertainty: affecting income and price growth
 # savings: grid search
-# housing: yes/no. adding house price uncertainty now.
+# housing: yes/no. 
 # utility: CRRA with housing utility
 # location: discrete choice over locations
 # locations differ by amenity, price and income distributions
 # moving cost: dist(here,there)
+# 
 
 # assume for this example that locations differ by amenity, house price and incomce supports
 
@@ -22,7 +26,7 @@ library(migration)
 
 
 Zero.MoveCost <- FALSE 
-Zero.Amenity <-TRUE 
+Zero.Amenity <-FALSE 
 
 cat(sprintf('START building the state space with\n\nZero.MoveCost %s and \nZero.Amenity %s',Zero.MoveCost,Zero.Amenity))
 
@@ -31,56 +35,92 @@ Rtime <- proc.time()
 
 m <- list()
 
+m$dollar.scale <- 50000	# all monetary values are relative to $50K
+						# in some base year. take 2008.
+
 m$nA <- 50L
 m$nY <- 3L
 m$nP <- 4
 m$nL <- 10L
 m$nT <- 30
+m$nZ  <- 2	# 2 agg states, high and low
 
-m$dims <- rep(0,5)
-names(m$dims) <- c("a","y","p","here","age")
+m$dims <- rep(0,6)
+names(m$dims) <- c("a","y","p","here","Z","age")
 
-m$dims <- with(m, c(nA,nY,nP,nL,nT))
+m$dims <- with(m, c(nA,nY,nP,nL,nZ,nT))
 
-G           <- rouwenhorst(rho=0.9,n=m$nY,sigma=0.1)$Pmat
-Gp          <- rouwenhorst(rho=0.9,n=m$nP,sigma=0.16)$Pmat
+# where Z=0, have income growth
 
-m$dimshere = m$dims
-m$theta    = 0.05
-m$beta     = 0.95
-m$gamma    = 1.4
-m$myNA     = -99
-m$rent     = 0.01
-m$R        = 1/(1+0.04)
-m$down     = 0.2
-m$G        = as.numeric(G)
-m$Gp       = as.numeric(Gp)
-m$verbose  = 1L
+
+m$dimshere  = m$dims
+m$theta     = 0.05
+m$beta      = 0.95
+m$gamma     = 1.4
+m$myNA      = -99
+m$rent      = 0.01
+m$delta     = c(0.97,1.02)	# growth in house prices
+m$mu        = seq(0,0.2,le                                                                  = m$nZ)
+m$meanlogsy = make.dummyLC(1:m$nT) + 10	# add a dummy lifecycle (max plus 1.6) to exp(10) = $22.000
+m$sdlogsy   = rep(0.6,m$nT)	# standard deviations for incomes constant by age?
+m$R         = 1/(1+0.04)
+m$down      = 0.2
+m$aggregate = c(0.8,0.3,0.2,0.7)	# transition probabilities of aggregate state
+m$pinit     = c(5)	# age 1 house price support
+m$pfunc     = seq(from=0,to=1,length=m$nL)	# house price function g(national, location) is a vertical shifter
+m$verbose   = 1L
 m$Zero <- list()
 m$Zero$amenity <- Zero.Amenity
 m$Zero$movecost <- Zero.MoveCost
-               
-idx       <- list()
-idx$L     <- 1:m$nL
+
+m$idx       <- list()
+m$idx$L     <- 1:m$nL
+m$idx$Z     <- 1:m$nZ
 m$grids   <- list()
+
+# make price and income grids
+m$grids$y <- make.income(m)	# is a list with nZ members
+m$grids$p <- make.prices(m,TRUE)	
+
+#m$G         = as.numeric(G)	# TODO how to pass a matrix to blitz?
+# Transition matrices for income and aggregate state
+m$G  <- getNormCop(rho=0.9,n=m$nY,cond=TRUE)
+m$GZ <- matrix(m$aggregate,2,2)
+
+               
 m$grids$L <- seq(0.1,2,length=m$nL)	# cities can be 10% or 200% of baseline city
-m$grids$p <- with(m, matrix(seq(4,15,le=nP),nP,nL) + matrix(seq(0,8,le=nL),nP,nL,byrow=T))
-m$grids$y <- with(m, matrix(seq(1,3,le=nY),nY,nL) + matrix(seq(0,2,le=nL),nY,nL,byrow=T))
-m$grids$a  <- seq(-(1-m$down)*max(m$grids$p),max(m$grids$p),length=m$nA)
-m$grids$apos <- m$grids$a[m$grids$a>0]
-m$grids$azero <- min(which(m$grids$a>0))
-m$idx <- list()
+
+# asset grid is now also a function of age!
+
+m$grids$a  <- apply(m$grids$p,2,function(x) seq(-(1-m$down)*max(x),max(x),length=m$nA))
+
+# check that at each age the first index of non-negative assets is the same!
+tmp <- min(which(m$grids$a[ , 1]>0))
+stopifnot( all( apply(m$grids$a,2,function(x) min(which(x>0)) == tmp)))
+m$grids$apos <- apply(m$grids$a,2,function(x) x[x>0])
+
 m$idx$apos <- which(m$grids$a>0)
 
 # m$grids$a <- with(m, grid.maker(bounds = c(-(1-m$down)*max(grids$p),max(grids$p)),num.points=nA, spacing="log.g"))
 
 # OTHER's statespace: add dimension "here" AND "there".
 
-SS <- data.table(expand.grid(a=m$grids$a,iy=1:m$nY,ip=1:m$nP,here=idx$L,there=idx$L,it=1:m$nT))
-for (yl in 1:m$nL) SS[here==yl, yhere:= m$grids$y[iy,yl] ]
-for (pl in 1:m$nL) SS[here==pl, phere:= m$grids$p[ip,pl] ]
-for (yl in 1:m$nL) SS[there==yl, ythere:= m$grids$y[iy,yl] ]
-for (pl in 1:m$nL) SS[there==pl, pthere:= m$grids$p[ip,pl] ]
+SS <- data.table(expand.grid(ia=1:m$nA,iy=1:m$nY,ip=1:m$nP,here=m$idx$L,there=m$idx$L,iz=m$idx$Z,it=1:m$nT))
+
+# age dependent assets
+
+for (ti in 1:m$nT) {
+	setkey(SS,it,here,iz)
+	SS[.(ti), a := m$grids$a[ia,ti] ]
+	for (yl in 1:m$nL) for (zi in 1:m$nZ) SS[.(ti,yl,zi)][, yhere := m$grids$y[[zi]][iy,ti] ]
+	for (pl in 1:m$nL)                    SS[.(ti,pl)][,    phere := m$grids$p$locs[ip,ti,pl] ]
+
+	setkey(SS,it,iz,there)
+	for (yl in 1:m$nL) for (zi in 1:m$nZ) SS[.(ti,zi,yl)][, ythere := m$grids$y[[zi]][iy,ti] ]
+	for (pl in 1:m$nL)                    SS[.(ti,zi,yl)][, pthere := m$grids$p$locs[ip,ti,pl] ]
+
+}
+
 
 
 # We compute available resources at each state (a,y,p,here,there,age) here.
@@ -231,6 +271,6 @@ print(sum(b$policies$time/1e9))
 
 #save(b,m,file='example11.RData')
 
-plot.CCPmoving(m,b)
+#plot.CCPmoving(m,b)
 
 
