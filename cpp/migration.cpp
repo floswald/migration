@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include "CMig.h"
-#include "CMig6.h"
 #include <vector>
 #include <random/uniform.h>
 #include <random/discrete-uniform.h>
@@ -10,19 +9,19 @@ int main(int argument_count, char ** command_line_arguments)
 { 
 	std::cout <<  std::endl;
 	std::cout <<  std::endl;
-	cout << "Boilerplate for CMig6 " << endl;
+	cout << "Boilerplate for CMig " << endl;
 	cout << "======================" << endl;
 	cout << endl;
 	
 	cout << endl;
-	cout << "Default Constructor for CMig6 " << endl;
+	cout << "Default Constructor for CMig " << endl;
 	cout << "======================" << endl;
 	cout << endl;
-	CMig6 mig1;
+	CMig mig1;
 	mig1.show();
 
 	cout << endl;
-	cout << "Constructor for CMig6 with dimensions" << endl;
+	cout << "Constructor for CMig with dimensions" << endl;
 	cout << "======================" << endl;
 	cout << endl;
 
@@ -30,13 +29,14 @@ int main(int argument_count, char ** command_line_arguments)
 	int nY = 2;
 	int nP = 3;
 	int nL = 5;
+	int nZ = 3;
 	int nT = 3;
 
-	CMig6 defmig(nA,nY,nP,nL,nT);
+	CMig defmig(nA,nY,nP,nL,nZ,nT);
 	defmig.show();
 
 	cout << endl;
-	cout << "Referenced Constructor for CMig6 " << endl;
+	cout << "Referenced Constructor for CMig " << endl;
 	cout << "======================" << endl;
 	cout << endl;
 
@@ -49,17 +49,17 @@ int main(int argument_count, char ** command_line_arguments)
 			 0.0025,0.0475,0.9025;
 
 	// get some data
-	TinyVector<int,6> aypHTt = shape(nA,nY,nP,nL,nL,nY);
+	TinyVector<int,7> aypHTZt = shape(nA,nY,nP,nL,nL,nZ,nY);
 
-	Array<double,6> tstay(aypHTt,FortranArray<6>());	
-	Array<double,6> tsell(aypHTt,FortranArray<6>());	
-	Array<double,6> trent(aypHTt,FortranArray<6>());	
-	Array<double,6> tbuy( aypHTt,FortranArray<6>());	
+	Array<double,7> tstay(aypHTZt,FortranArray<7>());	
+	Array<double,7> tsell(aypHTZt,FortranArray<7>());	
+	Array<double,7> trent(aypHTZt,FortranArray<7>());	
+	Array<double,7> tbuy( aypHTZt,FortranArray<7>());	
 
 
 	//fill with random numbers
 	ranlib::Uniform<double> uniGen;
-	Array<double,6>::iterator it;
+	Array<double,7>::iterator it;
 
 	for (it = tstay.begin(); it!=tstay.end(); it++) {
 		*it = uniGen.random() + 1;
@@ -82,6 +82,7 @@ int main(int argument_count, char ** command_line_arguments)
 	double step_own = (agrid(nA)-agrid(1)) / nA;
 	for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
 
+
 	Array<double,2> MoveCost(nL,nL,FortranArray<2>());
 	MoveCost = 100;
 
@@ -98,7 +99,7 @@ int main(int argument_count, char ** command_line_arguments)
 	ranlib::DiscreteUniform<int> Disc( nA );
 	Array<int,3>::iterator it3;
 	for (it3 = blim_own.begin();
-	     it3 != blim_own.end();
+		 it3 != blim_own.end();
 		 it3 ++){
 		*it3 = Disc.random() + 1;
 	}
@@ -110,94 +111,52 @@ int main(int argument_count, char ** command_line_arguments)
 	pars2.gamma   = 1.4;
 	pars2.mgamma  = 1 - pars2.gamma;
 	pars2.imgamma = 1/pars2.mgamma;
+	pars2.R       = 1/(1+0.04);
+	pars2.type   = gsl_interp_linear;	// change interpolation type here.
+	pars2.acc    = gsl_interp_accel_alloc ();
+	pars2.spline = gsl_spline_alloc (pars2.type, nP );
 
-	CMig6 myMig_ref(nA,nY,nP,nL,nT,
-			    &pars2, tstay, tsell, trent, tbuy, trans,
-				transP, MoveCost, Amenity, agrid, blim_own, blim_buy,
-				blim_rent, verbose);
-        
-	myMig_ref.show();
-	
-	// can compute a period?
-	for (int ti=myMig_ref.GetMaxage(); ti>0; ti--){
-		myMig_ref.ComputePeriod( ti );
+	// make savings tensors
+	Array<double,4> save_own(nL,nL,nP,nA,FortranArray<4>());
+	for (int here=1; here<nL+1; here++){
+	for (int there=1;there<nL+1;there++){
+	for (int pr=1;   pr<nP+1;   pr++){
+		save_own(here,there,pr,Range::all() ) = agrid;
+		if (blim_own(here,there,pr)>0) save_own(here,there,pr,Range(fromStart,blim_own(here,there,pr)) ) = (-1) * pars2.myNA;
+	}}}
+
+	Array<double,3> save_buy(nL,nP,nA,FortranArray<3>());
+	save_buy=2;
+
+	Array<double,1> save_rent(agrid);
+
+	// Constructor needs GpEval and GpInt!
+	// fill with ascending numbers
+	Array<double,3> GpEval(nL,nT,nP,FortranArray<3>());
+	Array<double,4> GpInt( nL,nZ,nT,nP,FortranArray<4>());
+
+	for (std::pair<Array<double,3>::iterator, int> i(GpEval.begin(),1); 
+			i.first != GpEval.end();
+			++i.first, ++i.second){
+		*i.first = i.second;
 	}
-   
-	//myMig_ref.LimitOwner();
-	//Array<double,6> myctmp(nA, nY, nP, nL, nL ,nA, FortranArray<6>());
-	//myctmp = myMig_ref.GetCtmp() ;
+	
+	for (std::pair<Array<double,4>::iterator, int> i(GpInt.begin(),1); 
+			i.first != GpInt.end();
+			++i.first, ++i.second){
+		*i.first = i.second;
+	}
 
-	//for (int ia=1;ia<nA+1; ia++){
-		//for (int iy=1;iy<nY+1; iy++){
-			//for (int ip=1;ip<nP+1; ip++){
-				//for (int ih=1;ih<nL+1; ih++){
-					//for (int it=1;it<nL+1; it++){
-							
-						//for (int is=1;is<nA+1; is++){
 
-							//// at all savings indices greater than the blimit index, 
-							//// ctmp should be a positive number
-
-								//cout << "ctmp = " << myctmp(ia,iy,ip,ih,it,is) << " at " << ia << iy << ip << ih << it << is << ", blim is " << blim_own(ih,it,ip) << endl;
-
-						//}
-					//}
-				//}
-			//}
-		//}
-	//}
+	CMig myMig_ref(nA,nY,nP,nL,nZ,nT,
+				&pars2, tstay, tsell, trent, tbuy, trans,
+				transP, MoveCost, Amenity, save_own, save_buy, save_rent, GpEval, GpInt, verbose);
+		
+	myMig_ref.show();
 	
 	return 0;
 }
 
 
-	// boilerplate for CMig class.
 
-	//std::cout <<  std::endl;
-	//std::cout <<  std::endl;
-	//std::cout << "Don't expect any sensible output, as resources are random." << std::endl;
-
-	//Array<double,5> stay(shape(2,2,2,2,2),FortranArray<5>());
-	//Array<double,5> sell(shape(2,2,2,2,2),FortranArray<5>());
-	//Array<double,5> rent(shape(2,2,2,2,2),FortranArray<5>());
-	//Array<double,5> buy( shape(2,2,2,2,2),FortranArray<5>());
-
-	//stay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-		   //17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-    //sell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 //1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-    //rent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-				//17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-	//buy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 //1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-
-	//Array<double,2> trans(shape(2,2),FortranArray<2>());
-	//trans = 0.9,0.3,0.1,0.7;
-
-	//Parstruc pars;
-	//pars.beta = 0.9;
-	//pars.myNA = -99;
-	//pars.gamma   = 1.4;
-	//pars.mgamma  = 1 - pars.gamma;
-	//pars.imgamma = 1/pars.mgamma;
-
-    //// create dimension vectors	                 
-	//TinyVector<int,5> aypta = shape(2,2,2,2,2);
-	//TinyVector<int,4> aypt  = shape(2,2,2,2);
-	//TinyVector<int,4> aypa  = shape(2,2,2,2);
-	//TinyVector<int,4> aypy  = shape(2,2,2,2);
-	//TinyVector<int,3> ayp   = shape(2,2,2);
-	//TinyVector<int,2> y     = shape(2,2);
-
-	//// create an instance of owner class
-	//CMig myMig( aypta,aypt, aypa, aypy,ayp, y, &pars, stay, sell, rent, buy, trans);
-	////myMig.show();
-	//myMig.ComputePeriod(2);
-	//myMig.ComputePeriod(1);
-
-	//cout << "c_stay " << endl;
-	//cout << myMig.Getc_stay()  << endl;
-
-	//cout << "s_stay " << endl;
-	//cout << myMig.Gets_stay()  << endl;
 

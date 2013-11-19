@@ -1,6 +1,6 @@
 
 
-#include "CMig.h" // Include the code that we are testing
+#include "CMig_dev1.h" // Include the code that we are testing
 #include <vector>
 #include <gtest/gtest.h> // Include the google test framework
 

@@ -2,326 +2,657 @@
 #include "CMig.h" // Include the code that we are testing
 #include <vector>
 #include <gtest/gtest.h> // Include the google test framework
+#include <random/uniform.h>
+#include <random/discrete-uniform.h>
+#include <typeinfo>		// do some type testing
+
+
 
 using namespace blitz;
 
 
-class MigrationTest: public ::testing::Test {
-protected:
-	Array<double,5> tstay,tsell,trent,tbuy;	
-	Array<double,2> trans;
-	Parstruc pars;
-	TinyVector<int,5> aypta;
-	TinyVector<int,4> aypt ;
-	TinyVector<int,4> aypa ;
-	TinyVector<int,4> aypy ;
-	TinyVector<int,3> ayp  ;
-	TinyVector<int,2> y    ;
-
+TEST(MigrationTest, GetNameAndDimDefault){
 	CMig myMig;
+	EXPECT_EQ("CMig_default", myMig.version());
+	EXPECT_EQ(7, myMig.MaxDim());
+}
 
-	MigrationTest() {
-		pars.beta = 0.9;
-		pars.myNA = -99;
+TEST(MigrationTest, GetNameAndDim_2){
+	CMig myMig(10, 3, 3, 4, 2, 5);
+	EXPECT_EQ("CMig_dims_given", myMig.version());
+	EXPECT_EQ(7, myMig.MaxDim());
+}
 
-		Array<double,2> trans(shape(2,2),FortranArray<2>());
-		trans = 0.9,0.3,0.1,0.7;
+//TEST(MigrationTest, CanSetGetCtmp){
+	//int nA = 5;
+	//int nY = 2;
+	//int nP = 3;
+	//int nL = 4;
+	//int nT = 3;
+	//CMig myMig(nA, nY, nP, nL, nT);
+	//Array<double,6> myctmp(nA, nY, nP, nL, nL ,nA, FortranArray<6>());
 
-		// create dimension vectors	                 
-		aypta = shape(2,2,2,2,2);
-		aypt  = shape(2,2,2,2);
-		aypa  = shape(2,2,2,2);
-		aypy  = shape(2,2,2,2);
-		ayp   = shape(2,2,2);
-		y     = shape(2,2);
+	//myctmp = 1.3;
+	//myMig.SetCtmp( myctmp );
+	
+	//Array<double,6>::iterator it;
+	//Array<double,6> out;
+	//out = myMig.GetCtmp();
+
+	//// traverse out and check all equal to set value
+	//for (it = out.begin();
+		 //it != out.end();
+		 //it ++ ){
+
+		//EXPECT_EQ( myctmp(1,1,1,1,1,1), *it );
+
+	//}
+//}
+
+
+//TEST(MigrationTest, Blimit_ownCorrect){
+	
+	//int nA = 8;
+	//int nY = 2;
+	//int nP = 3;
+	//int nL = 5;
+	//int nZ = 3;
+	//int nT = 3;
+	
+	//Array<double,2> trans(nY,nY,FortranArray<2>());
+	//trans = 0.9,0.3,0.1,0.7;
+
+	//Array<double,2> transZ(nZ,nZ,FortranArray<2>());
+	//transZ = 0.9025,0.0475,0.0025,
+			 //0.095,0.905,0.095,
+			 //0.0025,0.0475,0.9025;
+
+	//// get some data
+	//TinyVector<int,7> aypHTZt = shape(nA,nY,nP,nL,nL,nZ,nY);
+
+	//Array<double,7> tstay(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tsell(aypHTZt,FortranArray<7>());	
+	//Array<double,7> trent(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tbuy( aypHTZt,FortranArray<7>());	
+
+
+	////fill with random numbers
+	//ranlib::Uniform<double> uniGen;
+	//Array<double,7>::iterator it;
+
+	//for (it = tstay.begin(); it!=tstay.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tsell.begin(); it!=tsell.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = trent.begin(); it!=trent.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+
+	//double resources = 2;
+	//tstay = resources;
+
+	//// savings grid
+	//Array<double,1> agrid(nA,FortranArray<1>());
+	//agrid(1) = -2;
+	//agrid(nA) = 3;
+
+	//double step_own = (agrid(nA)-agrid(1)) / nA;
+	//for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
+
+
+	//Array<double,2> MoveCost(nL,nL,FortranArray<2>());
+	//MoveCost = 100;
+
+	//Array<double,1> Amenity(nL,FortranArray<1>());
+	//Amenity = 12;
+
+	//Array<int,3> blim_own(nL,nL,nP,FortranArray<3>());
+	//Array<int,2> blim_buy(nL,nP,FortranArray<2>());
+	//int blim_rent = nA-1;
+	//blim_buy = nA-1;
+
+
+	//// create borrowing limits at random indices
+	//ranlib::DiscreteUniform<int> Disc( nA );
+	//Array<int,3>::iterator it3;
+	//for (it3 = blim_own.begin();
+		 //it3 != blim_own.end();
+		 //it3 ++){
+		//*it3 = Disc.random() + 1;
+	//}
+	//int verbose = 1;
+	
+	//PStruct pars2;
+	//pars2.beta = 0.9;
+	//pars2.myNA = -99;
+	//pars2.gamma   = 1.4;
+	//pars2.mgamma  = 1 - pars2.gamma;
+	//pars2.imgamma = 1/pars2.mgamma;
+	//pars2.R       = 1/(1+0.04);
+
+	//// make savings tensors
+	//// this is to be done in R when producing stuff
+	//// ============================================
+	
+	//Array<double,4> save_own(nL,nL,nP,nA,FortranArray<4>());
+	//save_own = 0;
+	//for (int here=1; here<nL+1; here++){
+	//for (int there=1;there<nL+1;there++){
+	//for (int pr=1;   pr<nP+1;   pr++){
+		//if (blim_own(here,there,pr)>0) save_own(here,there,pr,Range(fromStart,blim_own(here,there,pr)) ) = (-1) * pars2.myNA;
+	//}}}
+
+	//Array<double,3> save_buy(nL,nP,nA,FortranArray<3>());
+	//save_buy=2;
+
+	//Array<double,1> save_rent(agrid);
+	
+
+	//CMig myMig_ref(nA,nY,nP,nL,nZ,nT,
+				//&pars2, tstay, tsell, trent, tbuy, trans,
+				//transZ, MoveCost, Amenity, save_own, save_buy, save_rent, verbose);
 		
-		Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
-		tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-			   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-		tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-		trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-				17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-		tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
 
-	}
-};
-
-
-// test whether the default constructor allocates
-// a default array for DimAYP = {2,2,2}
-TEST_F(MigrationTest, DefaultDimAYP){
-
-	std::vector<int> vec;
-	vec.push_back(2);
-	vec.push_back(2);
-	vec.push_back(2);
-
-	TinyVector<int,3> blitz;
-	blitz = myMig.GetDimAYP();
-	TinyVector<int,3>::iterator iter;
-
-	for (iter = blitz.begin(); iter!= blitz.end(); iter ++){
-
-		EXPECT_EQ(vec.at(iter-blitz.begin()), *iter);
-	}
-}
-
-// test whether pointers point to correct data in memory
-TEST_F(MigrationTest, TestDataPointers){
+	////// TEST
+	////// * upon construction, ctmp has a positive value
+	////// * calling TestCtmpSubset() will set all savings indices greater than blim_own(at,that,index) to pars2.myNA
+	////// * go through blim_own and see if that is true.
 	
-	// set some data
-	myMig.ReferenceStay( tstay );
-	myMig.ReferenceSell( tsell );
-	myMig.ReferenceRent( trent );
-	myMig.ReferenceBuy(  tbuy );
-	myMig.ReferenceG( trans );
-	myMig.SetP( &pars );
+	//myMig_ref.TestCtmpSubset();
+	//Array<double,7> myctmp(nA, nY, nP, nL, nL , nZ, nA, FortranArray<7>());
+	//myctmp = myMig_ref.GetCtmp() ;
 
-	// expect same data address
-	EXPECT_EQ( tstay.data() , myMig.GetResStay().data() ) << "ResStay pointer has wrong value " << endl;
-	EXPECT_EQ( tsell.data() , myMig.GetResSell().data() ) << "ResSell pointer has wrong value " << endl ;
-	EXPECT_EQ( trent.data() , myMig.GetResRent().data() ) << "ResRent poiter has wrong value "  << endl;
-	EXPECT_EQ( tbuy.data()  , myMig.GetResBuy().data() )  << "ResBuy pointer has wrong value "  << endl;
-	EXPECT_EQ( trans.data()  , myMig.GetG().data() )  << "G pointer has wrong value "  << endl;
-}
+	//// remember owner is only limited if here != there !!!!!
 
-// test whether allocate data contains same values 
-// as data to be allocated
-TEST_F(MigrationTest, CheckDataContents){
+	//for (int ia=1;ia<nA+1; ia++){
+		//for (int iy=1;iy<nY+1; iy++){
+			//for (int ip=1;ip<nP+1; ip++){
+				//for (int ih=1;ih<nL+1; ih++){
+					//for (int it=1;it<nL+1; it++){
+						//for (int iZ=1;iZ<nZ+1; iZ++){
+							
+							//for (int is=1;is<nA+1; is++){
+
+								//// at all savings indices greater than the blimit index, 
+								//// we computed res - save = 2 - 0 = 2
+								//if (is > blim_own(ih,it,ip) ) {
+
+									//EXPECT_DOUBLE_EQ( resources, myctmp(ia,iy,ip,ih,it,iZ,is) ) << "FALSE at " << ia << iy << ip << ih << it << iZ << is << " ctmp is " << myctmp(ia,iy,ip,ih,it,iZ,is)  << ", blim is " << blim_own(ih,it,ip) << endl;
+
+								//// otherwise ctmp should be a positive number
+								//// at all savings indeces less than or equal the blimit index, (and you are moving)
+								//// ctmp should be -myNA 
+								//} else if (is <= blim_own(ih,it,ip) && ih != it ){
+
+									//EXPECT_DOUBLE_EQ( resources + pars2.R * pars2.myNA , myctmp(ia,iy,ip,ih,it,iZ,is) ) << "FALSE at " << ia << iy << ip << ih << it << iZ << is << endl;
+
+								//}
+							//}
+						//}
+					//}
+				//}
+			//}
+		//}
+	//}
+
+//}
+
+
+//TEST(MigrationTest, Blimit_buyCorrect){
 	
-		Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
-		Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
-		tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-			   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-		tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-		trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-				17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-		tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-						 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-	// set some data
-	myMig.ReferenceStay( tstay );
-	myMig.ReferenceSell( tsell );
-	myMig.ReferenceRent( trent );
-	myMig.ReferenceBuy(  tbuy );
-
-	// now check it's the right data
-	std::vector<double> stayvec;
-	std::vector<double> sellvec;
-	std::vector<double> rentvec;
-	std::vector<double> buyvec;
-	std::vector<double> stayblitz;
-	std::vector<double> sellblitz;
-	std::vector<double> rentblitz;
-	std::vector<double> buyblitz;
-
-	Array<double,5>::iterator iter;
-	for (iter = tstay.begin() ; iter!=tstay.end();++iter){
-		stayvec.push_back(*iter);
-	}
-	for (iter = tsell.begin() ; iter!=tsell.end();++iter){
-		sellvec.push_back(*iter);
-	}
-	for (iter = trent.begin() ; iter!=trent.end();++iter){
-		rentvec.push_back(*iter);
-	}
-	for (iter = tbuy.begin() ; iter!=tbuy.end();++iter){
-		buyvec.push_back(*iter);
-	}
- 
-	stayblitz = myMig.GetResStayNumeric();
-	sellblitz = myMig.GetResSellNumeric();
-	rentblitz = myMig.GetResRentNumeric();
-	buyblitz = myMig.GetResBuyNumeric();
-
-	for (int i=0; i<sellvec.size(); i++){
-		EXPECT_EQ(stayvec.at(i),stayblitz.at(i)) << "ResStay has wrong value at idx " << i;
-		EXPECT_EQ(sellvec.at(i),sellblitz.at(i)) << "ResSell has wrong value at idx " << i;
-		EXPECT_EQ(rentvec.at(i),rentblitz.at(i)) << "ResRent has wrong value at idx " << i;
-		EXPECT_EQ(buyvec.at(i),buyblitz.at(i))   << "ResBuy has wrong value at idx "  << i;
-	}
-}
-
-
-
-// test whether referenced data is indeed 
-// stored in FortranArray mode
-TEST_F(MigrationTest, ResArraysAreFortranOrder) {
+	//int nA = 8;
+	//int nY = 2;
+	//int nP = 3;
+	//int nL = 5;
+	//int nZ = 3;
+	//int nT = 3;
 	
-	Array<double,5> tstay(2,2,2,2,2,FortranArray<5>());	
-	Array<double,5> tsell(2,2,2,2,2,FortranArray<5>());	
-	Array<double,5> trent(2,2,2,2,2,FortranArray<5>());	
-	Array<double,5> tbuy( 2,2,2,2,2,FortranArray<5>());	
-	tstay = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-		   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-	tsell = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-					 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
-	trent = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
-			17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32;
-	tbuy  = 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-					 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;
+	//Array<double,2> trans(nY,nY,FortranArray<2>());
+	//trans = 0.9,0.3,0.1,0.7;
 
-	// set some data
-	myMig.ReferenceStay( tstay );
-	myMig.ReferenceSell( tsell );
-	myMig.ReferenceRent( trent );
-	myMig.ReferenceBuy(  tbuy );
-	 
-	// fortranArray has blitz::ordering() vector 0,1,...,blitz::rank()-1
-	 // check last entry of that with
-	 TinyVector<int,5> fortran;
-	 fortran = 0,1,2,3,4;
-	 //int storage[] = {2,1,0};	// C order
+	//Array<double,2> transZ(nP,nP,FortranArray<2>());
+	//transZ = 0.9025,0.0475,0.0025,
+			 //0.095,0.905,0.095,
+			 //0.0025,0.0475,0.9025;
 
-	 TinyVector<int,5> stay = myMig.GetResStayOrder();
-	 TinyVector<int,5> sell = myMig.GetResSellOrder();
-	 TinyVector<int,5> rent = myMig.GetResRentOrder();
-	 TinyVector<int,5> buy  = myMig.GetResBuyOrder();
+	//// get some data
+	//TinyVector<int,7> aypHTZt = shape(nA,nY,nP,nL,nL,nZ,nY);
 
-	 for (int i=0;i<5;i++) {
-		 EXPECT_EQ(fortran(i),stay(i)) << "stay has wrong ordering at dim " << i;
-		 EXPECT_EQ(fortran(i),sell(i)) << "sell has wrong ordering at dim " << i;
-		 EXPECT_EQ(fortran(i),rent(i)) << "rent has wrong ordering at dim " << i;
-		 EXPECT_EQ(fortran(i),buy(i)) << "buy has wrong ordering at dim " << i;
-	 }
-}
+	//Array<double,7> tstay(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tsell(aypHTZt,FortranArray<7>());	
+	//Array<double,7> trent(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tbuy( aypHTZt,FortranArray<7>());	
 
 
+	////fill with random numbers
+	//ranlib::Uniform<double> uniGen;
+	//Array<double,7>::iterator it;
 
-// test whether integration function is correct
-TEST(MigTestIndivid, checkIntegration) {
+	//for (it = tstay.begin(); it!=tstay.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tsell.begin(); it!=tsell.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = trent.begin(); it!=trent.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
 
-	// create an instance of owner class
-	CMig myMig;
+	//double resources = 2;
+	//tstay = resources;
 
-	// get data
-	Array<double,3> test(myMig.GetDimAYP(),FortranArray<3>());
-	Array<double,3> bout(myMig.GetDimAYP(),FortranArray<3>());
-	test = 1;
-	bout = myMig.integrate(test);
+	//// savings grid
+	//Array<double,1> agrid(nA,FortranArray<1>());
+	//agrid(1) = -2;
+	//agrid(nA) = 3;
 
-	std::vector<double> out;
-	// define an iterator for a blitz array
-	Array<double,3>::iterator iter;
-
-	// iterate over blitz and fill vector with values
-	for (iter = bout.begin() ; iter!=bout.end();++iter){
-		out.push_back(*iter);
-	}
-
-	for (int i=0; i<out.size(); i++){
-		EXPECT_EQ(1,out.at(i)) << "integration not 1 at index " << i;
-	}
-}
+	//double step_own = (agrid(nA)-agrid(1)) / nA;
+	//for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
 
 
-// check whether discrete choice function 
-// works correctly
-TEST(MigTestIndivid,TestDchoice3d){
+	//Array<double,2> MoveCost(nL,nL,FortranArray<2>());
+	//MoveCost = 100;
 
-	CMig myMig;
+	//Array<double,1> Amenity(nL,FortranArray<1>());
+	//Amenity = 12;
+	//Array<int,2> blim_buy(nL,nP,FortranArray<2>());
 
-	// setup test for dchoice3d
-	Array<double,3> one(myMig.GetDimAYP(),FortranArray<3>());
-	Array<double,3> two(myMig.GetDimAYP(),FortranArray<3>());
-	Array<double,3> ret(myMig.GetDimAYP(),FortranArray<3>());
-	one = 1;
-	two = 0,0,2,0,2,0,2,2;
+	//// create borrowing limits are random indices
+	//ranlib::DiscreteUniform<int> Disc( nA );
 
-	std::vector<double> dchoice;
-	std::vector<double> vec;
-	dchoice.push_back(1);
-	dchoice.push_back(1);
-	dchoice.push_back(2);
-	dchoice.push_back(1);
-	dchoice.push_back(2);
-	dchoice.push_back(1);
-	dchoice.push_back(2);
-	dchoice.push_back(2);
+	//Array<int,2>::iterator it2;
+	//for (it2 = blim_buy.begin();
+		 //it2 != blim_buy.end();
+		 //it2 ++){
+		//*it2 = Disc.random() + 1;
+	//}
 
-	ret = myMig.dchoice3d(one,two);
-	// define two std::vectors to take the values
-	//std::vector<double> vec;
-	Array<double,3>::iterator iter;
+	//int blim_rent = nA-1;
 
-	// iterate over blitz and fill vector with values
-	for (iter = ret.begin() ; iter!=ret.end();++iter){
-		vec.push_back(*iter);
-	}
-	for (int i=0; i<dchoice.size(); i++){
-		EXPECT_EQ(dchoice.at(i),vec.at(i)) << "at" << i << "dchoice is "<<dchoice.at(i)<<"and blitzchoice is " << vec.at(i);
-	}
-
+	//int verbose = 1;
 	
-}
+	//PStruct pars2;
+	//pars2.beta = 0.9;
+	//pars2.myNA = -99;
+	//pars2.gamma   = 1.4;
+	//pars2.mgamma  = 1 - pars2.gamma;
+	//pars2.imgamma = 1/pars2.mgamma;
+	//pars2.R       = 1/(1+0.04);
 
-
-TEST(MigTestIndivid, TensorAddition ) {
-
-	Array<double,3> A(shape(2,2,2),FortranArray<3>());
-	A = 0.25; 
-
-	Array<double,2> B(shape(2,2),FortranArray<2>());
-	B = 0,0,1,1; 
-
-	firstIndex i;
-	secondIndex j;
-	thirdIndex k;
-
-	Array<double,3> C(A(i,j,k) + B(k,j));
-	Array<double,2> c;
-	Array<double,2>::iterator it;
+	//// make savings tensors
+	//// this is to be done in R when producing stuff
+	//// ============================================
 	
-	c = C(Range::all(),1,Range::all());
+	//Array<double,3> save_buy(nL,nP,nA,FortranArray<3>());
+	//save_buy= 0;
+	//for (int there=1;there<nL+1;there++){
+	//for (int pr=1;   pr<nP+1;   pr++){
+		//if (blim_buy(there,pr)>0) save_buy(there,pr,Range(fromStart,blim_buy(there,pr)) ) = (-1) * pars2.myNA;
+	//}}
 
-	for (it = c.begin(); it != c.end(); it++){
-		EXPECT_EQ(0.25, *it);
-	}
-	c = C(Range::all(),2,Range::all());
+	//Array<double,4> save_own(nL,nL,nP,nA,FortranArray<4>());
+	//save_own=2;
 
-	for (it = c.begin(); it != c.end(); it++){
-		EXPECT_EQ(1.25, *it);
-	}
-}
-
-
-// test whether tensor arithmetic in integration
-// is correct
-TEST(MigTestIndivid, CheckIntegration){
-     firstIndex i;
-     secondIndex j;
-     thirdIndex k;
-     fourthIndex l;
-
-     Array<double,3> A(2,2,2,FortranArray<3>());
-     Array<double,2> G(2,2,FortranArray<2>());
-     Array<double,3> R(2,2,2,FortranArray<3>());
-
-     A=1;
-     G = 0.3,0.4,0.7,0.6;
-     Array<double,4> C(2,2,2,2,FortranArray<4>());
-
-     C = A(i,j,k) * G(l,j);   // C(i,j,k,l)
-
-     R = sum(C(i,l,k,j),l);
+	//Array<double,1> save_rent(agrid);
 	
-	 Array<double,3>::iterator iter;
-	 for (iter = R.begin(); iter != R.end(); iter++){
 
-		 EXPECT_EQ( 1.0, *iter ) << "integrates not to one";
+	//CMig myMig_ref(nA,nY,nP,nL,nZ,nT,
+				//&pars2, tstay, tsell, trent, tbuy, trans,
+				//transZ, MoveCost, Amenity, save_own, save_buy, save_rent, verbose);
+		
+	//myMig_ref.TestCtmpSubset_Buy();
+	//Array<double,7> myctmp(nA, nY, nP, nL, nL , nZ, nA, FortranArray<7>());
+	//myctmp = myMig_ref.GetCtmp() ;
 
-	 }
-}	
+
+	//for (int ia=1;ia<nA+1; ia++){
+		//for (int iy=1;iy<nY+1; iy++){
+			//for (int ip=1;ip<nP+1; ip++){
+				//for (int ih=1;ih<nL+1; ih++){
+					//for (int it=1;it<nL+1; it++){
+						//for (int iZ=1;iZ<nZ+1; iZ++){
+							
+							//for (int is=1;is<nA+1; is++){
+
+							////// at all savings indices greater than the blimit index, 
+							////// ctmp should be a positive number
+								//if (is > blim_buy(it,ip) ) {
+
+									//EXPECT_DOUBLE_EQ( resources, myctmp(ia,iy,ip,ih,it,iZ,is) ) << "FALSE at " << ia << iy << ip << ih << it << iZ << is << " ctmp is " << myctmp(ia,iy,ip,ih,it,iZ,is)  << ", blim is " <<blim_buy(it,ip) << endl;
+
+								//} else if (is <= blim_buy(it,ip)){
+
+									//EXPECT_DOUBLE_EQ( resources + pars2.R * pars2.myNA , myctmp(ia,iy,ip,ih,it,iZ,is) ) << "FALSE at " << ia << iy << ip << ih << it << iZ << is << endl;
+								//}
+
+							//}
+						//}
+					//}
+				//}
+			//}
+		//}
+	//}
+
+//}
 
 
-int main(int argc, char **argv) { // A main function scaffold to call the tests
+
+//// test whether integration function is correct
+//// NOTE: this test only checks whether integration 
+//// give a one array if given a one array. it cannot
+//// check the ordering of the tensor operation.
+//TEST(MigTest, checkIntegration) {
+
+	//int nA = 8;
+	//int nY = 2;
+	//int nP = 3;
+	//int nL = 5;
+	//int nZ = 3;
+	//int nT = 3;
+	
+	//Array<double,2> trans(nY,nY,FortranArray<2>());
+	//trans = 0.9,0.3,0.1,0.7;
+
+	//Array<double,2> transZ(nP,nP,FortranArray<2>());
+	//transZ = 0.9025,0.0475,0.0025,
+			 //0.095,0.905,0.095,
+			 //0.0025,0.0475,0.9025;
+
+	//// get some data
+	//TinyVector<int,7> aypHTZt = shape(nA,nY,nP,nL,nL,nZ,nY);
+
+	//Array<double,7> tstay(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tsell(aypHTZt,FortranArray<7>());	
+	//Array<double,7> trent(aypHTZt,FortranArray<7>());	
+	//Array<double,7> tbuy( aypHTZt,FortranArray<7>());	
+
+
+	////fill with random numbers
+	//ranlib::Uniform<double> uniGen;
+	//Array<double,7>::iterator it;
+
+	//for (it = tstay.begin(); it!=tstay.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tsell.begin(); it!=tsell.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = trent.begin(); it!=trent.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+
+	//double resources = 2;
+	//tstay = resources;
+
+	//// savings grid
+	//Array<double,1> agrid(nA,FortranArray<1>());
+	//agrid(1) = -2;
+	//agrid(nA) = 3;
+
+	//double step_own = (agrid(nA)-agrid(1)) / nA;
+	//for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
+
+
+	//Array<double,2> MoveCost(nL,nL,FortranArray<2>());
+	//MoveCost = 100;
+
+	//Array<double,1> Amenity(nL,FortranArray<1>());
+	//Amenity = 12;
+	//Array<int,2> blim_buy(nL,nP,FortranArray<2>());
+
+	//// create borrowing limits are random indices
+	//ranlib::DiscreteUniform<int> Disc( nA );
+
+	//Array<int,2>::iterator it2;
+	//for (it2 = blim_buy.begin();
+		 //it2 != blim_buy.end();
+		 //it2 ++){
+		//*it2 = Disc.random() + 1;
+	//}
+
+	//int blim_rent = nA-1;
+
+	//int verbose = 1;
+	
+	//PStruct pars2;
+	//pars2.beta = 0.9;
+	//pars2.myNA = -99;
+	//pars2.gamma   = 1.4;
+	//pars2.mgamma  = 1 - pars2.gamma;
+	//pars2.imgamma = 1/pars2.mgamma;
+	//pars2.R       = 1/(1+0.04);
+
+	//// make savings tensors
+	//// this is to be done in R when producing stuff
+	//// ============================================
+	
+	//Array<double,3> save_buy(nL,nP,nA,FortranArray<3>());
+	//save_buy= 0;
+
+	//Array<double,4> save_own(nL,nL,nP,nA,FortranArray<4>());
+	//save_own=2;
+
+	//Array<double,1> save_rent(agrid);
+	
+
+	//CMig myMig_ref(nA,nY,nP,nL,nZ,nT,
+				//&pars2, tstay, tsell, trent, tbuy, trans,
+				//transZ, MoveCost, Amenity, save_own, save_buy, save_rent, verbose);
+
+	//// get data
+	//Array<double,5> test(nA,nY,nP,nL,nZ,FortranArray<5>());
+	//Array<double,5> bout(nA,nY,nP,nL,nZ,FortranArray<5>());
+	//test = 1;
+	//bout = myMig_ref.integrate(test);
+
+	//// define an iterator for a blitz array
+	//Array<double,5>::iterator iter;
+
+	//// iterate over blitz and fill vector with values
+	//for (iter = bout.begin() ; iter!=bout.end();++iter){
+		//EXPECT_DOUBLE_EQ( 1.0, *iter );
+	//}
+
+//}
+
+
+
+//// check whether discrete choice function 
+//// works correctly
+//TEST(Mig6Test,TestDchoice5d){
+
+	//CMig myMig;
+
+	//// setup test for dchoice3d
+	//Array<double,5> one(2,2,2,2,2,FortranArray<5>());
+	//Array<double,5> two(2,2,2,2,2,FortranArray<5>());
+	//Array<double,5> max12(2,2,2,2,2,FortranArray<5>());
+	//Array<double,5> ret(2,2,2,2,2,FortranArray<5>());
+
+	//one = 1;
+	//two = 0,0,2,0,2,0,2,2,
+		  //0,0,2,0,2,0,2,2,
+		  //0,0,2,0,2,0,2,2,
+          //0,0,2,0,2,0,2,2;
+
+	//max12 = where(one > two, one, two );
+
+	//ret = myMig.dchoice5d(one,two);
+	//// define two std::vectors to take the values
+	////std::vector<double> vec;
+	//Array<double,5>::iterator it1;
+	//Array<double,5>::iterator it2;
+	//double idx;
+
+	//// iterate over blitz and fill vector with values
+	//for (it1 = ret.begin(), it2 = max12.begin() ; it1!=ret.end() && it2!=max12.end() ; ++it1, ++it2){
+
+		//EXPECT_EQ( *it2, *it1 );
+	//}
+
+//}
+
+
+
+
+
+
+//// Test whether can GET various objects
+//TEST(Mig6Test, TestGetters) {
+
+	//CMig myMig;
+	//Array<double,7> t_ResStay(2,2,2,2,2,2,2,FortranArray<7>());
+	//Array<double,7> t_ResSell(2,2,2,2,2,2,2,FortranArray<7>());
+	//Array<double,7> t_ResRent(2,2,2,2,2,2,2,FortranArray<7>());
+	//Array<double,7> t_ResBuy (2,2,2,2,2,2,2,FortranArray<7>());
+
+
+	//Array<double,6> c_loc_stay(2,2,2,2,2,2,FortranArray<6>());	
+	//Array<double,6> c_loc_sell(2,2,2,2,2,2,FortranArray<6>());  
+	//Array<double,6> c_loc_rent(2,2,2,2,2,2,FortranArray<6>());	
+	//Array<double,6> c_loc_buy ( 2,2,2,2,2,2,FortranArray<6>());   
+
+	//Array<int   ,5> Down(  2,2,2,2,2,FortranArray<5>());  
+	//Array<int   ,5> Drent( 2,2,2,2,2,FortranArray<5>());
+
+	//EXPECT_EQ( typeid( t_ResStay ), typeid( myMig.GetResStay() ) );
+	//EXPECT_EQ( typeid( t_ResSell ), typeid( myMig.GetResSell() ) );
+	//EXPECT_EQ( typeid( t_ResRent ), typeid( myMig.GetResRent() ) );
+	//EXPECT_EQ( typeid( t_ResBuy  ), typeid( myMig.GetResBuy () ) );
+	
+	//EXPECT_EQ( typeid( c_loc_stay ), typeid( myMig.Getc_loc_stay() ) );
+	//EXPECT_EQ( typeid( c_loc_sell ), typeid( myMig.Getc_loc_sell() ) );
+	//EXPECT_EQ( typeid( c_loc_rent ), typeid( myMig.Getc_loc_rent() ) );
+	//EXPECT_EQ( typeid( c_loc_buy  ), typeid( myMig.Getc_loc_buy () ) );
+
+	//// ordering() returns a TinyVector<int,7>. ckeck if last elt is equal
+	//EXPECT_EQ( t_ResStay.ordering()(6),  myMig.GetResStay().ordering()(6) );
+	//EXPECT_EQ( t_ResSell.ordering()(6) , myMig.GetResSell().ordering()(6) );
+	//EXPECT_EQ( t_ResRent.ordering()(6) , myMig.GetResRent().ordering()(6) );
+	//EXPECT_EQ(  t_ResBuy.ordering()(6) , myMig.GetResBuy ().ordering()(6) );
+
+//}	
+
+
+
+
+
+//class MigrationFTest: public ::testing::Test {
+
+//protected:
+	//int nA = 2;
+	//int nY = 2;
+	//int nP = 3;
+	//int nL = 2;
+	//int nT = 3;
+
+	//Array<double,2> trans(nY,nY,FortranArray<2>());
+	//trans = 0.9,0.3,0.1,0.7;
+
+	//Array<double,2> transP(nP,nP,FortranArray<2>());
+	//transP = 0.9025,0.0475,0.0025,
+			 //0.095,0.905,0.095,
+			 //0.0025,0.0475,0.9025;
+
+	//// get some data
+	//TinyVector<int,6> aypHTt = shape(nA,nY,nP,nL,nL,nY);
+
+	//Array<double,6> tstay(aypHTt,FortranArray<6>());	
+	//Array<double,6> tsell(aypHTt,FortranArray<6>());	
+	//Array<double,6> trent(aypHTt,FortranArray<6>());	
+	//Array<double,6> tbuy( aypHTt,FortranArray<6>());	
+
+	////fill with random numbers
+	//tstay = 1;
+	//tsell = 2;
+	//trent = 4;
+	//tbuy = 5;
+
+	//ranlib::Uniform<double> uniGen;
+	//Array<double,6>::iterator it;
+
+	//for (it = tstay.begin(); it!=tstay.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tsell.begin(); it!=tsell.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = trent.begin(); it!=trent.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+	//for (it = tbuy.begin(); it!=tbuy.end(); it++) {
+		//*it = uniGen.random() + 1;
+	//}
+
+	//// savings grid
+	//Array<double,1> agrid(nA,FortranArray<1>());
+	//agrid = 1;
+	//agrid(1) = -2;
+	//agrid(nA) = 3;
+
+	//double step_own = (agrid(nA)-agrid(1)) / nA;
+	//for (int i=2;i<nA+1;i++) agrid(i) = agrid(i-1) + step_own;
+
+	//Array<double,2> MoveCost(nL,nL,FortranArray<2>());
+	//MoveCost = 100;
+
+	//Array<double,1> Amenity(nL,FortranArray<1>());
+	//Amenity = 12;
+
+
+	//Array<int,3> blim_own(nL,nL,nP,FortranArray<3>());
+	//Array<int,2> blim_buy(nL,nP,FortranArray<2>());
+
+	//// create borrowing limits are random indices
+	//ranlib::DiscreteUniform<int> Disc( nA );
+	//Array<int,3>::iterator it3;
+	//for (it3 = blim_own.begin();
+		 //it3 != blim_own.end();
+		 //it3 ++){
+		//*it3 = Disc.random() + 1;
+	//}
+
+	//Array<int,2>::iterator it2;
+	//for (it2 = blim_buy.begin();
+		 //it2 != blim_buy.end();
+		 //it2 ++){
+		//*it2 = Disc.random() + 1;
+	//}
+
+	//int blim_rent = nA-1;
+
+	//int verbose = 1;
+	
+	//PStruct pars2;
+	//pars2.beta = 0.9;
+	//pars2.myNA = -99;
+	//pars2.gamma   = 1.4;
+	//pars2.mgamma  = 1 - pars2.gamma;
+	//pars2.imgamma = 1/pars2.mgamma;
+
+	//CMig myMig_ref(nA, nY, nP, nL, nT,
+				//&pars2, tstay, tsell, trent, tbuy, trans,
+				//transP, MoveCost, Amenity, agrid, blim_own, blim_buy,
+				//blim_rent, verbose);
+
+
+	//MigrationTest() {
+	//}
+/*};*/
+
+
+int main(int argc, char **argv) { 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

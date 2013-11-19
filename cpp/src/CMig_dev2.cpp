@@ -1,9 +1,9 @@
 
 
 #ifdef RcppCompile
-#include "../../cpp/src/CMig7.h"
+#include "../../cpp/src/CMig_dev2.h"
 #else
-#include "CMig7.h"		// include class declaration of owner class
+#include "CMig_dev2.h"		// include class declaration of owner class
 #endif
 
 #define _EPS 1.0e-9

@@ -15,6 +15,11 @@ using namespace blitz;
 // =============================================================================================
 //
 
+
+#ifndef ONCE_COWNER_D2_H
+#define ONCE_COWNER_D2_H
+
+
 // define gsl parameter struct
 struct gsl_f_pars ;
 
@@ -166,3 +171,4 @@ double find_root(gsl_root_fsolver *RootFinder,  gsl_function  F, double x_lo, do
 
 // declare utility func as a Blitz function for final period
 //BZ_DECLARE_FUNCTION(CMig7::utility)
+#endif //ONCE_COWNER_H
