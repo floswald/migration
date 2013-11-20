@@ -3,10 +3,30 @@
 #include <blitz/array.h>
 #include <Rcpp/Benchmark/Timer.h>
 #include <Rcpp.h>
-#include "../../cpp/src/CMig6.cpp"
+#include "../../cpp/src/CMig.cpp"
 
 using namespace blitz;
- 
+
+
+// how to use this interface
+// =========================
+//
+// the user must pass a list with data. list contains
+// * admissible savings functions. these are arrays that specify how much can
+//   be borrowed on each state. If borrowing is illegal on a certain state (and
+//   after a certain amount of borrowing) then the array must hold NA at that position.
+// * Evaluation grids for prices in each period and location, independent of aggregate state
+// * Integration grids for each period, location and aggregate state. these are tomorrow's prices
+//   if today's price is p, you are in locatino j, and tomorrows state can be Z=1 or Z=0.
+// * parameter data
+// * Resource arrays. cash on hand at each state and here-there choice
+// * transition matrices
+// * amenity values
+// * moving costs
+// * 
+
+
+
 
 //' dev8: discrete optimization, housing choice, utility function, location choice
 //' 
@@ -77,7 +97,7 @@ Rcpp::List dev8( Rcpp::List data ) {
 	// create an mapped data instance of the migration class
 	// =====================================================
 	
-	CMig6 myMig_ref(d(0), d(1), d(2), d(3), d(4),
+	CMig myMig_ref(d(0), d(1), d(2), d(3), d(4),
 			    &p, stay, sell, rent, buy, G, Gp,
 				MoveCost, Amenity, agrid, blim_own, blim_buy,
 				R_blim_rent, verbose);

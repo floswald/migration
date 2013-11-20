@@ -84,7 +84,7 @@ class CMig {
 
 		// (IV) auxiliary member arrays
 		Array<double,6> v_loc_tmp;   //(a,y,p,here,there,Z)
-		Array<double,5> vbar_tmp;   //(a,y,p,here,Z)
+		Array<double,5> vbar_tmp, vbar_tmp2;   //(a,y,p,here,Z)
 
 		Array<double,7> ctmp,xtmp;	//(a,y,p,here,there,Z,a')
 		Array<double,6> restmp;	//(a,y,p,here,there,Z)
@@ -111,8 +111,8 @@ class CMig {
 		// the class. the class is referenced to those
 		// data arrays
 		CMig();
-		CMig(int nA, int nY, int nP, int nL, int nZ, int nT);
-		CMig(int nA, int nY, int nP, int nL, int nZ, int nT,
+		CMig(int nA, int nY, int nP, int nZ, int nL, int nT);
+		CMig(int nA, int nY, int nP, int nZ, int nL, int nT,
 				PStruct * data_pars,
 				Array<double,7> data_stay,
 				Array<double,7> data_sell,
@@ -145,7 +145,7 @@ class CMig {
 		Array<double,6> GetVrent(      void ) const {return(Vrent)  ;};
 		Array<double,6> GetEVown(      void ) const {return(EVown)  ;};
 		Array<double,6> GetVbarRent(   void ) const {return(Vbar_rent) ;};
-		Array<double,6> GetVbarOwn(    void ) const {return(Vbar_own) ;};
+		Array<double,5> GetVbarOwn(   int age ) const {return(Vbar_own(Range::all(),Range::all(),Range::all(),Range::all(),Range::all(),age) ) ;};
 		Array<double,6> GetEVrent(     void ) const {return(EVrent) ;};
 		Array<int   ,6> GetLocationOwn( void ) const {return(Location_own)   ;};
 		Array<int   ,6> GetLocationRent(void ) const {return(Location_rent)   ;};
@@ -189,9 +189,12 @@ class CMig {
 		void BuildSaveOwn( void ) ;
 		void TestCtmpSubset( void );
 		void TestCtmpSubset_Buy( void );
+		Array<double,1> interp1D( double xdata[], double ydata[], Array<double,1> newx ) ;
+		Array<double,5> Interpolate(Array<double,5> tens, int age) ;
+		Array<double,5> TestInterpolate(Array<double,5> tens, Array<double,3> GEval, Array<double,4> GInt, int age) ;
 		//void LimitBuyer( void ) ;
 		//void ComputePeriod(int age);
-		//void ComputeExpectations( int age );
+		void ComputeExpectations( int age );
 
 		//void ComputeStay( int age );
 		//void ComputeSell( int age );

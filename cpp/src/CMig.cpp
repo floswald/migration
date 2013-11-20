@@ -28,7 +28,7 @@ CMig::CMig() :
 
 	// the default constructor initiates all arrays with an extent of 2 in each dimension
 
-	// Arrays of size (a,y,p,here,there,age)
+	// Arrays of size (a,y,p,Z,here,there,age)
 	ResStay(        2,2,2,2,2,2,2,FortranArray<7>()),
     ResSell(        2,2,2,2,2,2,2,FortranArray<7>()),
 	ResRent(        2,2,2,2,2,2,2,FortranArray<7>()),
@@ -73,8 +73,9 @@ CMig::CMig() :
 
 	v_loc_tmp(      2,2,2,2,2,2,   FortranArray<6>()),	
 	vbar_tmp(       2,2,2,2,2,     FortranArray<5>()),	
+	vbar_tmp2(       2,2,2,2,2,     FortranArray<5>()),	
 
-	vplustmp(       2,2,2,2,2,     FortranArray<5>()), 	// (a,y,p,here,Z)
+	vplustmp(       2,2,2,2,2,     FortranArray<5>()), 	// (a,y,p,Z,here)
 
 	save_own(       2,2,2,2,       FortranArray<4>()), 	// (here,there,p,save) 	
 	save_buy(       2,2,2,         FortranArray<3>()),  // (     there,p,save)	
@@ -126,7 +127,7 @@ CMig::CMig() :
 		Gz       = 1.0/dim_ayp_here_there_Z_t(5);
 		MoveCost = 1.0/nLoc;
 	    Amenity  = 2;
-		pgrid    = 1;
+		pgrid    = 1,2;
 		// set parameter values
 		p.myNA    = -99;
 		p.beta    = 0.9;
@@ -135,61 +136,65 @@ CMig::CMig() :
 		p.imgamma = -1/0.4;
 		p.theta   = 0.1;
 		p.R       = 1/(1+0.4);
+		p.type   = gsl_interp_linear;	// change interpolation type here.
+		p.acc    = gsl_interp_accel_alloc ();
+		p.spline = gsl_spline_alloc (p.type, 2 );
 		maxage    = dim_ayp_here_there_Z_t(6);
 }
 
 // constructor 1
-CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT):
+CMig::CMig(int nA, int nY, int nP, int nZ, int nL, int nT):
 
 	// this is syntactic sugar. an initialiser list. 
 
-	// Arrays of size (a,y,p,here,there,Z,age)
-	ResStay(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-    ResSell(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-	ResRent(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-    ResBuy(         nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
+	// Arrays of size (a,y,p,Z,here,there,age)
+	ResStay(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+    ResSell(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+	ResRent(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+    ResBuy(         nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
                                       
-    v_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-    v_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-    v_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-    v_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),   
-	c_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-	c_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-	c_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-	c_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),   
-	s_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-	s_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	s_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	s_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	
-	W_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	W_loc_own(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	rho_rent(       nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	rho_own(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	Tenure_loc_rent(nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	Tenure_loc_own( nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
+    v_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+    v_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+    v_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+    v_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),   
+	c_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+	c_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+	c_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+	c_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),   
+	s_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+	s_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	s_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	s_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	                            
+	W_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	W_loc_own(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	rho_rent(       nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	rho_own(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	Tenure_loc_rent(nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	Tenure_loc_own( nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
 
 	// Arrays of size (a,y,p,here,there,Z,a)
-	ctmp(           nA,nY,nP,nL,nL,nZ,nA,FortranArray<7>()),  	
-	xtmp(           nA,nY,nP,nL,nL,nZ,nA,FortranArray<7>()),  	
+	ctmp(           nA,nY,nP,nZ,nL,nL,nA,FortranArray<7>()),  	
+	xtmp(           nA,nY,nP,nZ,nL,nL,nA,FortranArray<7>()),  	
 	
 	// Arrays of size (a,y,p,here,there,Z)
-	restmp(    		nA,nY,nP,nL,nL,nZ,   FortranArray<6>()),  	
+	restmp(    		nA,nY,nP,nZ,nL,nL,   FortranArray<6>()),  	
 
-	// Arrays of size (a,y,p,here,Z,age)
-	Vown(  	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vrent( 	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	EVown( 	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	EVrent(	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vbar_own( 	    nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vbar_rent(	    nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Location_own(   nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Location_rent(  nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
+	// Arrays of size (a,y,p,Z,here,age)
+	Vown(  	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vrent( 	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	EVown( 	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	EVrent(	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vbar_own( 	    nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vbar_rent(	    nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Location_own(   nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Location_rent(  nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
 
-	v_loc_tmp(      nA,nY,nP,nL,nL,nZ,   FortranArray<6>()),
-	vbar_tmp(       nA,nY,nP,nL,nZ,      FortranArray<5>()),
+	v_loc_tmp(      nA,nY,nP,nZ,nL,nL,   FortranArray<6>()),
+	vbar_tmp(       nA,nY,nP,nZ,nL,      FortranArray<5>()),
+	vbar_tmp2(      nA,nY,nP,nZ,nL,      FortranArray<5>()),
 
-	vplustmp(       nA,nY,nP,nL,nZ,      FortranArray<5>()), 	// (a,y,p,here)
+	vplustmp(       nA,nY,nP,nZ,nL,      FortranArray<5>()), 	// (a,y,p,here)
 	
 	save_own(       nL,nL,nP,nA,         FortranArray<4>()), 	// (here,there,p,save) 	
 	save_buy(       nL,nP,nA,            FortranArray<3>()), 	// (     there,p,save) 	
@@ -198,9 +203,13 @@ CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT):
 	MoveCost(       nL,nL,               FortranArray<2>()) ,	// (here,there)
 	G(              nY,nY,               FortranArray<2>()) ,	// (y,y')
 	Gz(             nZ,nZ,               FortranArray<2>()) ,	// (z,z')
-	pgrid(          nP,                  FortranArray<1>()),	
 	Amenity(        nL,                  FortranArray<1>()) ,
 	tmp1(           nP,                  FortranArray<1>()),
+
+	// price grids
+	GpEval(         nL,nT,nP,            FortranArray<3>()),
+	GpInt(          nL,nZ,nT,nP,         FortranArray<4>()),
+	pgrid(          nP,                  FortranArray<1>()),
 
 	verbose(1),
 	nLoc(nL),
@@ -226,6 +235,8 @@ CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT):
 		xtmp            = 1;
 		ctmp            = 2;
 		restmp          = 3;
+		Vbar_own        = 0;
+		Vbar_rent       = 0;
 		W_loc_rent      = 0;
 		W_loc_own       = 0;
 		rho_rent        = 0;
@@ -241,7 +252,10 @@ CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT):
 		Gz       = 1.0/dim_ayp_here_there_Z_t(5);
 		MoveCost = 1.0/nLoc;
 	    Amenity  = 2;
-		pgrid    = 1;
+		// price grids zero
+		GpEval   = 0;
+		GpInt    = 0;
+		pgrid    = 0;
 		// set parameter values
 		p.myNA    = -99;
 		p.beta    = 0.9;
@@ -250,13 +264,16 @@ CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT):
 		p.imgamma = -1/0.4;
 		p.theta   = 0.1;
 		p.R       = 1/(1+0.4);
+		p.type   = gsl_interp_linear;	// change interpolation type here.
+		p.acc    = gsl_interp_accel_alloc ();
+		p.spline = gsl_spline_alloc (p.type, nP );
 		maxage    = dim_ayp_here_there_Z_t(6);
 		save_own   = 1;
 		save_buy   = 2;
 		save_rent  = 3;
 }
 
-CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT,
+CMig::CMig(int nA, int nY, int nP,int nZ, int nL, int nT,
 				PStruct * data_pars,
 				Array<double,7> data_stay,
 				Array<double,7> data_sell,
@@ -275,53 +292,54 @@ CMig::CMig(int nA, int nY, int nP, int nL, int nZ, int nT,
 
 	// this is syntactic sugar. an initialiser list. 
 
-	// Arrays of size (a,y,p,here,there,Z,age)
-	ResStay(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-    ResSell(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-	ResRent(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
-    ResBuy(         nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),
+	// Arrays of size (a,y,p,Z,here,there,age)
+	ResStay(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+    ResSell(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+	ResRent(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
+    ResBuy(         nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),
                                       
-    v_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-    v_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-    v_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-    v_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),   
-	c_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-	c_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-	c_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),	
-	c_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),   
-	s_loc_stay(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()),  
-	s_loc_sell(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	s_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	s_loc_buy(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	
-	W_loc_rent(     nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	W_loc_own(      nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	rho_rent(       nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	rho_own(        nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	Tenure_loc_rent(nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
-	Tenure_loc_own( nA,nY,nP,nL,nL,nZ,nT,FortranArray<7>()), 
+    v_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+    v_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+    v_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+    v_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),   
+	c_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+	c_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+	c_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),	
+	c_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),   
+	s_loc_stay(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()),  
+	s_loc_sell(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	s_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	s_loc_buy(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	                            
+	W_loc_rent(     nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	W_loc_own(      nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	rho_rent(       nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	rho_own(        nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	Tenure_loc_rent(nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
+	Tenure_loc_own( nA,nY,nP,nZ,nL,nL,nT,FortranArray<7>()), 
 
 	// Arrays of size (a,y,p,here,there,Z,a)
-	ctmp(           nA,nY,nP,nL,nL,nZ,nA,FortranArray<7>()),  	
-	xtmp(           nA,nY,nP,nL,nL,nZ,nA,FortranArray<7>()),  	
+	ctmp(           nA,nY,nP,nZ,nL,nL,nA,FortranArray<7>()),  	
+	xtmp(           nA,nY,nP,nZ,nL,nL,nA,FortranArray<7>()),  	
 	
 	// Arrays of size (a,y,p,here,there,Z)
-	restmp(    		nA,nY,nP,nL,nL,nZ,   FortranArray<6>()),  	
+	restmp(    		nA,nY,nP,nZ,nL,nL,   FortranArray<6>()),  	
 
-	// Arrays of size (a,y,p,here,Z,age)
-	Vown(  	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vrent( 	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	EVown( 	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	EVrent(	        nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vbar_own( 	    nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Vbar_rent(	    nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Location_own(   nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
-	Location_rent(  nA,nY,nP,nL,nZ,nT,   FortranArray<6>()),
+	// Arrays of size (a,y,p,Z,here,age)
+	Vown(  	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vrent( 	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	EVown( 	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	EVrent(	        nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vbar_own( 	    nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Vbar_rent(	    nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Location_own(   nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
+	Location_rent(  nA,nY,nP,nZ,nL,nT,   FortranArray<6>()),
 
-	v_loc_tmp(      nA,nY,nP,nL,nL,nZ,   FortranArray<6>()),
-	vbar_tmp(       nA,nY,nP,nL,nZ,      FortranArray<5>()),
+	v_loc_tmp(      nA,nY,nP,nZ,nL,nL,   FortranArray<6>()),
+	vbar_tmp(       nA,nY,nP,nZ,nL,      FortranArray<5>()),
+	vbar_tmp2(      nA,nY,nP,nZ,nL,      FortranArray<5>()),
 
-	vplustmp(       nA,nY,nP,nL,nZ,      FortranArray<5>()), 	// (a,y,p,here)
+	vplustmp(       nA,nY,nP,nZ,nL,      FortranArray<5>()), 	// (a,y,p,here)
 	
 	save_own(       nL,nL,nP,nA,         FortranArray<4>()), 	// (here,there,p,save) 	
 	save_buy(       nL,nP,nA,            FortranArray<3>()), 	// (     there,p,save) 	
@@ -487,6 +505,10 @@ void CMig::show(){
 	cout << ResRent(Range(fromStart,ma),Range(fromStart,my),1,1,1,1,1) << endl;
 	cout << "ResBuy(:,:,1,1,1,1,1) = " << endl;
 	cout << ResBuy(Range(fromStart,ma),Range(fromStart,my),1,1,1,1,1) << endl;
+	cout << "GpEval = " << endl;
+	cout << GpEval << endl;
+	cout << "GpInt = " << endl;
+	cout << GpInt << endl;
 	cout << "end of show method: " << endl;
 	cout << "===================" << endl;
 }
@@ -545,14 +567,14 @@ void CMig::TestCtmpSubset( void ){
 	firstIndex   a;
 	secondIndex  y;
 	thirdIndex   pr;
-	fourthIndex  here;
-	fifthIndex   there;
-	sixthIndex   Z;
+	fourthIndex   Z;
+	fifthIndex  here;
+	sixthIndex   there;
 	seventhIndex save;
 	Range all = Range::all();
 	
-	restmp   = ResStay(all,all,all,all,all,all,1); // EV(a,y,p,here,there,Z)
-	ctmp     = restmp(a,y,pr,here,there,Z) - p.R * save_own(here,there,pr,save);
+	restmp   = ResStay(all,all,all,all,all,all,1); // EV(a,y,p,Z,here,there)
+	ctmp     = restmp(a,y,pr,Z,here,there) - p.R * save_own(here,there,pr,save);
 
 }
 
@@ -561,14 +583,14 @@ void CMig::TestCtmpSubset_Buy( void ){
 	firstIndex   a;
 	secondIndex  y;
 	thirdIndex   pr;
-	fourthIndex  here;
-	fifthIndex   there;
-	sixthIndex   Z;
+	fourthIndex   Z;
+	fifthIndex  here;
+	sixthIndex   there;
 	seventhIndex save;
 	Range all = Range::all();
 	
-	restmp   = ResStay(all,all,all,all,all,all,1); // EV(a,y,p,here,there,Z)
-	ctmp     = restmp(a,y,pr,here,there,Z) - p.R * save_buy(there,pr,save);
+	restmp   = ResStay(all,all,all,all,all,all,1); // EV(a,y,p,Z,here,there)
+	ctmp     = restmp(a,y,pr,Z,here,there) - p.R * save_buy(there,pr,save);
 
 }
 
@@ -854,8 +876,7 @@ void CMig::TestCtmpSubset_Buy( void ){
  * compute the upper envelope of all location-specific
  * value funcitons and their indicators
  * NOTE: if I do logit shocks, this function is 
- * irrelevant for the model solution, as Vown and Vrent
- * are not used anywhere. the Vbar formulation gets
+ * irrelevant for the model solution, as Vown and Vren * are not used anywhere. the Vbar formulation gets
  * around that. This should be used in SIMULATION,
  * where it depends on a parameter \sigma which is the
  * variance of the logit shock. 
@@ -905,54 +926,56 @@ void CMig::TestCtmpSubset_Buy( void ){
 
 
 // TODO
-/** Expectations and Conditional Choice Probabilities
- * compute vbar, EV and rho
- */
-//void CMig::ComputeExpectations( int age ){
+//* Expectations and Conditional Choice Probabilities
+//compute vbar, EV and rho
+void CMig::ComputeExpectations( int age ){
 
-	//Range all = Range::all();
-	//firstIndex   a;
-	//secondIndex  y;
-	//thirdIndex   pr;
-	//fourthIndex  here;
-	//fifthIndex   there;
-	//// compute Vbar first
+	Range all = Range::all();
+	firstIndex  a;
+	secondIndex y;
+	thirdIndex  pr;
+	fourthIndex Z;
+	fifthIndex  here;
+	sixthIndex  there;
+
+	// compute Vbar first
 	
-	//// owner
-	//// =====
+	// owner
+	// =====
 	
-	//v_loc_tmp = W_loc_own(all,all,all,all,all,age);  // a,y,p,here,there
-	//Vbar_own( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
+	v_loc_tmp = W_loc_own(all,all,all,all,all,all,age);  // a,y,p,Z,here,there
+	Vbar_own( all,all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ;  // a,y,p,Z,here
 
-	//// compute CCP aka rho
-	//vbar_tmp = Vbar_own(all,all,all,all,age);  // a,y,p,here
-	//rho_own( all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,here,there) - vbar_tmp(a,y,pr,here) );
+
+	// compute CCP aka rho
+	vbar_tmp = Vbar_own(all,all,all,all,all,age);  // a,y,p,Z,here
+	rho_own( all,all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,Z,here,there) - vbar_tmp(a,y,pr,Z,here) );
 	
+	cout << vbar_tmp(all,all,1,1,all) << endl;
 
-	////renter  
-	//// =====
+	//renter  
+	// =====
 	
-	//v_loc_tmp = W_loc_rent(all,all,all,all,all,age);  // a,y,p,here,there
-	//Vbar_rent( all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
+	v_loc_tmp = W_loc_rent(all,all,all,all,all,all,age);  // a,y,p,Z,here,there
+	Vbar_rent( all,all,all,all,all,age) = euler_mascheroni + log( sum( exp( v_loc_tmp ), there ) ) ; 
 
-	//// compute CCP aka rho
-	//vbar_tmp = Vbar_rent(all,all,all,all,age);  // a,y,p,here
-	//rho_rent( all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,here,there) - vbar_tmp(a,y,pr,here) );
+	// compute CCP aka rho
+	vbar_tmp = Vbar_rent(all,all,all,all,all,age);  // a,y,p,Z,here
+	rho_rent( all,all,all,all,all,all,age) = exp( euler_mascheroni + v_loc_tmp(a,y,pr,Z,here,there) - vbar_tmp(a,y,pr,Z,here) );
 
-	//// then integrate over Vbar to account for laws of motion of y and p.
+	// then integrate over Vbar to account for laws of motion of y and Z.
 	
-// first here must interpolate into vtilde
-//
-	//vtilde = interpolate(Vbar_own( all,all,all,all,all,age));
-	////EVown( all,all,all,all,age) = integrate(vtilde);
-	//vtilde = interpolate(Vbar_rent( all,all,all,all,all,age));
-	//EVrent(all,all,all,all,age) = integrate(vtilde);
+	// recycle vbar_tmp here
+	vbar_tmp = Interpolate( Vbar_own( all,all,all,all,all,age), age);
+	EVown( all,all,all,all,all,age) = integrate(vbar_tmp);
 
-//}
+	vbar_tmp = Interpolate(Vbar_rent( all,all,all,all,all,age), age);
+	EVrent(all,all,all,all,all,age) = integrate(vbar_tmp);
+
+}
 
 
-// TODO
-/**
+/** Test version of Interpolate
  * tens is defined on the period price grid that spans
  * all possible price values
  * must evaluate it from perspective of period (t-1), where
@@ -960,32 +983,96 @@ void CMig::TestCtmpSubset_Buy( void ){
  * need to interpolate vbar and evaluate at those vales.
  * could declare void once tested.
  */
-/*Array<double,5> CMig::interpolate(Array<double,5> tens, int age) {*/
+Array<double,5> CMig::TestInterpolate(Array<double,5> tens, Array<double,3> GEval, Array<double,4> GInt, int age) {
 
-	//Range all = Range::all();
-	//Array<double,5> ret(nAsset,nIncome,nPrice,nLoc,nAgg,FortranArray<5>());
+	Range all = Range::all();
+	Array<double,5> ret(nAsset,nIncome,nPrice,nAgg,nLoc,FortranArray<5>());
 
-	//for (int ih=1; ih<nLoc+1; ih++){
+	for (int ih=1; ih<nLoc+1; ih++){
 		//pgrid = GpEval(ih,age,all);		// this is the current period price grid, invariant with Z
-		//for (int ia=1;ia<nAsset+1; ia++){
-			//for (int iy=1;iy<nIncome+1; iy++){
-				//for (int iz=1; iz<nAgg+1; iz++){
+		pgrid = GEval(ih,age,all);		// this is the current period price grid, invariant with Z
+		for (int ia=1;ia<nAsset+1; ia++){
+			for (int iy=1;iy<nIncome+1; iy++){
+				for (int iz=1; iz<nAgg+1; iz++){
 
-					//tmp1  = tens(ia,iy,all,ih,iz);	// Array<double,1> tmp1(nP,FortranArray<1>());
-					//// set the spline on this data
-					//gsl_spline_init(p->spline, pgrid.data(), tmp1.data(), nPrice );
+					tmp1  = tens(ia,iy,all,iz,ih);	// Array<double,1> tmp1(nP,FortranArray<1>());
 
-					//// find the value at each integration node.
-					//for (int ip=1; ip<nPrice+1; ip++) ret(ia,iy,ip,ih,iz) = gsp_spline_eval(p->spline,GpInt(ih,iz,age,ip)) ;
-					////GpInt is the grid of integration nodes from a (t-1) perspective. there are nPrice such nodes
-					////for each aggregate state Z.
-				//}
-			//}
-		//}
-	//}
-	//return( ret );
+					ret(ia,iy,all,iz,ih) = interp1D( pgrid.data(), tmp1.data(), GInt(ih,iz,age,all) );
+				}
+			}
+		}
+	}
+	return( ret );
+}
 
-/*}*/
+/** Interpolate
+ * tens is defined on the period price grid that spans
+ * all possible price values
+ * must evaluate it from perspective of period (t-1), where
+ * each price level p(t-1) has nZ possible future values.
+ * need to interpolate vbar and evaluate at those vales.
+ * could declare void once tested.
+ */
+Array<double,5> CMig::Interpolate(Array<double,5> tens, int age) {
+
+	Range all = Range::all();
+	Array<double,5> ret(nAsset,nIncome,nPrice,nAgg,nLoc,FortranArray<5>());
+
+	for (int ih=1; ih<nLoc+1; ih++){
+		pgrid = GpEval(ih,age,all);		// this is the current period price grid, invariant with Z
+		for (int ia=1;ia<nAsset+1; ia++){
+			for (int iy=1;iy<nIncome+1; iy++){
+				for (int iz=1; iz<nAgg+1; iz++){
+
+					tmp1  = tens(ia,iy,all,iz,ih);	// Array<double,1> tmp1(nP,FortranArray<1>());
+
+					ret(ia,iy,all,iz,ih) = interp1D( pgrid.data(), tmp1.data(), GpInt(ih,iz,age,all) );
+				}
+			}
+		}
+	}
+	return( ret );
+
+}
+
+/** one dimensional interpolation wrapper
+ * @param xdata and ydata, where ydata = f(xdata), and newx which are points 
+ * where to evaluate the interpolated function
+ * @return newy = g(newx), where g() is the interpolation of f()
+ */
+Array<double,1> CMig::interp1D( double xdata[], double ydata[], Array<double,1> newx) {
+
+	Array<double,1> ret(newx.size(), FortranArray<1>());
+
+	// check whether first 2 points in x are increasing.
+	double diff = xdata[1] - xdata[0];
+
+	if (diff <= 0) {
+
+		cout << "CMig::inter1D error. xdata is not monotonically increasing" << endl;
+
+		return( ret );
+
+	} else {
+
+
+		// there needs to be a spline setup in the class. p.spline is the pointer
+		
+		gsl_spline_init( p.spline, xdata, ydata, nPrice );
+
+		// find function value at each newx
+		
+		for (std::pair<Array<double,1>::iterator,Array<double,1>::iterator> i(ret.begin(), newx.begin());
+			 i.first != ret.end();
+			 ++i.first, ++i.second ) {
+			*i.first = gsl_spline_eval(p.spline,*i.second,p.acc) ;
+		}
+
+		return( ret );
+	}
+}
+
+
 
 
 
@@ -995,12 +1082,12 @@ Array<double,5> CMig::integrate(Array<double,5> tens){
 	firstIndex   a;	
 	secondIndex  y; 
 	thirdIndex   pr;	
-	fourthIndex  here;	
-	fifthIndex   Z;	
+	fourthIndex  Z;	
+	fifthIndex   here;	
 	sixthIndex   yp;	
-	seventhIndex   Zp;	
+	seventhIndex Zp;	
 	
-	Array<double,5> ret(nAsset,nIncome,nPrice,nLoc,nAgg,FortranArray<5>());
+	Array<double,5> ret(nAsset,nIncome,nPrice,nAgg,nLoc,FortranArray<5>());
 
 	// this is my version:
 	//
@@ -1019,7 +1106,7 @@ Array<double,5> CMig::integrate(Array<double,5> tens){
 	//
 	//and this is tibo's version:
 	//
-	ret = sum( sum(   tens(a,yp,pr,here,Zp) * G(y,yp) * Gz(Z,Zp) , Zp) ,yp );
+	ret = sum( sum(   tens(a,yp,pr,Zp,here) * G(y,yp) * Gz(Z,Zp) , Zp) ,yp );
 	// uncomment to have a failing test
 	//ret = sum( sum(   tens(a,yp,pr,here,Zp) * G(y,yp) * Gz(Zp,Z) , Zp) ,yp );
 

@@ -27,13 +27,14 @@ int main(int argument_count, char ** command_line_arguments)
 
 	int nA = 8;
 	int nY = 2;
-	int nP = 3;
+	int nP = 5;
 	int nL = 5;
-	int nZ = 3;
+	int nZ = 2;
 	int nT = 3;
 
-	CMig defmig(nA,nY,nP,nL,nZ,nT);
-	defmig.show();
+	CMig defmig(nA,nY,nP,nZ,nL,nT);
+	//defmig.show();
+	defmig.ComputeExpectations(nT);
 
 	cout << endl;
 	cout << "Referenced Constructor for CMig " << endl;
@@ -43,18 +44,18 @@ int main(int argument_count, char ** command_line_arguments)
 	Array<double,2> trans(nY,nY,FortranArray<2>());
 	trans = 0.9,0.3,0.1,0.7;
 
-	Array<double,2> transP(nP,nP,FortranArray<2>());
-	transP = 0.9025,0.0475,0.0025,
+	Array<double,2> transZ(nZ,nZ,FortranArray<2>());
+	transZ = 0.9025,0.0475,0.0025,
 			 0.095,0.905,0.095,
 			 0.0025,0.0475,0.9025;
 
 	// get some data
-	TinyVector<int,7> aypHTZt = shape(nA,nY,nP,nL,nL,nZ,nY);
+	TinyVector<int,7> aypZHTt = shape(nA,nY,nP,nZ,nL,nL,nY);
 
-	Array<double,7> tstay(aypHTZt,FortranArray<7>());	
-	Array<double,7> tsell(aypHTZt,FortranArray<7>());	
-	Array<double,7> trent(aypHTZt,FortranArray<7>());	
-	Array<double,7> tbuy( aypHTZt,FortranArray<7>());	
+	Array<double,7> tstay(aypZHTt,FortranArray<7>());	
+	Array<double,7> tsell(aypZHTt,FortranArray<7>());	
+	Array<double,7> trent(aypZHTt,FortranArray<7>());	
+	Array<double,7> tbuy( aypZHTt,FortranArray<7>());	
 
 
 	//fill with random numbers
@@ -132,27 +133,33 @@ int main(int argument_count, char ** command_line_arguments)
 
 	// Constructor needs GpEval and GpInt!
 	// fill with ascending numbers
+	// create evaluation grid and integration nodes
+	Array<double,1> pval(nP,FortranArray<1>()); 
+	Array<double,2> pint(nP,nZ,FortranArray<2>());
+
+	pval = 1,2,3,4,5;
+	pint = 1,1.9,2.9,3.9,4.9,
+	       1.1,2.1,3.1,4.1,5;
+
+	// fill the Grid arrays with those values
 	Array<double,3> GpEval(nL,nT,nP,FortranArray<3>());
-	Array<double,4> GpInt( nL,nZ,nT,nP,FortranArray<4>());
+	Array<double,4> GpInt(nL,nZ,nT,nP,FortranArray<4>());
 
-	for (std::pair<Array<double,3>::iterator, int> i(GpEval.begin(),1); 
-			i.first != GpEval.end();
-			++i.first, ++i.second){
-		*i.first = i.second;
-	}
-	
-	for (std::pair<Array<double,4>::iterator, int> i(GpInt.begin(),1); 
-			i.first != GpInt.end();
-			++i.first, ++i.second){
-		*i.first = i.second;
+	for (int iL=1; iL<nL+1 ; iL++){
+		for (int iT=1; iT<nT+1; iT++){
+			GpEval(iL,iT,Range::all()) = pval;
+			for (int iZ=1; iZ<nZ+1; iZ++){
+				GpInt(iL,iZ,iT,Range::all()) = pint(Range::all(),iZ);
+			}
+		}
 	}
 
 
-	CMig myMig_ref(nA,nY,nP,nL,nZ,nT,
+	CMig myMig_ref(nA,nY,nP,nZ,nL,nT,
 				&pars2, tstay, tsell, trent, tbuy, trans,
-				transP, MoveCost, Amenity, save_own, save_buy, save_rent, GpEval, GpInt, verbose);
+				transZ, MoveCost, Amenity, save_own, save_buy, save_rent, GpEval, GpInt, verbose);
 		
-	myMig_ref.show();
+	//myMig_ref.show();
 	
 	return 0;
 }
