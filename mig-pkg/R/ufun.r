@@ -181,13 +181,6 @@ make.prices <- function(m,plot=FALSE){
 
 	
 
-
-	lims = apply(m$grids$p,2,range)
-	limits=aes(ymax=lims[2,],ymin=lims[1,])
-	ggplot(df,aes(x=location)) + geom_errorbar(limits,size=1)  + scale_y_continuous(name="house prices") + ggtitle("House price setup")	+ theme_bw()
-	ggsave(file.path(path,"prices.pdf"))
-
-
 #' make dummy lifecycle
 #'
 #' generates a lifecycle profile with on 30 periods with

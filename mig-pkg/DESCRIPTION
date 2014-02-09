@@ -12,10 +12,10 @@ Depends:
     data.table,
     rutils,
     RcppSimpleTensor,
-    RcppGSL,gridR
+    RcppGSL,gridR,survey,texreg
 LinkingTo: Rcpp, RcppGSL
 Collate:
     'rcpp_hello_world.R'
-    'RcppExports.R'
     'ufun.r'
     'analyze_solution.r'
+    'sipp.r'

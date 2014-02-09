@@ -39,12 +39,15 @@ if( !file.exists( "SIPP2008.RData" ) ){
 	d[as.numeric(tenure)==1, own := TRUE ]
 
 	d[,S2S := ( mover=="Moved, different state" )]
-	d[,duration_at_current := 2009 - MIG_year_moved_here]
-	d[duration_at_current>2000, duration_at_current := NA]
-	d[,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
+	d[MIG_year_moved_here > 0,duration_at_current := 2009 - MIG_year_moved_here]
+	d[MIG_year_moved_here > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
+
+
+	# relationship between duration an S2S
+	d[,mean(S2S,na.rm=T),by=duration_at_current][,plot(duration_at_current,V1)]
 
 	# make a unique observation number
-	d[,pid := paste0(ssuid,epppnum)]
+	d[,upid := paste0(ssuid,epppnum)]
 
 	# numeric educ variable
 	d[,educx := as.numeric(educ)]
@@ -63,8 +66,8 @@ if( !file.exists( "SIPP2008.RData" ) ){
 	# need a sequence of unique year month identifiers
 	tmp <- d[,list(yearmon=unique(yearmon))]
 	tmp <- tmp[complete.cases(tmp)]
-	tmp[,yrmnid := 1:nrow(tmp)]
 	setkey(tmp,yearmon)
+	tmp[,yrmnid := 1:nrow(tmp)]
 	setkey(d,yearmon)
 
 	d <- d[tmp]
@@ -76,6 +79,7 @@ if( !file.exists( "SIPP2008.RData" ) ){
 	d[,wealth.1yr   := d[list(ssuid,pid,year-1,monthid)][["wealth"]]]
 	d[,equity.1yr   := d[list(ssuid,pid,year-1,monthid)][["home.equity"]]]
 	d[,income.1yr   := d[list(ssuid,pid,year-1,monthid)][["tftotinc"]]]
+	d[,state.1yr    := d[list(ssuid,pid,year-1,monthid)][["state"]]]
 	
 	setkey(d,ssuid,pid,yrmnid)
 	d[,own.1mn      := d[list(ssuid,pid,yrmnid-1)][["own"]]]
@@ -84,12 +88,19 @@ if( !file.exists( "SIPP2008.RData" ) ){
 	d[,wealth.1mn   := d[list(ssuid,pid,yrmnid-1)][["wealth"]]]
 	d[,equity.1mn   := d[list(ssuid,pid,yrmnid-1)][["home.equity"]]]
 	d[,income.1mn   := d[list(ssuid,pid,yrmnid-1)][["tftotinc"]]]
+	d[,state.1mn    := d[list(ssuid,pid,yrmnid-1)][["state"]]]
+
+	# create a monthly state-2-state indicator
+	d[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
 
 	# make growth variables
 	# =====================
 
 	d[,dincome.mn := tftotinc - income.1mn,by=pid]
 	d[,dincome.yr := tftotinc - income.1yr,by=pid]
+
+
+	# take first reference month only
 
 
 	# heads only

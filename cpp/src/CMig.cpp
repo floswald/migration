@@ -595,42 +595,40 @@ void CMig::TestCtmpSubset_Buy( void ){
 }
 
 // TODO
-//void CMig::ComputeStay(int age) {
+void CMig::ComputeStay(int age) {
 
-	//firstIndex   a;
-	//secondIndex  y;
-	//thirdIndex   pr;
-	//fourthIndex  here;
-	//fifthIndex   there;
-	//sixthIndex   Z;
-	//seventhIndex   save;
-	//Range all = Range::all();
+	firstIndex   a;
+	secondIndex  y;
+	thirdIndex   pr;
+	fourthIndex  here;
+	fifthIndex   there;
+	sixthIndex   Z;
+	seventhIndex   save;
+	Range all = Range::all();
 
-	//vplustmp = EVown(all,all,all,all,age+1);	// EV(a,y,p,here,age)
-	//// get consumption at all states,savings combinations
+	vplustmp = EVown(all,all,all,all,age+1);	// EV(a,y,p,here,age)
+	// get consumption at all states,savings combinations
 	
-	//// build consumption tensor here. that is c = Res - save
-	//// complication: different borrowing constraints
-	//restmp   = ResStay(all,all,all,all,all,age); // EV(a,y,p,here,there)
+	// build consumption tensor here. that is c = Res - save
+	// complication: different borrowing constraints
+	restmp   = ResStay(all,all,all,all,all,age); // EV(a,y,p,here,there)
 
-	//// TODO: ALTERNATIVE to this formulation
-	//// is to compute the entire tensor for savings once for buyer
-	//// owner and renter (a.k.a. seller), and set restricted borrowing
-	//// values to +99. They never change over the lifecycle.
-	//ctmp     = restmp(a,y,pr,here,there,Z) - p.R * save_own(pr,here,there,save);
+	// TODO: ALTERNATIVE to this formulation
+	// is to compute the entire tensor for savings once for buyer
+	// owner and renter (a.k.a. seller), and set restricted borrowing
+	// values to +99. They never change over the lifecycle.
+	ctmp     = restmp(a,y,pr,here,there,Z) - p.R * save_own(pr,here,there,save);
 	
-	//// enforce the borrowing limit for moving owners.
-	//LimitOwner() ;
 	
-	//// taking care of infeasible consumption values here
+	// taking care of infeasible consumption values here
 
-	//xtmp     = where(ctmp > 0, p.imgamma*( pow(ctmp(a,y,pr,here,there,save),p.mgamma) ) + p.theta + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
-	//// get value of being an owner in all locations (here,there)
-	//v_loc_stay(all,all,all,all,all,age) = max(xtmp, save);
-	//s_loc_stay(all,all,all,all,all,age) = maxIndex(xtmp, save);
+	xtmp     = where(ctmp > 0, p.imgamma*( pow(ctmp(a,y,pr,here,there,save),p.mgamma) ) + p.theta + p.beta * vplustmp(save,y,pr,there) - MoveCost(here,there) + Amenity(there), p.myNA);	//vplustmp(save,y,p,there)
+	// get value of being an owner in all locations (here,there)
+	v_loc_stay(all,all,all,all,all,age) = max(xtmp, save);
+	s_loc_stay(all,all,all,all,all,age) = maxIndex(xtmp, save);
 
-	//FindStayCons( age );	
-//}
+	FindStayCons( age );	
+}
 
 
 
@@ -1026,7 +1024,7 @@ Array<double,5> CMig::Interpolate(Array<double,5> tens, int age) {
 
 					tmp1  = tens(ia,iy,all,iz,ih);	// Array<double,1> tmp1(nP,FortranArray<1>());
 
-					ret(ia,iy,all,iz,ih) = interp1D( pgrid.data(), tmp1.data(), GpInt(ih,iz,age,all) );
+					ret(ia,iy,all,iz,ih) = interp1D( pgrid.data(), tmp1.data(), GpInt(ih,iz,age,all) );  //GpInt(ih,iz,age,all) are the new points
 				}
 			}
 		}
