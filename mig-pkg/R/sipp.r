@@ -198,31 +198,39 @@ MergeSipp <- function(path="~/datasets/SIPP/2001/dta/export",outfile){
 #' @param which.core numeric vector of which core waves to keep
 #' @param which.tm numeric vector of which topical modules to keep
 #' @param which.wgt name of weight tables 
-#' @param tk string of variable names from topical data to keep
+#' @param tk list of character vectors of variable names from topical 
+#' data to keep, one vector for each topical module
 #' @param subset SQL string for selecting from database
 #' @param outfile filename of where to save results
-ExtractSippDB <- function(dbfile,ck,which.core,which.tm,tk,subset='',outfile){
+ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset='',outfile,verbose){
 
 	sql <- dbDriver("SQLite")
 	db  <- dbConnect(sql, dbfile)
 
 	# find out all core data tables. 
 	dbTabs <- dbListTables(db)
+	if (verbose) print(dbTabs)
 
 	cores <- list()
 	
-	for( icore in 1:lenth(which.core) ){
+	for( icore in 1:length(which.core) ){
 
-		sql.string <- paste0( "select " , paste( ck , collapse = "," ) , " from w" , which.core[icore] , subset )
+		if (verbose) cat(sprintf("processing core wave %d of %d\n",icore,length(which.core)))
+
+		sql.string <- paste0( "SELECT " , paste( ck , collapse = "," ) , " from w" , which.core[icore] , paste0(' ',subset) )
+		if (verbose) print(sql.string)
 		cores[[icore]] <- data.table(dbGetQuery( db , sql.string ))
 
 	}
 
 	topics <- list()
 	
-	for( itop in 1:lenth(which.tm) ){
+	for( itop in 1:length(which.tm) ){
 
-		sql.string <- paste0( "select " , paste( tk , collapse = "," ) , " from tm" , which.tm[itop] , subset )
+		if (verbose) cat(sprintf("processing topical wave %d of %d\n",itop,length(which.tm)))
+
+		sql.string <- paste0( "SELECT " , paste( tk[[itop]] , collapse = "," ) , " from tm" , which.tm[itop] , paste0(' ',subset))
+		if (verbose) print(sql.string)
 		topics[[itop]] <- data.table(dbGetQuery( db , sql.string ))
 
 	}
@@ -236,18 +244,195 @@ ExtractSippDB <- function(dbfile,ck,which.core,which.tm,tk,subset='',outfile){
 		for (iw in 1:length(which.wgt)){
 
 			# selects all
-			sql.string <- paste0( "select * from " , which.wgt[iw] )
+			sql.string <- paste0( "SELECT * from " , which.wgt[iw])
+			if (verbose) print(sql.string)
 
 		}
 	}
 
 	save(cores,topics,wgts,file=outfile)
+
+	if (verbose) cat("done.\n")
 }
 			
 
 
 
+#' Extractor wrapper
+#'
+Extract.wrap <- function(verbose=FALSE){
 
+	# extract 1996
+
+	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
+	ck     <- c("ssuid",
+                "srefmon",
+                "rhcalmn",
+                "errp",
+                "rhcalyr",
+                "tfipsst",
+                "eoutcome",
+                "eppintvw",
+                "rhnf",
+                "tmetro",
+                "etenure",
+                "thtotinc",
+                "epubhse",
+                "rfid",
+                "efrefper",
+                "rfnkids",
+                "wffinwgt",
+                "whfnwgt",
+                "tftotinc",
+                "epppnum",
+                "wpfinwgt",
+                "eeducate",
+                "eentaid",
+                "tage",
+                "esex",
+                "ersnowrk",
+                "east3e")
+	which.core <- 1:12
+	which.tm <- c(2,3,6,9,12)
+	tk     <- list(c("ssuid", "epppnum", "eprstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	which.wgt <- "wgtw12"
+	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
+
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset96.RData",verbose)
+
+	# extract 2001
+
+	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
+	ck     <- c("ssuid",
+                "srefmon",
+                "rhcalmn",
+                "errp",
+                "rhcalyr",
+                "tfipsst",
+                "tmovrflg",
+                "eoutcome",
+                "eppintvw",
+                "rhnf",
+                "tmetro",
+                "etenure",
+                "thtotinc",
+                "epubhse",
+                "rfid",
+                "efrefper",
+                "rfnkids",
+                "wffinwgt",
+                "whfnwgt",
+                "tftotinc",
+                "epppnum",
+                "wpfinwgt",
+                "eeducate",
+                "eentaid",
+                "tage",
+                "esex",
+                "ersnowrk",
+                "east3e")
+	which.core <- 1:9
+	which.tm <- c(2,3,6,9)
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	which.wgt <- "wgtw9"
+
+	# subset: correct interview status and only reference persons of age > 15.
+	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset01.RData",verbose)
+
+
+	# extract 2004
+
+	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
+	ck     <- c("ssuid",
+                "srefmon",
+                "rhcalmn",
+                "errp",
+                "rhcalyr",
+                "tfipsst",
+                "tmovrflg",
+                "eoutcome",
+                "eppintvw",
+                "rhnf",
+                "tmetro",
+                "etenure",
+                "thtotinc",
+                "epubhse",
+                "rfid",
+                "efrefper",
+                "rfnkids",
+                "wffinwgt",
+                "whfnwgt",
+                "tftotinc",
+                "epppnum",
+                "wpfinwgt",
+                "eeducate",
+                "eentaid",
+                "tage",
+                "esex",
+                "ersnowrk",
+                "east3e")
+	which.core <- 1:12
+	which.tm <- c(2,3,6)
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	which.wgt <- "wgtw12"
+	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset04.RData",verbose)
+
+	# extract 2008
+
+	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
+	ck     <- c("ssuid",
+                "srefmon",
+                "rhcalmn",
+                "errp",
+                "rhcalyr",
+                "tfipsst",
+                "tmovrflg",
+                "eoutcome",
+                "eppintvw",
+                "rhnf",
+                "tmetro",
+                "etenure",
+                "thtotinc",
+                "epubhse",
+                "rfid",
+                "efrefper",
+                "rfnkids",
+                "wffinwgt",
+                "whfnwgt",
+                "tftotinc",
+                "epppnum",
+                "wpfinwgt",
+                "eeducate",
+                "eentaid",
+                "tage",
+                "esex",
+                "ersnowrk",
+                "east3e")
+	which.core <- 1:13
+	which.tm <- c(2,4,7,10)
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	which.wgt <- "wgtw7"
+	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset08.RData",verbose)
+
+}
 
 
 
