@@ -197,7 +197,7 @@ MergeSipp <- function(path="~/datasets/SIPP/2001/dta/export",outfile){
 #' @param ck string of variable names from core data to keep
 #' @param which.core numeric vector of which core waves to keep
 #' @param which.tm numeric vector of which topical modules to keep
-#' @param which.wgt name of weight tables 
+#' @param which.wgt character vector of name of weight tables 
 #' @param tk list of character vectors of variable names from topical 
 #' data to keep, one vector for each topical module
 #' @param subset SQL string for selecting from database
@@ -251,7 +251,6 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 
 		}
 	}
-	names(wgts) <- paste0("wgt_",which.wgt)
 
 	save(cores,topics,wgts,file=outfile)
 
@@ -459,18 +458,23 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP"){
 	load(file.path(path,"subset96.RData"))
 		
 	# add vars that are missing in 1996 migration
-	topics[[2]][, tprstate := -1]
-	topics[[2]][, tbrstate := -1]
+	topics$TM_2[, tprstate := -1]
+	topics$TM_2[, tbrstate := -1]
+
+	TM.idx <- names(topics)
 
 	# one table for cores
-	for (i in 1:length(cores)) cores[[i]][,wave := i]
+	for (i in 1:length(cores)) {
+		cores[[i]][,wave := i]
+		setkey(cores[[i]], "ssuid", "epppnum")
+
+
 	core96 <- rbindlist(cores)
 
-	for (i in 1:length(cores)){
+	# add missing tmovrflg
+	core96[,tmovrfl := -1]
 
-		# add vars that are missing in 1996
-		cores[[i]][ ,tmovrflg := -1]
-
+	# merge
 
 
 }
