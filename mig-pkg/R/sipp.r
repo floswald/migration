@@ -222,6 +222,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 		cores[[icore]] <- data.table(dbGetQuery( db , sql.string ))
 
 	}
+	names(cores) <- paste0("core_",which.core)
 
 	topics <- list()
 	
@@ -234,6 +235,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 		topics[[itop]] <- data.table(dbGetQuery( db , sql.string ))
 
 	}
+	names(topics) <- paste0("TM_",which.tm)
 		
 	wgts <- list()
 
@@ -249,6 +251,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 
 		}
 	}
+	names(wgts) <- paste0("wgt_",which.wgt)
 
 	save(cores,topics,wgts,file=outfile)
 
@@ -260,7 +263,9 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 
 #' Extractor wrapper
 #'
-Extract.wrap <- function(verbose=FALSE){
+#' @param verbose 
+#' @param dropbox path to folder where to save this
+Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
 
 	# extract 1996
 
@@ -302,7 +307,7 @@ Extract.wrap <- function(verbose=FALSE){
 	which.wgt <- "wgtw12"
 	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset96.RData",verbose)
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
 
 	# extract 2001
 
@@ -337,7 +342,7 @@ Extract.wrap <- function(verbose=FALSE){
                 "east3e")
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
@@ -346,7 +351,7 @@ Extract.wrap <- function(verbose=FALSE){
 	# subset: correct interview status and only reference persons of age > 15.
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset01.RData",verbose)
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset01.RData"),verbose)
 
 
 	# extract 2004
@@ -382,13 +387,13 @@ Extract.wrap <- function(verbose=FALSE){
                 "east3e")
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
 	which.wgt <- "wgtw12"
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset04.RData",verbose)
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
 
 	# extract 2008
 
@@ -423,16 +428,55 @@ Extract.wrap <- function(verbose=FALSE){
                 "east3e")
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate"),
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
 	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
 	which.wgt <- "wgtw7"
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile="~/datasets/SIPP/R/subset08.RData",verbose)
+	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset08.RData"),verbose)
 
 }
+
+
+
+
+#' Clean Sipp Data
+#'
+#' take output from \link{\code{Extract.wrap}} 
+#' and clean data. apply labels, account for
+#' missing vars. merge topical and core data.
+#' output one dataset
+Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP"){
+
+	# clean 1996
+	# ==========
+
+	# 1) add missing entry for tmovrflag
+	# 2) encode tfipsst with state names
+
+	load(file.path(path,"subset96.RData"))
+		
+	# add vars that are missing in 1996 migration
+	topics[[2]][, tprstate := -1]
+	topics[[2]][, tbrstate := -1]
+
+	# one table for cores
+	for (i in 1:length(cores)) cores[[i]][,wave := i]
+	core96 <- rbindlist(cores)
+
+	for (i in 1:length(cores)){
+
+		# add vars that are missing in 1996
+		cores[[i]][ ,tmovrflg := -1]
+
+
+
+}
+	
+
+
 
 
 
