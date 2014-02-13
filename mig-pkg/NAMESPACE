@@ -1,3 +1,2 @@
 #useDynLib(migration)
 exportPattern("^[[:alpha:]]+")
-import(data.table)

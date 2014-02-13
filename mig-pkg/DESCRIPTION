@@ -8,14 +8,9 @@ Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
 License: GPL-3
 Depends:
-    Rcpp (>= 0.10.3),
     data.table,
-    rutils,
-    RcppSimpleTensor,
-    RcppGSL,gridR,survey,texreg,RSQLite
-LinkingTo: Rcpp, RcppGSL
+	RSQLite
 Collate:
-    'rcpp_hello_world.R'
     'ufun.r'
     'analyze_solution.r'
     'sipp.r'
