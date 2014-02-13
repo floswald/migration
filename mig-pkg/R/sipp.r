@@ -140,7 +140,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "efrefper",
                 "rfnkids",
                 "whfnwgt",
-                "tftotinc",
                 "epppnum",
                 "eeducate",
                 "eentaid",
@@ -181,7 +180,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "efrefper",
                 "rfnkids",
                 "whfnwgt",
-                "tftotinc",
                 "epppnum",
                 "eeducate",
                 "eentaid",
@@ -224,7 +222,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "efrefper",
                 "rfnkids",
                 "whfnwgt",
-                "tftotinc",
                 "epppnum",
                 "eeducate",
                 "eentaid",
@@ -265,7 +262,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "efrefper",
                 "rfnkids",
                 "whfnwgt",
-                "tftotinc",
                 "epppnum",
                 "eeducate",
                 "eentaid",
@@ -396,8 +392,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc"),
+						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome"))
 		setnames(mergexx,nm$oldname,nm$newname)
 
 
