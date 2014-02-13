@@ -9,7 +9,7 @@ Description: More about what it does (maybe more than one line)
 License: GPL-3
 Depends:
     data.table,
-	RSQLite
+    RSQLite
 Collate:
     'ufun.r'
     'analyze_solution.r'

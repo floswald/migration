@@ -7,10 +7,14 @@
 #'
 #' Select variables and build a data.tables
 #' from the SIPP database, downloaded and 
-#' built with ajdamico's usgsd tools.
+#' built with anthony damico's usgsd tools.
 #' selects ALL waves from coredata, but only
 #' selected waves from topical modules. 
-#' @references \url{https://github.com/ajdamico/usgsd}
+#' 
+#' don't use this function but the easier to use
+#' \code{\link{Extract.wrap}}
+#' @references \url{https://github.com/ajdamico/usgsd}, 
+#' \url{http://www.asdfree.com/}, 
 #' @param dbfile location of database
 #' @param ck string of variable names from core data to keep
 #' @param which.core numeric vector of which core waves to keep
@@ -20,7 +24,8 @@
 #' data to keep, one vector for each topical module
 #' @param subset SQL string for selecting from database
 #' @param outfile filename of where to save results
-ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset='',outfile,verbose){
+#' @param test if TRUE extract only a short test dataset
+ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset='',outfile,verbose,test=FALSE){
 
 	sql <- dbDriver("SQLite")
 	db  <- dbConnect(sql, dbfile)
@@ -80,8 +85,12 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 
 #' Extractor wrapper
 #'
+#' Selects variables from SIPP database
+#' and does some initial subsetting. This
+#' is an interface to \code{\link{ExtractorSippDB}}
 #' @param verbose 
 #' @param dropbox path to folder where to save this
+#' @return NULL saves subset data.tables into dropbox
 Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
 
 	# extract 1993
@@ -187,10 +196,10 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "east3e")
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
-	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
+	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw9"
 
 	# subset: correct interview status and only reference persons of age > 15.
@@ -293,15 +302,16 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 
 #' Clean Sipp Data
 #'
-#' take output from \link{\code{Extract.wrap}} 
+#' take output from \code{\link{Extract.wrap}} 
 #' and clean data. apply labels, account for
 #' missing vars. merge topical and core data.
 #' output one dataset
 #' @param TM.idx list with one index vector
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
-#' @param path to output from \code{Extract.wrap}
-Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10))){
+#' @param path to output from \code{\link{Extract.wrap}}
+# @param verbose
+Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10)),verbose=FALSE){
 
 	# list to collect all panels
 	m <- list()
@@ -324,11 +334,13 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	#ENTRY	ENTRY
 	#PNUM	PNUM
 
-	# so must rename ID in TM to SUID
+	# so must rename ID in TM to SUID,"net.wealth"
 
 
 
 	for (yr in 1:length(TM.idx)){
+
+		if (verbose) cat(sprintf("cleaning %s \n",yrs[yr]))
 
 		load(file.path(path,paste0("subset",yrs[yr],".RData")))
 
@@ -337,6 +349,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		lapply(cores,function(x) setkey(x, "ssuid", "epppnum"))
 
 		mergexx <- merge.idx(cores,topics,breaks=TM.idx[[yr]])
+
+		if (verbose) cat(sprintf("merged core-TM of %s \n",yrs[yr]))
 
 		# make one table out of it
 		mergexx <- rbindlist(mergexx)
@@ -352,6 +366,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 			# ==========
 
 			# add vars that are missing in 1996 migration
+			mergexx[, tprstate := -1]
 			mergexx[, tbrstate := ebrstate]
 			mergexx[, ebrstate := NULL]
 			mergexx[, tmovrflg := -1]
@@ -393,8 +408,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtnw",   "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","net.wealth","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
+						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
 		setnames(mergexx,nm$oldname,nm$newname)
 
 		setkey(mergexx,ssuid,epppnum,yrmnid)
@@ -412,8 +427,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		# create a monthly state-2-state indicator
 		mergexx[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
 		mergexx[,S2S.mnTO := (state != state.lead & !is.na(state.lead) )]
-		# relationship between duration and S2S
-		mergexx[,mean(S2S.mn,na.rm=T),by=duration_at_current][,plot(duration_at_current,V1)]
 
 		# whether moved within a wave
 		# when counting, choose one reference
