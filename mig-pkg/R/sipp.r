@@ -1,188 +1,6 @@
 
 
 
-#' merge SIPP 1996 core data with topical
-#'
-MergeSipp96 <- function(path="~/datasets/SIPP/1996/dta/export",outfile,heads=TRUE,test=FALSE){
-
-	# core file names
-	fi <- list.files()
-	co <- grep("core",fi,value=TRUE)
-	tm <- grep("TM",fi,value=TRUE)
-
-	# build the core data for all waves
-	#l <- lapply(core[1:4],function(x) data.table(foreign::read.dta(x),key=c("ssuid","epppnum","srefmon")))
-	l <- lapply(core,function(x) data.table(read.csv(x),key=c("ssuid","epppnum","srefmon")))
-	d1 <- rbindlist(l)
-
-	# merge core waves 1-3 with wealth_t3.dta	(ie wealth variables from topical module T3)
-	# merge core waves 4-6 with wealth_t6.dta
-	# merge core waves 7-9 with wealth_t9.dta
-	# merge core waves 10-12 with wealth_t12.dta
-
-	setkey(d1,ssuid,epppnum)
-
-	# merge with mig hist
-	# mig hist always in 2nd topical module
-
-	mig <- data.table(foreign::read.dta("mig.dta"),key=c("ssuid","epppnum"))
-	mig[,ssuid2 := as.numeric(ssuid)]
-	mig[,epppnum2 := as.integer(epppnum)]
-	mig[,c("epppnum","ssuid") := NULL]
-	setnames(mig,c("epppnum2","ssuid2"), c("epppnum","ssuid"))
-	setkey(mig,ssuid,epppnum)
-
-	m <- mig[d1]
-	m <- m[complete.cases(m)]
-
-	# merge with wealth modules
-
-	w1 <- data.table(foreign::read.dta("wealth_t3.dta"),key=c("ssuid","epppnum"))
-	w1[,ssuid2 := as.numeric(ssuid)]
-	w1[,epppnum2 := as.integer(epppnum)]
-	w1[,c("epppnum","ssuid") := NULL]
-	setnames(w1,c("epppnum2","ssuid2"), c("epppnum","ssuid"))
-	setkey(w1,ssuid,epppnum)
-
-	m <- w1[m]
-	m <- m[complete.cases(m)]
-
-}
-
-
-
-
-#' merge SIPP 2001,2004 and 2008 core and topical data
-#'
-MergeSipp <- function(path="~/datasets/SIPP/2001/dta/export",outfile){
-
-
-	# wealth variables:
-	# 2001: modules 3,6,9
-	# 2004: modules 3,6
-	# 2008: modules 3,7,10
-	
-	# mig hist always in 2nd topical module
-	# merge migration onto final full file
-
-	fi <- list.files()
-	co <- grep("core",fi,value=TRUE)
-	tm <- grep("TM",fi,value=TRUE)
-
-	# 2001: modules 3,6,9
-	# -1 or 0 = "not in universe"
-	if (grep("2001",path)){
-
-		# waves 1-3
-		l <- lapply(co[1:3],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm3 <- fread(grep("3",tm,value=TRUE))
-		setkey(tm3, "ssuid","epppnum")
-		m1 <- tm3[d]
-
-		# waves 4-6
-		l <- lapply(co[4:6],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm6 <- fread(grep("6",tm,value=TRUE))
-		setkey(tm6, "ssuid","epppnum")
-		m2 <- tm6[d]
-		
-		# waves 7-9
-		l <- lapply(co[7:9],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm9 <- fread(grep("9",tm,value=TRUE))
-		setkey(tm9, "ssuid","epppnum")
-		m3 <- tm9[d]
-
-		m <- rbindlist(list(m1,m2,m3))
-
-		# merge with mig hist
-		mig <- fread(grep("2",tm,value=TRUE))
-		setkey(mig,"ssuid","epppnum")
-		setkey(m,"ssuid","epppnum")
-
-		m <- mig[m]
-
-	} else if (grep("2004",path)){
-
-		# waves 1-3
-		l <- lapply(co[1:3],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm3 <- fread(grep("3",tm,value=TRUE))
-		setkey(tm3, "ssuid","epppnum")
-		m1 <- tm3[d]
-
-		# waves 4-6
-		l <- lapply(co[4:6],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm6 <- fread(grep("6",tm,value=TRUE))
-		setkey(tm6, "ssuid","epppnum")
-		m2 <- tm6[d]
-
-		m <- rbindlist(list(m1,m2))
-
-		# merge with mig hist
-		mig <- fread(grep("2",tm,value=TRUE))
-		setkey(mig,"ssuid","epppnum")
-		setkey(m,"ssuid","epppnum")
-
-		m <- mig[m]
-
-	# 2008: modules 3,7,10
-	} else if (grep("2008",path)){
-
-		# waves 1-3
-		l <- lapply(co[1:3],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm3 <- fread(grep("3",tm,value=TRUE))
-		setkey(tm3, "ssuid","epppnum")
-		m1 <- tm3[d]
-
-		# waves 4-7
-		l <- lapply(co[4:7],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm7 <- fread(grep("7",tm,value=TRUE))
-		setkey(tm7, "ssuid","epppnum")
-		m2 <- tm7[d]
-		
-		# waves 8-19
-		l <- lapply(co[8:10],function(x) fread(x))
-		d <- rbindlist(l)
-		setkey(d,"ssuid","epppnum")
-	
-		tm10 <- fread(grep("10",tm,value=TRUE))
-		setkey(tm10, "ssuid","epppnum")
-		m3 <- tm10[d]
-
-		m <- rbindlist(list(m1,m2,m3))
-
-		# merge with mig hist
-		mig <- fread(grep("2",tm,value=TRUE))
-		setkey(mig,"ssuid","epppnum")
-		setkey(m,"ssuid","epppnum")
-
-		m <- mig[m]
-
-	} 
-
-	save(m,file=outfile)
-	return(NULL)
-}
-
 
 
 #' Extract data.tables from SIPP database
@@ -447,418 +265,209 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 #' and clean data. apply labels, account for
 #' missing vars. merge topical and core data.
 #' output one dataset
-Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP"){
+#' @param TM.idx list with one index vector
+#' of TM waves to use per panel. Name list
+#' elements like "p96" [panel 96]
+#' @param path to output from \code{Extract.wrap}
+Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10))){
 
-	# clean 1996
-	# ==========
+	# list to collect all panels
+	m <- list()
 
-	# 1) add missing entry for tmovrflag
-	# 2) encode tfipsst with state names
-
-	load(file.path(path,"subset96.RData"))
+	# get years
+	yrs <- str_extract( names(TM.idx),"\\d+")	
 		
-	# add vars that are missing in 1996 migration
-	topics$TM_2[, tprstate := -1]
-	topics$TM_2[, tbrstate := -1]
-
-	TM.idx <- names(topics)
-
-	# one table for cores
-	for (i in 1:length(cores)) {
-		cores[[i]][,wave := i]
-		setkey(cores[[i]], "ssuid", "epppnum")
+	# loop over all years and clean
+	# depending on year, there are different tasks
 
 
-	core96 <- rbindlist(cores)
+	for (yr in 1:length(TM.idx)){
 
-	# add missing tmovrflg
-	core96[,tmovrfl := -1]
-
-	# merge
+		load(file.path(path,paste0("subset",yrs[yr],".RData")))
 
 
+		# set keys on data.tables
+		lapply(topics,function(x) setkey(x, "ssuid", "epppnum"))
+		lapply(cores,function(x) setkey(x, "ssuid", "epppnum"))
+
+		mergexx <- merge.idx(cores,topics,breaks=TM.idx[[yr]])
+
+		# make one table out of it
+		mergexx <- rbindlist(mergexx)
+		setkey(mergexx, "ssuid", "epppnum" )
+
+		# merge with migration
+		# migration always in module 2
+		mergexx <- mergexx[ topics$TM_2 ]
+		
+		if ("96" == yrs[yr]){
+			
+			# clean 1996
+			# ==========
+
+			# add vars that are missing in 1996 migration
+			mergexx[, tprstate := -1]
+			mergexx[, tbrstate := -1]
+			mergexx[, tmovrflg := -1]
+
+		}
+
+		# free memory
+		rm(cores, topics)
+		gc()
+
+		# clean 
+		# =====
+
+		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
+
+		# educ: high-school degree
+		mergexx[,HS := FALSE]
+		mergexx[eeducate==39|eeducate==40|eeducate==41,HS := TRUE]	# HS grad, some college, certificate from voc,tech,trade or bus school beyond HS
+
+		# educ: college
+		mergexx[,college := FALSE]
+		mergexx[eeducate>41,college := TRUE]	
+
+		mergexx[,own := FALSE]
+		mergexx[etenure==1,own := TRUE]
+
+		# lagged variables
+		# generate 1-month lags
+
+		mergexx[,yearmon := rhcalyr * 100 + rhcalmn]
+
+		# need a sequence of unique year month identifiers
+		tmp <- mergexx[,list(yearmon=unique(yearmon))]
+		tmp <- tmp[complete.cases(tmp)]
+		setkey(tmp,yearmon)
+		tmp[,yrmnid := 1:nrow(tmp)]
+		setkey(mergexx,yearmon)
+
+		mergexx <- mergexx[ tmp ]
+
+		# give some nicer names
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtnw",   "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
+						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","net.wealth","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
+		setnames(mergexx,nm$oldname,nm$newname)
+
+		setkey(mergexx,ssuid,epppnum,yrmnid)
+		mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
+		mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
+		mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
+		mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
+		mergexx[,faminc.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["faminc"]]]
+		mergexx[,state.1mn    := mergexx[list(ssuid,epppnum,yrmnid-1)][["state"]]]
+		mergexx[,state.lead   := mergexx[list(ssuid,epppnum,yrmnid+1)][["state"]]]
+
+		mergexx[MIG_year_moved_here > 0,duration_at_current := year - MIG_year_moved_here]
+		mergexx[MIG_year_moved_here > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
+
+		# create a monthly state-2-state indicator
+		mergexx[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
+		mergexx[,S2S.mnTO := (state != state.lead & !is.na(state.lead) )]
+		# relationship between duration and S2S
+		mergexx[,mean(S2S.mn,na.rm=T),by=duration_at_current][,plot(duration_at_current,V1)]
+
+		# whether moved within a wave
+		# when counting, choose one reference
+		# month, or you'll count 4 times:
+		# mergexx[srefmon==4,table(S2S)]
+		mergexx[,S2S := ( mover==4 )]
+		mergexx[, panel := yrs[yr]]
+
+		m[[yr]] <- copy(mergexx)
+
+		rm(mergexx)
+
+	}
+	
+	merged <- rbindlist(m)
+
+	movtmp <- merged[S2S.mn==TRUE,list(upid=unique(upid))]
+	setkey(merged,upid)
+	movers <- merged[ movtmp[,upid] ]
+
+	save(merged,file="~/datasets/SIPP/m010408.RData")
+
+	# state names need fixing in 2001
+	# 61 is sum of
+	# 23 = maine
+	# 50 = vermont
+
+	# 62 is sum of
+	# 38 = north dakota
+	# 46 = south dakota
+	# 56 = wyoming
 }
 	
 
 
 
-
-
-
-
-
-
-
-
-
-
-#' Merge Sipp core data with topical modules
-#'
-#' takes all available SIPP panels, processes them, and
-#' outputs a unitary dataset
-#' The list of topical modules by panel and wave is
-#' http://www.census.gov/programs-surveys/sipp/tech-documentation/topical-modules.html
-#'
-#' Notice that the folderstructure needs to look like this:
-#' /Users/florianoswald/datasets/SIPP \cr
-#' |-1996\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-----export\cr
-#' |-2001\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-----export\cr
-#' |-2004\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-----export\cr
-#' |-2008\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-----export\cr
-#' in particular, the paths yyyy/dta/export must exist
-#' @param path path/to/SIPP/folderstructure
-#' @param outfile where to save dataset
-#' @param heads TRUE if only family reference person is kept
-#' @param test TRUE if run on test dataset
-MergeSIPP <- function(path="~/datasets/SIPP",outfile="~/git/migration/mig-pkg/data/sipp.RData",heads=TRUE,test=FALSE){
-
-	yrs <- list.files(path)
-
-	l <- list()
-
-	for (y in 1:length(yrs)){
-
-		if(test){
-			fi <- file.path(path,yrs[y],paste0("dta/core_and_topical/test_",yrs[y],".dta"))
-
-		} else {
-			fi <- file.path(path,yrs[y],paste0("dta/core_and_topical/core_top_",yrs[y],".dta"))
-
-		}
-
-		# 
-
-
-		d <- data.table(foreign::read.dta(fi))
-		
-		cat(sprintf('\nloaded year %s \n',yrs[y]))
-
-		# fix family reference number. 
-		# currently a numeric 101 101 101
-		# but needs to be compatible with epppnum, which is
-		# "0101" "0101"
-		d[,pid := as.integer( epppnum )]	# person id within each ssuid
-		d[,famhead := efrefper==pid]	# indicator of family reference person
-
-		d[,non.work := as.numeric(ersnowrk)]
-		d[non.work==3, non.work := 2]
-		d[,non.work := factor(non.work,labels=levels(ersnowrk)[-3])]
-
-		# in some waves those vars are missing
-		if ( !("tmovrflg" %in% names(d)) ) d[ ,tmovrflg := "missing var"]
-		if ( !("tprstate" %in% names(d)) ) d[ ,tprstate := "missing var"]
-		if ( !("tbrstate" %in% names(d)) ) d[ ,tbrstate := "missing var"]
-			
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtnw",   "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","net.wealth","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
-
-		setnames(d,nm$oldname,nm$newname)
-
-		# make a unique observation number
-		d[,upid := paste0(yrs[y],ssuid,epppnum)]
-
-		keep <- c("famhead","upid","ssuid","pid",nm$newname)
-		nvs <- setdiff(names(d),keep)
-
-		# drop all vars not in that list
-		d[,nvs := NULL, with=FALSE]
-
-		d[,own := FALSE]
-		d[as.numeric(tenure)==1, own := TRUE ]
-
-
-
-		# numeric educ variable
-		d[,educx := as.numeric(educ)]
-		d[,college := FALSE]
-		d[educx>10, college := TRUE]
-
-		
-		# make lagged variables
-		# =====================
-
-		# want: own(t-1), income(t-1), non.work(t-1), kids(t-1)
-		# where t-1 means "a year ago"
-		d[,monthid := as.integer(month)]
-		d[,yearmon := year * 100 + monthid]
-
-		# need a sequence of unique year month identifiers
-		tmp <- d[,list(yearmon=unique(yearmon))]
-		tmp <- tmp[complete.cases(tmp)]
-		setkey(tmp,yearmon)
-		tmp[,yrmnid := 1:nrow(tmp)]
-		setkey(d,yearmon)
-
-		d <- d[tmp]
-
-		setkey(d,ssuid,pid,year,monthid)
-		d[,own.1yr      := d[list(ssuid,pid,year-1,monthid)][["own"]]]
-		#d[,non.work.1yr := d[list(ssuid,pid,year-1,monthid)][["non.work"]]]
-		d[,numkids.1yr  := d[list(ssuid,pid,year-1,monthid)][["numkids"]]]
-		d[,wealth.1yr   := d[list(ssuid,pid,year-1,monthid)][["wealth"]]]
-		d[,equity.1yr   := d[list(ssuid,pid,year-1,monthid)][["home.equity"]]]
-		d[,faminc.1yr   := d[list(ssuid,pid,year-1,monthid)][["faminc"]]]
-		d[,state.1yr    := d[list(ssuid,pid,year-1,monthid)][["state"]]]
-		
-		setkey(d,ssuid,pid,yrmnid)
-		d[,own.1mn      := d[list(ssuid,pid,yrmnid-1)][["own"]]]
-		#d[,non.work.1mn := d[list(ssuid,pid,yrmnid-1)][["non.work"]]]
-		d[,numkids.1mn  := d[list(ssuid,pid,yrmnid-1)][["numkids"]]]
-		d[,wealth.1mn   := d[list(ssuid,pid,yrmnid-1)][["wealth"]]]
-		d[,equity.1mn   := d[list(ssuid,pid,yrmnid-1)][["home.equity"]]]
-		d[,faminc.1mn   := d[list(ssuid,pid,yrmnid-1)][["faminc"]]]
-		d[,state.1mn    := d[list(ssuid,pid,yrmnid-1)][["state"]]]
-
-		d[MIG_year_moved_here > 0,duration_at_current := as.numeric(yrs[y]) - MIG_year_moved_here]
-		d[MIG_year_moved_here > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
-
-		# create a monthly state-2-state indicator
-		d[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
-		# relationship between duration an S2S
-		d[,mean(S2S.mn,na.rm=T),by=duration_at_current][,plot(duration_at_current,V1)]
-
-		# create annual mover variable (n.a. for 1996)
-		d[,S2S := ( mover=="Moved, different state" )]
-
-
-
-		# make growth variables
-		# =====================
-
-		d[,dfaminc.mn := faminc - faminc.1mn,by=upid]
-		d[,dfaminc.yr := faminc - faminc.1yr,by=upid]
-
-
-
-		# mark panel
-		d[,panel := yrs[y] ]
-
-		# heads only
-		# ==========
-
-		if (heads) d <- d[famhead==TRUE]
-
-		l[[y]] <- d
-
-		cat(sprintf('\ndone with year %s \n',yrs[y]))
-
+#' auxiliary function to get movers
+#' origin and destination state in a data.table
+#' @examples 
+#' ttab = data.table(pid = rep(c(1,2),each=5),state=c(3,3,4,4,4,6,7,7,8,9),istate=c(FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE))
+#' ttab[,c("from","to") := get.istate(states=state,imove=istate),with=FALSE]
+get.istate <- function(states,imove) {
+	mid <- 1:length(imove)
+	mid <- mid[imove]	# gives index of moving periods
+	from <- rep(NA,length(imove))
+	to   <- rep(NA,length(imove))
+	for (j in mid){
+		to[j] <- states[j]
+		from[j] <- states[j-1]
 	}
-
-	#     sipp <- rbindlist(l)
-
-	#save(sipp,file=outfile)
-
-	return(l)
+	return(list(from,to))
 }
 
 
+Sipp2001States <- function(){
 
-
-#' Build Sipp Panel for all years
-#'
-#' takes all available SIPP panels, processes them, and
-#' outputs a unitary dataset
-#'
-#' Notice that the folderstructure needs to look like this:
-#' /Users/florianoswald/datasets/SIPP \cr
-#' |-1996\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-2001\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-2004\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' |-2008\cr
-#' |---dat\cr
-#' |---dct\cr
-#' |---do_NBER\cr
-#' |---doc\cr
-#' |---dta\cr
-#' |-----core_and_topical\cr
-#' in particular, the paths yyyy/dta/core_and_topical must exist
-#' @param path path/to/SIPP/folderstructure
-#' @param outfile where to save dataset
-#' @param heads TRUE if only family reference person is kept
-#' @param test TRUE if run on test dataset
-MakeSIPP_all <- function(path="~/datasets/SIPP",outfile="~/git/migration/mig-pkg/data/sipp.RData",heads=TRUE,test=FALSE){
-
-	yrs <- list.files(path)
-
-	l <- list()
-
-	for (y in 1:length(yrs)){
-
-		if(test){
-			fi <- file.path(path,yrs[y],paste0("dta/core_and_topical/test_",yrs[y],".dta"))
-
-		} else {
-			fi <- file.path(path,yrs[y],paste0("dta/core_and_topical/core_top_",yrs[y],".dta"))
-
-		}
-
-		d <- data.table(foreign::read.dta(fi))
-		
-		cat(sprintf('\nloaded year %s \n',yrs[y]))
-
-		# fix family reference number. 
-		# currently a numeric 101 101 101
-		# but needs to be compatible with epppnum, which is
-		# "0101" "0101"
-		d[,pid := as.integer( epppnum )]	# person id within each ssuid
-		d[,famhead := efrefper==pid]	# indicator of family reference person
-
-		d[,non.work := as.numeric(ersnowrk)]
-		d[non.work==3, non.work := 2]
-		d[,non.work := factor(non.work,labels=levels(ersnowrk)[-3])]
-
-		# in some waves those vars are missing
-		if ( !("tmovrflg" %in% names(d)) ) d[ ,tmovrflg := "missing var"]
-		if ( !("tprstate" %in% names(d)) ) d[ ,tprstate := "missing var"]
-		if ( !("tbrstate" %in% names(d)) ) d[ ,tbrstate := "missing var"]
-			
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtnw",   "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","net.wealth","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
-
-		setnames(d,nm$oldname,nm$newname)
-
-		# make a unique observation number
-		d[,upid := paste0(yrs[y],ssuid,epppnum)]
-
-		keep <- c("famhead","upid","ssuid","pid",nm$newname)
-		nvs <- setdiff(names(d),keep)
-
-		# drop all vars not in that list
-		d[,nvs := NULL, with=FALSE]
-
-		d[,own := FALSE]
-		d[as.numeric(tenure)==1, own := TRUE ]
-
-
-
-		# numeric educ variable
-		d[,educx := as.numeric(educ)]
-		d[,college := FALSE]
-		d[educx>10, college := TRUE]
-
-		
-		# make lagged variables
-		# =====================
-
-		# want: own(t-1), income(t-1), non.work(t-1), kids(t-1)
-		# where t-1 means "a year ago"
-		d[,monthid := as.integer(month)]
-		d[,yearmon := year * 100 + monthid]
-
-		# need a sequence of unique year month identifiers
-		tmp <- d[,list(yearmon=unique(yearmon))]
-		tmp <- tmp[complete.cases(tmp)]
-		setkey(tmp,yearmon)
-		tmp[,yrmnid := 1:nrow(tmp)]
-		setkey(d,yearmon)
-
-		d <- d[tmp]
-
-		setkey(d,ssuid,pid,year,monthid)
-		d[,own.1yr      := d[list(ssuid,pid,year-1,monthid)][["own"]]]
-		#d[,non.work.1yr := d[list(ssuid,pid,year-1,monthid)][["non.work"]]]
-		d[,numkids.1yr  := d[list(ssuid,pid,year-1,monthid)][["numkids"]]]
-		d[,wealth.1yr   := d[list(ssuid,pid,year-1,monthid)][["wealth"]]]
-		d[,equity.1yr   := d[list(ssuid,pid,year-1,monthid)][["home.equity"]]]
-		d[,faminc.1yr   := d[list(ssuid,pid,year-1,monthid)][["faminc"]]]
-		d[,state.1yr    := d[list(ssuid,pid,year-1,monthid)][["state"]]]
-		
-		setkey(d,ssuid,pid,yrmnid)
-		d[,own.1mn      := d[list(ssuid,pid,yrmnid-1)][["own"]]]
-		#d[,non.work.1mn := d[list(ssuid,pid,yrmnid-1)][["non.work"]]]
-		d[,numkids.1mn  := d[list(ssuid,pid,yrmnid-1)][["numkids"]]]
-		d[,wealth.1mn   := d[list(ssuid,pid,yrmnid-1)][["wealth"]]]
-		d[,equity.1mn   := d[list(ssuid,pid,yrmnid-1)][["home.equity"]]]
-		d[,faminc.1mn   := d[list(ssuid,pid,yrmnid-1)][["faminc"]]]
-		d[,state.1mn    := d[list(ssuid,pid,yrmnid-1)][["state"]]]
-
-		d[MIG_year_moved_here > 0,duration_at_current := as.numeric(yrs[y]) - MIG_year_moved_here]
-		d[MIG_year_moved_here > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
-
-		# create a monthly state-2-state indicator
-		d[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
-		# relationship between duration an S2S
-		d[,mean(S2S.mn,na.rm=T),by=duration_at_current][,plot(duration_at_current,V1)]
-
-		# create annual mover variable (n.a. for 1996)
-		d[,S2S := ( mover=="Moved, different state" )]
-
-
-
-		# make growth variables
-		# =====================
-
-		d[,dfaminc.mn := faminc - faminc.1mn,by=upid]
-		d[,dfaminc.yr := faminc - faminc.1yr,by=upid]
-
-
-
-		# mark panel
-		d[,panel := yrs[y] ]
-
-		# heads only
-		# ==========
-
-		if (heads) d <- d[famhead==TRUE]
-
-		l[[y]] <- d
-
-		cat(sprintf('\ndone with year %s \n',yrs[y]))
-
-	}
-
-	#     sipp <- rbindlist(l)
-
-	#save(sipp,file=outfile)
-
-	return(l)
+	d <- data.table(fips=c(1 ,	2 ,	4 ,	5 ,	6 ,	8 ,	9 ,	10,	11,	12,	13,	15,	16,	17,	18,	19,	20,	21,	22,	24,	25,	26,	27,	28,	29,	30,	31,	32,	33,	34,	35,	36,	37,	39,	40,	41,	42,	44,	45,	47,	48,	49,	51,	53,	54,	55,	61,	62),
+					state=c("Alabama","Alaska"      , "Arizona"     , "Arkansas"    , "California"  , "Colorado"    , "Connecticut" , "Delaware"    , "D.C."        , "Florida"     , "Georgia"     , "Hawaii"      , "Idaho"       , "Illinois"    , "Indiana"     , "Iowa"        , "Kansas"      , "Kentucky"    , "Louisiana"   , "Maryland"    , "Massachusetts" , "Michigan"   , "Minnesota"   , "Mississippi" , "Missouri"   , "Montana"    , "Nebraska"   , "Nevada"       , "New Hampshire"   , "New Jersey"      , "New Mexico"      , "New York"        , "North Carolina"  , "Ohio"            , "Oklahoma"        , "Oregon"          , "Pennsylvania"    , "Rhode Island"    , "South Carolina"  , "Tennessee"       , "Texas"           , "Utah"            , "Virginia"        , "Washington"      , "West Virginia"   , "Wisconsin"       , "Maine, Vermont"  , "North.South.Dak.Wyoming"))
+	return(d)
 }
-
-
 	
+ 
+
+#' Merge SIPP cores and topical modules auxiliary function
+#'
+#' merges the most recent wealth module onto the corresponding
+#' core data.  i.e. if breaks=c(3,6,9), the TM was asked
+#' in waves 3,6 and 9. therefore merge TM_3 onto cores
+#' 1-3, merge TM_6 onto 4-6, etc
+#' @param core list of core datasets
+#' @param topic list of topical datasets
+#' @param breaks numeric vector of waves where a TM was asked.
+#' @param topic.names NULL by default assumes names of 
+#' \code{topic} are like "TM_2". if not, supply names here.
+#' @examples
+#' co <- lapply(1:12, function(x) data.table(ssuid=1:4,covar=rnorm(4),key="ssuid"))
+#' br <- c(2,5,9,12)
+#' tm <- lapply(1:5, function(x) data.table(ssuid=1:4,tmvar=10*c(1,br)[x] + sample(1:4,size=4),key="ssuid"))
+#' names(tm) <- paste0("TM_",c(1,br))	# don't merge first TM
+#' merge.idx(core=co,topic=tm,breaks=br)
+merge.idx <- function(core,topic,breaks=c(3,6,9,12),topic.names=NULL){
+
+	mergexx <- list()
+
+	if (is.null(topic.names)){
+		topic.names <- paste0("TM_",breaks)
+	}
+
+	for (i in 1:length(core)) {
+
+		# i is in which interval of breaks?
+		xi <- apply(outer(i,breaks,">"),1,sum) + 1
+
+		mergexx[[i]] <- core[[i]][ topic[[ topic.names[xi] ]] ]
+
+	}
+	return(mergexx)
+
+}
+
+
+
+
