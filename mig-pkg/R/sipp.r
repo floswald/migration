@@ -84,7 +84,34 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 #' @param dropbox path to folder where to save this
 Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
 
+	# extract 1993
+	# ============
+
+	# topic modules varnames
+	# ----------------------
+
+	# address ID:		entry
+	# person number:	pnum
+	# identifier:		id
+
+	# module 2: migration
+	# which year moved here:	tm8702
+	# which state before :  	tm8706
+	# which state born:     	tm8730
+	
+	# module 4: wealth
+	# total equity in property:	tm8666
+	# average joint savings :  	sc4314
+	# which state born:     	tm8730
+	#dbfile <- "~/datasets/SIPP/R/SIPP93.db"
+	#which.tm <- c(2,4,7)
+	#tk     <- list(c("entry","pnum","id","tm8702","tm8706","tm8730"),
+				   #c("entry","pnum","id"),
+				   #c("entry","pnum","id"),
+
+
 	# extract 1996
+	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
 	ck     <- c("ssuid",
@@ -116,17 +143,18 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "east3e")
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
-	tk     <- list(c("ssuid", "epppnum", "eprstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw12"
 	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
 
 	# extract 2001
+	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
 	ck     <- c("ssuid",
@@ -159,10 +187,10 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "east3e")
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw9"
 
 	# subset: correct interview status and only reference persons of age > 15.
@@ -172,6 +200,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 
 
 	# extract 2004
+	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
 	ck     <- c("ssuid",
@@ -204,15 +233,18 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "east3e")
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw12"
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
 
 	# extract 2008
+	# ============
+
+	# wealth modules
 
 	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
 	ck     <- c("ssuid",
@@ -246,9 +278,9 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
 	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"),
-	               c("ssuid", "epppnum", "thhtnw", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr"))
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw7"
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
@@ -280,11 +312,25 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	# loop over all years and clean
 	# depending on year, there are different tasks
 
+	# there will be a distinction between years before and after 
+	# the 1996 panel
+
+	# if (before) idvars = c("suid", "entry", "pnum")
+	# if (after)  idvars = c("ssuid", "epppnum")
+
+	# before 1996, match is
+	#TM		core
+	#ID		SUID
+	#ENTRY	ENTRY
+	#PNUM	PNUM
+
+	# so must rename ID in TM to SUID
+
+
 
 	for (yr in 1:length(TM.idx)){
 
 		load(file.path(path,paste0("subset",yrs[yr],".RData")))
-
 
 		# set keys on data.tables
 		lapply(topics,function(x) setkey(x, "ssuid", "epppnum"))
@@ -306,8 +352,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 			# ==========
 
 			# add vars that are missing in 1996 migration
-			mergexx[, tprstate := -1]
-			mergexx[, tbrstate := -1]
+			mergexx[, tbrstate := ebrstate]
+			mergexx[, ebrstate := NULL]
 			mergexx[, tmovrflg := -1]
 
 		}
