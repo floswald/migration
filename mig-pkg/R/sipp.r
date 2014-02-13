@@ -139,17 +139,14 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "rfid",
                 "efrefper",
                 "rfnkids",
-                "wffinwgt",
                 "whfnwgt",
                 "tftotinc",
                 "epppnum",
-                "wpfinwgt",
                 "eeducate",
                 "eentaid",
                 "tage",
                 "esex",
-                "ersnowrk",
-                "east3e")
+                "ersnowrk")
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
 	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
@@ -183,17 +180,14 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "rfid",
                 "efrefper",
                 "rfnkids",
-                "wffinwgt",
                 "whfnwgt",
                 "tftotinc",
                 "epppnum",
-                "wpfinwgt",
                 "eeducate",
                 "eentaid",
                 "tage",
                 "esex",
-                "ersnowrk",
-                "east3e")
+                "ersnowrk")
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
@@ -229,17 +223,14 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "rfid",
                 "efrefper",
                 "rfnkids",
-                "wffinwgt",
                 "whfnwgt",
                 "tftotinc",
                 "epppnum",
-                "wpfinwgt",
                 "eeducate",
                 "eentaid",
                 "tage",
                 "esex",
-                "ersnowrk",
-                "east3e")
+                "ersnowrk")
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
@@ -273,17 +264,14 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "rfid",
                 "efrefper",
                 "rfnkids",
-                "wffinwgt",
                 "whfnwgt",
                 "tftotinc",
                 "epppnum",
-                "wpfinwgt",
                 "eeducate",
                 "eentaid",
                 "tage",
                 "esex",
-                "ersnowrk",
-                "east3e")
+                "ersnowrk")
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
 	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
@@ -408,9 +396,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids","wffinwgt", "esex","wpfinwgt",  "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","famweight","sex", "persweight","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc","tftotinc"),
+						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","faminc"))
 		setnames(mergexx,nm$oldname,nm$newname)
+
+
+		# make savings
+		mergexx[, saving := thhintbk + thhintot]
+		mergexx[, c("thhintbk","thhintot") := NULL]
 
 		setkey(mergexx,ssuid,epppnum,yrmnid)
 		mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
@@ -447,8 +440,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	setkey(merged,upid)
 	movers <- merged[ movtmp[,upid] ]
 
-	save(merged,file="~/datasets/SIPP/m010408.RData")
+	merged4mn <- merged[srefmon==4]
 
+	save(merged,file="~/datasets/SIPP/fullSipp.RData")
+	save(merged4mn,file="~/datasets/SIPP/Sipp4mn.RData")
+
+	# TODO
 	# state names need fixing in 2001
 	# 61 is sum of
 	# 23 = maine
