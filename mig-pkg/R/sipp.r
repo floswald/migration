@@ -91,7 +91,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 #' @param verbose 
 #' @param dropbox path to folder where to save this
 #' @return NULL saves subset data.tables into dropbox
-Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
+Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
 
 	# extract 1993
 	# ============
@@ -134,7 +134,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "tmetro",		# metropolitan area/residual
                 "etenure",		# housing tenure
                 "thtotinc",		# tot hh income
-                "epubhse",		# public housing
                 "rfid",			# family id
                 "efrefper",		# person num of fam reference person
                 "rfnkids",		# number of kids in family (of HH ref person!)
@@ -147,7 +146,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "ersnowrk")		# main reason for not working
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
-	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
+	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "toutinyr", "tmovest", "eprevten"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
@@ -173,7 +172,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "tmetro",        # metropolitan area/residual
                 "etenure",       # housing tenure
                 "thtotinc",      # tot hh income
-                "epubhse",       # public housing
                 "rfid",          # family id
                 "efrefper",      # person num of fam reference person
                 "rfnkids",       # number of kids in family (of HH ref person!)
@@ -187,7 +185,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
-	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
+	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
@@ -215,7 +213,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "tmetro",          # metropolitan area/residual
                 "etenure",         # housing tenure
                 "thtotinc",        # tot hh income
-                "epubhse",         # public housing
                 "rfid",            # family id
                 "efrefper",        # person num of fam reference person
                 "rfnkids",         # number of kids in family (of HH ref person!)
@@ -228,7 +225,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "ersnowrk")        # main reason for not working
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
-	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
+	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
 	which.wgt <- "wgtw12"
@@ -254,7 +251,6 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "tmetro",       # metropolitan area/residual
                 "etenure",      # housing tenure
                 "thtotinc",     # tot hh income
-                "epubhse",      # public housing
                 "rfid",         # family id
                 "efrefper",     # person num of fam reference person
                 "rfnkids",      # number of kids in family (of HH ref person!)
@@ -267,7 +263,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
                 "ersnowrk")     # main reason for not working
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
+	tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
@@ -291,8 +287,7 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
 #' @param path to output from \code{\link{Extract.wrap}}
-# @param verbose
-Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10)),verbose=FALSE){
+Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10)),verbose=TRUE){
 
 	# list to collect all panels
 	m <- list()
@@ -303,6 +298,9 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	# loop over all years and clean
 	# depending on year, there are different tasks
 
+
+	# TODO
+	#
 	# there will be a distinction between years before and after 
 	# the 1996 panel
 
@@ -347,9 +345,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 			# ==========
 
 			# add vars that are missing in 1996 migration
-			mergexx[, tprstate := -1]
-			mergexx[, tbrstate := ebrstate]
-			mergexx[, ebrstate := NULL]
+			setnames(mergexx,c("eprstate","ebrstate"),c("tprstate","tbrstate"))
 			mergexx[, tmovrflg := -1]
 
 		}
@@ -361,7 +357,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		# clean 
 		# =====
 
-		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
 
 		# educ: high-school degree
 		mergexx[,HS := FALSE]
@@ -382,15 +377,22 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		# need a sequence of unique year month identifiers
 		tmp <- mergexx[,list(yearmon=unique(yearmon))]
 		tmp <- tmp[complete.cases(tmp)]
+		tmp[,year := round(yearmon/100,0)]
+		tmp[,month := yearmon-year*100]
+		tmp[,qtr := zoo::as.yearqtr(as.Date(paste0(year,"-",month,"-","01"))) ]
+		tmp[,c("year","month") := NULL]
 		setkey(tmp,yearmon)
 		tmp[,yrmnid := 1:nrow(tmp)]
+
 		setkey(mergexx,yearmon)
 
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",    "thtotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome"))
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",             "toutinyr",                    "tmovest",                "eprevten",    "thtotinc","ehbuyyr","thomeamt"),
+						 newname=c("FIPS",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","yr_bought","mortg.rent"))
+		if (verbose) print(nm)
+
 		setnames(mergexx,nm$oldname,nm$newname)
 
 
@@ -398,21 +400,45 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[, saving := thhintbk + thhintot]
 		mergexx[, c("thhintbk","thhintot") := NULL]
 
+		# code NAs and some labels
+		mergexx[,c("eoutcome","eppintvw","efrefper","eentaid","tenure","ersnowrk") := NULL]
+		mergexx[yr_bought==-1, yr_bought := NA ]
+
+		mergexx[MIG_year_moved_to_state<0, MIG_year_moved_to_state     := NA ] 	# =-5 => always lived here!
+		mergexx[MIG_year_moved_to_state==9999 ,MIG_year_moved_to_state := NA ] 	# =-5 => always lived here!
+
+		mergexx[MIG_state_born==-1, MIG_state_born := NA ] 	# =5 => always lived here!
+
+		mergexx[MIG_previous_tenure<0, MIG_previous_tenure := NA ] 	
+		mergexx[,previous.own := FALSE]
+		mergexx[MIG_previous_tenure==1, previous.own := TRUE]
+		mergexx[,MIG_previous_tenure := NULL]
+
+		mergexx[MIG_year_moved_into_previous<0, MIG_year_moved_into_previous     := NA ] 	# =5 => always lived here!
+		mergexx[MIG_year_moved_into_previous==9999, MIG_year_moved_into_previous := NA ] 	# =5 => always lived here!
+		mergexx[mover==-1, mover := NA ]
+
+
 		setkey(mergexx,ssuid,epppnum,yrmnid)
 		mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
 		mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
 		mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
 		mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		mergexx[,HHincome.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
-		mergexx[,state.1mn    := mergexx[list(ssuid,epppnum,yrmnid-1)][["state"]]]
-		mergexx[,state.lead   := mergexx[list(ssuid,epppnum,yrmnid+1)][["state"]]]
+		mergexx[,HHincome.1mn := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
+		mergexx[,FIPS.1mn     := mergexx[list(ssuid,epppnum,yrmnid-1)][["FIPS"]]]
 
-		mergexx[MIG_year_moved_here > 0,duration_at_current := year - MIG_year_moved_here]
-		mergexx[MIG_year_moved_here > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_here - MIG_year_moved_into_previous]
+		mergexx[MIG_year_moved_to_state > 0,duration_at_current := year - MIG_year_moved_to_state]
+		mergexx[MIG_year_moved_to_state > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_to_state - MIG_year_moved_into_previous]
+
+		mergexx[,born.here := FIPS==MIG_state_born ]
+
+		# make a unique person number
+		# in theory i should just have 1 person per ssuid
+		# but better be safe here.
+		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
 
 		# create a monthly state-2-state indicator
-		mergexx[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
-		#mergexx[,S2S.mnTO := (state != state.lead & !is.na(state.lead) )]
+		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
 
 		# whether moved within a wave
 		# when counting, choose one reference
@@ -420,6 +446,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		# mergexx[srefmon==4,table(S2S)]
 		mergexx[,S2S := ( mover==4 )]
 		mergexx[, panel := yrs[yr]]
+
+		# rbindlist (below) merges by 
+		# column order, not name!
+		if (yr==1){
+			colorder <- names(mergexx)
+		} else {
+			setcolorder(mergexx,colorder)
+		}
 
 		m[[yr]] <- copy(mergexx)
 
@@ -429,17 +463,9 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	
 	merged <- rbindlist(m)
 
-	movtmp <- merged[S2S.mn==TRUE,list(upid=unique(upid))]
-	setkey(merged,upid)
-	movers <- merged[ movtmp[,upid] ]
+	if (verbose) cat("combined all panels into one data.table\n")
 
-	merged4mn <- merged[srefmon==4]
-
-	save(merged,file="~/datasets/SIPP/fullSipp.RData")
-	save(merged4mn,file="~/datasets/SIPP/Sipp4mn.RData")
-
-	# TODO
-	# state names need fixing in 2001
+	# Note: 1996 and 2001 have aggregates states
 	# 61 is sum of
 	# 23 = maine
 	# 50 = vermont
@@ -448,9 +474,78 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	# 38 = north dakota
 	# 46 = south dakota
 	# 56 = wyoming
+
+	# adjust 2004 and 2008 for that!
+	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(23,50)),    FIPS := 61L]
+	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(38,46,56)), FIPS := 62L]
+
+	setkey(merged,FIPS)
+
+	# merge with FIPS codes
+	data(states)
+	abbr[,State := NULL]
+	# add aggregated states to FIPS register
+	x <- data.table(Abbreviation=c("ME.VT","ND.SD.WY"),FIPS=c(61,62))
+	abbr <- rbind(abbr,x)
+	setkey(abbr,FIPS)
+
+
+	merged <-  abbr[ merged ]
+	setnames(merged,"Abbreviation","state")
+
+	# merge prices onto this
+	# need a qtrdate column: 
+	#merged[,tmp := as.Date(paste0(year,"-",month,"-","01")) ]
+	#merged[,qtr := zoo::as.yearqtr(tmp) ]
+	#merged[,c("tmp") := NULL]
+	setkey(merged,state,qtr)
+	
+	# load fhfa house price data
+	data(fhfa)
+	setkey(fhfa,state,qtr)
+
+	# aggregate state prices
+	# ----------------------
+
+	# separate state groups
+	fhfa[ (state %in% c("ME","VT")),     state := "ME.VT"]
+	fhfa[ (state %in% c("SD","ND","WY")),state := "ND.SD.WY"]
+
+	xfhfa <- fhfa[ state %in% c("ND.SD.WY","ME.VT") ]
+	fhfa  <- fhfa[!state %in% c("ND.SD.WY","ME.VT") ]
+
+	# do aggregation
+	xfhfa <- xfhfa[,list(index_sa=mean(index_sa),index_nsa=mean(index_nsa)),by=list(state,qtr)]
+
+	# put back together
+	fhfa  <- rbind(fhfa,xfhfa,use.names=TRUE)
+
+	setkey(fhfa,state,qtr)
+	merged <- fhfa[ merged ]
+
+	if (verbose) cat("merge house prices into data.\n")
+	
+	# drop FIPS
+	merged[,FIPS := NULL]
+
+	merged4mn <- merged[srefmon==4]
+
+	# drop reference month
+	merged[,srefmon := NULL]
+	merged4mn[,srefmon := NULL]
+
+
+	if (verbose) cat("writing data to disk now.\n")
+
+	save(merged,file="~/Dropbox/mobility/SIPP/SippFull.RData")
+	save(merged4mn,file="~/Dropbox/mobility/SIPP/Sipp4mn.RData")
+
 }
 	
 
+	#movtmp <- merged[S2S.mn==TRUE,list(upid=unique(upid))]
+	#setkey(merged,upid)
+	#movers <- merged[ movtmp[,upid] ]
 
 
 #' auxiliary function to get movers
@@ -471,14 +566,6 @@ get.istate <- function(states,imove) {
 }
 
 
-Sipp2001States <- function(){
-
-	d <- data.table(fips=c(1 ,	2 ,	4 ,	5 ,	6 ,	8 ,	9 ,	10,	11,	12,	13,	15,	16,	17,	18,	19,	20,	21,	22,	24,	25,	26,	27,	28,	29,	30,	31,	32,	33,	34,	35,	36,	37,	39,	40,	41,	42,	44,	45,	47,	48,	49,	51,	53,	54,	55,	61,	62),
-					state=c("Alabama","Alaska"      , "Arizona"     , "Arkansas"    , "California"  , "Colorado"    , "Connecticut" , "Delaware"    , "D.C."        , "Florida"     , "Georgia"     , "Hawaii"      , "Idaho"       , "Illinois"    , "Indiana"     , "Iowa"        , "Kansas"      , "Kentucky"    , "Louisiana"   , "Maryland"    , "Massachusetts" , "Michigan"   , "Minnesota"   , "Mississippi" , "Missouri"   , "Montana"    , "Nebraska"   , "Nevada"       , "New Hampshire"   , "New Jersey"      , "New Mexico"      , "New York"        , "North Carolina"  , "Ohio"            , "Oklahoma"        , "Oregon"          , "Pennsylvania"    , "Rhode Island"    , "South Carolina"  , "Tennessee"       , "Texas"           , "Utah"            , "Virginia"        , "Washington"      , "West Virginia"   , "Wisconsin"       , "Maine, Vermont"  , "North.South.Dak.Wyoming"))
-	return(d)
-}
-	
- 
 
 #' Merge SIPP cores and topical modules auxiliary function
 #'
@@ -518,5 +605,35 @@ merge.idx <- function(core,topic,breaks=c(3,6,9,12),topic.names=NULL){
 }
 
 
+#' get FHFA state level HPI
+#'
+#' download FHFA state-level house price
+#' index 1990-2013, quarterly data.
+#' 
+#' source of data is
+#' \url{http://www.fhfa.gov/Default.aspx?Page=87}
+#' @param from url 
+#' @param to location to save data
+#' @return TRUE
+download.FHFA <- function(from="http://www.fhfa.gov/webfiles/25831/3q13hpists_expandeddata.txt",to="~/git/migration/mig-pkg/data"){
 
+	#h <- data.table(read.table(file=from,header=TRUE,sep="\t"))
+	fhfa <- fread(input=from,header=TRUE,sep="\t")	# directly into a data.table
+	fhfa[,note := NULL]
+	fhfa[,qtr := zoo::as.yearqtr(paste0(yr,"Q ",qtr),"%Y Q%q")]
+	fhfa[,yr := NULL]
+	warning("removed note field from fhfa data.")
+	save(fhfa,file=file.path(to,"fhfa.RData"))
+
+	return(TRUE)
+}
+
+						  
+						  
+
+
+
+#' Estimate Probability of Moving
+#'
+#' 
 

@@ -1,11 +1,11 @@
 Package: migration
 Type: Package
-Title: What the package does (short line)
+Title: Internal Migration and Housing Tenure in the US
 Version: 1.0
 Date: 2013-08-19
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Florian Oswald
+Maintainer: <florian.oswald@gmail.com>
+Description: implements a BBL estimator
 License: GPL-3
 Depends:
     data.table,
