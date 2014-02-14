@@ -123,29 +123,28 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
-	ck     <- c("ssuid",
-                "srefmon",
-                "rhcalmn",
-                "errp",
-                "rhcalyr",
-                "tfipsst",
-                "eoutcome",
-                "eppintvw",
-                "rhnf",
-                "tmetro",
-                "etenure",
-                "thtotinc",
-                "epubhse",
-                "rfid",
-                "efrefper",
-                "rfnkids",
-                "whfnwgt",
-                "epppnum",
-                "eeducate",
-                "eentaid",
-                "tage",
-                "esex",
-                "ersnowrk")
+	ck     <- c("ssuid",		# sample unit id
+                "srefmon",		# reference month (1-4)
+                "rhcalmn",		# cal month
+                "errp",			# HH relationship
+                "rhcalyr",		# cal year
+                "tfipsst",		# state
+                "eoutcome",		# interview outcome
+                "eppintvw",		# person interview outcome
+                "tmetro",		# metropolitan area/residual
+                "etenure",		# housing tenure
+                "thtotinc",		# tot hh income
+                "epubhse",		# public housing
+                "rfid",			# family id
+                "efrefper",		# person num of fam reference person
+                "rfnkids",		# number of kids in family (of HH ref person!)
+                "whfnwgt",		# final HH weight
+                "epppnum",		# person number
+                "eeducate",		# highest educ degree
+                "eentaid",		# address ID where entered sample
+                "tage",			# age
+                "esex",			# sex
+                "ersnowrk")		# main reason for not working
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
 	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten"),
@@ -162,30 +161,30 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
-	ck     <- c("ssuid",
-                "srefmon",
-                "rhcalmn",
-                "errp",
-                "rhcalyr",
-                "tfipsst",
-                "tmovrflg",
-                "eoutcome",
-                "eppintvw",
-                "rhnf",
-                "tmetro",
-                "etenure",
-                "thtotinc",
-                "epubhse",
-                "rfid",
-                "efrefper",
-                "rfnkids",
-                "whfnwgt",
-                "epppnum",
-                "eeducate",
-                "eentaid",
-                "tage",
-                "esex",
-                "ersnowrk")
+	ck     <- c("ssuid",         # sample unit id
+                "srefmon",       # reference month (1-4)
+                "rhcalmn",       # cal month
+                "errp",          # HH relationship
+                "rhcalyr",       # cal year
+                "tfipsst",       # state
+                "tmovrflg",      # mover flag
+                "eoutcome",      # interview outcome
+                "eppintvw",      # person interview outcome
+                "tmetro",        # metropolitan area/residual
+                "etenure",       # housing tenure
+                "thtotinc",      # tot hh income
+                "epubhse",       # public housing
+                "rfid",          # family id
+                "efrefper",      # person num of fam reference person
+                "rfnkids",       # number of kids in family (of HH ref person!)
+                "whfnwgt",       # final HH weight
+                "epppnum",       # person number
+                "eeducate",      # highest educ degree
+                "eentaid",       # address ID where entered sample
+                "tage",          # age
+                "esex",          # sex
+                "ersnowrk")      # main reason for not working
+                
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
@@ -204,30 +203,29 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 	# ============
 
 	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
-	ck     <- c("ssuid",
-                "srefmon",
-                "rhcalmn",
-                "errp",
-                "rhcalyr",
-                "tfipsst",
-                "tmovrflg",
-                "eoutcome",
-                "eppintvw",
-                "rhnf",
-                "tmetro",
-                "etenure",
-                "thtotinc",
-                "epubhse",
-                "rfid",
-                "efrefper",
-                "rfnkids",
-                "whfnwgt",
-                "epppnum",
-                "eeducate",
-                "eentaid",
-                "tage",
-                "esex",
-                "ersnowrk")
+	ck     <- c("ssuid",           # sample unit id
+                "srefmon",         # reference month (1-4)
+                "rhcalmn",         # cal month
+                "errp",            # HH relationship
+                "rhcalyr",         # cal year
+                "tfipsst",         # state
+                "tmovrflg",        # mover flag
+                "eoutcome",        # interview outcome
+                "eppintvw",        # person interview outcome
+                "tmetro",          # metropolitan area/residual
+                "etenure",         # housing tenure
+                "thtotinc",        # tot hh income
+                "epubhse",         # public housing
+                "rfid",            # family id
+                "efrefper",        # person num of fam reference person
+                "rfnkids",         # number of kids in family (of HH ref person!)
+                "whfnwgt",         # final HH weight
+                "epppnum",         # person number
+                "eeducate",        # highest educ degree
+                "eentaid",         # address ID where entered sample
+                "tage",            # age
+                "esex",            # sex
+                "ersnowrk")        # main reason for not working
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tprstate"),
@@ -244,30 +242,29 @@ Extract.wrap <- function(verbose=FALSE,dropbox="C:/Users/florian_o/Dropbox/mobil
 	# wealth modules
 
 	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
-	ck     <- c("ssuid",
-                "srefmon",
-                "rhcalmn",
-                "errp",
-                "rhcalyr",
-                "tfipsst",
-                "tmovrflg",
-                "eoutcome",
-                "eppintvw",
-                "rhnf",
-                "tmetro",
-                "etenure",
-                "thtotinc",
-                "epubhse",
-                "rfid",
-                "efrefper",
-                "rfnkids",
-                "whfnwgt",
-                "epppnum",
-                "eeducate",
-                "eentaid",
-                "tage",
-                "esex",
-                "ersnowrk")
+	ck     <- c("ssuid",        # sample unit id
+                "srefmon",      # reference month (1-4)
+                "rhcalmn",      # cal month
+                "errp",         # HH relationship
+                "rhcalyr",      # cal year
+                "tfipsst",      # state
+                "tmovrflg",     # mover flag
+                "eoutcome",     # interview outcome
+                "eppintvw",     # person interview outcome
+                "tmetro",       # metropolitan area/residual
+                "etenure",      # housing tenure
+                "thtotinc",     # tot hh income
+                "epubhse",      # public housing
+                "rfid",         # family id
+                "efrefper",     # person num of fam reference person
+                "rfnkids",      # number of kids in family (of HH ref person!)
+                "whfnwgt",      # final HH weight
+                "epppnum",      # person number
+                "eeducate",     # highest educ degree
+                "eentaid",      # address ID where entered sample
+                "tage",         # age
+                "esex",         # sex
+                "ersnowrk")     # main reason for not working
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
 	tk     <- list(c("ssuid", "epppnum", "eprevres", "tmovyryr", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
@@ -392,8 +389,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate","east3e",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",           "thtotinc"),
-						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",    "mortgage","wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome"))
+		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",      "tmovyryr",           "toutinyr",                    "tmovest",                "eprevten",    "thtotinc"),
+						 newname=c("state",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_here","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome"))
 		setnames(mergexx,nm$oldname,nm$newname)
 
 
@@ -406,7 +403,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
 		mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
 		mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		mergexx[,faminc.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["faminc"]]]
+		mergexx[,HHincome.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
 		mergexx[,state.1mn    := mergexx[list(ssuid,epppnum,yrmnid-1)][["state"]]]
 		mergexx[,state.lead   := mergexx[list(ssuid,epppnum,yrmnid+1)][["state"]]]
 
@@ -415,7 +412,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 		# create a monthly state-2-state indicator
 		mergexx[,S2S.mn := (state != state.1mn & !is.na(state.1mn) )]
-		mergexx[,S2S.mnTO := (state != state.lead & !is.na(state.lead) )]
+		#mergexx[,S2S.mnTO := (state != state.lead & !is.na(state.lead) )]
 
 		# whether moved within a wave
 		# when counting, choose one reference
