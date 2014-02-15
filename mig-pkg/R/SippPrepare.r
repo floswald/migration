@@ -390,7 +390,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 		# give some nicer names
 		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",             "toutinyr",                    "tmovest",                "eprevten",    "thtotinc","ehbuyyr","thomeamt"),
-						 newname=c("FIPS",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "MIG_previous_state","MIG_where_previous_home","MIG_state_born","MIG_year_moved_into_previous","MIG_year_moved_to_state","MIG_previous_tenure","HHincome","yr_bought","mortg.rent"))
+						 newname=c("FIPS",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "prev.state","prev.home","state.born","yr.moved.into.previous","yr.moved.here","prev.tenure","HHincome","yr_bought","mortg.rent"))
 		if (verbose) print(nm)
 
 		setnames(mergexx,nm$oldname,nm$newname)
@@ -404,18 +404,18 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[,c("eoutcome","eppintvw","efrefper","eentaid","tenure","ersnowrk") := NULL]
 		mergexx[yr_bought==-1, yr_bought := NA ]
 
-		mergexx[MIG_year_moved_to_state<0, MIG_year_moved_to_state     := NA ] 	# =-5 => always lived here!
-		mergexx[MIG_year_moved_to_state==9999 ,MIG_year_moved_to_state := NA ] 	# =-5 => always lived here!
+		mergexx[yr.moved.here<0, yr.moved.here     := NA ] 	# =-5 => always lived here!
+		mergexx[yr.moved.here==9999 ,yr.moved.here := NA ] 	# =-5 => always lived here!
 
-		mergexx[MIG_state_born==-1, MIG_state_born := NA ] 	# =5 => always lived here!
+		mergexx[state.born==-1, state.born := NA ] 	# =5 => always lived here!
 
-		mergexx[MIG_previous_tenure<0, MIG_previous_tenure := NA ] 	
+		mergexx[prev.tenure<0, prev.tenure := NA ] 	
 		mergexx[,previous.own := FALSE]
-		mergexx[MIG_previous_tenure==1, previous.own := TRUE]
-		mergexx[,MIG_previous_tenure := NULL]
+		mergexx[prev.tenure==1, previous.own := TRUE]
+		mergexx[,prev.tenure := NULL]
 
-		mergexx[MIG_year_moved_into_previous<0, MIG_year_moved_into_previous     := NA ] 	# =5 => always lived here!
-		mergexx[MIG_year_moved_into_previous==9999, MIG_year_moved_into_previous := NA ] 	# =5 => always lived here!
+		mergexx[yr.moved.into.previous<0, yr.moved.into.previous     := NA ] 	# =5 => always lived here!
+		mergexx[yr.moved.into.previous==9999, yr.moved.into.previous := NA ] 	# =5 => always lived here!
 		mergexx[mover==-1, mover := NA ]
 
 
@@ -425,12 +425,23 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
 		mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
 		mergexx[,HHincome.1mn := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
-		mergexx[,FIPS.1mn     := mergexx[list(ssuid,epppnum,yrmnid-1)][["FIPS"]]]
 
-		mergexx[MIG_year_moved_to_state > 0,duration_at_current := year - MIG_year_moved_to_state]
-		mergexx[MIG_year_moved_to_state > 0 & MIG_year_moved_into_previous > 0,duration_at_previous := MIG_year_moved_to_state - MIG_year_moved_into_previous]
+		# changes
+		mergexx[,dnumkids  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
+		mergexx[,dwealth   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
+		mergexx[,dequity   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
+		mergexx[,dHHincome := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
 
-		mergexx[,born.here := FIPS==MIG_state_born ]
+		mergexx[,ddnumkids  := mergexx[list(ssuid,epppnum,yrmnid-4)][["numkids"]]]
+		mergexx[,ddwealth   := mergexx[list(ssuid,epppnum,yrmnid-4)][["wealth"]]]
+		mergexx[,ddequity   := mergexx[list(ssuid,epppnum,yrmnid-4)][["home.equity"]]]
+		mergexx[,ddHHincome := mergexx[list(ssuid,epppnum,yrmnid-4)][["HHincome"]]]
+
+
+		mergexx[yr.moved.here > 0,duration_at_current := year - yr.moved.here]
+		mergexx[yr.moved.here > 0 & yr.moved.into.previous > 0,duration_at_previous := yr.moved.here - yr.moved.into.previous]
+		mergexx[duration_at_current < 0 , duration_at_current := NA]
+
 
 		# make a unique person number
 		# in theory i should just have 1 person per ssuid
@@ -479,6 +490,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(23,50)),    FIPS := 61L]
 	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(38,46,56)), FIPS := 62L]
 
+	merged[ state.born %in% c(61,62),    state.born := NA]	# overwrite foreign countries 61 and 62 with NA
+	merged[ state.born %in% c(23,50),    state.born := 61L] # and update with agg codes
+	merged[ state.born %in% c(38,46,56), state.born := 62L]
+
+	merged[,born.here := FIPS==state.born ]
+
 	setkey(merged,FIPS)
 
 	# merge with FIPS codes
@@ -492,6 +509,13 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 	merged <-  abbr[ merged ]
 	setnames(merged,"Abbreviation","state")
+
+	setkey(merged,state.born)
+	setnames(abbr,"FIPS","state.born")
+
+	merged <- abbr [ merged ]
+	setnames(merged,c("Abbreviation","state.born"),c("state.born","state.bornID"))
+	merged[,state.bornID := NULL]
 
 	# merge prices onto this
 	# need a qtrdate column: 
@@ -523,6 +547,11 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	setkey(fhfa,state,qtr)
 	merged <- fhfa[ merged ]
 
+	# create price difference with first year in sample
+	merged[, dindex := log(index_sa) - .SD[,log(index_sa)][[1]] , by=state]
+
+	# create price difference for owners with "year bought"
+
 	if (verbose) cat("merge house prices into data.\n")
 	
 	# drop FIPS
@@ -543,9 +572,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 }
 	
 
-	#movtmp <- merged[S2S.mn==TRUE,list(upid=unique(upid))]
-	#setkey(merged,upid)
-	#movers <- merged[ movtmp[,upid] ]
 
 
 #' auxiliary function to get movers

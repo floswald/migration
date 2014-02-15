@@ -14,4 +14,5 @@ Depends:
 Collate:
     'ufun.r'
     'analyze_solution.r'
-    'sipp.r'
+    'SippPrepare.r'
+    'SippAnalyse.r'
