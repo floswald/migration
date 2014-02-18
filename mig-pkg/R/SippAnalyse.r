@@ -100,21 +100,18 @@ reduced.form <- function(d){
 #' mu independent of v_it. v_i0 ~ N(0,sigma_eps^2 / (1-rho^2))
 #' The random effects assumption is incorporated by assuming that
 #' mu_i is iid (uncorrelated with X).
+#' @param dat data set of income relevant variables
 #' @return list for each state with coefficients and fixed effects
 #' for each individual. saves data.
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/SippFull.RData")
-#' l <- RE.HHincome(dat=merged[HHincome>0 & state %in% c("AZ","AL","AR"),list(upid,yrmnid,HHincome,age,year,state)],path="~/Dropbox/mobility/output/model/BBL",type="html")
-RE.HHincome <- function(dat=merged[HHincome>0,list(upid,yrmnid,HHincome,age,year,state)],
+#' load("~/Dropbox/mobility/SIPP/SippIncome.RData")
+#' l <- RE.HHincome(dat=income[state %in% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
+RE.HHincome <- function(dat,
 						path="~/Dropbox/mobility/output/model/BBL",
 						type="tex"){
 
-	coyrs = seq(1900,1990,by=10)
-	dat[,coh := .SD[,year-age][[1]], by=upid ]
-	dat[,cohort := coyrs[findInterval(coh,coyrs)]]
-	dat[,coh := NULL]
 	st <- dat[,unique(state)]
-	AR1 <- lapply(st, function(x) lme(log(HHincome) ~ age +I(age^2) + factor(cohort) , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x)))
+	AR1 <- lapply(st, function(x) lme(log(HHincome) ~ age + I(age^2) + cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x)))
 	names(AR1) <- st
 
 	if (type=="tex"){
@@ -134,13 +131,56 @@ RE.HHincome <- function(dat=merged[HHincome>0,list(upid,yrmnid,HHincome,age,year
 
 
 	# save coefs into a handy list
-	out <- lapply(AR1,lme.getCoefs)
-	save(out,file=file.path(path,"income-RE.RData"))
+	RE.HHincome.models <- AR1
+	RE.coefs <- lapply(AR1,lme.getCoefs)
+	save(RE.HHincome.models,RE.coefs,file=file.path(path,"income-RE.RData"))
 
-	return(out)
+	return(RE.coefs)
 }
 
 		
+#' Predict income in all locations
+#'
+#' takes output of \code{\link{RE.HHincome}} and
+#' predicts income in all locations. 
+#'
+#' We compute the the linear predictor of the model in
+#' \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
+#' 
+#'
+#' @param path location of income-RE.RData and SippIncome.RData
+predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Dropbox/mobility/output/model/BBL"){
+
+	load(file.path(datapath,"SippIncome.RData"))	# contains income
+	load(file.path(modelpath,"income-RE.RData"))		# contains RE.HHincome.model and RE.coefs
+
+	# take the first obs by age
+	y <- income[,list(HHincome=HHincome[1],cohort=cohort[1],state=state[1]),by=list(upid,age)]
+
+	st <- y[,unique(state)]
+  setkey(y,state,upid,age)
+
+	# for each upid,age combination, 
+	# take the guys random effect, add to
+	# region j's intercept, and multiply out other variables
+
+	for (s in st){
+
+    # for all guys in s
+		tmp <- y[.(s)]
+    setkey(tmp,upid)
+    tmp <- tmp[ RE.coefs[[s]]$RE ]
+    
+    # predict wage in all states k
+    for (j in st[-which(st==s)]){
+      tmp <- cbind(tmp, predict(RE.HHincome.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) ) # get population (fixed) prediction in this state
+    }
+    setnames(tmp,7:ncol(tmp),paste0("predIncome.",st[-which(st==s)]))
+    tmp[,7:ncol(tmp) := lapply(.SD[,7:ncol(tmp) + intercept ,with=FALSE])]
+	}
+
+
+}
 
 
 
@@ -160,6 +200,36 @@ lme.getCoefs <- function(obj){
 	r$sig.RE  <- as.numeric(VarCorr(obj)["(Intercept)","StdDev"])
 	return(r)
 }
+
+
+
+
+#' Get House Value distributions
+#'
+#' decompose p_ijt = mu_j + mu_t + e_ijt
+#' to get ecdf of e_ijt
+#' @examples 
+#' load("~/git/migration/data/hvalues.RData")
+#' p <- Hval.ecdf(d=hvalues)
+Hval.ecdf <- function(d){
+
+	des <- svydesign(id=~1,weights=~HHweight,data=d)
+	m <- svyglm( formula=log(hvalue) ~ factor(year) + state , design= des)
+
+
+
+}
+
+
+
+
+#' Probit of Buy
+#'
+#' in each location, estimate the probability
+#' of buying.
+#'
+#' Pr[buy_it==TRUE | y_it,wealth_it/y_it,price_jt/income_it,numkids_it, age] or even
+#' Pr[buy_it==TRUE |      wealth_it/y_it,price_jt/income_it,numkids_it, age]
 
 
 

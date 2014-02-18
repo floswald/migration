@@ -283,11 +283,20 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 #' take output from \code{\link{Extract.wrap}} 
 #' and clean data. apply labels, account for
 #' missing vars. merge topical and core data.
-#' output one dataset
+#' output two datasets, differing in time
+#' resolution (monthly of 4-monthly). 
+#'
+#' Data is cleaned for inconsistencies across
+#' SIPP panels 1996-2008, merged with house price
+#' indices by state, and dollar denoted variables
+#' are deflated to 1996 as a base year using the 
+#' US cpi. House price indices are normalized to
+#' to the state with lowest index value in 1995:Q4
 #' @param TM.idx list with one index vector
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
 #' @param path to output from \code{\link{Extract.wrap}}
+#' @return NULL. Saves 2 data.tables to dropbox. 
 Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10)),verbose=TRUE){
 
 	# list to collect all panels
@@ -410,7 +419,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 								   "thtotinc",
 								   "ehbuyyr",
 								   "thomeamt",
-								   "tpropval"),
+								   #"tpropval",
+								   "whfnwgt"),
 						 newname=c("FIPS",  
 								   "mover",   
 								   "tenure",
@@ -431,7 +441,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 								   "HHincome",
 								   "yr_bought",
 								   "mortg.rent",
-								   "hvalue"))
+								   #"hvalue",
+								   "HHweight"))
 		if (verbose) print(nm)
 
 		setnames(mergexx,nm$oldname,nm$newname)
@@ -461,22 +472,22 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 
 		setkey(mergexx,ssuid,epppnum,yrmnid)
-		mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
-		mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
-		mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
-		mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		mergexx[,HHincome.1mn := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
+		#mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
+		#mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
+		#mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
+		#mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
+		#mergexx[,HHincome.1mn := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
 
-		# changes
-		mergexx[,dnumkids  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
-		mergexx[,dwealth   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
-		mergexx[,dequity   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		mergexx[,dHHincome := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
+		## changes
+		#mergexx[,dnumkids  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
+		#mergexx[,dwealth   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
+		#mergexx[,dequity   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
+		#mergexx[,dHHincome := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
 
-		mergexx[,ddnumkids  := mergexx[list(ssuid,epppnum,yrmnid-4)][["numkids"]]]
-		mergexx[,ddwealth   := mergexx[list(ssuid,epppnum,yrmnid-4)][["wealth"]]]
-		mergexx[,ddequity   := mergexx[list(ssuid,epppnum,yrmnid-4)][["home.equity"]]]
-		mergexx[,ddHHincome := mergexx[list(ssuid,epppnum,yrmnid-4)][["HHincome"]]]
+		#mergexx[,ddnumkids  := mergexx[list(ssuid,epppnum,yrmnid-4)][["numkids"]]]
+		#mergexx[,ddwealth   := mergexx[list(ssuid,epppnum,yrmnid-4)][["wealth"]]]
+		#mergexx[,ddequity   := mergexx[list(ssuid,epppnum,yrmnid-4)][["home.equity"]]]
+		#mergexx[,ddHHincome := mergexx[list(ssuid,epppnum,yrmnid-4)][["HHincome"]]]
 
 
 		mergexx[yr.moved.here > 0,duration_at_current := year - yr.moved.here]
@@ -488,6 +499,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		# in theory i should just have 1 person per ssuid
 		# but better be safe here.
 		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
+		
+		# create cohort
+		coyrs = seq(1900,1990,by=10)
+		mergexx[,coh := .SD[,year-age][[1]], by=upid ]
+		mergexx[,cohort := as.character(coyrs[findInterval(coh,coyrs)])]
+		mergexx[,coh := NULL]
 
 		# create a monthly state-2-state indicator
 		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
@@ -563,17 +580,32 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged <- abbr [ merged ]
 	setnames(merged,c("Abbreviation","state.born"),c("state.born","state.bornID"))
 	merged[,state.bornID := NULL]
+	setkey(merged,qtr)
 
-	# merge prices onto this
-	# need a qtrdate column: 
-	#merged[,tmp := as.Date(paste0(year,"-",month,"-","01")) ]
-	#merged[,qtr := zoo::as.yearqtr(tmp) ]
-	#merged[,c("tmp") := NULL]
-	setkey(merged,state,qtr)
+	# Inflation
+	# =========
+
+	# adjust prices by inflation
+
+	data(cpi)
+	cpi <- window(cpi$qtr.base2010,start=c(1995,4))
+	cpi <- cpi/cpi[1]	# base year 1996
+	cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi96=coredata(cpi),key="qtr")
+
+	merged <- cpi[ merged ]
+
+	# adjust by inflation and divide by 1000$
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving)],function(x) x * cpi96 / 1000) ]
+
+
 	
 	# load fhfa house price data
 	data(fhfa)
+
 	setkey(fhfa,state,qtr)
+	lowest <- fhfa[qtr=="1995 Q4",state[.I[which.min(index_sa)]]]
+	fhfa[,index_sa := index_sa / fhfa[state==lowest & qtr=="1995 Q4"][["index_sa"]] ]	# index relative to lowest index value in 1995:Q4
+
 
 	# aggregate state prices
 	# ----------------------
@@ -591,18 +623,18 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	# put back together
 	fhfa  <- rbind(fhfa,xfhfa,use.names=TRUE)
 
+    setkey(merged,state,qtr)
 	setkey(fhfa,state,qtr)
 	merged <- fhfa[ merged ]
 
-	# create price difference with first year in sample
-	merged[, dindex := log(index_sa) - .SD[,log(index_sa)][[1]] , by=state]
-
-	# create price difference for owners with "year bought"
-
-	if (verbose) cat("merge house prices into data.\n")
+	if (verbose) cat("merged house prices into data.\n")
 	
 	# drop FIPS
 	merged[,FIPS := NULL]
+
+
+
+	# subset to a 4-monthly dataset
 
 	merged4mn <- merged[srefmon==4]
 	merged4mn[,yrmnid := NULL ]
@@ -723,8 +755,36 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 
 	hvalues <- merged4mn[hvalue>0,list(hvalue,year,state)]
 
-	save(hvalues,"~/git/migration/data/hvalues.RData")
+	save(hvalues,file="~/git/migration/data/hvalues.RData")
 
 }
 
+
+#' Re-subset all data
+#'
+#' wrapper to subset all datasets
+#' after full data, i.e. after \code{\link{Clean.Sipp}}
+#' has been run.
+#'
+#' @param path/to/location/of/full/data
+subset.all <- function(path="~/Dropbox/mobility/SIPP"){
+
+	load(file.path(path,"SippFull.RData"))
+
+	rent <- merged[own==FALSE, list(upid,
+									yrmnid,
+									HHincome,
+									HHweight,
+									mortg.rent,
+									numkids,
+									age,
+									#med.price,
+									wealth,
+									state)]
+	save(rent,file=file.path(path,"SippBuy.RData"))
+
+	income <- merged[HHincome>0, list(upid,yrmnid,HHincome,age,cohort,year,state)]
+	save(income,file=file.path(path,"SippIncome.RData"))
+	cat('done.\n')
+}
 

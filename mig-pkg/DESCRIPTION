@@ -12,7 +12,9 @@ Depends:
     RSQLite,
     stringr,
     nlme,
-    texreg
+    texreg,
+    survey,
+    zoo
 Collate:
     'ufun.r'
     'analyze_solution.r'
