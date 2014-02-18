@@ -1,0 +1,10 @@
+
+
+CMDinstall:
+	R CMD INSTALL --no-multiarch ../mig-pkg
+
+install:
+	Rscript -e "library(methods);library(devtools);document('.',roclets=c('collate','rd'));install('.')"
+
+sipp.stats:
+	Rscript -e "source('examples/sipp-sumstats.r')"

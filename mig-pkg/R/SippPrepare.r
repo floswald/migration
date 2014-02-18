@@ -69,6 +69,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 		for (iw in 1:length(which.wgt)){
 
 			# selects all
+
 			sql.string <- paste0( "SELECT * from " , which.wgt[iw])
 			if (verbose) print(sql.string)
 
@@ -147,10 +148,10 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
 	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "toutinyr", "tmovest", "eprevten"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 	which.wgt <- "wgtw12"
 	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
@@ -186,9 +187,9 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	which.core <- 1:9
 	which.tm <- c(2,3,6,9)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 	which.wgt <- "wgtw9"
 
 	# subset: correct interview status and only reference persons of age > 15.
@@ -226,9 +227,9 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	which.core <- 1:12
 	which.tm <- c(2,3,6)
 	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
-	which.wgt <- "wgtw12"
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+	which.wgt <- "wgtw12"                                                                                                        
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
@@ -264,9 +265,9 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	which.core <- 1:13
 	which.tm <- c(2,4,7,10)
 	tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot"))
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 	which.wgt <- "wgtw7"
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
@@ -389,8 +390,48 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx <- mergexx[ tmp ]
 
 		# give some nicer names
-		nm <- data.table(oldname=c("tfipsst","tmovrflg","etenure","rfnkids", "esex", "tage","eeducate",  "thhtwlth","thhtheq",    "rhcalyr","rhcalmn","tprstate",          "eprevres",               "tbrstate",             "toutinyr",                    "tmovest",                "eprevten",    "thtotinc","ehbuyyr","thomeamt"),
-						 newname=c("FIPS",  "mover",   "tenure", "numkids","sex","age", "educ",   "wealth", "home.equity","year",   "month",  "prev.state","prev.home","state.born","yr.moved.into.previous","yr.moved.here","prev.tenure","HHincome","yr_bought","mortg.rent"))
+		nm <- data.table(oldname=c("tfipsst",
+								   "tmovrflg",
+								   "etenure",
+								   "rfnkids", 
+								   "esex", 
+								   "tage",
+								   "eeducate",  
+								   "thhtwlth",
+								   "thhtheq",    
+								   "rhcalyr",
+								   "rhcalmn",
+								   "tprstate",          
+								   "eprevres",               
+								   "tbrstate",            
+								   "toutinyr",                   
+								   "tmovest",                
+								   "eprevten",    
+								   "thtotinc",
+								   "ehbuyyr",
+								   "thomeamt",
+								   "tpropval"),
+						 newname=c("FIPS",  
+								   "mover",   
+								   "tenure",
+								   "numkids",
+								   "sex",
+								   "age",
+								   "educ", 
+								   "wealth",
+								   "home.equity",
+								   "year",  
+								   "month",  
+								   "prev.state",
+								   "prev.home",
+								   "state.born",
+								   "yr.moved.into.previous",
+								   "yr.moved.here",
+								   "prev.tenure",
+								   "HHincome",
+								   "yr_bought",
+								   "mortg.rent",
+								   "hvalue"))
 		if (verbose) print(nm)
 
 		setnames(mergexx,nm$oldname,nm$newname)
@@ -450,6 +491,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 		# create a monthly state-2-state indicator
 		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
+
+		# create a lead of that
+		mergexx[,S2S.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["S2S.mn"]]]
+		mergexx[,own.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["own"]]]
+		mergexx[, sell := FALSE]
+		mergexx[own==TRUE & own.lead==FALSE, sell := TRUE]
 
 		# whether moved within a wave
 		# when counting, choose one reference
@@ -558,6 +605,19 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged[,FIPS := NULL]
 
 	merged4mn <- merged[srefmon==4]
+	merged4mn[,yrmnid := NULL ]
+	# need a sequence of unique year month identifiers
+	tmp <- merged4mn[,list(yearmon=unique(yearmon))]
+	tmp <- tmp[complete.cases(tmp)]
+	tmp[,year := round(yearmon/100,0)]
+	tmp[,month := yearmon-year*100]
+	tmp[,c("year","month") := NULL]
+	setkey(tmp,yearmon)
+	tmp[,yrmnid := 1:nrow(tmp)]
+
+	setkey(merged4mn,yearmon)
+
+	merged4mn <- merged4mn[ tmp ]
 
 	# drop reference month
 	merged[,srefmon := NULL]
@@ -655,11 +715,16 @@ download.FHFA <- function(from="http://www.fhfa.gov/webfiles/25831/3q13hpists_ex
 }
 
 						  
+
 						  
 
+getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
+	load(data)
 
+	hvalues <- merged4mn[hvalue>0,list(hvalue,year,state)]
 
-#' Estimate Probability of Moving
-#'
-#' 
+	save(hvalues,"~/git/migration/data/hvalues.RData")
+
+}
+
 

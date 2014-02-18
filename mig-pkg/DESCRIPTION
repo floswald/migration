@@ -10,7 +10,9 @@ License: GPL-3
 Depends:
     data.table,
     RSQLite,
-    stringr
+    stringr,
+    nlme,
+    texreg
 Collate:
     'ufun.r'
     'analyze_solution.r'
