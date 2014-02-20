@@ -147,9 +147,10 @@ RE.HHincome <- function(dat,
 #'
 #' We compute the the linear predictor of the model in
 #' \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
-#' 
 #'
-#' @param path location of income-RE.RData and SippIncome.RData
+#' @param datapath location of SippIncome.RData
+#' @param modelpath location of SippIncome.RData
+#' @return TRUE
 predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Dropbox/mobility/output/model/BBL"){
 
 	load(file.path(datapath,"SippIncome.RData"))	# contains income
@@ -158,8 +159,8 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 	# take the first obs by age
 	y <- income[,list(HHincome=HHincome[1],cohort=cohort[1],state=state[1]),by=list(upid,age)]
 
-	st <- y[,unique(state)]
-  setkey(y,state,upid,age)
+	st <- names(RE.coefs)
+    setkey(y,upid,state,age)
 
 	# for each upid,age combination, 
 	# take the guys random effect, add to
@@ -167,22 +168,30 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 
 	for (s in st){
 
-    # for all guys in s
-		tmp <- y[.(s)]
-    setkey(tmp,upid)
-    tmp <- tmp[ RE.coefs[[s]]$RE ]
-    
-    # predict wage in all states k
-    for (j in st[-which(st==s)]){
-      tmp <- cbind(tmp, predict(RE.HHincome.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) ) # get population (fixed) prediction in this state
-    }
-    setnames(tmp,7:ncol(tmp),paste0("predIncome.",st[-which(st==s)]))
-    tmp[,7:ncol(tmp) := lapply(.SD[,7:ncol(tmp) + intercept ,with=FALSE])]
+		# for all guys in s
+		tmp <- y[state==s]
+		setkey(tmp,upid)
+		tmp <- tmp[ RE.coefs[[s]]$RE ]
+		
+		# predict wage in all states k
+		for (j in st[-which(st==s)]){
+
+			# level=0 predicts population effect only
+			expr <- paste0("tmp[, ", paste0("HHincome.",j), " := predict(RE.HHincome.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) + intercept ]")
+			eval(parse(text=expr))
+		}
+
+		# merge back into y
+		y <- y[tmp]
+		rm(tmp)
+
 	}
 
+	save(y,file=file.path(modelpath,"predIncome.RData"))
+
+	return(TRUE)
 
 }
-
 
 
 
