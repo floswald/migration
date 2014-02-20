@@ -501,7 +501,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
 		
 		# create cohort
-		coyrs = seq(1900,1990,by=15)
+		coyrs = seq(1900,1990,by=20)
 		mergexx[,coh := .SD[,year-age][[1]], by=upid ]
 		mergexx[,cohort := as.character(coyrs[findInterval(coh,coyrs)])]
 		mergexx[,coh := NULL]
