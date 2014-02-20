@@ -94,13 +94,17 @@ reduced.form <- function(d){
 #' estimate a linear panel of incoem with AR(1) error term
 #' fit a model similar to the one in Baltagi (2005, 5.2.1).
 #'
-#' model is y_it = beta + gamma'X_it + mu_i + v_it, where
-#' v_it = rho v_it-1 + eps_it
-#' eps ~ iid N(0,sigma_eps),
-#' mu  ~ iid N(0,sigma_mu),
-#' mu independent of v_it. v_i0 ~ N(0,sigma_eps^2 / (1-rho^2))
-#' The random effects assumption is incorporated by assuming that
-#' mu_i is iid (uncorrelated with X).
+#' model is for income in location j is
+#' \itemize{
+#' \item log(y_ijt) = beta_j + gamma'X_it + mu_i + v_it, where
+#' \itemize{
+#' \item v_it = rho v_it-1 + eps_it
+#' \item eps ~ iid N(0,sigma_eps),
+#' \item mu  ~ iid N(0,sigma_mu),
+#' \item mu independent of v_it. v_i0 ~ N(0,sigma_eps^2 / (1-rho^2))
+#' \item The random effects assumption is incorporated by assuming that
+#' \item mu_i is iid (uncorrelated with X).
+#' }}
 #' @param dat data set of income relevant variables
 #' @return list for each state with coefficients and fixed effects
 #' for each individual. saves data.
@@ -111,7 +115,7 @@ RE.HHincome <- function(dat,
 						path="~/Dropbox/mobility/output/model/BBL"){
 
 	st <- dat[,unique(state)]
-	AR1 <- lapply(st, function(x) lme(log(HHincome) ~ age + I(age^2) + cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x)))
+	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort1920 +cohort1940 +cohort1960 +cohort1980 , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
 	# print results to tex files
@@ -130,7 +134,8 @@ RE.HHincome <- function(dat,
 	# save coefs into a handy list
 	RE.HHincome.models <- AR1
 	RE.coefs <- lapply(AR1,lme.getCoefs)
-	save(RE.HHincome.models,RE.coefs,file=file.path(path,"income-RE.RData"))
+	save(RE.HHincome.models,file=file.path(path,"income-REmodels.RData"))
+	save(RE.coefs,file=file.path(path,"income-RE.RData"))
 
 	return(RE.coefs)
 }
@@ -156,7 +161,7 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 	y <- income[,list(HHincome=HHincome[1],cohort=cohort[1],state=state[1]),by=list(upid,age)]
 
 	st <- names(RE.coefs)
-    setkey(y,upid,state,age)
+    setkey(y,upid,age,state)
 
 	# for each upid,age combination, 
 	# take the guys random effect, add to
@@ -178,6 +183,9 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 		}
 
 		# merge back into y
+		tmp[,c("HHincome","cohort","state","intercept") := NULL]
+
+		setkey(tmp,upid,age)
 		y <- y[tmp]
 		rm(tmp)
 		gc()

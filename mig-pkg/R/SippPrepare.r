@@ -783,8 +783,20 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 									state)]
 	save(rent,file=file.path(path,"SippBuy.RData"))
 
-	income <- merged[HHincome>0, list(upid,yrmnid,HHincome,age,cohort,year,state)]
+	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,cohort,year,state)]
+
+	# make a model.matrix out of that (i.e. no factors but dummies)
+	cohorts <- model.matrix(~cohort - 1,data=income)
+	income[,cohort := NULL]
+	income <- cbind(income,cohorts)
 	save(income,file=file.path(path,"SippIncome.RData"))
+
+	# make a test dataset
+	inds <- income[,list(upid=sample(unique(upid),20)),by=state]
+	setkey(income,upid)
+	incomeTest <- income[inds[,upid]]
+	save(incomeTest,file=file.path(path,"SippIncomeTest.RData"))
+
 	cat('done.\n')
 }
 
