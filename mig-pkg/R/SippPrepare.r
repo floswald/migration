@@ -419,7 +419,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 								   "thtotinc",
 								   "ehbuyyr",
 								   "thomeamt",
-								   #"tpropval",
+								   "tpropval",
 								   "whfnwgt"),
 						 newname=c("FIPS",  
 								   "mover",   
@@ -441,7 +441,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 								   "HHincome",
 								   "yr_bought",
 								   "mortg.rent",
-								   #"hvalue",
+								   "hvalue",
 								   "HHweight"))
 		if (verbose) print(nm)
 
@@ -595,7 +595,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged <- cpi[ merged ]
 
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving)],function(x) x * cpi96 / 1000) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,hvalue)],function(x) x * cpi96 / 1000) ]
 
 
 	

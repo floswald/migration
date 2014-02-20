@@ -52,7 +52,8 @@ Sipp.SumStats <- function(d,saveto){
 	# get location transition matrix of movers
 	l$trans <- movers[,table(from,to)]
 
-	save(l,file=saveto)
+	if (!is.null(saveto)) save(l,file=saveto)
+	
 	return(l)
 }
 
