@@ -108,27 +108,23 @@ reduced.form <- function(d){
 #' load("~/Dropbox/mobility/SIPP/SippIncome.RData")
 #' l <- RE.HHincome(dat=income[state %in% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
 RE.HHincome <- function(dat,
-						path="~/Dropbox/mobility/output/model/BBL",
-						type="tex"){
+						path="~/Dropbox/mobility/output/model/BBL"){
 
 	st <- dat[,unique(state)]
 	AR1 <- lapply(st, function(x) lme(log(HHincome) ~ age + I(age^2) + cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x)))
 	names(AR1) <- st
 
-	if (type=="tex"){
-		# print results to tex files
-		for (i in st){
+	# print results to tex files
+	for (i in st){
 
-			fi <- paste0("incomeRE-",i,".tex")
-			texreg(list(AR1[[i]]),file=file.path(path,fi),include.RE=TRUE,booktabs=TRUE,dcolumn=TRUE)
-
-		}
-	} else if (type=="html"){
-		# print all into one html file
-			fi <- "incomeRE-all.html"
-			htmlreg(AR1,file=file.path(path,fi),include.RE=TRUE,caption="all models",custom.model.names=paste0("income process in ",st))
+		fi <- paste0("incomeRE-",i,".tex")
+		texreg(list(AR1[[i]]),file=file.path(path,fi),include.RE=TRUE,booktabs=TRUE,dcolumn=TRUE)
 
 	}
+	# print all into one html file
+		fi <- "incomeRE-all.html"
+		htmlreg(AR1,file=file.path(path,fi),include.RE=TRUE,caption="all models",custom.model.names=paste0("income process in ",st))
+
 
 
 	# save coefs into a handy list
@@ -184,6 +180,7 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 		# merge back into y
 		y <- y[tmp]
 		rm(tmp)
+		gc()
 
 	}
 
