@@ -115,7 +115,7 @@ RE.HHincome <- function(dat,
 						path="~/Dropbox/mobility/output/model/BBL"){
 
 	st <- dat[,unique(state)]
-	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort1920 +cohort1940 +cohort1960 +cohort1980 , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
+	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
 	# print results to tex files
@@ -132,10 +132,10 @@ RE.HHincome <- function(dat,
 
 
 	# save coefs into a handy list
-	RE.HHincome.models <- AR1
 	RE.coefs <- lapply(AR1,lme.getCoefs)
-	save(RE.HHincome.models,file=file.path(path,"income-REmodels.RData"))
-	save(RE.coefs,file=file.path(path,"income-RE.RData"))
+	save(RE.coefs,file=file.path(path,"income-REcoefs.RData"))
+	RE.models <- AR1
+	save(RE.models,file=file.path(path,"income-REmodels.RData"))
 
 	return(RE.coefs)
 }
@@ -155,35 +155,52 @@ RE.HHincome <- function(dat,
 predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Dropbox/mobility/output/model/BBL"){
 
 	load(file.path(datapath,"SippIncome.RData"))	# contains income
-	load(file.path(modelpath,"income-RE.RData"))		# contains RE.HHincome.model and RE.coefs
+	load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
+	load(file.path(modelpath,"income-REcoefs.RData"))		# contains RE.coefs
 
 	# take the first obs by age
-	y <- income[,list(HHincome=HHincome[1],cohort=cohort[1],state=state[1]),by=list(upid,age)]
+	# you will not have predictions vary by month
+	y <- income[,list(logHHincome=logHHincome[1],state=state[1],cohort=cohort[1]),by=list(upid,age)]
 
 	st <- names(RE.coefs)
     setkey(y,upid,age,state)
 
 	# for each upid,age combination, 
-	# take the guys random effect, add to
-	# region j's intercept, and multiply out other variables
+	# take the guys random effect, find difference from 
+	# region j's intercept, predict population income in k,
+    # and finally add the personal effect.
 
 	for (s in st){
 
 		# for all guys in s
 		tmp <- y[state==s]
+
+		# tmp is sorted by upid
 		setkey(tmp,upid)
+
+		# adds column "intercept" from RE regression
 		tmp <- tmp[ RE.coefs[[s]]$RE ]
+
+		# adjust "intercept" to be difference to population intercept:
+		tmp[, intercept := intercept - RE.coefs[[s]]$fixed[[1]] ]
 		
 		# predict wage in all states k
 		for (j in st[-which(st==s)]){
 
 			# level=0 predicts population effect only
-			expr <- paste0("tmp[, ", paste0("HHincome.",j), " := predict(RE.HHincome.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) + intercept ]")
+			
+			#m <- as.matrix(tmp[,list(1,intercept,age,age2=age^2,cohort1920,cohort1940,cohort1960,cohort1980)])	# (n by [1,alpha_i,age,age2,...] )
+			#be <- RE.coefs[[j]]$fixed
+			#be <- c(be[1],1,be[-1])	# be = [beta0, 1, beta1, ... betak]
+			
+
+			#expr <- paste0("tmp[, ", paste0("HHincome.",j), " := myPredict(data=m,beta=be]")
+			expr <- paste0("tmp[, ", paste0("logHHincome.",j), " := predict(RE.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) + intercept ]")
 			eval(parse(text=expr))
 		}
 
 		# merge back into y
-		tmp[,c("HHincome","cohort","state","intercept") := NULL]
+		tmp[,c("logHHincome","cohort","state","intercept") := NULL]
 
 		setkey(tmp,upid,age)
 		y <- y[tmp]
@@ -198,6 +215,10 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 
 }
 
+
+myPredict <- function(data,beta){
+	return(data %*% beta)
+}
 
 
 

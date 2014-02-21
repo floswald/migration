@@ -770,6 +770,7 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 
 	load(file.path(path,"SippFull.RData"))
+	setkey(merged,upid,yrmnid)
 
 	rent <- merged[own==FALSE, list(upid,
 									yrmnid,
@@ -783,16 +784,16 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 									state)]
 	save(rent,file=file.path(path,"SippBuy.RData"))
 
-	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,cohort,year,state)]
+	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,year,state,cohort)]
 
 	# make a model.matrix out of that (i.e. no factors but dummies)
-	cohorts <- model.matrix(~cohort - 1,data=income)
-	income[,cohort := NULL]
-	income <- cbind(income,cohorts)
+	#cohorts <- model.matrix(~cohort - 1,data=income)
+	#income <- cbind(income,cohorts)
 	save(income,file=file.path(path,"SippIncome.RData"))
 
 	# make a test dataset
-	inds <- income[,list(upid=sample(unique(upid),20)),by=state]
+	# take an x% random sample by state
+	inds <- income[,list(upid=sample(unique(upid),size=round(length(unique(upid))*0.5))),by=state]
 	setkey(income,upid)
 	incomeTest <- income[inds[,upid]]
 	save(incomeTest,file=file.path(path,"SippIncomeTest.RData"))
