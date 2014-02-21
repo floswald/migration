@@ -434,7 +434,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 								   "month",  
 								   "prev.state",
 								   "prev.home",
-								   "state.born",
+								   "state.bornID",
 								   "yr.moved.into.previous",
 								   "yr.moved.here",
 								   "prev.tenure",
@@ -459,7 +459,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[yr.moved.here<0, yr.moved.here     := NA ] 	# =-5 => always lived here!
 		mergexx[yr.moved.here==9999 ,yr.moved.here := NA ] 	# =-5 => always lived here!
 
-		mergexx[state.born==-1, state.born := NA ] 	# =5 => always lived here!
+		mergexx[state.bornID==-1, state.bornID := NA ] 	# =5 => always lived here!
 
 		mergexx[prev.tenure<0, prev.tenure := NA ] 	
 		mergexx[,previous.own := FALSE]
@@ -540,7 +540,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 	if (verbose) cat("combined all panels into one data.table\n")
 
-	# Note: 1996 and 2001 have aggregates states
+	# Note: 1996 and 2001 have aggregated states
 	# 61 is sum of
 	# 23 = maine
 	# 50 = vermont
@@ -554,32 +554,33 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(23,50)),    FIPS := 61L]
 	merged[ (! panel %in% c("96","01")) & (FIPS %in% c(38,46,56)), FIPS := 62L]
 
-	merged[ state.born %in% c(61,62),    state.born := NA]	# overwrite foreign countries 61 and 62 with NA
-	merged[ state.born %in% c(23,50),    state.born := 61L] # and update with agg codes
-	merged[ state.born %in% c(38,46,56), state.born := 62L]
+	merged[ state.bornID %in% c(61,62),    state.bornID := NA]	# overwrite foreign countries 61 and 62 with NA
+	merged[ state.bornID %in% c(23,50),    state.bornID := 61L] # and update with agg codes
+	merged[ state.bornID %in% c(38,46,56), state.bornID := 62L]
 
-	merged[,born.here := FIPS==state.born ]
+	merged[,born.here := FIPS==state.bornID ]
 
 	setkey(merged,FIPS)
 
 	# merge with FIPS codes
-	data(states)
-	abbr[,State := NULL]
+	data(US_states,package="EconData")
 	# add aggregated states to FIPS register
-	x <- data.table(Abbreviation=c("ME.VT","ND.SD.WY"),FIPS=c(61,62))
-	abbr <- rbind(abbr,x)
-	setkey(abbr,FIPS)
+	x <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("New England","West North Central"))
+	US_states <- rbind(US_states,x)
+	setkey(US_states,FIPS)
 
 
-	merged <-  abbr[ merged ]
-	setnames(merged,"Abbreviation","state")
+	merged <-  US_states[ merged ]
 
-	setkey(merged,state.born)
-	setnames(abbr,"FIPS","state.born")
+	# same for state born
+	setkey(merged,state.bornID)
+	setnames(US_states,c("FIPS","state"),c("state.bornID","state.born"))
 
-	merged <- abbr [ merged ]
-	setnames(merged,c("Abbreviation","state.born"),c("state.born","state.bornID"))
-	merged[,state.bornID := NULL]
+	US_states[,c("STATE","Reg_ID","Region","Div_ID","Division") := NULL]
+	setkey(US_states,state.bornID)
+
+	merged <- US_states[ merged ]
+	merged[,c("state.bornID","STATE") := NULL]
 	setkey(merged,qtr)
 
 	# Inflation
@@ -784,11 +785,11 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 									state)]
 	save(rent,file=file.path(path,"SippBuy.RData"))
 
-	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,year,state,cohort)]
+	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,age2=age^2,year,state,cohort)]
 
 	# make a model.matrix out of that (i.e. no factors but dummies)
-	#cohorts <- model.matrix(~cohort - 1,data=income)
-	#income <- cbind(income,cohorts)
+	cohorts <- model.matrix(~cohort - 1,data=income)
+	income <- cbind(income,cohorts)
 	save(income,file=file.path(path,"SippIncome.RData"))
 
 	# make a test dataset

@@ -8,15 +8,19 @@ Maintainer: <florian.oswald@gmail.com>
 Description: implements a BBL estimator
 License: GPL-3
 Depends:
+    zoo,
     data.table,
+    reshape2,
+    ggplot2,
     RSQLite,
     stringr,
     nlme,
     texreg,
-    survey,
-    zoo
+    survey
 Collate:
-    'ufun.r'
-    'analyze_solution.r'
-    'SippPrepare.r'
     'SippAnalyse.r'
+    'SippPrepare.r'
+    'analyze_solution.r'
+    'migration-package.r'
+    'plots.r'
+    'ufun.r'

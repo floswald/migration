@@ -115,7 +115,13 @@ RE.HHincome <- function(dat,
 						path="~/Dropbox/mobility/output/model/BBL"){
 
 	st <- dat[,unique(state)]
-	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
+	st <- st[order(st)]
+
+
+
+	# this formulation if you use the predict.lme
+	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
+	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
 	# print results to tex files
@@ -134,8 +140,8 @@ RE.HHincome <- function(dat,
 	# save coefs into a handy list
 	RE.coefs <- lapply(AR1,lme.getCoefs)
 	save(RE.coefs,file=file.path(path,"income-REcoefs.RData"))
-	RE.models <- AR1
-	save(RE.models,file=file.path(path,"income-REmodels.RData"))
+	#RE.models <- AR1
+	#save(RE.models,file=file.path(path,"income-REmodels.RData"))
 
 	return(RE.coefs)
 }
@@ -149,20 +155,36 @@ RE.HHincome <- function(dat,
 #' We compute the the linear predictor of the model in
 #' \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
 #'
-#' @param datapath location of SippIncome.RData
-#' @param modelpath location of SippIncome.RData
-#' @return TRUE
-predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Dropbox/mobility/output/model/BBL"){
+#' @param income data.table from \code{\link{subset.all}}
+#' @param RE.coefs regression coefs from \code{\link{RE.HHincome}}
+#' @param verbose TRUE/FALSE
+#' @param saveto if not NULL, where to save
+#' @param with.FE TRUE if you want to make prediction in state k with 
+#' individual fixed effect estimated for state j.
+#' @return data.table with predicted incomes
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/SippIncome.RData")
+#' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
+#' l <- predict.income(income,RE.coefs)
+predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/predIncome.RData"){
 
-	load(file.path(datapath,"SippIncome.RData"))	# contains income
-	load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
-	load(file.path(modelpath,"income-REcoefs.RData"))		# contains RE.coefs
+	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
 	# take the first obs by age
 	# you will not have predictions vary by month
-	y <- income[,list(logHHincome=logHHincome[1],state=state[1],cohort=cohort[1]),by=list(upid,age)]
+	setkey(income,upid,age)
+	y <- income[,list(logHHincome=mean(logHHincome),
+					  age2=age2[1],
+					  state=state[1],
+					  cohort=cohort[1],
+					  cohort1920=cohort1920[1],
+					  cohort1940=cohort1940[1],
+					  cohort1960=cohort1960[1],
+					  cohort1980=cohort1980[1]),by=list(upid,age)]
+					  
 
 	st <- names(RE.coefs)
+	st <- st[order(st)]
     setkey(y,upid,age,state)
 
 	# for each upid,age combination, 
@@ -170,48 +192,65 @@ predict.income <- function(datapath="~/Dropbox/mobility/SIPP/",modelpath="~/Drop
 	# region j's intercept, predict population income in k,
     # and finally add the personal effect.
 
+	l <- list()
+
 	for (s in st){
 
-		# for all guys in s
-		tmp <- y[state==s]
+		if (verbose) cat(sprintf("predicting wages for people from: %s\n",s))
 
-		# tmp is sorted by upid
-		setkey(tmp,upid)
+		# for all guys in s
+		l[[s]] <- y[state==s]
+
+		# l[[s]] is sorted by upid
+		setkey(l[[s]],upid)
 
 		# adds column "intercept" from RE regression
-		tmp <- tmp[ RE.coefs[[s]]$RE ]
+		l[[s]] <- RE.coefs[[s]]$RE[ l[[s]] ]
 
 		# adjust "intercept" to be difference to population intercept:
-		tmp[, intercept := intercept - RE.coefs[[s]]$fixed[[1]] ]
+		l[[s]][, intercept := intercept - RE.coefs[[s]]$fixed[[1]] ]
 		
+		if (with.FE){
+			m <- as.matrix(l[[s]][,list(1,intercept,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	# (n by [1,alpha_i,age,age2,...] )
+		} else {
+			m <- as.matrix(l[[s]][,list(1,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	
+		}
+
+		#if (verbose) cat("in: \n")
+
+		# rbindlist does not rbind by column name
+		# take care here to keep the ordering of columns constant!
+
 		# predict wage in all states k
-		for (j in st[-which(st==s)]){
+		for (j in st){
 
 			# level=0 predicts population effect only
 			
-			#m <- as.matrix(tmp[,list(1,intercept,age,age2=age^2,cohort1920,cohort1940,cohort1960,cohort1980)])	# (n by [1,alpha_i,age,age2,...] )
-			#be <- RE.coefs[[j]]$fixed
-			#be <- c(be[1],1,be[-1])	# be = [beta0, 1, beta1, ... betak]
-			
+			if (with.FE){
+				be <- RE.coefs[[j]]$fixed
+				be <- c(be[1],1,be[-1])	# be = [beta0, 1, beta1, ... betak]
 
-			#expr <- paste0("tmp[, ", paste0("HHincome.",j), " := myPredict(data=m,beta=be]")
-			expr <- paste0("tmp[, ", paste0("logHHincome.",j), " := predict(RE.models[[j]],newdata=tmp[,list(upid,age,cohort)],level=0) + intercept ]")
+			} else {
+
+				be <- RE.coefs[[j]]$fixed
+			}
+
+			# build expression
+			expr <- paste0("l[[s]][, logHHincome.",j, " := myPredict(data=m,beta=be)]")	# adds a new column with predicted wage in j
 			eval(parse(text=expr))
 		}
-
-		# merge back into y
-		tmp[,c("logHHincome","cohort","state","intercept") := NULL]
-
-		setkey(tmp,upid,age)
-		y <- y[tmp]
-		rm(tmp)
-		gc()
+		if (verbose) cat("done.\n\n\n ")
 
 	}
 
-	save(y,file=file.path(modelpath,"predIncome.RData"))
+	l <- rbindlist(l)
 
-	return(TRUE)
+	if (!is.null(saveto)){
+		if (verbose) cat("all done. saving file.\n")
+		save(l,file=saveto)
+	}
+
+	return(l)
 
 }
 
