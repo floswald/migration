@@ -5,13 +5,25 @@
 #' Dynamic Factor Model for Prices
 #'
 #' estimates a dynamic factor model
-dynPrices <- function(dat){
+#' @examples
+#' data(FHFA_states,package="EconData")
+#' l = dynPrices(states$qtr)
+dynPrices <- function(dat,maxite=50){
+
+	# detrend data
+	dat[,detr := residuals(lm(index_sa ~ quarter*state))]
 
 	# demean series
-	dat[,index_sa := .SD[,(index_sa - mean(index_sa))/sd(index_sa)], by=state]
+	dat[,y := .SD[,(detr- mean(detr))/sd(detr)], by=state]
+
+	# plot all
+	st = dat[,unique(state)]
+
+	dat[state==st[1],plot(Date,y,type="l",ylim=c(-3,3),main="z-score of deviation from linear trend for all states")]
+	for (i in st[-1]) dat[state==i,lines(Date,y)]
 
 	# bring into right shape
-	m <- reshape(dat[,list(state,quarter,index_sa)],timevar="quarter",idvar="state",direction="wide")
+	m <- reshape(dat[,list(state,quarter,y)],timevar="quarter",idvar="state",direction="wide")
 	st <- m[,state]
 	ti <- dat[,unique(quarter)]
 
@@ -22,9 +34,9 @@ dynPrices <- function(dat){
 	colnames(m) <- ti
 
 	# plot for 6 states
-	sst <- sample(st,6)
-	par(mfcol=(c(3,2)))
+	sst <- sample(st,5)
 
+	par(mfcol=c(3,2))
 	for (i in sst){
 		plot(m[i,],xlab="",ylab="hpi",bty="L",pch=16,col="blue",type="b",main=i)
 	}
@@ -99,7 +111,7 @@ dynPrices <- function(dat){
 
 	# list to pass to MARSS
 	dfa <- list(Z=Z3,A=A,R=R,B=B,U=U,Q=Q,x0=x0,V0=V0)
-	cntl.list <- list(maxit=500,trace=1)
+	cntl.list <- list(maxit=maxite,trace=1)
 
 	mod3 <- MARSS(m,model=dfa,control=cntl.list)
 
@@ -171,7 +183,7 @@ dynPrices <- function(dat){
 
 	# list to pass to MARSS
 	dfa <- list(Z=Z2,A=A,R=R,B=B,U=U,Q=Q,x0=x0,V0=V0)
-	cntl.list <- list(maxit=50)
+	cntl.list <- list(maxit=maxite)
 
 	mod2 <- MARSS(m,model=dfa,control=cntl.list)
 
