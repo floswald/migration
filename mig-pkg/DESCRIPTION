@@ -16,7 +16,9 @@ Depends:
     stringr,
     nlme,
     texreg,
-    survey
+    survey,
+    gridExtra,
+	MARSS
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
@@ -24,3 +26,4 @@ Collate:
     'migration-package.r'
     'plots.r'
     'ufun.r'
+    'factorModels.r'
