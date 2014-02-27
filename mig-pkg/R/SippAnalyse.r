@@ -6,7 +6,10 @@
 #' Summary Statistics from Sipp
 #'
 #' @param save file to save
-Sipp.SumStats <- function(d,saveto){
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/SippFull.RData")
+#' z = Sipp.SumStats(merged,NULL)
+Sipp.SumStats <- function(d,saveto="~/Dropbox/mobility/output/data/sipp/sumstats.RData"){
 
 	l <- list()
 
@@ -39,6 +42,7 @@ Sipp.SumStats <- function(d,saveto){
 
 	# get to and from
 	setkey(movers,yrmnid)
+    movers[,c("from","to") := list("hi","there")]
 	movers[,c("from","to") := get.istate(states=state,imove=S2S.mn),by=upid]
 
 	# moves back to home
@@ -46,16 +50,34 @@ Sipp.SumStats <- function(d,saveto){
 											 to.home  =sum(to==state.born,na.rm=T)/length(from),
 											 to.other =sum(to!=state.born,na.rm=T)/length(from))]
 
-	# moves away from home
+	moves <- movers[S2S.mn==TRUE]
+	mvtab <- moves[,list(mid=cumsum(S2S.mn),from=from[S2S.mn],to=to[S2S.mn],wave=wave[S2S.mn],yearmon=yearmon[S2S.mn],age=age[S2S.mn]),by=upid]
+	l$movers <- movers
+	l$mvtab <- mvtab
 
 
 	# get location transition matrix of movers
 	l$trans <- movers[,table(from,to)]
 
-	if (!is.null(saveto)) save(l,file=saveto)
-	
+	if (!is.null(saveto)){
+	   sumstats=l
+		save(sumstats,file=saveto)
+	}
 	return(l)
 }
+
+
+#' Get Movers from full data
+#'
+getMovers <- function(d){
+
+	movtmp <- d[S2S.mn==TRUE,list(upid=unique(upid))]
+	setkey(d,upid)
+	movers <- d[ movtmp[,upid] ]
+
+	return(movers)
+}
+
 
 #' reduced form models
 #'
@@ -147,10 +169,10 @@ RE.HHincome <- function(dat,
 }
 
 		
-#' Predict income in all locations
+#' Make a MN Logit estimation datset
 #'
 #' takes output of \code{\link{RE.HHincome}} and
-#' predicts income in all locations. 
+#' predicts income in all locations. same for house prices
 #'
 #' We compute the the linear predictor of the model in
 #' \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
@@ -163,25 +185,36 @@ RE.HHincome <- function(dat,
 #' individual fixed effect estimated for state j.
 #' @return data.table with predicted incomes
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/SippIncome.RData")
+#' load("~/Dropbox/mobility/SIPP/prelogit.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-#' l <- predict.income(income,RE.coefs)
-predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/predIncome.RData"){
+#' l <- buildLogit(prelogit,RE.coefs)
+buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData"){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
-	# take the first obs by age
-	# you will not have predictions vary by month
-	setkey(income,upid,age)
-	y <- income[,list(logHHincome=mean(logHHincome),
-					  age2=age2[1],
-					  state=state[1],
-					  cohort=cohort[1],
-					  cohort1920=cohort1920[1],
-					  cohort1940=cohort1940[1],
-					  cohort1960=cohort1960[1],
-					  cohort1980=cohort1980[1]),by=list(upid,age)]
-					  
+	# take the first obs by age for time=constant
+	# variables and compute mean for numerics.
+
+	# log hh income is on a monthly basis and
+	# you compute the mean of that by age.
+	setkey(logi,upid,age)
+	y <- logi[,list(logHHincome=mean(logHHincome,na.rm=T),
+					wealth     = mean(wealth,na.rm     = T),
+					mortg.rent = mean(mortg.rent,na.rm = T),
+					age2       = age2[1],
+					born       = born[1],
+					born.here  = born.here[1],
+					college    = college[1],
+					numkids    = numkids[1],
+					state      = state[1],
+					cohort     = cohort[1],
+					cohort1920 = cohort1920[1],
+					cohort1940 = cohort1940[1],
+					cohort1960 = cohort1960[1],
+					cohort1980 = cohort1980[1]),
+               by=list(upid,age)]
+
+
 
 	st <- names(RE.coefs)
 	st <- st[order(st)]
@@ -192,28 +225,47 @@ predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/
 	# region j's intercept, predict population income in k,
     # and finally add the personal effect.
 
+	# format
+	# ======
+
+	# logit model requires long data.
+
+	# strategy: take copy of 'income' by state to get
+	# id    age    state    y
+	#  1     29       WI    1000
+	#  1     30       WI    1030
+	#  1     31       WI    1100
+	#  ...
+
+	# then a list tmp <- list()
+	# tmp[[1]] <- copy(income[state=='WI'])
+	# tmp[[2]] <- copy(income[state=='WI'])
+	# tmp[[2]][, state := newState ]
+	# tmp[[2]][,     y := predictYinNewState]
+
+	# list for holding current state groups
 	l <- list()
 
 	for (s in st){
 
-		if (verbose) cat(sprintf("predicting wages for people from: %s\n",s))
 
 		# for all guys in s
-		l[[s]] <- y[state==s]
+		tmps <- y[state==s]
+
 
 		# l[[s]] is sorted by upid
-		setkey(l[[s]],upid)
+		setkey(tmps,upid)
 
 		# adds column "intercept" from RE regression
-		l[[s]] <- RE.coefs[[s]]$RE[ l[[s]] ]
+		tmps <- RE.coefs[[s]]$RE[ tmps ]
 
 		# adjust "intercept" to be difference to population intercept:
-		l[[s]][, intercept := intercept - RE.coefs[[s]]$fixed[[1]] ]
+		tmps[, intercept := intercept - RE.coefs[[s]]$fixed[[1]] ]
 		
 		if (with.FE){
-			m <- as.matrix(l[[s]][,list(1,intercept,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	# (n by [1,alpha_i,age,age2,...] )
+			m <- as.matrix(tmps[,list(1,intercept,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	# (n by [1,alpha_i,age,age2,...] )
 		} else {
-			m <- as.matrix(l[[s]][,list(1,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	
+			m <- as.matrix(tmps[,list(1,age,age2,cohort1920,cohort1940,cohort1960,cohort1980)])	
 		}
 
 		#if (verbose) cat("in: \n")
@@ -222,10 +274,17 @@ predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/
 		# take care here to keep the ordering of columns constant!
 
 		# predict wage in all states k
-		for (j in st){
+		ll <- list()
+		
+		# save current state as copy in the result list
+		ll[[s]] <- copy(tmps)
 
-			# level=0 predicts population effect only
-			
+		for (j in st[-which(st==s)]){
+
+				
+			# get regression coefficients 
+			# pertaining to state j
+
 			if (with.FE){
 				be <- RE.coefs[[j]]$fixed
 				be <- c(be[1],1,be[-1])	# be = [beta0, 1, beta1, ... betak]
@@ -235,15 +294,96 @@ predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/
 				be <- RE.coefs[[j]]$fixed
 			}
 
-			# build expression
-			expr <- paste0("l[[s]][, logHHincome.",j, " := myPredict(data=m,beta=be)]")	# adds a new column with predicted wage in j
-			eval(parse(text=expr))
-		}
-		if (verbose) cat("done.\n\n\n ")
+			# copy origin state data.table
+			ll[[j]] <- copy(tmps)
 
+			# change to current state
+			ll[[j]][,state := j ]
+			# predict income there
+
+			# NOTICE that
+			# this predicts MONTHLY log household income
+			ll[[j]][,logHHincome := myPredict(data=m,beta=be)]
+
+		}
+			
+		tmp2 <- rbindlist(ll)
+		rm(ll)
+		# remove age2, year and cohort dummies
+		tmp2[,c("age2","cohort1920","cohort1940","cohort1960","cohort1980") := NULL]
+
+
+		l[[s]] <- tmp2
+		rm(tmps,tmp2)
+		gc()
+
+	if (verbose) cat(sprintf("done with income prediction for origin %s\n",s))
 	}
 
+
+	# join all lists
 	l <- rbindlist(l)
+
+
+	# this data needs to be merged by an age-cohort => calendar time
+	# mapping
+
+	# TODO!
+
+
+
+	# add price/income to that
+	data(HomeValues,package="EconData")
+	data(CPIHOSSL,package="EconData")	# monthly xts data on inflation
+	cpi.h <- xts::to.yearly(CPIHOSSL)[,1]
+	# set 1996 as base year
+	coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996'])
+	# subset to 1996 -
+	#cpi.h <- cpi.h['1996::']
+	names(cpi.h) <- "cpiH"
+
+	cpi <- data.table(year=year(index(cpi.h)),cpiH=coredata(cpi.h),key="year")
+	setnames(cpi,c("year","cpiH"))
+
+	# divide by 1000$
+	HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,year(qtr))]
+	setkey(HV,year)
+	# adjust by inflation 
+	HV <- cpi[HV]
+	HV[,HValue96 := Home.Value / cpiH ]
+
+	
+	# add to l
+	# --------
+	
+	setnames(HV,"State","state")
+	setkey(HV,state,year)
+
+	# create calyear variable in income dataset
+	l[, year := age + born]
+	setkey(l,state,year)
+
+	# merge! huge!
+	l <- HV[ l ]
+
+
+	# bring in the moving data
+	load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
+	mvt <- sumstats$mvtab
+	mvt[,c("mid","wave","yearmon") := NULL]
+	setkey(mvt,upid,age)
+
+	setkey(l,upid,age)
+
+	l <- l[mvt]
+
+
+
+
+
+
+
+
 
 	if (!is.null(saveto)){
 		if (verbose) cat("all done. saving file.\n")
@@ -253,6 +393,10 @@ predict.income <- function(income,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/
 	return(l)
 
 }
+
+
+
+
 
 
 myPredict <- function(data,beta){

@@ -18,7 +18,9 @@ Depends:
     texreg,
     survey,
     gridExtra,
-    MARSS
+    MARSS,
+    devtools,
+    xts
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

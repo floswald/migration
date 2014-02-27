@@ -157,6 +157,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
+	if (verbose) cat("done with 1996 panel.\n")
 
 	# extract 2001
 	# ============
@@ -197,6 +198,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset01.RData"),verbose)
+	if (verbose) cat("done with 2001 panel.\n")
 
 
 	# extract 2004
@@ -234,6 +236,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
+	if (verbose) cat("done with 2004 panel.\n")
 
 	# extract 2008
 	# ============
@@ -273,6 +276,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
 	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset08.RData"),verbose)
+	if (verbose) cat("done with 2008 panel.\n")
 
 }
 
@@ -297,8 +301,16 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
 #' @param path to output from \code{\link{Extract.wrap}}
+#' @param subset.4months TRUE if want to subset monthly data to only the final reference month (srefmon 4). the assumption is
+#' events in srefmon 4 are representative of the previous three months. 
 #' @return NULL. Saves 2 data.tables to dropbox. 
-Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12),p01=c(3,6,9),p04=c(3,6),p08=c(4,7,10)),verbose=TRUE){
+Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
+					   TM.idx=list(p96=c(3,6,9,12),
+								   p01=c(3,6,9),
+								   p04=c(3,6),
+								   p08=c(4,7,10)),
+					   verbose=TRUE,
+					   subset.4months=TRUE){
 
 	# list to collect all panels
 	m <- list()
@@ -453,11 +465,23 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[, saving := thhintbk + thhintot]
 		mergexx[, c("thhintbk","thhintot") := NULL]
 
+
+
+		# make a unique person number
+		# in theory i should just have 1 person per ssuid
+		# but better be safe here.
+		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
+		
+		# create cohort
+		coyrs = seq(1900,1990,by=20)
+		mergexx[,born := .SD[,year-age][[1]], by=upid ]	# pick the first element and just define year born as that.
+		mergexx[,cohort := as.character(coyrs[findInterval(born,coyrs)])]
+
 		# code NAs and some labels
 		mergexx[,c("eoutcome","eppintvw","efrefper","eentaid","tenure","ersnowrk") := NULL]
 		mergexx[yr_bought==-1, yr_bought := NA ]
 
-		mergexx[yr.moved.here<0, yr.moved.here     := NA ] 	# =-5 => always lived here!
+		mergexx[yr.moved.here<0, yr.moved.here     := born ] 	# =-5 => always lived here!
 		mergexx[yr.moved.here==9999 ,yr.moved.here := NA ] 	# =-5 => always lived here!
 
 		mergexx[state.bornID==-1, state.bornID := NA ] 	# =5 => always lived here!
@@ -496,21 +520,19 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		mergexx[duration_at_current < 0 , duration_at_current := NA]
 
 
-		# make a unique person number
-		# in theory i should just have 1 person per ssuid
-		# but better be safe here.
-		mergexx[,upid := paste0(yrs[yr],ssuid,epppnum)]
-		
-		# create cohort
-		coyrs = seq(1900,1990,by=20)
-		mergexx[,born := .SD[,year-age][[1]], by=upid ]	# pick the first element and just define year born as that.
-		mergexx[,cohort := as.character(coyrs[findInterval(born,coyrs)])]
 
 		# create a monthly state-2-state indicator
+		# indicates THAT YOU HAVE JUST MOVED! (AT THE BEGINNING OF CURRENT PERIOD, SAY)
+
 		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
 
+		# create a per-wave indicator
+		mergexx[,S2S.wave := max(S2S.mn,na.rm=T),by=list(upid,wave)]	
+
+
+
 		# create a lead of that
-		mergexx[,S2S.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["S2S.mn"]]]
+		#mergexx[,S2S.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["S2S.mn"]]]
 		mergexx[,own.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["own"]]]
 		mergexx[, sell := FALSE]
 		mergexx[own==TRUE & own.lead==FALSE, sell := TRUE]
@@ -540,7 +562,13 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 	if (verbose) cat("combined all panels into one data.table\n")
 
+	
+	
+	
+	
 	# Note: 1996 and 2001 have aggregated states
+	# ==========================================
+
 	# 61 is sum of
 	# 23 = maine
 	# 50 = vermont
@@ -565,7 +593,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	# merge with FIPS codes
 	data(US_states,package="EconData")
 	# add aggregated states to FIPS register
-	x <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("New England","West North Central"))
+	x         <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("New England","West North Central"))
 	US_states <- rbind(US_states,x)
 	setkey(US_states,FIPS)
 
@@ -582,6 +610,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged <- US_states[ merged ]
 	merged[,c("state.bornID","STATE") := NULL]
 	setkey(merged,qtr)
+
+
+	# end state aggregation
+	# ==========================================
+
+
+
+
 
 	# Inflation
 	# =========
@@ -601,6 +637,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 	
 	# load fhfa house price data
+	# why do you need that?
 	data(fhfa)
 
 	setkey(fhfa,state,qtr)
@@ -632,6 +669,15 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	
 	# drop FIPS
 	merged[,FIPS := NULL]
+
+
+	# drop inconsistencies
+	# --------------------
+
+	# 1) people who have an age difference less than 0 or greater than 1 are 
+	# either not the same people, or age is mismeasured.
+	# TODO
+	#merged <- merged[diff(age) > -1 & diff(age) < 2]
 
 
 
@@ -668,18 +714,22 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 
 
 #' auxiliary function to get movers
-#' origin and destination state in a data.table
+#' origin and destination state in a data.table (AT THE BEGINNING OF CURRENT PERIOD, SAY)
 #' @examples 
 #' ttab = data.table(pid = rep(c(1,2),each=5),state=c(3,3,4,4,4,6,7,7,8,9),istate=c(FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE))
 #' ttab[,c("from","to") := get.istate(states=state,imove=istate),with=FALSE]
 get.istate <- function(states,imove) {
-	mid <- 1:length(imove)
-	mid <- mid[imove]	# gives index of moving periods
-	from <- rep(NA,length(imove))
-	to   <- rep(NA,length(imove))
+
+	pid <- 1:length(imove)	# how many periods
+	mid <- pid[imove]	# gives index of moving periods
+	from <- rep(NA_character_,length(imove))
+	to   <- rep(NA_character_,length(imove))
 	for (j in mid){
-		to[j] <- states[j]
-		from[j] <- states[j-1]
+		if (j==1) {
+		} else {
+			to[j] <- states[j]
+			from[j] <- states[j-1]
+		}
 	}
 	return(list(from,to))
 }
@@ -785,20 +835,29 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 									state)]
 	save(rent,file=file.path(path,"SippBuy.RData"))
 
-	income <- merged[HHincome>0, list(upid,yrmnid,logHHincome=log(HHincome),age,age2=age^2,year,state,cohort)]
+	# loosing 5 moves here by subsetting to pos income
+	# this is the mnlogit dataset
+	logit <- merged[HHincome>0, list(upid,
+									  yrmnid,
+									  logHHincome=log(HHincome),
+									  age,age2=age^2,
+									  year,state,cohort,
+									  born,numkids,born.here,
+									  college,own,
+									  wealth,mortg.rent)]
 
 	# make a model.matrix out of that (i.e. no factors but dummies)
-	cohorts <- model.matrix(~cohort - 1,data=income)
-	income <- cbind(income,cohorts)
-	save(income,file=file.path(path,"SippIncome.RData"))
+	cohorts <- model.matrix(~cohort - 1,data=logit)
+	prelogit <- cbind(logit,cohorts)
+	save(prelogit,file=file.path(path,"prelogit.RData"))
 
 	# make a test dataset
 	# take an x% random sample by state
-	inds <- income[,list(upid=sample(unique(upid),size=round(length(unique(upid))*0.5))),by=state]
-	setkey(income,upid)
-	incomeTest <- income[inds[,upid]]
-	save(incomeTest,file=file.path(path,"SippIncomeTest.RData"))
+	inds <- logit[,list(upid=sample(unique(upid),size=round(length(unique(upid))*0.5))),by=state]
+	setkey(logit,upid)
+	logitTest <- logit[inds[,upid]]
+	save(logitTest,file=file.path(path,"LogitTest.RData"))
 
-	cat('done.\n')
+	cat('done with subsetting all.\n')
 }
 
