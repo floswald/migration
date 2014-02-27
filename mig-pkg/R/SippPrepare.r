@@ -127,7 +127,6 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
 	ck     <- c("ssuid",		# sample unit id
                 "srefmon",		# reference month (1-4)
-                "wave",  		# which wave
                 "rhcalmn",		# cal month
                 "errp",			# HH relationship
                 "rhcalyr",		# cal year
@@ -165,7 +164,6 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
 	ck     <- c("ssuid",         # sample unit id
                 "srefmon",       # reference month (1-4)
-                "wave",  		 # which wave
                 "rhcalmn",       # cal month
                 "errp",          # HH relationship
                 "rhcalyr",       # cal year
@@ -207,7 +205,6 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
 	ck     <- c("ssuid",           # sample unit id
                 "srefmon",         # reference month (1-4)
-                "wave",  		   # which wave
                 "rhcalmn",         # cal month
                 "errp",            # HH relationship
                 "rhcalyr",         # cal year
@@ -246,7 +243,6 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
 	ck     <- c("ssuid",        # sample unit id
                 "srefmon",      # reference month (1-4)
-                "wave",  		# which wave
                 "rhcalmn",      # cal month
                 "errp",         # HH relationship
                 "rhcalyr",      # cal year
