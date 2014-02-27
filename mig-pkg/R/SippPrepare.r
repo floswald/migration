@@ -43,6 +43,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 		sql.string <- paste0( "SELECT " , paste( ck , collapse = "," ) , " from w" , which.core[icore] , paste0(' ',subset) )
 		if (verbose) print(sql.string)
 		cores[[icore]] <- data.table(dbGetQuery( db , sql.string ))
+		cores[[icore]][,wave := which.core[icore] ]
 
 	}
 	names(cores) <- paste0("core_",which.core)
@@ -126,6 +127,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
 	ck     <- c("ssuid",		# sample unit id
                 "srefmon",		# reference month (1-4)
+                "wave",  		# which wave
                 "rhcalmn",		# cal month
                 "errp",			# HH relationship
                 "rhcalyr",		# cal year
@@ -163,6 +165,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
 	ck     <- c("ssuid",         # sample unit id
                 "srefmon",       # reference month (1-4)
+                "wave",  		 # which wave
                 "rhcalmn",       # cal month
                 "errp",          # HH relationship
                 "rhcalyr",       # cal year
@@ -204,6 +207,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
 	ck     <- c("ssuid",           # sample unit id
                 "srefmon",         # reference month (1-4)
+                "wave",  		   # which wave
                 "rhcalmn",         # cal month
                 "errp",            # HH relationship
                 "rhcalyr",         # cal year
@@ -242,6 +246,7 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
 	ck     <- c("ssuid",        # sample unit id
                 "srefmon",      # reference month (1-4)
+                "wave",  		# which wave
                 "rhcalmn",      # cal month
                 "errp",         # HH relationship
                 "rhcalyr",      # cal year
@@ -502,9 +507,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 		
 		# create cohort
 		coyrs = seq(1900,1990,by=20)
-		mergexx[,coh := .SD[,year-age][[1]], by=upid ]
-		mergexx[,cohort := as.character(coyrs[findInterval(coh,coyrs)])]
-		mergexx[,coh := NULL]
+		mergexx[,born := .SD[,year-age][[1]], by=upid ]	# pick the first element and just define year born as that.
+		mergexx[,cohort := as.character(coyrs[findInterval(born,coyrs)])]
 
 		# create a monthly state-2-state indicator
 		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
@@ -596,7 +600,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",TM.idx=list(p96=c(3,6,9,12
 	merged <- cpi[ merged ]
 
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,hvalue)],function(x) x * cpi96 / 1000) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,hvalue)],function(x) x / (cpi96 * 1000)) ]
 
 
 	
