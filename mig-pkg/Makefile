@@ -8,3 +8,6 @@ install:
 
 sipp.stats:
 	Rscript -e "source('examples/sipp-sumstats.r')"
+
+test:
+	Rscript -e "library(testthat); test_dir('tests/testthat/')"

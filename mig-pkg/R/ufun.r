@@ -1,5 +1,122 @@
 
 
+
+#' makes a Test Dataset of Individuals for income prediction
+#'
+#' @param n number of inds
+#' @param A number of maximal age
+#' @param nm number of movers
+#' @family testFunctions
+makeTestData <- function(n,A,nm){
+
+	# list of ages
+	ages <- sample(A,size=n,replace=TRUE)
+	id <- c()
+	for (i in 1:n){
+	for (j in 1:ages[i]){
+		id <- c(id,i)
+	}}
+
+	age <- c()
+	for (i in 1:n){
+	for (j in 1:ages[i]){
+		age <- c(age,j)
+	}}
+
+	# states
+	data(State_distTable_agg,package="EconData")
+	st <- as.character(State_distTable_agg[,unique(from)])
+
+	# initial/constant conditions
+	init <- data.table(upid=as.character(unique(id)),state=as.character(sample(st,size=n,replace=T)),born=sample(1920:1990,size=n,replace=T),born.here=sample(c(TRUE,FALSE),size=n,replace=T),college=sample(c(TRUE,FALSE),size=n,replace=T),numkids=sample(0:4,size=n,replace=T))
+
+	coyrs = seq(1900,1990,by=20)
+	init[,cohort := as.character(coyrs[findInterval(born,coyrs)])]
+	coh <- model.matrix(~ cohort -1, init)
+	init <- cbind(init,coh)
+	setkey(init,upid)
+
+	tt <- data.table( upid=as.character(id), age=age)
+	tt[,c("logHHincome",
+		  "wealth",    
+		  "mortg.rent",
+		  "age2") := list(runif(nrow(tt)),runif(nrow(tt)),runif(nrow(tt)),age^2)]   
+
+
+	# initial location
+	setkey(tt,upid)
+	tt <- tt[init]
+
+	# movers
+	setkey(tt,upid,age)
+	mv <- as.character(sample(n,size=nm))
+	for (i in mv){
+		# if guy is only around for 1 year
+		if (tt[.(i)][,max(age)==1]) {
+			# choose another guy
+			mv[mv==i] <- as.character(sample((1:n)[-as.numeric(mv)],size=1))
+		}
+	}
+
+	mvtab <- data.table(upid=mv,age=0L,from="NA",to="NA",key="upid")
+
+	for (i in mv){
+		# if guy is only around for 1 year
+		mvage <- tt[.(i)][,sample(age,size=1)]
+		mvat <- tt[.(i)][,mvage:max(age)]
+		mvto <- tt[.(i,mvat)][,sample(st[-which(st==state)],size=1)]
+		tt[.(i,mvat), state := mvto]
+
+		# add to mvtab
+		mvtab[.(i),age := mvage]
+		mvtab[.(i),to  := mvto]
+	}
+
+	l <- list(dat=tt,movers=tt[.(mv)],mvtab=mvtab)
+	return(l)
+}
+
+
+#' makes a Test Dataset of income regression coefs
+#'
+#' @param te test dataset from \code{\link{makeTestData}}
+#' @param X char vector of explanatory variables, including "(Intercept)"
+#' @family testFunctions
+makeTestREcoefs <- function(te,X=c("(Intercept)","age","I(age^2)","cohort1920","cohort1940","cohort1960","cohort1980")){
+
+	# 1. for each state in te, create a (1,length(X)) vector of 
+	#    fixed effect estimates
+	# 2. for each upid in each state, create a RE intercept
+
+	st <- te[,unique(state)]
+	setkey(te,state)
+
+	l <- list()
+
+	for (i in st){
+
+		tmp <- te[.(i),list(upid=unique(upid))]
+		tmp[,intercept := runif(nrow(tmp),min=-1,max=1)]
+		setkey(tmp,upid)
+
+		tmpf <- runif(n=length(X))
+		names(tmpf) <- X
+
+		tmp[,state := NULL]
+
+		l[[i]] <- list(fixed=tmpf,RE=tmp)
+
+	}
+	return(l)
+}
+
+
+
+
+
+
+
+
 #' CRRA Utility Function
 #'
 #' this is a devel function. only used to 

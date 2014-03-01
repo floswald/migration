@@ -638,34 +638,34 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	
 	# load fhfa house price data
 	# why do you need that?
-	data(fhfa)
+   # data(fhfa)
 
-	setkey(fhfa,state,qtr)
-	lowest <- fhfa[qtr=="1995 Q4",state[.I[which.min(index_sa)]]]
-	fhfa[,index_sa := index_sa / fhfa[state==lowest & qtr=="1995 Q4"][["index_sa"]] ]	# index relative to lowest index value in 1995:Q4
+	#setkey(fhfa,state,qtr)
+	#lowest <- fhfa[qtr=="1995 Q4",state[.I[which.min(index_sa)]]]
+	#fhfa[,index_sa := index_sa / fhfa[state==lowest & qtr=="1995 Q4"][["index_sa"]] ]	# index relative to lowest index value in 1995:Q4
 
 
-	# aggregate state prices
-	# ----------------------
+	## aggregate state prices
+	## ----------------------
 
-	# separate state groups
-	fhfa[ (state %in% c("ME","VT")),     state := "ME.VT"]
-	fhfa[ (state %in% c("SD","ND","WY")),state := "ND.SD.WY"]
+	## separate state groups
+	#fhfa[ (state %in% c("ME","VT")),     state := "ME.VT"]
+	#fhfa[ (state %in% c("SD","ND","WY")),state := "ND.SD.WY"]
 
-	xfhfa <- fhfa[ state %in% c("ND.SD.WY","ME.VT") ]
-	fhfa  <- fhfa[!state %in% c("ND.SD.WY","ME.VT") ]
+	#xfhfa <- fhfa[ state %in% c("ND.SD.WY","ME.VT") ]
+	#fhfa  <- fhfa[!state %in% c("ND.SD.WY","ME.VT") ]
 
-	# do aggregation
-	xfhfa <- xfhfa[,list(index_sa=mean(index_sa),index_nsa=mean(index_nsa)),by=list(state,qtr)]
+	## do aggregation
+	#xfhfa <- xfhfa[,list(index_sa=mean(index_sa),index_nsa=mean(index_nsa)),by=list(state,qtr)]
 
-	# put back together
-	fhfa  <- rbind(fhfa,xfhfa,use.names=TRUE)
+	## put back together
+	#fhfa  <- rbind(fhfa,xfhfa,use.names=TRUE)
 
-    setkey(merged,state,qtr)
-	setkey(fhfa,state,qtr)
-	merged <- fhfa[ merged ]
+    #setkey(merged,state,qtr)
+	#setkey(fhfa,state,qtr)
+	#merged <- fhfa[ merged ]
 
-	if (verbose) cat("merged house prices into data.\n")
+	#if (verbose) cat("merged house prices into data.\n")
 	
 	# drop FIPS
 	merged[,FIPS := NULL]
