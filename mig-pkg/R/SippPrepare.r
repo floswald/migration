@@ -524,10 +524,11 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		# create a monthly state-2-state indicator
 		# indicates THAT YOU HAVE JUST MOVED! (AT THE BEGINNING OF CURRENT PERIOD, SAY)
 
-		mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
+		#mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
 
-		# create a per-wave indicator
-		mergexx[,S2S.wave := max(S2S.mn,na.rm=T),by=list(upid,wave)]	
+
+		## create a per-wave indicator
+		#mergexx[,S2S.wave := max(S2S.mn,na.rm=T),by=list(upid,wave)]	
 
 
 
@@ -541,7 +542,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		# when counting, choose one reference
 		# month, or you'll count 4 times:
 		# mergexx[srefmon==4,table(S2S)]
-		mergexx[,S2S := ( mover==4 )]
+		#mergexx[,S2S := ( mover==4 )]
 		mergexx[, panel := yrs[yr]]
 
 		# rbindlist (below) merges by 
@@ -609,16 +610,25 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	merged <- US_states[ merged ]
 	merged[,c("state.bornID","STATE") := NULL]
-	setkey(merged,qtr)
 
 
 	# end state aggregation
 	# ==========================================
 
 
+	# create moving indicator:
+	# whenever "from" != "to", you moved.
+	setkey(merged,upid,yrmnid)
+	merged[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
+
+	# indicates that at the end of the current period, you move to location "to"
+	merged[,S2S := from != to]	# NA!=0 returns NA.
+
+	# create a per-wave indicator
+	merged[,S2S.wave := any(S2S),by=list(upid,wave)]	
 
 
-
+	setkey(merged,qtr)
 	# Inflation
 	# =========
 

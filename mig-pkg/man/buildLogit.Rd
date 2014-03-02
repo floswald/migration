@@ -4,7 +4,8 @@
 \usage{
   buildLogit(logi, RE.coefs, with.FE = FALSE,
     verbose = TRUE,
-    saveto = "~/Dropbox/mobility/output/model/BBL/logit.RData")
+    saveto = "~/Dropbox/mobility/output/model/BBL/logit.RData",
+    movreg)
 }
 \arguments{
   \item{income}{data.table from \code{\link{subset.all}}}
@@ -15,6 +16,10 @@
   \item{verbose}{TRUE/FALSE}
 
   \item{saveto}{if not NULL, where to save}
+
+  \item{movreg}{data.table with movers register. this is a
+  data.table as produced by \code{\link{Sipp.Sumstats}},
+  with columns \code{from,to,upid,age} at the minium.}
 
   \item{with.FE}{TRUE if you want to make prediction in
   state k with individual fixed effect estimated for state
@@ -34,6 +39,16 @@
 \examples{
 load("~/Dropbox/mobility/SIPP/prelogit.RData")
 load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-l <- buildLogit(prelogit,RE.coefs)
+load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
+mvt <- sumstats$mvtab
+mvt[,c("wave","mid","yearmon") := NULL]
+l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
+}
+\seealso{
+  Other IncomePrediction: \code{\link{RE.HHincome}},
+  \code{\link{getHomeValues}}, \code{\link{getIncomeM}},
+  \code{\link{getREintercept}},
+  \code{\link{makePrediction1}},
+  \code{\link{makePrediction2}}
 }
 

@@ -13,6 +13,6 @@
 }
 \examples{
 load("~/Dropbox/mobility/SIPP/SippFull.RData")
-z = Sipp.SumStats(merged,NULL)
+z = Sipp.SumStats(merged,"~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 }
 

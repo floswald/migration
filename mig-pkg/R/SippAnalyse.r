@@ -14,18 +14,18 @@ Sipp.SumStats <- function(d,saveto="~/Dropbox/mobility/output/data/sipp/sumstats
 	l <- list()
 
 	# monthly state-to-state transitions
-	l$mS2S <- d[,mean(S2S.mn)]
+	l$mS2S <- d[,mean(S2S)]
 
-	kv <- c("S2S.mn","HHincome","numkids","age","sex","wealth","home.equity","thhmortg","own","yr_bought","mortg.rent","college","saving","year","born.here")
+	kv <- c("S2S","HHincome","numkids","age","sex","wealth","home.equity","thhmortg","own","yr_bought","mortg.rent","college","saving","year","born.here")
 
 	# summary of key vars
 	l$sum <- summary(d[,kv,with=FALSE])
 
 	# monthly state-to-state transitions by current state
-	l$mS2S_state <- d[,mean(S2S.mn),by=state]
+	l$mS2S_state <- d[,mean(S2S),by=state]
 
 	# get movers
-	movtmp <- d[S2S.mn==TRUE,list(upid=unique(upid))]
+	movtmp <- d[S2S==TRUE,list(upid=unique(upid))]
 	setkey(d,upid)
 	movers <- d[ movtmp[,upid] ]
 	stayers <- d[ !upid %in%  movtmp[,upid] ]
@@ -38,20 +38,25 @@ Sipp.SumStats <- function(d,saveto="~/Dropbox/mobility/output/data/sipp/sumstats
 	rownames(l$means) <- c("never.moved","moved")
 
 	# number of moves per person
-	l$num.moves <- movers[,list(moves=sum(S2S.mn,na.rm=T)),by=upid][,table(moves)]
+	l$num.moves <- movers[,list(moves=sum(S2S,na.rm=T)),by=upid][,table(moves)]
 
 	# get to and from
-	setkey(movers,yrmnid)
-    movers[,c("from","to") := list("hi","there")]
-	movers[,c("from","to") := get.istate(states=state,imove=S2S.mn),by=upid]
+	#setkey(movers,yrmnid)
+    #movers[,c("from","to") := list("hi","there")]
+	#movers[,c("from","to") := get.istate(states=state,imove=S2S),by=upid]
+
+	#setkey(movers,upid,yrmnid)
+	#movers[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
 
 	# moves back to home
-	l$moves.home <- movers[S2S.mn==TRUE,list(from.home=sum(from==state.born,na.rm=T)/length(from),
+	l$moves.home <- movers[S2S==TRUE,list(from.home=sum(from==state.born,na.rm=T)/length(from),
 											 to.home  =sum(to==state.born,na.rm=T)/length(from),
 											 to.other =sum(to!=state.born,na.rm=T)/length(from))]
 
-	moves <- movers[S2S.mn==TRUE]
-	mvtab <- moves[,list(mid=cumsum(S2S.mn),from=from[S2S.mn],to=to[S2S.mn],wave=wave[S2S.mn],yearmon=yearmon[S2S.mn],age=age[S2S.mn]),by=upid]
+	moves <- movers[S2S==TRUE]
+
+	# get periods where amove happens and get age, from, to
+	mvtab <- moves[,list(mid=cumsum(S2S),from=from[S2S],to=to[S2S],wave=wave[S2S],yearmon=yearmon[S2S],age=age[S2S]),by=upid]
 	setkey(mvtab,from,to)
 
 	## get distances data
@@ -369,6 +374,24 @@ getHomeValues <- function(){
 	return(HV)
 }
 
+
+
+#' multinomial logit model of location choice
+#'
+#' @examples 
+#' load(""C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
+#' res <- runMNLogit(d=l)
+runMNLogit <- function(d){
+
+	d <- d[complete.cases(d)]
+
+	fm = formula(choice ~ -1 + HValue96 + distance | wealth + born.here + college + numkids | 1 )
+	res = mnlogit(fm,l,"move.to",ncores=4,print.level=3)
+
+	return(res)
+}
+
+
 		
 #' Make a MN Logit estimation datset
 #'
@@ -393,7 +416,7 @@ getHomeValues <- function(){
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 #' load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 #' mvt <- sumstats$mvtab
-#' mvt[,c("mid","wave","yearmon") := NULL]
+#' mvt[,c("wave","mid","yearmon") := NULL]
 #' l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
 buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",movreg){
 
@@ -467,8 +490,10 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	# add a choice indicator
 	# ======================
 	l[,choice := FALSE]
+	l[,stay   := FALSE]
 
 	
+	# add the moving choices and merge
 	l <- mergePredIncomeMovingHist(l,movreg)
 
 	if (!is.null(saveto)){
@@ -493,15 +518,22 @@ mergePredIncomeMovingHist <- function(l,mvt){
 	yesmove <-  l[mvt]
 
 	yesmove <- DTSetChoice(yesmove)
+	yesmove[,c("from","to") := NULL]
+
+
 
 	# data of all non-movers
-	l <- l[!J(yesmove[,unique(upid)])]
+	# here you erase ages of movers where they have not moved!
+	l <- l[!J(yesmove[,list(upid,age)])]
 
 	# set choice of all stayers
-	l[state==to , choice := TRUE ]
+	l[state==move.to , choice := TRUE ]
+	l[state == move.to, stay := TRUE]
 
 	# stack back together
-	l <- rbind(l,yesmove,use.names=TRUE)
+	setcolorder(yesmove,names(l))
+	l <- rbindlist(list(l,yesmove))
+
 
 	return(l)
 }

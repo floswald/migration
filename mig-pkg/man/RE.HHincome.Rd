@@ -30,4 +30,11 @@
 load("~/Dropbox/mobility/SIPP/SippIncome.RData")
 l <- RE.HHincome(dat=income[state \%in\% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
 }
+\seealso{
+  Other IncomePrediction: \code{\link{buildLogit}},
+  \code{\link{getHomeValues}}, \code{\link{getIncomeM}},
+  \code{\link{getREintercept}},
+  \code{\link{makePrediction1}},
+  \code{\link{makePrediction2}}
+}
 
