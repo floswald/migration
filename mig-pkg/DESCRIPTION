@@ -20,7 +20,9 @@ Depends:
     gridExtra,
     MARSS,
     devtools,
-    xts
+    xts,
+    mnlogit,
+    testthat
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

@@ -379,14 +379,31 @@ getHomeValues <- function(){
 #' multinomial logit model of location choice
 #'
 #' @examples 
-#' load(""C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
-#' res <- runMNLogit(d=l)
-runMNLogit <- function(d){
+#' if (Sys.info()["user"] == "florianoswald" ){
+#' load("~/Dropbox/mobility/output/model/BBL/logit.RData")
+#' } else {
+#' load("C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
+#' }
+#' res <- runMNLogit(d=l,0.3)
+runMNLogit <- function(d,fraction=1){
 
-	d <- d[complete.cases(d)]
 
-	fm = formula(choice ~ -1 + HValue96 + distance | wealth + born.here + college + numkids | 1 )
-	res = mnlogit(fm,l,"move.to",ncores=4,print.level=3)
+	if (fraction<1) {
+
+		cat(sprintf("taking %d %% random sample from full data\n",fraction*100))
+
+		su <- d[,sample(unique(upid),size=round(fraction*length(unique(upid))))]
+		setkey(d,upid)
+		d <- d[.(su)]
+	}
+
+	d <- d[complete.cases(d[,list(HValue96)])]
+
+	# you cannot have stay:  d[,cor(choice,stay)]
+	#fm = formula(choice ~ -1 + distance + logHHincome + HValue96 + stay | 1 | 1 )
+	#fm = formula(choice ~ -1 + distance | age | logHHincome + HValue96 )
+	fm = formula(choice ~ -1 + distance + age + I(age^2) | 1 | logHHincome + HValue96 )
+	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100)
 
 	return(res)
 }
@@ -416,7 +433,7 @@ runMNLogit <- function(d){
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 #' load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 #' mvt <- sumstats$mvtab
-#' mvt[,c("wave","mid","yearmon") := NULL]
+#' mvt[,c("wave","mid","yearmon","from") := NULL]
 #' l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
 buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",movreg){
 
@@ -433,7 +450,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 					wealth     = mean(wealth,na.rm     = T),
 					mortg.rent = mean(mortg.rent,na.rm = T),
 					age2       = age2[1],
-					born       = born[1],
+					year       = year[1],
 					born.here  = born.here[1],
 					college    = college[1],
 					numkids    = numkids[1],
@@ -457,24 +474,8 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 
 	# get homevalues by year and state
 	# inflation adjusted
-	HV <- getHomeValues()
-	
-	# add to l
-	# --------
-	
-	setnames(HV,"State","state")
-	setkey(HV,state,year)
+	l <- mergeHomeValues(l)
 
-	# create calyear variable in income dataset
-	# TODO
-	# this variable has a ton of problems.
-	# age is poorly measured (goes up or down with time sometimes)
-	# need to fix that.
-	l[, year := age + born]
-	setkey(l,state,year)
-
-	# merge! huge!
-	l <- HV[ l ]
 
 
 	# merge back into monthly data
@@ -491,6 +492,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	# ======================
 	l[,choice := FALSE]
 	l[,stay   := FALSE]
+	l[move.to==state, stay := TRUE]
 
 	
 	# add the moving choices and merge
@@ -505,6 +507,24 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 
 }
 
+mergeHomeValues <- function(d){
+	
+	# get Home Values by year/state
+	HV <- getHomeValues()
+	
+	# add to l
+	# --------
+	
+	setnames(HV,"State","move.to")
+	setkey(HV,move.to,year)
+
+	setkey(d,move.to,year)
+
+	# merge! huge!
+	d <-  HV[ d ]
+
+	return(d)
+}
 
 
 mergePredIncomeMovingHist <- function(l,mvt){
@@ -518,7 +538,7 @@ mergePredIncomeMovingHist <- function(l,mvt){
 	yesmove <-  l[mvt]
 
 	yesmove <- DTSetChoice(yesmove)
-	yesmove[,c("from","to") := NULL]
+	yesmove[,c("to") := NULL]
 
 
 
@@ -528,12 +548,10 @@ mergePredIncomeMovingHist <- function(l,mvt){
 
 	# set choice of all stayers
 	l[state==move.to , choice := TRUE ]
-	l[state == move.to, stay := TRUE]
 
 	# stack back together
 	setcolorder(yesmove,names(l))
 	l <- rbindlist(list(l,yesmove))
-
 
 	return(l)
 }

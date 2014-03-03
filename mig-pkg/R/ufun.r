@@ -4,23 +4,36 @@
 #' makes a Test Dataset of Individuals for income prediction
 #'
 #' @param n number of inds
-#' @param A number of maximal age
+#' @param A number of maximal years in panel
 #' @param nm number of movers
 #' @family testFunctions
+#' @examples
+#' tt <- makeTestData(10,3,1)
 makeTestData <- function(n,A,nm){
 
-	# list of ages
-	ages <- sample(A,size=n,replace=TRUE)
+	# everybody starts at 30 and lives up to max 60 say
+	ages <- 30:60
+	yrs <- 1995:2011
+
+	# list of num of years in panel for each guy
+	times <- data.table(id=1:n,maxages=sample(A,size=n,replace=TRUE))
+	times$year <- sample(yrs,size=n,replace=TRUE)
+	times[times$year+times$maxages>max(yrs),]$year <- max(yrs) - times[times$year+times$maxages>max(yrs),]$maxages
+
+	setkey(times,id)
+
 	id <- c()
 	for (i in 1:n){
-	for (j in 1:ages[i]){
+	for (j in 1:times$maxages[i]){
 		id <- c(id,i)
 	}}
 
 	age <- c()
+	year <- c()
 	for (i in 1:n){
-	for (j in 1:ages[i]){
-		age <- c(age,j)
+	for (j in 1:times$maxages[i]){
+		age <- c(age,ages[j])
+		year <- c(year,times[.(i)][,year] + j)
 	}}
 
 	# states
@@ -36,7 +49,7 @@ makeTestData <- function(n,A,nm){
 	init <- cbind(init,coh)
 	setkey(init,upid)
 
-	tt <- data.table( upid=as.character(id), age=age)
+	tt <- data.table( upid=as.character(id), age=age, year=year)
 	tt[,c("logHHincome",
 		  "wealth",    
 		  "mortg.rent",
@@ -52,19 +65,19 @@ makeTestData <- function(n,A,nm){
 	mv <- as.character(sample(n,size=nm))
 	for (i in mv){
 		# if guy is only around for 1 year
-		if (tt[.(i)][,max(age)==1]) {
+		if (tt[.(i)][,length(age)==1]) {
 			# choose another guy
 			mv[mv==i] <- as.character(sample((1:n)[-as.numeric(mv)],size=1))
 		}
 	}
 
-	mvtab <- data.table(upid=mv,age=0L,from="NA",to="NA",key="upid")
+	mvtab <- data.table(upid=mv,age=0L,to="NA",key="upid")
 
 	for (i in mv){
 		# if guy is only around for 1 year
 		mvage <- tt[.(i)][,sample(age,size=1)]
 		mvat <- tt[.(i)][,mvage:max(age)]
-		mvto <- tt[.(i,mvat)][,sample(st[-which(st==state)],size=1)]
+		mvto <- tt[.(i,mvage)][,sample(st[-which(st==state)],size=1)]
 		tt[.(i,mvat), state := mvto]
 
 		# add to mvtab

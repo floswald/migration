@@ -110,24 +110,47 @@ test_that("makePrediction1 has correct size", {
 
 	expect_equal( nrow(t1), nrow(tt$dat)*tt$dat[,length(unique(state))])
 })
-      
+     
+
+
+test_that("test that homevalues merge is correct",{
+
+	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	l    <- mergeHomeValues(tdat)
+
+	yr   <- l[,list(year=unique(year)),by=move.to]
+	HV   <- getHomeValues()
+
+	setkey(HV,State,year)
+	setkey(l,move.to,year)
+
+	expect_that( l[,list(sd=sd(HValue96,na.rm=T)),by=list(upid,age)][,min(sd) > 0], is_true() , label="Hvalue varies by person and age")
+	expect_that( all.equal( l[,list(hv=unique(HValue96)),by=list(move.to,year)][,hv], HV[yr[,list(move.to,year)]][,HValue96] ), is_true() )
+
+})
+
 
 # test DTSetChoice
 # ================
 
 test_that("DTSetChoice has correct output",{
 
-	with.FE <- TRUE		
-	t1 <- makePrediction1(tt$dat,RE.coefs,with.FE,State_distMat_agg)
 
-	t1[,choice := FALSE]
-	setkey(t1,upid,age)
+	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	tdat[,choice := FALSE]
+	tdat[,stay   := FALSE]
+
+	setkey(tdat,upid,age)
 	setkey(tt$mvtab,upid,age)
 
-	t1 <- 	t1[tt$mvtab]
+	# get the movers in the age where they move
+	tdat <- 	tdat[tt$mvtab]
 
-	t2 <- DTSetChoice(t1)
+	# set their discrete choice to TRUE in the age they moved
+	t2 <- DTSetChoice(tdat)
 
+	expect_true( all(t2[move.to == to][, choice]) )
+	expect_true( !any(t2[move.to == to][, stay]) )
 
 })
 
@@ -137,9 +160,67 @@ test_that("DTSetChoice has correct output",{
 
 test_that("mergePredIncomeMovingHist correct output", {
 
+	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	tdat[,choice := FALSE]
+	tdat[,stay   := FALSE]
 
+	# values to test:
+	l <- mergePredIncomeMovingHist(tdat,tt$mvtab)
+
+
+	# control values:
+	setkey(tdat,upid,age)
+	setkey(tt$mvtab,upid,age)
+
+	# get the movers in the age where they move
+	mdat <- 	tdat[tt$mvtab]
+	mdat[,c("from","to") := NULL]
+
+
+	# test: in l, all non-movers can have only one "stay" per age
+	# 1) get movers from l
+
+	setkey(l,upid,age)
+	setkey(mdat,upid,age)
+
+	# separate movers and non movers
+	nonmv.from.l <- l[!J(mdat[,list(upid,age)])]	# NEVER move
+	   mv.from.l <- l[   mdat[,list(upid,age)] ]	# move in one of many cases
+
+	# in an age where you are a mover, you cannot be a nonmover
+	mv.from.l1 <- mv.from.l[,list(id=unique(upid)),by=age]
+	for (i in 1:nrow(mv.from.l1)){
+
+		expect_that( nrow(nonmv.from.l[upid==mv.from.l1[i][["id"]] & age==mv.from.l1[i][["age"]]]), equals( 0 ) )
+	}
+
+	# in mover section, there is nobody apart from upid who is moving at age
+	setkey(mv.from.l,age,upid)
+	expect_that( nrow( mv.from.l[!J(mv.from.l1)] ), equals( 0 ) )
+
+	# in non-mover section, people who move in mv.from.l are stayers
+	setkey(nonmv.from.l,age,upid)
+
+	for (i in 1:nrow(mv.from.l1)){
+
+		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all(stay)], is_true() )
+		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all(distance==0)],  is_true(  ) )
+		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all.equal(state,move.to)], is_true() )
+
+	}
+
+
+	# in non-mover section, all who never where movers, are always stayers
+	setkey(nonmv.from.l,upid)
+	expect_that( nonmv.from.l[!J(mv.from.l1[,unique(id)])][choice==TRUE,all(stay)], is_true() )
+	expect_that( nonmv.from.l[!J(mv.from.l1[,unique(id)])][choice==TRUE,all.equal(state,move.to)], is_true() )
+
+	# in entire dataset, wherever move.to==
+	expect_that( l[move.to==state, all(stay)], is_true() )
 
 })
+
+
 
 
 
