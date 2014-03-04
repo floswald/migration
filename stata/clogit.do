@@ -11,7 +11,7 @@ replace cchoice = 1 if choice=="TRUE"
 gen sstay = 0
 replace sstay = 1 if stay=="TRUE"
 
-clogit cchoice distance loghhincome wealth age hvalue96 sstay, group(upid)
+clogit choice distance logHHincome wealth age HValue96, group(upid)
 
 matrix X=e(b)
 matrix V1=e(V)

@@ -11,3 +11,9 @@ sipp.stats:
 
 test:
 	Rscript -e "library(testthat); test_dir('tests/testthat/')"
+
+logit30:
+	Rscript -e "library(migration); example(runMNLogit)"
+
+buildLogit:
+	Rscript -e "library(migration); example(buildLogit)"

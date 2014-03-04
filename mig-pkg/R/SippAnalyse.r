@@ -384,7 +384,11 @@ getHomeValues <- function(){
 #' } else {
 #' load("C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
 #' }
-#' res <- runMNLogit(d=l,0.3)
+#' fraction <- 0.3
+#'	su <- l[,sample(unique(upid),size=round(fraction*length(unique(upid))))]
+#'	setkey(l,upid)
+#'	l <- l[.(su)]
+#' res <- runMNLogit(d=l)
 runMNLogit <- function(d,fraction=1){
 
 
@@ -402,7 +406,7 @@ runMNLogit <- function(d,fraction=1){
 	# you cannot have stay:  d[,cor(choice,stay)]
 	#fm = formula(choice ~ -1 + distance + logHHincome + HValue96 + stay | 1 | 1 )
 	#fm = formula(choice ~ -1 + distance | age | logHHincome + HValue96 )
-	fm = formula(choice ~ -1 + distance + age + I(age^2) | 1 | logHHincome + HValue96 )
+	fm = formula(choice ~ -1 + distance + I(distance^2) + age + I(age^2) + HValue96 | 1 | logHHincome )
 	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100)
 
 	return(res)
@@ -471,6 +475,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 
 	# make predictions of income
 	l <- makePrediction1(y,RE.coefs,with.FE,State_distMat_agg)
+	gc()
 
 	# get homevalues by year and state
 	# inflation adjusted
@@ -492,11 +497,12 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	# ======================
 	l[,choice := FALSE]
 	l[,stay   := FALSE]
-	l[move.to==state, stay := TRUE]
 
 	
 	# add the moving choices and merge
 	l <- mergePredIncomeMovingHist(l,movreg)
+
+	gc()
 
 	if (!is.null(saveto)){
 		if (verbose) cat("all done. saving file.\n")
@@ -552,6 +558,7 @@ mergePredIncomeMovingHist <- function(l,mvt){
 	# stack back together
 	setcolorder(yesmove,names(l))
 	l <- rbindlist(list(l,yesmove))
+	l[move.to==state, stay := TRUE]
 
 	return(l)
 }
