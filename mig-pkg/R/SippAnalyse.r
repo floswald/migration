@@ -384,11 +384,10 @@ getHomeValues <- function(){
 #' } else {
 #' load("C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
 #' }
-#' fraction <- 0.3
-#'	su <- l[,sample(unique(upid),size=round(fraction*length(unique(upid))))]
-#'	setkey(l,upid)
-#'	l <- l[.(su)]
-#' res <- runMNLogit(d=l)
+#' res <- runMNLogit(d=l,fraction=0.3)
+#' p1 = l[1:48]
+#' pr1=direct.predict(newdata=p1,object=res,probability=TRUE)
+#' # plot(pr1[-grep("ID",colnames(pr1))])
 runMNLogit <- function(d,fraction=1){
 
 
@@ -406,7 +405,10 @@ runMNLogit <- function(d,fraction=1){
 	# you cannot have stay:  d[,cor(choice,stay)]
 	#fm = formula(choice ~ -1 + distance + logHHincome + HValue96 + stay | 1 | 1 )
 	#fm = formula(choice ~ -1 + distance | age | logHHincome + HValue96 )
-	fm = formula(choice ~ -1 + distance + I(distance^2) + age + I(age^2) + HValue96 | 1 | logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids + born.here| logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + numkids + born.here| logHHincome )
+	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids | logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + born.here | logHHincome )
 	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100)
 
 	return(res)

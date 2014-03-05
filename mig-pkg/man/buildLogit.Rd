@@ -41,7 +41,7 @@ load("~/Dropbox/mobility/SIPP/prelogit.RData")
 load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 mvt <- sumstats$mvtab
-mvt[,c("wave","mid","yearmon") := NULL]
+mvt[,c("wave","mid","yearmon","from") := NULL]
 l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
 }
 \seealso{
