@@ -407,12 +407,52 @@ runMNLogit <- function(d,fraction=1){
 	#fm = formula(choice ~ -1 + distance | age | logHHincome + HValue96 )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids + born.here| logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + numkids + born.here| logHHincome )
-	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids | logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids | logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + mortg.rent | logHHincome )
+	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  + numkids | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + born.here | logHHincome )
-	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100)
+
+
+	# add a case id
+	d[,chID := paste0(upid,"_",age) ]
+	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100,chid="chID",linDepTol=0.0001)
 
 	return(res)
 }
+
+
+
+
+
+#' simulate number of moves from mnlogit result
+#'
+#' @param res mnlogit result
+#' @param print.to location to print table
+#' @examples 
+simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/prediction.tex"){
+
+	stopifnot(class(res) == "mnlogit" )
+
+	# get prediciton on estimation data
+	p <- direct.predict(res,probability=TRUE)
+
+	d <- copy(res$data)
+	# here same ordering in both
+
+	d[, pred := as.numeric(p) ]
+	d[, move := runif(nrow(d)) <= pred ]
+
+	predTab <- d[distance>0, list(observed=sum(choice),predicted=sum(move)),by=move.to]
+
+	if (!is.null(print.to)){
+	print(xtable(predTab,caption="prediction from logit model"),file=print.to,include.rownames=FALSE,floating=FALSE)
+	}
+	return(predTab)
+}
+
+
+
+
 
 
 		
@@ -455,6 +495,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	y <- logi[,list(logHHincome=mean(logHHincome,na.rm=T),
 					wealth     = mean(wealth,na.rm     = T),
 					mortg.rent = mean(mortg.rent,na.rm = T),
+					own        = own[1],
 					age2       = age2[1],
 					year       = year[1],
 					born.here  = born.here[1],

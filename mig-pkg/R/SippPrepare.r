@@ -830,23 +830,10 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 #' @param path/to/location/of/full/data
 subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 
-	load(file.path(path,"SippFull.RData"))
-	setkey(merged,upid,yrmnid)
-
-	rent <- merged[own==FALSE, list(upid,
-									yrmnid,
-									HHincome,
-									HHweight,
-									mortg.rent,
-									numkids,
-									age,
-									#med.price,
-									wealth,
-									state)]
-	save(rent,file=file.path(path,"SippBuy.RData"))
 
 	# loosing 5 moves here by subsetting to pos income
 	# this is the mnlogit dataset
+	load(file.path(path,"SippFull.RData"))
 	logit <- merged[HHincome>0, list(upid,
 									  yrmnid,
 									  logHHincome=log(HHincome),
@@ -867,6 +854,26 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 	setkey(logit,upid)
 	logitTest <- logit[inds[,upid]]
 	save(logitTest,file=file.path(path,"LogitTest.RData"))
+
+	rm(logit,merged)
+	gc()
+
+
+	load(file.path(path,"Sipp4mn.RData"))
+	setkey(merged4mn,upid,yrmnid)
+
+	save.buy <- merged4mn[, list(upid,
+							age,state,
+							wealth,
+							mortg.rent,
+							yearmon,
+							home.equity,
+							HHincome,
+							HHweight,
+							saving, wave,
+							own,hvalue,
+							numkids)]
+	save(save.buy,file=file.path(path,"preSaveBuy.RData"))
 
 	cat('done with subsetting all.\n')
 }
