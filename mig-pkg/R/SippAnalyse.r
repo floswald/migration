@@ -380,25 +380,13 @@ getHomeValues <- function(){
 #'
 #' @examples 
 #' if (Sys.info()["user"] == "florianoswald" ){
-#' load("~/Dropbox/mobility/output/model/BBL/logit.RData")
+#' load("~/Dropbox/mobility/output/model/BBL/logit30.RData")
 #' } else {
-#' load("C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit.RData")
+#' load("C:/Users/florian_o/Dropbox/mobility/output/model/BBL/logit30.RData")
 #' }
-#' res <- runMNLogit(d=l,fraction=0.3)
-#' p1 = l[1:48]
-#' pr1=direct.predict(newdata=p1,object=res,probability=TRUE)
+#' res <- runMNLogit(d=l)
 #' # plot(pr1[-grep("ID",colnames(pr1))])
-runMNLogit <- function(d,fraction=1){
-
-
-	if (fraction<1) {
-
-		cat(sprintf("taking %d %% random sample from full data\n",fraction*100))
-
-		su <- d[,sample(unique(upid),size=round(fraction*length(unique(upid))))]
-		setkey(d,upid)
-		d <- d[.(su)]
-	}
+runMNLogit <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/logit30Res.RData"){
 
 	d <- d[complete.cases(d[,list(HValue96)])]
 
@@ -409,13 +397,17 @@ runMNLogit <- function(d,fraction=1){
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + numkids + born.here| logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + mortg.rent | logHHincome )
-	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  + numkids | logHHincome )
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  + numkids | logHHincome )
+	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + born.here | logHHincome )
 
 
 	# add a case id
-	d[,chID := paste0(upid,"_",age) ]
-	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100,chid="chID",linDepTol=0.0001)
+	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100,chid="upid2",linDepTol=0.0001)
+
+	if (!is.null(saveto)){
+		save(res,file=saveto)
+	}
 
 	return(res)
 }
@@ -428,26 +420,54 @@ runMNLogit <- function(d,fraction=1){
 #'
 #' @param res mnlogit result
 #' @param print.to location to print table
-#' @examples 
-simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/prediction.tex"){
+simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/"){
 
 	stopifnot(class(res) == "mnlogit" )
 
 	# get prediciton on estimation data
-	p <- direct.predict(res,probability=TRUE)
+	p <- data.table(direct.predict(res,probability=TRUE))
+	p[,upid2 := res$data[,unique(upid2)] ]
 
-	d <- copy(res$data)
-	# here same ordering in both
+	m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="prediction")
+	m[,move1 := moveto[ findInterval(runif(1), cumsum(value)) +1], by=upid2]
+	setkey(m,upid2,moveto)
 
-	d[, pred := as.numeric(p) ]
-	d[, move := runif(nrow(d)) <= pred ]
 
-	predTab <- d[distance>0, list(observed=sum(choice),predicted=sum(move)),by=move.to]
+	r <- copy(res$data)
+	setkey(r,upid2,moveto)
 
+	r[,sim.move := m[,move1 ] ]
+	r[,stay.model := FALSE]
+	r[move.to==sim.move & distance==0, stay.model:=TRUE]
+	r[,stay.data := FALSE]
+	r[distance==0 & choice==TRUE, stay.data := TRUE]
+	freqs <- r[,list(data.stay=sum(stay.data),model.stay=sum(stay.model)),by=move.to]
+
+	r[,move.to.model := NA_character_ ]
+	r[move.to==sim.move& distance > 0, move.to.model := sim.move]
+	r[,move.to.data := NA_character_ ]
+	r[distance > 0 & choice==TRUE, move.to.data:= move.to]
+
+	tmp <- r[,as.data.frame(table(move.to.model))]
+	freqs[,model.move.to := tmp$Freq]
+
+	tmp <- r[,as.data.frame(table(move.to.data))]
+	freqs[,data.move.to := tmp$Freq]
+
+	freqs[,dataN := data.stay + data.move.to]
+	freqs[,modelN := model.stay + model.move.to]
+
+	props <- freqs[,list(move.to,dat.stay=data.stay/dataN,dat.mv=data.move.to/dataN,mod.stay=model.stay/modelN,mod.mv=model.move.to/modelN)]
+	setcolorder(props,c(1,2,4,3,5))
+	props <- props[,lapply(.SD,round,3),.SDcols=2:5,by=move.to]
+	
 	if (!is.null(print.to)){
-	print(xtable(predTab,caption="prediction from logit model"),file=print.to,include.rownames=FALSE,floating=FALSE)
+	print(xtable(freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
+	print(xtable(props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
 	}
-	return(predTab)
+
+
+	return(list(props,freqs))
 }
 
 
@@ -468,6 +488,7 @@ simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/
 #' @param RE.coefs regression coefs from \code{\link{RE.HHincome}}
 #' @param verbose TRUE/FALSE
 #' @param saveto if not NULL, where to save
+#' @param saveto if not NULL, where to save small data
 #' @param movreg data.table with movers register. this is a data.table
 #' as produced by \code{\link{Sipp.Sumstats}}, with columns \code{from,to,upid,age} at the minium.
 #' @param with.FE TRUE if you want to make prediction in state k with 
@@ -479,9 +500,9 @@ simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 #' load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 #' mvt <- sumstats$mvtab
-#' mvt[,c("wave","mid","yearmon","from") := NULL]
+#' mvt[,c("wave","mid","from") := NULL]
 #' l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
-buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",movreg){
+buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData",movreg){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
@@ -550,6 +571,11 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	if (!is.null(saveto)){
 		if (verbose) cat("all done. saving file.\n")
 		save(l,file=saveto)
+		su <- l[,sample(unique(upid),size=round(0.3*length(unique(upid))))]
+		setkey(l,upid)
+		l <- l[.(su)]
+		save(l,file=savetosmall)
+
 	}
 
 	return(l)
@@ -587,7 +613,10 @@ mergePredIncomeMovingHist <- function(l,mvt){
 	yesmove <-  l[mvt]
 
 	yesmove <- DTSetChoice(yesmove)
-	yesmove[,c("to") := NULL]
+
+	# add column upid2
+	yesmove[,upid2 := paste0(upid,"_",yearmon) ]
+	yesmove[,c("to","yearmon") := NULL]
 
 
 
@@ -599,6 +628,10 @@ mergePredIncomeMovingHist <- function(l,mvt){
 	l[state==move.to , choice := TRUE ]
 
 	# stack back together
+
+	# add new col upid2 to l
+	l[,upid2 := paste0( upid,"_",age )]
+
 	setcolorder(yesmove,names(l))
 	l <- rbindlist(list(l,yesmove))
 	l[move.to==state, stay := TRUE]

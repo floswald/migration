@@ -22,7 +22,8 @@ Depends:
     devtools,
     xts,
     mnlogit,
-    testthat
+    testthat,
+	xtable
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
