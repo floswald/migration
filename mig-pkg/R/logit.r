@@ -658,3 +658,41 @@ savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.R
 }
 
 
+
+
+#' Housing Status Policy Function Model
+#'
+#' estimates the reduced form for housing status changes form data
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
+housingModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/housing.RData")
+
+	# loaded 4-monthly data
+
+	# throw away renters with positive house value
+	d <- d[(own==TRUE) | (own==FALSE & hvalue==0)]
+
+	# throw away negative incomes
+	d <- d[HHincome>0]
+
+	# change in ownership
+	d[,down := c(diff(as.numeric(own)),0),by=upid]
+	d[,buy := FALSE]
+	d[down==1, buy := TRUE]
+
+	# TODO for probit of house choice
+	# create current house value for renters from rent paid
+	d[own==FALSE, hvalue := mortg.rent * 12 / 0.075 ] 
+	d[hvalue!=0,y2p := HHincome / hvalue]
+	d[hvalue==0,y2p := 1 ]
+	d[hvalue!=0,w2p := wealth / hvalue]
+	d[hvalue==0,w2p := 1]
+
+	d[y2p>30, y2p := 30]
+
+	l <- list()
+
+	l$rent <- glm( buy ~  age + I(age^2) + HHincome + ns(w2p,knots=c(0.05,0.3)) + ns(y2p,knots=c(0.05,0.1,1))+ numkids, data=d[own==FALSE] )
+
+}
+
