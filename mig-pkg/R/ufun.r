@@ -14,10 +14,13 @@ makeTestData <- function(n,A,nm){
 	# everybody starts at 30 and lives up to max 60 say
 	ages <- 30:60
 	yrs <- 1995:2011
+	yrmn <- yrs*100 + sample(1:12,size=length(yrs),replace=T)
 
 	# list of num of years in panel for each guy
 	times <- data.table(id=1:n,maxages=sample(A,size=n,replace=TRUE))
-	times$year <- sample(yrs,size=n,replace=TRUE)
+	which.yrs <- sample(1:length(yrs),size=n,replace=TRUE)
+	times$year <- yrs[which.yrs]
+	times$yrmn <- yrmn[which.yrs]
 	times[times$year+times$maxages>max(yrs),]$year <- max(yrs) - times[times$year+times$maxages>max(yrs),]$maxages
 
 	setkey(times,id)
@@ -30,10 +33,12 @@ makeTestData <- function(n,A,nm){
 
 	age <- c()
 	year <- c()
+	yrmn <- c()
 	for (i in 1:n){
 	for (j in 1:times$maxages[i]){
 		age <- c(age,ages[j])
 		year <- c(year,times[.(i)][,year] + j)
+		yrmn <- c(yrmn,times[.(i)][,yrmn] + j)
 	}}
 
 	# states
@@ -49,7 +54,7 @@ makeTestData <- function(n,A,nm){
 	init <- cbind(init,coh)
 	setkey(init,upid)
 
-	tt <- data.table( upid=as.character(id), age=age, year=year)
+	tt <- data.table( upid=as.character(id), age=age, year=year, yearmon=yrmn)
 	tt[,c("logHHincome",
 		  "wealth",    
 		  "mortg.rent",
@@ -71,19 +76,25 @@ makeTestData <- function(n,A,nm){
 		}
 	}
 
-	mvtab <- data.table(upid=mv,age=0L,to="NA",key="upid")
+	mvtab <- data.table(upid=mv,age=0L,yearmon=0,to="NA",key="upid")
 
 	for (i in mv){
-		# if guy is only around for 1 year
 		mvage <- tt[.(i)][,sample(age,size=1)]
+		mvyrm <- tt[.(i)][,sample(yearmon,size=1)]
 		mvat <- tt[.(i)][,mvage:max(age)]
-		mvto <- tt[.(i,mvage)][,sample(st[-which(st==state)],size=1)]
+		cst  <- tt[.(i,mvage)][["state"]]
+		sst  <- st[-which(st==cst)]
+		mvto <- tt[.(i,mvage)][,sample(sst,size=1)]
 		tt[.(i,mvat), state := mvto]
 
 		# add to mvtab
 		mvtab[.(i),age := mvage]
+		mvtab[.(i),yearmon := mvyrm]
 		mvtab[.(i),to  := mvto]
 	}
+
+	# drop yrmn from big data
+	tt[,yearmon := NULL]
 
 	l <- list(dat=tt,movers=tt[.(mv)],mvtab=mvtab)
 	return(l)

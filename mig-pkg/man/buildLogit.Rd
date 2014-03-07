@@ -48,10 +48,10 @@ mvt[,c("wave","mid","from") := NULL]
 l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
 }
 \seealso{
-  Other IncomePrediction: \code{\link{RE.HHincome}},
-  \code{\link{getHomeValues}}, \code{\link{getIncomeM}},
-  \code{\link{getREintercept}},
-  \code{\link{makePrediction1}},
-  \code{\link{makePrediction2}}
+  Other LogitModel: \code{\link{DTSetChoice}},
+  \code{\link{mergeHomeValues}},
+  \code{\link{mergePredIncomeMovingHist}},
+  \code{\link{printLogitModel}}, \code{\link{runMNLogit}},
+  \code{\link{simMovesFromLogit}}
 }
 

@@ -23,7 +23,7 @@ Depends:
     xts,
     mnlogit,
     testthat,
-	xtable
+    xtable
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
@@ -32,3 +32,4 @@ Collate:
     'plots.r'
     'ufun.r'
     'factorModels.r'
+    'logit.r'

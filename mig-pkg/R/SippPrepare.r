@@ -148,8 +148,24 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
                 "ersnowrk")		# main reason for not working
 	which.core <- 1:12
 	which.tm <- c(2,3,6,9,12)
-	tk     <- list(c("ssuid", "epppnum", "eprstate", "ebrstate", "eprevres", "toutinyr", "tmovest", "eprevten"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+	tk     <- list(c("ssuid",		# 
+					 "epppnum", 	# 
+					 "eprstate", 	# previous state of residence
+					 "ebrstate", 	# state where born
+					 "eprevres", 	# previous state of residence
+					 "toutinyr", 	# year moved into previous state
+					 "tmovest",  	# year moved here
+					 "eprevten"),	# residence status in previous state
+	               c("ssuid",
+					 "epppnum",
+					 "thhtwlth",    # total HH wealth 
+					 "thhtheq",     # total HH home equity
+					 "thhmortg",    # HH mortgage principal
+					 "ehbuyyr",     # year bought
+					 "thomeamt",    # monthly rent/mortgage payment
+					 "thhintbk",    # Interest Earning assets held in banking institutions
+					 "thhintot",    # Interest Earning assets held in other institutions
+					 "tpropval"),   # how much do you think you could sell your house for today?
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))

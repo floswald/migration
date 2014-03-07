@@ -17,6 +17,7 @@ RE.coefs <- makeTestREcoefs(te=tt$dat)
 data(State_distMat_agg,package="EconData")
 
 
+context("income predictions.")
 
 # test getREintercept
 # ===================
@@ -120,15 +121,20 @@ test_that("test that homevalues merge is correct",{
 
 	yr   <- l[,list(year=unique(year)),by=move.to]
 	HV   <- getHomeValues()
+	
+	HV = HV[State %in% yr[,unique(move.to)] & year %in% yr[,unique(year)]]
 
-	setkey(HV,State,year)
-	setkey(l,move.to,year)
+	setkey(HV,year,State)
+	setkey(l,year,move.to)
 
 	expect_that( l[,list(sd=sd(HValue96,na.rm=T)),by=list(upid,age)][,min(sd) > 0], is_true() , label="Hvalue varies by person and age")
-	expect_that( all.equal( l[,list(hv=unique(HValue96)),by=list(move.to,year)][,hv], HV[yr[,list(move.to,year)]][,HValue96] ), is_true() )
+	expect_that( all.equal( l[,unique(HValue96)], HV[,unique(HValue96)] ), is_true() )
 
 })
 
+
+
+context("Discrete choice tests.")
 
 # test DTSetChoice
 # ================
@@ -174,7 +180,8 @@ test_that("mergePredIncomeMovingHist correct output", {
 
 	# get the movers in the age where they move
 	mdat <- 	tdat[tt$mvtab]
-	mdat[,c("from","to") := NULL]
+	mdat[,upid2 := paste0(upid,"_",yearmon) ]
+	mdat[,c("to","yearmon") := NULL]
 
 
 	# test: in l, all non-movers can have only one "stay" per age
@@ -219,6 +226,66 @@ test_that("mergePredIncomeMovingHist correct output", {
 	expect_that( l[move.to==state, all(stay)], is_true() )
 
 })
+
+
+
+
+# test logit predictions
+# ================
+
+context("Predictions from logit location choice model")
+
+
+test_that("makeMovingIndicatorsLogit is correct",{
+
+	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	tdat[,choice := FALSE]
+	tdat[,stay   := FALSE]
+
+	l <- mergePredIncomeMovingHist(tdat,tt$mvtab)
+
+	# get predicted probs of moving for each upid2
+	p <- replicate(n=l[,length(unique(move.to))],runif(n=l[,length(unique(upid2))]))
+	colnames(p) <- l[,unique(move.to)[order(unique(move.to))]]
+	p <- p / matrix(rowSums(p),nrow(p),ncol(p))
+
+	p <- data.table(p)
+	p[,upid2 := l[,unique(upid2)] ]
+	
+	m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
+
+	setkey(m,upid2,move.to)
+	setkey(l,upid2,move.to)
+
+	# compute test values
+	m <- simulateMoveLogit(m)
+	r <- copy(l)
+
+	# add to original data
+	l[,sim.move := m[,sim.move] ]
+	l[,stay.model := FALSE]
+	l[move.to==sim.move & distance==0, stay.model:=TRUE]
+	
+	l[,stay.data:= FALSE]
+	l[distance==0 & choice==TRUE, stay.data := TRUE]
+
+	expect_true( all.equal( l[,stay.data], l[,stay] ), label="original definition of stay and backed out def in stay.data" )
+
+
+	# test whether "move.to" columns are correct
+	l[,move.to.model := NA_character_ ]
+	l[move.to==sim.move & distance > 0, move.to.model := sim.move]
+	l[,move.to.data := NA_character_ ]
+	l[distance > 0 & choice==TRUE, move.to.data:= move.to]
+
+	r <- makeMovingIndicatorsLogit(r,m)
+
+	expect_true( all( l[!is.na(move.to.model),move.to.model] == r[!is.na(move.to.model),move.to.model] ) )
+	expect_true( all( l[!is.na(move.to.data),move.to.data] == r[!is.na(move.to.data),move.to.data] ) )
+
+}
+)
+
 
 
 
