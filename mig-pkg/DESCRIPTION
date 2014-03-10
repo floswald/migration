@@ -7,23 +7,27 @@ Author: Florian Oswald
 Maintainer: <florian.oswald@gmail.com>
 Description: implements a BBL estimator
 License: GPL-3
-Depends:
-    zoo,
-    data.table,
-    reshape2,
-    ggplot2,
-    RSQLite,
+Imports:
     stringr,
     nlme,
     texreg,
     survey,
     gridExtra,
     MARSS,
-    devtools,
+    quantreg,
+    RSQLite,
     xts,
+    splines,
+    xtable,
     mnlogit,
-    testthat,
-    xtable
+    ggplot2,
+    Hmisc
+Depends:
+    zoo,
+    data.table,
+    reshape2,
+    devtools,
+    testthat
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

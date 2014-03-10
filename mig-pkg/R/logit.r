@@ -213,39 +213,76 @@ getREintercept <- function(tmps,RE.coefs){
 #' get home values and adjust by inflation
 #'
 #' @family IncomePrediction
-getHomeValues <- function(){
+getHomeValues <- function(freq="yearly"){
 
 	data(HomeValues,package="EconData")
 	data(CPIHOSSL,package="EconData")	# monthly xts data on inflation
-	cpi.h <- xts::to.yearly(CPIHOSSL)[,1]
 
-	# set 1996 as base year
-	coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996'])
-	names(cpi.h) <- "cpiH"
+	if(freq=="yearly"){
+		cpi.h <- xts::to.yearly(CPIHOSSL)[,1]
 
-	cpi <- data.table(year=year(index(cpi.h)),cpiH=coredata(cpi.h),key="year")
-	setnames(cpi,c("year","cpiH"))
+		# set 1996 as base year
+		coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996'])
+		names(cpi.h) <- "cpiH"
 
-	# divide by 1000$
-	HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,year(qtr))]
-	setkey(HV,year)
+		cpi <- data.table(year=year(index(cpi.h)),cpiH=coredata(cpi.h),key="year")
+		setnames(cpi,c("year","cpiH"))
 
-	# adjust by inflation 
-	HV <- cpi[HV]
-	HV[,HValue96 := Home.Value / cpiH ]
-	HV[,c("cpiH","Home.Value") := NULL]
+		# divide by 1000$
+		HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,year(qtr))]
+		setkey(HV,year)
 
-	# aggregate states: c("ME.VT","ND.SD.WY")
-	HV.ME.VT <- HV[State %in% c("ME","VT"),list(HValue96 = mean(HValue96)),by=list(year)]
-	HV.ME.VT[, State := "ME.VT"]
-	HV.ND.SD.WY <- HV[State %in% c("ND","SD","WY"),list(HValue96 = mean(HValue96)),by=list(year)]
-	HV.ND.SD.WY[, State := "ND.SD.WY"]
+		# adjust by inflation 
+		HV <- cpi[HV]
+		HV[,HValue96 := Home.Value / cpiH ]
+		HV[,c("cpiH","Home.Value") := NULL]
 
-	# delete from table ...
-	HV <- HV[!State %in% c("ME","VT","ND","SD","WY")]
+		# aggregate states: c("ME.VT","ND.SD.WY")
+		HV.ME.VT <- HV[State %in% c("ME","VT"),list(HValue96 = mean(HValue96)),by=list(year)]
+		HV.ME.VT[, State := "ME.VT"]
+		HV.ND.SD.WY <- HV[State %in% c("ND","SD","WY"),list(HValue96 = mean(HValue96)),by=list(year)]
+		HV.ND.SD.WY[, State := "ND.SD.WY"]
 
-	# ... and add new states
-	HV <- rbind(HV,HV.ME.VT,HV.ND.SD.WY,use.names=TRUE)
+		# delete from table ...
+		HV <- HV[!State %in% c("ME","VT","ND","SD","WY")]
+
+		# ... and add new states
+		HV <- rbind(HV,HV.ME.VT,HV.ND.SD.WY,use.names=TRUE)
+
+	} else if (freq=="quarterly"){
+
+		cpi.h <- xts::to.quarterly(CPIHOSSL)[,1]
+
+		# set 1996 as base year
+		coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996-01-01'])
+		names(cpi.h) <- "cpiH"
+
+		cpi <- data.table(qtr=index(cpi.h),cpiH=coredata(cpi.h),key="qtr")
+		setnames(cpi,c("qtr","cpiH"))
+
+		# divide by 1000$
+		HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,qtr)]
+		setkey(HV,qtr)
+
+		# adjust by inflation 
+		HV <- cpi[HV]
+		HV[,HValue96 := Home.Value / cpiH ]
+		HV[,c("cpiH","Home.Value") := NULL]
+
+		# aggregate states: c("ME.VT","ND.SD.WY")
+		HV.ME.VT <- HV[State %in% c("ME","VT"),list(HValue96 = mean(HValue96)),by=qtr]
+		HV.ME.VT[, State := "ME.VT"]
+		HV.ND.SD.WY <- HV[State %in% c("ND","SD","WY"),list(HValue96 = mean(HValue96)),by=list(qtr)]
+		HV.ND.SD.WY[, State := "ND.SD.WY"]
+
+		# delete from table ...
+		HV <- HV[!State %in% c("ME","VT","ND","SD","WY")]
+
+		# ... and add new states
+		HV <- rbind(HV,HV.ME.VT,HV.ND.SD.WY,use.names=TRUE)
+
+
+	}
 
 	return(HV)
 }
@@ -254,7 +291,7 @@ getHomeValues <- function(){
 
 #' Run multinomial logit model of location choice
 #'
-#' @family LogitModel
+#' @family LogitModel FirstStage
 #' @examples 
 #' if (Sys.info()["user"] == "florianoswald" ){
 #' load("~/Dropbox/mobility/output/model/BBL/logit30.RData")
@@ -618,7 +655,7 @@ lme.getCoefs <- function(obj){
 #' estimates the reduced form for liquid savings form data
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.RData")
+savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.RData"){
 
 	# loaded 4-monthly data
 
@@ -639,8 +676,8 @@ savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.R
 	f2 <- formula(saving ~ age + I(age^2) + log(HHincome) + mortg.rent + numkids + wealth + own)
 
 	lms <- list()
-	lms[[1] <- lm(formula=f1, data=d)
-	lms[[2] <- lm(formula=f2, data=d)
+	lms[[1]] <- lm(formula=f1, data=d)
+	lms[[2]] <- lm(formula=f2, data=d)
 	
 	# if survey design
 	# coefs are identical
@@ -663,11 +700,15 @@ savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.R
 #' Housing Status Policy Function Model
 #'
 #' estimates the reduced form for housing status changes form data
+#' @param path
+#' @param marginal TRUE if marginal effects 
+#' @family FirstStage
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-housingModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/housing.RData")
+#' h <- housingModel(d=merged4mn)
+housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=FALSE){
 
-	# loaded 4-monthly data
+	# loaded 4-monthly data in d
 
 	# throw away renters with positive house value
 	d <- d[(own==TRUE) | (own==FALSE & hvalue==0)]
@@ -675,24 +716,150 @@ housingModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/housing.R
 	# throw away negative incomes
 	d <- d[HHincome>0]
 
+	# CAUTION
+	# remember that HHIncome is MONTHLY INCOME!!
+	d[,income := 12 * HHincome]
+
 	# change in ownership
+	setkey(d,upid,yrmnid)
 	d[,down := c(diff(as.numeric(own)),0),by=upid]
 	d[,buy := FALSE]
 	d[down==1, buy := TRUE]
+	d[,sell := FALSE]
+	d[down==-1, sell := TRUE]
 
-	# TODO for probit of house choice
-	# create current house value for renters from rent paid
-	d[own==FALSE, hvalue := mortg.rent * 12 / 0.075 ] 
-	d[hvalue!=0,y2p := HHincome / hvalue]
-	d[hvalue==0,y2p := 1 ]
-	d[hvalue!=0,w2p := wealth / hvalue]
-	d[hvalue==0,w2p := 1]
+	d[,dkids := c(diff(numkids),0),by=upid]
 
-	d[y2p>30, y2p := 30]
+	# get average home values
+	hv <- getHomeValues(freq="quarterly")
+	HV = hv[,list(state=State,qtr,HValue96)]
+	setkey(HV,state,qtr)
+	setkey(d,state,qtr)
 
-	l <- list()
+	d <- HV[d]
+	d[,p2y := HValue96 / income ] 
+	d[wealth!= 0,p2w := HValue96 / wealth] 
+	d[,age2 := age^2 ]
 
-	l$rent <- glm( buy ~  age + I(age^2) + HHincome + ns(w2p,knots=c(0.05,0.3)) + ns(y2p,knots=c(0.05,0.1,1))+ numkids, data=d[own==FALSE] )
+	rent <- d[own==FALSE,list(state,qtr,HValue96,income,numkids,HHweight,educ,age,age2,sex,wealth,mortg.rent,duration_at_current,born.here,p2y,p2w,buy,dkids)]
 
+	# throw out all cases with some NA
+	rent = rent[complete.cases(rent)]
+
+	own <- d[own==TRUE,list(state,qtr,hvalue,income,numkids,HHweight,educ,age,age2,sex,mortg.rent,home.equity,duration_at_current,born.here,p2y,p2w,sell,wealth,dkids)]
+
+	own = own[complete.cases(own)]
+
+	# models
+	m <- list()
+	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent ,data=rent,family=binomial(link="probit"),x=TRUE) 
+	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) + ns(p2w)  + mortg.rent ,data=rent,family=binomial(link="probit"),x=TRUE) 
+
+	m$sellspline <- glm(sell ~ age + age2+dkids+income+ ns(home.equity,df=2) + mortg.rent + duration_at_current,data=own,family=binomial(link="probit"),x=TRUE)
+	
+	m$selllinear <- glm(sell ~ age + age2+dkids+income+ home.equity + mortg.rent + duration_at_current,data=own,family=binomial(link="probit"),x=TRUE)
+
+
+	# compute marginal effects
+	mab <- lapply(m,erer::maBina)
+
+	# get coefficients
+	coefs <- lapply(m,coef)
+
+
+	if (!is.null(path)){
+
+		save(coefs,file=file.path(path,"housingCoefs.RData"))
+
+		if (marginal){
+
+			texreg(mab[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.tex"),caption="marginal effects at sample mean of x",table=FALSE)
+			htmlreg(mab[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.html"),caption="marginal effects at sample mean of x")
+
+			texreg(mab[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.tex"),caption="marginal effects at sample mean of x",table=FALSE)
+			htmlreg(mab[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.html"),caption="marginal effects at sample mean of x")
+
+		} else {
+
+
+			texreg(m[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.tex"),caption="coefficient estimates",table=FALSE)
+			htmlreg(m[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.html"),caption="coefficient estimates")
+
+			texreg(m[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.tex"),caption="coefficient estimates",table=FALSE)
+			htmlreg(m[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.html"),caption="coefficient estimates")
+		
+		}
+
+	}
+
+	screenreg(m,digits=4,custom.model.names=names(m),stars=c(0.01,0.05,0.1))
+	return(m)
+
+}
+
+
+
+#' Savings policy function
+#' @param d dataset
+#' @param quants at which quantiles of savings to run quantile regression (default NULL)
+#' @param path where to save results
+#' @param plot if to plot mean/median savings
+#' @family FirstStage
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
+#' s <- savingsPolicy(d=merged4mn,quants=0.5)
+savingsPolicy <- function(d,quants=NULL,path="~/Dropbox/mobility/output/model/BBL",plot=FALSE){
+	
+	d[,age2 := age^2 ]
+	d[,w2 := HHweight / 10000 ] 
+	tab         <- d[,list(mean=weighted.mean(saving,w2),median=Hmisc::wtd.quantile(saving,weights=w2,probs=0.5)),by=age][order(age)]
+	#tab         <- d[,list(mean=mean(saving),median=median(saving)),by=age][order(age)]
+	mtab        <- melt(tab,"age")
+	setnames(mtab,c("age","savings","value"))
+	p           <- ggplot(mtab,aes(x=age,y=value,color=savings)) + geom_line(size=1) + theme_bw() + scale_y_continuous(name="amount in bank account. 1000 of 1996 dollars")
+
+	m <- list()
+
+	# should weight that regression
+	# TODO
+
+	m$OLS1 <- lm(saving ~ HHincome + wealth + age + age2 + mortg.rent + numkids,data=d)
+	m$OLS2 <- lm(saving ~ ns(HHincome,df=3) + ns(wealth,df=3) + age + age2 + mortg.rent + numkids,data=d)
+	
+
+	t1 <- proc.time()[3]
+	cat("entering quantile regression 1. stay tuned.\n")
+	m$quantreg <- quantreg::rq(saving ~ HHincome + wealth + age + age2 + mortg.rent + numkids,data=d,tau=quants,method="pfn")
+	cat(sprintf("quantile regression 1 took %g seconds\n",proc.time()[3]-t1))
+
+	# summaries
+	#s <- list()
+	#s$quantreg <- summary(m$quantreg,cov=TRUE)
+	
+	# coefs
+	save.coefs <- list()
+	save.coefs$OLS <- coef(m$OLS)
+	save.coefs$quantreg <- coef(m$quantreg)
+	#save.coefs$quantreg <- s$quantreg$coefficients
+
+
+	# print to tex
+
+	if (!is.null(path)){
+
+		if (plot){
+		pdf(file.path(path,"median-saving.pdf"))
+		print(p)
+		dev.off()
+		}
+
+		save(save.coefs,file=file.path(path,"savings.RData"))
+
+		texreg(m,custom.model.names=names(m),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"savings.tex"),table=FALSE)
+		htmlreg(m,custom.model.names=names(m),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"savings.html"),caption="savings policy estimates")
+
+	}
+
+	return(m)
 }
 

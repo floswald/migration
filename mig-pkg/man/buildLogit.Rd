@@ -51,7 +51,7 @@ l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
   Other LogitModel: \code{\link{DTSetChoice}},
   \code{\link{mergeHomeValues}},
   \code{\link{mergePredIncomeMovingHist}},
-  \code{\link{printLogitModel}}, \code{\link{runMNLogit}},
+  \code{\link{printLogitModel}},
   \code{\link{simMovesFromLogit}}
 }
 

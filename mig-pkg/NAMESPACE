@@ -1,2 +1,21 @@
 
 exportPattern("^[[:alpha:]]+")
+
+
+import(RSQLite)
+import(data.table)
+import(ggplot2)
+import(nlme)
+import(reshape2)
+import(stringr)
+import(survey)
+import(texreg)
+import(zoo)
+import(gridExtra)
+import(quantreg)
+import(splines)
+import(xtable)
+import(MARSS)
+import(xts)
+	
+

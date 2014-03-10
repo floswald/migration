@@ -16,7 +16,7 @@
 }
 \examples{
 data(FHFA_states,package="EconData")
-dd <- states$qtr[state \%in\% sample(unique(state),size=20)]
+dd <- FHFA.states$qtr[state \%in\% sample(unique(state),size=20)]
 l <- dynPrices(dat=dd,facs=3,maxite=300,demean=TRUE,detrend=TRUE,meth="BFGS")
 sim <- MARSSsimulate(l,tSteps=20,nsim=1)
 matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
