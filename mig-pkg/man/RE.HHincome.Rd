@@ -19,7 +19,8 @@
 \details{
   model is for income in location j is \itemize{ \item
   log(y_ijt) = beta_j + gamma'X_it + mu_i + v_it, where
-  \itemize{ \item v_it = rho v_it-1 + eps_it \item eps ~
+  \itemize{ \item y_ijt is log income of HH i in MONTH t in
+  location j \item v_it = rho v_it-1 + eps_it \item eps ~
   iid N(0,sigma_eps), \item mu ~ iid N(0,sigma_mu), \item
   mu independent of v_it. v_i0 ~ N(0,sigma_eps^2 /
   (1-rho^2)) \item The random effects assumption is

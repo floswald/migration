@@ -17,3 +17,6 @@ logit30:
 
 buildLogit:
 	Rscript -e "library(migration); example(buildLogit)"
+
+plotHPI:
+	Rscript -e "library(migration); example(plot.FHFAindex); example(plot.LincolnHomeValues)"

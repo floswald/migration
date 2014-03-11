@@ -16,8 +16,8 @@ scree <- function(m){
 #' @examples
 #' data(FHFA_states,package="EconData")
 #' dd <- FHFA.states$qtr[state %in% sample(unique(state),size=20)]
-#' plot.TimeMatrix(dd)
-plot.TimeMatrix <- function(dat,saveto="~/Dropbox/mobility/output/model/factor/fhfa.pdf"){
+#' plot.FHFAindex(dd)
+plot.FHFAindex <- function(dat,saveto="~/Dropbox/mobility/output/model/factor/fhfa.pdf"){
 
 	# detrend data
 		detmod <- lm(index_sa ~ quarter*state,data=dat)
@@ -35,17 +35,166 @@ plot.TimeMatrix <- function(dat,saveto="~/Dropbox/mobility/output/model/factor/f
 	pdf(file=saveto)
 	par(mfcol=c(2,2))
 
-		dat[state==st[1],plot(Date,index_sa,type="l",ylim=c(90,350),main="observed index")]
-		for (i in st[-1]) dat[state==i,lines(Date,index_sa)]
 
-		dat[state==st[1],plot(Date,detr,type="l",ylim=c(-100,120),main="detrended index")]
-		for (i in st[-1]) dat[state==i,lines(Date,detr)]
+	r <- dat[,range(index_sa)]
+	dat[state==st[1],plot(Date,index_sa,type="l",ylim=r,main="observed index")]
+	for (i in st[-1]) dat[state==i,lines(Date,index_sa)]
 
-		dat[state==st[1],plot(Date,y1,type="l",ylim=c(-3,3),main="z-score of observed index")]
-		for (i in st[-1]) dat[state==i,lines(Date,y1)]
+	r <- dat[,range(detr)]
+	dat[state==st[1],plot(Date,detr,type="l",ylim=r,main="detrended index\n(time dummies)")]
+	for (i in st[-1]) dat[state==i,lines(Date,detr)]
 
-		dat[state==st[1],plot(Date,y2,type="l",ylim=c(-3,3),main="z-score of deviation from\n linear trend")]
-		for (i in st[-1]) dat[state==i,lines(Date,y2)]
+	r <- dat[,range(y1)]
+	dat[state==st[1],plot(Date,y1,type="l",ylim=r,main="z-score of observed index",ylab="z")]
+	for (i in st[-1]) dat[state==i,lines(Date,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[state==st[1],plot(Date,y2,type="l",ylim=r,main="z-score of deviation from\n time (dummy) trend",ylab="z'")]
+	for (i in st[-1]) dat[state==i,lines(Date,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+}
+
+#' Plot different Lincoln Inst. House Values
+#'
+#' @examples
+#' data(HomeValues,package="EconData")
+#' dd <- HomeValues[State %in% sample(unique(State),size=20)]
+#' plot.LincolnHomeValues(dd)
+plot.LincolnHomeValues <- function(dat,saveto="~/Dropbox/mobility/output/model/factor"){
+
+	# detrend data
+	setnames(dat,"Home.Price.Index","hpi")
+
+	detmod <- lm(hpi ~ qtr*State,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(hpi- mean(hpi))/sd(hpi)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHPI.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(hpi)]
+	dat[State==st[1],plot(qtr,hpi,type="l",ylim=r,main="observed index")]
+	for (i in st[-1]) dat[State==i,lines(qtr,hpi)]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,main="detrended index\n(time dummies)")]
+	for (i in st[-1]) dat[State==i,lines(qtr,detr)]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,main="z-score of observed index",ylab="z")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,main="z-score of deviation from\n time (dummy) trend",ylab="z'")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+	
+	# same for HomeValues
+	# ===================
+
+	# with and without inflation adustment
+
+	# without
+	detmod <- lm(Home.Value ~ qtr*State,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(Home.Value- mean(Home.Value))/sd(Home.Value)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHomeValues.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(Home.Value)]
+	dat[State==st[1],plot(qtr,Home.Value,type="l",ylim=r,main="observed values",ylab="current dollars")]
+	for (i in st[-1]) dat[State==i,lines(qtr,Home.Value,ylab="")]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,main="detrended values\n(time dummies)",ylab="current dollars")]
+	for (i in st[-1]) dat[State==i,lines(qtr,detr,ylab="")]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,main="z-score of observed values",ylab="z")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,main="z-score of value deviation \nfrom time (dummy) trend",ylab="z'")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+
+
+	# with
+
+	data(CPIHOSSL,package="EconData")
+	cpi.h <- xts::to.quarterly(CPIHOSSL)[,1]
+		
+	coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996-01-01'])
+	names(cpi.h) <- "cpiH"
+
+	cpi <- data.table(qtr=index(cpi.h),cpiH=coredata(cpi.h),key="qtr")
+	setnames(cpi,c("qtr","cpiH"))
+	setkey(cpi,qtr)
+	setkey(dat,qtr)
+
+	dat <- cpi[dat]
+	dat[,HValue96 := Home.Value / cpiH ]
+
+	detmod <- lm(HValue96 ~ qtr*State,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(HValue96- mean(HValue96))/sd(HValue96)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHomeValuesInflation.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(HValue96)]
+	dat[State==st[1],plot(qtr,HValue96,type="l",ylim=r,ylab="1996 dollars")]
+	title(main="observed values",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,HValue96,ylab="")]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,ylab="1996 dollars")]
+	title(main="detrended values\n(time dummies)",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,detr,ylab="")]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,ylab="z")]
+	title(main="z-score of observed values",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,ylab="z'")]
+	title(main="z-score of value deviation \nfrom time (dummy) trend",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
 
 	par(mfcol=c(1,1))
 	dev.off()
@@ -54,18 +203,20 @@ plot.TimeMatrix <- function(dat,saveto="~/Dropbox/mobility/output/model/factor/f
 
 #' construct a numeric matrix with time varying across columns
 #'
-#' @param dat data.frame in long format from data(FHFA_states,package="EconData")
+#' @param dat data.frame in long format with columns y, quarter and state
 #' @param demean TRUE/FALSE
 #' @param detrend TRUE/FALSE
 #' @return list with detrended data matrix and data.table with means and sds
 makeTimeMatrix <- function(dat,detrend=TRUE,demean=TRUE){
 
+	stopifnot( c("y","quarter","state") %in% names(dat) )
+
 	# detrend data
 	if (detrend){
-		detmod <- lm(index_sa ~ quarter*state,data=dat)
+		detmod <- lm(y ~ quarter*state,data=dat)
 		dat[,detr := residuals(detmod)]
 	} else {
-		dat[,detr := index_sa]
+		dat[,detr := y]
 		detmod <- NULL
 	}
 
@@ -82,28 +233,6 @@ makeTimeMatrix <- function(dat,detrend=TRUE,demean=TRUE){
 	# plot all
 	st = dat[,unique(state)]
 
-	if (demean & detrend){
-
-		dat[state==st[1],plot(Date,y,type="l",ylim=c(-3,3),main="z-score of deviation from linear trend for all states")]
-		for (i in st[-1]) dat[state==i,lines(Date,y)]
-
-	} else if (demean & !detrend){
-
-		dat[state==st[1],plot(Date,y,type="l",ylim=c(-3,3),main="z-score of observed index")]
-		for (i in st[-1]) dat[state==i,lines(Date,y)]
-
-	} else if (!deman & detrend){
-		
-		dat[state==st[1],plot(Date,y,type="l",ylim=c(90,350),main="demeaned index")]
-		for (i in st[-1]) dat[state==i,lines(Date,y)]
-
-	} else {
-
-		dat[state==st[1],plot(Date,y,type="l",ylim=c(90,350),main="observed index")]
-		for (i in st[-1]) dat[state==i,lines(Date,y)]
-
-	}
-
 	# bring into right shape
 	m <- reshape(dat[,list(state,quarter,y)],timevar="quarter",idvar="state",direction="wide")
 	st <- m[,state]
@@ -119,12 +248,37 @@ makeTimeMatrix <- function(dat,detrend=TRUE,demean=TRUE){
 	return(out)
 
 }
+	
 
 
-#' MARSS Dynamic Factor Model for Prices
+#' Dynamic Factor model for Lincoln Home Values
+#'
+#' @examples
+#' data(HomeValues,package="EconData")
+#' dat <- HomeValues
+#' data(CPIHOSSL,package="EconData")
+#' cpi.h <- xts::to.quarterly(CPIHOSSL)[,1]
+#' coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996-01-01'])
+#' names(cpi.h) <- "cpiH"
+#' cpi <- data.table(qtr=index(cpi.h),cpiH=coredata(cpi.h),key="qtr")
+#' setnames(cpi,c("qtr","cpiH"))
+#' setkey(cpi,qtr)
+#' setkey(dat,qtr)
+#' dat <- cpi[dat]
+#' dat[,HValue96 := Home.Value / cpiH ]
+#' setnames(dat,c("qtr","HValue96","State"),c("quarter","y","state"))
+#' m <- dynPrices(dat=dat,facs=3,maxite=300,demean=TRUE,detrend=TRUE,meth="BFGS")
+runDynFactorsLincoln <- function(){
+	NULL
+}
+
+
+
+#' MARSS Dynamic Factor Model for House Prices
 #'
 #' estimates a dynamic factor model
-#' @param dat dataset from data(FHFA_states,package="EconData")
+#' 
+#' @param dat dataset of House Prices
 #' @param facs number of hidden factors
 #' @examples
 #' data(FHFA_states,package="EconData")
@@ -135,7 +289,9 @@ makeTimeMatrix <- function(dat,detrend=TRUE,demean=TRUE){
 #' matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")
 dynPrices <- function(dat,facs,maxite=50,detrend=TRUE,demean=TRUE,meth="kem"){
 
-	m <- makeTimeMatrix(dat,detrend,demean)
+	mmat <- makeTimeMatrix(dat,detrend,demean)
+
+	m <- mmat$m
 
 	# plot for 6 states
 	#sst <- sample(st,5)

@@ -1,13 +1,12 @@
 \name{dynPrices}
 \alias{dynPrices}
-\title{MARSS Dynamic Factor Model for Prices}
+\title{MARSS Dynamic Factor Model for House Prices}
 \usage{
   dynPrices(dat, facs, maxite = 50, detrend = TRUE,
     demean = TRUE, meth = "kem")
 }
 \arguments{
-  \item{dat}{dataset from
-  data(FHFA_states,package="EconData")}
+  \item{dat}{dataset of House Prices}
 
   \item{facs}{number of hidden factors}
 }
