@@ -227,7 +227,12 @@ backOutPrices <- function(l,n,N=1){
 
 	# states involved
 	st <- rownames(l$marss$model$data)
-	dates=l$orig[,as.yearqtr(seq(from=min(as.Date(date)),length.out=n,by="3 months"))]
+
+	if (l$orig[,class(date)=="yearqtr"]){
+		dates=l$orig[,as.yearqtr(seq(from=min(as.Date(date)),length.out=n,by="3 months"))]
+	} else if (l$orig[,class(date)=="integer"]){
+		dates=l$orig[,seq(from=min(date),length.out=n,by=1)]
+	}
 
 
 
@@ -238,18 +243,22 @@ backOutPrices <- function(l,n,N=1){
 	dimnames(sim$sim.data) = list(state=st,date=dates,sim=paste0(1:N))
 	for (i in st) unzi[i, , ] <- sim$sim.data[i, , ] * l$datmod$zmod[state==i][["sd"]] + l$datmod$zmod[state==i][["mean"]]
 
-	# add linear trend to that
+	# add linear trend to that, if you had one
 	# newdata for prediction
-	newd <- data.table(expand.grid(date=dates,state=st))
-	for (i in st) unzi[i, , ] <- unzi[i, , ] + predict(l$datmod$detmod,newdata=newd[state==i])
+	if (!is.null(l$datmod$detmod)){
+
+		newd <- data.table(expand.grid(date=dates,state=st))
+		for (i in st) unzi[i, , ] <- unzi[i, , ] + predict(l$datmod$detmod,newdata=newd[state==i])
+
+	}
 
 	# melt
 	m <- melt(unzi)
 	out <- list(arr=unzi,molten=m)
 
-	ggplot(m,aes(x=date,y=value,color=state)) + geom_line() + facet_wrap(~sim)
+	out$p <- ggplot(m,aes(x=date,y=value,color=state)) + geom_line() + facet_wrap(~sim)
 
-	return(unzi)
+	return(out)
 
 }
 

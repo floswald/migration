@@ -124,17 +124,34 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	reg[,Date := as.Date(paste(year,"01","01",sep="-"))]
 	div[,Date := as.Date(paste(year,"01","01",sep="-"))]
 
+	# normal simulation
+
+	d[,c("meanY","sdY") := list(mean(medinc),sd(medinc)),by=state]
+	d[,sim := rnorm(n=1,mean=meanY,sd=sdY),by=list(state,Date)]
+	setkey(d,state,Date)
+
 	# plots
 	plist <- list()
-	yscale <- scale_y_continuous(name="median annual income in 1000 dollars",limits=c(30,80))
-	yscale2 <- scale_y_continuous(name="median annual income in 1000 dollars")
+	tstring <- "median income 1000s 2012$"
+	yscale <- scale_y_continuous(name=tstring,limits=d[,range(medinc/1000)])
+	yscale2 <- scale_y_continuous(name=tstring)
 
-	plist$regs <- ggplot(reg,aes(x=Date,y=medinc/1000,color=Region,group=Region)) + geom_line(size=1)+ ggtitle('median income income in 2012 dollars')  + yscale2
-	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle('median income in 2012 dollars')  + yscale2
+	plist$regs <- ggplot(reg,aes(x=Date,y=medinc/1000,color=Region,group=Region)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2
+	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2
 
-	plist$divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=medinc/1000,color=STATE)) + geom_line(size=1)+ ggtitle(x) + yscale )
+	plist$divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + yscale )
+	
 
-	plist$regstate <- lapply(d[,unique(Region)], function(x) ggplot(d[Region==x], aes(x=Date,y=medinc/1000,color=STATE)) + geom_line(size=1)+ ggtitle(x)  + yscale)
+
+
+	plist$sim_divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=sim/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + scale_y_continuous(name="simulate income",limits=d[,range(medinc/1000)]) )
+
+
+
+
+
+
+	plist$regstate <- lapply(d[,unique(Region)], function(x) ggplot(d[Region==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x)  + yscale)
 
 	pdf(file=file.path(saveto,"reg.pdf"))
 	print(plist$regs)
@@ -144,20 +161,53 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	print(plist$divs)
 	dev.off()
 
-	pdf(file=file.path(saveto,"regstate.pdf"),width=20,height=18)
-	do.call(grid.arrange,plist$regstate)
+	pdf(file=file.path(saveto,"regstate.pdf"),width=16,height=10)
+	multiplot(plotlist=plist$regstate,layout=matrix(1:6,nrow=2,byrow=TRUE))
 	dev.off()
 	
-	pdf(file=file.path(saveto,"divstate.pdf"),width=20,height=18)
-	do.call(grid.arrange,plist$divstate)
+	pdf(file=file.path(saveto,"divstate.pdf"),width=16,height=10)
+	multiplot(plotlist=plist$divstate,layout=matrix(1:9,nrow=3,byrow=TRUE))
 	dev.off()
 
+	pdf(file=file.path(saveto,"sim_divstate.pdf"),width=16,height=10)
+	multiplot(plotlist=plist$sim_divstate,layout=matrix(1:9,nrow=3,byrow=TRUE))
+	dev.off()
 
 
 	return(plist)
 
 }
 	
+
+
+
+#' Make Tables with House Value stats
+#'
+makeTablesHValue96 <- function(path="~/Dropbox/mobility/output/data/Lincoln"){
+	data(HValue96_dynF_yearly)
+	d <- copy(dat) 
+	data(US_states,package="EconData")
+	US_states[,c("FIPS","STATE","Reg_ID","Div_ID") := NULL]
+	setkey(d,state)
+	setkey(US_states,state)
+	# merge
+	d <- US_states[d]
+	setkey(d,state,date)
+	d[,dHomeval := c(diff(y),NA),by=state]
+	d[,logdHomeval := c(diff(log(y)),NA),by=state]
+	d[,divVal := mean(y),by=list(date,Division)]
+
+	ta <- list()
+	ta$growth <- d[,list(bound=c("lower","upper"),level=range(y,na.rm=T),growth=range(dHomeval,na.rm=T),loggrowh=range(logdHomeval,na.rm=T),meanloggrowth=mean(logdHomeval,na.rm=T),varloggrowth=var(logdHomeval,na.rm=T)),by=Division]
+						  
+
+	ta$means <- d[,.SD[,list(MeanDevFromDiv=mean(y)-mean(divVal)),by=state],by=Division]
+
+	print(xtable(ta$growth,digits=c(1,1,1,0,0,3,4,4)),include.rownames=FALSE,file=file.path(path,"growthHValue96.tex"),floating=FALSE,booktabs=TRUE)
+	print(xtable(ta$means),include.rownames=FALSE,digits=4,file=file.path(path,"meanHValue96.tex"),floating=FALSE,booktabs=TRUE)
+
+	return(ta)
+}
 
 
 
@@ -221,9 +271,12 @@ plotHousePrices <- function(d,response,FD=FALSE,saveto="~/Dropbox/mobility/outpu
 
 	plist <- list()
 
+	# my color scale
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
 	# compare divisions
 	dd <- d[,list(y= mean(y),FDindex=mean(FDindex)),by=list(Division,date)]
-	plist$divs <- ggplot(dd,aes(x=date,y=y,color=Division)) + geom_line(size=1) + theme_bw() + ggtitle(paste0(response,' by Census Division')) 
+	plist$divs <- ggplot(dd,aes(x=date,y=y,color=Division)) + geom_line(size=1) + theme_bw() + ggtitle(paste0(response,' by Census Division')) + scale_color_manual(values=cbPalette)
 
 	pdf(file=file.path(saveto,"div.pdf"))
 	print(plist$divs)
