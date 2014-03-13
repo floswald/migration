@@ -19,4 +19,9 @@ buildLogit:
 	Rscript -e "library(migration); example(buildLogit)"
 
 plotHPI:
-	Rscript -e "library(migration); example(plot.FHFAindex); example(plot.LincolnHomeValues)"
+	Rscript -e "library(migration); example(plotHousePrices)"
+
+dynP:
+	Rscript -e "library(migration); example(dynPrices)"
+
+

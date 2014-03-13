@@ -1,5 +1,51 @@
 
 
+#' Multiple plot function
+#
+#' ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+#' 
+#' @param plotlist list of ggplots
+#' @param cols Number of columns in layout
+#' @param layout matrix specifying the layout. If present, 'cols' is ignored.
+#' If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+#' then plot 1 will go in the upper left, 2 will go in the upper right, and
+#' 3 will go all the way across the bottom.
+#' @author http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+multiplot <- function(..., plotlist=NULL, cols=1, layout=NULL) {
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
 
 # plotting functions
 
@@ -121,18 +167,36 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 
 
 
-#' Plot FHFA house price index series
+#' Plot different house price index series
 #'
-#' group states by region and plot
-#' price series
+#' groups series by states, region and division and plots
+#' 
+#' @param d dataset. must contain columns Date, State and a response variable
+#' @param response string of response var name
 #' @param saveto location where to save plots
+#' @param FD wether to first difference the series
 #' @return list of ggplots
-plotHousePrices <- function(saveto="~/Dropbox/mobility/output/data/FHFA/"){
+#' @examples
+#' ## FHFA indices
+#' data(FHFA_states,package="EconData")
+#' d <- copy(FHFA.states$qtr)
+#' plotHousePrices(d=d,response="index_sa")
+#' rm(d)
+#' ## Lincoln House values
+#' data(HValue96_dynF_quarterly)
+#' d <- copy(dat)
+#' d[,date := as.Date(date)]
+#' setnames(d,"y","HValue96")
+#' plotHousePrices(d=d,response="HValue96",saveto="~/Dropbox/mobility/output/data/Lincoln/")
+plotHousePrices <- function(d,response,FD=FALSE,saveto="~/Dropbox/mobility/output/data/FHFA/"){
 
-	data(FHFA_states,package="EconData")
+	
+	setnames(d,names(d),tolower(names(d)))
+	response <- tolower(response)
+	stopifnot(c("state","date") %in% names(d))
+	stopifnot( !(c("y") %in% names(d)))
 
-	d <- states$qtr
-	d[,note:= NULL]
+	setnames(d,response,"y")
 
 	# group by census division
 
@@ -144,47 +208,344 @@ plotHousePrices <- function(saveto="~/Dropbox/mobility/output/data/FHFA/"){
 
 	# merge
 	d <- US_states[d]
+	setkey(d,state,date)
+
+	# don't do any first differencing
+
+
+	d[,FDindex := c(diff(y),NA),by=state]
+	d <- d[complete.cases(d)]
+
 	div <- d[,unique(Division)]
 	reg <- d[,unique(Region)]
 
 	plist <- list()
 
 	# compare divisions
-	dd <- d[,list(index_sa = mean(index_sa)),by=list(Division,Date)]
-	plist$divs <- ggplot(dd,aes(x=Date,y=index_sa,color=Division)) + geom_line(size=1) + theme_bw() + ggtitle('FHFA indices by Census Division') 
+	dd <- d[,list(y= mean(y),FDindex=mean(FDindex)),by=list(Division,date)]
+	plist$divs <- ggplot(dd,aes(x=date,y=y,color=Division)) + geom_line(size=1) + theme_bw() + ggtitle(paste0(response,' by Census Division')) 
 
 	pdf(file=file.path(saveto,"div.pdf"))
 	print(plist$divs)
 	dev.off()
 
+
 	# compare regions
-	dd <- d[,list(index_sa = mean(index_sa)),by=list(Region,Date)]
-	plist$regs <- ggplot(dd,aes(x=Date,y=index_sa,color=Region)) + geom_line(size=1) + theme_bw() + ggtitle('FHFA indices by Census Region') 
+	dd <- d[,list(y = mean(y),FDindex=mean(FDindex)),by=list(Region,date)]
+	plist$regs <- ggplot(dd,aes(x=date,y=y,color=Region)) + geom_line(size=1) + theme_bw() + ggtitle(paste0(response,' by Census Region') )
 
 	pdf(file=file.path(saveto,"reg.pdf"))
 	print(plist$regs)
 	dev.off()
 
+
 	# plots grouping states by divisions
-	yscale <- scale_y_continuous(name="FHFA index",limits=c(85,360))
+	yscale <- scale_y_continuous(name=response,limits=d[,range(y)] )
 
 
-	plist$bydiv <- lapply(div, function(z) ggplot(d[Division==z],aes(x=Date,y=index_sa,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
+	plist$bydiv <- lapply(div, function(z) ggplot(d[Division==z],aes(x=date,y=y,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
 
 	pdf(file=file.path(saveto,"bydiv.pdf"),width=14,height=8)
-	do.call(grid.arrange,plist$bydiv)
+	multiplot(plotlist=plist$bydiv,layout=matrix(1:9,nrow=3,byrow=TRUE))
 	dev.off()
+
 
 	# plots grouping states by regions
-	plist$byreg <- lapply(reg, function(z) ggplot(d[Region==z],aes(x=Date,y=index_sa,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
+	plist$byreg <- lapply(reg, function(z) ggplot(d[Region==z],aes(x=date,y=y,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
 
 	pdf(file=file.path(saveto,"byreg.pdf"),width=14,height=9)
-	do.call(grid.arrange,plist$byreg)
+	multiplot(plotlist=plist$byreg,layout=matrix(1:4,nrow=2,byrow=TRUE))
 	dev.off()
 
+
+	# first differencing plots
+
+	if (FD){
+
+		# compare FD of divisions
+		plist$FDdivs <- ggplot(dd,aes(x=date,y=FDindex,color=Division)) + geom_line(size=1) + theme_bw() + ggtitle(paste0('FD of ',response,' by Census Division') )
+
+		pdf(file=file.path(saveto,"FDdiv.pdf"))
+		print(plist$FDdivs)
+		dev.of()
+
+		# FD
+		plist$FDregs <- ggplot(dd,aes(x=date,y=FDindex,color=Region)) + geom_line(size=1) + theme_bw() + ggtitle(paste0('FD of ',response,' by Census Region') )
+
+		pdf(file=file.path(saveto,"FDreg.pdf"))
+		print(plist$FDregs)
+		dev.off()
+		# FD
+		
+		plist$FDbydiv <- lapply(div, function(z) ggplot(d[Division==z],aes(x=date,y=FDindex,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw())
+
+		pdf(file=file.path(saveto,"FDbydiv.pdf"),width=14,height=8)
+		multiplot(plotlist=plist$FDbydiv,layout=matrix(1:9,nrow=3,byrow=TRUE))
+		dev.off()
+
+
+		# FD
+		plist$FDbyreg <- lapply(reg, function(z) ggplot(d[Region==z],aes(x=date,y=FDindex,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() )
+
+		pdf(file=file.path(saveto,"FDbyreg.pdf"),width=14,height=9)
+		multiplot(plotlist=plist$FDbyreg,layout=matrix(1:4,nrow=2,byrow=TRUE))
+		dev.off()
+
+	}
 
 
 	return(plist)
 
+}
+
+
+
+
+
+
+#' Plot normalization of Prices
+#'
+#' @examples
+#' data(HValue96_dynF_quarterly)
+#' m <- makeTimeMatrix(dat)
+#' plotNormalization(d=dat,mod=m$detmod,saveto=NULL)
+plotNormalization <- function(d,mod,saveto="~/Dropbox/mobility/output/model/factor"){
+
+	# sample 4 states
+	d <- d[state %in% sample(unique(state),size=4)]
+
+	if (!is.null(saveto))	pdf(file=file.path(saveto,"normalization.pdf"))
+	par(mfcol=c(2,2))
+	for (i in d[,unique(state)] ){
+
+		newd <- d[state==i]
+		d[state==i,plot(date,Home.Value,main=i)]
+		#abline(a=sum(coef(m$detmod)[c("(Intercept)","stateCA")]),b=coef(m$detmod)["date"])
+		lines(newd[,date],predict(mod,newdata=newd),col="red")
+
+	}
+	if (!is.null(saveto))	dev.off()
+	par(mfcol=c(1,1))
+
+}
+
+
+#' Plot factor model Time Matrix
+#'
+#' @examples
+#' data(HValue96_dynF_quarterly)
+#' m <- makeTimeMatrix(dat)
+#' p <- plotTimeMatrix(m,FD=FALSE)
+plotTimeMatrix <- function(m,FD,saveto="~/Dropbox/mobility/output/model/factor"){
+
+	stopifnot(c("m","detmod","zmod","idx") %in% names(m))
+
+	mm <- m$m
+	nas <- (1:ncol(mm))[!is.na(mm[1, ])]
+
+	mm <- mm[,nas]
+
+	d <- data.table(mm)
+	setnames(d,as.character(m$idx))
+	d[, state := rownames(mm)]
+
+	dm <- melt(d,id.vars="state",variable.name="variable",value.name="price")
+	dm[,date := as.Date(as.yearqtr(variable))]
+	dm[,variable :=NULL]
+
+	p <- plotHousePrices(d=dm,response="price",FD,saveto)
+
+	return(p)
+}
+
+
+
+#' Plot different FHFA house prices indices
+#'
+#' @examples
+#' data(FHFA_states,package="EconData")
+#' dd <- FHFA.states$qtr[state %in% sample(unique(state),size=20)]
+#' plot.FHFAindex(dd)
+plot.FHFAindex <- function(dat,saveto="~/Dropbox/mobility/output/model/factor/fhfa.pdf"){
+
+	# detrend data
+		detmod <- lm(index_sa ~ quarter,data=dat)
+		dat[,detr := residuals(detmod)]
+
+
+	# demean series
+		dat[,y1 := .SD[,(index_sa- mean(index_sa))/sd(index_sa)], by=state]
+		dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=state]
+		zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=state]
+
+	# plot all
+	st = dat[,unique(state)]
+
+	pdf(file=saveto)
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(index_sa)]
+	dat[state==st[1],plot(Date,index_sa,type="l",ylim=r,main="observed index")]
+	for (i in st[-1]) dat[state==i,lines(Date,index_sa)]
+
+	r <- dat[,range(detr)]
+	dat[state==st[1],plot(Date,detr,type="l",ylim=r,main="detrended index\n(linear trend)")]
+	for (i in st[-1]) dat[state==i,lines(Date,detr)]
+
+	r <- dat[,range(y1)]
+	dat[state==st[1],plot(Date,y1,type="l",ylim=r,main="z-score of observed index",ylab="z")]
+	for (i in st[-1]) dat[state==i,lines(Date,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[state==st[1],plot(Date,y2,type="l",ylim=r,main="z-score of deviation from\n linear trend",ylab="z'")]
+	for (i in st[-1]) dat[state==i,lines(Date,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+}
+
+#' Plot different Lincoln Inst. House Values
+#'
+#' @examples
+#' data(HomeValues,package="EconData")
+#' dd <- HomeValues[State %in% sample(unique(State),size=20)]
+#' plot.LincolnHomeValues(dd)
+plot.LincolnHomeValues <- function(dat,saveto="~/Dropbox/mobility/output/model/factor"){
+
+	# detrend data
+	setnames(dat,"Home.Price.Index","hpi")
+
+	detmod <- lm(hpi ~ qtr + state,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(hpi- mean(hpi))/sd(hpi)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHPI.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(hpi)]
+	dat[State==st[1],plot(qtr,hpi,type="l",ylim=r,main="observed index")]
+	for (i in st[-1]) dat[State==i,lines(qtr,hpi)]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,main="detrended index\n(linear trend)")]
+	for (i in st[-1]) dat[State==i,lines(qtr,detr)]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,main="z-score of observed index",ylab="z")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,main="z-score of deviation from\n linear trend",ylab="z'")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+	
+	# same for HomeValues
+	# ===================
+
+	# with and without inflation adustment
+
+	# without
+	detmod <- lm(Home.Value ~ qtr,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(Home.Value- mean(Home.Value))/sd(Home.Value)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHomeValues.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(Home.Value)]
+	dat[State==st[1],plot(qtr,Home.Value,type="l",ylim=r,main="observed values",ylab="current dollars")]
+	for (i in st[-1]) dat[State==i,lines(qtr,Home.Value,ylab="")]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,main="detrended values\n(linear trend)",ylab="current dollars")]
+	for (i in st[-1]) dat[State==i,lines(qtr,detr,ylab="")]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,main="z-score of observed values",ylab="z")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,main="z-score of value deviation \nfrom linear trend",ylab="z'")]
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
+
+
+	# with
+
+	data(CPIHOSSL,package="EconData")
+	cpi.h <- xts::to.quarterly(CPIHOSSL)[,1]
+		
+	coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996-01-01'])
+	names(cpi.h) <- "cpiH"
+
+	cpi <- data.table(qtr=index(cpi.h),cpiH=coredata(cpi.h),key="qtr")
+	setnames(cpi,c("qtr","cpiH"))
+	setkey(cpi,qtr)
+	setkey(dat,qtr)
+
+	dat <- cpi[dat]
+	dat[,HValue96 := Home.Value / cpiH ]
+
+	detmod <- lm(HValue96 ~ qtr,data=dat)
+	dat[,detr := residuals(detmod)]
+
+
+	# demean series
+	dat[,y1 := .SD[,(HValue96- mean(HValue96))/sd(HValue96)], by=State]
+	dat[,y2 := .SD[,(detr- mean(detr))/sd(detr)], by=State]
+	zmod <- dat[,list(mean=mean(detr),sd=sd(detr)),by=State]
+
+	# plot all
+	st = dat[,unique(State)]
+
+	pdf(file=file.path(saveto,"LincolnHomeValuesInflation.pdf"))
+	par(mfcol=c(2,2))
+
+
+	r <- dat[,range(HValue96)]
+	dat[State==st[1],plot(qtr,HValue96,type="l",ylim=r,ylab="1996 dollars")]
+	title(main="observed values",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,HValue96,ylab="")]
+
+	r <- dat[,range(detr)]
+	dat[State==st[1],plot(qtr,detr,type="l",ylim=r,ylab="1996 dollars")]
+	title(main="detrended values\n(linear trend)",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,detr,ylab="")]
+
+	r <- dat[,range(y1)]
+	dat[State==st[1],plot(qtr,y1,type="l",ylim=r,ylab="z")]
+	title(main="z-score of observed values",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,y1,ylab="")]
+
+	r <- dat[,range(y2)]
+	dat[State==st[1],plot(qtr,y2,type="l",ylim=r,ylab="z'")]
+	title(main="z-score of value deviation \nfrom time (dummy) trend",sub="inflation adjusted")
+	for (i in st[-1]) dat[State==i,lines(qtr,y2,ylab="")]
+
+	par(mfcol=c(1,1))
+	dev.off()
 }
 

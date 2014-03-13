@@ -12,11 +12,10 @@ Imports:
     nlme,
     texreg,
     survey,
-    gridExtra,
-    MARSS,
     quantreg,
     RSQLite,
     xts,
+    grid,
     splines,
     xtable,
     mnlogit,
@@ -26,6 +25,7 @@ Depends:
     zoo,
     data.table,
     reshape2,
+    MARSS,
     devtools,
     testthat
 Collate:
