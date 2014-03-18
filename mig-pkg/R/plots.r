@@ -117,7 +117,6 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	d[,Date := as.Date(paste(Year,"01","01",sep="-"))]
 
 
-
 	# aggregate
 	reg <- d[,list(medinc=mean(medinc)),by=list(Region,year(Date))]
 	div <- d[,list(medinc=mean(medinc)),by=list(Division,year(Date))]
@@ -125,7 +124,6 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	div[,Date := as.Date(paste(year,"01","01",sep="-"))]
 
 	# normal simulation
-
 	d[,c("meanY","sdY") := list(mean(medinc),sd(medinc)),by=state]
 	d[,sim := rnorm(n=1,mean=meanY,sd=sdY),by=list(state,Date)]
 	setkey(d,state,Date)
@@ -136,21 +134,12 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	yscale <- scale_y_continuous(name=tstring,limits=d[,range(medinc/1000)])
 	yscale2 <- scale_y_continuous(name=tstring)
 
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 	plist$regs <- ggplot(reg,aes(x=Date,y=medinc/1000,color=Region,group=Region)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2
-	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2
+	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2 + scale_color_manual(values=cbPalette)
 
 	plist$divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + yscale )
-	
-
-
-
 	plist$sim_divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=sim/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + scale_y_continuous(name="simulate income",limits=d[,range(medinc/1000)]) )
-
-
-
-
-
-
 	plist$regstate <- lapply(d[,unique(Region)], function(x) ggplot(d[Region==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x)  + yscale)
 
 	pdf(file=file.path(saveto,"reg.pdf"))
@@ -179,6 +168,55 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 }
 	
 
+#' Analyse median Income statistically
+#'
+#' @param saveto
+analyzeMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
+
+	data(US_medinc,package="EconData")
+	data(US_states,package="EconData")
+
+	d <- data.table(medinc.in2012$incl)
+	d[, State := tolower(State)]
+	setnames(d,"State","STATE")
+	setkey(d,STATE)
+
+	s <- US_states[,list(STATE,state,Region,Division)]
+	s[,STATE := tolower(STATE)]
+	s <- s[complete.cases(s)]
+	setkey(s,STATE)
+
+	# merge
+	d <- d[s]
+	d[,Date := as.Date(paste(Year,"01","01",sep="-"))]
+
+	d[,year := as.numeric(as.character(Year))]
+	setkey(d,state,year)
+	d[,Ly := d[list(state,year-1)][["medinc"]] ]
+
+	l <- lapply(d[,unique(state)], function(j) lm(medinc~Ly,d[state==j]))
+	names(l) <- d[,unique(state)]
+
+	adf0 <- lapply(d[,unique(state)], function(j) d[state==j,adf.test(medinc,k=1,alternative="stationary")])
+	adf1 <- lapply(d[,unique(state)], function(j) d[state==j,adf.test(medinc,k=1,alternative="explosive")])
+	adf <- data.frame(state=names(l), Pval.H0.stationary=unlist(lapply(adf0,function(x) x$p.value)), Pval.H0.explosive=unlist(lapply(adf1,function(x) x$p.value)))
+
+	df <- data.frame(state=names(l),intercept=unlist(lapply(l,function(x) coef(x)[1])),slope=unlist(lapply(l,function(x) coef(x)[2])),slope.pvalue=unlist(lapply(l,function(x) coef(summary(x))["Ly","Pr(>|t|)"])),r.squared=unlist(lapply(l,function(x) summary(x)[["r.squared"]])))
+	rownames(df) <- NULL
+
+	if (!is.null(saveto)){
+
+		print(xtable(df,digits=c(1,1,2,2,4,2)),include.rownames=FALSE,file=file.path(saveto,"IncomeAR1Reg.tex"),floating=FALSE,booktabs=TRUE)
+		print(xtable(adf,digits=c(1,1,3,3)),include.rownames=FALSE,file=file.path(saveto,"Dickey-Fuller.tex"),floating=FALSE,booktabs=TRUE)
+
+	}
+
+	return(list(df,adf))
+}
+
+
+
+
 
 
 #' Make Tables with House Value stats
@@ -205,6 +243,16 @@ makeTablesHValue96 <- function(path="~/Dropbox/mobility/output/data/Lincoln"){
 
 	print(xtable(ta$growth,digits=c(1,1,1,0,0,3,4,4)),include.rownames=FALSE,file=file.path(path,"growthHValue96.tex"),floating=FALSE,booktabs=TRUE)
 	print(xtable(ta$means),include.rownames=FALSE,digits=4,file=file.path(path,"meanHValue96.tex"),floating=FALSE,booktabs=TRUE)
+
+	# make some acf plots as well
+	div = d[,list(HV = mean(Home.Value)),by=list(date,Division)]
+	pdf(file.path(path,"Div_PACF.pdf"))
+	par(mfcol=c(3,3))
+	for (i in div[,unique(Division)]){
+		div[Division==i,acf(diff(HV),type="partial",main=paste0("growth in ",i))]
+	}
+	par(mfcol=c(1,1))
+	dev.off()
 
 	return(ta)
 }
