@@ -1,10 +1,9 @@
 \name{dynGrowth}
 \alias{dynGrowth}
-\title{MARSS Dynamic Factor Model on growth}
+\title{MARSS Dynamic Factor Model on growth by Division}
 \usage{
-  dynGrowth(dat, facs, maxite = 50,
-    detrend = formula(y ~ state * date), demean = TRUE,
-    FD = FALSE, log = TRUE, meth = "BFGS")
+  dynGrowth(dat, facs, maxite = 50, trans = 1,
+    meth = "BFGS")
 }
 \arguments{
   \item{dat}{dataset}
@@ -23,14 +22,9 @@
 }
 \examples{
 data(HValue96_dynF_yearly)
-data(US_states,package="EconData")
-setkey(dat,state)
-setkey(US_states,state)
-US_states[,c("FIPS","STATE","Reg_ID","Div_ID"):=NULL]
-dat=US_states[dat]
 div=dat[,list(HV=mean(y)),by=list(Division,date)]
 setnames(div,c("state","date","y"))
-d <- dynGrowth(div,facs=2,detrend=NULL,maxite=1000,demean=TRUE,FD=TRUE)
+d <- dynGrowth(div,facs=2,trans=1)
 sim <- MARSSsimulate(d$marss,tSteps=20,nsim=10)
 #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
 #matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")

@@ -10,63 +10,59 @@ scree <- function(m){
 }
 
 
+#' transform R into a compact interval
+#'
+y2z.transform <- function(y,high,low=0){
+
+	stopifnot(high > low)
+
+	z <- log( (y - low) / (1 - y/high))
+	return(z)
+}
+
+#' inverse of transform R into a compact interval
+#'
+z2y.transform <- function(z,high,low=0){
+
+	stopifnot(high > low)
+	y <- (low + exp(z) ) / (1 + exp(z)/high)
+	return(y)
+}
 
 
 
 #' construct a numeric matrix with time varying across columns
 #'
 #' @param dat data.frame in long format with columns y, quarter and state
-#' @param demean TRUE/FALSE
-#' @param detrend TRUE/FALSE
+#' @param trans transformation
 #' @return list with detrended data matrix and data.table with means and sds
-makeTimeMatrix <- function(dat,detrend=formula(y~state*date),demean=TRUE,FD=FALSE,log=FALSE){
+makeTimeMatrix <- function(dat,trans=1){
 
 	stopifnot( c("y","date","state") %in% names(dat) )
 
-	if (log) {
-		dat[,y := log(y)]
-		logmod <-TRUE 
+	w <- copy(dat)
+	setkey(w,state,date)
+
+
+	# z transform and growth
+
+	if (trans==1){
+
+
+
+		w[,z := .SD[,(y - mean(y))/sd(y)], by=state]
+		w[,dz := .SD[,diff(z)] ,by=state ]
+		m <- reshape(w[,list(state,date,dz)],timevar="date",idvar="state",direction="wide")
+
 	} else {
-		logmod <- FALSE
+
+		stop("no other trans defined")
 
 	}
-
-
-	# detrend data
-	if (!is.null(detrend)){
-		#detmod <- lm(y ~ state*bs(date,degree=3),data=dat)
-		detmod <- lm(formula=detrend,data=dat)
-		dat[,y := residuals(detmod)]
-	} else {
-		detmod <- NULL
-	}
-
-
-	# demean series
-	if (demean){
-		zmod <- dat[,list(mean=mean(y),sd=sd(y)),by=state]
-		dat[,y := .SD[,(y- mean(y))/sd(y)], by=state]
-	} else {
-		zmod <- NULL
-	}
-
-
-	# first difference
-	if (FD){
-		setkey(dat,state,date)
-		FDmod <- copy(dat)
-		dat[,y := diff(y), by=state]
-	} else {
-		FDmod <- NULL
-	}
-
-	# plot all
-	st = dat[,unique(state)]
 
 	# bring into right shape
-	m <- reshape(dat[,list(state,date,y)],timevar="date",idvar="state",direction="wide")
 	st <- m[,state]
-	ti <- dat[,unique(date)]
+	ti <- w[,unique(date)]
 
 	m[,state:=NULL]
 	m <- as.matrix(m)
@@ -74,9 +70,9 @@ makeTimeMatrix <- function(dat,detrend=formula(y~state*date),demean=TRUE,FD=FALS
 	rownames(m) <- st
 	colnames(m) <- ti
 
-	idx <- dat[,unique(date)]
+	idx <- w[,unique(date)]
 
-	out <- list(m=m,detmod=detmod,zmod=zmod,FDmod=FDmod,idx=idx,orig=dat,logmod=logmod)
+	out <- list(m=m,idx=idx,w=w)
 	return(out)
 
 }
@@ -223,7 +219,7 @@ dynPrices <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TR
 
 }
 
-#' MARSS Dynamic Factor Model on growth
+#' MARSS Dynamic Factor Model on growth by Division
 #'
 #' estimates a dynamic factor model
 #' 
@@ -234,20 +230,17 @@ dynPrices <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TR
 #' @param facs number of hidden factors
 #' @examples
 #' data(HValue96_dynF_yearly)
-#' data(US_states,package="EconData")
-#' setkey(dat,state)
-#' setkey(US_states,state)
-#' US_states[,c("FIPS","STATE","Reg_ID","Div_ID"):=NULL]
-#' dat=US_states[dat]
 #' div=dat[,list(HV=mean(y)),by=list(Division,date)]
 #' setnames(div,c("state","date","y"))
-#' d <- dynGrowth(div,facs=2,detrend=NULL,maxite=1000,demean=TRUE,FD=TRUE)
+#' d <- dynGrowth(div,facs=2,trans=1)
 #' sim <- MARSSsimulate(d$marss,tSteps=20,nsim=10)
 #' #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
-#' #matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")
-dynGrowth <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TRUE,FD=FALSE,log=TRUE,meth="BFGS"){
+#' par(mfcol=c(3,3))
+#' for (i in 1:9) matplot(t(sim$sim.data[ , , i]),type="l",main=sprintf("sim number %d",i))
+#' par(mfcol=c(1,1))
+dynGrowth <- function(dat,facs,maxite=50,trans=1,meth="BFGS"){
 
-	mmat <- makeTimeMatrix(dat=dat,detrend=detrend,demean=demean,FD=FD,log=log)
+	mmat <- makeTimeMatrix(dat=dat,trans)
 
 	m <- mmat$m
 
@@ -291,7 +284,7 @@ dynGrowth <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TR
 
 	mod <- MARSS(m,model=dfa,control=cntl.list,method=meth)
 
-	out <- list(marss=mod,datmod=mmat,orig=dat)
+	out <- list(marss=mod,datmod=mmat)
 
 	return(out)
 
@@ -303,7 +296,7 @@ dynGrowth <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TR
 #' @param l the output of \code{\link{dynPrices}}
 #' @param n number of periods to simulate
 #' @param N number of different simulations
-backOutPrices <- function(l,n,N=1){
+backOutPrices <- function(l,n,N=1,trans){
 
 	# simulate series
 	sim <- MARSSsimulate(l$marss,tSteps=n,nsim=N)
@@ -311,47 +304,59 @@ backOutPrices <- function(l,n,N=1){
 	# states involved
 	st <- rownames(l$marss$model$data)
 
-	if (l$orig[,class(date)=="yearqtr"]){
-		dates=l$orig[,as.yearqtr(seq(from=min(as.Date(date)),length.out=n,by="3 months"))]
-	} else if (l$orig[,class(date)=="integer"]){
-		dates=l$orig[,seq(from=min(date),length.out=n,by=1)]
+	if (l$datmod$w[,class(date)=="yearqtr"]){
+		dates=l$datmod$w[,as.yearqtr(seq(from=min(as.Date(date)),length.out=n,by="3 months"))]
+	} else if (l$datmod$w[,class(date)=="integer"]){
+		dates=l$datmod$w[,seq(from=min(date),length.out=n,by=1)]
 	}
 
-	pr <- sim$sim.data
-	dimnames(pr) = list(state=st,date=dates,sim=paste0(1:N))
+	si <- sim$sim.data
+	dimnames(si) = list(state=st,date=dates,sim=paste0(1:N))
 	dimnames(sim$sim.data) = list(state=st,date=dates,sim=paste0(1:N))
 
 
-	if(!is.null(l$datmod$FDmod)){
-		setkey(d$orig,state,date)
+	# box in si!
+	ra <- l$datmod$w[,range(dz)]
+	si = z2y.transform(si,high=ra[2],low=ra[1])
 
-		for (ni in 1:N){
-		pr[,1,ni ] <- d$orig[list(unique(state),min(date))][["y"]]
-		for (ist in 1:length(st)){
-			for (iN in 2:n){
-				pr[ist,iN, ni] <- pr[ist,iN-1,ni ] + pr[ist,iN,ni ]
+
+
+	if (trans==1){
+
+		# undo differencing
+
+		z <- array(0,dim(si))
+		dimnames(z) = list(state=st,date=dates,sim=paste0(1:N))
+
+		z0 <- l$datmod$w[,head(z,1),by=list(state)][["V1"]]
+
+
+		for (nS in 1:N){
+
+			z[, 1,nS] <- z0 
+
+			for (nt in 2:n){
+				
+				z[, nt,nS] <- z[, nt-1,nS] + si[, nt,nS]
+
 			}
 		}
-		}
+
+
+		# undo z transformation
+		y <- data.table(melt(z),key="state")
+		ms <- d$datmod$w[,list(mean=mean(y),sd=sd(y)),by=state]
+		setkey(ms,state)
+
+		y[ms]
+
+		y[,unzed := z*sd + mean]
+
+	} else {
+
+		stop("not defined")
+
 	}
-
-	if (!is.null(l$datmod$zmod)){	
-
-		# un-z-score simulation values
-		for (i in st) pr[i, , ] <- pr[i, , ] * l$datmod$zmod[state==i][["sd"]] + l$datmod$zmod[state==i][["mean"]]
-
-	}
-
-	
-	if (!is.null(l$datmod$detmod)){
-
-		newd <- data.table(expand.grid(date=dates,state=st))
-		for (i in st) pr[i, , ] <- pr[i, , ] + predict(l$datmod$detmod,newdata=newd[state==i])
-
-	}
-
-	if (l$datmod$logmod) pr <- exp(pr)
-
 	
 
 
@@ -363,12 +368,12 @@ backOutPrices <- function(l,n,N=1){
 	# newdata for prediction
 
 	# melt
-	m <- melt(pr)
+	m <- melt(y)
 	mf <- melt(facs)
-	out <- list(arr=pr,molten=m,factors=facs)
+	out <- list(arr=y,molten=m,factors=facs)
 
 	# plots
-	out$t <- ggplot(l$orig,aes(x=date,y=y,color=state))+ geom_line()
+	out$t <- ggplot(l$datmod$orig,aes(x=date,y=y,color=state))+ geom_line()
 	out$p <- ggplot(m,aes(x=date,y=value,color=state)) + geom_line() + facet_wrap(~sim)
 	out$f <- ggplot(mf,aes(x=date,y=value,color=factor(fac))) + geom_line() + facet_wrap(~sim)
 
