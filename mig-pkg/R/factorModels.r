@@ -156,20 +156,17 @@ makeHomeValues <- function(freq,path="~/git/migration/mig-pkg/data/"){
 #' estimates a dynamic factor model
 #' 
 #' @param dat dataset 
-#' @param detrend formula for detrending outcome var
-#' @param demean TRUE if want to do a z-transformation on detrended outcome
-#' @param meth method for maximizing the likelihood
-#' @param facs number of hidden factors
+#' @param trans integer which transformation
 #' @examples
 #' data(HValue96_dynF_yearly)
 #' dd <- copy(dat)
-#' l <- dynPrices(dat=dd,facs=2,maxite=5000)
+#' l <- dynPrices(dat=dd,facs=2,maxite=5000,trans=1)
 #' sim <- MARSSsimulate(l$marss,tSteps=20,nsim=1)
 #' #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
 #' #matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")
-dynPrices <- function(dat,facs,maxite=50,detrend=formula(y~state*date),demean=TRUE,FD=FALSE,meth="BFGS"){
+dynPrices <- function(dat,facs,maxite=50,trans=1,meth="BFGS"){
 
-	mmat <- makeTimeMatrix(dat=dat,detrend=detrend,demean=demean,FD=FD)
+	mmat <- makeTimeMatrix(dat=dat,trans)
 
 	m <- mmat$m
 
