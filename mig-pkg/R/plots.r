@@ -171,7 +171,7 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 #' Analyse median Income statistically
 #'
 #' @param saveto
-analyzeMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
+analyzeMedianIncome <- function(demean=FALSE,division=FALSE,saveto="~/Dropbox/mobility/output/data/census"){
 
 	data(US_medinc,package="EconData")
 	data(US_states,package="EconData")
@@ -188,17 +188,28 @@ analyzeMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 
 	# merge
 	d <- d[s]
-	d[,Date := as.Date(paste(Year,"01","01",sep="-"))]
-
 	d[,year := as.numeric(as.character(Year))]
+
+	# division
+	if (division) {
+		d <- d[,list(medinc=mean(medinc)),by=list(year,Division)]
+		setnames(d,"Division","state")
+	}
+
+	if (demean) {
+		d[,USmean := mean(medinc),by=year]
+		d[,medinc := medinc - .SD[,USmean],by=state]
+	}
+	
+
 	setkey(d,state,year)
 	d[,Ly := d[list(state,year-1)][["medinc"]] ]
 
 	l <- lapply(d[,unique(state)], function(j) lm(medinc~Ly,d[state==j]))
 	names(l) <- d[,unique(state)]
 
-	adf0 <- lapply(d[,unique(state)], function(j) d[state==j,adf.test(medinc,k=1,alternative="stationary")])
-	adf1 <- lapply(d[,unique(state)], function(j) d[state==j,adf.test(medinc,k=1,alternative="explosive")])
+	adf0 <- lapply(d[,unique(state)], function(j) d[state==j,tseries::adf.test(medinc,k=1,alternative="stationary")])
+	adf1 <- lapply(d[,unique(state)], function(j) d[state==j,tseries::adf.test(medinc,k=1,alternative="explosive")])
 	adf <- data.frame(state=names(l), Pval.H0.stationary=unlist(lapply(adf0,function(x) x$p.value)), Pval.H0.explosive=unlist(lapply(adf1,function(x) x$p.value)))
 
 	df <- data.frame(state=names(l),intercept=unlist(lapply(l,function(x) coef(x)[1])),slope=unlist(lapply(l,function(x) coef(x)[2])),slope.pvalue=unlist(lapply(l,function(x) coef(summary(x))["Ly","Pr(>|t|)"])),r.squared=unlist(lapply(l,function(x) summary(x)[["r.squared"]])))
@@ -211,9 +222,30 @@ analyzeMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 
 	}
 
-	return(list(df,adf))
+	return(list(d=d,df=df,adf=adf,l=l))
 }
 
+
+
+#' Simulate AR1 models from \code{\link{analyzeMedianIncome}}
+#'
+simMedianIncome <- function(x,n){
+
+	l <- x$l
+
+	simAR1 <- function(b0=0,b1,sigma,n){
+
+		r <- rep(b0,n)
+		for (i in 2:n){
+			r[i] <- b0 + b1*r[i-1] + rnorm(n=1,mean=0,sd=sigma)
+		}
+		return(r)
+	}
+
+	r <- as.data.frame(lapply(l, function(z) simAR1(b0=coef(z)[[1]],b1=coef(z)[[2]],sigma=summary(z)$sigma,n) ))
+
+	return(r)
+}
 
 
 
@@ -648,5 +680,18 @@ plot.LincolnHomeValues <- function(dat,saveto="~/Dropbox/mobility/output/model/f
 
 	par(mfcol=c(1,1))
 	dev.off()
+}
+
+	
+
+getcbPalette <- function(n){
+
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+	if (n > 9){
+		cbPalette <- c(cbPalette, cbPalette[n-length(cbPalette)] )
+	}
+
+	return(cbPalette)
 }
 
