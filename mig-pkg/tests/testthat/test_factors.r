@@ -80,3 +80,21 @@ test_that("percentage growth is correct",{
 
 })
 
+
+
+context("test deviation models")
+
+test_that("divDeviations returns correct class",{
+
+		  expect_that( divDeviations(), is_a( c("list","devmodels") ) )
+
+})
+
+
+test_that("divDeviations has correct elements",{
+
+		  r <- divDeviations()
+
+		  expect_that( all.equal( names(r), c("houses","incomes")) , is_true() )
+
+})

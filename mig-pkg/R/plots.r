@@ -695,3 +695,55 @@ getcbPalette <- function(n){
 	return(cbPalette)
 }
 
+
+
+
+
+#' make plots of deviations models
+#'
+#' @family ExpectationsModel
+plotDivDeviations <- function(n,N,path=NULL){
+
+	d <- buildDivDeviations(n,N)
+
+	divs <- names(d$price)
+	rp <- lapply(d$price,range)
+	rp <- c(min(unlist(rp)),max(unlist(rp)))
+
+	ry <- lapply(d$inc,range)
+	ry <- c(min(unlist(ry)),max(unlist(ry)))
+
+	if (is.null(path)){
+		par(ask=TRUE)
+		par(mfrow=c(3,3))
+		for (i in 1:9){
+			matplot(d$price[[i]],type="l",main=paste0("price ",divs[i]),ylim=rp)
+			abline(a=0,b=0)
+		}
+		par(mfrow=c(3,3))
+		for (i in 1:9){
+			matplot(d$inc[[i]],type="l",main=paste0("income ",divs[i]),ylim=ry)
+			abline(a=0,b=0)
+		}
+		par(mfrow=c(1,1))
+		par(ask=FALSE)
+
+	} else {
+		pdf(file.path(path,"simDivPrices.pdf"))
+		par(mfrow=c(3,3))
+		for (i in 1:9){
+			matplot(d$price[[i]],type="l",main=paste0("price ",divs[i]),ylim=rp)
+			abline(a=0,b=0)
+		}
+		dev.off()
+
+		pdf(file.path(path,"simDivIncomes.pdf"))
+		par(mfrow=c(3,3))
+		for (i in 1:9){
+			matplot(d$price[[i]],type="l",main=paste0("income ",divs[i]),ylim=ry)
+			abline(a=0,b=0)
+		}
+		dev.off()
+	}
+}
+
