@@ -16,7 +16,7 @@ library(reshape2)
 
 # 2 equivalent ways of definining the problem
 
-# a) as a functino of savings:
+# a) as a function of savings:
 # V(a) = max_{alow<a'<a} u(a - a') + beta EV(R*a')
 # foc: -u'(c) + beta*R*EV'(R*a') = 0
 
@@ -25,6 +25,9 @@ library(reshape2)
 # foc: u'(c) - beta*R*EV'( R*(a-c) )
 
 mu <- function(x,gamma) { 1/(x^gamma) }
+
+# dummy future value function.
+# i just assume it's shape here.
 vprime <- function(x,zeta) { 1/(x^zeta) }
 
 obja <- function(assets, saving, beta, R, gamma, zeta){

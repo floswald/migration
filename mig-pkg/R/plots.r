@@ -702,9 +702,17 @@ getcbPalette <- function(n){
 #' make plots of deviations models
 #'
 #' @family ExpectationsModel
-plotDivDeviations <- function(n,N,path=NULL){
+#' @examples
+#' d <- buildDivDeviations(n=20,N=3)
+#' plotDivDeviations(d)
+#' d <- buildDivDeviations(n=20,N=3)
+#' 
+#' ## example 2
+#' agg <- makeAggPricesFromData(N=3)
+#' a = buildAggregatePrices(agg)
+#' plotDivDeviations(a)
+plotDivDeviations <- function(d,path=NULL){
 
-	d <- buildDivDeviations(n,N)
 
 	divs <- names(d$price)
 	rp <- lapply(d$price,range)
@@ -747,3 +755,33 @@ plotDivDeviations <- function(n,N,path=NULL){
 	}
 }
 
+
+
+#' plot monthly rent and mortgage by state
+#'
+#' create a errorbar plot marking both mean
+#' mortgage payment as well as mortgage payment
+#' from my sipp sample 
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
+#' plotMortgageRentSipp(sipp=merged4mn)
+plotMortgageRentSipp <- function(sipp,path="~/Dropbox/mobility/output/data/sipp/"){
+
+	
+	m1=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=state]
+	m2=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=list(state,year)]
+	m2 <- melt(m2,id=c("state","year"))
+
+	p <- list()
+	p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000,ymax=mort*1000)) + geom_errorbar() + coord_flip() + scale_y_continuous(name="monthly rent (lower) or mortgage (upper bound) payment in 1996 USD\n(exception: Florida has bounds reversed)")
+	p$dist <- ggplot(m2,aes(x=value*1000,color=factor(year))) + geom_density() + ggtitle("distribution of monthly rent or mortgage payments") + facet_wrap(~variable) + scale_x_continuous(name="monthly rent or mortgage payment in 1996 USD")
+
+	pdf(file=file.path(path,"mort-rent.pdf"))
+	print(p$rent)
+
+	dev.off()
+	pdf(file=file.path(path,"mort-rent-dist.pdf"))
+	print(p$dist)
+	dev.off()
+	return(NULL)
+}

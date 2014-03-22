@@ -684,8 +684,8 @@ buildAggregatePrices <- function(agg){
 
 	r <- list()
 
-	r$inc <- lapply(s$inc,function(x){ x + agg[ ,"medinc", ] }) 
-	r$pri <- lapply(s$price,function(x){ x + agg[ ,"p", ] }) 
+	r$inc <- lapply(s$inc,function(x){ agg[ ,"medinc", ] - x }) 
+	r$price <- lapply(s$price,function(x){ agg[ ,"p", ] - x  }) 
 
 	return(r)
 
@@ -695,6 +695,7 @@ buildAggregatePrices <- function(agg){
 #' make aggregate prices from real data
 #'
 #' @param N number of simulations
+#' @family ExpectationsModel
 makeAggPricesFromData <- function(N){
 
    x   <- makeDivDifferences()

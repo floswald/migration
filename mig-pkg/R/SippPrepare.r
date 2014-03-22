@@ -311,8 +311,8 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 #' SIPP panels 1996-2008, merged with house price
 #' indices by state, and dollar denoted variables
 #' are deflated to 1996 as a base year using the 
-#' US cpi. House price indices are normalized to
-#' to the state with lowest index value in 1995:Q4
+#' US cpi. All dollar values are denoted in 1000s of
+#' US dollars.
 #' @param TM.idx list with one index vector
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
@@ -481,6 +481,9 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		mergexx[, saving := thhintbk + thhintot]
 		mergexx[, c("thhintbk","thhintot") := NULL]
 
+		# Household weight needs to be 
+		# divided by 10000. see pdf with email.
+		mergexx[,HHweight := HHweight / 10000 ]
 
 
 		# make a unique person number
@@ -513,28 +516,10 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 
 		setkey(mergexx,ssuid,epppnum,yrmnid)
-		#mergexx[,own.1mn      := mergexx[list(ssuid,epppnum,yrmnid-1)][["own"]]]
-		#mergexx[,numkids.1mn  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
-		#mergexx[,wealth.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
-		#mergexx[,equity.1mn   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		#mergexx[,HHincome.1mn := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
-
-		## changes
-		#mergexx[,dnumkids  := mergexx[list(ssuid,epppnum,yrmnid-1)][["numkids"]]]
-		#mergexx[,dwealth   := mergexx[list(ssuid,epppnum,yrmnid-1)][["wealth"]]]
-		#mergexx[,dequity   := mergexx[list(ssuid,epppnum,yrmnid-1)][["home.equity"]]]
-		#mergexx[,dHHincome := mergexx[list(ssuid,epppnum,yrmnid-1)][["HHincome"]]]
-
-		#mergexx[,ddnumkids  := mergexx[list(ssuid,epppnum,yrmnid-4)][["numkids"]]]
-		#mergexx[,ddwealth   := mergexx[list(ssuid,epppnum,yrmnid-4)][["wealth"]]]
-		#mergexx[,ddequity   := mergexx[list(ssuid,epppnum,yrmnid-4)][["home.equity"]]]
-		#mergexx[,ddHHincome := mergexx[list(ssuid,epppnum,yrmnid-4)][["HHincome"]]]
-
 
 		mergexx[yr.moved.here > 0,duration_at_current := year - yr.moved.here]
 		mergexx[yr.moved.here > 0 & yr.moved.into.previous > 0,duration_at_previous := yr.moved.here - yr.moved.into.previous]
 		mergexx[duration_at_current < 0 , duration_at_current := NA]
-
 
 
 		# create a monthly state-2-state indicator
@@ -893,4 +878,6 @@ subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 
 	cat('done with subsetting all.\n')
 }
+
+
 
