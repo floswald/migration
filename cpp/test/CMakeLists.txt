@@ -9,12 +9,13 @@
 
 # here's how you manually add a test.
 
-set(TNAMES "SimTest" "SolTest" "SolInterpTest" "ComputeOwnTest" "DimTest" "ComputeFunsOwnBKTest" "ComputeRenterTest" "RunAllPeriods_SLOW")
+#set(TNAMES "SimTest" "SolTest" "SolInterpTest" "ComputeOwnTest" "DimTest" "ComputeFunsOwnBKTest" "ComputeRenterTest" "RunAllPeriods_SLOW")
+set(TNAMES "BBLTest")
 
 foreach(TNAME ${TNAMES})
 
 	add_executable(test_${TNAME} ${TNAME}.cpp)
-	target_link_libraries(test_${TNAME} /usr/local/lib/libgtest.a bankruptcy_library ${LIBS})
+	target_link_libraries(test_${TNAME} /usr/local/lib/libgtest.a BBL_library ${LIBS})
 
 	add_dependencies(test_${TNAME} googletest)
 
