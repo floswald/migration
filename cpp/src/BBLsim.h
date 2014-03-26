@@ -34,35 +34,48 @@ struct parStruct{
 
 #include <armadillo>
 
-class BBLsim {
+using namespace arma;
 
-	private: 
+class CBBLsim {
 
-		// data object
-		arma::cube dcube;		// data cube. (id,age,replication)
-		arma::cube aggPrices;	// aggregate prices. (period,priceType,replication)
+	protected: 
+
+		// data objects
+		cube dcube;		// data cube. (id+period,variables,replication)
+		cube aggPrices;	// aggregate prices. (period,priceType,replication)
 		std::vector< std::vector<double> > RFcoefs; // coefficients of reduced form policies
 
+		mat logitmat;	// nS by K matrix to predict i's income
+
 		// RF objects
+		std::vector<std::vector< int > > idx;	// indices of data
+
 
 		// info objects
 		std::string name;
-		int N,T,R,nS;	// number of individuals, max periods, number of replications and num of states
+		int N,T,R,K,nS;	// number of individuals, max periods, number of replications and num of states
 
 		parStruct par;
 
 
 	public:
 
-		BBLsim();	// default constructor
-		BBLsim(int N_, int T_, int R_, int nS_, arma::mat initCond);	// default constructor
+		CBBLsim();	// default constructor
+		CBBLsim(int N_, int T_, int R_, int nS_, int K_, arma::mat initCond);	// default constructor
 
 		// member functions
 		void show(void);
 
 		// getters
 		std::string GetName( void ) const { return(name); };
-		arma::cube  Getdcube( void ) const { return(dcube); };
+		cube  Getdcube( void ) const { return(dcube); };
+		mat  Getlogitmat( void ) const { return(logitmat); };
+
+};
+
+
+class CIndividual: public CBBLsim {
+
 
 };
 

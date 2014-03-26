@@ -10,7 +10,7 @@ int main(){
 	std::cout << std::endl;
 
 	// create class instance
-	BBLsim B;
+	CBBLsim B;
 
 	
 	std::cout << std::endl;

@@ -387,31 +387,55 @@ getFreqsLogit <- function(m,r){
 #' @family LogitModel
 #' @param res mnlogit result
 #' @param print.to location to print table
-simMovesFromLogit <- function(res,print.to="~/Dropbox/mobility/output/model/BBL/"){
+simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/output/model/BBL/"){
 
 	stopifnot(class(res) == "mnlogit" )
 
 	# get prediciton on estimation data
-	p <- data.table(direct.predict(res,probability=TRUE))
-	p[,upid2 := res$data[,unique(upid2)] ]
+	if (is.null(newdata)) {
+		p <- data.table(direct.predict(res,probability=TRUE))
+		p[,upid2 := res$data[,unique(upid2)] ]
+	} else {
+		p <- data.table(direct.predict(res,newdata,probability=TRUE))
+		p[,upid2 := newdata[,unique(upid2)] ]
+	}
+
 
 	m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
 	# simulate each case-id: given all 48 choices, which one do you choose?
 	m <- simulateMoveLogit(m)
 
-
-	r <- copy(res$data)
-	fp <- getFreqsLogit(m,r)
-
-	
 	if (!is.null(print.to)){
-	print(xtable(fp$freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
-	print(xtable(fp$props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
+
+		r <- copy(res$data)
+		fp <- getFreqsLogit(m,r)
+
+		
+		print(xtable(fp$freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
+		print(xtable(fp$props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
+		return(fp)
+	
+	} else {
+		return(m)
 	}
 
 
-	return(fp)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #' print Logit Model Results
@@ -462,12 +486,12 @@ printLogitModel <- function(res,omit,path="~/Dropbox/mobility/output/model/BBL")
 #' @family LogitModel
 #' @return data.table with predicted incomes
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/prelogit.RData")
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_year.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 #' load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 #' mvt <- sumstats$mvtab
 #' mvt[,c("wave","mid","from") := NULL]
-#' l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
+#' l <- buildLogit(merged,RE.coefs,movreg=mvt)
 buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData",movreg){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
@@ -478,23 +502,33 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	# logi is on a monthly basis 
 	# predict income on an annual basis only: aggregate by age
 
-	setkey(logi,upid,age)
-	y <- logi[,list(logHHincome=mean(logHHincome,na.rm=T),
-					wealth     = mean(wealth,na.rm     = T),
-					mortg.rent = mean(mortg.rent,na.rm = T),
-					own        = own[1],
-					age2       = age2[1],
-					year       = year[1],
-					born.here  = born.here[1],
-					college    = college[1],
-					numkids    = numkids[1],
-					state      = state[1],
-					cohort     = cohort[1],
-					cohort1920 = cohort1920[1],
-					cohort1940 = cohort1940[1],
-					cohort1960 = cohort1960[1],
-					cohort1980 = cohort1980[1]),
-               by=list(upid,age)]
+	# keep only pos incomes
+	logi <- logi[HHincome>0]
+
+	cohorts <- model.matrix(~cohort + own - 1,data=logi)
+	logi <- cbind(logi,cohorts)
+
+	# further subset. keep only vars you are using in the logit model!
+	logi <- logi[,list(logHHincome=log(HHincome),
+					wealth ,
+					#mortg.rent,
+					own,
+					upid,
+					age,
+					age2,
+					from,
+					to,
+					S2S,
+					year,
+					#born.here,
+					#college,
+					dkids,
+					state,
+					cohort,
+					cohort1920,
+					cohort1940,
+					cohort1960,
+					cohort1980)]
 
 	# initiate choice column as zero choice
 	#y[,c("to.tmp","choice","distance") := list(state,FALSE,0)]
@@ -504,14 +538,25 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	data(State_distMat_agg,package="EconData")
 
 	# make predictions of income
-	l <- makePrediction1(y,RE.coefs,with.FE,State_distMat_agg)
+	# will add column logHHincome
+	l <- makePrediction1(logi,RE.coefs,with.FE,State_distMat_agg)
 	gc()
 
 	# get homevalues by year and state
 	# inflation adjusted
+
+	# need that because house values vary by state/year
 	l <- mergeHomeValues(l)
+	setkey(l,upid,age,move.to)
 
+	# add a case id
+	l[,caseid := paste0(upid,"_",age)]
 
+	# add an indicator at move.to==to
+	l[,move.to_to := FALSE]
+	l[move.to==to, move.to_to := TRUE ]
+
+browser()
 
 	# merge back into monthly data
 
@@ -528,6 +573,18 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	l[,choice := FALSE]
 	l[,stay   := FALSE]
 
+	setkey(l,S2S,move.to_to)
+
+	l[J(1,TRUE), choice:=TRUE]
+
+	move.cases <- l[choice==TRUE,list(caseid=unique(caseid))]
+
+	setkey(move.cases,caseid)
+	setkey(l,caseid)
+
+	l[!list(move.cases),stay := TRUE]
+	setkey(l,stay,move.to_true)
+	l[J(TRUE,TRUE), choice := TRUE]
 	
 	# add the moving choices and merge
 	l <- mergePredIncomeMovingHist(l,movreg)
@@ -650,52 +707,6 @@ lme.getCoefs <- function(obj){
 
 
 
-#' Savings Policy Function Model
-#'
-#' estimates the reduced form for liquid savings form data
-#' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-savingsModel <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/savings.RData"){
-
-	# loaded 4-monthly data
-
-	# throw away renters with positive house value
-	d <- d[(own==TRUE) | (own==FALSE & hvalue==0)]
-
-	# throw away negative incomes
-	d <- d[HHincome>0]
-
-	# TODO for probit of house choice
-	# create current house value for renters from rent paid
-	#d[own==FALSE, hvalue := mortg.rent * 12 / 0.075 ] 
-	#d[,p2y := hvalue / HHincome]
-	#d[,w2y := hvalue / wealth]
-
-
-	f1 <- formula(saving ~ age + I(age^2) + HHincome +  mortg.rent + numkids + wealth + own)
-	f2 <- formula(saving ~ age + I(age^2) + log(HHincome) + mortg.rent + numkids + wealth + own)
-
-	lms <- list()
-	lms[[1]] <- lm(formula=f1, data=d)
-	lms[[2]] <- lm(formula=f2, data=d)
-	
-	# if survey design
-	# coefs are identical
-	svy <- list()
-	des <- svydesign(id=~1,weights=~HHweight,data=d)
-	svy[[1]] <- svyglm(formula=f1, design=des)
-	svy[[2]] <- svyglm(formula=f2, design=des)
-
-	out <- list(lm=lms,svy=svy)
-
-	save(out,file=saveto)
-
-	return(out)
-
-}
-
-
-
 
 #' Housing Status Policy Function Model
 #'
@@ -718,46 +729,27 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 
 	# CAUTION
 	# remember that HHIncome is MONTHLY INCOME!!
-	d[,income := 12 * HHincome]
 
-	# change in ownership
-	setkey(d,upid,yrmnid)
-	d[,down := c(diff(as.numeric(own)),0),by=upid]
-	d[,buy := FALSE]
-	d[down==1, buy := TRUE]
-	d[,sell := FALSE]
-	d[down==-1, sell := TRUE]
+	#rent <- d[own==FALSE,list(state,qtr,HValue96,income,numkids,HHweight,educ,age,age2,sex,wealth,mortg.rent,duration_at_current,born.here,p2y,p2w,buy,dkids)]
 
-	d[,dkids := c(diff(numkids),0),by=upid]
+	## throw out all cases with some NA
+	#rent = rent[complete.cases(rent)]
 
-	# get average home values
-	hv <- getHomeValues(freq="quarterly")
-	HV = hv[,list(state=State,qtr,HValue96)]
-	setkey(HV,state,qtr)
-	setkey(d,state,qtr)
+	#own <- d[own==TRUE,list(state,qtr,hvalue,income,numkids,HHweight,educ,age,age2,sex,mortg.rent,home.equity,duration_at_current,born.here,p2y,p2w,sell,wealth,dkids)]
 
-	d <- HV[d]
-	d[,p2y := HValue96 / income ] 
-	d[wealth!= 0,p2w := HValue96 / wealth] 
-	d[,age2 := age^2 ]
+	#own = own[complete.cases(own)]
 
-	rent <- d[own==FALSE,list(state,qtr,HValue96,income,numkids,HHweight,educ,age,age2,sex,wealth,mortg.rent,duration_at_current,born.here,p2y,p2w,buy,dkids)]
-
-	# throw out all cases with some NA
-	rent = rent[complete.cases(rent)]
-
-	own <- d[own==TRUE,list(state,qtr,hvalue,income,numkids,HHweight,educ,age,age2,sex,mortg.rent,home.equity,duration_at_current,born.here,p2y,p2w,sell,wealth,dkids)]
-
-	own = own[complete.cases(own)]
+	# throw away multiple sales/purchases by age
+	d <- d[buy<2 & sell < 2]
 
 	# models
 	m <- list()
-	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent ,data=rent,family=binomial(link="probit"),x=TRUE) 
-	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) + ns(p2w)  + mortg.rent ,data=rent,family=binomial(link="probit"),x=TRUE) 
+	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent + duration,data=d[own==FALSE],family=binomial(link="probit"),x=TRUE) 
+	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) + ns(p2w) + duration + mortg.rent ,data=d[own==FALSE],family=binomial(link="probit"),x=TRUE) 
 
-	m$sellspline <- glm(sell ~ age + age2+dkids+income+ ns(home.equity,df=2) + mortg.rent + duration_at_current,data=own,family=binomial(link="probit"),x=TRUE)
 	
-	m$selllinear <- glm(sell ~ age + age2+dkids+income+ home.equity + mortg.rent + duration_at_current,data=own,family=binomial(link="probit"),x=TRUE)
+	m$selllinear <- glm(sell ~ age + age2+dkids+HHincome+ home.equity + mortg.rent + duration,data=d[own==TRUE],family=binomial(link="probit"),x=TRUE)
+	m$sellspline <- glm(sell ~ age + age2+dkids+HHincome+ ns(home.equity,df=2) + mortg.rent + duration,data=d[own==TRUE],family=binomial(link="probit"),x=TRUE)
 
 
 	# compute marginal effects
@@ -793,6 +785,7 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 	}
 
 	screenreg(m,digits=4,custom.model.names=names(m),stars=c(0.01,0.05,0.1))
+	screenreg(mab,digits=4,custom.model.names=paste0("ME of ",names(m)),stars=c(0.01,0.05,0.1))
 	return(m)
 
 }
@@ -810,6 +803,14 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 #' s <- savingsPolicy(d=merged4mn,quants=0.5)
 savingsPolicy <- function(d,quants=NULL,path="~/Dropbox/mobility/output/model/BBL",plot=FALSE){
 	
+	# TODO this should be by calendar year
+	# not by every 4 months
+	# of course people will save less within 4 months thatn withing 1 year!
+
+	# TODO redefine savings variable! saving_t = Assets_t+1 - Assets_t, where 
+	# Assets_t = wealth_t - equity_t.
+
+
 	d[,age2 := age^2 ]
 	d[,w2 := HHweight / 10000 ] 
 	tab         <- d[,list(mean=weighted.mean(saving,w2),median=Hmisc::wtd.quantile(saving,weights=w2,probs=0.5)),by=age][order(age)]
@@ -863,3 +864,69 @@ savingsPolicy <- function(d,quants=NULL,path="~/Dropbox/mobility/output/model/BB
 	return(m)
 }
 
+
+
+
+
+#' Create the BBL data set
+#'
+#' forward simulate lifecycle profiles based 
+#' on policy functions and initial conditions
+CreateBBLData <- function(init,res,RFmodels){
+
+	d <- copy(init)
+
+	# there must be a time loop
+	# if an individual is age > maxage, they must drop out
+
+	for (p in 1:periods){
+
+		# initial sample: dataset with with all locations
+
+		# find L decision:
+		d <- simMovesFromLogit(res$logit,newdata=d,print.to=NULL)	# add/change column newLoc
+
+		d <- simHousing(newdata=d,obj=res$housing) # add/change column newHouse
+
+		d <- simSaving(newdata=d,obj=res$saving) # add/change column newAsset
+
+	}
+
+
+	# if age==maxAge, you die. consumption = bequest value
+
+	# else you life
+
+	# c = y - a' - pay(h)
+
+	# new state
+	# init[,state==.SD[,sim.move] ]
+
+	# if you moved, need to take care of your housing assets
+	# init[moved, 	
+
+
+
+
+}
+
+simHousing <- function(newdat,obj){
+
+	if (is.null(newdat)){
+
+		p <- predict(obj)
+		return(p)
+
+	} else {
+		p <- predict(obj,newdat,probability=TRUE)
+		newdat[,newH := as.numeric( runif(nrow(newdat)) > p)]
+		return(newdat)
+	}
+}
+
+
+simSaving <- function(newdat,obj){
+
+	newdat[,newAsset := predict(obj,newdata=newdat)]
+	return(newdat)
+}

@@ -17,6 +17,7 @@ makeHPIDivDifferences()
   \code{\link{buildAggregatePrices}},
   \code{\link{buildDivDeviations}},
   \code{\link{estimateDivDeviations}},
+  \code{\link{makeAggPricesFromData}},
   \code{\link{plotDivDeviations}},
   \code{\link{simDivDeviations}}
 }

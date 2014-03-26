@@ -305,19 +305,23 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 #' and clean data. apply labels, account for
 #' missing vars. merge topical and core data.
 #' output two datasets, differing in time
-#' resolution (monthly of 4-monthly). 
+#' resolution (monthly or 4-monthly). 
 #'
 #' Data is cleaned for inconsistencies across
 #' SIPP panels 1996-2008, merged with house price
 #' indices by state, and dollar denoted variables
 #' are deflated to 1996 as a base year using the 
 #' US cpi. All dollar values are denoted in 1000s of
-#' US dollars.
+#' US dollars. The SIPP can be cast at different 
+#' time resolutions, i.e. you can look at monthly data
+#' quarterly data, annual, etc. This function outputs
+#' monthly data and a dataset subset to the fourth (i.e. last)
+#' reference month of each wave.
+#' @param agg.by list of variable names by which to aggregate. presumably those should be time variables like qtr, year, age etc
 #' @param TM.idx list with one index vector
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
 #' @param path to output from \code{\link{Extract.wrap}}
-#' @param subset.4months TRUE if want to subset monthly data to only the final reference month (srefmon 4). the assumption is
 #' events in srefmon 4 are representative of the previous three months. 
 #' @return NULL. Saves 2 data.tables to dropbox. 
 Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
@@ -325,8 +329,9 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 								   p01=c(3,6,9),
 								   p04=c(3,6),
 								   p08=c(4,7,10)),
-					   verbose=TRUE,
-					   subset.4months=TRUE){
+					   agg.by="age",
+					   use.hvalue.for.p2y=TRUE,
+					   verbose=TRUE){
 
 	# list to collect all panels
 	m <- list()
@@ -362,9 +367,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 		load(file.path(path,paste0("subset",yrs[yr],".RData")))
 
-		# set keys on data.tables
-		lapply(topics,function(x) setkey(x, "ssuid", "epppnum"))
-		lapply(cores,function(x) setkey(x, "ssuid", "epppnum"))
+		# convert ssuid to a string.
+		lapply(topics,function(x) x[,ssuid := as.character(ssuid)])
+		lapply(cores,function(x) x[,ssuid := as.character(ssuid)])
+
+
+		# set keys on data.table
+		lapply(topics,function(x) setkey(x, ssuid, epppnum))
+		lapply(cores,function(x) setkey(x, ssuid, epppnum, srefmon))
 
 		mergexx <- merge.idx(cores,topics,breaks=TM.idx[[yr]])
 
@@ -421,7 +431,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		tmp[,qtr := zoo::as.yearqtr(as.Date(paste0(year,"-",month,"-","01"))) ]
 		tmp[,c("year","month") := NULL]
 		setkey(tmp,yearmon)
-		tmp[,yrmnid := 1:nrow(tmp)]
+		tmp[,timeid := 1:nrow(tmp)]
 
 		setkey(mergexx,yearmon)
 
@@ -478,8 +488,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 
 		# make savings
+		# "savings" is not what corresponds to "a" in the model
+		# "a" is all other nonhousing wealth
 		mergexx[, saving := thhintbk + thhintot]
 		mergexx[, c("thhintbk","thhintot") := NULL]
+
+		mergexx[, nonh_wealth := wealth - home.equity ]
 
 		# Household weight needs to be 
 		# divided by 10000. see pdf with email.
@@ -515,7 +529,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		mergexx[mover==-1, mover := NA ]
 
 
-		setkey(mergexx,ssuid,epppnum,yrmnid)
+		setkey(mergexx,ssuid,epppnum,timeid)
 
 		mergexx[yr.moved.here > 0,duration_at_current := year - yr.moved.here]
 		mergexx[yr.moved.here > 0 & yr.moved.into.previous > 0,duration_at_previous := yr.moved.here - yr.moved.into.previous]
@@ -531,19 +545,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		## create a per-wave indicator
 		#mergexx[,S2S.wave := max(S2S.mn,na.rm=T),by=list(upid,wave)]	
 
-
-
-		# create a lead of that
-		#mergexx[,S2S.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["S2S.mn"]]]
-		mergexx[,own.lead := mergexx[list(ssuid,epppnum,yrmnid+1)][["own"]]]
-		mergexx[, sell := FALSE]
-		mergexx[own==TRUE & own.lead==FALSE, sell := TRUE]
-
-		# whether moved within a wave
-		# when counting, choose one reference
-		# month, or you'll count 4 times:
-		# mergexx[srefmon==4,table(S2S)]
-		#mergexx[,S2S := ( mover==4 )]
 		mergexx[, panel := yrs[yr]]
 
 		# rbindlist (below) merges by 
@@ -564,8 +565,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	if (verbose) cat("combined all panels into one data.table\n")
 
-	
-	
 	
 	
 	# Note: 1996 and 2001 have aggregated states
@@ -612,29 +611,16 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	merged <- US_states[ merged ]
 	merged[,c("state.bornID","STATE") := NULL]
 
-
 	# end state aggregation
-	# ==========================================
+	# ======================
 
 
-	# create moving indicator:
-	# whenever "from" != "to", you moved.
-	setkey(merged,upid,yrmnid)
-	merged[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
-
-	# indicates that at the end of the current period, you move to location "to"
-	merged[,S2S := from != to]	# NA!=0 returns NA.
-
-	# create a per-wave indicator
-	merged[,S2S.wave := any(S2S),by=list(upid,wave)]	
-
-
-	setkey(merged,qtr)
 	# Inflation
 	# =========
 
 	# adjust prices by inflation
 
+	setkey(merged,qtr)
 	data(cpi)
 	cpi <- window(cpi$qtr.base2010,start=c(1995,4))
 	cpi <- cpi/cpi[1]	# base year 1996
@@ -643,81 +629,167 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	merged <- cpi[ merged ]
 
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,hvalue)],function(x) x / (cpi96 * 1000)) ]
-
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue)],function(x) x / (cpi96 * 1000)) ]
 
 	
-	# load fhfa house price data
-	# why do you need that?
-   # data(fhfa)
+	# get average home values at state level
+	# ======================================
 
-	#setkey(fhfa,state,qtr)
-	#lowest <- fhfa[qtr=="1995 Q4",state[.I[which.min(index_sa)]]]
-	#fhfa[,index_sa := index_sa / fhfa[state==lowest & qtr=="1995 Q4"][["index_sa"]] ]	# index relative to lowest index value in 1995:Q4
+	# use this for renters
 
+	hv <- getHomeValues(freq="quarterly")
+	HV = hv[,list(state=State,qtr,HValue96)]
+	setkey(HV,state,qtr)
+	setkey(merged,state,qtr)
 
-	## aggregate state prices
-	## ----------------------
-
-	## separate state groups
-	#fhfa[ (state %in% c("ME","VT")),     state := "ME.VT"]
-	#fhfa[ (state %in% c("SD","ND","WY")),state := "ND.SD.WY"]
-
-	#xfhfa <- fhfa[ state %in% c("ND.SD.WY","ME.VT") ]
-	#fhfa  <- fhfa[!state %in% c("ND.SD.WY","ME.VT") ]
-
-	## do aggregation
-	#xfhfa <- xfhfa[,list(index_sa=mean(index_sa),index_nsa=mean(index_nsa)),by=list(state,qtr)]
-
-	## put back together
-	#fhfa  <- rbind(fhfa,xfhfa,use.names=TRUE)
-
-    #setkey(merged,state,qtr)
-	#setkey(fhfa,state,qtr)
-	#merged <- fhfa[ merged ]
-
-	#if (verbose) cat("merged house prices into data.\n")
+	merged <- HV[merged]
 	
-	# drop FIPS
-	merged[,FIPS := NULL]
+	# imputed renters house value assuming a 
+	# effective user cost of 5%	
+   # merged[,r_hvalue := mortg.rent / 0.05 ]
+
+	#if (use.hvalue.for.p2y){
+		#merged[HHincome>0 & own==TRUE ,p2y := hvalue / (12*HHincome) ] 
+		#merged[HHincome>0 & own==FALSE,p2y := r_hvalue / (12*HHincome) ] 	# in terms of ANNUAL income
+		#merged[wealth!= 0 & own==TRUE ,p2w := hvalue / wealth] 
+		#merged[wealth!= 0 & own==FALSE,p2w := r_hvalue / wealth] 
+
+	#} else {
+		## use the state level index for price to incoem ratios
+
+		#merged[HHincome>0,p2y := HValue96 / (12*HHincome) ] 
+		#merged[wealth!= 0,p2w := HValue96 / wealth] 
+		#merged[,r_hvalue := NA]
+	#}
+
+	merged[,age2 := age^2 ]
 
 
-	# drop inconsistencies
-	# --------------------
 
-	# 1) people who have an age difference less than 0 or greater than 1 are 
-	# either not the same people, or age is mismeasured.
-	# TODO
-	#merged <- merged[diff(age) > -1 & diff(age) < 2]
+	# create moving indicator:
+	# ========================
+
+	# whenever "from" != "to", you moved.
+	setkey(merged,upid,timeid)
+	merged[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
+
+	# indicates that at the end of the current period, you move to location "to"
+	merged[,S2S := from != to]	# NA!=0 returns NA.
+	
+	
+	# change in ownership in time period
+	# ==================================
+
+	merged[,down := c(diff(as.numeric(own)),0),by=upid]
+	merged[,buy := FALSE]
+	merged[down==1, buy := TRUE]
+	merged[,sell := FALSE]
+	merged[down==-1, sell := TRUE]
+
+	# change in number of kids
+	# ========================
+
+	merged[,dkids := c(diff(numkids),0),by=upid]
+
+	# do time aggregation
+	# ===================
+
+	# needs to to aggregation operations 
+	# and needs to assign a new time index.
+
+	# do required time aggregation
+	# first order by time
+	setkey(merged,upid,yearmon)
+
+	if (!is.null(agg.by)){
+
+		# aggregate by agg.by
+		# construct the call as a string
+		mcall <- paste0("merged <- merged[,list(state=state[1],HValue96=mean(HValue96,na.rm=T),
+						   state.born=state.born[1],
+						   Region=Region[1],
+						   Division=Division[1],
+						   HHincome=sum(HHincome,na.rm=T),
+						   numkids=max(numkids,na.rm=T),
+						   HHweight=mean(HHweight,na.rm=T),
+						   age=min(age,na.rm=T),
+						   year=min(year,na.rm=T),
+						   wealth=mean(wealth,na.rm=T),
+						   nonh_wealth=mean(nonh_wealth,na.rm=T),
+						   hvalue=mean(hvalue,na.rm=T),
+						   home.equity=mean(home.equity,na.rm=T),
+						   mortg.rent=mean(mortg.rent,na.rm=T),
+						   dkids=sum(dkids,na.rm=T),
+						   buy=sum(buy,na.rm=T),
+						   sell=sum(sell,na.rm=T),
+						   college=college[1],
+						   born=born[1],
+						   own=max(own,na.rm=T),
+						   S2S=sum(S2S,na.rm=T),
+						   from=from[1],
+						   to=to[length(to[!is.na(to)])],
+						   cohort=cohort[1],
+						   duration=duration_at_current[1]),by=list(upid,",agg.by,")]")
+
+		# evaluate the call
+		eval(parse(text=mcall))
+
+	   # # get a unique timeid that is a numeric sequence
+		#mcall <- paste0("tmp <- merged[,list(",agg.by,"=as.numeric(unique(",agg.by,")))]")
+		#eval(parse(text=mcall))
+
+		## setkey on the time id
+		#mcall <- paste0("setkey(tmp,",agg.by,")")
+		#eval(parse(text=mcall))
+
+		#tmp[,timeid := 1:nrow(tmp)]
 
 
+		#mcall <- paste0("setkey(merged,",agg.by,")")
+		#eval(parse(text=mcall))
+		#merged <- merged[ tmp ]
 
-	# subset to a 4-monthly dataset
 
-	merged4mn <- merged[srefmon==4]
-	merged4mn[,yrmnid := NULL ]
-	# need a sequence of unique year month identifiers
-	tmp <- merged4mn[,list(yearmon=unique(yearmon))]
-	tmp <- tmp[complete.cases(tmp)]
-	tmp[,year := round(yearmon/100,0)]
-	tmp[,month := yearmon-year*100]
-	tmp[,c("year","month") := NULL]
-	setkey(tmp,yearmon)
-	tmp[,yrmnid := 1:nrow(tmp)]
+		#mcall <- paste0("merged[,timeid := as.numeric(",agg.by,")]")
+		#eval(parse(text=mcall))
 
-	setkey(merged4mn,yearmon)
+		# re-add age2
+		merged[,age2 := age^2]
 
-	merged4mn <- merged4mn[ tmp ]
+		# get rid of duplicate cols
+		nm <- names(merged)
+		merged[,unique(nm),with=FALSE]
+	
+		fname <- paste0("Sipp_aggby_",agg.by,".RData")
+		
+	} else {
+		fname <- "Sipp_aggby_NULL.RData"
 
-	# drop reference month
-	merged[,srefmon := NULL]
-	merged4mn[,srefmon := NULL]
+	}
+
+	# imputed renters house value assuming a 
+	# effective user cost of 5%	
+	merged[,r_hvalue := mortg.rent / 0.05 ]
+
+	if (use.hvalue.for.p2y){
+		merged[HHincome>0 & own==TRUE ,p2y := hvalue / (HHincome) ] 
+		merged[HHincome>0 & own==FALSE,p2y := r_hvalue / HHincome ] 
+		merged[wealth!= 0 & own==TRUE ,p2w := hvalue / wealth] 
+		merged[wealth!= 0 & own==FALSE,p2w := r_hvalue / wealth] 
+
+	} else {
+		# use the state level index for price to incoem ratios
+
+		merged[HHincome>0,p2y := HValue96 / (HHincome) ] 
+		merged[wealth!= 0,p2w := HValue96 / wealth] 
+	}
 
 
 	if (verbose) cat("writing data to disk now.\n")
 
-	save(merged,file="~/Dropbox/mobility/SIPP/SippFull.RData")
-	save(merged4mn,file="~/Dropbox/mobility/SIPP/Sipp4mn.RData")
+	save(merged,file=file.path(path,fname))
+
+	return(merged)
 
 }
 	
@@ -832,20 +904,19 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 subset.all <- function(path="~/Dropbox/mobility/SIPP"){
 
 
-	# loosing 5 moves here by subsetting to pos income
 	# this is the mnlogit dataset
 	load(file.path(path,"SippFull.RData"))
 	logit <- merged[HHincome>0, list(upid,
 									  yrmnid,
-									  logHHincome=log(HHincome),
+									  HHincome,
 									  age,age2=age^2,
 									  year,state,cohort,
 									  born,numkids,born.here,
-									  college,own,
-									  wealth,mortg.rent)]
+									  college,duration_at_current,own,
+									  wealth,mortg.rent,HHweight)]
 
 	# make a model.matrix out of that (i.e. no factors but dummies)
-	cohorts <- model.matrix(~cohort - 1,data=logit)
+	cohorts <- model.matrix(~cohort + own + born.here - 1,data=logit)
 	prelogit <- cbind(logit,cohorts)
 	save(prelogit,file=file.path(path,"prelogit.RData"))
 

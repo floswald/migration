@@ -2,7 +2,7 @@
 \alias{simMovesFromLogit}
 \title{simulate number of moves from mnlogit result}
 \usage{
-  simMovesFromLogit(res,
+  simMovesFromLogit(res, newdata = NULL,
     print.to = "~/Dropbox/mobility/output/model/BBL/")
 }
 \arguments{

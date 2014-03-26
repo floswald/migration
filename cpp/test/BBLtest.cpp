@@ -3,9 +3,9 @@
 #include "BBLsim.h" // Include the code that we are testing
 #include <gtest/gtest.h> // Include the google test framework
 
+using namespace arma;
 
-
-class BBLSimTest : public ::testing::Test {
+class CBBLSimTest : public ::testing::Test {
 	protected:
 
 		// data members of the fixture
@@ -15,7 +15,7 @@ class BBLSimTest : public ::testing::Test {
 		int K;	// number of vars in datamatrix (id, age, state, h, a, m, eq, pay)
 		int nS;	// number of states
 
-		arma::mat iCond;
+		arma::mat iCond;	// initial conditions 
 
 		void SetUp() {
 
@@ -28,7 +28,7 @@ class BBLSimTest : public ::testing::Test {
 			iCond.randu(N,K);
 			
 			// create a class on the heap
-			BBL = new BBLsim(N,T,R,nS,iCond);
+			BBL = new CBBLsim(N,T,R,nS,K,iCond);
 		}
 
 
@@ -37,23 +37,29 @@ class BBLSimTest : public ::testing::Test {
 			delete BBL;
 		}
 
-		BBLsim *BBL;
+		CBBLsim *BBL;
 };
 
 
 
 
 // test if can construct an instance
-TEST_F(BBLSimTest, CanGetName){
+TEST_F(CBBLSimTest, CanGetName){
 
 	EXPECT_EQ( "BBLsim", BBL->GetName() );
-
 }
 
-TEST_F(BBLSimTest, DimsOfdcubeAreCorrect){
+TEST_F(CBBLSimTest, DimsAreCorrect){
 
-	arma::cube myc = arma::zeros<arma::cube>(N,T,R);
-	arma::cube test = BBL->Getdcube();
+	cube myc = zeros<cube>(N,T,R);
+	cube test = BBL->Getdcube();
+
+	EXPECT_EQ( myc.n_cols, test.n_cols );
+	EXPECT_EQ( myc.n_rows, test.n_rows );
+	EXPECT_EQ( myc.n_slices, test.n_slices );
+
+	mat mym = zeros<mat>(N,K);
+	mat testm = BBL->Getlogitmat();
 
 	EXPECT_EQ( myc.n_cols, test.n_cols );
 	EXPECT_EQ( myc.n_rows, test.n_rows );

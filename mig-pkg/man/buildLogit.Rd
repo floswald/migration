@@ -40,12 +40,12 @@
   \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/prelogit.RData")
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_year.RData")
 load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
 load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
 mvt <- sumstats$mvtab
 mvt[,c("wave","mid","from") := NULL]
-l <- buildLogit(prelogit,RE.coefs,movreg=mvt)
+l <- buildLogit(merged,RE.coefs,movreg=mvt)
 }
 \seealso{
   Other LogitModel: \code{\link{DTSetChoice}},
