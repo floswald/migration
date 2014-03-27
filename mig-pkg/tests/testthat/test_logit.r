@@ -12,9 +12,22 @@ nm <- 5		# number of movers
 tt <- makeTestData(n,A,nm)
 
 # make income equation coefs
-RE.coefs <- makeTestREcoefs(te=tt$dat)
+RE.coefs <- makeTestREcoefs(te=tt)
 
 data(State_distMat_agg,package="EconData")
+
+
+context("checking testdata")
+
+test_that(" testdata has correct attributes",{
+
+		  expect_that( tt, is_a("data.table") )
+		  expect_that( attr(tt,"movers"), is_a("character") )
+		  expect_that( attr(tt,"mvage"), is_a("integer") )
+		  expect_that( length(attr(tt,"movers")), equals( nm ) )
+		  expect_that( length(attr(tt,"mvage")), equals( nm ) )
+		  expect_that( all.equal( names(attr(tt,"mvage")), attr(tt,"movers")), is_true()  )
+})
 
 
 context("income predictions.")
@@ -25,7 +38,7 @@ context("income predictions.")
 test_that("getREintercept adds the correct intercept",{
 
 	s       <- sample(names(RE.coefs),size=1)
-	tmps    <- tt$dat[state==s]
+	tmps    <- tt[state==s]
 	
 	tmps <- getREintercept(tmps,RE.coefs[[s]])
 	expect_that( all.equal( tmps[,unique(intercept)] , RE.coefs[[s]]$RE[,intercept] - RE.coefs[[s]]$fixed[[1]] ), is_true() )
@@ -41,7 +54,7 @@ test_that("makePrediction2 has correct attributes", {
 
 	stn     <- names(RE.coefs)
 	s       <- sample(stn,size=1)
-	tmps    <- tt$dat[state==s]
+	tmps    <- tt[state==s]
 	tmps <- getREintercept(tmps,RE.coefs[[s]])
 
 	with.FE <- TRUE		
@@ -69,7 +82,7 @@ test_that("makePrediction2 has correct attributes", {
 test_that("makePrediction2 output is correct", {
 
 	s       <- sample(names(RE.coefs),size=1)
-	tmps    <- tt$dat[state==s]
+	tmps    <- tt[state==s]
 	tmps <- getREintercept(tmps,RE.coefs[[s]])
 	with.FE <- TRUE		
 	m <- getIncomeM(with.FE,tmps)
@@ -107,16 +120,16 @@ test_that("makePrediction1 has correct size", {
 
 
 	with.FE <- TRUE		
-	t1 <- makePrediction1(tt$dat,RE.coefs,with.FE,State_distMat_agg)
+	t1 <- makePrediction1(tt,RE.coefs,with.FE,State_distMat_agg)
 
-	expect_equal( nrow(t1), nrow(tt$dat)*tt$dat[,length(unique(state))])
+	expect_equal( nrow(t1), nrow(tt)*tt[,length(unique(state))])
 })
-     
+	 
 
 
 test_that("test that homevalues merge is correct",{
 
-	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	tdat <- makePrediction1(tt,RE.coefs,with.FE=TRUE,State_distMat_agg)
 	l    <- mergeHomeValues(tdat)
 
 	yr   <- l[,list(year=unique(year)),by=move.to]
@@ -136,94 +149,43 @@ test_that("test that homevalues merge is correct",{
 
 context("Discrete choice tests.")
 
-# test DTSetChoice
-# ================
+test_that("buildLogitDchoice adds correct variables", {
 
-test_that("DTSetChoice has correct output",{
+	tdat <- makePrediction1(tt,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	l <- mergeHomeValues(tdat)
+	setkey(l,upid,age,move.to)
 
+	# values to be tested
+	l <- buildLogitDchoice(l)
 
-	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
-	tdat[,choice := FALSE]
-	tdat[,stay   := FALSE]
+	# test that mover has choice==TRUE at moving age
+	# rebuild case_id for movers
+	mvid <- paste0(attr(tt,"movers"),"_",attr(tt,"mvage"))
 
-	setkey(tdat,upid,age)
-	setkey(tt$mvtab,upid,age)
+	setkey(l,caseid)
 
-	# get the movers in the age where they move
-	tdat <- 	tdat[tt$mvtab]
+	# subsetting l to id of moves, all must have TRUE as choice
+	# where move.to == to
+	expect_that( all( l[list(mvid)][move.to==to,choice] ), is_true() )
 
-	# set their discrete choice to TRUE in the age they moved
-	t2 <- DTSetChoice(tdat)
+	# reverse
+	expect_that( !any( l[list(mvid)][move.to!=to,choice] ), is_true() )
 
-	expect_true( all(t2[move.to == to][, choice]) )
-	expect_true( !any(t2[move.to == to][, stay]) )
+	# test stay indicator
+	expect_that( all( l[!list(mvid)][,stay] ), is_true() )
+	expect_that( !any( l[list(mvid)][,stay] ), is_true() )
+		  
+	expect_that( l[,max(S2S,na.rm=T)] == 1, is_true() )
 
 })
 
 
-# test mergePredIncomeMovingHist 
-# ================v============
+context("test true logit data")
 
-test_that("mergePredIncomeMovingHist correct output", {
+test_that("logit.RData has valid S2S values",{
 
-	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
-	tdat[,choice := FALSE]
-	tdat[,stay   := FALSE]
-
-	# values to test:
-	l <- mergePredIncomeMovingHist(tdat,tt$mvtab)
-
-
-	# control values:
-	setkey(tdat,upid,age)
-	setkey(tt$mvtab,upid,age)
-
-	# get the movers in the age where they move
-	mdat <- 	tdat[tt$mvtab]
-	mdat[,upid2 := paste0(upid,"_",yearmon) ]
-	mdat[,c("to","yearmon") := NULL]
-
-
-	# test: in l, all non-movers can have only one "stay" per age
-	# 1) get movers from l
-
-	setkey(l,upid,age)
-	setkey(mdat,upid,age)
-
-	# separate movers and non movers
-	nonmv.from.l <- l[!J(mdat[,list(upid,age)])]	# NEVER move
-	   mv.from.l <- l[   mdat[,list(upid,age)] ]	# move in one of many cases
-
-	# in an age where you are a mover, you cannot be a nonmover
-	mv.from.l1 <- mv.from.l[,list(id=unique(upid)),by=age]
-	for (i in 1:nrow(mv.from.l1)){
-
-		expect_that( nrow(nonmv.from.l[upid==mv.from.l1[i][["id"]] & age==mv.from.l1[i][["age"]]]), equals( 0 ) )
-	}
-
-	# in mover section, there is nobody apart from upid who is moving at age
-	setkey(mv.from.l,age,upid)
-	expect_that( nrow( mv.from.l[!J(mv.from.l1)] ), equals( 0 ) )
-
-	# in non-mover section, people who move in mv.from.l are stayers
-	setkey(nonmv.from.l,age,upid)
-
-	for (i in 1:nrow(mv.from.l1)){
-
-		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all(stay)], is_true() )
-		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all(distance==0)],  is_true(  ) )
-		expect_that( l[upid==mv.from.l1[i][["id"]] & age!=mv.from.l1[i][["age"]] ][choice==TRUE,all.equal(state,move.to)], is_true() )
-
-	}
-
-
-	# in non-mover section, all who never where movers, are always stayers
-	setkey(nonmv.from.l,upid)
-	expect_that( nonmv.from.l[!J(mv.from.l1[,unique(id)])][choice==TRUE,all(stay)], is_true() )
-	expect_that( nonmv.from.l[!J(mv.from.l1[,unique(id)])][choice==TRUE,all.equal(state,move.to)], is_true() )
-
-	# in entire dataset, wherever move.to==
-	expect_that( l[move.to==state, all(stay)], is_true() )
+		  load("~/Dropbox/mobility/output/model/BBL/logit.RData")
+		  expect_that( l[,max(S2S,na.rm=T)] == 1, is_true() )
 
 })
 
@@ -236,55 +198,56 @@ test_that("mergePredIncomeMovingHist correct output", {
 context("Predictions from logit location choice model")
 
 
-test_that("makeMovingIndicatorsLogit is correct",{
+#test_that("makeMovingIndicatorsLogit is correct",{
 
-	tdat <- makePrediction1(tt$dat,RE.coefs,with.FE=TRUE,State_distMat_agg)
-	tdat[,choice := FALSE]
-	tdat[,stay   := FALSE]
+	#tdat <- makePrediction1(tt,RE.coefs,with.FE=TRUE,State_distMat_agg)
+	#l <- mergeHomeValues(tdat)
+	#setkey(l,upid,age,move.to)
 
-	l <- mergePredIncomeMovingHist(tdat,tt$mvtab)
+	## values to be tested
+	#l <- buildLogitDchoice(l)
 
-	# get predicted probs of moving for each upid2
-	p <- replicate(n=l[,length(unique(move.to))],runif(n=l[,length(unique(upid2))]))
-	colnames(p) <- l[,unique(move.to)[order(unique(move.to))]]
-	p <- p / matrix(rowSums(p),nrow(p),ncol(p))
+	## get predicted probs of moving for each upid2
+	#p <- replicate(n=l[,length(unique(move.to))],runif(n=l[,length(unique(upid2))]))
+	#colnames(p) <- l[,unique(move.to)[order(unique(move.to))]]
+	#p <- p / matrix(rowSums(p),nrow(p),ncol(p))
 
-	p <- data.table(p)
-	p[,upid2 := l[,unique(upid2)] ]
+	#p <- data.table(p)
+	#p[,upid2 := l[,unique(upid2)] ]
 	
-	m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
+	#m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
 
-	setkey(m,upid2,move.to)
-	setkey(l,upid2,move.to)
+	#setkey(m,upid2,move.to)
+	#setkey(l,upid2,move.to)
 
-	# compute test values
-	m <- simulateMoveLogit(m)
-	r <- copy(l)
+	## compute test values
+	#m <- simulateMoveLogit(m)
+	#r <- copy(l)
 
-	# add to original data
-	l[,sim.move := m[,sim.move] ]
-	l[,stay.model := FALSE]
-	l[move.to==sim.move & distance==0, stay.model:=TRUE]
+	## add to original data
+	#l[,sim.move := m[,sim.move] ]
+	#l[,stay.model := FALSE]
+	#l[move.to==sim.move & distance==0, stay.model:=TRUE]
 	
-	l[,stay.data:= FALSE]
-	l[distance==0 & choice==TRUE, stay.data := TRUE]
+	#l[,stay.data:= FALSE]
+	#l[distance==0 & choice==TRUE, stay.data := TRUE]
 
-	expect_true( all.equal( l[,stay.data], l[,stay] ), label="original definition of stay and backed out def in stay.data" )
+	#expect_true( all.equal( l[,stay.data], l[,stay] ), label="original definition of stay and backed out def in stay.data" )
 
 
-	# test whether "move.to" columns are correct
-	l[,move.to.model := NA_character_ ]
-	l[move.to==sim.move & distance > 0, move.to.model := sim.move]
-	l[,move.to.data := NA_character_ ]
-	l[distance > 0 & choice==TRUE, move.to.data:= move.to]
+	## test whether "move.to" columns are correct
+	#l[,move.to.model := NA_character_ ]
+	#l[move.to==sim.move & distance > 0, move.to.model := sim.move]
+	#l[,move.to.data := NA_character_ ]
+	#l[distance > 0 & choice==TRUE, move.to.data:= move.to]
 
-	r <- makeMovingIndicatorsLogit(r,m)
+	#r <- makeMovingIndicatorsLogit(r,m)
 
-	expect_true( all( l[!is.na(move.to.model),move.to.model] == r[!is.na(move.to.model),move.to.model] ) )
-	expect_true( all( l[!is.na(move.to.data),move.to.data] == r[!is.na(move.to.data),move.to.data] ) )
+	#expect_true( all( l[!is.na(move.to.model),move.to.model] == r[!is.na(move.to.model),move.to.model] ) )
+	#expect_true( all( l[!is.na(move.to.data),move.to.data] == r[!is.na(move.to.data),move.to.data] ) )
 
-}
-)
+#}
+#)
 
 
 

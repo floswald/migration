@@ -2,11 +2,10 @@
 \alias{buildLogit}
 \title{Make a MN Logit estimation datset}
 \usage{
-  buildLogit(logi, RE.coefs, with.FE = FALSE,
+  buildLogit(logi, RE.coefs, with.FE = TRUE,
     verbose = TRUE,
     saveto = "~/Dropbox/mobility/output/model/BBL/logit.RData",
-    savetosmall = "~/Dropbox/mobility/output/model/BBL/logit30.RData",
-    movreg)
+    savetosmall = "~/Dropbox/mobility/output/model/BBL/logit30.RData")
 }
 \arguments{
   \item{income}{data.table from \code{\link{subset.all}}}
@@ -40,12 +39,9 @@
   \code{\link{RE.HHincome}}, i.e. shocks are irrelevant.
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/Sipp_aggby_year.RData")
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
-mvt <- sumstats$mvtab
-mvt[,c("wave","mid","from") := NULL]
-l <- buildLogit(merged,RE.coefs,movreg=mvt)
+l <- buildLogit(merged,RE.coefs)
 }
 \seealso{
   Other LogitModel: \code{\link{DTSetChoice}},

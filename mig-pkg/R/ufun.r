@@ -54,7 +54,7 @@ makeTestData <- function(n,A,nm){
 	init <- cbind(init,coh)
 	setkey(init,upid)
 
-	tt <- data.table( upid=as.character(id), age=age, year=year, yearmon=yrmn)
+	tt <- data.table( upid=as.character(id), age=age, year=year)
 	tt[,c("logHHincome",
 		  "wealth",    
 		  "mortg.rent",
@@ -64,6 +64,8 @@ makeTestData <- function(n,A,nm){
 	# initial location
 	setkey(tt,upid)
 	tt <- tt[init]
+	tt[,from:=state]
+	tt[,to :=state]
 
 	# movers
 	setkey(tt,upid,age)
@@ -76,28 +78,29 @@ makeTestData <- function(n,A,nm){
 		}
 	}
 
-	mvtab <- data.table(upid=mv,age=0L,yearmon=0,to="NA",key="upid")
+	mvage <- c()
 
 	for (i in mv){
-		mvage <- tt[.(i)][,sample(age,size=1)]
-		mvyrm <- tt[.(i)][,sample(yearmon,size=1)]
-		mvat <- tt[.(i)][,mvage:max(age)]
-		cst  <- tt[.(i,mvage)][["state"]]
+		mvage <- c(mvage,tt[.(i)][,sample(age,size=1)])
+		mvat <- tt[.(i)][,mvage[length(mvage)]:max(age)]
+		cst  <- tt[.(i,mvage[length(mvage)])][["state"]]
 		sst  <- st[-which(st==cst)]
-		mvto <- tt[.(i,mvage)][,sample(sst,size=1)]
-		tt[.(i,mvat), state := mvto]
+		mvto <- tt[.(i,mvage[length(mvage)])][,sample(sst,size=1)]
+		tt[.(i,mvat), to := mvto]
+		tt[.(i,mvat+1), state := mvto]
+		tt[.(i,mvat+1), from := mvto]
 
-		# add to mvtab
-		mvtab[.(i),age := mvage]
-		mvtab[.(i),yearmon := mvyrm]
-		mvtab[.(i),to  := mvto]
 	}
 
-	# drop yrmn from big data
-	tt[,yearmon := NULL]
+	tt[,S2S := as.numeric(from!=to)]
 
-	l <- list(dat=tt,movers=tt[.(mv)],mvtab=mvtab)
-	return(l)
+
+	# add attribs
+	attr(tt,"movers") <- mv
+	names(mvage) <- mv
+	attr(tt,"mvage") <- mvage
+
+	return(tt)
 }
 
 

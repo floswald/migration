@@ -720,12 +720,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 						   home.equity=mean(home.equity,na.rm=T),
 						   mortg.rent=mean(mortg.rent,na.rm=T),
 						   dkids=sum(dkids,na.rm=T),
-						   buy=sum(buy,na.rm=T),
-						   sell=sum(sell,na.rm=T),
+						   buy=cumsum(buy,na.rm=T),
+						   sell=cumsum(sell,na.rm=T),
 						   college=college[1],
 						   born=born[1],
 						   own=max(own,na.rm=T),
-						   S2S=sum(S2S,na.rm=T),
+						   S2S=cumsum(S2S,na.rm=T),
 						   from=from[1],
 						   to=to[length(to[!is.na(to)])],
 						   cohort=cohort[1],
@@ -891,63 +891,6 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 
 	save(hvalues,file="~/git/migration/data/hvalues.RData")
 
-}
-
-
-#' Re-subset all data
-#'
-#' wrapper to subset all datasets
-#' after full data, i.e. after \code{\link{Clean.Sipp}}
-#' has been run.
-#'
-#' @param path/to/location/of/full/data
-subset.all <- function(path="~/Dropbox/mobility/SIPP"){
-
-
-	# this is the mnlogit dataset
-	load(file.path(path,"SippFull.RData"))
-	logit <- merged[HHincome>0, list(upid,
-									  yrmnid,
-									  HHincome,
-									  age,age2=age^2,
-									  year,state,cohort,
-									  born,numkids,born.here,
-									  college,duration_at_current,own,
-									  wealth,mortg.rent,HHweight)]
-
-	# make a model.matrix out of that (i.e. no factors but dummies)
-	cohorts <- model.matrix(~cohort + own + born.here - 1,data=logit)
-	prelogit <- cbind(logit,cohorts)
-	save(prelogit,file=file.path(path,"prelogit.RData"))
-
-	# make a test dataset
-	# take an x% random sample by state
-	inds <- logit[,list(upid=sample(unique(upid),size=round(length(unique(upid))*0.5))),by=state]
-	setkey(logit,upid)
-	logitTest <- logit[inds[,upid]]
-	save(logitTest,file=file.path(path,"LogitTest.RData"))
-
-	rm(logit,merged)
-	gc()
-
-
-	load(file.path(path,"Sipp4mn.RData"))
-	setkey(merged4mn,upid,yrmnid)
-
-	save.buy <- merged4mn[, list(upid,
-							age,state,
-							wealth,
-							mortg.rent,
-							yearmon,
-							home.equity,
-							HHincome,
-							HHweight,
-							saving, wave,
-							own,hvalue,
-							numkids)]
-	save(save.buy,file=file.path(path,"preSaveBuy.RData"))
-
-	cat('done with subsetting all.\n')
 }
 
 

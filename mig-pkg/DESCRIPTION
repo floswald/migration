@@ -17,16 +17,16 @@ Imports:
     xts,
     grid,
     splines,
-    xtable,
-    mnlogit,
-    ggplot2,
     Hmisc
 Depends:
     zoo,
+    mnlogit,
     data.table,
     reshape2,
     MARSS,
+    xtable,
     devtools,
+    ggplot2,
     testthat
 Collate:
     'SippAnalyse.r'

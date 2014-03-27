@@ -182,7 +182,7 @@ makePrediction2 <- function(s,RE.coefs,m,with.FE,tmps,State_dist){
 	}
 
 	ll <- rbindlist(ll)
-	ll[,c("age2","cohort1920","cohort1940","cohort1960","cohort1980") := NULL]
+	ll[,c("cohort1920","cohort1940","cohort1960","cohort1980") := NULL]
 	attr(ll,"origin") <- s
 	attr(ll,"with.FE") <- with.FE
 	attr(ll,"pred.for") <- prst
@@ -305,6 +305,7 @@ runMNLogit <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/logit30Res.
 	d <- d[complete.cases(d[,list(HValue96)])]
 
 	# you cannot have stay:  d[,cor(choice,stay)]
+	# furthermore, you can't have any of those formulae:
 	#fm = formula(choice ~ -1 + distance + logHHincome + HValue96 + stay | 1 | 1 )
 	#fm = formula(choice ~ -1 + distance | age | logHHincome + HValue96 )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids + born.here| logHHincome )
@@ -312,12 +313,17 @@ runMNLogit <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/logit30Res.
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + numkids | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + mortg.rent | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  + numkids | logHHincome )
-	fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + own  | logHHincome )
+	
+
+	# those work:
+	
+	#fm = formula(choice ~ -1 + distance + HValue96  | age + age2 + own + duration | logHHincome )
+	fm = formula(choice ~ -1 + distance + HValue96  | age + age2 + own  | logHHincome )
 	#fm = formula(choice ~ -1 + distance + HValue96  | age + I(age^2) + born.here | logHHincome )
 
 
 	# add a case id
-	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100,chid="upid2",linDepTol=0.0001)
+	res = mnlogit(fm,d,"move.to",ncores=1,print.level=1,maxiter=100,chid="caseid",linDepTol=0.0001)
 
 	if (!is.null(saveto)){
 		save(res,file=saveto)
@@ -333,7 +339,7 @@ runMNLogit <- function(d,saveto="~/Dropbox/mobility/output/model/BBL/logit30Res.
 
 #' @family LogitModel
 simulateMoveLogit <- function(m){
-	m[,sim.move := move.to[ findInterval(runif(1), cumsum(prediction)) +1], by=upid2]
+	m[,sim.move := move.to[ findInterval(runif(1), cumsum(prediction)) +1], by=caseid]
 }
 
 #' @family LogitModel
@@ -356,8 +362,9 @@ makeMovingIndicatorsLogit <- function(r,m){
 #' @family LogitModel
 getFreqsLogit <- function(m,r){
 
-	setkey(m,upid2,move.to)
-	setkey(r,upid2,move.to)
+	setkey(m,caseid,move.to)
+	setkey(r,caseid,move.to)
+
 
 	r <- makeMovingIndicatorsLogit(r,m)
 
@@ -394,29 +401,57 @@ simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/outp
 	# get prediciton on estimation data
 	if (is.null(newdata)) {
 		p <- data.table(direct.predict(res,probability=TRUE))
-		p[,upid2 := res$data[,unique(upid2)] ]
+		p[,caseid := res$data[,unique(caseid)] ]
 	} else {
 		p <- data.table(direct.predict(res,newdata,probability=TRUE))
-		p[,upid2 := newdata[,unique(upid2)] ]
+		p[,caseid := newdata[,unique(caseid)] ]
 	}
 
 
-	m <- melt(p,id.vars="upid2",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
+	m <- melt(p,id.vars="caseid",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
 	# simulate each case-id: given all 48 choices, which one do you choose?
 	m <- simulateMoveLogit(m)
+	setkey(m,caseid,move.to)
+
+	# table with where each guy moves
+	r <- res$data[,list(caseid,move.to,distance,choice)]
+	setkey(r,caseid,move.to)
+
+	rm(res)
+	gc()
+
+	# merge back
+	r <- r[m]
+	r[,simchoice := move.to==sim.move]
+	r[,dpos := distance > 0]
+	setkey(r,simchoice,dpos)
+
+	# simulation choice at distance==0
+	r[,c("m.move","m.stay","d.move","d.stay") := FALSE]
+
+	r[J(TRUE,FALSE), m.stay := TRUE]	#i.e. stay==TRUE
+	r[J(TRUE,TRUE),  m.move := TRUE]
+
+	# true choices
+	setkey(r,choice,dpos)
+	r[J(TRUE,TRUE), d.move := TRUE]
+	r[J(TRUE,FALSE), d.stay := TRUE]
+
+	fp <- list()
+	fp$freqs <- r[,list(model.stay=sum(m.stay),data.stay=sum(d.stay),model.move=sum(m.move),data.move=sum(d.move)),by=move.to]
+	fp$freqs[,dataN := data.stay+data.move]
+	fp$freqs[,modelN := model.stay+model.move]
+
+	fp$props <- fp$freqs[,list(move.to,data.stay=data.stay/dataN,model.stay=model.stay/modelN,data.move=data.move/dataN,model.move=model.move/modelN)]
 
 	if (!is.null(print.to)){
 
-		r <- copy(res$data)
-		fp <- getFreqsLogit(m,r)
-
-		
 		print(xtable(fp$freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
 		print(xtable(fp$props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
-		return(fp)
+		return(list(fp=fp,r=r))
 	
 	} else {
-		return(m)
+		return(list(fp=fp,r=r))
 	}
 
 
@@ -486,13 +521,10 @@ printLogitModel <- function(res,omit,path="~/Dropbox/mobility/output/model/BBL")
 #' @family LogitModel
 #' @return data.table with predicted incomes
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_year.RData")
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-#' load("~/Dropbox/mobility/output/data/sipp/sumstats.RData")
-#' mvt <- sumstats$mvtab
-#' mvt[,c("wave","mid","from") := NULL]
-#' l <- buildLogit(merged,RE.coefs,movreg=mvt)
-buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData",movreg){
+#' l <- buildLogit(merged,RE.coefs)
+buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
@@ -510,7 +542,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 
 	# further subset. keep only vars you are using in the logit model!
 	logi <- logi[,list(logHHincome=log(HHincome),
-					wealth ,
+					#wealth ,
 					#mortg.rent,
 					own,
 					upid,
@@ -520,6 +552,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 					to,
 					S2S,
 					year,
+					duration,
 					#born.here,
 					#college,
 					dkids,
@@ -549,47 +582,18 @@ buildLogit <- function(logi,RE.coefs,with.FE=FALSE,verbose=TRUE,saveto="~/Dropbo
 	l <- mergeHomeValues(l)
 	setkey(l,upid,age,move.to)
 
-	# add a case id
-	l[,caseid := paste0(upid,"_",age)]
+	# drop multiple moves
+	l <- l[S2S<2]
 
-	# add an indicator at move.to==to
-	l[,move.to_to := FALSE]
-	l[move.to==to, move.to_to := TRUE ]
+	# buildLogitDChoice
+	l <- buildLogitDchoice(l)
 
-browser()
-
-	# merge back into monthly data
-
-
-	# bring in the moving data
-	# ------------
-
-
-	# merge with l
-	# ============
-
-	# add a choice indicator
-	# ======================
-	l[,choice := FALSE]
-	l[,stay   := FALSE]
-
-	setkey(l,S2S,move.to_to)
-
-	l[J(1,TRUE), choice:=TRUE]
-
-	move.cases <- l[choice==TRUE,list(caseid=unique(caseid))]
-
-	setkey(move.cases,caseid)
-	setkey(l,caseid)
-
-	l[!list(move.cases),stay := TRUE]
-	setkey(l,stay,move.to_true)
-	l[J(TRUE,TRUE), choice := TRUE]
-	
 	# add the moving choices and merge
-	l <- mergePredIncomeMovingHist(l,movreg)
+	#l <- mergePredIncomeMovingHist(l,movreg)
 
 	gc()
+
+	attr(l,"shape") <- "choice.set"
 
 	if (!is.null(saveto)){
 		if (verbose) cat("all done. saving file.\n")
@@ -604,6 +608,38 @@ browser()
 	return(l)
 
 }
+
+
+
+buildLogitDchoice <- function(d){
+
+	# create variable that's TRUE
+	# whenever move.to is equal to "to"
+	d[,choice := FALSE]
+	d[move.to==to, choice := TRUE ]
+
+	# add a choice and stay indicator
+	d[,stay   := FALSE]
+
+	setkey(d,S2S,choice)
+
+	# add a case id
+	d[,caseid := paste0(upid,"_",age)]
+
+	# find all cases where move happened
+	move.cases <- d[choice==TRUE & distance>0,list(caseid=unique(caseid))]
+
+	setkey(move.cases,caseid)
+	setkey(d,caseid)
+
+	# find all cases where a move NOT happened
+	d[!list(move.cases),stay := TRUE]
+
+	return(d)
+}
+
+
+
 
 #' Merge Home Values with logit data
 #' 
