@@ -23,8 +23,8 @@
 #' @return list for each state with coefficients and fixed effects
 #' for each individual. saves data.
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/SippIncome.RData")
-#' l <- RE.HHincome(dat=income[state %in% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_NULL.RData")
+#' l <- RE.HHincome(dat=merged[state %in% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
 RE.HHincome <- function(dat,
 						path="~/Dropbox/mobility/output/model/BBL"){
 
@@ -422,17 +422,23 @@ simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/outp
 
 	# merge back
 	r <- r[m]
-	r[,simchoice := move.to==sim.move]
-	r[,dpos := distance > 0]
-	setkey(r,simchoice,dpos)
+	r[,simchoice0 := move.to==sim.move & distance==0]
+	r[,simchoice1 := move.to==sim.move & distance>0]
 
 	# simulation choice at distance==0
 	r[,c("m.move","m.stay","d.move","d.stay") := FALSE]
 
-	r[J(TRUE,FALSE), m.stay := TRUE]	#i.e. stay==TRUE
-	r[J(TRUE,TRUE),  m.move := TRUE]
+	# model: stay
+	setkey(r,simchoice0)
+	r[J(TRUE), m.stay := TRUE]	
+
+	# model:move 
+	setkey(r,simchoice1)
+	r[J(TRUE), m.move := TRUE]	
+
 
 	# true choices
+	r[,dpos := distance >0]
 	setkey(r,choice,dpos)
 	r[J(TRUE,TRUE), d.move := TRUE]
 	r[J(TRUE,FALSE), d.stay := TRUE]
@@ -585,11 +591,17 @@ buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox
 	# drop multiple moves
 	l <- l[S2S<2]
 
+	# drop final period of each guy: don't know whether stay or move.
+	l <- l[complete.cases(l)]
+	#     l <- l[!(is.na(from) & is.na(to))]
+
 	# buildLogitDChoice
 	l <- buildLogitDchoice(l)
 
-	# add the moving choices and merge
-	#l <- mergePredIncomeMovingHist(l,movreg)
+	# drop cases with no choice at all.
+	l[,onechoice := sum(choice),by=caseid]
+	stopifnot( l[,min(onechoice)==1] | l[,max(onechoice)==1] )
+	l[,onechoice := NULL]
 
 	gc()
 
@@ -751,8 +763,8 @@ lme.getCoefs <- function(obj){
 #' @param marginal TRUE if marginal effects 
 #' @family FirstStage
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-#' h <- housingModel(d=merged4mn)
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' h <- housingModel(d=merged)
 housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=FALSE){
 
 	# loaded 4-monthly data in d
@@ -914,10 +926,47 @@ CreateBBLData <- function(init,res,RFmodels){
 
 	# there must be a time loop
 	# if an individual is age > maxage, they must drop out
+		
+	# initial sample: first observation from logit dataset
 
 	for (p in 1:periods){
 
-		# initial sample: dataset with with all locations
+		# update house prices and incomes in all locations
+		# with values at period p
+		# - fill in new equity
+
+
+		# actions
+
+		# run on choice.set data the next location choice
+		# loc
+
+		# reduce over choice dim, i.e. subset to sim.move==move.to to get 
+		# one row per caseid
+		# rloc <- reduce(loc)
+
+		# predict next housing and assets
+		# rloc[,nexth := predict(housing.model)]
+		# rloc[,nextA := predict(savings.model)]
+
+		# reporting
+		# append rloc to results table, recording
+		# current value of state and choice variables
+
+
+		# transition
+
+		# if changed location, i.e loc[state!=sim.move]
+		# 1) update state
+		# 2) update distance
+		#
+		# if h=1 and change to location k and
+		#    h'=0: nonhA = nonhA_new + equity
+		#    h'=1: nonhA = nonhA_new ,
+		#          mdebt = p_k - equity_j ,
+
+
+		#
 
 		# find L decision:
 		d <- simMovesFromLogit(res$logit,newdata=d,print.to=NULL)	# add/change column newLoc

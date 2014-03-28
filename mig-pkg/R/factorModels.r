@@ -530,8 +530,8 @@ makeDivDifferences <- function(){
 	pal <- c("red",pal)
 
 	# income
-	data(US_medinc,package="EconData")
-	d <- data.table(medinc.in2012$inc)
+	data(US_medinc_2012,package="EconData")
+	d <- data.table(medinc_2012$inc)
 	d[,State := tolower(State)]
 	d[,Year := as.numeric(as.character(Year))]
 	setkey(d,State)
@@ -795,8 +795,8 @@ divDeviations <- function(){
 	r$houses <- list()
 
 	# load division median income data
-	data(US_medinc,package="EconData")
-	m <- medinc.in2012$zinc
+	data(US_medinc_2012,package="EconData")
+	m <- medinc_2012$zinc
 
 	# estimate linear model for each d
 	r$incomes <- list()

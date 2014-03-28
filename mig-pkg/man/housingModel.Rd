@@ -16,8 +16,8 @@
   form data
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-h <- housingModel(d=merged4mn)
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+h <- housingModel(d=merged)
 }
 \seealso{
   Other FirstStage: \code{\link{savingsPolicy}}

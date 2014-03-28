@@ -748,7 +748,7 @@ plotDivDeviations <- function(d,path=NULL){
 		pdf(file.path(path,"simDivIncomes.pdf"))
 		par(mfrow=c(3,3))
 		for (i in 1:9){
-			matplot(d$price[[i]],type="l",main=paste0("income ",divs[i]),ylim=ry)
+			matplot(d$inc[[i]],type="l",main=paste0("income ",divs[i]),ylim=ry)
 			abline(a=0,b=0)
 		}
 		dev.off()

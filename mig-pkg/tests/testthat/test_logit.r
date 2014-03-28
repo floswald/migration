@@ -187,6 +187,11 @@ test_that("logit.RData has valid S2S values",{
 		  load("~/Dropbox/mobility/output/model/BBL/logit.RData")
 		  expect_that( l[,max(S2S,na.rm=T)] == 1, is_true() )
 
+		  # every case has one and exactly one choice.
+		  expect_that( l[,sum(choice),by=caseid][,min(V1) == 1], is_true() )
+		  expect_that( l[,sum(choice),by=caseid][,max(V1) == 1], is_true() )
+
+
 })
 
 

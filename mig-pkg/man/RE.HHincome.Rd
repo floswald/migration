@@ -28,8 +28,8 @@
   (uncorrelated with X). }}
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/SippIncome.RData")
-l <- RE.HHincome(dat=income[state \%in\% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_NULL.RData")
+l <- RE.HHincome(dat=merged[state \%in\% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
 }
 \seealso{
   Other IncomePrediction: \code{\link{getHomeValues}},
