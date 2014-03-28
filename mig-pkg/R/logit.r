@@ -23,19 +23,33 @@
 #' @return list for each state with coefficients and fixed effects
 #' for each individual. saves data.
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_NULL.RData")
-#' l <- RE.HHincome(dat=merged[state %in% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' l <- RE.HHincome(dat=merged)
 RE.HHincome <- function(dat,
-						path="~/Dropbox/mobility/output/model/BBL"){
+						path="~/Dropbox/mobility/output/model/BBL/test"){
+
+
+	# TODO 
+	# question
+	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~age|upid),data=subset(dat,state==x))})
+
+
 
 	st <- dat[,unique(state)]
 	st <- st[order(st)]
 
+	kv <- c("HHincome","upid","age","age2","cohort","timeid","state")
+	dat <- dat[HHincome>0,kv,with=FALSE]
 
+	coh <- model.matrix(~cohort -1 ,data=dat)
+	dat <- cbind(dat,coh)
 
 	# this formulation if you use the predict.lme
 	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
-	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
+
+	# problem with that: you will never have individual i (estimated effect in state j) in the object
+	# for state k. so you cannot predict state k.
+	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
 	# print results to tex files
@@ -394,18 +408,18 @@ getFreqsLogit <- function(m,r){
 #' @family LogitModel
 #' @param res mnlogit result
 #' @param print.to location to print table
-simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/output/model/BBL/"){
+simMovesFromLogit <- function(res,newdata=NULL,GOF=FALSE,print.to="~/Dropbox/mobility/output/model/BBL/"){
 
 	stopifnot(class(res) == "mnlogit" )
 
 	# get prediciton on estimation data
 	if (is.null(newdata)) {
-		p <- data.table(direct.predict(res,probability=TRUE))
-		p[,caseid := res$data[,unique(caseid)] ]
+		data <- res$data
 	} else {
-		p <- data.table(direct.predict(res,newdata,probability=TRUE))
-		p[,caseid := newdata[,unique(caseid)] ]
+		data <- newdata
 	}
+	p <- data.table(direct.predict(res,newdata=data,probability=TRUE))
+	p[,caseid := res$data[,unique(caseid)] ]
 
 
 	m <- melt(p,id.vars="caseid",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
@@ -414,19 +428,22 @@ simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/outp
 	setkey(m,caseid,move.to)
 
 	# table with where each guy moves
-	r <- res$data[,list(caseid,move.to,distance,choice)]
+	# this line probably not necessary
+	r <- data[,list(caseid,move.to,distance,choice)]
 	setkey(r,caseid,move.to)
 
 	rm(res)
 	gc()
 
-	# merge back
+	# merge back into data
 	r <- r[m]
+
+
 	r[,simchoice0 := move.to==sim.move & distance==0]
 	r[,simchoice1 := move.to==sim.move & distance>0]
 
 	# simulation choice at distance==0
-	r[,c("m.move","m.stay","d.move","d.stay") := FALSE]
+	r[,c("m.move","m.stay") := FALSE]
 
 	# model: stay
 	setkey(r,simchoice0)
@@ -436,28 +453,36 @@ simMovesFromLogit <- function(res,newdata=NULL,print.to="~/Dropbox/mobility/outp
 	setkey(r,simchoice1)
 	r[J(TRUE), m.move := TRUE]	
 
+	if (GOF){
+		r[,c("d.move","d.stay") := FALSE]
 
-	# true choices
-	r[,dpos := distance >0]
-	setkey(r,choice,dpos)
-	r[J(TRUE,TRUE), d.move := TRUE]
-	r[J(TRUE,FALSE), d.stay := TRUE]
+		# true choices
+		r[,dpos := distance >0]
+		setkey(r,choice,dpos)
+		r[J(TRUE,TRUE), d.move := TRUE]
+		r[J(TRUE,FALSE), d.stay := TRUE]
 
-	fp <- list()
-	fp$freqs <- r[,list(model.stay=sum(m.stay),data.stay=sum(d.stay),model.move=sum(m.move),data.move=sum(d.move)),by=move.to]
-	fp$freqs[,dataN := data.stay+data.move]
-	fp$freqs[,modelN := model.stay+model.move]
+		fp <- list()
+		fp$freqs <- r[,list(model.stay=sum(m.stay),data.stay=sum(d.stay),model.move=sum(m.move),data.move=sum(d.move)),by=move.to]
+		fp$freqs[,dataN := data.stay+data.move]
+		fp$freqs[,modelN := model.stay+model.move]
 
-	fp$props <- fp$freqs[,list(move.to,data.stay=data.stay/dataN,model.stay=model.stay/modelN,data.move=data.move/dataN,model.move=model.move/modelN)]
+		fp$props <- fp$freqs[,list(move.to,data.stay=data.stay/dataN,model.stay=model.stay/modelN,data.move=data.move/dataN,model.move=model.move/modelN)]
 
-	if (!is.null(print.to)){
+		if (!is.null(print.to)){
 
-		print(xtable(fp$freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
-		print(xtable(fp$props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
-		return(list(fp=fp,r=r))
-	
+			print(xtable(fp$freqs),file=file.path(print.to,"logit_pred_freqs.tex"),include.rownames=FALSE,floating=FALSE)
+			print(xtable(fp$props),file=file.path(print.to,"logit_pred_props.tex"),include.rownames=FALSE,floating=FALSE)
+			return(list(fp=fp,r=r))
+		
+		} else {
+			return(list(fp=fp,r=r))
+		}
+
 	} else {
-		return(list(fp=fp,r=r))
+
+		return( r )
+
 	}
 
 
@@ -504,6 +529,89 @@ printLogitModel <- function(res,omit,path="~/Dropbox/mobility/output/model/BBL")
 
 }
 
+#' Make a BBL simulation dataset
+#'
+#' builds the initial BBL dataset
+#'
+#' @param varlist character vector of variables to take from full data
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
+#' l <- buildBBLData(merged,RE.coefs)
+buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output/model/BBL/BBLSimData.RData"){
+
+	
+	# could find a problem here
+	# if the subset of individuals does not span
+	# all cohort dummies. need to get around that somehow
+	
+
+
+
+
+	# keep only pos incomes
+	logi <- logi[HHincome>0]
+
+	cohorts <- model.matrix(~cohort + own - 1,data=logi)
+	logi <- cbind(logi,cohorts)
+
+	# further subset. drop people who are too old
+	logi <- logi[age < BBLpars$maxAge]
+
+
+	# create a consecutive counter by age for each guy
+	setkey(logi,upid,age)
+	logi[,count := 1:.N,by=upid]
+
+	setkey(logi,upid,count)
+
+	# draw a random sample
+	n <- logi[,list(upid=sample(unique(upid),size=length(wealth)*BBLpars$n)),by=state][,upid]
+
+	# subset data to that sample, at the first obs for each guy
+	logi <- logi[list(n,1),list(logHHincome=log(HHincome),
+					wealth ,
+					home.equity,
+					mortg.rent,
+					own,
+					age,
+					age2,
+					year,
+					duration,
+					numkids,
+					state,
+					cohort,
+					cohort1920,
+					cohort1940,
+					cohort1960,
+					cohort1980)]
+
+	logi[,count := NULL]
+
+	# get distances data
+	data(State_distMat_agg,package="EconData")
+
+	# make predictions of income
+	# will add column logHHincome
+	l <- makePrediction1(logi,RE.coefs,with.FE=BBLpars$FE,State_distMat_agg)
+	gc()
+
+	# quality control output
+	# there are a few cases with multiple obs in a category?
+
+	l[,xl:=length(move.to),by=upid]
+
+	l <- l[xl==length(unique(move.to))] 
+	l[,xl := NULL]
+
+	attr(l,"type") <- "BBLInit"
+	attr(l,"BBLpars") <- BBLpars
+
+	if (!is.null(saveto)) save(l,file=saveto)
+
+	return(l)
+
+}
 
 
 		
@@ -920,76 +1028,33 @@ savingsPolicy <- function(d,quants=NULL,path="~/Dropbox/mobility/output/model/BB
 #'
 #' forward simulate lifecycle profiles based 
 #' on policy functions and initial conditions
-CreateBBLData <- function(init,res,RFmodels){
+#'
+#' @param data full SIPP dataset
+#' @param RFmodels list with reduced form models
+#' @param BBLpars list with simulation parameters
+CreateBBLData <- function(data,RFmodels,BBLpars){
 
-	d <- copy(init)
+	# check input
+	stopifnot( c("savings","housing","location","RE.coefs") %in% names(RFmodels) )
 
-	# there must be a time loop
-	# if an individual is age > maxage, they must drop out
-		
-	# initial sample: first observation from logit dataset
+	# setup data.tables
+	# take a sample from full data
 
-	for (p in 1:periods){
-
-		# update house prices and incomes in all locations
-		# with values at period p
-		# - fill in new equity
-
-
-		# actions
-
-		# run on choice.set data the next location choice
-		# loc
-
-		# reduce over choice dim, i.e. subset to sim.move==move.to to get 
-		# one row per caseid
-		# rloc <- reduce(loc)
-
-		# predict next housing and assets
-		# rloc[,nexth := predict(housing.model)]
-		# rloc[,nextA := predict(savings.model)]
-
-		# reporting
-		# append rloc to results table, recording
-		# current value of state and choice variables
+	d <- buildBBLData(data,RFmodels$RE.coefs,BBLpars=BBL,saveto=NULL)
 
 
-		# transition
-
-		# if changed location, i.e loc[state!=sim.move]
-		# 1) update state
-		# 2) update distance
-		#
-		# if h=1 and change to location k and
-		#    h'=0: nonhA = nonhA_new + equity
-		#    h'=1: nonhA = nonhA_new ,
-		#          mdebt = p_k - equity_j ,
+	# predict location
+	# predict save/house
+	# update d
 
 
-		#
-
-		# find L decision:
-		d <- simMovesFromLogit(res$logit,newdata=d,print.to=NULL)	# add/change column newLoc
-
-		d <- simHousing(newdata=d,obj=res$housing) # add/change column newHouse
-
-		d <- simSaving(newdata=d,obj=res$saving) # add/change column newAsset
+	for (p in 1:10){
 
 	}
 
 
-	# if age==maxAge, you die. consumption = bequest value
 
-	# else you life
-
-	# c = y - a' - pay(h)
-
-	# new state
-	# init[,state==.SD[,sim.move] ]
-
-	# if you moved, need to take care of your housing assets
-	# init[moved, 	
-
+	return(d)
 
 
 

@@ -720,12 +720,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 						   home.equity=mean(home.equity,na.rm=T),
 						   mortg.rent=mean(mortg.rent,na.rm=T),
 						   dkids=sum(dkids,na.rm=T),
-						   buy=cumsum(buy,na.rm=T),
-						   sell=cumsum(sell,na.rm=T),
+						   buy=sum(buy),
+						   sell=sum(sell),
 						   college=college[1],
 						   born=born[1],
 						   own=max(own,na.rm=T),
-						   S2S=cumsum(S2S,na.rm=T),
+						   S2S=sum(S2S),
 						   from=from[1],
 						   to=to[length(to[!is.na(to)])],
 						   cohort=cohort[1],
@@ -733,6 +733,10 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 		# evaluate the call
 		eval(parse(text=mcall))
+
+		mcall <- paste0("merged[,timeid := ",agg.by,"]")
+		eval(parse(text=mcall))
+
 
 	   # # get a unique timeid that is a numeric sequence
 		#mcall <- paste0("tmp <- merged[,list(",agg.by,"=as.numeric(unique(",agg.by,")))]")
