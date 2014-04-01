@@ -883,10 +883,10 @@ lme.getCoefs <- function(obj){
 #' h <- housingModel(d=merged)
 housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=FALSE){
 
-	# loaded 4-monthly data in d
+	# loaded data aggregated by age
 
 	# throw away renters with positive house value
-	d <- d[(own==TRUE) | (own==FALSE & hvalue==0)]
+	# d <- d[(own==TRUE) | (own==FALSE & hvalue==0)]
 
 	# throw away negative incomes
 	d <- d[HHincome>0]
@@ -903,17 +903,15 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 
 	#own = own[complete.cases(own)]
 
-	# throw away multiple sales/purchases by age
-	d <- d[buy<2 & sell < 2]
 
 	# models
 	m <- list()
-	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent + duration,data=d[own==FALSE],family=binomial(link="probit"),x=TRUE) 
-	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) + ns(p2w) + duration + mortg.rent ,data=d[own==FALSE],family=binomial(link="probit"),x=TRUE) 
+	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent + duration,data=d[own==FALSE&buy<2],family=binomial(link="probit"),x=TRUE) 
+	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) +  mortg.rent ,data=d[own==FALSE&buy<2],family=binomial(link="probit"),x=TRUE) 
 
 	
-	m$selllinear <- glm(sell ~ age + age2+dkids+HHincome+ home.equity + mortg.rent + duration,data=d[own==TRUE],family=binomial(link="probit"),x=TRUE)
-	m$sellspline <- glm(sell ~ age + age2+dkids+HHincome+ ns(home.equity,df=2) + mortg.rent + duration,data=d[own==TRUE],family=binomial(link="probit"),x=TRUE)
+	m$selllinear <- glm(sell ~ age + age2+dkids+HHincome+ home.equity + mortg.rent + duration,data=d[own==TRUE&sell<2],family=binomial(link="probit"),x=TRUE)
+	m$sellspline <- glm(sell ~ age + age2+dkids+HHincome+ ns(home.equity,df=2) + mortg.rent + duration,data=d[own==TRUE&sell<2],family=binomial(link="probit"),x=TRUE)
 
 
 	# compute marginal effects
