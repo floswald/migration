@@ -676,6 +676,28 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	# indicates that at the end of the current period, you move to location "to"
 	merged[,S2S := from != to]	# NA!=0 returns NA.
 	
+	# drop age inconsistencies
+	# ========================
+
+	# some upid's have age increases greater than 1
+	# it is unclear to what extent this is measurement error
+	# (someone not knowing their age?), misreporting, or
+	# a data quality problem. 
+	# my issue is that the occurence of this problem is skewed
+	# dramatically towards the mover population, where you expect
+	# it to be more difficult to ensure data consistency.
+
+	#> merged[,prop.table(table(S2S,twoages),margin=1)]
+    	   #twoages
+	#S2S            FALSE         TRUE
+	  #FALSE 0.9997688135 0.0002311865
+	  #TRUE  0.9976990336 0.0023009664
+	
+	# i.e. I loose 0.23% of all interstate moves by assuming 
+	# that increases greater than 2 years are invalid cases.
+
+	# merged[,dage := diff(age),by=upid]
+	# merged[,dage := NULL]
 	
 	# change in ownership in time period
 	# ==================================

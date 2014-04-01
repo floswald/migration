@@ -26,18 +26,12 @@
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' l <- RE.HHincome(dat=merged)
 RE.HHincome <- function(dat,
-						path="~/Dropbox/mobility/output/model/BBL/test"){
-
-
-	# TODO 
-	# question
-	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~age|upid),data=subset(dat,state==x))})
-
-
+						path="~/Dropbox/mobility/output/model/BBL/inc-process"){
 
 	st <- dat[,unique(state)]
 	st <- st[order(st)]
 
+	# keep only those few variables around
 	kv <- c("HHincome","upid","age","age2","cohort","timeid","state")
 	dat <- dat[HHincome>0,kv,with=FALSE]
 
@@ -49,6 +43,7 @@ RE.HHincome <- function(dat,
 
 	# problem with that: you will never have individual i (estimated effect in state j) in the object
 	# for state k. so you cannot predict state k.
+
 	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
@@ -566,6 +561,7 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 	setkey(logi,upid,count)
 
 	# draw a random sample
+	# of individuals
 	n <- logi[,list(upid=sample(unique(upid),size=length(wealth)*BBLpars$n)),by=state][,upid]
 
 	# subset data to that sample, at the first obs for each guy
@@ -636,7 +632,7 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 #' @return data.table with predicted incomes
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-#' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
+#' load("~/Dropbox/mobility/output/model/BBL/inc-process/income-REcoefs.RData")
 #' l <- buildLogit(merged,RE.coefs)
 buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
 

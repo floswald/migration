@@ -3,7 +3,7 @@
 \title{Linear Random Effects Panel Model of Income}
 \usage{
   RE.HHincome(dat,
-    path = "~/Dropbox/mobility/output/model/BBL")
+    path = "~/Dropbox/mobility/output/model/BBL/inc-process")
 }
 \arguments{
   \item{dat}{data set of income relevant variables}
@@ -28,8 +28,8 @@
   (uncorrelated with X). }}
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/Sipp_aggby_NULL.RData")
-l <- RE.HHincome(dat=merged[state \%in\% c("AZ","AL","AR")],path="~/Dropbox/mobility/output/model/BBL",type="html")
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+l <- RE.HHincome(dat=merged)
 }
 \seealso{
   Other IncomePrediction: \code{\link{getHomeValues}},

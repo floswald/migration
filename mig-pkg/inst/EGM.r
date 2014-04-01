@@ -15,13 +15,13 @@ library(data.table)
                
 
 dataR <- list( dims = c(nA,nY,nT),
-               theta = 1.2,beta=0.95,
+               beta=0.95,
 			   myNA=-99,rent=0.05,
 			   r=0.04,
 			   R=(1+0.04),
 			   CRRA=1.4,
 			   down=0.2)
-dataR$a <- exp(exp(exp(seq(0.00,log(log(log(10+1)+1)+1),length=nA))-1)-1)-1
+dataR$a <- exp(exp(exp(seq(0.01,log(log(log(10+1)+1)+1),length=nA))-1)-1)-1
 # dataR$a <- seq(0.00,10,length=nA)
 dataR$y <- seq(0.1,3,le=nY) 
 dataR$G <- rouwenhorst(n=nY,rho=0.8,sigma=1,mu=0)$Pmat
@@ -97,7 +97,7 @@ val  <- array(0,dataR$dims)
 err  <- array(0,dataR$dims)
 sav  <- array(0,dataR$dims)
 con  <- array(0,dataR$dims)
-val[ , ,nT] <- s[it==nT,matrix(ufun(a+y,dataR),nA,nY)] 	# final period value 
+val[ , ,nT] <- s[it==nT,matrix(10*ufun(a+y,dataR),nA,nY)] 	# final period value 
 EV   <- array(0,dataR$dims)
 
 # tensor functions
@@ -113,7 +113,7 @@ abline(h=0,col="red")
 plot(x=seq(0,2,le=100),y=obj(seq(0,2,le=100),cash=2,EV[ ,1,nT],dataR),type="l",ylab="euler equation",xlab="savings choice",main="euler equation with cash=2")
 abline(h=0,col="red")
 par(mfcol=c(1,1))
-stop()
+
 setkey(s,ia,iy,it)
 
 
@@ -126,7 +126,7 @@ for (ti in (nT-1):1){
 		evtmp <- EV[ ,yi,ti+1]
 		for (ai in 1:nA){
 			tmp <- uniroot(f=obj,
-						   interval=c(-1,s[.(ai,yi,ti)][["rcash"]]-eps),
+						   interval=c(-2,s[.(ai,yi,ti)][["rcash"]]-eps),
 						   cash=s[.(ai,yi,ti)][["cash"]],
 						   evplus = evtmp,
 						   pars=dataR)
@@ -278,12 +278,13 @@ e$EV[ , ,nT-1] <- f(e$V[ , ,nT-1],t(dataR$G))
 
 
 
+# newx should be next period's consumption function!
 
 
 ti=nT-2
-derivs <- lapply(1:nY,function(x) InterpExtrap(x=dataR$a,y=e$EV[,x,ti+1],newx=dataR$a*dataR$R,spline=FALSE,deriv=1))
+derivs <- lapply(1:nY,function(x) InterpExtrap(x=dataR$a,y=e$c[,x,ti+1],newx=dataR$a*dataR$R,spline=FALSE,deriv=1))
 
-# get T-1 consumption
+# get T-2 consumption
 for (yi in 1:nY){
 	e$c[ ,yi,ti] <- duinv( derivs[[yi]], dataR)
 }
@@ -297,7 +298,7 @@ e$EV[ , ,ti] <- f(e$V[ , ,ti],t(dataR$G))
 ti=nT-3
 derivs <- lapply(1:nY,function(x) InterpExtrap(x=dataR$a,y=e$EV[,x,ti+1],newx=dataR$a*dataR$R,spline=FALSE,deriv=1))
 
-# get T-1 consumption
+# get T-3 consumption
 for (yi in 1:nY){
 	e$c[ ,yi,ti] <- duinv( derivs[[yi]], dataR)
 }
@@ -347,114 +348,4 @@ for (ti in (nT-2):1){
 
 
 
-stop()
 
-
-
-
-######################################################
-# Calculating an R solution to this lifecycle
-######################################################
-
-# envelopes of conditional values
-WO = array(0,dataR$dims)
-WR = array(0,dataR$dims)
-
-# discrete choice amoung conditional values
-DO = array(0,dataR$dims)
-DR = array(0,dataR$dims)
-
-# conditional values
-VR = array(0,dataR$dims)
-VB = array(0,dataR$dims)
-VS = array(0,dataR$dims)
-VO = array(0,dataR$dims)
-
-# conditional savings functions
-saveR = array(0,dataR$dims)
-saveB = array(0,dataR$dims)
-saveS = array(0,dataR$dims)
-saveO = array(0,dataR$dims)
-
-# conditional consumption functions
-consR = array(0,c(nA,nY,nP,nT-1))
-consB = array(0,c(nA,nY,nP,nT-1))
-consS = array(0,c(nA,nY,nP,nT-1))
-consO = array(0,c(nA,nY,nP,nT-1))
-
-# final period values
-WR[ , , ,nT] <- sR[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
-WO[ , , ,nT] <- sO[it==nT&save==grids$a[nA],array(cons,c(nA,nY,nP))]
-# WR[ , , ,nT] <- sT[,array(log(cashR),c(nA,nY,nP))]
-# WO[ , , ,nT] <- sT[,array(log(cashO),c(nA,nY,nP))]
-# WR[is.nan(WR)] <- dataR$myNA
-# WO[is.nan(WR)] <- dataR$myNA
-
-for (ti in (nT-1):1) {
-    for (ia in 1:nA) {
-         for(iy in 1:nY) {
-			 for (ip in 1:nP){
-				 for (ja in 1:nA){
-					 # renter
-					 if (CR[ia,iy,ip,ti,ja] < 0 | !is.finite(CR[ia,iy,ip,ti,ja])){
-						xR[ia,iy,ip,ti,ja] = dataR$myNA
-					 } else {
-						xR[ia,iy,ip,ti,ja] =  log(CR[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
-					 }
-					 # buyer
-					 if (CB[ia,iy,ip,ti,ja] < 0 | !is.finite(CB[ia,iy,ip,ti,ja])){
-						xB[ia,iy,ip,ti,ja] = dataR$myNA
-					 } else {
-						xB[ia,iy,ip,ti,ja] =  log(CB[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
-					 }
-					 # seller
-					 if (CS[ia,iy,ip,ti,ja] < 0 | !is.finite(CS[ia,iy,ip,ti,ja])){
-						xS[ia,iy,ip,ti,ja] = dataR$myNA
-					 } else {
-						xS[ia,iy,ip,ti,ja] =  log(CS[ia,iy,ip,ti,ja])  + dataR$beta*WR[ja,iy,ip,ti+1]
-					 }
-					 # owner
-					 if (CO[ia,iy,ip,ti,ja] < 0 | !is.finite(CO[ia,iy,ip,ti,ja])){
-						xO[ia,iy,ip,ti,ja] = dataR$myNA
-					 } else {
-						xO[ia,iy,ip,ti,ja] =  log(CO[ia,iy,ip,ti,ja])  + dataR$beta*WO[ja,iy,ip,ti+1]
-					 }
-				 }
-
-    			 # renter state
-				 # ============
-
-				 # conditional values renter state
-				 VR[ia,iy,ip,ti] = max(xR[ia,iy,ip,ti, ])
-				 VB[ia,iy,ip,ti] = max(xB[ia,iy,ip,ti, ])
-				 # conditional savings renter state
-				 saveR[ia,iy,ip,ti] = which.max(xR[ia,iy,ip,ti, ])
-				 saveB[ia,iy,ip,ti] = which.max(xB[ia,iy,ip,ti, ])
-				 # max val renter state
-				 WR[ia,iy,ip,ti] = max(VR[ia,iy,ip,ti],VB[ia,iy,ip,ti])
-				 DR[ia,iy,ip,ti] = which.max(c(VR[ia,iy,ip,ti],VB[ia,iy,ip,ti]))
-
-    			 # owner state
-				 # ============
-
-				 # conditional values owner state
-				 VS[ia,iy,ip,ti] = max(xS[ia,iy,ip,ti, ])
-				 VO[ia,iy,ip,ti] = max(xO[ia,iy,ip,ti, ])
-				 # conditional savings owner state
-				 saveO[ia,iy,ip,ti] = which.max(xO[ia,iy,ip,ti, ])
-				 saveS[ia,iy,ip,ti] = which.max(xS[ia,iy,ip,ti, ])
-				 # max val owner state
-				 WO[ia,iy,ip,ti] = max(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti])
-				 DO[ia,iy,ip,ti] = which.max(c(VO[ia,iy,ip,ti],VS[ia,iy,ip,ti]))
-
-			 }
-         }
-     }
-}
-
-# get conditional consumption functions
-# ======================
-consR <- array(matrix(CR[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveR[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consB <- array(matrix(CB[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveB[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consS <- array(matrix(CS[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveS[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))
-consO <- array(matrix(CO[ , , ,1:(nT-1), ],nA*nY*nP*(nT-1),nA)[cbind(1:(nA*nY*nP*(nT-1)),as.numeric(saveO[ , , ,1:(nT-1)]))], c(nA,nY,nP,nT-1))

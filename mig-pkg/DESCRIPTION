@@ -37,3 +37,4 @@ Collate:
     'ufun.r'
     'factorModels.r'
     'logit.r'
+    'CPS.r'

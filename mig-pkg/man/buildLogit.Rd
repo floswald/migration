@@ -40,7 +40,7 @@
 }
 \examples{
 load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
+load("~/Dropbox/mobility/output/model/BBL/inc-process/income-REcoefs.RData")
 l <- buildLogit(merged,RE.coefs)
 }
 \seealso{
