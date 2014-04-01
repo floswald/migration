@@ -646,7 +646,7 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/inc-process/income-REcoefs.RData")
 #' l <- buildLogit(merged,RE.coefs)
- <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
+buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
