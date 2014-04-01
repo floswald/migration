@@ -403,18 +403,20 @@ getFreqsLogit <- function(m,r){
 #' @family LogitModel
 #' @param res mnlogit result
 #' @param print.to location to print table
-simMovesFromLogit <- function(res,newdata=NULL,GOF=FALSE,print.to="~/Dropbox/mobility/output/model/BBL/"){
+simMovesFromLogit <- function(res,newdat=NULL,GOF=FALSE,print.to="~/Dropbox/mobility/output/model/BBL/"){
 
 	stopifnot(class(res) == "mnlogit" )
 
 	# get prediciton on estimation data
-	if (is.null(newdata)) {
+	nm <- names(res$data)
+	if (is.null(newdat)) {
 		data <- res$data
 	} else {
-		data <- newdata
+		data <- newdat
 	}
-	p <- data.table(direct.predict(res,newdata=data,probability=TRUE))
-	p[,caseid := res$data[,unique(caseid)] ]
+
+	p <- data.table(direct.predict(res,newdata=data[,nm,with=FALSE],probability=TRUE))
+	p[,caseid := data[,unique(caseid)] ]
 
 
 	m <- melt(p,id.vars="caseid",variable.factor=FALSE,verbose=TRUE,variable.name="move.to",value.name="prediction")
@@ -532,7 +534,8 @@ printLogitModel <- function(res,omit,path="~/Dropbox/mobility/output/model/BBL")
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-#' l <- buildBBLData(merged,RE.coefs)
+#' BBL <- list(maxAge=60,FE=TRUE,n=0.1)
+#' l <- buildBBLData(merged,RE.coefs,BBLpars=BBL)
 buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output/model/BBL/BBLSimData.RData"){
 
 	
@@ -542,6 +545,7 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 	
 
 
+	stopifnot(BBLpars$n<1)
 
 
 	# keep only pos incomes
@@ -592,6 +596,12 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 	l <- makePrediction1(logi,RE.coefs,with.FE=BBLpars$FE,State_distMat_agg)
 	gc()
 
+	l <- mergeHomeValues(l)
+
+	# add required columns for mnlogit prediction
+	l[,caseid := upid]
+	l[,choice := TRUE]
+
 	# quality control output
 	# there are a few cases with multiple obs in a category?
 
@@ -599,6 +609,8 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 
 	l <- l[xl==length(unique(move.to))] 
 	l[,xl := NULL]
+
+	l <- l[complete.cases(l)]
 
 	attr(l,"type") <- "BBLInit"
 	attr(l,"BBLpars") <- BBLpars
@@ -634,7 +646,7 @@ buildBBLData <- function(logi,RE.coefs,BBLpars,saveto="~/Dropbox/mobility/output
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' load("~/Dropbox/mobility/output/model/BBL/inc-process/income-REcoefs.RData")
 #' l <- buildLogit(merged,RE.coefs)
-buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
+ <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox/mobility/output/model/BBL/logit.RData",savetosmall="~/Dropbox/mobility/output/model/BBL/logit30.RData"){
 
 	#load(file.path(modelpath,"income-REmodels.RData"))		# contains RE.models
 
@@ -1040,6 +1052,7 @@ CreateBBLData <- function(data,RFmodels,BBLpars){
 
 
 	# predict location
+	d <- simMovesFromLogit(res=RFmodels$logit,newdata=d,print.to=NULL)
 	# predict save/house
 	# update d
 

@@ -58,18 +58,21 @@ tabfun <- function(yr,des){
 	tabs$mv2 <- data.frame(svytable(formula=~mig_mtr3, des$des[[yr]],N=100,exclude="Not in universe (children under"))
 	names(tabs$mv2) <- c("where did you move?","Percent")
 
-	tabs$mv2a <- data.frame(svytable(formula=~S2S.move, des$des[[yr]],N=100,exclude="Not in universe (children under"))
-	names(tabs$mv2a) <- c("Did you move to another state?","Percent")
+	tabs$mv3 <- data.frame(svytable(formula=~S2S.move, des$des[[yr]],N=100,exclude="Not in universe (children under"))
+	names(tabs$mv3) <- c("Did you move to another state?","Percent")
 
 	# 3)for all X state movers, what was main reason for moving ?
-	tabs$mv3 <- data.frame(round(svytable(~nxtresf, des$desmv.st[[yr]], N=100),1))
-	names(tabs$mv3) <- c("main reason for moving","Percent")
-	tabs$mv3 <- tabs$mv3[order(tabs$mv3$Percent,decreasing=TRUE),]
-
-	# 4) aggregated up of 3)
-	tabs$mv4 <- data.frame(round(svytable(~main.reason, des$desmv.st[[yr]], N=100),1))
+	tabs$mv4 <- data.frame(round(svytable(~nxtresf, des$desmv.st[[yr]], N=100),1))
 	names(tabs$mv4) <- c("main reason for moving","Percent")
 	tabs$mv4 <- tabs$mv4[order(tabs$mv4$Percent,decreasing=TRUE),]
+
+	# 4) aggregated up of 3)
+	tabs$mv5 <- data.frame(round(svytable(~main.reason, des$desmv.st[[yr]], N=100),1))
+	names(tabs$mv5) <- c("main reason for moving","Percent.S2S")
+	tabs$mv5 <- tabs$mv5[order(tabs$mv5$Percent,decreasing=TRUE),]
+
+	# TODO
+	tabs$mv5$Percent.Within <- data.frame(round(svtytable(~main.reason, des$desmv[[yr]], N=100),1))
 
 	return(tabs)
 
