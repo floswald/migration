@@ -309,13 +309,16 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 
 
 		dbfile <- "~/datasets/SIPP/R/SIPP08.db"
+    
+		sql <- dbDriver("SQLite")
+		db  <- dbConnect(sql, dbfile)
 
 		tk <- c("ssuid", "epppnum", "wpfinwgt", "tage","ems","tfipsst","eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate")
 		subset = "WHERE eoutcome < 208 AND errp IN (1,2) AND tage > 15"
 
-		sql.string <- paste0( "SELECT " , tk , " from tm" , 2 , paste0(' ',subset))
+		sql.string <- paste0( "SELECT " , paste( tk , collapse = "," ) , " from tm" , 2 , paste0(' ',subset))
 		mig <- data.table(dbGetQuery( db , sql.string ))
-		save(mig,file="subsetMig_08.RData")
+		save(mig,file=file.path(dropbox,"subsetMig_08.RData"))
 		if (verbose) cat("done with 2008 Migration history.\n")
 
 	}
