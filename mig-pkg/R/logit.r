@@ -906,12 +906,12 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 
 	# models
 	m <- list()
-	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent + duration,data=d[own==FALSE&buy<2],family=binomial(link="probit"),x=TRUE) 
+	m$buylinear <- glm(buy ~ age + age2+dkids+ p2y + p2w  + mortg.rent,data=d[own==FALSE&buy<2],family=binomial(link="probit"),x=TRUE) 
 	m$buyspline <- glm(buy ~ age + age2+dkids+ bs(p2y,knots=c(3,5),degree=1) +  mortg.rent ,data=d[own==FALSE&buy<2],family=binomial(link="probit"),x=TRUE) 
 
 	
 	m$selllinear <- glm(sell ~ age + age2+dkids+HHincome+ home.equity + mortg.rent + duration,data=d[own==TRUE&sell<2],family=binomial(link="probit"),x=TRUE)
-	m$sellspline <- glm(sell ~ age + age2+dkids+HHincome+ ns(home.equity,df=2) + mortg.rent + duration,data=d[own==TRUE&sell<2],family=binomial(link="probit"),x=TRUE)
+	m$sellspline <- glm(sell ~ age + age2+dkids+HHincome+ bs(home.equity,df=3,degree=1) + mortg.rent + duration,data=d[own==TRUE&sell<2],family=binomial(link="probit"),x=TRUE)
 
 
 	# compute marginal effects
@@ -936,11 +936,11 @@ housingModel <- function(d,path="~/Dropbox/mobility/output/model/BBL",marginal=F
 		} else {
 
 
-			texreg(m[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.tex"),caption="coefficient estimates",table=FALSE)
-			htmlreg(m[c("buylinear","buyspline")],custom.model.names=c("Pr(buy|rent)","Pr(buy|rent)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.html"),caption="coefficient estimates")
+			texreg(m[c("buylinear","buyspline")],stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.tex"),caption="coefficient estimates",table=FALSE)
+			htmlreg(m[c("buylinear","buyspline")],custom.model.names=c("linear","spline"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"buy.html"),caption="coefficient estimates")
 
-			texreg(m[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.tex"),caption="coefficient estimates",table=FALSE)
-			htmlreg(m[c("selllinear","sellspline")],custom.model.names=c("Pr(sell|own)","Pr(sell|own)"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.html"),caption="coefficient estimates")
+			texreg(m[c("selllinear","sellspline")],stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.tex"),caption="coefficient estimates",table=FALSE)
+			htmlreg(m[c("selllinear","sellspline")],custom.model.names=c("linear","spline"),stars=c(0.01,0.05,0.1),digits=4,file=file.path(path,"sell.html"),caption="coefficient estimates")
 		
 		}
 
@@ -973,8 +973,6 @@ savingsPolicy <- function(d,quants=NULL,path="~/Dropbox/mobility/output/model/BB
 	# Assets_t = wealth_t - equity_t.
 
 
-	d[,age2 := age^2 ]
-	d[,w2 := HHweight / 10000 ] 
 	tab         <- d[,list(mean=weighted.mean(saving,w2),median=Hmisc::wtd.quantile(saving,weights=w2,probs=0.5)),by=age][order(age)]
 	#tab         <- d[,list(mean=mean(saving),median=median(saving)),by=age][order(age)]
 	mtab        <- melt(tab,"age")

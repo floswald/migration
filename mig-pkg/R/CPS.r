@@ -34,6 +34,7 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 
 	# create a dummy for cross state move
 	d[, S2S.move := mig_mtr3 %in% c("Different state, same division","Different division, same region","Different region")]
+	d[, S2S.move := factor(S2S.move,labels=c("No","Yes"))]
 
 	# encode race
 	d[,race := prdtrace]

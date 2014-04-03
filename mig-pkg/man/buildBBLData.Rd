@@ -15,6 +15,7 @@
 \examples{
 load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 load("~/Dropbox/mobility/output/model/BBL/income-REcoefs.RData")
-l <- buildBBLData(merged,RE.coefs)
+BBL <- list(maxAge=60,FE=TRUE,n=0.1)
+l <- buildBBLData(merged,RE.coefs,BBLpars=BBL)
 }
 

@@ -92,8 +92,9 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 #' is an interface to \code{\link{ExtractorSippDB}}
 #' @param verbose 
 #' @param dropbox path to folder where to save this
+#' @param which names of datasets to extract. Names are: "1996", "2001", "2004", "2008", "Mig_2008"
 #' @return NULL saves subset data.tables into dropbox
-Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
+Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
 
 	# extract 1993
 	# ============
@@ -121,178 +122,206 @@ Extract.wrap <- function(verbose=TRUE,dropbox="C:/Users/florian_o/Dropbox/mobili
 				   #c("entry","pnum","id"),
 
 
+	if ("1996" %in% which) {
+
 	# extract 1996
 	# ============
 
-	dbfile <- "~/datasets/SIPP/R/SIPP96.db"
-	ck     <- c("ssuid",		# sample unit id
-                "srefmon",		# reference month (1-4)
-                "rhcalmn",		# cal month
-                "errp",			# HH relationship
-                "rhcalyr",		# cal year
-                "tfipsst",		# state
-                "eoutcome",		# interview outcome
-                "eppintvw",		# person interview outcome
-                "tmetro",		# metropolitan area/residual
-                "etenure",		# housing tenure
-                "thtotinc",		# tot hh income
-                "rfid",			# family id
-                "efrefper",		# person num of fam reference person
-                "rfnkids",		# number of kids in family (of HH ref person!)
-                "whfnwgt",		# final HH weight
-                "epppnum",		# person number
-                "eeducate",		# highest educ degree
-                "eentaid",		# address ID where entered sample
-                "tage",			# age
-                "esex",			# sex
-                "ersnowrk")		# main reason for not working
-	which.core <- 1:12
-	which.tm <- c(2,3,6,9,12)
-	tk     <- list(c("ssuid",		# 
-					 "epppnum", 	# 
-					 "eprstate", 	# previous state of residence
-					 "ebrstate", 	# state where born
-					 "eprevres", 	# previous state of residence
-					 "toutinyr", 	# year moved into previous state
-					 "tmovest",  	# year moved here
-					 "eprevten"),	# residence status in previous state
-	               c("ssuid",
-					 "epppnum",
-					 "thhtwlth",    # total HH wealth 
-					 "thhtheq",     # total HH home equity
-					 "thhmortg",    # HH mortgage principal
-					 "ehbuyyr",     # year bought
-					 "thomeamt",    # monthly rent/mortgage payment
-					 "thhintbk",    # Interest Earning assets held in banking institutions
-					 "thhintot",    # Interest Earning assets held in other institutions
-					 "tpropval"),   # how much do you think you could sell your house for today?
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
-	which.wgt <- "wgtw12"
-	subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
+		dbfile <- "~/datasets/SIPP/R/SIPP96.db"
+		ck     <- c("ssuid",		# sample unit id
+	                "srefmon",		# reference month (1-4)
+	                "rhcalmn",		# cal month
+	                "errp",			# HH relationship
+	                "rhcalyr",		# cal year
+	                "tfipsst",		# state
+	                "eoutcome",		# interview outcome
+	                "eppintvw",		# person interview outcome
+	                "tmetro",		# metropolitan area/residual
+	                "etenure",		# housing tenure
+	                "thtotinc",		# tot hh income
+	                "rfid",			# family id
+	                "efrefper",		# person num of fam reference person
+	                "rfnkids",		# number of kids in family (of HH ref person!)
+	                "whfnwgt",		# final HH weight
+	                "epppnum",		# person number
+	                "eeducate",		# highest educ degree
+	                "eentaid",		# address ID where entered sample
+	                "tage",			# age
+	                "esex",			# sex
+	                "ersnowrk")		# main reason for not working
+		which.core <- 1:12
+		which.tm <- c(2,3,6,9,12)
+		tk     <- list(c("ssuid",		# 
+						 "epppnum", 	# 
+						 "eprstate", 	# previous state of residence
+						 "ebrstate", 	# state where born
+						 "eprevres", 	# previous state of residence
+						 "toutinyr", 	# year moved into previous state
+						 "tmovest",  	# year moved here
+						 "eprevten"),	# residence status in previous state
+		               c("ssuid",
+						 "epppnum",
+						 "thhtwlth",    # total HH wealth 
+						 "thhtheq",     # total HH home equity
+						 "thhmortg",    # HH mortgage principal
+						 "ehbuyyr",     # year bought
+						 "thomeamt",    # monthly rent/mortgage payment
+						 "thhintbk",    # Interest Earning assets held in banking institutions
+						 "thhintot",    # Interest Earning assets held in other institutions
+						 "tpropval"),   # how much do you think you could sell your house for today?
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		which.wgt <- "wgtw12"
+		subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
-	if (verbose) cat("done with 1996 panel.\n")
+		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
+		if (verbose) cat("done with 1996 panel.\n")
 
-	# extract 2001
-	# ============
+	} else if ("2001" %in% which){
 
-	dbfile <- "~/datasets/SIPP/R/SIPP01.db"
-	ck     <- c("ssuid",         # sample unit id
-                "srefmon",       # reference month (1-4)
-                "rhcalmn",       # cal month
-                "errp",          # HH relationship
-                "rhcalyr",       # cal year
-                "tfipsst",       # state
-                "tmovrflg",      # mover flag
-                "eoutcome",      # interview outcome
-                "eppintvw",      # person interview outcome
-                "tmetro",        # metropolitan area/residual
-                "etenure",       # housing tenure
-                "thtotinc",      # tot hh income
-                "rfid",          # family id
-                "efrefper",      # person num of fam reference person
-                "rfnkids",       # number of kids in family (of HH ref person!)
-                "whfnwgt",       # final HH weight
-                "epppnum",       # person number
-                "eeducate",      # highest educ degree
-                "eentaid",       # address ID where entered sample
-                "tage",          # age
-                "esex",          # sex
-                "ersnowrk")      # main reason for not working
-                
-	which.core <- 1:9
-	which.tm <- c(2,3,6,9)
-	tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
-	which.wgt <- "wgtw9"
+		# extract 2001
+		# ============
 
-	# subset: correct interview status and only reference persons of age > 15.
-	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+		dbfile <- "~/datasets/SIPP/R/SIPP01.db"
+		ck     <- c("ssuid",         # sample unit id
+	                "srefmon",       # reference month (1-4)
+	                "rhcalmn",       # cal month
+	                "errp",          # HH relationship
+	                "rhcalyr",       # cal year
+	                "tfipsst",       # state
+	                "tmovrflg",      # mover flag
+	                "eoutcome",      # interview outcome
+	                "eppintvw",      # person interview outcome
+	                "tmetro",        # metropolitan area/residual
+	                "etenure",       # housing tenure
+	                "thtotinc",      # tot hh income
+	                "rfid",          # family id
+	                "efrefper",      # person num of fam reference person
+	                "rfnkids",       # number of kids in family (of HH ref person!)
+	                "whfnwgt",       # final HH weight
+	                "epppnum",       # person number
+	                "eeducate",      # highest educ degree
+	                "eentaid",       # address ID where entered sample
+	                "tage",          # age
+	                "esex",          # sex
+	                "ersnowrk")      # main reason for not working
+	                
+		which.core <- 1:9
+		which.tm <- c(2,3,6,9)
+		tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		which.wgt <- "wgtw9"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset01.RData"),verbose)
-	if (verbose) cat("done with 2001 panel.\n")
+		# subset: correct interview status and only reference persons of age > 15.
+		subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset01.RData"),verbose)
+		if (verbose) cat("done with 2001 panel.\n")
+
+	} else if ("2004" %in% which){
+
+		# extract 2004
+		# ============
+
+		dbfile <- "~/datasets/SIPP/R/SIPP04.db"
+		ck     <- c("ssuid",           # sample unit id
+	                "srefmon",         # reference month (1-4)
+	                "rhcalmn",         # cal month
+	                "errp",            # HH relationship
+	                "rhcalyr",         # cal year
+	                "tfipsst",         # state
+	                "tmovrflg",        # mover flag
+	                "eoutcome",        # interview outcome
+	                "eppintvw",        # person interview outcome
+	                "tmetro",          # metropolitan area/residual
+	                "etenure",         # housing tenure
+	                "thtotinc",        # tot hh income
+	                "rfid",            # family id
+	                "efrefper",        # person num of fam reference person
+	                "rfnkids",         # number of kids in family (of HH ref person!)
+	                "whfnwgt",         # final HH weight
+	                "epppnum",         # person number
+	                "eeducate",        # highest educ degree
+	                "eentaid",         # address ID where entered sample
+	                "tage",            # age
+	                "esex",            # sex
+	                "ersnowrk")        # main reason for not working
+		which.core <- 1:12
+		which.tm <- c(2,3,6)
+		tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		which.wgt <- "wgtw12"                                                                                                        
+		subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
+		if (verbose) cat("done with 2004 panel.\n")
+
+	} else if ("2008" %in% which){
+
+		# extract 2008
+		# ============
+
+		# wealth modules
+
+		dbfile <- "~/datasets/SIPP/R/SIPP08.db"
+		ck     <- c("ssuid",        # sample unit id
+	                "srefmon",      # reference month (1-4)
+	                "rhcalmn",      # cal month
+	                "errp",         # HH relationship
+	                "rhcalyr",      # cal year
+	                "tfipsst",      # state
+	                "tmovrflg",     # mover flag
+	                "eoutcome",     # interview outcome
+	                "eppintvw",     # person interview outcome
+	                "tmetro",       # metropolitan area/residual
+	                "etenure",      # housing tenure
+	                "thtotinc",     # tot hh income
+	                "rfid",         # family id
+	                "efrefper",     # person num of fam reference person
+	                "rfnkids",      # number of kids in family (of HH ref person!)
+	                "whfnwgt",      # final HH weight
+	                "epppnum",      # person number
+	                "eeducate",     # highest educ degree
+	                "eentaid",      # address ID where entered sample
+	                "tage",         # age
+	                "esex",         # sex
+	                "ersnowrk")     # main reason for not working
+		which.core <- 1:13
+		which.tm <- c(2,4,7,10)
+		tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		which.wgt <- "wgtw7"
+		subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+
+		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset08.RData"),verbose)
+		if (verbose) cat("done with 2008 panel.\n")
+
+	} else if ("Mig_2008" %in% which){	
+
+		# extract 2008 Migration history
+		# ============
 
 
-	# extract 2004
-	# ============
+		dbfile <- "~/datasets/SIPP/R/SIPP08.db"
 
-	dbfile <- "~/datasets/SIPP/R/SIPP04.db"
-	ck     <- c("ssuid",           # sample unit id
-                "srefmon",         # reference month (1-4)
-                "rhcalmn",         # cal month
-                "errp",            # HH relationship
-                "rhcalyr",         # cal year
-                "tfipsst",         # state
-                "tmovrflg",        # mover flag
-                "eoutcome",        # interview outcome
-                "eppintvw",        # person interview outcome
-                "tmetro",          # metropolitan area/residual
-                "etenure",         # housing tenure
-                "thtotinc",        # tot hh income
-                "rfid",            # family id
-                "efrefper",        # person num of fam reference person
-                "rfnkids",         # number of kids in family (of HH ref person!)
-                "whfnwgt",         # final HH weight
-                "epppnum",         # person number
-                "eeducate",        # highest educ degree
-                "eentaid",         # address ID where entered sample
-                "tage",            # age
-                "esex",            # sex
-                "ersnowrk")        # main reason for not working
-	which.core <- 1:12
-	which.tm <- c(2,3,6)
-	tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
-	which.wgt <- "wgtw12"                                                                                                        
-	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
+		tk <- c("ssuid", "epppnum", "wpfinwgt", "tage","ems","tfipsst","eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate")
+		subset = "WHERE eoutcome < 208 AND errp IN (1,2) AND tage > 15"
 
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
-	if (verbose) cat("done with 2004 panel.\n")
+		sql.string <- paste0( "SELECT " , tk , " from tm" , 2 , paste0(' ',subset))
+		mig <- data.table(dbGetQuery( db , sql.string ))
+		save(mig,file="subsetMig_08.RData")
+		if (verbose) cat("done with 2008 Migration history.\n")
 
-	# extract 2008
-	# ============
+	}
 
-	# wealth modules
+	# get migration history as separate dataset
 
-	dbfile <- "~/datasets/SIPP/R/SIPP08.db"
-	ck     <- c("ssuid",        # sample unit id
-                "srefmon",      # reference month (1-4)
-                "rhcalmn",      # cal month
-                "errp",         # HH relationship
-                "rhcalyr",      # cal year
-                "tfipsst",      # state
-                "tmovrflg",     # mover flag
-                "eoutcome",     # interview outcome
-                "eppintvw",     # person interview outcome
-                "tmetro",       # metropolitan area/residual
-                "etenure",      # housing tenure
-                "thtotinc",     # tot hh income
-                "rfid",         # family id
-                "efrefper",     # person num of fam reference person
-                "rfnkids",      # number of kids in family (of HH ref person!)
-                "whfnwgt",      # final HH weight
-                "epppnum",      # person number
-                "eeducate",     # highest educ degree
-                "eentaid",      # address ID where entered sample
-                "tage",         # age
-                "esex",         # sex
-                "ersnowrk")     # main reason for not working
-	which.core <- 1:13
-	which.tm <- c(2,4,7,10)
-	tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-	               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
-	which.wgt <- "wgtw7"
-	subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
-
-	ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset08.RData"),verbose)
-	if (verbose) cat("done with 2008 panel.\n")
 
 }
 
