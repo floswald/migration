@@ -68,7 +68,7 @@ tabfun <- function(yr,des){
 	tabs$mv4 <- tabs$mv4[order(tabs$mv4$Percent,decreasing=TRUE),]
 
 	# 4) aggregated up of 3)
-	tabs$mv5 <- data.frame(round(svytable(~main.reason, des$desmv.st[[yr]], N=100),1))
+	tabs$mv5 <- data.frame(round(svytable(~main.reason, des$desmv.st[[yr]], N=100,exclude="NIU"),1))
 	names(tabs$mv5) <- c("main reason for moving","Percent.S2S")
 	tabs$mv5 <- tabs$mv5[order(tabs$mv5$Percent,decreasing=TRUE),]
 

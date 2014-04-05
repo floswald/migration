@@ -521,7 +521,7 @@ growthobj <- function(dat,pars,N){
 #' @examples
 #' data(US_medinc,package="EconData")
 #' makeHPIDivDifferences()
-makeDivDifferences <- function(){
+makeDivDifferences <- function(path=NULL){
 
 	r <- list()
 
@@ -545,7 +545,10 @@ makeDivDifferences <- function(){
 	d <- US_states[d]
 	d[STATE=="     united states",c("state","Division") := list("USA","USA")]
 	d[,STATE := NULL]
+	
 	div <- d[,list(medinc=mean(log(medinc))),by=list(Year,Division)]
+
+	# define "deviation" as difference in logs i.e. percentage difference
 	div[,dev := .SD[Division=="USA"][["medinc"]] - medinc ]
 	div[,Division := factor(Division)]
 	div[,Division := relevel(Division,"USA")]
@@ -556,16 +559,19 @@ makeDivDifferences <- function(){
 	r$income$d <- div
 
 	# plots
-	r$income$plevel <- ggplot(div,aes(x=Year,y=medinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=c(1,rep(0.5,9)))
+	r$income$plevel <- ggplot(div,aes(x=Year,y=medinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
 
-	r$income$pdevs  <- ggplot(div,aes(x=Year,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('deviations from median log income') + scale_size_manual(values=c(1,rep(0.5,9)))
+	r$income$pdevs  <- ggplot(div,aes(x=Year,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviations from median log income') + scale_size_manual(values=c(1.5,rep(1,9))) + theme_bw()
 
 
-	# prices in 96 dollars
+	# Lincoln House values in 96 dollars
 	data(HValue96_dynF_yearly)
 	divH <- dat[,list(p=mean(log(y))),by=list(date,Division)]
+
+	# national house value
 	US <- divH[,list(p=mean(p)),by=date]
 	US[,Division:="USA"]
+
 	divH <- rbind(divH,US,use.names=TRUE)
 	divH[,Division := factor(Division)]
 	divH[,Division := relevel(Division,"USA")]
@@ -574,9 +580,18 @@ makeDivDifferences <- function(){
 	r$price <- list()
 	r$price$d <- divH
 
-	r$price$plevel <- ggplot(divH,aes(x=date,y=p,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('mean log house values') + scale_size_manual(values=c(1,rep(0.5,9)))
+	r$price$plevel <- ggplot(divH,aes(x=date,y=p,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('mean log house values') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
 
-	r$price$pdevs  <- ggplot(divH,aes(x=date,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviation from national mean house value') + scale_size_manual(values=c(1,rep(0.5,9))) + scale_y_continuous(name="log(P) - log(p_d)")
+	r$price$pdevs  <- ggplot(divH,aes(x=date,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviation from national mean house value') + scale_size_manual(values=c(1.5,rep(1,9))) + scale_y_continuous(name="log(P) - log(p_d)")+ theme_bw()
+
+	if (!is.null(path)){
+
+		ggsave(plot=r$price$plevel,filename=file.path(path,"DivisionPriceLevel.pdf"),width=23,height=15,units="cm")
+		ggsave(plot=r$price$pdevs,filename=file.path(path,"DivisionPriceDevs.pdf"),width=23,height=15,units="cm")
+		ggsave(plot=r$income$plevel,filename=file.path(path,"DivisionIncomeLevel.pdf"),width=23,height=15,units="cm")
+		ggsave(plot=r$income$pdevs,filename=file.path(path,"DivisionIncomeDevs.pdf"),width=23,height=15,units="cm")
+	}
+
 
 	class(r) <- c("list","divData")
 	return(r)

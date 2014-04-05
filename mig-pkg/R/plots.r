@@ -99,10 +99,10 @@ plot.predict.income <- function(n,l){
 #'
 plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 
-	data(US_medinc,package="EconData")
+	data(US_medinc_2012,package="EconData")
 	data(US_states,package="EconData")
 
-	d <- data.table(medinc.in2012$incl)
+	d <- data.table(medinc_2012$incl)
 	d[, State := tolower(State)]
 	setnames(d,"State","STATE")
 	setkey(d,STATE)
@@ -135,12 +135,12 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	yscale2 <- scale_y_continuous(name=tstring)
 
 	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-	plist$regs <- ggplot(reg,aes(x=Date,y=medinc/1000,color=Region,group=Region)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2
-	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2 + scale_color_manual(values=cbPalette)
+	plist$regs <- ggplot(reg,aes(x=Date,y=medinc/1000,color=Region,group=Region)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2+theme_bw()
+	plist$divs <- ggplot(div,aes(x=Date,y=medinc/1000,color=Division)) + geom_line(size=1)+ ggtitle(tstring)  + yscale2 + scale_color_manual(values=cbPalette)+theme_bw()
 
-	plist$divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + yscale )
-	plist$sim_divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=sim/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + scale_y_continuous(name="simulate income",limits=d[,range(medinc/1000)]) )
-	plist$regstate <- lapply(d[,unique(Region)], function(x) ggplot(d[Region==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x)  + yscale)
+	plist$divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x) + yscale +theme_bw())
+	plist$sim_divstate <- lapply(d[,unique(Division)], function(x) ggplot(d[Division==x], aes(x=Date,y=sim/1000,color=state)) + geom_line(size=1)+ ggtitle(x) +theme_bw()+ scale_y_continuous(name="simulate income",limits=d[,range(medinc/1000)]) )
+	plist$regstate <- lapply(d[,unique(Region)], function(x) ggplot(d[Region==x], aes(x=Date,y=medinc/1000,color=state)) + geom_line(size=1)+ ggtitle(x) +theme_bw() + yscale)
 
 	pdf(file=file.path(saveto,"reg.pdf"))
 	print(plist$regs)
@@ -150,15 +150,15 @@ plotMedianIncome <- function(saveto="~/Dropbox/mobility/output/data/census"){
 	print(plist$divs)
 	dev.off()
 
-	pdf(file=file.path(saveto,"regstate.pdf"),width=16,height=10)
+	pdf(file=file.path(saveto,"regstate.pdf"),width=12,height=9)
 	multiplot(plotlist=plist$regstate,layout=matrix(1:6,nrow=2,byrow=TRUE))
 	dev.off()
 	
-	pdf(file=file.path(saveto,"divstate.pdf"),width=16,height=10)
+	pdf(file=file.path(saveto,"divstate.pdf"),width=12,height=9)
 	multiplot(plotlist=plist$divstate,layout=matrix(1:9,nrow=3,byrow=TRUE))
 	dev.off()
 
-	pdf(file=file.path(saveto,"sim_divstate.pdf"),width=16,height=10)
+	pdf(file=file.path(saveto,"sim_divstate.pdf"),width=12,height=9)
 	multiplot(plotlist=plist$sim_divstate,layout=matrix(1:9,nrow=3,byrow=TRUE))
 	dev.off()
 
@@ -309,7 +309,7 @@ makeTablesHValue96 <- function(path="~/Dropbox/mobility/output/data/Lincoln"){
 #' @examples
 #' ## FHFA indices
 #' data(FHFA_states,package="EconData")
-#' d <- copy(FHFA.states$qtr)
+#' d <- copy(FHFA_states$qtr)
 #' plotHousePrices(d=d,response="index_sa")
 #' rm(d)
 #' ## Lincoln House values
@@ -378,7 +378,7 @@ plotHousePrices <- function(d,response,FD=FALSE,saveto="~/Dropbox/mobility/outpu
 
 	plist$bydiv <- lapply(div, function(z) ggplot(d[Division==z],aes(x=date,y=y,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
 
-	pdf(file=file.path(saveto,"bydiv.pdf"),width=14,height=8)
+	pdf(file=file.path(saveto,"bydiv.pdf"),width=12,height=9)
 	multiplot(plotlist=plist$bydiv,layout=matrix(1:9,nrow=3,byrow=TRUE))
 	dev.off()
 
@@ -386,7 +386,7 @@ plotHousePrices <- function(d,response,FD=FALSE,saveto="~/Dropbox/mobility/outpu
 	# plots grouping states by regions
 	plist$byreg <- lapply(reg, function(z) ggplot(d[Region==z],aes(x=date,y=y,color=state)) + geom_line(size=1) + ggtitle( z )+ theme_bw() + yscale)
 
-	pdf(file=file.path(saveto,"byreg.pdf"),width=14,height=9)
+	pdf(file=file.path(saveto,"byreg.pdf"),width=12,height=9)
 	multiplot(plotlist=plist$byreg,layout=matrix(1:4,nrow=2,byrow=TRUE))
 	dev.off()
 
@@ -697,6 +697,64 @@ getcbPalette <- function(n){
 
 
 
+#' make plots of deviations model and true deviations
+#'
+plotSimTruthDeviations <- function(path=NULL) {
+
+	N <- 3
+	d <- makeDivDifferences()
+	s <- buildDivDeviations(n=d$price$d[,length(unique(date))],N=N)
+
+	# price
+
+	dp <- d$price$d[Division!="USA"]
+	dp[,Replication :="truth"]
+
+	ds <- lapply(s$price,as.data.frame)
+	for (si in 1:length(ds)) {
+		ds[[si]] <- cbind(ds[[si]],dp[,unique(date)],names(ds)[si])
+		names(ds[[si]]) <- c(paste0("rep.",1:N),"date","Division")
+	}
+	ds <- rbindlist(ds)	# coerces to data.table!
+
+	ds <- melt(ds,id.vars=c("date","Division"),variable.name="Replication")
+	ds[,Division := gsub("\\."," ",Division)]
+
+	# base plot: true deviations
+	p <- ggplot(dp) + geom_line(aes(x=date,y=dev*100,color=Replication),size=1) + geom_hline(aes(yintercept=0),color="grey",linetype="dashed")
+
+	p <- p + geom_line(data=ds,aes(x=date,y=value*100,color=Replication)) + facet_wrap(~Division) + theme_bw()
+	p <- p + scale_y_continuous(name="percent deviation") + scale_color_manual(values=c("blue","green","red","black"))
+
+	ggsave(filename=file.path(path,"priceSimTruthDevs.pdf"),plot=p,width=23,height=15,units="cm")
+
+	# income
+
+	s <- buildDivDeviations(n=d$income$d[,length(unique(Year))],N=N)
+	dy <- d$inc$d[Division!="USA"]
+	dy[,Replication :="truth"]
+
+	ds <- lapply(s$inc,as.data.frame)
+	for (si in 1:length(ds)) {
+		ds[[si]] <- cbind(ds[[si]],dy[,unique(Year)],names(ds)[si])
+		names(ds[[si]]) <- c(paste0("rep.",1:N),"Year","Division")
+	}
+	ds <- rbindlist(ds)	# coerces to data.table!
+
+	ds <- melt(ds,id.vars=c("Year","Division"),variable.name="Replication")
+	ds[,Division := gsub("\\."," ",Division)]
+
+	# base plot: true deviations
+	y <- ggplot(dy) + geom_line(aes(x=Year,y=dev*100,color=Replication),size=1)+ geom_hline(aes(yintercept=0),color="grey",linetype="dashed")
+
+	y <- y + geom_line(data=ds,aes(x=Year,y=value*100,color=Replication)) + facet_wrap(~Division) + theme_bw()
+	y <- y + scale_y_continuous(name="percent deviation") + scale_color_manual(values=c("blue","green","red","black"))
+
+	ggsave(filename=file.path(path,"incomeSimTruthDevs.pdf"),plot=y,width=23,height=15,units="cm")
+
+	return(list(price=p,income=y))
+
+}
 
 
 #' make plots of deviations models
@@ -711,7 +769,7 @@ getcbPalette <- function(n){
 #' agg <- makeAggPricesFromData(N=3)
 #' a = buildAggregatePrices(agg)
 #' plotDivDeviations(a)
-plotDivDeviations <- function(d,path=NULL){
+plotSimDivDeviations <- function(d,path=NULL){
 
 
 	divs <- names(d$price)
@@ -763,17 +821,21 @@ plotDivDeviations <- function(d,path=NULL){
 #' mortgage payment as well as mortgage payment
 #' from my sipp sample 
 #' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-#' plotMortgageRentSipp(sipp=merged4mn)
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' plotMortgageRentSipp(sipp=merged)
 plotMortgageRentSipp <- function(sipp,path="~/Dropbox/mobility/output/data/sipp/"){
 
 	
 	m1=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=state]
+	m1[,mort2rent := mort / rent]
 	m2=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=list(state,year)]
 	m2 <- melt(m2,id=c("state","year"))
 
 	p <- list()
-	p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000,ymax=mort*1000)) + geom_errorbar() + coord_flip() + scale_y_continuous(name="monthly rent (lower) or mortgage (upper bound) payment in 1996 USD\n(exception: Florida has bounds reversed)")
+	p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012')
+	m1 <- m1[order(mort2rent)]
+	m1[,state := factor(state)]
+	p$m2r  <- ggplot(m1,aes(x=state,y=mort2rent)) + geom_line()  + coord_flip() 
 	p$dist <- ggplot(m2,aes(x=value*1000,color=factor(year))) + geom_density() + ggtitle("distribution of monthly rent or mortgage payments") + facet_wrap(~variable) + scale_x_continuous(name="monthly rent or mortgage payment in 1996 USD")
 
 	pdf(file=file.path(path,"mort-rent.pdf"))

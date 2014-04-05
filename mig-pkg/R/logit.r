@@ -47,6 +47,7 @@ RE.HHincome <- function(dat,
 	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
 
+
 	# print results to tex files
 	for (i in st){
 

@@ -157,7 +157,8 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 						 "ebrstate", 	# state where born
 						 "eprevres", 	# previous state of residence
 						 "toutinyr", 	# year moved into previous state
-						 "tmovest",  	# year moved here
+						 "tmovest",  	# year moved into current state 
+						 "tmovyryr",  	# Year moved into the current home 
 						 "eprevten"),	# residence status in previous state
 		               c("ssuid",
 						 "epppnum",
@@ -209,7 +210,8 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                
 		which.core <- 1:9
 		which.tm <- c(2,3,6,9)
-		tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
+                                             
+		tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest","tmovyryr", "eprevten","tprstate"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
@@ -251,7 +253,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "ersnowrk")        # main reason for not working
 		which.core <- 1:12
 		which.tm <- c(2,3,6)
-		tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest", "eprevten","tprstate"),
+		tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest","tmovyryr", "eprevten","tprstate"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 		which.wgt <- "wgtw12"                                                                                                        
@@ -292,7 +294,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "ersnowrk")     # main reason for not working
 		which.core <- 1:13
 		which.tm <- c(2,4,7,10)
-		tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate"),
+		tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tmovyryr","tbrstate","tprstate"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
 		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
@@ -313,7 +315,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		sql <- dbDriver("SQLite")
 		db  <- dbConnect(sql, dbfile)
 
-		tk <- c("ssuid", "epppnum", "wpfinwgt", "tage","ems","tfipsst","eprevres", "toutinyr", "tmovest", "eprevten","tbrstate","tprstate")
+		tk <- c("ssuid", "epppnum", "wpfinwgt", "tage","ems","tfipsst","eprevres", "toutinyr", "tmovest","tmovyryr", "eprevten","tbrstate","tprstate")
 		subset = "WHERE eoutcome < 208 AND errp IN (1,2) AND tage > 15"
 
 		sql.string <- paste0( "SELECT " , paste( tk , collapse = "," ) , " from tm" , 2 , paste0(' ',subset))
