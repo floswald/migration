@@ -10,7 +10,7 @@
   as well as mortgage payment from my sipp sample
 }
 \examples{
-load("~/Dropbox/mobility/SIPP/Sipp4mn.RData")
-plotMortgageRentSipp(sipp=merged4mn)
+load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+plotMortgageRentSipp(sipp=merged)
 }
 
