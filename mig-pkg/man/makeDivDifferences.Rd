@@ -1,16 +1,17 @@
 \name{makeDivDifferences}
 \alias{makeDivDifferences}
-\title{create dataset with devations from US average for income and prices}
+\title{log differences between US average and location prices from Data}
 \usage{
-  makeDivDifferences()
+  makeDivDifferences(path = NULL)
 }
 \description{
-  create dataset with devations from US average for income
-  and prices
+  create dataset with of log differences between US average
+  and location prices from census median income and Lincoln
+  house values in 96 dollars
 }
 \examples{
 data(US_medinc,package="EconData")
-makeHPIDivDifferences()
+makeHPIDivDifferences()a
 }
 \seealso{
   Other ExpectationsModel:
@@ -18,7 +19,7 @@ makeHPIDivDifferences()
   \code{\link{buildDivDeviations}},
   \code{\link{estimateDivDeviations}},
   \code{\link{makeAggPricesFromData}},
-  \code{\link{plotDivDeviations}},
+  \code{\link{plotSimDivDeviations}},
   \code{\link{simDivDeviations}}
 }
 

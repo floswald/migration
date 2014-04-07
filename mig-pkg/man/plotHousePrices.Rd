@@ -24,7 +24,7 @@
 \examples{
 ## FHFA indices
 data(FHFA_states,package="EconData")
-d <- copy(FHFA.states$qtr)
+d <- copy(FHFA_states$qtr)
 plotHousePrices(d=d,response="index_sa")
 rm(d)
 ## Lincoln House values

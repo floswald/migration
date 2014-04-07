@@ -2,7 +2,8 @@
 \alias{makePrediction1}
 \title{income prediciton level 1}
 \usage{
-  makePrediction1(y, RE.coefs, with.FE, State_dist)
+  makePrediction1(y, RE.coefs, with.FE, State_dist,
+    prices = NULL)
 }
 \description{
   merge random effects id-specific intercept and adjust as

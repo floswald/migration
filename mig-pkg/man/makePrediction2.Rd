@@ -3,7 +3,7 @@
 \title{income prediction level 2}
 \usage{
   makePrediction2(s, RE.coefs, m, with.FE, tmps,
-    State_dist)
+    pred.all = FALSE, State_dist, prices)
 }
 \description{
   predict income for all j given s

@@ -57,8 +57,6 @@ InitBBLData <- function(logi,BBLpars,saveto="~/Dropbox/mobility/output/model/BBL
 #' Build BBL Logit dataset
 #'
 #' expand flat data into data with predictions for each location
-#'
-#' @examples
 buildLogitBBL <- function(logi,RE.coefs,with.FE,prices){
 
 	cohorts <- model.matrix(~cohort - 1,data=logi)
@@ -68,8 +66,9 @@ buildLogitBBL <- function(logi,RE.coefs,with.FE,prices){
 	data(State_distMat_agg,package="EconData")
 
 	# make predictions of income
-	# will add column logHHincome
-	l <- makePrediction1(logi,RE.coefs,with.FE,State_distMat_agg)
+	# this needs prices list!
+
+	l <- makePrediction1(logi,RE.coefs,with.FE,State_distMat_agg,prices)
 	gc()
 
 	# get homevalues by year and state
@@ -104,6 +103,9 @@ CreateBBLData <- function(data,RFmodels,BBLpars){
 	# take a sample from full data
 
 	init <- InitBBLData(data,BBLpars=BBL,saveto=NULL)
+
+	# get random prices
+	# prices <- getPrices()
 
 	# build logit data
 	logit <- buildLogitBBL(init,RFmodels$RE.coefs,with.FE=TRUE)

@@ -2,33 +2,17 @@
 
 
 
-#' Incoem Process Class
-#' 
-IncomeProcess <- setClass("IncomeProcess",
-	slots = c(RE.coefs="list",scales="data.table",prices="data.table")
-	)
 
-#' show method for Income process
-setMethod("show",signature = "IncomeProcess",
-	definition = function(object){
-		cat("object of class ",class(object),"\n")
-		cat("number of states",length(object@RE.coefs),"\n")
-		cat("models are of class",attr(object@RE.coefs,"estim.type"),"\n")
-		cat("Aggregate prices and incomes: \n")
-		print()
-		cat("\nintercept scale factors: \n")
-		print(scales)
-	})
+# method to predict income for logit estimation,
+# i.e. only predict in states other than j
+# setMethod("buildLogitData", signature = c("IncomeProcess","character"),
+# 	definition = function(x,y,...){
+# 		load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+# 		r <- buildLogit(logi=merged,RE.coefs=x@RE.coefs,saveto=y)
+# 		return(r)
+# 	})
 
 
-
-#' estimate linear mixed model income process
-setMethod("estimate.lme",signature = "IncomeProcess",
-	definition = function(object){
-		load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-		x <- RE.HHincome(dat=merged)
-		object@RE.coefs <- x
-	})
 
 
 #' predict all states
@@ -104,7 +88,8 @@ RE.HHincome <- function(dat,
 
 	# save coefs into a handy list
 	RE.coefs <- lapply(AR1,lme.getCoefs)
-	save(RE.coefs,file=file.path(path,"income-REcoefs.RData"))
+	attr(RE.coefs,"type") <- "RE.coefs"
+	saveRDS(RE.coefs,file=file.path(path,"income-REcoefs.rds"))
 	#RE.models <- AR1
 	#save(RE.models,file=file.path(path,"income-REmodels.RData"))
 
@@ -202,7 +187,7 @@ makePrediction1 <- function(y,RE.coefs,with.FE,State_dist,prices=NULL) {
 #' 
 #' predict income for all j given s
 #' @family IncomePrediction
-makePrediction2 <- function(s,RE.coefs,m,with.FE,tmps,State_dist,prices){
+makePrediction2 <- function(s,RE.coefs,m,with.FE,tmps,pred.all=FALSE,State_dist,prices){
 	
 	ll <- list()	
 		
@@ -215,16 +200,27 @@ makePrediction2 <- function(s,RE.coefs,m,with.FE,tmps,State_dist,prices){
 	# because state s is known.
 	# not useful for prediction if not for initial logit model.
 
-	ll[[s]] <- copy(tmps)
-	ll[[s]][,move.to  := state]
-	ll[[s]][,distance := 0]
-
 	st <- names(RE.coefs)
-	
-	# predict states
-	prst <- st[-which(st==s)]
 
-	# loop over all states except s
+	if(!pred.all){
+
+		ll[[s]] <- copy(tmps)
+		ll[[s]][,move.to  := state]
+		ll[[s]][,distance := 0]
+
+		
+		# predict states other than s
+		prst <- st[-which(st==s)]
+
+	}	else {
+
+		# predict all states 
+		prst <- st
+
+	}
+
+	
+	# loop over all states in j
 	for (j in prst){
 
 		# get regression coefficients 
@@ -265,7 +261,7 @@ makePrediction2 <- function(s,RE.coefs,m,with.FE,tmps,State_dist,prices){
 	ll[,c("cohort1920","cohort1940","cohort1960","cohort1980") := NULL]
 	attr(ll,"origin") <- s
 	attr(ll,"with.FE") <- with.FE
-	attr(ll,"pred.for") <- prst
+	attr(ll,"predicted.all") <- pred.all
 
 	return(ll)
 

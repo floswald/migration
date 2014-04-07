@@ -1,6 +1,8 @@
 \name{RE.HHincome}
 \alias{RE.HHincome}
-\title{Linear Random Effects Panel Model of Income}
+\title{predict all states
+predict all but current state
+save to disk}
 \usage{
   RE.HHincome(dat,
     path = "~/Dropbox/mobility/output/model/BBL/inc-process")
@@ -13,10 +15,12 @@
   for each individual. saves data.
 }
 \description{
-  estimate a linear panel of incoem with AR(1) error term
-  fit a model similar to the one in Baltagi (2005, 5.2.1).
+  Linear Random Effects Panel Model of Income
 }
 \details{
+  estimate a linear panel of incoem with AR(1) error term
+  fit a model similar to the one in Baltagi (2005, 5.2.1).
+
   model is for income in location j is \itemize{ \item
   log(y_ijt) = beta_j + gamma'X_it + mu_i + v_it, where
   \itemize{ \item y_ijt is log income of HH i in MONTH t in

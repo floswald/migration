@@ -82,7 +82,7 @@ makeHomeValues <- function(freq,path="~/git/migration/mig-pkg/data/"){
 #' @family ExpectationsModel
 #' @examples
 #' data(US_medinc,package="EconData")
-#' makeHPIDivDifferences()
+#' makeHPIDivDifferences()a
 makeDivDifferences <- function(path=NULL){
 
 	r <- list()
@@ -97,14 +97,20 @@ makeDivDifferences <- function(path=NULL){
 
 	# in 1996 dollars
 	data("CPIAUCSL",package="EconData")
-	cpi <- to.yearly(CPIAUCSL)[,1]
+	cpi           <- to.yearly(CPIAUCSL)[,1]
 	coredata(cpi) <- coredata(cpi)/ as.numeric(cpi['1996'])
-	cpi <- data.table(Year=year(index(cpi)),cpi=coredata(cpi),key="Year")
+	cpi           <- data.table(Year=year(index(cpi)),cpi=coredata(cpi),key="Year")
 	setnames(cpi,"cpi.CPIAUCSL.Open","cpi")
 
 
+	# must aggregate over those 2 groups of states that are missing
+	# huge pain.
+
+	
+
+
 	d[,State := tolower(State)]
-	d[,Year := as.numeric(as.character(Year))]
+	d[,Year  := as.numeric(as.character(Year))]
 	setkey(d,Year)
 	d <- cpi[d]
 	d[,medinc := medinc / cpi]
@@ -139,6 +145,7 @@ makeDivDifferences <- function(path=NULL){
 
 
 	# Lincoln House values in 96 dollars
+	# TODO you may want to change that series
 	data(HValue96_dynF_yearly)
 	divH <- dat[,list(p=mean(log(y))),by=list(date,Division)]
 
@@ -152,6 +159,7 @@ makeDivDifferences <- function(path=NULL){
 	divH[,dev := .SD[Division=="USA"][["p"]] - p ]
 
 	r$price <- list()
+	r$price$meanp <- dat[,list(p=mean(log(y))),by=state]
 	r$price$d <- divH
 
 	r$price$plevel <- ggplot(divH,aes(x=date,y=p,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('mean log house values') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()

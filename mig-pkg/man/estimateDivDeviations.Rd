@@ -13,7 +13,7 @@
   \code{\link{buildDivDeviations}},
   \code{\link{makeAggPricesFromData}},
   \code{\link{makeDivDifferences}},
-  \code{\link{plotDivDeviations}},
+  \code{\link{plotSimDivDeviations}},
   \code{\link{simDivDeviations}}
 }
 

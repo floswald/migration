@@ -350,7 +350,7 @@ buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox
 	# keep only pos incomes
 	logi <- logi[HHincome>0]
 
-	cohorts <- model.matrix(~cohort + own - 1,data=logi)
+	cohorts <- model.matrix(~cohort - 1,data=logi)
 	logi <- cbind(logi,cohorts)
 
 	# further subset. keep only vars you are using in the logit model!
@@ -385,6 +385,13 @@ buildLogit <- function(logi,RE.coefs,with.FE=TRUE,verbose=TRUE,saveto="~/Dropbox
 
 	# make predictions of income
 	# will add column logHHincome
+
+	# TODO
+	# IncProcess
+	# attr(logi,"type") <- "LogitEstim"
+	# l <- inflate(IncProc,logi)
+
+
 	l <- makePrediction1(logi,RE.coefs,with.FE,State_distMat_agg)
 	gc()
 
