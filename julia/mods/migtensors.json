@@ -1,0 +1,11 @@
+
+
+{
+	"module_name":"expectations",
+	"tensors": {
+		"expect_y" : {
+			"expr" : "V[a,y1,p1,z,t] * Gy[y,y1] * Gp[p,p1]",
+			"args" : "a,y,p,z,t"
+		}
+	}
+}

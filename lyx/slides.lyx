@@ -1,0 +1,3991 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{color}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\boxbgcolor #dbdbdb
+\branch answer
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\rightmargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Internal Migration and Homeownership 
+\end_layout
+
+\begin_layout Author
+Florian Oswald
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{10pt}
+\end_layout
+
+\end_inset
+
+Yale Prospectus Seminar
+\end_layout
+
+\begin_layout BeginFrame
+What's the cost of homeownership?
+\end_layout
+
+\begin_layout Itemize
+Labor mobility enables adjustments to regional labor market shocks
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ (Blanchard and Katz 1992)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Mobility depends on housing
+\end_layout
+
+\begin_layout Itemize
+Buying or selling a home has large costs
+\end_layout
+
+\begin_layout Itemize
+Government policy is biased towards owning
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Shaded
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+1.
+ Does homeownership reduce labor mobility?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Shaded
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+2.
+ Would abolishing the mortgage interest rate deduction increase labor mobility?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Shaded
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+3.
+ What are the welfare implications of such a policy?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+This Paper
+\end_layout
+
+\begin_layout Itemize
+I will model ownership and migration choices
+\end_layout
+
+\begin_layout Itemize
+Lifecycle model in partial equilibrium setting, with 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consumption and savings choice, 
+\end_layout
+
+\begin_layout Itemize
+homeownership choice and 
+\end_layout
+
+\begin_layout Itemize
+location choice 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Aggregate uncertainty in house prices and income
+\end_layout
+
+\begin_layout Itemize
+Estimate parameters on micro panel data
+\end_layout
+
+\begin_layout Itemize
+Can be used to simulate responses of labor mobility to different housing
+ policies
+\end_layout
+
+\begin_layout BeginFrame
+Annual Interstate Migration Rate
+\end_layout
+
+\begin_layout Itemize
+CPS question: Have you moved in the last year?
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{../data/CPS/mv3_2013-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPS 2013 march supplement
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons to migrate across states I
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{../data/CPS/mv5_2013-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPS 2013.
+ Conditional on moving across state lines.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Housing: better house, other housing, estab.
+ own household, want to own, cheaper housing
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Work: new job, attend/leave college, other job reason, look for job, closer
+ to work
+\end_layout
+
+\begin_layout BeginFrame
+Reasons to migrate across states II
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename pasted-pr-move.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Probit of cross state moves.
+ SIPP 1996--2012.
+ Controlling for quadratic in age, race and marital status.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Roadmap
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Literature
+\end_layout
+
+\begin_layout BeginFrame
+What we know from the literature
+\end_layout
+
+\begin_layout Itemize
+Migration
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Workers move to better opportunities:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Kennan and Walker (2011)
+\end_layout
+
+\begin_layout Itemize
+Blanchard and Katz (1992)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Family considerations are important
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Gemici (2011)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Housing Demand
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Aggregate price/income fluctuations affect demand
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Bajari, Chan, Krueger, Miller (2013)
+\end_layout
+
+\begin_layout Itemize
+Attanasio, Bottazzi, Low, Nesheim, Wakefield (2012)
+\end_layout
+
+\begin_layout Itemize
+Li, Meghir, Oswald (2014)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Methodology: CCP estimation
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Bajari, Benkard and Levin (2007)
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Model
+\end_layout
+
+\begin_layout BeginFrame
+Model: General Setup
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $(i,j,k,t)$
+\end_inset
+
+ indexes individual, origin location, destination location and 
+\begin_inset Formula $t$
+\end_inset
+
+ is age
+\end_layout
+
+\begin_layout Itemize
+in each period, choose 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+location: 
+\begin_inset Formula $k\in J$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+rent or own: 
+\begin_inset Formula $h_{t}\in\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+savings: 
+\begin_inset Formula $a_{t+1}\in\mathbb{R}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+What is a Location?
+\end_layout
+
+\begin_layout Itemize
+A bundle of attributes: price, mean income and amenity
+\end_layout
+
+\begin_layout Itemize
+Location is a triple 
+\begin_inset Formula 
+\[
+\left(p_{jt},\overline{y}_{jt},\psi_{ij}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There are 
+\begin_inset Formula $s\in J$
+\end_inset
+
+ locations (US States)
+\end_layout
+
+\begin_layout Itemize
+Agents know the stochastic process driving 
+\begin_inset Formula $p_{jt},\overline{y}_{jt}$
+\end_inset
+
+ is a VAR(1) denoted 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Searching across locations
+\end_layout
+
+\begin_layout Itemize
+iid location taste shock 
+\begin_inset Formula $\varepsilon_{ijt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Permanent match effect 
+\begin_inset Formula $\psi_{ij}$
+\end_inset
+
+ is learned 
+\emph on
+after
+\emph default
+ arrival at location 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\psi_{ij}\sim F$
+\end_inset
+
+.
+ Unobserved heterogeneity.
+\end_layout
+
+\begin_layout Itemize
+Fully informed about prices in all locations.
+\end_layout
+
+\begin_layout Itemize
+In each period, compute expected value in each location, and choose highest.
+\end_layout
+
+\begin_layout Itemize
+Inelastic labor supply.
+ Labor income is
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+incoem process is quite rich!
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\\
+z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Housing Choice
+\end_layout
+
+\begin_layout Itemize
+Households choose to rent or own: 
+\begin_inset Formula $h_{t}=\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Renters:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rent in 
+\begin_inset Formula $j$
+\end_inset
+
+ is a constant fraction 
+\begin_inset Formula $\kappa_{j}$
+\end_inset
+
+ of current price 
+\begin_inset Formula $p_{jt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Renters cannot borrow: one-period bond 
+\begin_inset Formula $a\geq0$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Owners:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Owners borrow with house as collateral
+\end_layout
+
+\begin_layout Itemize
+Selling incurs proportional costs 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Owners are required to occupy the house they own; change of location requires
+ sale of house.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Payment function 
+\begin_inset Formula $\pi(h_{t-1},h_{t},\mathbf{p}_{t})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Timing within each period
+\end_layout
+
+\begin_layout Enumerate
+observe 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose location 
+\begin_inset Formula $k$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+if 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+incur moving cost 
+\begin_inset Formula $\Delta(k,x)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+draw 
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Formula $\psi_{ik}\sim F$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+if 
+\begin_inset Formula $j=k$
+\end_inset
+
+, keep 
+\begin_inset Formula $\psi_{ij}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $h_{it}\in\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume 
+\begin_inset Formula $c_{it}=y_{ikt}+a_{it}(1+r)-\pi(h_{t-1},h_{t},\mathbf{p}_{t})-a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},\mathbf{p}_{t})\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\\
+\\
+\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},\mathbf{p}_{t})\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\\
+\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
+(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+\\
+\\
+\end{cases}\\
+\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},\mathbf{p}_{t})\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\\
+\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
+(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+\\
+\begin{array}{c}
+-(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{k}p_{kt}\right)-\\
+h_{t}\mathbf{1}\left[j\neq k\right]\left((1-\phi)p_{jt}-p_{kt}\right)
+\end{array} & \text{if }h_{t-1}=1
+\end{cases}\\
+\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},\mathbf{p}_{t})\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\\
+\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
+(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+\\
+\begin{array}{c}
+-(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{k}p_{kt}\right)-\\
+h_{t}\mathbf{1}\left[j\neq k\right]\left((1-\phi)p_{jt}-p_{kt}\right)
+\end{array} & \text{if }h_{t-1}=1
+\end{cases}\\
+a_{t+1} & \geq & \begin{cases}
+0 & \text{if }h_{t}=0\\
+\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{tk}\right\}  & \text{if }h_{t}=1
+\end{cases}\\
+a_{T} & \geq & 0
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Downpayment Constraint and Default
+\end_layout
+
+\begin_layout Itemize
+Buyer's budget constraint and 
+\begin_inset Formula $c>0$
+\end_inset
+
+ imply:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{t}(1+r(a_{t}))+y_{t}-p_{t} & > & a_{t+1}\\
+ & > & -(1-\chi)p_{t}\\
+a_{t}(1+r(a_{t}))+y_{t} & > & \chi p_{t}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Moving locations with negative equity means mortgage default: 
+\begin_inset Formula 
+\[
+d_{t}=\mathbf{1}\left[j\neq k,p_{t}(1-\phi)+a_{t}(1+r(a_{t}))<0\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Incurs default cost 
+\begin_inset Formula $\lambda>0$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Period utility and state space
+\end_layout
+
+\begin_layout Itemize
+State space of individual is
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi_{ij},t\right)\in X
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Period utility is given by
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ik}+\xi h_{it}-\Delta\left(k,x_{it}\right)-\lambda d_{it}+\varepsilon_{ijt} & \text{if }j\neq k
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Maximize expected lifetime utility
+\begin_inset Formula 
+\begin{eqnarray*}
+U & = & E_{0}\sum_{t=1}^{T}\beta^{t-1}u\left(c_{t},h_{t},k_{t},x_{t}\right)+\beta^{T}b\left(\cdot\right)\\
+b\left(a_{T},h_{T-1},p_{jT}\right) & = & \omega_{0}+\omega_{1}\ln\left(a+h_{T-1}p_{jt}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Moving Costs
+\end_layout
+
+\begin_layout Itemize
+In terms of utility: psychological costs
+\end_layout
+
+\begin_layout Itemize
+Costs differ by ownership status
+\end_layout
+
+\begin_layout Itemize
+Owners incur time and effort cost from having to sell, proportional to value
+\end_layout
+
+\begin_layout Itemize
+Additionally depends on distance and age
+\begin_inset Formula 
+\[
+\Delta(k,x)=\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Data
+\end_layout
+
+\begin_layout BeginFrame
+Survey for Income and Program Participation (SIPP)
+\end_layout
+
+\begin_layout Itemize
+Panels 1996, 2001, 2004 and 2008
+\end_layout
+
+\begin_layout Itemize
+Need to observe movers in 
+\begin_inset Formula $j$
+\end_inset
+
+ 
+\series bold
+and 
+\series default
+
+\begin_inset Formula $k$
+\end_inset
+
+.
+ (50,50) transition matrix.
+ Need a large estimation sample! 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Sipp}{
+\backslash
+beamergotobutton{Sipp Info}}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{SippTrans}{
+\backslash
+beamergotobutton{Transition Matrix}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+panel duration 2.5 years -- 4 years.
+ Interviewed every 4 months.
+\end_layout
+
+\begin_layout Itemize
+SIPP sample sizes range from 15.000 to 52.000 households.
+ Nationally representative.
+\end_layout
+
+\begin_layout Itemize
+Claim to have a good track record with following movers
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{SippInfo}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Sipp Raw Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-movers.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Implementation
+\end_layout
+
+\begin_layout BeginFrame
+Empirical Strategy
+\end_layout
+
+\begin_layout Enumerate
+Estimate some parts outside of the structural model in a first step
+\end_layout
+
+\begin_layout Enumerate
+In second step, find preference parameters that rationalize the data
+\end_layout
+
+\begin_layout Enumerate
+See model implications
+\end_layout
+
+\begin_layout Enumerate
+Conduct policy analysis
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Problem: At reasonable grid sizes, state space has 375 million points.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{StateSpace}{
+\backslash
+beamergotobutton{State Space Count}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{EmpiricalStrategy}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+SMM
+\end_layout
+
+\begin_layout Enumerate
+Estimate exogenous processes
+\end_layout
+
+\begin_layout Enumerate
+Compute target moments from data
+\end_layout
+
+\begin_layout Enumerate
+Given current parameters, compute decision rules from model
+\end_layout
+
+\begin_layout Enumerate
+Given decision rules, simulate moments from model
+\end_layout
+
+\begin_layout Enumerate
+Stop at parameter vector that makes model and data moments 
+\begin_inset Quotes eld
+\end_inset
+
+equal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vrule{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+SMM
+\end_layout
+
+\begin_layout Enumerate
+Estimate exogenous processes
+\end_layout
+
+\begin_layout Enumerate
+Compute target moments from data
+\end_layout
+
+\begin_layout Enumerate
+
+\color red
+Given current parameters, compute decision rules from model
+\end_layout
+
+\begin_layout Enumerate
+
+\color red
+Given decision rules, simulate moments from model
+\end_layout
+
+\begin_layout Enumerate
+Stop at parameter vector that makes model and data moments 
+\begin_inset Quotes eld
+\end_inset
+
+equal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vrule{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+SMM
+\end_layout
+
+\begin_layout Enumerate
+Estimate exogenous processes
+\end_layout
+
+\begin_layout Enumerate
+Compute target moments from data
+\end_layout
+
+\begin_layout Enumerate
+
+\color red
+Given current parameters, compute decision rules from model
+\end_layout
+
+\begin_layout Enumerate
+
+\color red
+Given decision rules, simulate moments from model
+\end_layout
+
+\begin_layout Enumerate
+Stop at parameter vector that makes model and data moments 
+\begin_inset Quotes eld
+\end_inset
+
+equal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vrule{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+BBL
+\end_layout
+
+\begin_layout Enumerate
+Estimate exogenous processes
+\end_layout
+
+\begin_layout Enumerate
+Compute reduced form policy functions
+\end_layout
+
+\begin_layout Enumerate
+Estimate value function by forward simulating many lifecycle paths
+\end_layout
+
+\begin_layout Enumerate
+Estimate 
+\emph on
+all other 
+\emph default
+(non-optimal) value functions by using perturbed policies
+\end_layout
+
+\begin_layout Enumerate
+Find parameter vector s.t.
+ value in 3.
+ is highest
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+BBL: First Stage Policy Functions
+\end_layout
+
+\begin_layout Itemize
+Define savings, location and housing policies on state space 
+\begin_inset Formula $X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+g_{A}: &  & X\mapsto\mathbb{R}\\
+g_{L}: &  & X\mapsto J\\
+g_{H}: &  & X\mapsto\left\{ 0,1\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+BBL: Second Stage
+\end_layout
+
+\begin_layout Itemize
+given reduced form policy function 
+\begin_inset Formula $g(x)$
+\end_inset
+
+, lifetime utility is
+\begin_inset Formula 
+\[
+U=\sum_{t=1}^{T}\beta^{t-1}u\left(g\left(x_{t}\right),\theta\right)+\beta^{T}b\left(\cdot\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Agents behave optimally in data: 
+\begin_inset Formula $U$
+\end_inset
+
+ must be best value
+\end_layout
+
+\begin_layout Itemize
+any other policy 
+\begin_inset Formula $\tilde{g}(x)$
+\end_inset
+
+ must yield lower utility:
+\begin_inset Formula 
+\[
+\tilde{U}=\sum_{t=1}^{T}\beta^{t-1}u\left(\tilde{g}\left(x_{t}\right),\theta\right)+\beta^{T}b\left(\cdot\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+estimator finds 
+\begin_inset Formula $\theta$
+\end_inset
+
+ such that 
+\begin_inset Formula 
+\[
+U\geq\tilde{U}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Estimation: Recovering 
+\begin_inset Formula $\psi_{ij}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\psi_{ij}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+permanent
+\begin_inset Quotes erd
+\end_inset
+
+ unobserved heterogeneity.
+ Permanent for length of stay in 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+need to have a consistent estimate of policy functions
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\psi\sim F$
+\end_inset
+
+ is identified by variation in durations of stay
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Requires extension of BBL -- work in progress
+\end_layout
+
+\begin_layout Itemize
+Arcidiacono-Miller (2011) type EM algorithm
+\end_layout
+
+\begin_layout Itemize
+Start decision rules on data, assume arbitrary distribution of types 
+\begin_inset Formula $F^{(0)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use bayes rule and structural model to update 
+\begin_inset Formula $ $
+\end_inset
+
+(m-th iteration)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+structural parameters, 
+\begin_inset Formula $\theta^{(m)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+distribution of types 
+\begin_inset Formula $F^{(m)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+policy functions 
+\begin_inset Formula $g^{(m)}\left(F^{(m)}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout BeginFrame
+Exogenous Processes: House Price and mean Income
+\end_layout
+
+\begin_layout Itemize
+Data spans period 1996--2012
+\end_layout
+
+\begin_layout Itemize
+Huge nationwide increase and subsequent drop in house price levels
+\end_layout
+
+\begin_layout Itemize
+Strong common (national) component
+\end_layout
+
+\begin_layout Itemize
+Split by regions (Census Divisions)
+\end_layout
+
+\begin_layout Itemize
+How to represent this?
+\end_layout
+
+\begin_layout BeginFrame
+Hierarchical Price and Income model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename mba-graph.pdf
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Hierarchical Price and Income model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename mba-graph2.pdf
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Exogenous Price and Income Process: 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+States are a subset of census 
+\emph on
+divisions, 
+\emph default
+
+\begin_inset Formula $s\in d\subset J$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Price/income in state 
+\begin_inset Formula $s$
+\end_inset
+
+ is made of national component, division deviation, and constant state shifter
+\begin_inset Formula 
+\begin{eqnarray*}
+p_{st} & = & P_{t}+\tilde{p}_{t}^{d}+\overline{m}_{s},\forall s\in d\\
+\overline{y}_{st} & = & Y_{t}+\tilde{y}_{t}^{d}+\overline{q}_{s},\forall s\in d
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Why? 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Prices}{
+\backslash
+beamergotobutton{House Prices}}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{AggPricesSlide}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+State of economy summarized by 
+\begin_inset Formula 
+\begin{eqnarray*}
+\mathbf{P}_{t} & \equiv & \left(\left\{ P_{t},\tilde{\mathbf{p}}_{t}\right\} ,\left\{ Y_{t},\tilde{\mathbf{y}}_{t}\right\} \right)\\
+\tilde{\mathbf{p}}_{t} & = & \left[\tilde{p}_{t}^{1},\dots,\tilde{p}_{t}^{9}\right]\\
+\tilde{\mathbf{y}}_{t} & = & \left[\tilde{y}_{t}^{1},\dots,\tilde{y}_{t}^{9}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Exogenous Price and Income Process: 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Assume AR(1) processes on deviations and aggregates 
+\begin_inset Formula $Y_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{t}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{y}_{t}^{d} & = & \beta_{0d}+\beta_{1d}\tilde{y}_{t-1}^{d}+\nu_{\tilde{y}t,d}\\
+\tilde{p}_{t}^{d} & = & \gamma_{0d}+\gamma_{1d}\tilde{p}_{t-1}^{d}+\nu_{\tilde{p}t,d}\\
+\left[\begin{array}{cc}
+\nu_{\tilde{p}t,d} & \nu_{\tilde{y}t,d}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
+0\\
+0
+\end{array}\right]\left[\begin{array}{cc}
+\sigma_{\tilde{y},d}^{2} & \sigma_{\tilde{y}\tilde{p},d}\\
+ & \sigma_{\tilde{p},d}^{2}
+\end{array}\right]\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{PriceDeviations}{
+\backslash
+beamergotobutton{Division Deviations}}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{AggPricesSlide2}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{Prices}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-5pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/FHFA/bydiv.pdf
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{AggPricesSlide}{
+\backslash
+beamergotobutton{Back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Division Deviations from National Index
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{PriceDeviations}{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{AggPricesSlide2}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/census/DivisionPriceDevs.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Division Prices and Simulated Paths
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename ../model/factor/priceSimTruthDevs.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+State level Income Processes
+\end_layout
+
+\begin_layout Itemize
+Random effects model with AR1 error disturbance
+\end_layout
+
+\begin_layout Itemize
+State by state
+\begin_inset Formula 
+\begin{eqnarray*}
+\ln y_{ijt} & = & \beta_{j0}+\beta_{j1}\text{age}_{it}+\beta_{j2}\left(\text{age}_{it}\right)^{2}+\beta_{j3}\text{cohort}_{i}+\alpha_{i}+z_{it}\\
+z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})\\
+\alpha_{i} & \sim & N(0,\sigma_{\alpha}^{2})\\
+u_{ijt} & \sim & N(0,\sigma_{u_{j}}^{2})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Selected Income Processes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename pasted-incomes.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Omitted coefficients: cohort dummies.
+ Reject Null that age profiles are identical at 
+\begin_inset Formula $p<0.01$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Savings policy function
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{nonh_policy}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename pasted-nonh-small.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{fullnonh_policy}{
+\backslash
+beamergotobutton{Full table}}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{mean_median_nonH}{
+\backslash
+beamergotobutton{Mean vs median}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Housing Policy Functions
+\end_layout
+
+\begin_layout Itemize
+housing is binary:
+\begin_inset Formula 
+\begin{eqnarray*}
+h & = & \mathbf{1}\left[h^{*}>0\right]\\
+ & = & \mathbf{1}\left[x\beta+u>0\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+variables in 
+\begin_inset Formula $x$
+\end_inset
+
+ are in state space of model
+\end_layout
+
+\begin_layout Itemize
+Key: flexible specifications
+\end_layout
+
+\begin_layout BeginFrame
+Housing Policy for Renters: Switch to owner?
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename pasted-buy.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Omitted: State fixed effects.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Housing Policy for Owners: Switch to renter?
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename pasted-sell.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Omitted: cubic spline in home equity and state fixed effects.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Location Policy Function: Where to go?
+\end_layout
+
+\begin_layout Itemize
+Implemented as a multinomial logit model.
+ 
+\end_layout
+
+\begin_layout Itemize
+Choose location 
+\begin_inset Formula $k\in J$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Choosing 
+\begin_inset Formula $k$
+\end_inset
+
+ while 
+\begin_inset Formula $\delta(j,k)=0$
+\end_inset
+
+ means you stay.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+W_{ijkt} & = & \beta_{1k}\text{age}_{it}+\beta_{2k}\text{age}_{it}^{2}+\beta_{3k}\text{own}_{it}+\gamma_{k}y_{ikt}\\
+ & + & \alpha_{1}p_{kt}+\alpha_{2}\delta(j,k)+\epsilon_{ijkt}\\
+\epsilon_{ijkt} & \sim & \text{EV}(0,\sigma_{\epsilon}^{2})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Show observed vs predicted sample proportion of movers and stayer by state.
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/logit-stay.pdf
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/logit-move.pdf
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Policy
+\end_layout
+
+\begin_layout BeginFrame
+Policy experiment
+\end_layout
+
+\begin_layout Itemize
+From Poterba and Sinai (2008): annual tax savings from mortgage interest
+ deduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Annual Household Income ($)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Age
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+<40K
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+40-75K
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+75-125K
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+125-250K
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+250K+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+All
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+25-35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$208
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$592
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$1817
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$3603
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$7077
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+$1155
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+35-50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+216
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+719
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1483
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+3599
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+5833
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1598
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+50-65
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+143
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+476
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1074
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2039
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+6348
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1226
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+>65
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+134
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+351
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+914
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1435
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+149
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+All
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+91
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+523
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1264
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2703
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+5459
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+1060
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout BeginFrame
+Conclusion
+\end_layout
+
+\begin_layout Itemize
+Lifecycle model of housing, consumption and migration
+\end_layout
+
+\begin_layout Itemize
+Aim: evaluate welfare implications of housing subsidies
+\end_layout
+
+\begin_layout Itemize
+So far: first stage policy functions unconditional of unobserved heterogeneity
+\end_layout
+
+\begin_layout Itemize
+Proof of BBL estimator is work in progress
+\end_layout
+
+\begin_layout BeginFrame
+State Space Sizes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{StateSpace}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Number of points is:
+\begin_inset Formula 
+\[
+\left(\mathcal{A}\times\mathcal{Z}\times\left(\mathcal{Y}\times\mathcal{P}\times(J-1)\right)\times\{0,1\}\times J\times\Psi\times T\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dimension
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Points
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{Z}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{Y}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{H}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $J$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+50
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+30
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+total
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+367.500.000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{EmpiricalStrategy}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+SIPP
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{Sipp}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SIPP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PSID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NLSY79
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+128.815
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10.802
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.439
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+years
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1996--2011
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1994--2011
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1979--
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+moves
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3521
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2414
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+124
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{SippInfo}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{SippTrans}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/SIPP-transition.pdf
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Full Savings Policy
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{fullnonh_policy}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename pasted-nonh.pdf
+	scale 50
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{nonh_policy}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Why Quantile Regression on non-housing wealth?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{mean_median_nonH}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/median-nonh_wealth.pdf
+	scale 55
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{nonh_policy}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
