@@ -91,30 +91,7 @@ getMovers <- function(d){
 }
 
 
-#' SIPP probit of staying vs moving
-#'
-#' descriptive evidence
-#' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
-#' pr <- SippProbitMove(d=des,"~/Dropbox/mobility/output/data/sipp")
-#' 
-#' ## goodness of fit
-#' 
-#' dat <- copy(des$variables)
-#' dat[,probmove := predict(pr,type="response")]
-#' dat[,pred.move := runif(n=nrow(dat))<probmove]
-#' print(dat[,list(actual.moves=sum(S2S),predicted=sum(pred.move))])
-SippProbitMove <- function(d,path=NULL){
 
-	stopifnot("survey.design" %in% class(d) )
-
-	m <- svyglm(S2S ~ age + age2 + dkids + own + HHincome + home.equity + duration + college, family=binomial(link="probit"),design=d)
-
-	if (!is.null(path)){
-		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
-	}
-	return(m)
-}
 
 #' make SIPP survey Design object
 #'
@@ -122,7 +99,7 @@ SippSvyDesign <- function(){
 
  	load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 
- 	des <- svydesign(ids=~1,weights=~HHweight,data=merged[S2S<2 & complete.cases(merged)])
+ 	des <- svydesign(ids=~1,weights=~HHweight,data=merged)
  	save(des,file="~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
 }
 

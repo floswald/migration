@@ -521,11 +521,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		setnames(mergexx,nm$oldname,nm$newname)
 
 
-		# make savings
+		# make and clean nonhousing wealth (savings)
 		# "savings" is not what corresponds to "a" in the model
 		# "a" is all other nonhousing wealth
 		mergexx[, saving := thhintbk + thhintot]
 		mergexx[, c("thhintbk","thhintot") := NULL]
+
+		# drop wealth above 99-th percentile
+		mergexx <- mergexx[wealth < quantile(wealth,probs=.99,na.rm=T)]
 
 		mergexx[, nonh_wealth := wealth - home.equity ]
 
@@ -627,13 +630,17 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	# merge with FIPS codes
 	data(US_states,package="EconData")
+	US_states[,Division := abbreviate(Division,minlength=3)]
 	# add aggregated states to FIPS register
-	x         <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("New England","West North Central"))
+	x         <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("NwE","WNC"))
 	US_states <- rbind(US_states,x)
 	setkey(US_states,FIPS)
 
 
 	merged <-  US_states[ merged ]
+	merged[,metro2 := "urban"]
+	merged[tmetro==2,metro2:="rural"]
+	merged[,Div2 := paste(Division,metro2,sep=".")]
 
 	# same for state born
 	setkey(merged,state.bornID)
@@ -647,7 +654,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	# end state aggregation
 	# ======================
-
 
 	# Inflation
 	# =========
@@ -671,6 +677,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	# use this for renters
 
+	# lincoln house value data
+
 	hv <- getHomeValues(freq="quarterly")
 	HV = hv[,list(state=State,qtr,HValue96)]
 	setkey(HV,state,qtr)
@@ -678,24 +686,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	merged <- HV[merged]
 	
-	# imputed renters house value assuming a 
-	# effective user cost of 5%	
-   # merged[,r_hvalue := mortg.rent / 0.05 ]
-
-	#if (use.hvalue.for.p2y){
-		#merged[HHincome>0 & own==TRUE ,p2y := hvalue / (12*HHincome) ] 
-		#merged[HHincome>0 & own==FALSE,p2y := r_hvalue / (12*HHincome) ] 	# in terms of ANNUAL income
-		#merged[wealth!= 0 & own==TRUE ,p2w := hvalue / wealth] 
-		#merged[wealth!= 0 & own==FALSE,p2w := r_hvalue / wealth] 
-
-	#} else {
-		## use the state level index for price to incoem ratios
-
-		#merged[HHincome>0,p2y := HValue96 / (12*HHincome) ] 
-		#merged[wealth!= 0,p2w := HValue96 / wealth] 
-		#merged[,r_hvalue := NA]
-	#}
-
 	merged[,age2 := age^2 ]
 
 
@@ -706,32 +696,19 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	# whenever "from" != "to", you moved.
 	setkey(merged,upid,timeid)
 	merged[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
+	merged[,c("fromD","toD") := list(c(Division[-length(Division)],NA), c(Division[-1],NA)), by=upid]
+	merged[,c("fromD2","toD2") := list(c(Div2[-length(Div2)],NA), c(Div2[-1],NA)), by=upid]
 
 	# indicates that at the end of the current period, you move to location "to"
 	merged[,S2S := from != to]	# NA!=0 returns NA.
+	merged[,D2D := fromD != toD]	# NA!=0 returns NA.
+	merged[,D22D2 := fromD2 != toD2]	# NA!=0 returns NA.
 	
-	# drop age inconsistencies
-	# ========================
+	# drop age 
+	# ========
 
-	# some upid's have age increases greater than 1
-	# it is unclear to what extent this is measurement error
-	# (someone not knowing their age?), misreporting, or
-	# a data quality problem. 
-	# my issue is that the occurence of this problem is skewed
-	# dramatically towards the mover population, where you expect
-	# it to be more difficult to ensure data consistency.
-
-	#> merged[,prop.table(table(S2S,twoages),margin=1)]
-    	   #twoages
-	#S2S            FALSE         TRUE
-	  #FALSE 0.9997688135 0.0002311865
-	  #TRUE  0.9976990336 0.0023009664
-	
-	# i.e. I loose 0.23% of all interstate moves by assuming 
-	# that increases greater than 2 years are invalid cases.
-
-	# merged[,dage := diff(age),by=upid]
-	# merged[,dage := NULL]
+	merged <- merged[age %in% 20:65]
+			
 	
 	# change in ownership in time period
 	# ==================================
@@ -745,7 +722,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 	# change in number of kids
 	# ========================
 
-	merged[,dkids := c(diff(numkids),0),by=upid]
+	merged[,nkids := numkids]
+	merged[nkids > 3, nkids := 4]
+	merged[,dkids := c(diff(nkids),0),by=upid]
+	merged[,nkids2 := c(nkids[-1],NA),by=upid] # next period kids
+
+
 
 	# do time aggregation
 	# ===================
@@ -765,23 +747,30 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 						   state.born=state.born[1],
 						   Region=Region[1],
 						   Division=Division[1],
+						   Div2=Div2[1],
 						   HHincome=sum(HHincome,na.rm=T),
-						   numkids=max(numkids,na.rm=T),
+						   metro=tmetro[1]	,
+						   numkids=numkids[1],
 						   HHweight=mean(HHweight,na.rm=T),
 						   age=min(age,na.rm=T),
 						   year=min(year,na.rm=T),
 						   wealth=mean(wealth,na.rm=T),
 						   nonh_wealth=mean(nonh_wealth,na.rm=T),
+						   saving=mean(saving,na.rm=T),
 						   hvalue=mean(hvalue,na.rm=T),
 						   home.equity=mean(home.equity,na.rm=T),
 						   mortg.rent=mean(mortg.rent,na.rm=T),
 						   dkids=sum(dkids,na.rm=T),
+						   nkids=nkids[1],
+						   nkids2=nkids2[length(nkids2[!is.na(nkids2)])],
 						   buy=sum(buy),
 						   sell=sum(sell),
 						   college=college[1],
 						   born=born[1],
 						   own=max(own,na.rm=T),
 						   S2S=sum(S2S),
+						   D2D=sum(D2D),
+						   D22D2=sum(D22D2),
 						   from=from[1],
 						   to=to[length(to[!is.na(to)])],
 						   cohort=cohort[1],
@@ -823,13 +812,14 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		fname <- paste0("Sipp_aggby_",agg.by,".RData")
 		
 	} else {
+
 		fname <- "Sipp_aggby_NULL.RData"
 
 	}
 
 	# imputed renters house value assuming a 
 	# effective user cost of 5%	
-	merged[,r_hvalue := mortg.rent / 0.05 ]
+	merged[own==FALSE,r_hvalue := mortg.rent / 0.05 ]
 
 	if (use.hvalue.for.p2y){
 		merged[HHincome>0 & own==TRUE ,p2y := hvalue / (HHincome) ] 

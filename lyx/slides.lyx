@@ -629,7 +629,7 @@ after
 \end_layout
 
 \begin_layout Itemize
-Fully informed about prices in all locations.
+imperfect information about prices and incomes in other locations k
 \end_layout
 
 \begin_layout Itemize
@@ -738,6 +738,26 @@ Timing within each period
 \end_layout
 
 \begin_layout Enumerate
+if duration of 
+\begin_inset Formula $i$
+\end_inset
+
+ in 
+\begin_inset Formula $j$
+\end_inset
+
+, 
+\begin_inset Formula $d_{it}=0$
+\end_inset
+
+, draw 
+\begin_inset Formula $\psi_{ij}\sim F$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
 observe 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
@@ -762,17 +782,13 @@ observe
 \end_layout
 
 \begin_layout Enumerate
-choose location 
-\begin_inset Formula $k$
-\end_inset
-
-
+choose whether to move at end of period
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-if 
-\begin_inset Formula $j\neq k$
+if yes 
+\begin_inset Formula $(j\neq k)$
 \end_inset
 
 , 
@@ -780,7 +796,23 @@ if
 
 \begin_deeper
 \begin_layout Enumerate
-incur moving cost 
+sell house: 
+\begin_inset Formula $h_{it}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume and incur moving cost 
 \begin_inset Formula $\Delta(k,x)$
 \end_inset
 
@@ -788,12 +820,8 @@ incur moving cost
 \end_layout
 
 \begin_layout Enumerate
-draw 
-\begin_inset Formula $ $
-\end_inset
-
-
-\begin_inset Formula $\psi_{ik}\sim F$
+set duration 
+\begin_inset Formula $d_{it+1}=0$
 \end_inset
 
 
@@ -801,18 +829,14 @@ draw
 
 \end_deeper
 \begin_layout Enumerate
-if 
-\begin_inset Formula $j=k$
-\end_inset
-
-, keep 
-\begin_inset Formula $\psi_{ij}$
+if no 
+\begin_inset Formula $(j=k)$
 \end_inset
 
 
 \end_layout
 
-\end_deeper
+\begin_deeper
 \begin_layout Enumerate
 choose 
 \begin_inset Formula $h_{it}\in\{0,1\}$
@@ -830,13 +854,19 @@ choose
 \end_layout
 
 \begin_layout Enumerate
-consume 
-\begin_inset Formula $c_{it}=y_{ikt}+a_{it}(1+r)-\pi(h_{t-1},h_{t},\mathbf{p}_{t})-a_{it+1}$
-\end_inset
-
-
+consume
 \end_layout
 
+\begin_layout Enumerate
+set duration 
+\begin_inset Formula $d_{it+1}=d_{it}+1$
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\end_deeper
 \begin_layout BeginFrame
 Budget Constraint
 \end_layout
@@ -895,7 +925,7 @@ r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
 \end{cases},r^{m}>r\\
 \pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
-(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
 \\
 \end{cases}\\
@@ -932,12 +962,10 @@ r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
 \end{cases},r^{m}>r\\
 \pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
-(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
 \begin{array}{c}
--(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{k}p_{kt}\right)-\\
-h_{t}\mathbf{1}\left[j\neq k\right]\left((1-\phi)p_{jt}-p_{kt}\right)
-\end{array} & \text{if }h_{t-1}=1
+-(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)\end{array} & \text{if }h_{t-1}=1
 \end{cases}\\
 \\
 \end{eqnarray*}
@@ -972,18 +1000,15 @@ r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
 \end{cases},r^{m}>r\\
 \pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
-(1-h_{t})\kappa_{k}p_{tk}+h_{t}p_{tk} & \text{if }h_{t-1}=0\\
+(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
 \begin{array}{c}
--(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{k}p_{kt}\right)-\\
-h_{t}\mathbf{1}\left[j\neq k\right]\left((1-\phi)p_{jt}-p_{kt}\right)
-\end{array} & \text{if }h_{t-1}=1
+-(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)\end{array} & \text{if }h_{t-1}=1
 \end{cases}\\
 a_{t+1} & \geq & \begin{cases}
 0 & \text{if }h_{t}=0\\
-\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{tk}\right\}  & \text{if }h_{t}=1
-\end{cases}\\
-a_{T} & \geq & 0
+\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{jt}\right\}  & \text{if }h_{t}=1
+\end{cases}
 \end{eqnarray*}
 
 \end_inset

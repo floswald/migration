@@ -1,6 +1,9 @@
 
 
 
+# contains income models by geography
+# contains house value models by geography
+# contains children arrival process
 
 
 # method to predict income for logit estimation,
@@ -24,6 +27,50 @@
 #' 
 
 
+#' Children arrival process
+#'
+ChildrenArrivalProcess <- function(d,path=NULL){
+
+	r <- svytable(formula=~nkids + nkids2 + age,design=d)
+
+	r2 <- array(0,dim(r))
+	for (i in 1:dim(r)[3]){
+		r2[ , ,i] <- prop.table(r[ , ,i],margin=1)
+	}
+	dimnames(r2) <- dimnames(r)
+	if (!is.null(path)) saveRDS(r2,file=path)
+	return(r2)
+}
+
+
+#' Model to predict house values in other regions
+#'
+#' estiamtes a linear svyglm model to predict the house price
+#' relevant for household with observables x in region j
+#' @examples
+#' load('~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData')
+#' des$variables[,state := Division]
+#' h <- HouseValueModel(d=des,path="~/Dropbox/mobility/output/model/BBL/house-values")
+HouseValueModel <- function(d,path){
+
+	m = lapply(d$variables[,unique(state)],function(x) svyglm(hvalue ~ -1 + factor(year) + age + age2 + nkids + ns(HHincome,df=2) + ns(nonh_wealth,df=3),design=subset(d,own==TRUE&state==x)))
+	names(m) <- d$variables[,unique(state)]
+
+	
+	sp <- list()
+	sp$coefs <- sapply(m,coef)
+	sp$HHincome <- lapply(m,function(x) attributes(x$model[,"ns(HHincome, df = 2)"]))
+	sp$nonh_wealth <- lapply(m,function(x) attributes(x$model[,"ns(nonh_wealth, df = 3)"]))
+	# save 
+	if (!is.null(path)){
+		saveRDS(m,file=file.path(path,"hvalue-model.rds"))
+		saveRDS(sp,file=file.path(path,"hvalue-coefs.rds"))
+	}
+
+	return(m)
+}
+
+
 
 
 #' Linear Random Effects Panel Model of Income
@@ -45,13 +92,26 @@
 #' }}
 #' @family IncomePrediction
 #' @param dat data set of income relevant variables
+#' @param geo level of geopgraphy: state, Division, Div2.
 #' @return list for each state with coefficients and fixed effects
 #' for each individual. saves data.
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
 #' l <- RE.HHincome(dat=merged)
-RE.HHincome <- function(dat,
+RE.HHincome <- function(dat,geo="Division",
 						path="~/Dropbox/mobility/output/model/BBL/inc-process"){
+
+	if (geo=="Division") {
+		dat[,state := Division]
+		fname <- "Div-REcoefs.rds"
+
+	} else if (geo=="Div2") {
+		dat[,state := Div2]
+		fname <- "Div2-REcoefs.rds"
+	} else if (geo=="state"){
+		fname <- "state-REcoefs.rds"
+
+	}
 
 	st <- dat[,unique(state)]
 	st <- st[order(st)]
@@ -66,30 +126,35 @@ RE.HHincome <- function(dat,
 	# this formulation if you use the predict.lme
 	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
 
-	# problem with that: you will never have individual i (estimated effect in state j) in the object
+	# problem with using the actual object to make predictions: you will never have individual i (estimated effect in state j) in the object
 	# for state k. so you cannot predict state k.
 
 	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
 	names(AR1) <- st
+
+	# print a subset of states to one table
+	fi <- "incomeRE-123.tex"
+	sst <- sample(st,size=3)
+	texreg(AR1[sst],file=file.path(path,fi),include.variance=TRUE,include.bic=FALSE,include.aic=FALSE,include.loglik=FALSE,booktabs=TRUE,dcolumn=TRUE,table=FALSE,omit.coef="cohort",digits=3,custom.model.names=sst,use.packages=FALSE)
 
 
 	# print results to tex files
 	for (i in st){
 
 		fi <- paste0("incomeRE-",i,".tex")
-		texreg(list(AR1[[i]]),file=file.path(path,fi),include.RE=TRUE,booktabs=TRUE,dcolumn=TRUE)
+		texreg(list(AR1[[i]]),file=file.path(path,fi),include.variance=TRUE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
 
 	}
 	# print all into one html file
 		fi <- "incomeRE-all.html"
-		htmlreg(AR1,file=file.path(path,fi),include.RE=TRUE,caption="all models",custom.model.names=paste0("income process in ",st))
+		htmlreg(AR1,file=file.path(path,fi),include.variance=TRUE,caption="all models",custom.model.names=paste0("income process in ",st))
 
 
 
 	# save coefs into a handy list
 	RE.coefs <- lapply(AR1,lme.getCoefs)
 	attr(RE.coefs,"type") <- "RE.coefs"
-	saveRDS(RE.coefs,file=file.path(path,"income-REcoefs.rds"))
+	saveRDS(RE.coefs,file=file.path(path,fname))
 	#RE.models <- AR1
 	#save(RE.models,file=file.path(path,"income-REmodels.RData"))
 

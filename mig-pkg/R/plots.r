@@ -847,3 +847,108 @@ plotMortgageRentSipp <- function(sipp,path="~/Dropbox/mobility/output/data/sipp/
 	dev.off()
 	return(NULL)
 }
+
+
+
+
+
+#' plot logit prediction results
+#'
+plotLogitPredictions <- function(path="~/Dropbox/mobility/output/model/BBL"){
+
+	d = read.csv("~/Dropbox/mobility/output/model/BBL/logit_pred_props.csv")
+	d[d$dat.mv==0,]$dat.mv <- 0.01
+
+	# percent deviation
+
+	d$value <- abs(d$mod.stay - d$dat.stay )
+
+	d$move <- d$dat.mv / d$mod.mv
+	names(d)[1] <- "region"
+	d$region <- stringr::str_trim(as.character(d$region))
+
+	p <- list()
+
+	p$stay <- choroplethr::choroplethr(d,lod="state",scaleName="Difference",title="Abs. difference, observed vs predicted proportion of stayers.",gradient=TRUE)
+
+	d$value <- abs(d$mod.mv - d$dat.mv) 
+	p$move <- choroplethr::choroplethr(d,lod="state",scaleName="Difference",title="Abs. difference, observed vs predicted proportion moving to k.",gradient=TRUE)
+
+	pdf(file=file.path(path,"logit-stay.pdf"),width=8,height=6)
+	print(p$stay)
+	dev.off()
+	pdf(file=file.path(path,"logit-move.pdf"),width=8,height=6)
+	print(p$move)
+	dev.off()
+}
+
+
+#' Plot Sipp Transition matrix
+#'
+#' @examples
+#' load('~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData')
+#' tt <- merged[from!=to,table(from,to)]
+#' PlotSippTransitionMatrix(tt)
+PlotSippTransitionMatrix <- function(ttable,path="~/Dropbox/mobility/output/data/sipp"){
+
+	bins <- c(0,1,3,7,10,15,20,25)
+	cats <- cut(as.numeric(ttable),breaks=bins,labels=FALSE,right=FALSE)
+
+	pal = getcbPalette(7)
+
+	p <- ggplot(data.frame(expand.grid(from=1:nrow(ttable),to=1:nrow(ttable)),z=factor(cats,labels=c(paste(c(0,1,3,7,10,15)),"> 20"))),aes(x=from,y=to,fill=z)) + geom_tile() + scale_fill_manual(values=pal,name="number\nof movers")
+
+	# add scales
+	p <- p + scale_x_continuous(name="from",breaks=1:nrow(ttable),labels=rownames(ttable)) + scale_y_continuous(name="to",breaks=1:nrow(ttable),labels=rownames(ttable)) 
+
+	# add 45deg angle on x names
+	p <- p + theme(axis.text.x = element_text(angle=45,vjust=0.5), panel.grid.minor=element_blank()) + ggtitle('SIPP transition matrix')
+
+	if (!is.null(path)){
+		pdf(file=file.path(path,"SIPP-transition.pdf"),width=11,height=9)
+		print(p)
+		dev.off()
+	}
+
+	return(p)
+
+}
+
+
+
+#' SIPP probit of staying vs moving
+#'
+#' descriptive evidence
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
+#' pr <- SippProbitMove(d=subset(des,S2S<2 & complete.cases(des$variables)),"~/Dropbox/mobility/output/data/sipp")
+#' 
+#' ## goodness of fit
+#' 
+#' dat <- copy(des$variables[S2S<2 & complete.cases(des$variables)])
+#' dat[,probmove := predict(pr,type="response")]
+#' dat[,pred.move := runif(n=nrow(dat))<probmove]
+#' print(dat[,list(actual.moves=sum(S2S),predicted=sum(pred.move))])
+#'
+#' ## plot
+#' ## predict model
+#' prd <- data.frame(age=rep(30:60,2),age2=rep((30:60)^2,2),own=rep(c(0,1),each=31), HHincome=40,home.equity=rep(c(0,61),each=31),duration=3,dkids=0,college=TRUE)
+#' prd <- cbind(prd,as.data.frame(predict(pr,newdata=prd,type="response")))
+#' pl=ggplot(prd,aes(x=age)) + geom_line(aes(y=response,color=factor(own))) + geom_ribbon(aes(ymin=response-SE,ymax=response+SE,color=factor(own)),alpha=0.3)
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' m=merged[age>29&age<61&college==TRUE,list(proportion.moved = weighted.mean(S2S,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
+#' p <- ggplot(m,aes(age,y=proportion.moved,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
+#' ggsave(plot=p,file="~/Dropbox/mobility/output/data/sipp/raw-movers.pdf",width=13,height=9,scale=0.6)
+SippProbitMove <- function(d,path=NULL){
+
+	stopifnot("survey.design" %in% class(d) )
+
+	m <- svyglm(S2S ~ age + age2 + dkids + own + HHincome + home.equity + duration + college, family=binomial(link="probit"),design=d)
+
+	if (!is.null(path)){
+		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+	}
+	return(m)
+}
+
+

@@ -17,11 +17,9 @@
     colorlinks, linkcolor={dark-red},
     citecolor={dark-blue}, urlcolor={medium-blue}
 }
+\newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
 \end_preamble
 \use_default_options true
-\begin_modules
-knitr
-\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -639,6 +637,20 @@ reference "sec:Estimation"
 \end_inset
 
 .
+\begin_inset Formula 
+\begin{eqnarray*}
+\mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
+Y_{t+t} & = & \rho_{Y}Y_{t-1}+\nu_{Y}\\
+P_{t+t} & = & \rho_{P}P_{t-1}+\nu_{P}\\
+\overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
+p_{jt} & = & P_{t}+\tilde{p}_{jt}\\
+E\overline{y}_{kt+1} & = & E[Y_{t+1}|Y_{t}]+E\tilde{y}_{kt}\\
+Ep_{kt+1} & = & E[P_{t+1}|P_{t}]+E\tilde{p}_{kt}
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -784,65 +796,6 @@ where the variables stand, in order, for assets, persistent income shock,
 \end_layout
 
 \begin_layout Subsection
-Utility
-\end_layout
-
-\begin_layout Standard
-Current period utility depends on consumption, ownership status, current
- location 
-\begin_inset Formula $j$
-\end_inset
-
- match effect 
-\begin_inset Formula $\psi_{j}$
-\end_inset
-
- and whether a move to 
-\begin_inset Formula $k$
-\end_inset
-
- is undertaken.
- The parameter 
-\begin_inset Formula $\xi$
-\end_inset
-
- measures utility from ownership.
- 
-\begin_inset Formula $h=\{0,1\}$
-\end_inset
-
- is today's choice of housing, the benefits and costs of which materialize
- immeditately.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it} & \text{if }j=k\\
-\\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ik}+\xi h_{it}-\Delta\left(k,x_{it}\right)-\lambda d_{it} & \text{if }j\neq k
-\end{cases}\label{eq:period-utility}
-\end{equation}
-
-\end_inset
-
-In this formulation of utility, the value of the location--specific match
- 
-\begin_inset Formula $\psi_{ik}$
-\end_inset
-
- from amenities in the new location 
-\begin_inset Formula $k$
-\end_inset
-
- starts to flow only in the period after arrival.
- In the period where the move takes place, the cost is incurred.
- 
-\end_layout
-
-\begin_layout Subsection
 Moving Costs
 \end_layout
 
@@ -917,6 +870,147 @@ reference "eq:moving-cost"
 \end_layout
 
 \begin_layout Subsection
+Moving Arrangements
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Assumption 1: 
+\series default
+Owners cannot own in location 
+\begin_inset Formula $j$
+\end_inset
+
+ and reside in location 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ That implies that before a household can move to 
+\begin_inset Formula $k$
+\end_inset
+
+, they must sell their house in 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Assumption 2: 
+\series default
+Moving from 
+\begin_inset Formula $j$
+\end_inset
+
+ to 
+\begin_inset Formula $k$
+\end_inset
+
+ while the house is in negative equity defines the event 
+\begin_inset Quotes eld
+\end_inset
+
+mortgage default
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This arrangement implies that if an owner wants to move but they have negative
+ equity in the home, they default on the mortgage and incur a default cost
+ 
+\begin_inset Formula $\lambda>0$
+\end_inset
+
+.
+ In other words if 
+\begin_inset Formula 
+\[
+p_{jt}(1-\phi)-(1+r(a_{t}))a_{t}<0
+\]
+
+\end_inset
+
+ and 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+, there is mortgage default denoted by 
+\begin_inset Formula $d_{it}=1$
+\end_inset
+
+.
+ I don't consider default within the region for the same reasons as I don't
+ consider within region moves.
+\end_layout
+
+\begin_layout Subsection
+Utility
+\end_layout
+
+\begin_layout Standard
+Current period utility depends on consumption, ownership status, current
+ location 
+\begin_inset Formula $j$
+\end_inset
+
+ match effect 
+\begin_inset Formula $\psi_{j}$
+\end_inset
+
+ and whether a move to 
+\begin_inset Formula $k$
+\end_inset
+
+ is undertaken.
+ The parameter 
+\begin_inset Formula $\xi$
+\end_inset
+
+ measures utility from ownership.
+ 
+\begin_inset Formula $h=\{0,1\}$
+\end_inset
+
+ is today's choice of housing, the benefits and costs of which materialize
+ immeditately.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it} & \text{if }j=k\\
+\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ik}+\xi h_{it}-\Delta\left(k,x_{it}\right)-\lambda d_{it} & \text{if }j\neq k
+\end{cases}\label{eq:period-utility}
+\end{equation}
+
+\end_inset
+
+In this formulation of utility, the value of the location--specific match
+ 
+\begin_inset Formula $\psi_{ik}$
+\end_inset
+
+ from amenities in the new location 
+\begin_inset Formula $k$
+\end_inset
+
+ starts to flow only in the period after arrival.
+ In the period where the move takes place, the cost is incurred.
+ 
+\end_layout
+
+\begin_layout Subsection
 Recursive Formulation
 \end_layout
 
@@ -969,14 +1063,16 @@ To spare on notation I will drop the subscript
 \end_inset
 
 .
+ I first present an abbreviated version of the recursive program before
+ defining the full problem.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
 v_{t}(x,j,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,j,k)+\beta\sum_{x'}q\left(x'|x,k\right)\overline{v}_{t+1}(x',k)\\
-\overline{v}_{t}(x,j) & = & E_{\xi}V_{t}(x,j,\xi)\\
- & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}(x,j,k\right)\right)\\
+\overline{v}_{t}(x,j) & = & E_{\xi}V_{t}(x,j,\varepsilon)\\
+ & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}(x,j,k)\right)\right)\\
 \exp\left(\overline{v}(x,j)\right) & = & \exp(\overline{\gamma})\sum_{k=1}^{J}\exp\left(v(x,j,k)\right),\forall j\\
 \rho(x,j,k) & = & \Pr\left[\text{move to }k|x,j\right]\\
  & = & \frac{\exp\left(v_{t}(x,j,k)\right)}{\sum_{z=1}^{J}\exp\left(v_{t}(x,j,z)\right)}\\
@@ -990,7 +1086,7 @@ v_{t}(x,j,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,j,k)+\beta\sum_{x'}q
 \end_layout
 
 \begin_layout Standard
-The value function when at state 
+The value function of the full problem when at state 
 \begin_inset Formula $\left(a,z,\mathbf{P},h_{-1},j,\psi,t<T\right)$
 \end_inset
 
@@ -1008,32 +1104,30 @@ reference "eq:full-value"
 \begin_inset Formula 
 \begin{eqnarray}
 V\left(a,z,\mathbf{P},h_{-1},j,\psi,t\right) & = & \max_{k}\left(v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right)+\varepsilon_{it}\right)\label{eq:full-value}\\
-v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right) & = & \max_{c,h,a'}u\left(c,j,k,h,\psi\right)\label{eq:conditional-value}\\
- & + & \begin{cases}
-\beta\mathbb{E}_{\nu,\varepsilon,\mathbf{P}'}\left[V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right] & \text{if }j=k\\
-\beta\mathbb{E}_{\psi,\nu,\varepsilon,\mathbf{P}'}\left[V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right] & \text{if }j\neq k
-\end{cases}\nonumber \\
+v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right) & = & \begin{cases}
+\max_{c,h,a'}u\left(c,j,k,h,\psi\right) & \text{if }j=k\\
++\beta\mathbb{E}_{\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right]\\
+\\
+\max_{c,a'}u\left(c,j,k,0,\psi\right) & \text{if }j\neq k\\
++\beta\mathbb{E}_{\psi',\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',0,k,\psi',t+1\right)|\left(z,\mathbf{P}\right)\right]
+\end{cases}\label{eq:conditional-value}\\
+\bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)\\
 \text{subject to}\nonumber \\
-a' & = & a(1+r^{*})+y-c+w\left(h_{-1},h\right)\label{eq:budget}\\
-w\left(h_{-1},h\right) & = & \begin{cases}
--\mathbf{1}\left[h=0\right]\kappa p_{k}-\mathbf{1}\left[h=1\right]p_{k} & \text{if }h_{-1}=0\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\label{eq:budget}\\
+\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
+(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
 \begin{array}{c}
-\mathbf{1}\left[h=0\right]\left((1-\phi)p_{j}-\kappa p_{k}\right)+\\
-\mathbf{1}\left[h=1,j\neq k\right]\left((1-\phi)p_{j}-p_{k}\right)
-\end{array} & \text{if }h_{-1}=1
+-(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)\end{array} & \text{if }h_{t-1}=1
 \end{cases}\label{eq:budget-housing}\\
-a' & \geq & \begin{cases}
-0 & \text{if }h=0\\
-\min\left(a(1+r^{*}),-0.8p_{k}\right) & \text{if }h=1
+a_{t+1} & \geq & \begin{cases}
+0 & \text{if }h_{t}=0\\
+\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{jt}\right\}  & \text{if }h_{t}=1
 \end{cases}\label{eq:borrowing-constraint}\\
-r^{*} & = & \begin{cases}
-r & \text{if }a\geq0\\
-r^{m} & \text{else}
-\end{cases}\label{eq:interest-rate}\\
-a_{T} & \geq & 0\label{eq:final-period-borrowing}\\
-y & = & \bar{y}_{j}+g(i,j,t)+z\label{eq:budget-income}\\
-z' & = & \rho z+\nu,\,\nu\sim N(0,\sigma_{z}^{2})\label{eq:budget-zshock}
+a_{T} & \geq & 0\label{eq:interest-rate}
 \end{eqnarray}
 
 \end_inset
@@ -4495,7 +4589,9 @@ status open
 
 
 \backslash
-input{../data/CPS/mv1_2013.tex}
+input{
+\backslash
+Dropbox/data/CPS/mv1_2013.tex}
 \end_layout
 
 \end_inset
@@ -4544,7 +4640,9 @@ status open
 
 
 \backslash
-input{../data/CPS/mv2_2013-edit.tex}
+input{
+\backslash
+Dropbox/data/CPS/mv2_2013-edit.tex}
 \end_layout
 
 \end_inset
@@ -4593,7 +4691,9 @@ status open
 
 
 \backslash
-input{../data/CPS/mv4_2013-edit2.tex}
+input{
+\backslash
+Dropbox/data/CPS/mv4_2013-edit2.tex}
 \end_layout
 
 \end_inset
@@ -4642,7 +4742,9 @@ status open
 
 
 \backslash
-input{../data/CPS/mv5_2013.tex}
+input{
+\backslash
+Dropbox/data/CPS/mv5_2013.tex}
 \end_layout
 
 \end_inset
@@ -4672,53 +4774,6 @@ reference "tab:Conditional-on-moving"
 
 \end_inset
 
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../data/CPS/probit-predict.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS moving propensity by housing tenure
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:SIPP-propensity-move"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4824,7 +4879,9 @@ status open
 
 
 \backslash
-input{../model/BBL/savings.tex}
+input{
+\backslash
+Dropbox/model/BBL/savings.tex}
 \end_layout
 
 \end_inset
@@ -4884,7 +4941,9 @@ status open
 
 
 \backslash
-input{../model/BBL/buy.tex}
+input{
+\backslash
+Dropbox/model/BBL/buy.tex}
 \end_layout
 
 \end_inset
@@ -4940,7 +4999,9 @@ status open
 
 
 \backslash
-input{../model/BBL/sell-edit.tex}
+input{
+\backslash
+Dropbox/model/BBL/sell-edit.tex}
 \end_layout
 
 \end_inset
@@ -5014,7 +5075,9 @@ status open
 
 
 \backslash
-input{../model/BBL/logit_pred_freqs.tex}
+input{
+\backslash
+Dropbox/model/BBL/logit_pred_freqs.tex}
 \end_layout
 
 \end_inset
@@ -5062,7 +5125,9 @@ status open
 
 
 \backslash
-input{../model/BBL/logit_pred_props.tex}
+input{
+\backslash
+Dropbox/model/BBL/logit_pred_props.tex}
 \end_layout
 
 \end_inset
@@ -5109,249 +5174,9 @@ status open
 
 
 \backslash
-input{../model/BBL/logitRes2.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../PSID-datastore/transition.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-State to State transition matrix from the PSID.
- Not used in this paper.
- Uses all interstate moves from 2001--2009.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:State-to-State-PSID"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-mean versus median savings by age in the SIPP.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:mean-versus-median-savings"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Deviations of division level from national index, FHFA data.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:FHFA-division"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Deviations of division median income from national median income, US census
- data.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Census-income-devs"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../model/factor/simDivPrices.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Three simulated paths from price expectations model on division deviations.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Sim-price-deviation"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../model/factor/simDivIncomes.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Three simulated paths from income expectations model.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Sim-income-deviations"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
+input{
+\backslash
+Dropbox/model/BBL/logitRes2.tex}
 \end_layout
 
 \end_inset
