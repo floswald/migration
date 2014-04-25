@@ -25,8 +25,10 @@ type Param
 	MC    :: Array{Float64,1} # parameters in moving cost: alpha1, alpha2, alpha3
 	kappa :: Array{Float64,1} # rent to price ratio in each region
 	phi   :: Float64		  # fixed cost of selling
+
 	rhop  :: Array{Float64,1} # vector of AR1 coefs for each region price deviation
 	rhoy  :: Array{Float64,1} # vector of AR1 coefs for each region income deviation
+	rhoz  :: Array{Float64,1} # vector of AR1 coefs for each region individual-specific income shock
 	rhoP  :: Float64          # AR1 coef for the national process
 	rhoY  :: Float64          # AR1 coef for the national process
 
@@ -99,6 +101,12 @@ type Param
 		kappa = [rand() for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
 
+		rhop = rand(nJ)
+		rhoy = rand(nJ)
+		rhoz = rand(nJ)
+		rhoP = rand()
+		rhoY = rand()
+
 		R   = 1.03 	# gross interest rate savings: 1+r
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
 		chi = 0.2   # downpayment ratio
@@ -106,7 +114,7 @@ type Param
 
 		# create object
 
-		return new(beta,gamma,lambda,psi,psidist,xi,omega,MC,kappa,phi,R,Rm,chi,na,nz,nh,nt,npsi,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2)
+		return new(beta,gamma,lambda,psi,psidist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,na,nz,nh,nt,npsi,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2)
 	end
 
 	

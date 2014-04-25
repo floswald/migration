@@ -8,10 +8,13 @@ type Model
 
 	# values conditional on moving to k
 	# dimensions: a,z,psi,t,P,Y,j,k,pj,yj
-	vstay :: Array{Float64,11}
 	vsell :: Array{Float64,11}
-	vbuy  :: Array{Float64,11}
 	vrent :: Array{Float64,11}
+
+	# values conditional on staying in j
+	# dimensions: a,z,psi,t,P,Y,j,pj,yj
+	vstay :: Array{Float64,10}
+	vbuy  :: Array{Float64,10}
 
 	# expected final period value
 	# dimensions: a,h,P,j,pj
@@ -69,10 +72,10 @@ type Model
 		end
 
 		# national transition matrices
-		GY = rand(p.nY,p.nY)
-		GP = rand(p.nY,p.nY)
-		GY = GY./sum(GY,2)
-		GP = GP./sum(GP,2)
+		# ============================
+
+		GY = makeTransition(p.nY,p.rhoY)
+		GP = makeTransition(p.nP,p.rhoP)
 
 		dist = rand(p.nJ,p.nJ) * 1000.0
 		dist[ diagind(dist,0) ] = 0
@@ -83,13 +86,12 @@ type Model
 		# 3D grids
 		# =========
 
-		Gy = [rand(p.ny,p.ny).+z for z=linspace(0.0,1.0,n.nJ)]	# transition matrices for each region
-		Gp = [rand(p.np,p.np).+z for z=linspace(1.0,5.0,n.nJ)]	# transition matrices for each region
-		Gz = [rand(p.nz,p.nz).+z for z=linspace(-0.1,0.1,n.nJ)]	# transition matrices for each region
+		# national transition matrices
+		# ============================
 
-		Gy = Gy./sum(Gy,2)
-		Gp = Gp./sum(Gp,2)
-		Gz = Gz./sum(Gz,2)
+		Gy = makeTransition(p.ny,p.rhoy)
+		Gp = makeTransition(p.np,p.rhop)
+		Gz = makeTransition(p.nz,p.rhoz)
 
 		grids3D = (ASCIIString => Array{Float64,3})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz]
 
@@ -102,11 +104,45 @@ type Model
 end
 
 
-function show(io::IO, M::Model)
-	d = 0
-	for i = 1:9
-		d = d+sizeof(M.Gy[i]) + sizeof(M.Gp[i]) + sizeof(M.Gz[i])
+
+
+
+function makeTransition(n,rho)
+
+	u = linspace(1/n, 1-1/n, n)
+	u =[repmat(u,n,1) repmat(u,1,n)'[:] ]
+	
+	J = length(rho)
+
+	if J==1
+		G = zeros(n,n)
+		Cop = Copmod.Copula(2,rho)
+		G = reshape(Copmod.dnormCopula(u,Cop),n,n)
+
+		# normalize by row sums
+		G = G./sum(G,2)
+		return G
+
+	else
+
+		G = zeros(n,n,J)
+		for i=1:J
+			Cop = Copmod.Copula(2,rho[i])
+			G[:,:,i] = reshape(Copmod.dnormCopula(u,Cop),n,n)
+		end
+
+		# normalize by row sums
+		G = G./sum(G,2)
+		return G
+
 	end
+
+end
+
+
+
+
+function show(io::IO, M::Model)
 	r = round( (sizeof(M.vstay)+
 		        sizeof(M.vsell)+
 		        sizeof(M.vbuy)+
@@ -115,9 +151,8 @@ function show(io::IO, M::Model)
 		        sizeof(M.Vown)+
 		        sizeof(M.Vrent)+
 		        sizeof(M.EVown)+
-		        sizeof(M.EVrent)+
-		        sizeof(M.GP)+
-		        sizeof(M.GY)+d)/8388608, 3)
+		        sizeof(M.EVrent))
+		        /8388608, 3)
 		        
 	print(io, "size of Model in Mb: $(r)")
 end
