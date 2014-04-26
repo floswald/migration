@@ -9,9 +9,7 @@ Description: implements a BBL estimator
 License: GPL-3
 Imports:
     stringr,
-    nlme,
     texreg,
-    quantreg,
     RSQLite,
     xts,
     grid,
@@ -21,6 +19,8 @@ Depends:
     zoo,
     mnlogit,
     survey,
+    nlme,
+    quantreg,
     data.table,
     reshape2,
     MARSS,

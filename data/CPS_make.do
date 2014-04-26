@@ -10,13 +10,10 @@ cd ~/datasets/CPS/outdata
 foreach yr in 03 04  {
 
 	use cpsmar`yr'.dta,clear
-	keep h_seq h_year h_faminc h_tenure gestfips geco hmssz hmsa_r hccc_r ffpos fpersons fownu18 ftot_r fsup_wgt a_famrel a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st placdscp gediv mig_div mig_mtr1 mig_mtr3 nxtres 
+	keep h_seq h_year hhinc h_tenure hh5to18 gestfips geco hmssz hmsa_r hccc_r ffpos fpersons fownu18 ftot_r fsup_wgt a_exprrp a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st placdscp gediv mig_div mig_mtr1 mig_mtr3 nxtres prdtrace a_clswkr
 
-	keep if a_famrel==1	/* drop all non reference persons */
-	gen famid = h_seq + ffpos
-	drop a_famrel h_seq ffpos
-	sort famid
-	rename h_faminc hefaminc
+	** drop all  non-reference persons
+	keep if a_exprrp < 3
 	rename geco gtco
     rename hmssz gtcbsasz
 	rename hmsa_r gtmetsta
@@ -28,13 +25,9 @@ foreach yr in 03 04  {
 foreach yr in 05 06 07 08 09 {
 
 	use cpsmar`yr'.dta,clear
-	keep h_seq h_year hufaminc h_tenure gestfips gtco gtcbsasz gtmetsta gtcbsast ffpos fpersons fownu18 ftot_r fsup_wgt a_famrel a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st mig_dscp gediv mig_div mig_mtr1 mig_mtr3 nxtres 
+	keep h_seq h_year hhinc h_tenure hh5to18 gestfips gtco gtcbsasz gtmetsta gtcbsast ffpos fpersons fownu18 ftot_r fsup_wgt a_exprrp a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st mig_dscp gediv mig_div mig_mtr1 mig_mtr3 nxtres prdtrace a_clswkr
 
-	keep if a_famrel==1	/* drop all non reference persons */
-	gen famid = h_seq + ffpos
-	drop a_famrel h_seq ffpos
-	sort famid
-	rename hufaminc hefaminc
+	keep if a_exprrp < 3
 
 	save selected_cpsmar`yr'.dta,replace
 
@@ -43,12 +36,9 @@ foreach yr in 05 06 07 08 09 {
 foreach yr in 10 11 12 13 {
 
 	use cpsmar`yr'.dta,clear
-	keep h_seq h_year hefaminc h_tenure gestfips gtco gtcbsasz gtmetsta gtcbsast ffpos fpersons fownu18 ftot_r fsup_wgt a_famrel a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st mig_dscp gediv mig_div mig_mtr1 mig_mtr3 nxtres 
+	keep h_seq h_year hhinc h_tenure hh5to18 gestfips gtco gtcbsasz gtmetsta gtcbsast ffpos fpersons fownu18 ftot_r fsup_wgt a_exprrp a_age a_maritl a_hga prdtrace a_lfsr a_mjind migsame mig_st mig_dscp gediv mig_div mig_mtr1 mig_mtr3 nxtres prdtrace a_clswkr
 
-	keep if a_famrel==1	/* drop all non reference persons */
-	gen famid = h_seq + ffpos
-	drop a_famrel h_seq ffpos
-	sort famid
+	keep if a_exprrp < 3
 
 	save selected_cpsmar`yr'.dta,replace
 }

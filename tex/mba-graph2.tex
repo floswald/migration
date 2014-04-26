@@ -1,0 +1,119 @@
+%% Graph of Multilevel price/income processes
+%% Author: Florian Oswald
+%% documentation at http://www.isi.edu/~chiang/software/texmf/tikz-qtree-manual.pdf
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{arrows,positioning,shapes,snakes} 
+
+%%%<
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{5pt}%
+%%%>
+
+
+\begin{document}
+
+\begin{figure}
+\centering
+
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north},
+         level 1/.style={level distance=120pt},
+         level 2/.style={level distance=120pt,sibling distance=0pt},
+                     National/.style={ellipse,thick,draw,fill=red!50,font=\sffamily},
+                     Division/.style={rectangle,thick,draw,fill=yellow!30,font=\sffamily},
+                     state/.style={font=\sffamily}
+        }
+
+
+\Tree [.\node[National](national) {National index\\$P_t$}; 
+             [.\node[Division](dPA){Pacific\\$p^{PAC}_t$}; ]
+             [.\node[Division](dESC){East\\ South\\ Central\\$p^{ESC}_t$}; ]
+             [.\node[Division](dWSC){West\\South\\ Central\\$p^{WSC}_t$}; ]
+             [.\node[Division](dMO){Mountain\\$p^{MON}_t$}; ]
+             [.\node[Division](dNE){New \\England\\$p^{NENG}_t$}; ]
+				 % [.IA ]   
+				 % [.KS ]   
+				 % [.MN ]   
+				 % [.MO ]   
+				 % [.ND ]   
+				 % [.NE ]   
+				 % [.SD ]  ] 
+             [.\node[Division](dSA){South \\Atlantic\\$p^{SAT}_t$}; ]
+				 % [.\node[state] (DC) {$p^{DC}_t=$\\$p^{SAT}_t + a_{DC}$};  ]   
+				 % [.$p^{DE}_t$ ]   
+				 % [.$p^{FL}_t$ ]   
+				 % [.$p^{GA}_t$ ]   
+				 % [.$p^{MD}_t$ ]   
+				 % [.$p^{NC}_t$ ]   
+				 % [.$p^{SC}_t$ ]   
+				 % [.$p^{VA}_t$ ]   
+				 % [.$p^{WV}_t$ ]  ] 
+             [.\node[Division](dWNC){West\\ North\\ Central\\$p^{WNC}_t$}; ]
+				 % [.IA ]   
+				 % [.KS ]   
+				 % [.MN ]   
+				 % [.MO ]   
+				 % [.ND ]   
+				 % [.NE ]   
+				 % [.SD ]  ] 
+             [.\node[Division](dENC){East\\ North\\ Central\\$p^{ENC}_t$}; ]
+				 % [.IL ]   
+				 % [.IN ]   
+				 % [.MI ]   
+				 % [.OH ]   
+				 % [.WI ]  ] 
+             [.\node[Division](dMA){Middle\\ Atlantic\\$p^{MAT}_t$};  
+				 [.\node[state] (NJ)
+                                 {$p_{NJ,t}=P_t + \tilde{p}^{MAT}_t + a_{NJ}$};  ]   
+				 [.$p_{PA,t}$ ]   
+				 [.$p_{NY,t}$ ]  ]  ]
+
+\node[above= 10pt of dMA,font=\large](deviation) {Division Deviation: $\tilde{p}^{MAT}_t = P_t - p^{MAT}_t$} ;
+\node[left= 10pt of NJ,font=\large](stateLevel) {State level price:} ;
+				  
+
+
+	                                           
+
+\end{tikzpicture}
+
+
+% [.C$'$ [.I did ]
+% [.\node[draw]{IP};
+% [.NP [.Det the ] [.N cat ] ]
+% [.VP [.V sit ]
+% [.PP [.P on ]
+% [.\node[draw]{NP};
+% [.NP [.Det a ] [.N book ] ]
+% [.PP [.P about ] [.NP \node(t){$t$}; ] ] ] ] ] ] ] ]
+% \draw[semithick,->] (t)..controls +(south west:5) and +(south:5)..(wh);
+% \end{tikzpicture}
+
+% \node [National] (USA) {National Indices $P_t,Y_t$}
+%   child {node [Division] (NewEngland) {New England $p^{NE}_t,y^{NE}_t$}
+%     child {node [State] (ME) {ME $p_{ME,t}$}}
+%     child {node [State] (NH) {NH $p_{NH,t}$}}
+%     child {node [State] (RI) {RI $p_{RI,t}$}}
+%     child {node [State] (VT) {VT $p_{VT,t}$}}
+%     }
+%   % child {node [Division] (NewEngland) {New England $p^{NE}_t,y^{NE}_t$}
+%   %   child {node [State] (CT) {CT $p_{CT,t}$}}
+%   %   child {node [State] (MA) {MA $p_{MA,t}$}}
+%   %   child {node [State] (ME) {ME $p_{ME,t}$}}
+%   %   child {node [State] (NH) {NH $p_{NH,t}$}}
+%   %   child {node [State] (RI) {RI $p_{RI,t}$}}
+%   %   child {node [State] (VT) {VT $p_{VT,t}$}}
+%   child {node [Division] (Pacific) {Pacific $p^{PA}_t,y^{PA}_t$}
+%     child {node [State] (AK) {AK $p_{AK,t}$}}
+%     child {node [State] (CA) {CA $p_{CA,t}$}}
+%     child {node [State] (HI) {HI $p_{HI,t}$}}
+%     child {node [State] (OR) {OR $p_{OR,t}$}}
+%     };
+
+\end{figure}
+
+\end{document}
