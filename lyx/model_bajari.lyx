@@ -431,7 +431,7 @@ where
 \begin_inset Formula $\psi_{ij}$
 \end_inset
 
- is the permanent location--specific amenity match effect of 
+ is the permanent location--specific preference match effect of 
 \begin_inset Formula $i$
 \end_inset
 
@@ -440,7 +440,7 @@ where
 \end_inset
 
 , which is drawn from distribution 
-\begin_inset Formula $\psi_{j}\sim F$
+\begin_inset Formula $\psi\sim U\left[\underbar{\psi},\bar{\psi}\right]$
 \end_inset
 
 .
@@ -456,8 +456,7 @@ where
 \begin_inset Formula $j$
 \end_inset
 
- other than house price and income, and can be viewed as unobserved heterogeneit
-y in the model.
+ other than house price and income.
  I assume that the value of 
 \begin_inset Formula $\psi_{ij}$
 \end_inset
@@ -540,7 +539,7 @@ reference "eq:income-model-1"
  
 \begin_inset Formula 
 \begin{eqnarray}
-y_{ijt} & = & \overline{y}_{jt}+f\left(i,t\right)+z_{it}\nonumber \\
+y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\nonumber \\
 z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},\, u_{ijt}\sim N(0,\sigma_{j}^{2})\label{eq:income-model-1}
 \end{eqnarray}
 
@@ -761,41 +760,6 @@ Whenever an individual is not owning, they must obtain housing services
 \end_layout
 
 \begin_layout Subsection
-State space
-\end_layout
-
-\begin_layout Standard
-The state space of an individual is given by 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi,t\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where the variables stand, in order, for assets, persistent income shock,
- the map of prices and incomes in each location, last period ownership status,
- current location, value of the location-specific match effect, and age.
- 
-\end_layout
-
-\begin_layout Subsection
 Moving Costs
 \end_layout
 
@@ -823,6 +787,12 @@ Moving across locations is assumed to be costly in terms of utility.
  some effort and time costs.
  This is on top of any other psychological costs incurred from moving states
  which are common between renters and owners.
+ There is unobserved heterogeneity in moving costs, specified by a finite
+ number of discrete types 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
  I specify the moving cost function as linear in parameters 
 \begin_inset Formula $\alpha$
 \end_inset
@@ -830,7 +800,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(j,k,x)=\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t\label{eq:moving-cost}
+\Delta(j,k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t\label{eq:moving-cost}
 \end{equation}
 
 \end_inset
@@ -867,6 +837,41 @@ reference "eq:moving-cost"
 \end_inset
 
  is an age effect.
+\end_layout
+
+\begin_layout Subsection
+State space
+\end_layout
+
+\begin_layout Standard
+The state space of an individual is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi,\tau,t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the variables stand, in order, for assets, persistent income shock,
+ the map of prices and incomes in each location, last period ownership status,
+ current location, value of the location-specific match effect, and age.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -930,24 +935,15 @@ This arrangement implies that if an owner wants to move but they have negative
 \end_inset
 
 .
- In other words if 
+ In other words, default is defined as 
 \begin_inset Formula 
 \[
-p_{jt}(1-\phi)-(1+r(a_{t}))a_{t}<0
+def_{t}=\mathbf{1}\left[j\neq k,p_{t}(1-\phi)+a_{t}(1+r(a_{t}))<0\right]
 \]
 
 \end_inset
 
- and 
-\begin_inset Formula $j\neq k$
-\end_inset
-
-, there is mortgage default denoted by 
-\begin_inset Formula $d_{it}=1$
-\end_inset
-
-.
- I don't consider default within the region for the same reasons as I don't
+I don't consider default within the region for the same reasons as I don't
  consider within region moves.
 \end_layout
 
@@ -988,9 +984,10 @@ Current period utility depends on consumption, ownership status, current
 \begin_inset Formula 
 \begin{equation}
 u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it} & \text{if }j=k\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
 \\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ik}+\xi h_{it}-\Delta\left(k,x_{it}\right)-\lambda d_{it} & \text{if }j\neq k
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
+-\Delta\left(k,x_{it}\right)-\lambda def_{it}
 \end{cases}\label{eq:period-utility}
 \end{equation}
 
@@ -1105,10 +1102,10 @@ reference "eq:full-value"
 \begin{eqnarray}
 V\left(a,z,\mathbf{P},h_{-1},j,\psi,t\right) & = & \max_{k}\left(v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right)+\varepsilon_{it}\right)\label{eq:full-value}\\
 v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right) & = & \begin{cases}
-\max_{c,h,a'}u\left(c,j,k,h,\psi\right) & \text{if }j=k\\
+\max_{h,a'}u\left(c,j,k,h,\psi\right) & \text{if }j=k\\
 +\beta\mathbb{E}_{\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right]\\
 \\
-\max_{c,a'}u\left(c,j,k,0,\psi\right) & \text{if }j\neq k\\
+\max_{a'}u\left(c,j,k,0,\psi\right) & \text{if }j\neq k\\
 +\beta\mathbb{E}_{\psi',\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',0,k,\psi',t+1\right)|\left(z,\mathbf{P}\right)\right]
 \end{cases}\label{eq:conditional-value}\\
 \bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)\\
