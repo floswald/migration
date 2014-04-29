@@ -13,8 +13,10 @@ export Param
 type Param
 
 	# utility function parameters
-	beta    :: Float64
-	gamma   :: Float64
+	beta    :: Float64			# discount factor
+	gamma   :: Float64			# CRRA
+	mgamma  :: Float64			# (1-CRRA)
+	imgamma :: Float64			# 1/(1-CRRA)
 	lambda  :: Float64          # default penalty
 	psi     :: Array{Float64,1} # values for psi
 	psidist :: Array{Float64,1} # distribution of psi
@@ -35,6 +37,7 @@ type Param
 	R  :: Float64 	# gross interest rate savings: 1+r
 	Rm :: Float64 	# gross interest rate mortgage: 1+rm
 	chi:: Float64   # downpayment ratio
+	myNA:: Float64
 
 	# numerical setup
 	# points in each dimension
@@ -52,7 +55,7 @@ type Param
 
 	# bounds on grids
 	bounds  :: Dict{ASCIIString,(Float64,Float64)}
-	pbounds :: Dict{ASCIIString,Dict{Int,Array{Float64,1}}}
+	pbounds :: Dict{ASCIIString,Dict{Int,Any}}
 
 
 	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
@@ -66,9 +69,8 @@ type Param
 		bounds = ["asset_own" => (-10.0,10.0)]   
 		bounds["asset_rent"] = (0.01,10.0)
 		bounds["psi"]        = (0.0,1.0)
-		bounds["P"]        = (1.0,5.0)
-		bounds["Y"]        = (0.5,1.5)
-		pbounds = Dict{ASCIIString,Dict{Int,(Float64,Float64)}}
+		bounds["P"]          = (1.0,5.0)
+		bounds["Y"]          = (0.5,1.5)
 		pbounds = ["p" => [i => sort(rand(2)) for i = 1:9] ]
 		pbounds["y"] = [i => sort(rand(2)) for i = 1:9] 
 
@@ -77,10 +79,10 @@ type Param
 		nh    = 2
 		nt    = 10
 		npsi  = 2
-		nP    = 2
+		nP    = 3
 		nY    = 2
 		nJ    = 9
-		np    = 4
+		np    = 3
 		ny    = 4
 
 		dimvec  = ((nt-1), na, nz, nh, npsi, nP, nY, nJ ,np ,ny, (nJ-1))
@@ -88,6 +90,8 @@ type Param
 
 		beta    = 0.95
 		gamma   = 2
+		mgamma  = 1-gamma
+		imgamma = 1/mgamma
 		lambda  = 10
 		# psi     = linspace(0,1,npsi)
 		psi     = linspace(bounds["psi"][1],bounds["psi"][2],npsi)
@@ -110,11 +114,12 @@ type Param
 		R   = 1.03 	# gross interest rate savings: 1+r
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
 		chi = 0.2   # downpayment ratio
+		myNA = -999
 
 
 		# create object
 
-		return new(beta,gamma,lambda,psi,psidist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,na,nz,nh,nt,npsi,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2)
+		return new(beta,gamma,mgamma,imgamma,lambda,psi,psidist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,myNA,na,nz,nh,nt,npsi,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2)
 	end
 
 	

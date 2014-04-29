@@ -5,114 +5,187 @@
 function solve(m::Model, p::Param)
 
 	# final period
-	m.EVfinal = solveFinal!(m,p)
+	solveFinal!(m,p)
 
 	# loop over time
-	for age=p.nt-1:1
+	# for age=p.nt-1:1
 
-		# compute current period values
+	# 	# compute current period values
 
-		# optimal savings conditional on 
-		# each housing and loc choice:
-		m.vstay = computeStay!(m,p,age)
-		m.vsell = computeSell!(m,p,age)
-		m.vbuy  = computeBuy!(m,p,age)
-		m.vrent = computeRent!(m,p,age)
+	# 	# optimal savings conditional on 
+	# 	# each housing and loc choice:
+	# 	m.vstay = computeStay!(m,p,age)
+	# 	m.vsell = computeSell!(m,p,age)
+	# 	m.vbuy  = computeBuy!(m,p,age)
+	# 	m.vrent = computeRent!(m,p,age)
 
-		# optimal housing choice in each loc
-		m = computeTenureChoice!(m,p,age)	
+	# 	# optimal housing choice in each loc
+	# 	m = computeTenureChoice!(m,p,age)	
 
-		# compute vbar
+	# 	# compute vbar
 
-		# compute CCPs
+	# 	# compute CCPs
 
-		# compute expectations	 
-		m = computeExpectations!(m,p,age)
+	# 	# compute expectations	 
+	# 	m = computeExpectations!(m,p,age)
 
-	end
+	# end
 
 	return m
 
 end
 
 
-for ij=1:p.nJ
-for ipsi=1:p.npsi
-	psi = p.psi[ipsi]
-for iz=1:p.nz
-	z = m.grids["z"][iz]
-for iP=1:p.nP
-	P = m.grids["P"][iP]
-for iY=1:p.nY
-for ip=1:p.np
-for iy=1:p.ny
-	# can define p and y here
-for ih=1:p.nh
-for ia=1:p.na
+
+function maxvalue(x::Float64,p::Param,s::Array{Float64,1},w::Array{Float64,1},own::Float64,mc::Float64,def::Float64,EV::Array{Float64,1})
+
+	@assert length(s) == length(w)
+
+	# v = max u(cash - s) + beta EV(s,h=1,j,t+1)
+
+	for i=1:na
+		if x-s[i] > 0
+			w[i] = ufun(x-s[i],own,mc,def,p) + p.beta * EV[i]
+		end
+	end
+
+	r = findmax(w)
+	return r
+end
+
+
+
+function ufun(x::Float64,own::Float64,mc::Float64,def::Float64,p::Param)
+	r = p.imgamma * x^p.mgamma + own*p.xi - def*p.lambda - mc
+end
+
+
+# housing payment function
+function pifun(ih::Int,ihh::Int,price::Float64,ij::Int,ik::Int,p::Param)
+	r = 0.0
 
 	if ih==0
-		# enter period as renter
-		a = m.grids["asset_rent"][ia]
+		r = (1-ihh)*p.kappa[ij]*price + ihh * price
+	else 
+		r = -( (ij==ik)*(1-ihh) + (ij!=ik) )*(1-p.phi-p.kappa[ij])*price 
+	end
+	return r
+end
 
+
+function grossSaving(x::Float64,p::Param)
+	if x>0
+		return x * p.R
 	else
-		# enter period as owner
+		return x * p.Rm
+	end
+end
 
-		# housing choice
-		for ihh=1:p.nh
 
-			if ihh==0
-				# sell the house:
-				# you are allowed to move
+function income(muy::Float64,ageeff::Float64,shock::Float64)
 
-				# location choice
-				for ik=1:p.nJ
+	# y = muy + f(i,j,t) + shock
 
-					# savings choice given you move to k
-					# at the end of the period
+	y = muy + ageeff + shock
 
-					cash = a*p.R + y[iz] + p*(1-phi-kappa)
+end
 
-					# loop over savings
-					for is=1:p.na
-						cons[is] = cash - a[is]
-						W[is] = u(cons[is]) + beta*R*m.EVrent[is,...,ik,age]
+# scaffold for main loop
+# ======================	
+		dimvec  = ((nt-1), na, nz, nh, npsi, nP, nY, nJ ,np ,ny, (nJ-1))
+
+function solvePeriod(age::Int,m::Model,p::Param)
+
+	w = zeros(p.na)
+	r = (0.0,0)
+
+	for ij=1:p.nJ				# current location
+		ageeffect = m.grids["ageprof"][age,ij]
+	for ipsi=1:p.npsi			# type
+		psi = p.psi[ipsi]
+	for iz=1:p.nz				# individual income shock
+		z = m.grids["z"][iz]
+	for iP=1:p.nP 				# national price index
+		P = m.grids["P"][iP]	
+	for iY=1:p.nY 				# national income lebel
+	for ip=1:p.np 				# regional price deviation
+	for iy=1:p.ny 				# regional income deviation
+		price = m.grids3D["p"][iP,ip,ij]
+		y = m.grids3D["y"][iY,iy,ij]
+	for ih=1:p.nh
+	for ia=1:p.na
+
+		if ih==0
+			# enter period as renter
+			a = m.grids["asset_rent"][ia]
+
+		else
+			# enter period as owner
+
+			a = m.grids["asset_own"][ia]
+
+			# choices
+			# =======
+
+			# housing choice
+			for ihh in m.grids["housing"]
+
+				if ihh==0.0
+					# sell the house:
+					# you are allowed to move
+
+					# next period you are a renter:
+					# that's your savings grid
+					s = m.grids["asset_rent"]
+
+
+					# location choice
+					for ik=1:p.nJ
+
+						# reset w vector
+						fill!(w,p.myNA)
+
+						# cashfunction(a,y,ageeffect,z,ih,ihh)
+						cash = grossSaving(a) + income(y,ageeffect,z) - pifun*(ih,ihh,price,ij,ik,p)
+
+
+						# find moving cost
+						mc = movecost[age,ij,ik,ih,ipsi]
+
+						# relevant future value:
+						# EV[:,iz,ik,...,age+1]
+
+						# savings choice given you move to k
+						# at the end of the period
+
+						r = maxvalue(cash,p,s,w,ihh,mc,def,EV)
+
+						m.v[age,ia,iz,ih,ipsi,iP,iY,ij,ip,iy,ik] = r[1]
+						m.s[age,ia,iz,ih,ipsi,iP,iY,ij,ip,iy,ik] = r[2]
+						m.c[age,ia,iz,ih,ipsi,iP,iY,ij,ip,iy,ik] = cash - s[ r[2] ]
+
 					end
 
-					# find maximal level
-					findmax(W)
+				else
+					# keep the house:
+					# no move
 
 				end
 
-			else
-				# keep the house:
-				# no move
-
-			end
+		end
 
 	end
-
-end
-end
-end
-end
-end
-end
-end
-end
-end
+	end
+	end
+	end
+	end
+	end
+	end
+	end
+	end
 
 
-
-
-
-
-# compute value of owner who 
-# stays in the house
-# notice that this value is only defined
-# for each home location
-# (not for all potential destinations!!)
-function computeStay!(m::Model,p::Param)
-
+end
 
 
 
@@ -124,9 +197,6 @@ function solveFinal!(m::Model,p::Param)
 	# extract grids for faster lookup
 	agrid = m.grids["asset_rent"]
 	hgrid = m.grids["housing"]
-	Pgrid = m.grids["P"]
-	pgrid = m.grids2D["p"]
-
 	# loop over all states
 	for ia = 1:p.na
 	for ih = 1:p.nh
@@ -134,7 +204,7 @@ function solveFinal!(m::Model,p::Param)
 	for ij = 1:p.nJ
 	for ip = 1:p.np 
 
-		m.EVfinal[ia,ih,iP,ij,ip] = p.omega[1] + p.omega[2] * log(agrid[ia] + hgrid[ih] * (Pgrid[iP] + pgrid[ip,ij] ) )
+		m.EVfinal[ia,ih,iP,ij,ip] = p.omega[1] + p.omega[2] * log(agrid[ia] + hgrid[ih] * (m.grids3D["p"][iP,ip,ij] ) )
 
 	end
 	end
@@ -143,7 +213,7 @@ function solveFinal!(m::Model,p::Param)
 	end
 
 	# return the part we changed: final value
-	m.EVfinal = integrateFinal(m)
+	# m.EVfinal = integrateFinal(m)
 	return m
 end
 

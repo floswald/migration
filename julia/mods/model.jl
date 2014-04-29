@@ -36,10 +36,10 @@ type Model
 	# constructor
 	function Model(p::Param)
 
-		vstay   = fill(0.0,p.dimvec)
 		vsell   = fill(0.0,p.dimvec)
-		vbuy    = fill(0.0,p.dimvec)
 		vrent   = fill(0.0,p.dimvec)
+		vstay   = fill(0.0,p.dimvec2)
+		vbuy    = fill(0.0,p.dimvec2)
 
 		EVfinal = fill(0.0,(p.na,p.nh,p.nP,p.nJ,p.np))
 
@@ -59,17 +59,12 @@ type Model
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
 		grids["P"]          = linspace(p.bounds["P"][1],p.bounds["P"][2],p.nP)
 		grids["Y"]          = linspace(p.bounds["Y"][1],p.bounds["Y"][2],p.nY)
+		grids["W"]          = zeros(p.na)
+		grids["z"]          = zeros(p.nz)
 
 		# 2D grids
 		# =========
 
-		# price and incomes by region
-		xp = fill(0.0,p.np,p.nJ)
-		xy = fill(0.0,p.ny,p.nJ)
-		for i = 1:p.nJ
-			xp[:,i] = linspace(p.pbounds["p"][i][1], p.pbounds["p"][i][2], p.np)
-			xy[:,i] = linspace(p.pbounds["y"][i][1], p.pbounds["y"][i][2], p.ny)
-		end
 
 		# national transition matrices
 		# ============================
@@ -77,14 +72,45 @@ type Model
 		GY = makeTransition(p.nY,p.rhoY)
 		GP = makeTransition(p.nP,p.rhoP)
 
+		# Distance matrix
+		# ===============
+
 		dist = rand(p.nJ,p.nJ) * 1000.0
 		dist[ diagind(dist,0) ] = 0
 		Base.LinAlg.copytri!(dist,'U')
 
-		grids2D = (ASCIIString => Array{Float64,2})["p" => xp, "y" => xy, "GY"=> GY, "GP" => GP, "dist" => dist]
+		# age profile by region
+		# =====================
+
+		agemat = hcat(ones(p.nt),30:(30+p.nt-1))
+		agemat = hcat(agemat,agemat[:,2].^2)
+		AgeP = JSON.parsefile("/Users/florianoswald/Dropbox/mobility/output/model/BBL/inc-process/Div-REcoefs.json")
+		ageprofile = zeros(p.nt,p.nJ)
+
+		i = 0
+		for j in keys(AgeP)
+			i = i+1
+			ageprofile[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+		end
+
+
+		grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
 
 		# 3D grids
 		# =========
+
+		# regional prices
+		# 3D array (national_price,regional_price,region_id)
+		ygrid = zeros(p.ny,p.nJ)
+		pgrid = zeros(p.np,p.nJ)
+		for i = 1:p.nJ
+			pgrid[:,i] = linspace(p.pbounds["p"][i][1], p.pbounds["p"][i][2], p.np)
+		    ygrid[:,i] = linspace(p.pbounds["y"][i][1], p.pbounds["y"][i][2], p.ny)
+		end
+
+		# rebuild as 3D array
+		pgrid = [grids["P"][i] .+ pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
 		# national transition matrices
 		# ============================
@@ -93,9 +119,9 @@ type Model
 		Gp = makeTransition(p.np,p.rhop)
 		Gz = makeTransition(p.nz,p.rhoz)
 
-		grids3D = (ASCIIString => Array{Float64,3})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz]
+		grids3D = (ASCIIString => Array{Float64,3})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "p" => pgrid, "y" => ygrid ]
 
-		return new(vstay,vsell,vbuy,vrent,EVfinal,Vown,Vrent,EVown,EVrent,grids,grids2D,grids3D)
+		return new(vsell,vrent,vstay,vbuy,EVfinal,Vown,Vrent,EVown,EVrent,grids,grids2D,grids3D)
 
 	end
 

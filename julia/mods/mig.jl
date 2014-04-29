@@ -1,6 +1,6 @@
 module mig
 
-using Base.LinAlg, Distributions
+using Base.LinAlg, Distributions, JSON, DataFrames
 
 export Param, Model, Copula, dnormCopula
 
