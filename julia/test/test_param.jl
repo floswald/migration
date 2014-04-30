@@ -10,8 +10,8 @@ facts("testing bounds on grids") do
 	p = mig.Param();
 
 	# check we have all bounds in bounds
-	b1 = ["asset_rent","asset_own","P","psi","Y"]
-	@fact b1 == collect(keys(p.bounds)) => true
+	b1 = ["asset_rent","asset_own","P","tau","Y"]
+	@fact length(setdiff(b1, collect(keys(p.bounds)))) => 0
 	for k in keys(p.bounds)
 		@fact typeof(p.bounds[k]) == (Float64,Float64) => true
 		@fact p.bounds[k][2] - p.bounds[k][1] > 0 => true
@@ -36,8 +36,9 @@ facts("length of dimension vectors") do
 
 	p = mig.Param();
 
-	@fact length(p.dimvec) == 11 => true
-	@fact length(p.dimvec2) == 10 => true
+	@fact length(p.dimvec)  == 12 => true
+	@fact length(p.dimvec2) == 11 => true
+	@fact length(p.dimvec3) == 10 => true
 
 end
 

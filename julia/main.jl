@@ -9,7 +9,7 @@ include("mods/mig.jl")
 # testing
 include("test/test_param.jl")
 include("test/test_model.jl")
-
+include("test/test_solver.jl")
 
 
 # running

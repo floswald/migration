@@ -18,8 +18,8 @@ type Param
 	mgamma  :: Float64			# (1-CRRA)
 	imgamma :: Float64			# 1/(1-CRRA)
 	lambda  :: Float64          # default penalty
-	psi     :: Array{Float64,1} # values for psi
-	psidist :: Array{Float64,1} # distribution of psi
+	tau     :: Array{Float64,1} # values for tau
+	taudist :: Array{Float64,1} # distribution of tau
 	xi      :: Float64          # utility of housing
 	omega   :: Array{Float64,1} # final period utility parameters, omega1 and omega2
 
@@ -38,6 +38,9 @@ type Param
 	Rm :: Float64 	# gross interest rate mortgage: 1+rm
 	chi:: Float64   # downpayment ratio
 	myNA:: Float64
+	maxAge::Int 	# maximal age in model
+	minAge::Int 	# maximal age in model
+	euler::Float64
 
 	# numerical setup
 	# points in each dimension
@@ -45,7 +48,7 @@ type Param
 	nz   ::Int 	# number of inidividual income states
 	nh   ::Int 	# number of housing states
 	nt   ::Int 	# number of periods
-	npsi ::Int 	# number of types
+	ntau ::Int 	# number of types
 	nP   ::Int 	# aggregate price levels
 	nY   ::Int 	# aggregate income levels
 	nJ   ::Int 	# number of origin locations
@@ -58,8 +61,9 @@ type Param
 	pbounds :: Dict{ASCIIString,Dict{Int,Any}}
 
 
-	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	dimvec3::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing - location
 
 
 
@@ -68,7 +72,7 @@ type Param
 
 		bounds = ["asset_own" => (-10.0,10.0)]   
 		bounds["asset_rent"] = (0.01,10.0)
-		bounds["psi"]        = (0.0,1.0)
+		bounds["tau"]        = (0.0,1.0)
 		bounds["P"]          = (1.0,5.0)
 		bounds["Y"]          = (0.5,1.5)
 		pbounds = ["p" => [i => sort(rand(2)) for i = 1:9] ]
@@ -78,25 +82,26 @@ type Param
 		nz    = 4
 		nh    = 2
 		nt    = 10
-		npsi  = 2
+		ntau  = 2
 		nP    = 3
 		nY    = 2
 		nJ    = 9
 		np    = 3
 		ny    = 4
 
-		dimvec  = ((nt-1), na, nz, nh, npsi, nP, nY, nJ ,np ,ny, (nJ-1))
-		dimvec2 = ((nt-1), na, nz, nh, npsi, nP, nY, nJ ,np ,ny)
+		dimvec  = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nh, nJ)
+		dimvec2 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nJ)
+		dimvec3 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1)) 
 
 		beta    = 0.95
 		gamma   = 2
 		mgamma  = 1-gamma
 		imgamma = 1/mgamma
 		lambda  = 10
-		# psi     = linspace(0,1,npsi)
-		psi     = linspace(bounds["psi"][1],bounds["psi"][2],npsi)
-		psidist = rand(npsi)
-		psidist = psidist/sum(psidist)
+		# tau     = linspace(0,1,ntau)
+		tau     = linspace(bounds["tau"][1],bounds["tau"][2],ntau)
+		taudist = rand(ntau)
+		taudist = taudist/sum(taudist)
 		xi      = 0.5
 		omega   = [1.0, 0.8]
 
@@ -115,11 +120,13 @@ type Param
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
 		chi = 0.2   # downpayment ratio
 		myNA = -999
-
+		maxAge = 50
+		minAge = 50
+		euler = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 
 		# create object
 
-		return new(beta,gamma,mgamma,imgamma,lambda,psi,psidist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,myNA,na,nz,nh,nt,npsi,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2)
+			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimvec3)
 	end
 
 	
@@ -129,7 +136,7 @@ end
 # define member functions
 
 function nPoints(p::Param)
-	r = p.na * p.nz * p.nh * (p.nt-1) * p.npsi * p.nP * p.nY * p.nJ * (p.nJ - 1) * p.np * p.ny
+	r = p.na * p.nz * p.nh * (p.nt-1) * p.ntau * p.nP * p.nY * p.nJ * (p.nJ - 1) * p.np * p.ny
 	return r
 end
 # show(io::IO, p::Param) = print(io,"number of points=$(p.na*p.nz*p.nt)")
