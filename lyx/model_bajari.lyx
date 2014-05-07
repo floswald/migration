@@ -148,37 +148,20 @@ INCOMPLETE
 \end_layout
 
 \begin_layout Abstract
-In this paper I propose a dynamic model of internal migration which explicitly
- takes the decision to buy or rent a home into account.
- Homeowners have in general greater costs of relocation, which is borne
- out in a much lower propensity to move if compared to renters that are
- otherwise equal.
- Internal migration has long been recognized as one of the main mechanisms
- of adjustment of local labor markets to demand or supply shocks.
- At the same time, the literature following 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Roback:1982uq"
-
-\end_inset
-
- recognized the intimate relationship between the migration decision and
- local housing markets, as the latter are crucial in determining the cost
- of living, and thus utility, in a given place.
- This analysis was static.
- I argue that both migration and homeownership are dynamic decisions, as
- the returns materialize in a future environment which is subject to considerabl
-e uncertainty.
- I use the relatively recent estimator of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bajari2007"
-
-\end_inset
-
- to estimate the parameters of the model.
- I conduct a policy experiment that changes mortgage tax deduction to investigat
-e the reponse on migration rates.
+In this paper I propose a lifecycle model of internal migration in the US
+ which explicitly takes the decision to buy or rent a home into account.
+ Homeowners have greater costs of relocation, resulting in a lower propensity
+ to move relative to renters.
+ To the extent that labor market mobility can be viewed as an important
+ mechanism of adjustment of regional labor markets to shocks, reduced mobility
+ of homeowners is costly for society.
+ My model incorporates the main features of housing (persistent house price
+ uncertainty and financing frictions) and mobility (moving costs and uncertainty
+ about future prospects) and can be used to simulate the effect of different
+ housing policies on mobility, as well as to assess their respective welfare
+ implications.
+ In particular, I'm able to quanitify the effect of abolishing the mortgage
+ interest rate tax deduction policy in terms of mobility rates and welfare.
 \end_layout
 
 \begin_layout Section
@@ -242,13 +225,59 @@ This implies that upon the arrival of shocks to house prices or labor income,
 The main motivation for this paper is illustrated in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:SIPP-propensity-move"
+reference "fig:SIPP-sample-proportion"
 
 \end_inset
 
 , which plots the sample proportion of the SIPP dataset that moves across
  state lines by age.
  Renters are more likely to move at all ages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-movers.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SIPP sample proportion moving across states by age.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:SIPP-sample-proportion"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -411,10 +440,10 @@ Let
 \begin_inset Formula $t$
 \end_inset
 
- is characterized by a triple of values 
+ is characterized by a tuple of values 
 \begin_inset Formula 
 \begin{equation}
-\left(p_{jt},\overline{y}_{jt},\psi_{ij}\right)\label{eq:triple-location}
+\left(p_{jt},\overline{y}_{jt}\right)\label{eq:triple-location}
 \end{equation}
 
 \end_inset
@@ -423,92 +452,12 @@ where
 \begin_inset Formula $p_{jt}$
 \end_inset
 
- is the average house price, 
+ is the average house price and 
 \begin_inset Formula $\overline{y}_{jt}$
 \end_inset
 
- stands for the average level of income, and 
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
- is the permanent location--specific preference match effect of 
-\begin_inset Formula $i$
-\end_inset
-
- with 
-\begin_inset Formula $j$
-\end_inset
-
-, which is drawn from distribution 
-\begin_inset Formula $\psi\sim U\left[\underbar{\psi},\bar{\psi}\right]$
-\end_inset
-
-.
- The value of 
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
- represents the permanent taste of 
-\begin_inset Formula $i$
-\end_inset
-
- for all attributes of location 
-\begin_inset Formula $j$
-\end_inset
-
- other than house price and income.
- I assume that the value of 
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
- is known only after 
-\begin_inset Formula $i$
-\end_inset
-
- effectively visited 
-\begin_inset Formula $j$
-\end_inset
-
-.
- This implies that it takes some time to learn about all the specifics of
- a location, essentially saying that local amenities are an experience good.
- In contrast to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-, I assume that the value of 
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
- is known for only as long as the individual stays in 
-\begin_inset Formula $j$
-\end_inset
-
-, i.e.
- I assume zero memory.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Allowing a positive number of periods remembered is important if one aims
- to match the empirical pattern that people often move back to a previously
- visited place, which is what 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
- do.
- This is not first order in my paper.
-\end_layout
-
-\end_inset
-
-
+ stands for the average level of income.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -549,7 +498,7 @@ z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},\, u_{ijt}\sim N(0,\sigma_{j}^{2})\label{e
 \end_layout
 
 \begin_layout Standard
-Agents have rational expectations about the dynamics of 
+Agents know that 
 \family roman
 \series medium
 \shape up
@@ -565,18 +514,41 @@ Agents have rational expectations about the dynamics of
 \begin_inset Formula $\left(p_{jt},\overline{y}_{jt}\right)$
 \end_inset
 
- in all states 
+ are first order markovian in all 
 \begin_inset Formula $j$
 \end_inset
 
-, as well as about the structure or their income process in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:income-model-1"
-
+, but they do not observe the current value in locations other than 
+\begin_inset Formula $j$
 \end_inset
 
 .
+ In other words, there is incomplete information with respect to prices
+ in locations other then the current one.
+ I assume agents observe a national index 
+\begin_inset Formula $\left(Y_{t},P_{t}\right)$
+\end_inset
+
+ and the current deviation from that index in the current location, denoted
+ by 
+\begin_inset Formula $\left(\tilde{y}_{jt},\tilde{p}_{jt}\right)$
+\end_inset
+
+.
+ Therefore the relevant state variable is 
+\begin_inset Formula $\mathbf{P}_{jt}=(Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})$
+\end_inset
+
+.
+ For all locations 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+ other than the current location, agents use unconditional the mean of 
+\begin_inset Formula $\left(\tilde{y}_{kt},\tilde{p}_{kt}\right)$
+\end_inset
+
+ to forecast prices.
  
 \family default
 \series default
@@ -589,53 +561,11 @@ reference "eq:income-model-1"
 \uwave default
 \noun default
 \color inherit
-Regarding the location--level prices 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\left(p_{jt},\overline{y}_{jt}\right)$
-\end_inset
-
-,
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- let us assume for the time being that there is a markovian vector process
- 
+A succinct description of the prices process 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
 
- according to which those processes evolve, and that agents know the specifics
- of this process.
- I will describe 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
- in greater detail in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Estimation"
-
-\end_inset
-
-.
+ is thus as follows:
 \begin_inset Formula 
 \begin{eqnarray*}
 \mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
@@ -644,7 +574,17 @@ P_{t+t} & = & \rho_{P}P_{t-1}+\nu_{P}\\
 \overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
 p_{jt} & = & P_{t}+\tilde{p}_{jt}\\
 E\overline{y}_{kt+1} & = & E[Y_{t+1}|Y_{t}]+E\tilde{y}_{kt}\\
-Ep_{kt+1} & = & E[P_{t+1}|P_{t}]+E\tilde{p}_{kt}
+Ep_{kt+1} & = & E[P_{t+1}|P_{t}]+E\tilde{p}_{kt}\\
+\tilde{y}_{jt} & = & \beta_{0}+\beta_{1}\tilde{y}_{jt-1}+\nu_{\tilde{y}t,d}\\
+\tilde{p}_{jt} & = & \gamma_{0}+\gamma_{1}\tilde{p}_{jt-1}+\nu_{\tilde{p}t,d}\\
+\left[\begin{array}{cc}
+\nu_{\tilde{p}t,d} & \nu_{\tilde{y}t,d}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
+0\\
+0
+\end{array}\right]\left[\begin{array}{cc}
+\sigma_{\tilde{y},d}^{2} & \sigma_{\tilde{y}\tilde{p},d}\\
+ & \sigma_{\tilde{p},d}^{2}
+\end{array}\right]\right)
 \end{eqnarray*}
 
 \end_inset
@@ -669,16 +609,7 @@ The current version of the model does not admit any choice over the size
 
  stands for an owner.
  The assumption about discrete housing is not strictly necessary and was
- made only for simplifying reasons; In fact, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "IERE:IERE12001"
-
-\end_inset
-
- demonstrate how the model and estimation procedure is amenable to allowing
- housing choice as well.
- 
+ made only for simplifying reasons.
 \end_layout
 
 \begin_layout Standard
@@ -859,7 +790,7 @@ The state space of an individual is given by
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi,\tau,t\right)
+x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau,t\right)
 \]
 
 \end_inset
@@ -870,7 +801,7 @@ x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi,\tau,t\right)
 \begin_layout Standard
 where the variables stand, in order, for assets, persistent income shock,
  the map of prices and incomes in each location, last period ownership status,
- current location, value of the location-specific match effect, and age.
+ current location, type and age.
  
 \end_layout
 
@@ -945,6 +876,15 @@ def_{t}=\mathbf{1}\left[j\neq k,p_{t}(1-\phi)+a_{t}(1+r(a_{t}))<0\right]
 
 I don't consider default within the region for the same reasons as I don't
  consider within region moves.
+ In practice, the model will fit the observed fraction of homeowner movers
+ for which the final equity in 
+\begin_inset Formula $j$
+\end_inset
+
+ was negative.
+ I do not know from the data whether they actually defaulted, but the definition
+ corresponds to the model.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -952,16 +892,8 @@ Utility
 \end_layout
 
 \begin_layout Standard
-Current period utility depends on consumption, ownership status, current
- location 
-\begin_inset Formula $j$
-\end_inset
-
- match effect 
-\begin_inset Formula $\psi_{j}$
-\end_inset
-
- and whether a move to 
+Current period utility depends on consumption, ownership status whether
+ a move to 
 \begin_inset Formula $k$
 \end_inset
 
@@ -984,27 +916,16 @@ Current period utility depends on consumption, ownership status, current
 \begin_inset Formula 
 \begin{equation}
 u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
 \\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
 -\Delta\left(k,x_{it}\right)-\lambda def_{it}
 \end{cases}\label{eq:period-utility}
 \end{equation}
 
 \end_inset
 
-In this formulation of utility, the value of the location--specific match
- 
-\begin_inset Formula $\psi_{ik}$
-\end_inset
 
- from amenities in the new location 
-\begin_inset Formula $k$
-\end_inset
-
- starts to flow only in the period after arrival.
- In the period where the move takes place, the cost is incurred.
- 
 \end_layout
 
 \begin_layout Subsection
@@ -1084,7 +1005,7 @@ v_{t}(x,j,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,j,k)+\beta\sum_{x'}q
 
 \begin_layout Standard
 The value function of the full problem when at state 
-\begin_inset Formula $\left(a,z,\mathbf{P},h_{-1},j,\psi,t<T\right)$
+\begin_inset Formula $\left(a,z,\mathbf{P},h_{-1},j,\tau,t<T\right)$
 \end_inset
 
  is given by expression 
@@ -1100,15 +1021,15 @@ reference "eq:full-value"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-V\left(a,z,\mathbf{P},h_{-1},j,\psi,t\right) & = & \max_{k}\left(v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right)+\varepsilon_{it}\right)\label{eq:full-value}\\
-v\left(a,z,\mathbf{P},h_{-1},j,k,\psi,t\right) & = & \begin{cases}
+V\left(a,z,\mathbf{P},h_{-1},j,\tau,t\right) & = & \max_{k}\left(v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right)+\varepsilon_{it}\right)\label{eq:full-value}\\
+v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right) & = & \begin{cases}
 \max_{h,a'}u\left(c,j,k,h,\psi\right) & \text{if }j=k\\
-+\beta\mathbb{E}_{\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right]\\
++\beta\mathbb{E}_{u,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)|\left(z,\mathbf{P}\right)\right]\\
 \\
-\max_{a'}u\left(c,j,k,0,\psi\right) & \text{if }j\neq k\\
-+\beta\mathbb{E}_{\psi',\nu,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',0,k,\psi',t+1\right)|\left(z,\mathbf{P}\right)\right]
+\max_{a'}u\left(c,j,k,0,\tau\right) & \text{if }j\neq k\\
++\beta\mathbb{E}_{u,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',0,k,\tau,t+1\right)|\left(z,\mathbf{P}\right)\right]
 \end{cases}\label{eq:conditional-value}\\
-\bar{v}\left(a',z',\mathbf{P}',h,k,\psi,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)\\
+\bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)\\
 \text{subject to}\nonumber \\
 r(a_{t}) & = & \begin{cases}
 r & \text{if }a_{t}\geq0\\
@@ -1149,389 +1070,116 @@ V(a,h_{T-1},j)=\omega_{0}+\omega_{1}\ln\left(a+h_{T-1}p_{jt}\right)\label{eq:fin
 
 \end_layout
 
-\begin_layout Standard
-Let's define the set of policy functions arising as the solution to this
- lifecycle maximization problem by 
-\begin_inset Formula $G=\left\{ g_{A},g_{L},g_{H}\right\} $
-\end_inset
-
-, with the understanding that 
-\begin_inset Formula $g_{A}$
-\end_inset
-
- is the optimal policy for assets, 
-\begin_inset Formula $g_{L}$
-\end_inset
-
- for location, and 
-\begin_inset Formula $g_{H}$
-\end_inset
-
- for housing, respectively:
-\begin_inset Formula 
-\begin{eqnarray}
-g_{A}: &  & X\mapsto\mathbb{R}\nonumber \\
-g_{L}: &  & X\mapsto J\label{eq:optimal-policies}\\
-g_{H}: &  & X\mapsto\left\{ 0,1\right\} \nonumber 
-\end{eqnarray}
-
-\end_inset
-
-Abbreviating the future part of the bellman equation by 
-\begin_inset Formula 
-\[
-EV=\begin{cases}
-\beta\mathbb{E}_{\mathbf{P}'}\left[V\left(a',z',\mathbf{P}',h,k,\psi,t+1\right)|\left(z,\mathbf{P}\right)\right] & \text{if }j=k\\
-\beta\mathbb{E}_{\psi_{k},\mathbf{P}'}\left[V\left(a',z',\mathbf{P}',h,k,\psi_{k},t+1\right)|\left(z,\mathbf{P}\right)\right] & \text{if }j\neq k
-\end{cases}
-\]
-
-\end_inset
-
-a more complete definition of those functions would be
-\begin_inset Formula 
-\begin{eqnarray}
-g_{A}\left(x_{it}\right) & = & \arg\max_{a'}u\left(c,j,k,h,\psi\right)+EV,\,\forall j,k,h\nonumber \\
-g_{H}\left(x_{it}\right) & = & \arg\max_{h}u\left(c\left(g_{A}\left(x_{it}\right)\right),j,k,h,\psi\right)+EV,\,\forall j,k\nonumber \\
-g_{L}\left(s_{it}\right) & = & \arg\max_{r\in\left\{ 1,\dots,J\right\} }\left(v\left(a,z,\mathbf{P},h_{-1},j,r,\psi,t\right)\right)\label{eq:optimal-policies-detail}\\
-\text{all subject to} &  & \eqref{eq:budget},\eqref{eq:borrowing-constraint},\eqref{eq:interest-rate},\eqref{eq:final-period-borrowing},\eqref{eq:budget-income},\eqref{eq:budget-zshock}\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Timing
 \end_layout
 
-\begin_layout Standard
-There are 3 decision variables in this model: where to move, whether to
- change housing status, and how much to save/consume.
- The timing within a period is as follows:
-\end_layout
-
 \begin_layout Enumerate
-enter the current period with state vector 
-\begin_inset Formula $x_{it}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-compute the expected value function in each potential state (location) 
-\begin_inset Formula $k$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-conditional on each potential housing choice 
-\begin_inset Formula $h$
-\end_inset
-
-, compute the optimal savings policy from 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:conditional-value"
-
-\end_inset
-
- for each combination of 
-\begin_inset Formula $\left(j,k\right)$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-conditional on the optimal savings policy in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:optimal-policies-detail"
-
-\end_inset
-
-, compute optimal housing for each combination of 
-\begin_inset Formula $\left(j,k\right)$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-observe the location specific shock 
-\begin_inset Formula $\psi_{kt}$
-\end_inset
-
- in each location
-\end_layout
-
-\begin_layout Enumerate
-From among all the potential conditional values of moving from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
-, choose the highest after adding in the location-specific taste shock,
- i.e.
- compute expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:full-value"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-at the end of period 
-\begin_inset Formula $t$
-\end_inset
-
-, update 
-\begin_inset Formula $x_{it}$
-\end_inset
-
-.
- This requires updating 
+observe 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
 
-, which in turn requires observing the realization of the aggregate shock
- vector 
-\begin_inset Formula $\left(\varepsilon_{Y},\varepsilon_{P},\mathbf{\nu}_{\tilde{y}},\nu_{\tilde{p}}\right)$
-\end_inset
-
-, where 
-\begin_inset Formula $\left(\mathbf{\nu}_{\tilde{y}},\nu_{\tilde{p}}\right)$
-\end_inset
-
-
-\begin_inset Formula $ $
-\end_inset
-
- are both vectors of length 
-\begin_inset Formula $D$
-\end_inset
-
-.
- Similarly, update the individual specific permanent income component 
-\begin_inset Formula $z_{it}$
-\end_inset
-
- by drawing 
-\begin_inset Formula $u_{it}$
-\end_inset
-
-.
- The asset state is updated as 
-\begin_inset Formula $a_{it+1}=a_{it}+saving_{it}$
-\end_inset
-
-, and current housing status 
-\begin_inset Formula $h_{it}$
-\end_inset
-
- was directly chosen.
-\end_layout
-
-\begin_layout Enumerate
-Enter period 
-\begin_inset Formula $t+1$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Section
-Proof for 
-\begin_inset Formula $\psi$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Start with the conditional value function for a renter who stays.
-\begin_inset Formula 
-\begin{eqnarray*}
-v\left(a_{t},x_{t}\backslash a_{t}\right) & = & \max_{a_{t+1}}u\left(c,\psi\right)+\beta EV(a_{t+1},x_{t+1}\backslash a_{t+1})\\
- & = & \max_{a_{t+1}}\psi\frac{\left(R^{*}a_{t}+y-\kappa_{j}p_{j}-a_{t+1}\right)^{1-\gamma}}{1-\gamma}+\beta EV(a_{t+1},x_{t+1}\backslash a_{t+1})
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Following 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "clausenenvelope"
-
-\end_inset
-
-, despite the existence of discrete choices and potentially binding borrowing
- constraints, the first order condition is necessary for an optimal interior
- choice of the continuous choice variable 
-\begin_inset Formula $a_{t+1}$
-\end_inset
-
-.
- This first order condition is
-\begin_inset Formula 
-\begin{eqnarray*}
-\frac{\partial v}{\partial a_{t+1}} & = & 0\\
-\psi c_{t}^{-\gamma} & = & \beta E\frac{\partial V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}}\\
-0 & = & \beta E\frac{\partial V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}}-\psi c_{t}^{-\gamma}
-\end{eqnarray*}
-
-\end_inset
-
-Defining an implicit function 
-\begin_inset Formula $F(a_{t+1},\psi)=0$
-\end_inset
-
-, and referring to the implicit function theorem, we can find the partial
- derivative or optimal savings w.r.t.
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
  
-\begin_inset Formula $\psi$
+\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
 \end_inset
 
 ,
-\begin_inset Formula 
-\begin{eqnarray}
-\frac{\partial a_{t+1}}{\partial\psi} & = & -\frac{\frac{\partial F}{\partial\psi}}{\frac{\partial F}{\partial a_{t+1}}}\label{eq:implicit-funcitno}\\
- & = & -\frac{\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}\partial\psi}-c_{t}^{-\gamma}}{\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\left(\partial a_{t+1}\right)^{2}}-\gamma c_{t}^{-\gamma-1}}\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-Now split the cross partial derivative in the numerator and apply the Envelope
- theorem of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "clausenenvelope"
-
-\end_inset
-
- to the derivative of the future value function: 
-\begin_inset Formula 
-\begin{eqnarray*}
-\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}\partial\psi} & = & \frac{\partial}{\partial\psi}\left(\frac{\partial V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}}\right)\\
- & = & \frac{\partial}{\partial\psi}\left(Ru'(c_{t+1})\right)\\
- & = & \frac{\partial}{\partial\psi}\left(R\psi c_{t+1}^{-\gamma}\right)\\
- & = & Rc_{t+1}^{-\gamma}
-\end{eqnarray*}
-
-\end_inset
-
-because by the envelope theorem, 
-\begin_inset Formula 
-\begin{eqnarray*}
-\frac{\partial V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}} & = & u'(c_{t+1})R
-\end{eqnarray*}
-
-\end_inset
-
-Plugging this back into 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:implicit-funcitno"
-
-\end_inset
-
-, we obtain
-\begin_inset Formula 
-\begin{eqnarray}
-\frac{\partial a_{t+1}}{\partial\psi} & = & -\frac{\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\partial a_{t+1}\partial\psi}-c_{t}^{-\gamma}}{\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\left(\partial a_{t+1}\right)^{2}}-\gamma c_{t}^{-\gamma-1}}\nonumber \\
- & = & \frac{-\beta REc_{t+1}^{-\gamma}-c_{t}^{-\gamma}}{\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\left(\partial a_{t+1}\right)^{2}}-\gamma c_{t}^{-\gamma-1}}\label{eq:implicit2}
-\end{eqnarray}
-
-\end_inset
-
-Given the numerator of 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:implicit2"
-
-\end_inset
-
- is unambiguously negative, 
-\begin_inset Formula $\frac{\partial a_{t+1}}{\partial\psi}$
-\end_inset
-
- is positive whenever 
-\begin_inset Formula 
-\begin{eqnarray}
-\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\left(\partial a_{t+1}\right)^{2}}-\gamma c_{t}^{-\gamma-1} & < & 0\nonumber \\
-\beta E\frac{\partial^{2}V_{t+1}\left(a_{t+1},x_{t+1}\backslash a_{t+1}\right)}{\left(\partial a_{t+1}\right)^{2}} & < & \gamma c_{t}^{-\gamma-1}\label{eq:implicit-bounds}
-\end{eqnarray}
-
-\end_inset
-
-It is easy to interpret this condition.
- The term on the left of the inequality is the discounted expected second
- partial derivative of the future value function w.r.t.
- the continuous choice variable 
-\begin_inset Formula $a_{t+1}$
-\end_inset
-
-.
- Notice that in a region where 
-\begin_inset Formula $V_{t+1}(a_{t+1})$
-\end_inset
-
- is concave in the asset dimension, this is true.
- In the current setup with discrete coices and potentially binding constraints,
- there may be downward kinks in the value function, i.e.
- the value function is not globally concave.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "clausenenvelope"
-
-\end_inset
-
- provide an argument that shows that an agent will never chooe 
-\begin_inset Formula $a^{*}$
-\end_inset
-
- at a kink in 
-\begin_inset Formula $V_{t+1}(a_{t+1})$
-\end_inset
-
- is always dominated by a choice to either the left or right of 
-\begin_inset Formula $a^{*}$
-\end_inset
-
-, i.e.
- in a region where 
-\begin_inset Formula $V_{t+1}(a_{t+1})$
-\end_inset
-
- is locally concave.
- Furthermore, the expression in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:implicit-bounds"
-
-\end_inset
-
- allows for a certain degree of non-concavity, as long as the value of the
- expected second derivative does not exceed the absolute value of the second
- derivative of the utility function at optimal consumption.
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ iid location taste shock 
 \end_layout
 
+\begin_layout Enumerate
+choose whether to move at end of period
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+if yes 
+\begin_inset Formula $(j\neq k)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+sell house: 
+\begin_inset Formula $h_{it}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume and incur moving cost 
+\begin_inset Formula $\Delta(k,x)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+if no 
+\begin_inset Formula $(j=k)$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $h_{it}\in\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume
+\end_layout
+
+\end_deeper
+\end_deeper
 \begin_layout Section
 Solution/Estimation
 \begin_inset CommandInset label
@@ -1544,124 +1192,36 @@ name "sec:Estimation"
 \end_layout
 
 \begin_layout Standard
-The full dynamic program in this model is at the limit or beyond of what
- is computationally feasible for estimation.
- To illustrate this, lets assume that we choose an approximation scheme
- for the value function that requires us to compute a function value at
- 
-\begin_inset Formula $n_{q}$
-\end_inset
-
- points, where 
-\begin_inset Formula $q$
-\end_inset
-
- indexes the 
-\begin_inset Formula $q$
-\end_inset
-
--th dimension of the problem.
- Under a standard scenario shown in table 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "tab:state-space-count"
-
-\end_inset
-
-, the value function needs to be evaluated at 367.5 million points in order
- to arrive at one approximation that would then be used in the objective
- function of an estimator for a given value of the parameter vector (e.g.
- a likelihood function or a GMM distance function).
- Given that there is no analytic expression for the gradient of any such
- objective function in this model, typically a very large number of iterations
- on the parameter vector is necessary.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Again referring to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-, they use 10.125.000 points by age, for 16 periods (ages 20 through 36),
- totalling 164.000.000 points.
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-In order to avoid the large computational costs associated with traditional
- methods like full maximium likelihood or simulated method of moments, I
- will use a simulation based estimator as devised by 
+Standard SMM.
+ I investigated 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "bajari2007"
 
 \end_inset
 
-, henceforth BBL.
- The advantage of this is that the dyanamic program in defined by equations
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:full-value"
+ and the application in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IERE:IERE12001"
 
 \end_inset
 
--
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:final-period-value"
-
-\end_inset
-
- does not have to be solved repeatedly in an estimation algorithm.
- In fact, the dynamic program is solved not even once for the purpose of
- estimation.
- 
-\end_layout
-
-\begin_layout Standard
-The main idea behind BBL is as follows.
- Assuming that agents behave under the model laid out in the preceding paragraph
-s, the decisions taken in the data 
-\emph on
-are 
-\emph default
-the optimal decisions or policy functions.
- Thus, BBL propose to estimate those policy functions in a first step together
- with the probability distributions of exogenous state variables.
- In the second stage, using the first stage policy functions, the analyst
- simulates life-cycle paths from the structural model in order to obtain
- an estimate of the value function in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:full-value"
+, but discarded the option after it became clear that the unobserved heterogenei
+ty is an important feature.
+ There is no immediate way for BBL to accomodate permanent unobserved types.
+ This is therefore an application similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "keane1997career"
 
 \end_inset
 
 .
- The crucial point is that the value obtained by behaving optimally, i.e.
- according to the first stage policy functions, an individual must have
- obtained a value greater or equal to the one obtained had they behaved
- in any different kind of way.
- Using this restriction, it is possible to reverse engineer the preference
- parameters in the payoff function of the model.
 \end_layout
 
 \begin_layout Subsection
 Exogenous Processes: House Price and Mean Income
-\end_layout
-
-\begin_layout Standard
-A cursory look at house price and median income data reveals two common
- features (see figures 
 \end_layout
 
 \begin_layout Standard
@@ -1839,1119 +1399,8 @@ Denote the collection of division deviations of prices and incomes at time
 \end_layout
 
 \end_deeper
-\begin_layout Enumerate
-Within division 
-\begin_inset Formula $d$
-\end_inset
-
-, there is a very simple relationship between division-level prices and
- state-level prices, given by a constant vertical shift, as in expression
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:div-2-state"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-\overline{y}_{st} & = & \overline{y}_{dt}+a_{s}\nonumber \\
-p_{st} & = & p_{dt}+b_{s},\,\forall s\in d.\label{eq:div-2-state}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
 \begin_layout Subsection
-modifying the state space
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{it},z_{it},\tilde{\mathbf{y}}_{t},\tilde{\mathbf{p}}_{t},Y_{t},P_{t},h_{it-1},j,\psi,t\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where the variables stand, in order, for assets, persistent income shock,
- vector of deviations in prices and incomes for each division, national
- indices, last period ownership status, current location, value of the location-
-specific match effect, and age (there is a deterministic relationship between
- date and age, so the distinction is trivial).
- The actual size of the problem when implementing a numerical approximation
- is the tensor product of all variables in 
-\begin_inset Formula $x$
-\end_inset
-
-.
- In order to define this space let caligraphic symbols denote the set of
- approximating points in a given dimension of the problem (i.e.
- 
-\begin_inset Formula $\mathcal{A}$
-\end_inset
-
- is the set of points used to approximate the asset dimension.
- 
-\begin_inset Formula $\Psi$
-\end_inset
-
- is the corresponding set for 
-\begin_inset Formula $\psi$
-\end_inset
-
-).
-\end_layout
-
-\begin_layout Standard
-Define the set 
-\begin_inset Formula $X$
-\end_inset
-
- as follows: 
-\begin_inset Formula 
-\begin{eqnarray*}
-X & = & \left(\text{asset}\times\text{z-shock}\times\left(\mbox{\text{y.devs}}\times\mbox{\text{p.devs}}\times\text{division}\right)\times\text{Y}\times\text{P}\times\text{own}\times\text{current loc}\times\text{match}\times\text{age}\right)\\
- & = & \left(\mathcal{A}\times\mathcal{Z}\times\left(\tilde{\mathcal{Y}}\times\tilde{\mathcal{P}}\times D\right)\times\mathcal{Y}\times\mathcal{P}\times\{0,1\}\times J\times\Psi\times T\right)
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With those definitions in place, redefine the price vector as 
-\begin_inset Formula $\mathbf{P}\equiv\left(\tilde{\mathbf{y}},\tilde{\mathbf{p}},Y,P\right).$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="7">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Full Setup
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Division Deviation Setup
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{A}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{A}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Z}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Z}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\tilde{\mathcal{P}}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Y}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\tilde{\mathcal{Y}}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Y}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $D$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-9
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-9
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-9
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{H}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{H}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $J$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-50
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $J$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-50
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-50
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-50
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\Psi$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\Psi$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-15
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-total
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-367.500.000
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-total
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-607.500.000
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-174.960.000
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-43.740.000
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-For the full setup note that I define 
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
- to the the number of points approximation 
-\begin_inset Formula $p$
-\end_inset
-
- 
-\emph on
-in each of J states.
- 
-\emph default
-The problem is that the individual must know the prices and incomes in 
-\emph on
-all 
-\emph default
-locations in order to make a decision.
- That means the contribution to the state space from 
-\begin_inset Formula $p$
-\end_inset
-
- and 
-\begin_inset Formula $y$
-\end_inset
-
- alone is 
-\begin_inset Formula $\mathcal{P}\times\mathcal{Y}\times J$
-\end_inset
-
-.
- For comparison reasons, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
- have 10.125.000 by age, or that by 15 periods = 151.875.000.
- (They actually estimate the parameters of the model on that state space.
- I only solve the model once for each policy simulation.) 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:state-space-count"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-First Stage
-\end_layout
-
-\begin_layout Standard
-income specification
+Income Process
 \end_layout
 
 \begin_layout Standard
@@ -3020,1491 +1469,7 @@ This is because for individual
 \end_inset
 
  are known.
- remember that 
-\begin_inset Formula $\bar{y}_{jt}$
-\end_inset
-
- comes out of the expectations model in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Expectations-Model"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Location Choice Model
-\end_layout
-
-\begin_layout Standard
-Ideally, one would estimate 
-\begin_inset Formula $P_{ijk}$
-\end_inset
-
- -- the probability that 
-\begin_inset Formula $i$
-\end_inset
-
- moves from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
- -- non-parametrically, for example with a bin estimator.
- An important problem with many survey datasets is that the number of recorded
- moves is small.
- In other words, the transition matrix of state--to--state moves is very
- sparse.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-For an illustration from the PSID see figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:State-to-State-PSID"
-
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
- In most cases it is therefore impossible to estimate the probability of
- moving from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
-, if the conditioning on 
-\begin_inset Formula $j$
-\end_inset
-
- requires some kind of location fixed effect; In other words, it is infeasible
- using standard methods to estimate the probability of moving from Maine
- to Idaho, say, if no such move is ever observed in the data.
  
-\end_layout
-
-\begin_layout Standard
-There are several ways to deal with this, since at the heart of it lies
- a measurement problem (the true probabililty of moving from Maine to Idaho
- is bounded away from zero).
- Here I take a simple approach and I exclude any fixed reference to the
- origin location 
-\begin_inset Formula $j$
-\end_inset
-
- from the model.
- The exercise is to predict moves 
-\emph on
-to
-\emph default
- Maine or Idaho, without explicit reference to where that move might have
- originated.
- In practice, the main characteristic describing moves is the distance travelled.
- If 
-\begin_inset Formula $j$
-\end_inset
-
- lies at a distance 
-\begin_inset Formula $d(j,k)$
-\end_inset
-
- from 
-\begin_inset Formula $k$
-\end_inset
-
-, then any location 
-\begin_inset Formula $r$
-\end_inset
-
- at the same distance such that 
-\begin_inset Formula $d(r,k)=d(j,k)$
-\end_inset
-
- will have the same probability of moving to 
-\begin_inset Formula $k$
-\end_inset
-
- (conditional on covariates).
- In particular, I specify a flexible multinomial logit framework where the
- utility for 
-\begin_inset Formula $i$
-\end_inset
-
- derived from moving from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
- is given by 
-\begin_inset Formula 
-\begin{eqnarray}
-W_{ijkt} & = & \beta_{1k}\text{age}_{it}+\beta_{2k}\text{age}_{it}^{2}+\beta_{3k}\text{own}_{it}+\gamma_{k}y_{ikt}+\alpha_{1}p_{kt}+\alpha_{2}d(j,k)+\epsilon_{ijkt}\label{eq:logit-spec}\\
-\epsilon_{ijkt} & \sim & \text{EV}(0,\sigma_{\epsilon}^{2})\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-
-\begin_inset Formula $\epsilon_{ijkt}$
-\end_inset
-
- is a drawn IID from a type 1 extreme value distribution.
- The time index 
-\begin_inset Formula $t$
-\end_inset
-
- is not strictly necessary, as I don't exploit any panel dimension in this
- model other than the information that 
-\begin_inset Formula $i$
-\end_inset
-
- moves from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
-.
- House prices vary by time, this is main reason for including 
-\begin_inset Formula $t$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-This setup allows for a very flexible representation of utility.
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:logit-spec"
-
-\end_inset
-
- features variables that are individual specific with location specific
- valuations (
-\begin_inset Formula $\beta$
-\end_inset
-
-), location specific variables that may vary by individual with a location
- specific coefficient (
-\begin_inset Formula $\gamma$
-\end_inset
-
-), and location attributes with a generic coefficient (
-\begin_inset Formula $\alpha$
-\end_inset
-
-) on house price in location 
-\begin_inset Formula $k$
-\end_inset
-
- and distance between 
-\begin_inset Formula $j$
-\end_inset
-
- and 
-\begin_inset Formula $k$
-\end_inset
-
-.
- Notice that the variable 
-\begin_inset Formula $y_{ikt}$
-\end_inset
-
- must be predicted for unobserved location 
-\begin_inset Formula $k$
-\end_inset
-
- using the income model in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:income-model-details"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-As is well known, the multinomial logit model needs to be normalized with
- respect to a base level of utility (which is zero here).
- This is the utility associated with the first option in the choice set,
- which happens to be 
-\begin_inset Quotes eld
-\end_inset
-
-AK
-\begin_inset Quotes erd
-\end_inset
-
- (moving to Alaska).
- Labelling the the base alternative with 
-\begin_inset Formula $k=0$
-\end_inset
-
-, normalized utility becomes
-\begin_inset Formula 
-\begin{eqnarray}
-w_{ijkt} & = & X_{i}\left(\beta_{k}-\beta_{0}\right)+Y_{ik}\gamma_{k}-Y_{i0}\gamma_{0}+\left(Z_{jkt}-Z_{j0t}\right)\alpha+\epsilon_{ijkt}\label{eq:normalized-logit}
-\end{eqnarray}
-
-\end_inset
-
-Here 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- are individual specific variables, 
-\begin_inset Formula $Y_{ik}$
-\end_inset
-
- location 
-\begin_inset Formula $k$
-\end_inset
-
- individual specific variables and 
-\begin_inset Formula $Z_{jk}$
-\end_inset
-
- are location specific variables.
-\end_layout
-
-\begin_layout Standard
-It is a well known property of the multinomial logit model that 
-\begin_inset Formula $P_{ijk}$
-\end_inset
-
- can be expressed as 
-\begin_inset Formula 
-\begin{equation}
-P_{ijk}=P_{ij0}\exp\left(w_{ijk}\right)\label{eq:logit-ccp}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where the baseline probability is 
-\begin_inset Formula 
-\[
-P_{ij0}=\frac{1}{1+\sum_{k=1}^{K-1}\exp\left(w_{ijk}\right)}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The objective of the first stage location choice model is to estimate parameter
- vectors 
-\begin_inset Formula $\beta,\gamma,\alpha$
-\end_inset
-
- from equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:normalized-logit"
-
-\end_inset
-
-, in order to make predicitons about the likelihood of moves from expression
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:logit-ccp"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Housing Choice Models
-\end_layout
-
-\begin_layout Standard
-For renters, I estimate a probit model for the probability of buying.
- Equally, for sellers I estimate a probit on the probability of selling.
- The results are given in tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-renter-buy"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-stay"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Savings policy
-\end_layout
-
-\begin_layout Standard
-A final reduced form policy function for liquid savings is necessary.
- I estimate a simple linear regression where the dependent variable is 
-\begin_inset Quotes eld
-\end_inset
-
-savings
-\begin_inset Quotes erd
-\end_inset
-
-, defined by SIPP question 
-\begin_inset Quotes eld
-\end_inset
-
-amount of money in interest earning accounts within bank and other institutions
-\begin_inset Quotes erd
-\end_inset
-
-.
- This variable is measured at a quarterly frequency.
- Results from this model are given in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-savings"
-
-\end_inset
-
-.
- Notice that there is a serious outlier problem, so it may be necessary
- to use quantile regression, see figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:mean-versus-median-savings"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Second Stage
-\end_layout
-
-\begin_layout Standard
-In the second stage, one needs to 
-\end_layout
-
-\begin_layout Enumerate
-estimate the value functions using simulated lifecycle paths from the first
- state
-\end_layout
-
-\begin_layout Enumerate
-estimate the value functions using simulated lifecycle paths from perturbed
- (wrong) policy functions
-\end_layout
-
-\begin_layout Enumerate
-compute a GMM objective function where the criterion is build up as
-\begin_inset Formula 
-\begin{eqnarray*}
-g(x,\theta) & = & V(s,\alpha)-V(s,\tilde{\alpha})\\
-Q(\theta) & = & \int\left(\min\left\{ g(x,\theta),0\right\} \right)^{2}dH(x)
-\end{eqnarray*}
-
-\end_inset
-
-where 
-\begin_inset Formula $H(x)$
-\end_inset
-
- is the set of 
-\begin_inset Quotes eld
-\end_inset
-
-moment conditions
-\begin_inset Quotes erd
-\end_inset
-
- at random states 
-\begin_inset Formula $s$
-\end_inset
-
- (iid)
-\end_layout
-
-\begin_layout Enumerate
-minimize 
-\begin_inset Formula $\min_{\theta\in\Theta}Q$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Forward Simulation
-\end_layout
-
-\begin_layout Standard
-The objective here is to estimate the object 
-\begin_inset Formula $V(a,z,\mathbf{x},h_{-1},j,t)$
-\end_inset
-
-, which is the discounted sum of expected future payoffs contigent on optimal
- behaviour in each period of life remaining.
- This is equivalent to estimating
-\begin_inset Formula 
-\begin{equation}
-U_{t}=E_{t}\left[\sum_{\tau=t}^{T-1}\beta^{\tau}u(c_{\tau},h_{\tau},j_{\tau},k_{\tau})+\omega\beta^{T}\ln(b_{T})|s_{it}\right]\label{eq:time-t-utility}
-\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula $U_{t}$
-\end_inset
-
- depends of course on a sequence of optimal decisions, collected in set
- 
-\begin_inset Formula $G$
-\end_inset
-
-.
- In order to construct an estimate 
-\begin_inset Formula $\hat{U_{t}}$
-\end_inset
-
-, we use our first state reduced form estimates to obtain 
-\begin_inset Formula $\hat{G}$
-\end_inset
-
- .
- For everything that follows, we can take the functions collected in 
-\begin_inset Formula $\hat{G}$
-\end_inset
-
- as given (they will not be affected by changes to the structural parameter
- vector 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:structural-params"
-
-\end_inset
-
- in the second stage of the estimation proceedure).
- 
-\end_layout
-
-\begin_layout Standard
-Here's an outline of the algorithm to estimate expected lifetime utility
- as displayed in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:time-t-utility"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Enumerate
-Take the 
-\emph on
-first 
-\emph default
-observation for each household in the data and initate the state space on
- that value 
-\begin_inset Formula $s_{i1}$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Enumerate
-Using the optimal policies 
-\begin_inset Formula $\hat{G}$
-\end_inset
-
-, construct the dataset displayed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:constructing-the-dataset"
-
-\end_inset
-
- for each individual, where 
-\begin_inset Formula $t$
-\end_inset
-
- indexes the period of observation (not age).
- This requires the following steps:
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-evaluate all policy functions in 
-\begin_inset Formula $\hat{G}$
-\end_inset
-
- at current state 
-\begin_inset Formula $s_{t}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-given decisions and 
-\begin_inset Formula $s_{t}$
-\end_inset
-
-, compute current consumption as 
-\begin_inset Formula $c_{t}=y_{t}-m_{t}-a_{t+1}$
-\end_inset
-
-, where 
-\begin_inset Formula $m_{t}$
-\end_inset
-
- is either mortgage payment or rent
-\end_layout
-
-\begin_layout Enumerate
-fill in the values in 
-\begin_inset Formula $u$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-update the state 
-\begin_inset Formula $s_{t+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-go back to (a)
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-Bear in mind here that the values of 
-\begin_inset Formula $u_{t}(\cdot)^{(r)}$
-\end_inset
-
- will be different in each replication 
-\begin_inset Formula $r$
-\end_inset
-
-, because period utility depends on the realization of the iid shock 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
-, see 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:period-utility"
-
-\end_inset
-
-.
- Furtermore, the lifecycle paths for the decision variables will vary, first
- of all because the location decision depends on the realization of a uniform
- random variable, and secondly because the state variables 
-\begin_inset Formula $\mathbf{x}_{t}$
-\end_inset
-
- will evolve stochastically.
- The sequences of shocks are necessarily going to be kept fixed, since this
- dataset needs to be constructed only once.
- They will be seeded nevertheless to ensure reproducibility.
-\end_layout
-
-\begin_layout Enumerate
-The estimate for 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:time-t-utility"
-
-\end_inset
-
- will be obtained by averaging the values for 
-\begin_inset Formula $u_{it}$
-\end_inset
-
- across both rows and columns of table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:constructing-the-dataset"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="14">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0pt">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-replication: 
-\begin_inset Formula $r_{1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-replication: 
-\begin_inset Formula $r_{2}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-...
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $t$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{L}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{A}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{H}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u_{it}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{L}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{A}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $g_{H}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u_{it}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s_{1}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $k_{1}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $a_{2}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $h_{1}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c_{1}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u\left(c_{1},h_{1},j_{1},k_{1}\right)^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s_{1}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $k_{1}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $a_{2}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $h_{1}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c_{1}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u\left(c_{1},h_{1},j_{1},k_{1}\right)^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s_{2}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $k_{2}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $a{}_{3}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $h_{2}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c_{2}^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u\left(c_{2},h_{2},j_{2},k_{2}\right)^{(1)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $s_{2}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $k_{2}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $a{}_{3}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $h_{2}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $c_{2}^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $u\left(c_{2},h_{2},j_{2},k_{2}\right)^{(2)}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\dots$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\dots$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\dots$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-constructing the dataset for estimation of 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:time-t-utility"
-
-\end_inset
-
-
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:constructing-the-dataset"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -4783,402 +1748,8 @@ reference "tab:Conditional-on-moving"
 Results
 \end_layout
 
-\begin_layout Subsection
-First Stage
-\end_layout
-
 \begin_layout Standard
-See the savings policy in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-savings"
-
-\end_inset
-
-, the renter's rent vs buy decision in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-renter-buy"
-
-\end_inset
-
- and the owner's stay vs sell decision in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-stay"
-
-\end_inset
-
-.
- The implied moving behaviour from the location choice model is given in
- tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-logit-freqs"
-
-\end_inset
-
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:RF-logit-props"
-
-\end_inset
-
- and the coefficient estimates are given in 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-ref{logit_res}
-\end_layout
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Expectations model
-\end_layout
-
-\begin_layout Standard
-The expectations model depends on deviations of a census level index from
- the national index.
- The deviations in the data are shown in figures and .The implications of
- the expectations model from section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Expectations-Model"
-
-\end_inset
-
- can be be seen in figures.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/savings.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Reduced form savings policy.
- see figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:mean-versus-median-savings"
-
-\end_inset
-
- for why quantreg.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:RF-savings"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/buy.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-renter's choice buy vs rent.
- probit model.
- Model 1 is a linear regression, model 2 has a linear spline in the price
- to income ratio with knots at values 3 and 5.
- The fact that the first basis function (the one closer to lower values
- of p2y) is positive, while the second basis function is negative indicates
- that the probability of buying is decreasing in p2y.
- Many mortgage products require a minium income level, which is reflected
- here.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:RF-renter-buy"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/sell-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-owner's choice stay vs sell.
- probit model.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:RF-stay"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-newpage
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pagestyle{empty}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/logit_pred_freqs.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Simulated moves from the logit choice model as frequencies.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:RF-logit-freqs"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/logit_pred_props.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Simulated moves from the logit choice model as proportions.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:RF-logit-props"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/BBL/logitRes2.tex}
-\end_layout
-
-\end_inset
-
-
+tbc
 \end_layout
 
 \begin_layout Standard
