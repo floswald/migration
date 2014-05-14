@@ -77,6 +77,14 @@ facts("testing the model module") do
 
 	end
 
+	context("model arrays are accessible") do
+
+	@fact m.vbar[1,1,1,1,1,1,1,1,1,1] == p.myNA => true
+	@fact m.vh[1,1,1,1,1,1,1,1,1,1,1] > 0 => true
+	@fact m.v[1,1,1,1,1,1,1,1,1,1,1,1] == p.myNA => true
+
+	end
+
 
 
 end

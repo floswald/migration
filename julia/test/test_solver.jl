@@ -288,16 +288,16 @@ end
 
 facts("testing EVfunChooser") do
 
-	p = mig.Param()
-	m = mig.Model(p)
-	iz = rand(1:p.nz)
+	p    = mig.Param()
+	m    = mig.Model(p)
+	iz   = rand(1:p.nz)
 	itau = rand(1:p.ntau)
-	iP = rand(1:p.nP)
-	iY = rand(1:p.nP)
-	ip = rand(1:p.np)
-	iy = rand(1:p.ny)
-	ij = rand(1:p.nJ)
-	ihh = 0
+	iP   = rand(1:p.nP)
+	iY   = rand(1:p.nY)
+	ip   = rand(1:p.np)
+	iy   = rand(1:p.ny)
+	ij   = rand(1:p.nJ)
+	ihh  = 0
 
 	# test for penultimate period
 	ti = p.nt-1
@@ -306,7 +306,47 @@ facts("testing EVfunChooser") do
 	@fact mig.EVfunChooser(iz,ihh,itau,iP,iY,ip,iy,ij,ti,m,p)[:] => EV[:] 
 
 	# test for previous
+
+	ti = p.nt-2
+	EV = m.EV[:,iz,ihh+1,itau,iP,iY,ip,iy,ij,ti+1]
+
+	@fact mig.EVfunChooser(iz,ihh,itau,iP,iY,ip,iy,ij,ti,m,p)[:] => EV[:] 
 end
+
+
+# facts("test myFindMax: hard coded to max over dim 11") do
+
+# 	p = mig.Param()
+# 	A = rand(p.dimvec)
+# 	x = mapslices(findmax,A,11)
+
+# 	# z = mig.ismaxfun(A,11)
+# 	# ArrayViews.jl does not support dims>4
+# 	z = myFindMax(A)
+
+# 	@fact x==z => true
+
+# end
+
+# facts("testing Housing Discrete Choice function") do
+
+# 	p    = mig.Param()
+# 	m    = mig.Model(p)
+# 	age  = p.nt - 2
+
+# 	v = mapslices(findmax,m.vh[:,:,:,:,:,:,:,:,:,age,:,:],11)
+# 	vh = map(x->x[1],v)
+# 	dh = map(x->x[2],v)
+
+# 	# call function on model object
+# 	mig.computeHousingDchoice!(age,m)
+
+# 	# check results
+# 	@fact vh[:] .== m.vh[:] => trues(length(vh))
+# 	@fact dh[:] .== m.dh[:] => trues(length(dh))
+
+# end
+
 
 
 

@@ -3,23 +3,34 @@
 # setting up a model
 
 
+type TModel
+
+	v :: Array{Float64,12}
+	function TModel(p::Param)
+		v= fill(p.myNA,p.dimvec)
+		return new(v)
+	end
+end
+
+
+
 
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nt-1), na, nz, nh, ntau, nP, nY, nJ ,np ,ny, nh, nJ)
+	# dimvec  = (nJ, nh, nJ, nh, ny, np, nY ,nP, nz, ntau,  na, nt-1 )
 	v :: Array{Float64,12}
 	s :: Array{Int,12}
 	c :: Array{Float64,12}
 
 	# location-optimal value and index array (maximized over housing in k)
-	# dimvec  = ((nt-1), na, nz, nh, ntau, nP, nY, nJ ,np ,ny, nJ)
+	# dimvec2 = (nJ	, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
 	vh  :: Array{Float64,11}
 	rho :: Array{Float64,11}
 	dh  :: Array{Int,11}
 
 	# top-level value maxed over housing and location
-	# dimvec  = ((nt-1), na, nz, nh, ntau, nP, nY, nJ ,np ,ny)
+	# dimvec3 = (na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
 	EV   :: Array{Float64,10}
 	vbar :: Array{Float64,10}
 
@@ -41,11 +52,11 @@ type Model
 
 		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
 
-		vh = fill(p.myNA,p.dimvec2)
+		vh = reshape(rand(prod((p.dimvec2))),p.dimvec2)
 		rho = fill(p.myNA,p.dimvec2)
 		dh = fill(0,p.dimvec2)
 
-		EV = fill(p.myNA,p.dimvec3)
+		EV = reshape(rand(prod((p.dimvec3))),p.dimvec3)
 		vbar = fill(p.myNA,p.dimvec3)
 
 		
@@ -84,13 +95,16 @@ type Model
 		agemat = hcat(ones(p.nt),p.minAge:(p.minAge+p.nt-1))
 		agemat = hcat(agemat,agemat[:,2].^2)
 		AgeP = JSON.parsefile("/Users/florianoswald/Dropbox/mobility/output/model/BBL/inc-process/Div-REcoefs.json")
-		ageprofile = zeros(p.nt,p.nJ)
+		agep = zeros(p.nt,length(AgeP))
 
 		i = 0
 		for j in keys(AgeP)
 			i = i+1
-			ageprofile[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+			agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
 		end
+
+		# cut ageprofile to number of regions currently running:
+		ageprofile = agep[:,1:p.nJ]
 
 		grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
 
@@ -188,18 +202,31 @@ end
 
 
 function show(io::IO, M::Model)
-	r = round( (sizeof(M.v)+
+	r = sizeof(M.v)+
 		        sizeof(M.c)+
 		        sizeof(M.s)+
+		        sizeof(M.grids2D["GY"])+
+		        sizeof(M.grids2D["GP"])+
+		        sizeof(M.grids2D["dist"])+
+		        sizeof(M.grids2D["ageprof"])+
+		        sizeof(M.gridsXD["movecost"])+
+		        sizeof(M.gridsXD["Gy"])+
+		        sizeof(M.gridsXD["Gp"])+
+		        sizeof(M.gridsXD["p"])+
+		        sizeof(M.gridsXD["y"])+
 		        sizeof(M.vh)+
 		        sizeof(M.dh)+
 		        sizeof(M.rho)+
 		        sizeof(M.vbar)+
 		        sizeof(M.EVfinal)+
-		        sizeof(M.EV))/8388608, 3)
-		        
-		        
-	print(io, "size of model arrays in Mb: $(r)\n")
+		        sizeof(M.EV)
+
+	mb = round(r/1.049e+6,1)
+	gb = round(r/1.074e+9,1)
+
+	print(io, "size of model arrays:\n")
+	print(io, "               in Mb: $(mb)\n")
+	print(io, "               in Gb: $(gb)\n")
 	print(io, "objects in model:\n")
 	print(io, names(M))
 end

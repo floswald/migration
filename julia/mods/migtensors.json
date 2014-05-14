@@ -4,15 +4,15 @@
 	"module_name":"E_tensors",
 	"tensors": {
 		"T_Evbar" : {
-			"expr" : "V[a,z1,h,tau,P1,Y1,p1,y1,j] * Gz[z,z1] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] * GY[Y,Y1]",
-			"args" : "a,z,h,tau,P,Y,p,y,j"
+			"expr" : "V[a,h,y1,p1,Y1,P1,z1,tau,j] * Gz[z,z1] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] * GY[Y,Y1]",
+			"args" : "a,h,y,p,Y,P,z,tau,j"
 		},
 		"T_Final" : {
 			"expr" : "V[a,h,P1,p1,j] * GP[P,P1] * Gp[p,p1,j]",
 			"args" : "a,h,P,p,j"
 		},
-		"FinalV" : {
-			"expr" : "log(A_[a] + H_[h] * ( P_[P] + p_[p,j] ) )",
+		"T_FinalV" : {
+			"expr" : "log(A_[a] + (H_[h] * P_[P,p,j] ) )",
 			"args" : "a,h,P,j,p"
 		}
 	}

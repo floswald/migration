@@ -58,7 +58,7 @@ type Param
 
 	# bounds on grids
 	bounds  :: Dict{ASCIIString,(Float64,Float64)}
-	pbounds :: Dict{ASCIIString,Dict{Int,Any}}
+	pbounds :: Dict{ASCIIString,Dict{Int,Array{Float64,1}}}
 
 
 	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
@@ -78,20 +78,45 @@ type Param
 		pbounds = ["p" => [i => sort(rand(2)) for i = 1:9] ]
 		pbounds["y"] = [i => sort(rand(2)) for i = 1:9] 
 
+		# big: maximal size for memory on my box
+		# na    = 40
+		# nz    = 4
+		# nh    = 2
+		# ntau  = 2
+		# nP    = 3
+		# nY    = 3
+		# np    = 4
+		# ny    = 3
+		# nJ    = 9
+		# nt    = 30
+		
+		# small
 		na    = 10
-		nz    = 4
+		nz    = 2
 		nh    = 2
-		nt    = 10
 		ntau  = 2
 		nP    = 3
-		nY    = 2
-		nJ    = 9
-		np    = 3
-		ny    = 4
+		nY    = 3
+		np    = 2
+		ny    = 3
+		nJ    = 3
+		nt    = 9
+		
+		# super small
+		# na    = 3
+		# nz    = 2
+		# nh    = 2
+		# ntau  = 2
+		# nP    = 3
+		# nY    = 3
+		# np    = 2
+		# ny    = 3
+		# nJ    = 3
+		# nt    = 3
 
-		dimvec  = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nh, nJ)
-		dimvec2 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nJ)
-		dimvec3 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1)) 
+		dimvec  = (nh, nJ, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
+		dimvec2 = (nJ, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
+		dimvec3 = (na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
 
 		beta    = 0.95
 		gamma   = 2
@@ -140,7 +165,7 @@ function nPoints(p::Param)
 	return r
 end
 # show(io::IO, p::Param) = print(io,"number of points=$(p.na*p.nz*p.nt)")
-show(io::IO, p::Param) = print(io,"number of points:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))")
+show(io::IO, p::Param) = if nPoints(p) > 160000000 print(io,"number of points:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))\n CAUTION: this will not fit in 16GB of RAM!") else print(io,"number of points:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))") end
 
 
 

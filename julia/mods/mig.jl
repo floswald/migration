@@ -1,9 +1,9 @@
 module mig
 
-using Base.LinAlg, Distributions, JSON, DataFrames
+import Base.LinAlg: copytri! 
+using JSON, Debug
 
-export Param, Model, Copula, dnormCopula
-
+export Param, Model
 
 include("/Users/florianoswald/git/copula.jl/mods/copula.jl")
 include("param.jl")
