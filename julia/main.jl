@@ -12,11 +12,17 @@ include("test/test_Tensors.jl")
 	
 
 # running
-p = mig.Param()
+p = mig.Param(1)
 m = mig.Model(p)
-mig.solve!(m,p)
+@time mig.solve!(m,p)
 # mig.solvePeriod!(1,m,p);
 
-cp = mig.Copmod.Copula(2,0.8)
 
+
+# without linear index: 96 secs
+# with linear index: 74 secs
+# speedup: 29%
+
+# with discretized savings solution: 74 secs
+# without any savings solution: 73 secs
 

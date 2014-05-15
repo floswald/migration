@@ -4,8 +4,8 @@
 	"module_name":"E_tensors",
 	"tensors": {
 		"T_Evbar" : {
-			"expr" : "V[a,h,y1,p1,Y1,P1,z1,tau,j] * Gz[z,z1] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] * GY[Y,Y1]",
-			"args" : "a,h,y,p,Y,P,z,tau,j"
+			"expr" : "V[a,h,y1,p1,P1,z1,tau,j] * Gz[z,z1,j] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1]",
+			"args" : "a,h,y,p,P,z,tau,j"
 		},
 		"T_Final" : {
 			"expr" : "V[a,h,P1,p1,j] * GP[P,P1] * Gp[p,p1,j]",
@@ -14,6 +14,11 @@
 		"T_FinalV" : {
 			"expr" : "log(A_[a] + (H_[h] * P_[P,p,j] ) )",
 			"args" : "a,h,P,j,p"
+		},
+		"test" : {
+			"expr" : "V[a,b,c] * B[b,c]",
+			"args" : "a,b,c"
+
 		}
 	}
 }

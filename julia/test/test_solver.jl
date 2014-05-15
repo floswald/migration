@@ -9,9 +9,82 @@ module test_solver
 
 using FactCheck, mig
 
+facts("test linear index functions") do
+
+	p = mig.Param(1)
+	m = mig.Model(p)
+
+	context("testing 11 dim index") do
+
+		# choose a random state
+		ihh  = rand(1:p.nh)
+		ik   = rand(1:p.nJ)
+		ia   = rand(1:p.na)
+		ih   = rand(1:p.nh)
+		iy   = rand(1:p.ny)
+		ip   = rand(1:p.np)
+		iP   = rand(1:p.nP)
+		iz   = rand(1:p.nz)
+		itau = rand(1:p.ntau)
+		ij   = rand(1:p.nJ)
+		it   = rand(1:(p.nt-1))
+
+		@fact m.v[ihh,ik,ia,ih,iy,ip,iP,iz,itau,ij,it] == m.v[mig.idx11(ihh,ik,ia,ih,iy,ip,iP,iz,itau,ij,it,p)] => true
+
+		# choose another one
+		ihh  = rand(1:p.nh)
+		ik   = rand(1:p.nJ)
+		ia   = rand(1:p.na)
+		ih   = rand(1:p.nh)
+		iy   = rand(1:p.ny)
+		ip   = rand(1:p.np)
+		iP   = rand(1:p.nP)
+		iz   = rand(1:p.nz)
+		itau = rand(1:p.ntau)
+		ij   = rand(1:p.nJ)
+		it   = rand(1:(p.nt-1))
+
+		@fact m.v[ihh,ik,ia,ih,iy,ip,iP,iz,itau,ij,it] == m.v[mig.idx11(ihh,ik,ia,ih,iy,ip,iP,iz,itau,ij,it,p)] => true
+
+	end
+
+
+	context("testing 10 dim index") do
+		# choose a random state
+		ik   = rand(1:p.nJ)
+		ia   = rand(1:p.na)
+		ih   = rand(1:p.nh)
+		iy   = rand(1:p.ny)
+		ip   = rand(1:p.np)
+		iP   = rand(1:p.nP)
+		iz   = rand(1:p.nz)
+		itau = rand(1:p.ntau)
+		ij   = rand(1:p.nJ)
+		it   = rand(1:(p.nt-1))
+
+		@fact m.vh[ik,ia,ih,iy,ip,iP,iz,itau,ij,it] == m.vh[mig.idx10(ik,ia,ih,iy,ip,iP,iz,itau,ij,it,p)] => true
+
+		# choose another one
+		ik   = rand(1:p.nJ)
+		ia   = rand(1:p.na)
+		ih   = rand(1:p.nh)
+		iy   = rand(1:p.ny)
+		ip   = rand(1:p.np)
+		iP   = rand(1:p.nP)
+		iz   = rand(1:p.nz)
+		itau = rand(1:p.ntau)
+		ij   = rand(1:p.nJ)
+		it   = rand(1:(p.nt-1))
+
+		@fact m.vh[ik,ia,ih,iy,ip,iP,iz,itau,ij,it] == m.vh[mig.idx10(ik,ia,ih,iy,ip,iP,iz,itau,ij,it,p)] => true
+
+	end
+
+end
+
 facts("testing utility function") do
 
-	p = mig.Param()
+	p = mig.Param(1)
 	x = 1.0
 	own = 1
 	def = true
@@ -71,7 +144,7 @@ end
 facts("testing payments function") do
 
 	
-	p = mig.Param()
+	p = mig.Param(1)
 
 	context("payments when move==false") do
 
@@ -160,7 +233,7 @@ end
 
 facts("testing grossSaving function") do
 
-	p = mig.Param()
+	p = mig.Param(1)
 	x = rand()
 
 	@fact mig.grossSaving(x,p) => x*p.R
@@ -173,7 +246,7 @@ end
 
 facts("testing cashFunction") do
 
-	p = mig.Param()
+	p = mig.Param(1)
 	a = rand()
 	y = rand()
 	j = rand(1:p.nJ)
@@ -195,7 +268,7 @@ facts("testing maxvalue function") do
 
 	context("maxalue for owners") do
 
-		p = mig.Param()
+		p = mig.Param(1)
 		m = mig.Model(p)
 
 		w = zeros(p.na)
@@ -229,7 +302,7 @@ facts("testing maxvalue function") do
 
 	context("maxalue for renters") do
 
-		p = mig.Param()
+		p = mig.Param(1)
 		m = mig.Model(p)
 
 		w = zeros(p.na)
@@ -265,7 +338,7 @@ facts("testing maxvalue function") do
 	context("maxvalue throws errors") do
 
 
-		p = mig.Param()
+		p = mig.Param(1)
 		m = mig.Model(p)
 
 		w = zeros(p.na)
@@ -288,12 +361,14 @@ end
 
 facts("testing EVfunChooser") do
 
-	p    = mig.Param()
+	p    = mig.Param(1)
 	m    = mig.Model(p)
+
+	# choose a random state
 	iz   = rand(1:p.nz)
 	itau = rand(1:p.ntau)
 	iP   = rand(1:p.nP)
-	iY   = rand(1:p.nY)
+	# iY   = rand(1:p.nY)
 	ip   = rand(1:p.np)
 	iy   = rand(1:p.ny)
 	ij   = rand(1:p.nJ)
@@ -303,14 +378,37 @@ facts("testing EVfunChooser") do
 	ti = p.nt-1
 	EV = m.EVfinal[:,ihh+1,iP,ip,ij]
 
-	@fact mig.EVfunChooser(iz,ihh,itau,iP,iY,ip,iy,ij,ti,m,p)[:] => EV[:] 
+	@fact mig.EVfunChooser(iz,ihh,itau,iP,ip,iy,ij,ti,m,p)[:] => EV[:] 
 
 	# test for previous
 
 	ti = p.nt-2
-	EV = m.EV[:,iz,ihh+1,itau,iP,iY,ip,iy,ij,ti+1]
+	EV = m.EV[:,ihh+1,iy,ip,iP,iz,itau,ij,ti+1]
 
-	@fact mig.EVfunChooser(iz,ihh,itau,iP,iY,ip,iy,ij,ti,m,p)[:] => EV[:] 
+	@fact mig.EVfunChooser(iz,ihh,itau,iP,ip,iy,ij,ti,m,p)[:] => EV[:] 
+
+	# choose another one
+	iz   = rand(1:p.nz)
+	itau = rand(1:p.ntau)
+	iP   = rand(1:p.nP)
+	# iY   = rand(1:p.nY)
+	ip   = rand(1:p.np)
+	iy   = rand(1:p.ny)
+	ij   = rand(1:p.nJ)
+	ihh  = 1
+
+	# test for penultimate period
+	ti = p.nt-1
+	EV = m.EVfinal[:,ihh+1,iP,ip,ij]
+
+	@fact mig.EVfunChooser(iz,ihh,itau,iP,ip,iy,ij,ti,m,p)[:] => EV[:] 
+
+	# test for previous
+
+	ti = p.nt-2
+	EV = m.EV[:,ihh+1,iy,ip,iP,iz,itau,ij,ti+1]
+
+	@fact mig.EVfunChooser(iz,ihh,itau,iP,ip,iy,ij,ti,m,p)[:] => EV[:] 
 end
 
 

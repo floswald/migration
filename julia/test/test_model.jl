@@ -7,15 +7,15 @@ using mig
 
 facts("testing the model module") do
 
-	p = mig.Param()
+	p = mig.Param(2)
 	m = mig.Model(p)
 
 	context("Dictionaries have all required elements") do
 
-		b = ["asset_own","asset_rent","housing","P","Y","W","z"]
+		b = ["asset_own","asset_rent","housing","P","W","z"]
 		@fact length(setdiff(b, collect(keys(m.grids)))) => 0
 
-		b = ["GY","GP","dist","ageprof"]
+		b = ["GP","dist","ageprof"]
 		@fact length(setdiff(b, collect(keys(m.grids2D)))) => 0
 
 		b = ["Gy","Gp","Gz","p","y","movecost"]
@@ -26,7 +26,7 @@ facts("testing the model module") do
 	context("price grids have correct dimenions (p,P,J)") do
 
 		@fact size(m.gridsXD["p"]) == (p.nP,p.np,p.nJ) => true
-		@fact size(m.gridsXD["y"]) == (p.nY,p.ny,p.nJ) => true
+		@fact size(m.gridsXD["y"]) == (p.ny,p.nJ) => true
 
 	end
 
@@ -35,16 +35,12 @@ facts("testing the model module") do
 	context("Transition arrays sum to 1 over dimension 2") do
 
 		@fact sum(m.grids2D["GP"],2)[:] .-1.0 => roughly(zeros(p.nP)[:],atol=0.00001)
-		@fact sum(m.grids2D["GY"],2)[:] .-1.0 => roughly(zeros(p.nY)[:],atol=0.00001)
+		# @fact sum(m.grids2D["GY"],2)[:] .-1.0 => roughly(zeros(p.nY)[:],atol=0.00001)
 
 		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gz"],2)[:] .- 1.0 => roughly(zeros(p.nz*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
-		# for p.np==2 that is actually symmetric!
-		# @fact all(sum(m.gridsXD["Gp"],1)[:] .- 1.0 != zeros(p.np*p.nJ)) => true
-		# @fact all(sum(m.gridsXD["Gz"],1)[:] .- 1.0 != zeros(p.nz*p.nJ)) => true
-		# @fact all(sum(m.gridsXD["Gp"],1)[:] .- 1.0 != zeros(p.np*p.nJ)) => true
- 	end
+	 	end
 
 
  	context("price grids have correct values for each region") do
@@ -76,15 +72,6 @@ facts("testing the model module") do
 		end
 
 	end
-
-	context("model arrays are accessible") do
-
-	@fact m.vbar[1,1,1,1,1,1,1,1,1,1] == p.myNA => true
-	@fact m.vh[1,1,1,1,1,1,1,1,1,1,1] > 0 => true
-	@fact m.v[1,1,1,1,1,1,1,1,1,1,1,1] == p.myNA => true
-
-	end
-
 
 
 end

@@ -1,4 +1,4 @@
-
+	
 
 
 # module param
@@ -32,7 +32,7 @@ type Param
 	rhoy  :: Array{Float64,1} # vector of AR1 coefs for each region income deviation
 	rhoz  :: Array{Float64,1} # vector of AR1 coefs for each region individual-specific income shock
 	rhoP  :: Float64          # AR1 coef for the national process
-	rhoY  :: Float64          # AR1 coef for the national process
+	# rhoY  :: Float64          # AR1 coef for the national process
 
 	R  :: Float64 	# gross interest rate savings: 1+r
 	Rm :: Float64 	# gross interest rate mortgage: 1+rm
@@ -50,7 +50,7 @@ type Param
 	nt   ::Int 	# number of periods
 	ntau ::Int 	# number of types
 	nP   ::Int 	# aggregate price levels
-	nY   ::Int 	# aggregate income levels
+	# nY   ::Int 	# aggregate income levels
 	nJ   ::Int 	# number of origin locations
 	            # nk = nj - 1 is the number of destination locations
 	np   ::Int # number of price levels in each location
@@ -61,62 +61,73 @@ type Param
 	pbounds :: Dict{ASCIIString,Dict{Int,Array{Float64,1}}}
 
 
-	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
-	dimvec3::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing - location
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	dimvec3::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing - location
+	dimnames::Array{ASCIIString}
 
 
 
 	# constructor assigning initial values
-	function Param()
+	function Param(size::Int)
 
 		bounds = ["asset_own" => (-10.0,10.0)]   
 		bounds["asset_rent"] = (0.01,10.0)
 		bounds["tau"]        = (0.0,1.0)
 		bounds["P"]          = (1.0,5.0)
-		bounds["Y"]          = (0.5,1.5)
+		# bounds["Y"]          = (0.5,1.5)
 		pbounds = ["p" => [i => sort(rand(2)) for i = 1:9] ]
 		pbounds["y"] = [i => sort(rand(2)) for i = 1:9] 
 
-		# big: maximal size for memory on my box
-		# na    = 40
-		# nz    = 4
-		# nh    = 2
-		# ntau  = 2
-		# nP    = 3
-		# nY    = 3
-		# np    = 4
-		# ny    = 3
-		# nJ    = 9
-		# nt    = 30
 		
-		# small
-		na    = 10
-		nz    = 2
-		nh    = 2
-		ntau  = 2
-		nP    = 3
-		nY    = 3
-		np    = 2
-		ny    = 3
-		nJ    = 3
-		nt    = 9
 		
-		# super small
-		# na    = 3
-		# nz    = 2
-		# nh    = 2
-		# ntau  = 2
-		# nP    = 3
-		# nY    = 3
-		# np    = 2
-		# ny    = 3
-		# nJ    = 3
-		# nt    = 3
+		if size==1
 
-		dimvec  = (nh, nJ, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
-		dimvec2 = (nJ, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
-		dimvec3 = (na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
+			# super small: use for tests
+			na    = 5
+			nz    = 3
+			nh    = 2
+			ntau  = 2
+			nP    = 2
+			# nY    = 3
+			np    = 4
+			ny    = 2
+			nJ    = 3
+			nt    = 4
+
+		elseif size==2
+			# small: runs on my box
+			na    = 10
+			nz    = 2
+			nh    = 2
+			ntau  = 2
+			nP    = 3
+			# nY    = 3
+			np    = 2
+			ny    = 3
+			nJ    = 9
+			nt    = 30
+
+		elseif size==3
+		# big: maximal size for memory on my box
+		# much too slow
+			na    = 40
+			nz    = 4
+			nh    = 2
+			ntau  = 2
+			nP    = 3
+			# nY    = 3
+			np    = 4
+			ny    = 3
+			nJ    = 9
+			nt    = 30
+
+		end		
+
+		dimvec  = (nh, nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+		dimvec2 = (nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+		dimvec3 = (na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+		dimnames = ["hh", "k", "a", "h", "y", "p", "P", "z", "tau", "j", "age" ]
 
 		beta    = 0.95
 		gamma   = 2
@@ -139,7 +150,7 @@ type Param
 		rhoy = rand(nJ)
 		rhoz = rand(nJ)
 		rhoP = rand()
-		rhoY = rand()
+		# rhoY = rand()
 
 		R   = 1.03 	# gross interest rate savings: 1+r
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
@@ -151,7 +162,7 @@ type Param
 
 		# create object
 
-			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,rhoY,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nY,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimvec3)
+			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimvec3,dimnames)
 	end
 
 	
@@ -161,11 +172,11 @@ end
 # define member functions
 
 function nPoints(p::Param)
-	r = p.na * p.nz * p.nh * (p.nt-1) * p.ntau * p.nP * p.nY * p.nJ * (p.nJ - 1) * p.np * p.ny
+	r = prod(p.dimvec)
 	return r
 end
 # show(io::IO, p::Param) = print(io,"number of points=$(p.na*p.nz*p.nt)")
-show(io::IO, p::Param) = if nPoints(p) > 160000000 print(io,"number of points:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))\n CAUTION: this will not fit in 16GB of RAM!") else print(io,"number of points:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))") end
+show(io::IO, p::Param) = if nPoints(p) > 160000000 print(io,"number of savings problems to solve:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))\n CAUTION: this will not fit in 16GB of RAM!") else print(io,"number of dims  :$(length(p.dimvec))\nnumber of savings problems to solve:$(nPoints(p))") end
 
 
 

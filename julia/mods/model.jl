@@ -18,21 +18,21 @@ end
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, nh, nJ, nh, ny, np, nY ,nP, nz, ntau,  na, nt-1 )
-	v :: Array{Float64,12}
-	s :: Array{Int,12}
-	c :: Array{Float64,12}
+	# dimvec  = (nJ, nh, nJ, nh, ny, np, nP, nz, ntau,  na, nt-1 )
+	v :: Array{Float64,11}
+	s :: Array{Int,11}
+	c :: Array{Float64,11}
 
 	# location-optimal value and index array (maximized over housing in k)
-	# dimvec2 = (nJ	, na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
-	vh  :: Array{Float64,11}
-	rho :: Array{Float64,11}
-	dh  :: Array{Int,11}
+	# dimvec2 = (nJ	, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+	vh  :: Array{Float64,10}
+	rho :: Array{Float64,10}
+	dh  :: Array{Int,10}
 
 	# top-level value maxed over housing and location
-	# dimvec3 = (na, nh, ny, np, nY ,nP, nz, ntau,  nJ, nt-1 )
-	EV   :: Array{Float64,10}
-	vbar :: Array{Float64,10}
+	# dimvec3 = (na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+	EV   :: Array{Float64,9}
+	vbar :: Array{Float64,9}
 
 	# expected final period value
 	# dimensions: a,h,P,j,pj
@@ -46,18 +46,19 @@ type Model
 	# constructor
 	function Model(p::Param)
 
-		v= fill(p.myNA,p.dimvec)
-		s= fill(0,p.dimvec)
+
+		v= reshape(rand(prod((p.dimvec))),p.dimvec)
+		s= fill(-1,p.dimvec)
 		c= fill(p.myNA,p.dimvec)
 
 		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
 
 		vh = reshape(rand(prod((p.dimvec2))),p.dimvec2)
-		rho = fill(p.myNA,p.dimvec2)
+		rho = reshape(rand(prod((p.dimvec2))),p.dimvec2)
 		dh = fill(0,p.dimvec2)
 
 		EV = reshape(rand(prod((p.dimvec3))),p.dimvec3)
-		vbar = fill(p.myNA,p.dimvec3)
+		vbar = reshape(rand(prod((p.dimvec3))),p.dimvec3)
 
 		
 
@@ -68,7 +69,7 @@ type Model
 		grids["asset_rent"] = linspace(p.bounds["asset_rent"][1],p.bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
 		grids["P"]          = linspace(p.bounds["P"][1],p.bounds["P"][2],p.nP)
-		grids["Y"]          = linspace(p.bounds["Y"][1],p.bounds["Y"][2],p.nY)
+		# grids["Y"]          = linspace(p.bounds["Y"][1],p.bounds["Y"][2],p.nY)
 		grids["W"]          = zeros(p.na)
 		grids["z"]          = zeros(p.nz)
 
@@ -79,7 +80,7 @@ type Model
 		# national transition matrices
 		# ============================
 
-		GY = makeTransition(p.nY,p.rhoY)
+		# GY = makeTransition(p.nY,p.rhoY)
 		GP = makeTransition(p.nP,p.rhoP)
 
 		# Distance matrix
@@ -106,7 +107,8 @@ type Model
 		# cut ageprofile to number of regions currently running:
 		ageprofile = agep[:,1:p.nJ]
 
-		grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
+		# grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
+		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP, "dist" => dist, "ageprof" => ageprofile]
 
 		# 3D grids
 		# =========
@@ -123,7 +125,7 @@ type Model
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
 		pgrid = [grids["P"][i] .+ pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
-		ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
+		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
 		# regional transition matrices
 		# ============================
@@ -205,7 +207,7 @@ function show(io::IO, M::Model)
 	r = sizeof(M.v)+
 		        sizeof(M.c)+
 		        sizeof(M.s)+
-		        sizeof(M.grids2D["GY"])+
+		        # sizeof(M.grids2D["GY"])+
 		        sizeof(M.grids2D["GP"])+
 		        sizeof(M.grids2D["dist"])+
 		        sizeof(M.grids2D["ageprof"])+

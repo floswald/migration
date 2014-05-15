@@ -7,7 +7,7 @@ using mig
 
 facts("testing bounds on grids") do
 
-	p = mig.Param();
+	p = mig.Param(1);
 
 	# check we have all bounds in bounds
 	b1 = ["asset_rent","asset_own","P","tau","Y"]
@@ -34,11 +34,11 @@ end
 
 facts("length of dimension vectors") do
 
-	p = mig.Param();
+	p = mig.Param(1);
 
-	@fact length(p.dimvec)  == 12 => true
-	@fact length(p.dimvec2) == 11 => true
-	@fact length(p.dimvec3) == 10 => true
+	@fact length(p.dimvec)  == 11 => true
+	@fact length(p.dimvec2) == 10 => true
+	@fact length(p.dimvec3) == 9 => true
 
 end
 

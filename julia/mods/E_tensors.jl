@@ -1,37 +1,52 @@
 module E_tensors
-export T_Evbar,T_FinalV,T_Final
+export test,T_Evbar,T_FinalV,T_Final
 # Generated tensor:
-# T_Evbar V[a,h,y1,p1,Y1,P1,z1,tau,j] * Gz[z,z1] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] * GY[Y,Y1] | a,h,y,p,Y,P,z,tau,j
-function T_Evbar(GP,GY,Gp,Gy,Gz,V)
-ntau = size(V)[8]
+# test V[a,b,c] * B[b,c] | a,b,c
+function test(B,V)
+na = size(V)[1]
+nb = size(V)[2]
+nc = size(V)[3]
+@inbounds begin
+Res = zeros(na,nb,nc)
+for a = 1:na
+ for b = 1:nb
+  for c = 1:nc
+   Res[a,b,c]= 0
+   Res[a,b,c] =  Res[a,b,c].+V[a + na * (b + nb * (c-1)-1)].*B[b + nb * (c-1)]
+  end
+ end
+end
+end
+return Res
+end
+
+# Generated tensor:
+# T_Evbar V[a,h,y1,p1,P1,z1,tau,j] * Gz[z,z1,j] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] | a,h,y,p,P,z,tau,j
+function T_Evbar(GP,Gp,Gy,Gz,V)
+ntau = size(V)[7]
 nh = size(V)[2]
-nj = size(V)[9]
-nY = size(V)[5]
+nj = size(V)[8]
 na = size(V)[1]
 ny = size(V)[3]
-nz = size(V)[7]
+nz = size(V)[6]
 np = size(V)[4]
-nP = size(V)[6]
+nP = size(V)[5]
 @inbounds begin
-Res = zeros(na,nh,ny,np,nY,nP,nz,ntau,nj)
+Res = zeros(na,nh,ny,np,nP,nz,ntau,nj)
 for a = 1:na
  for h = 1:nh
   for y = 1:ny
    for p = 1:np
-    for Y = 1:nY
-     for P = 1:nP
-      for z = 1:nz
-       for tau = 1:ntau
-        for j = 1:nj
-         Res[a,h,y,p,Y,P,z,tau,j]= 0
-         for y1 = 1:ny
-          for Y1 = 1:nY
-           for P1 = 1:nP
-            for p1 = 1:np
-             for z1 = 1:nz
-              Res[a,h,y,p,Y,P,z,tau,j] =  Res[a,h,y,p,Y,P,z,tau,j].+V[a + na * (h + nh * (y1 + ny * (p1 + np * (Y1 + nY * (P1 + nP * (z1 + nz * (tau + ntau * (j-1)-1)-1)-1)-1)-1)-1)-1)].*Gz[z + nz * (z1-1)].*Gp[p + np * (p1 + np * (j-1)-1)].*Gy[y + ny * (y1 + ny * (j-1)-1)].*GP[P + nP * (P1-1)].*GY[Y + nY * (Y1-1)]
-             end
-            end
+    for P = 1:nP
+     for z = 1:nz
+      for tau = 1:ntau
+       for j = 1:nj
+        Res[a,h,y,p,P,z,tau,j]= 0
+        for y1 = 1:ny
+         for P1 = 1:nP
+          for p1 = 1:np
+           for z1 = 1:nz
+            Res[a,h,y,p,P,z,tau,j] =  Res[a,h,y,p,P,z,tau,j].+V[a + na * (h + nh * (y1 + ny * (p1 + np * (P1 + nP * (z1 + nz * (tau + ntau * (j-1)-1)-1)-1)-1)-1)-1)].*Gz[z + nz * (z1 + nz * (j-1)-1)].*Gp[p + np * (p1 + np * (j-1)-1)].*Gy[y + ny * (y1 + ny * (j-1)-1)].*GP[P + nP * (P1-1)]
            end
           end
          end
