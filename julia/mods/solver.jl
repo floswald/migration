@@ -60,227 +60,253 @@ end
 # @debug function solvePeriod!(age::Int,m::Model,p::Param)
 function solvePeriod!(age::Int,m::Model,p::Param)
 
+	# initialise some objects
+
+	vstay = zeros(2)
+	sstay = [0, 0]
+	cstay = zeros(2)
+
 	w = zeros(p.na)
+	EV = zeros(p.na)
+
+	# return value for findmax: tuple (value,index)
 	r = (0.0,0)
+
 	movecost = m.gridsXD["movecost"]
 
-	vhtmp = zeros(p.nJ) 
-	expvh = zeros(p.nJ) 
+	Gz = m.gridsXD["Gz"]
+	Gy = m.gridsXD["Gy"]
+	Gp = m.gridsXD["Gp"]
+	GP = m.grids2D["GP"]
+
+	vtmp = zeros(p.nJ) 
+	expv = zeros(p.nJ) 
 	vbartmp = 0.0
 
-	indx11 = 0
-	indx10 = 0
-	indx9  = 0
-
+	# indexes the current state: y, p, P, z, a, h, tau, current loc, age
+	jidx = 0
+	# indexes the state when moving to k: k, y, p, P, z, a, h, tau, current loc, age
+	kidx = 0
 
 	# ================
 	# loop over states
 	# ================
 
-	# dimvec  = (nh, nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+	# dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+	# V[y,p,P,z,a,h,tau,j,age]
 
+	@inbounds begin
 	for ij=1:p.nJ				# current location
 		ageeffect = m.grids2D["ageprof"][age,ij]
 		for itau=1:p.ntau			# type
 			tau = p.tau[itau]
-			for iz=1:p.nz				# individual income shock
-				z = m.grids["z"][iz]
-				for iP=1:p.nP 				# national price index
-					# for iY=1:p.nY 				# national income lebel
+			for ih=0:1
+				# choose asset grid for owner/renter
+				agrid = agridChooser(ih,m)
+				for ia=1:p.na
+					a = agrid[ia]
+					for iz=1:p.nz				# individual income shock
+						z = m.grids["z"][iz]
 						for ip=1:p.np 				# regional price deviation
-							for iy=1:p.ny 				# regional income deviation
+							for iP=1:p.nP 				# national price index
 								price = m.gridsXD["p"][iP,ip,ij]
-								y     = m.gridsXD["y"][iy,ij]
-								for ih=0:1
+								# given h, price and a, figure out if in neg equtiy
+								def=false
 
-									# choose asset grid for owner/renter
-									agrid = agridChooser(ih,m)
+								for iy=1:p.ny 				# regional income deviation
 
-									# loop over asset levels
-									for ia=1:p.na
+									y     = m.gridsXD["y"][iy,ij]
 
-										indx9 = idx9(ia,ih+1,iy,ip,iP,iz,itau,ij,age,p)
+									# now you know the index of the
+									# current state
+									jidx = idx9(iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)
 
-										a = agrid[ia]
 
-										# given h, price and a, figure out if in neg equtiy
-										def=false
+									# =================
+									# loop over choices
+									# =================
 
-										# =================
-										# loop over choices
-										# =================
+									fill!(vtmp,0.0)
+									fill!(expv,0.0)
+									vbartmp = 0.0
 
-										fill!(vhtmp,0.0)
-										fill!(expvh,0.0)
+									# location choice
+									for ik=1:p.nJ
 
-										# location choice
-										for ik=1:p.nJ
+										# now you know the index of the 
+										# state when moving to k
+										kidx = idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)
 
-											indx10 = idx10(ik,ia,ih+1,iy,ip,iP,iz,itau,ij,age,p)
+										# you stay: therefore you have got a housing choice
+										if ij==ik
 
-											# housing choice
+											# vstay is a triple (value, optimal index, consumption)
+											fill!(vstay,0.0)
+											fill!(sstay,0)
+											fill!(cstay,0.0)
+
 											for ihh in 0:1
-
-												indx11 = idx11(ihh+1,ik,ia,ih+1,iy,ip,iP,iz,itau,ij,age,p)
-
-												# println("loop: ij=$(ij), itau=$itau, iz=$iz,iP=$iP, iY=$iY, ip=$ip, iy=$iy, price=$price, y=$y,ih=$ih,ia=$ia,ik=$ik,ihh=$ihh")
-
 												# choose relevant savings grid
 												sgrid = agridChooser(ihh,m)
 
-												if ihh*(ij!=ik)==1
-												
-													# ruled out: do nothing
-													# cannot be choose h=1 and move
-													m.v[indx11] = p.myNA
-													m.c[indx11] = p.myNA
+												# reset w vector
+												fill!(w,p.myNA)
+												fill!(EV,p.myNA)
 
-												else
+												# cashfunction(a,y,ageeffect,z,ih,ihh)
+												cash = cashFunction(a,income(y,ageeffect,z),ih,ihh,price,ij!=ik,ik,p)
 
-													# reset w vector
-													fill!(w,p.myNA)
+												# find moving cost
+												mc = 0.0
 
-													# cashfunction(a,y,ageeffect,z,ih,ihh)
-													cash = cashFunction(a,income(y,ageeffect,z),ih,ihh,price,ij!=ik,ik,p)
+												# find relevant future value:
+												EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
-													# find moving cost
-													mc = movecost[age,ij,ik,ih+1,itau]
+												# optimal savings choice
+												r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
 
-													# find relevant future value:
-													EV = EVfunChooser(iz,ihh,itau,iP,ip,iy,ik,age,m,p)
+												# put into vfun, savings and cons policies
+												vstay[ihh+1] = r[1]
+												sstay[ihh+1] = r[2]
+												cstay[ihh+1] = cash - sgrid[ r[2] ]
 
-													# optimal savings choice
-													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+											end
 
-													# put into vfun, savings and cons policies
-													m.v[indx11] = r[1]
-													m.s[indx11] = r[2]
-													# m.s[idx11(ihh+1,ik,ia,ih+1,iy,ip,iP,iz,itau,ij] = r[2]
-													m.c[indx11] = cash - sgrid[ r[2] ]
+											# find optimal housing choice
+											r = findmax(vstay)
+											# and store value, discrete choice idx, savings idx and consumption
+											m.v[kidx] = r[1]
+											m.dh[jidx] = r[2]
+											m.s[kidx]  = sstay[r[2]] 
+											m.c[kidx]  = cstay[r[2]] 
 
-												end # if owner wants to move
-											end # choice: housing
+										# you move: you must sell
+										else
+											ihh = 0
+											# choose relevant savings grid
+											sgrid = agridChooser(ihh,m)
 
-											# get housing discrete choice
-											r = findmax(m.v[:,ik,ia,ih+1,iy,ip,iP,iz,itau,ij,age])
+											# reset w vector
+											fill!(w,p.myNA)
+											fill!(EV,p.myNA)	
 
-											m.vh[indx10] = r[1]
-											m.dh[indx10] = r[2]
+											# cashfunction(a,y,ageeffect,z,ih,ihh)
+											cash = cashFunction(a,income(y,ageeffect,z),ih,ihh,price,ij!=ik,ik,p)
 
-											vhtmp[ik] = r[1]
-											expvh[ik] = exp(r[1])
+											# find moving cost
+											mc = movecost[age,ij,ik,ih+1,itau]
 
-										end	# choice: location 
+											# find relevant future value:
+											EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
-										# compute vbar and rho
-										vbartmp = p.euler + log(sum(expvh))
-										m.vbar[indx9] = vbartmp
+											# optimal savings choice
+											r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
 
-										for ik in 1:p.nJ
-											m.rho[idx10(ik,ia,ih+1,iy,ip,iP,iz,itau,ij,age,p)] = exp( p.euler - vbartmp + vhtmp[ik])
+											# put into vfun, savings and cons policies
+											m.v[kidx] = r[1]
+											m.s[kidx] = r[2]
+											m.c[kidx] = cash - sgrid[ r[2] ]
+
 										end
 
-									end # state: assets
-								end	# state: housing
-							end	# state: local y-level
-						end	# state: local p-level
-					# end	# state: aggregate Y-level
-				end	# state: aggregate P-level
-			end	# state: individual z
-		end	# state: individual tau
-	end	# state: location
+										# store optimal value in tmp vector
+										# used in vbar calculation
+										vtmp[ik] = r[1]
+										expv[ik]  = exp(r[1])
 
+									end	# choice: location 
 
+									# compute vbar and rho
+									vbartmp = p.euler + log(sum(expv))
+									m.vbar[jidx] = vbartmp
 
-	# repack into m
-	# m.v[:,:,:,:,:,:,:,:,:,:,age] = v;
-	# m.s[:,:,:,:,:,:,:,:,:,:,age] = s;
-	# m.c[:,:,:,:,:,:,:,:,:,:,age] = c;
+									# compute rho: probability of moving to k given j
+									for ik in 1:p.nJ
+									m.rho[idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)] = exp( p.euler - vbartmp + vtmp[ik] )
+									end
 
-	# m.vh[:,:,:,:,:,:,:,:,:,age] = vh;
-	# m.dh[:,:,:,:,:,:,:,:,:,age] = dh;
-	# m.rho[:,:,:,:,:,:,:,:,:,age] = rho;
-	
-	# vbar is redundant: get rid of this later on
-	# m.vbar[:,:,:,:,:,:,:,:,age] = vbar;
+									# integrate vbar to get EV
+									m.EV[jidx] = integrateVbar(ia,ih+1,iy,ip,iP,iz,itau,ij,age,p,Gz,Gy,Gp,GP,m)
 
-	integrateVbar!(m,age)
+								end	# local y-level
+							end	# aggregate p-level 
+						end	# local P-level 
+					end # individual z
+				end	# assets
+			end	# housing
+		end	# individual tau
+	end	# current location
+
+	end # inbounds
 
 	return nothing
 
 end
 
+function integrateVbar(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param,Gz::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},GP::Array{Float64,2},m::Model)
+	# set index
+	idx = 0
+	# set value
+	tmp = 0.0
+	# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+	# for iz=1:p.nz				# current z
+	# 	for iP=1:p.nP 				# current P
+	# 		for ip=1:p.np 				# current p
+	# 			for iy=1:p.ny 				# current y
+	# ===========================================================
+					for iz1 = 1:p.nz			# future z
+						for iP1 = 1:p.nP 			# future P
+							for ip1 = 1:p.np 			# future p
+								for iy1=1:p.ny 				# future y
+					# ===========================================================
 
-function integrateVbar!(m::Model,age::Int)
+									# compute index in integrand: uses ix1 indices!
+					         	    idx = iy1 + p.ny * (ip1 + p.np * (iP1 + p.nP * (iz1 + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
 
-	m.EV[:,:,:,:,:,:,:,:,age] = E_tensors.T_Evbar(m.grids2D["GP"],m.gridsXD["Gp"],m.gridsXD["Gy"],m.gridsXD["Gz"],m.vbar[:,:,:,:,:,:,:,:,age])
-	return nothing
+					         	    # construct sum
+									tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)]
 
+								end
+							end
+						end
+					end
+					# ===========================================================
+	# 			end
+	# 		end
+	# 	end
+	# end
+	return tmp
 end
+
 
 
 # linear index functions
 # ======================
 
-# dimvec  = (nh, nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-function idx11(ihh::Int,ik::Int,ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param)
-	r = ihh + p.nh * (ik + p.nJ * (ia + p.na * (ih + p.nh * (iy + p.ny * (ip + p.np * (iP + p.nP * (iz + p.nz * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
 
+# dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+function idx10(ik::Int,iy::Int,ip::Int,iP::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+
+	r = ik + p.nJ * (iy + p.ny * (ip + p.np * (iP + p.nP * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
-# dimvec2 = (nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-function idx10(ik::Int,ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param)
+# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+function idx9(iy::Int,ip::Int,iP::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
 
-	r = ik + p.nJ * (ia + p.na * (ih + p.nh * (iy + p.ny * (ip + p.np * (iP + p.nP * (iz + p.nz * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	r = iy + p.ny * (ip + p.np * (iP + p.nP * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
-# dimvec3 = (na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-function idx9(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param)
+# p.na,p.nh,p.nP,p.np,p.nJ
+function idxFinal(ia::Int,ih::Int,iP::Int,ip::Int,ij::Int,p::Param)
 
-	r = ia + p.na * (ih + p.nh * (iy + p.ny * (ip + p.np * (iP + p.nP * (iz + p.nz * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
-	return r
-end
-
-
-function tfun1()
-	A = rand(1000,1000,2)
-	B = zeros(1000,1000)
-	C = zeros(Int,(1000,1000))
-	for i=1:1000
-		for j=1:1000
-			r = findmax(A[i,j,:])
-			B[i,j] = r[1]
-			C[i,j] = r[2]
-		end
-	end
-	return nothing
-end
-
-function tfun2()
-	A = rand(1000,1000,2)
-	x = mapslices(findmax,A,3)
-	return nothing
+	r = ia + p.na * (ih-1 + p.nh* (iP-1 + p.nP* (ip-1 + p.np* (ij-1))))
+    return r
 end
 
 
 
-
-
-
-
-
-function computeRhoVbar!(age::Int,m::Model,p::Param)
-
-	# dimvec3 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1))  
-	m.vbar[:,:,:,:,:,:,:,:,:,age] = p.euler .+ log( sum( exp( m.vh ), 11 ) )
-
-	# dimvec2 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nJ)
-	m.rho [:,:,:,:,:,:,:,:,:,age,:] = exp( p.euler .+ m.vh[:,:,:,:,:,:,:,:,:,age,:] .- m.vbar[:,:,:,:,:,:,:,:,age] ) 
-	return nothing
-
-end
 
 # finds optimal value and 
 # index of optimal savings choice
@@ -367,34 +393,27 @@ function agridChooser( own::Int ,m::Model)
 end
 
 
+# TODO slow
 # EV selector
 # given current state and discrete choice, which portion of
 # EV is relevant for current choice?
-function EVfunChooser(iz::Int,ihh::Int, itau::Int, iP::Int,ip::Int,iy::Int, ik::Int,age::Int,m::Model,p::Param)
+function EVfunChooser!(ev::Array{Float64,1},iz::Int,ihh::Int, itau::Int, iP::Int,ip::Int,iy::Int, ik::Int,age::Int,m::Model,p::Param)
+
 
 	if age==p.nt-1
-		m.EVfinal[:,ihh+1,iP,ip,ik]
+		for ia in 1:p.na
+			ev[ia] = m.EVfinal[ia,ihh,iP,ip,ik]
+		end
 	else 
-		m.EV[:,ihh+1,iy,ip,iP,iz,itau,ik,age+1]
+		for ia in 1:p.na
+			ev[ia] = m.EV[idx9(iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+		end
+		
 	end
-end
-
-
-# housing discrete choice
-function computeHousingDchoice!(age::Int,m::Model)
-
-	# dimvec  = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nh, nJ)
-	# r = ismaxfun(squeeze(m.v[:,:,:,:,:,:,:,:,:,age,:,:],10), 10)  # max over nh
-	r = mapslices(findmax,m.v[:,:,:,:,:,:,:,:,:,age,:,:], 11)  # max over nh
-
-	# dimvec2 = (na, nz, nh, ntau, nP, nY, np ,ny, nJ, (nt-1),  nJ)
-	# get the first elt of each tuple: the value
-	m.vh[:,:,:,:,:,:,:,:,:,age,:] = map(x->x[1],r)
-	# get the second elt of each tuple: the index
-	m.dh[:,:,:,:,:,:,:,:,:,age,:] = map(x->x[2],r)
 
 	return nothing
 end
+
 
 
 

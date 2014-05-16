@@ -61,9 +61,8 @@ type Param
 	pbounds :: Dict{ASCIIString,Dict{Int,Array{Float64,1}}}
 
 
-	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
-	dimvec3::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing - location
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
 	dimnames::Array{ASCIIString}
 
 
@@ -97,13 +96,13 @@ type Param
 
 		elseif size==2
 			# small: runs on my box
-			na    = 10
-			nz    = 2
+			na    = 15
+			nz    = 4
 			nh    = 2
 			ntau  = 2
 			nP    = 3
 			# nY    = 3
-			np    = 2
+			np    = 3
 			ny    = 3
 			nJ    = 9
 			nt    = 30
@@ -124,10 +123,9 @@ type Param
 
 		end		
 
-		dimvec  = (nh, nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-		dimvec2 = (nJ, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-		dimvec3 = (na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-		dimnames = ["hh", "k", "a", "h", "y", "p", "P", "z", "tau", "j", "age" ]
+		dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+		dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+		dimnames = ["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ]
 
 		beta    = 0.95
 		gamma   = 2
@@ -162,7 +160,7 @@ type Param
 
 		# create object
 
-			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimvec3,dimnames)
+			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimnames)
 	end
 
 	

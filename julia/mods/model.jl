@@ -3,36 +3,20 @@
 # setting up a model
 
 
-type TModel
-
-	v :: Array{Float64,12}
-	function TModel(p::Param)
-		v= fill(p.myNA,p.dimvec)
-		return new(v)
-	end
-end
-
-
-
-
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, nh, nJ, nh, ny, np, nP, nz, ntau,  na, nt-1 )
-	v :: Array{Float64,11}
-	s :: Array{Int,11}
-	c :: Array{Float64,11}
-
-	# location-optimal value and index array (maximized over housing in k)
-	# dimvec2 = (nJ	, na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
-	vh  :: Array{Float64,10}
+	# dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+	v   :: Array{Float64,10}
+	s   :: Array{Int,10}
+	c   :: Array{Float64,10}
 	rho :: Array{Float64,10}
-	dh  :: Array{Int,10}
 
 	# top-level value maxed over housing and location
-	# dimvec3 = (na, nh, ny, np, nP, nz, ntau,  nJ, nt-1 )
+	# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	EV   :: Array{Float64,9}
 	vbar :: Array{Float64,9}
+	dh   :: Array{Int,9}
 
 	# expected final period value
 	# dimensions: a,h,P,j,pj
@@ -50,15 +34,14 @@ type Model
 		v= reshape(rand(prod((p.dimvec))),p.dimvec)
 		s= fill(-1,p.dimvec)
 		c= fill(p.myNA,p.dimvec)
+		rho = reshape(rand(prod((p.dimvec))),p.dimvec)
 
 		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
 
-		vh = reshape(rand(prod((p.dimvec2))),p.dimvec2)
-		rho = reshape(rand(prod((p.dimvec2))),p.dimvec2)
 		dh = fill(0,p.dimvec2)
 
-		EV = reshape(rand(prod((p.dimvec3))),p.dimvec3)
-		vbar = reshape(rand(prod((p.dimvec3))),p.dimvec3)
+		EV = reshape(rand(prod((p.dimvec2))),p.dimvec2)
+		vbar = reshape(rand(prod((p.dimvec2))),p.dimvec2)
 
 		
 
@@ -156,7 +139,7 @@ type Model
 
 
 
-		return new(v,s,c,vh,rho,dh,EV,vbar,EVfinal,grids,grids2D,gridsXD)
+		return new(v,s,c,rho,EV,vbar,dh,EVfinal,grids,grids2D,gridsXD)
 
 	end
 
@@ -216,7 +199,6 @@ function show(io::IO, M::Model)
 		        sizeof(M.gridsXD["Gp"])+
 		        sizeof(M.gridsXD["p"])+
 		        sizeof(M.gridsXD["y"])+
-		        sizeof(M.vh)+
 		        sizeof(M.dh)+
 		        sizeof(M.rho)+
 		        sizeof(M.vbar)+

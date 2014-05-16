@@ -21,7 +21,7 @@ return Res
 end
 
 # Generated tensor:
-# T_Evbar V[a,h,y1,p1,P1,z1,tau,j] * Gz[z,z1,j] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] | a,h,y,p,P,z,tau,j
+# T_Evbar V[a,h,y1,p1,P1,z1,tau,j,age] * Gz[z,z1,j] * Gp[p,p1,j] * Gy[y,y1,j] * GP[P,P1] | a,h,y,p,P,z,tau,j,age
 function T_Evbar(GP,Gp,Gy,Gz,V)
 ntau = size(V)[7]
 nh = size(V)[2]
@@ -29,10 +29,11 @@ nj = size(V)[8]
 na = size(V)[1]
 ny = size(V)[3]
 nz = size(V)[6]
-np = size(V)[4]
+nage = size(V)[9]
 nP = size(V)[5]
+np = size(V)[4]
 @inbounds begin
-Res = zeros(na,nh,ny,np,nP,nz,ntau,nj)
+Res = zeros(na,nh,ny,np,nP,nz,ntau,nj,nage)
 for a = 1:na
  for h = 1:nh
   for y = 1:ny
@@ -41,12 +42,14 @@ for a = 1:na
      for z = 1:nz
       for tau = 1:ntau
        for j = 1:nj
-        Res[a,h,y,p,P,z,tau,j]= 0
-        for y1 = 1:ny
-         for P1 = 1:nP
-          for p1 = 1:np
-           for z1 = 1:nz
-            Res[a,h,y,p,P,z,tau,j] =  Res[a,h,y,p,P,z,tau,j].+V[a + na * (h + nh * (y1 + ny * (p1 + np * (P1 + nP * (z1 + nz * (tau + ntau * (j-1)-1)-1)-1)-1)-1)-1)].*Gz[z + nz * (z1 + nz * (j-1)-1)].*Gp[p + np * (p1 + np * (j-1)-1)].*Gy[y + ny * (y1 + ny * (j-1)-1)].*GP[P + nP * (P1-1)]
+        for age = 1:nage
+         Res[a,h,y,p,P,z,tau,j,age]= 0
+         for y1 = 1:ny
+          for P1 = 1:nP
+           for p1 = 1:np
+            for z1 = 1:nz
+             Res[a,h,y,p,P,z,tau,j,age] =  Res[a,h,y,p,P,z,tau,j,age].+V[a + na * (h + nh * (y1 + ny * (p1 + np * (P1 + nP * (z1 + nz * (tau + ntau * (j + nj * (age-1)-1)-1)-1)-1)-1)-1)-1)].*Gz[z + nz * (z1 + nz * (j-1)-1)].*Gp[p + np * (p1 + np * (j-1)-1)].*Gy[y + ny * (y1 + ny * (j-1)-1)].*GP[P + nP * (P1-1)]
+            end
            end
           end
          end
