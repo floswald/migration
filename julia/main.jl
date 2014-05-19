@@ -17,9 +17,11 @@ m = mig.Model(p)
 @time mig.solve!(m,p)
 @profile mig.solve!(m,p)
 
+# plot value function
+mig.vplot(m,p)
 
 
-function T_Evbar(GP,Gp,Gy,Gz,V)
+# simulating
 
 
 

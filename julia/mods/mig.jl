@@ -1,7 +1,7 @@
 module mig
 
 import Base.LinAlg: copytri! 
-using JSON, Debug
+using JSON, Debug, PyPlot
 
 export Param, Model
 
@@ -10,6 +10,7 @@ include("param.jl")
 include("model.jl")
 include("E_tensors.jl")
 include("solver.jl")
+include("plotting.jl")
 
 end
 

@@ -72,6 +72,10 @@ HouseValueModel <- function(d,path){
 
 
 
+# TODO 
+# get empirical autocrrelation
+# merged[HHincome>0,acf(HHincome,lag.max=1,plot=FALSE)$acf[2], by=Division]
+
 
 #' Linear Random Effects Panel Model of Income
 #'
@@ -120,8 +124,8 @@ RE.HHincome <- function(dat,geo="Division",
 	kv <- c("HHincome","upid","age","age2","cohort","timeid","state")
 	dat <- dat[HHincome>0,kv,with=FALSE]
 
-	coh <- model.matrix(~cohort -1 ,data=dat)
-	dat <- cbind(dat,coh)
+	# coh <- model.matrix(~cohort -1 ,data=dat)
+	# dat <- cbind(dat,coh)
 
 	# this formulation if you use the predict.lme
 	#AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(logHHincome ~ age + I(age^2) +cohort , random=~1|upid,correlation=corAR1(0,form=~yrmnid|upid),data=subset(dat,state==x))})
@@ -129,8 +133,11 @@ RE.HHincome <- function(dat,geo="Division",
 	# problem with using the actual object to make predictions: you will never have individual i (estimated effect in state j) in the object
 	# for state k. so you cannot predict state k.
 
-	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
+	# AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 + cohort1920  + cohort1940 + cohort1960 + cohort1980, random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
+	AR1 <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lme(log(HHincome) ~ age + age2 , random=~1|upid,correlation=corAR1(0,form=~timeid|upid),data=subset(dat,state==x))})
+	lms <- lapply(st, function(x) {cat(sprintf("estimating model for %s\n",x)); lm(log(HHincome) ~ age + age2 , data=subset(dat,state==x))})
 	names(AR1) <- st
+	names(lms) <- st
 
 	# print a subset of states to one table
 	fi <- "incomeRE-123.tex"
@@ -153,12 +160,44 @@ RE.HHincome <- function(dat,geo="Division",
 
 	# save coefs into a handy list
 	RE.coefs <- lapply(AR1,lme.getCoefs)
+
+	# write to json
+	write.csv(t(sapply(RE.coefs,function(x) x$fixed)),file=file.path(path,"Div-Ageprofile.csv"))
+	write.csv(t(sapply(RE.coefs,function(x) x[c("rho","sigma","sig.RE")])),file=file.path(path,"Div-IncParams.csv"))
+
+	if (geo=="Division"){
+		nd = data.frame(const=1,age=20:65,age2=(20:65)^2)
+		md = as.matrix(nd)
+		for (i in st){
+			nd = cbind(nd,md %*% fixef(AR1[[i]]))
+		}
+		names(nd)[-(1:3)] <- st
+		md = melt(nd[,c("age",st)],id.vars="age")
+		names(md) <- c("age","Division","value")
+		pl <- ggplot(md,aes(x=age,y=1000*exp(value),color=Division)) + geom_line(size=1) + theme_bw() + ggtitle('Age Profiles') + scale_y_continuous(name="Annual income in 1996 US Dollars")
+		pl <- pl + scale_color_manual(values=getcbPalette(n=9))
+		pdf(file=file.path(path,"Div-Profiles.pdf"),width=8,height=6)
+		print(pl)
+		dev.off()
+	}
+
+	# out = data.frame(t(sapply(RE.coefs,function(x) x$fixed)))
+	# out = cbind(out,as.numeric(lapply(RE.coefs,function(x) x$rho)))
+	# out = cbind(out,as.numeric(lapply(RE.coefs,function(x) x$sigma)))
+	# out = cbind(out,as.numeric(lapply(RE.coefs,function(x) x$sig.RE)))
+	# out$region = rownames(out)
+	# names(out) = c(names(RE.coefs[[1]]$fixed), c("rho","sigma","sigRE"))
+
+	# write.csv(out,file=file.path(path,"Div-ageprofile.csv"),row.names=FALSE)
+
+
+
 	attr(RE.coefs,"type") <- "RE.coefs"
 	saveRDS(RE.coefs,file=file.path(path,fname))
 	#RE.models <- AR1
 	#save(RE.models,file=file.path(path,"income-REmodels.RData"))
 
-	return(RE.coefs)
+	return(list(RE.coefs,lms))
 }
 
 

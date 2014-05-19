@@ -82,7 +82,7 @@ makeHomeValues <- function(freq,path="~/git/migration/mig-pkg/data/"){
 #' @family ExpectationsModel
 #' @examples
 #' data(US_medinc,package="EconData")
-#' makeHPIDivDifferences()a
+#' makeDivDifferences()
 makeDivDifferences <- function(path=NULL){
 
 	r <- list()
@@ -126,22 +126,30 @@ makeDivDifferences <- function(path=NULL){
 	d[STATE=="     united states",c("state","Division") := list("USA","USA")]
 	d[,STATE := NULL]
 	
-	div <- d[,list(medinc=mean(log(medinc))),by=list(Year,Division)]
+	div <- d[,list(meanmedinc=mean(log(medinc)),minmedinc=min(log(medinc)),maxmedinc=max(log(medinc))),by=list(Year,Division)]
+
+	# normalizing constant for model:
+	normalize = d[Year==1996,mean(medinc)]
 
 	# define "deviation" as difference in logs i.e. percentage difference
-	div[,dev := .SD[Division=="USA"][["medinc"]] - medinc ]
+	div[,dev := meanmedinc - .SD[Division=="USA"][["meanmedinc"]] ]
 	div[,Division := factor(Division)]
 	div[,Division := relevel(Division,"USA")]
 		
+	div2 <- div[Division!="USA",list(meddev=mean(dev),mindev=min(dev),maxdev=max(dev)),by=Division]
+	div2[,Division := abbreviate(Division,3)]
+	setkey(div2,Division)
+
 	# collect results
 
 	r$income <- list()
 	r$income$d <- div
+	r$income$d2 <- div2
 
 	# plots
-	r$income$plevel <- ggplot(div,aes(x=Year,y=medinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
+	r$income$plevel <- ggplot(div,aes(x=Year,y=meanmedinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
 
-	r$income$pdevs  <- ggplot(div,aes(x=Year,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviations from median log income') + scale_size_manual(values=c(1.5,rep(1,9))) + theme_bw()
+	r$income$pdevs  <- ggplot(div,aes(x=Year,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviations from US median log income') + scale_size_manual(values=c(1.5,rep(1,9))) + theme_bw()
 
 
 	# Lincoln House values in 96 dollars
@@ -156,22 +164,46 @@ makeDivDifferences <- function(path=NULL){
 	divH <- rbind(divH,US,use.names=TRUE)
 	divH[,Division := factor(Division)]
 	divH[,Division := relevel(Division,"USA")]
-	divH[,dev := .SD[Division=="USA"][["p"]] - p ]
+	divH[,dev := p - .SD[Division=="USA"][["p"]] ]
 
 	r$price <- list()
-	r$price$meanp <- dat[,list(p=mean(log(y))),by=state]
+	r$price$meanstate <- dat[,list(mean=mean(log(y)),min=min(log(y)),max=max(log(y))),by=state]
+	div2 <- div[Division!="USA",list(meddev=mean(dev),mindev=min(dev),maxdev=max(dev)),by=Division]
+	div2[,Division := abbreviate(Division,3)]
+	setkey(div2,Division)
+	r$price$meandiv <- div2
 	r$price$d <- divH
 
 	r$price$plevel <- ggplot(divH,aes(x=date,y=p,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('mean log house values') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
 
-	r$price$pdevs  <- ggplot(divH,aes(x=date,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviation from national mean house value') + scale_size_manual(values=c(1.5,rep(1,9))) + scale_y_continuous(name="log(P) - log(p_d)")+ theme_bw()
+	r$price$pdevs  <- ggplot(divH,aes(x=date,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviation from national mean house value') + scale_size_manual(values=c(1.5,rep(1,9))) + scale_y_continuous(name="log(p_d) - log(P)")+ theme_bw()
+
+
+	#  US national price to income ratio
+	# ==================================
+
+	r$price$p2y = data.table(year=seq(from=as.Date("1984-1-1"),to=as.Date("2012-1-1"),by="year"),p2y=r$price$d[date>1983 & date<2013 & Division=="USA", exp(p)] / r$inc$d[Division=="USA",exp(meanmedinc)])
+
+	rexp = r$price$p2y
+	rexp[,year := year(year)]
+
+	r$price$p_p2y <- ggplot(r$price$p2y,aes(x=year,y=p2y)) + geom_line(size=1.2) + theme_bw() + scale_y_continuous(name="US Price to Income ratio")
+
+	write.csv(r$income$d2,file="~/Dropbox/mobility/output/model/R2julia/divincome.csv")
+	write.csv(r$price$meandiv,file="~/Dropbox/mobility/output/model/R2julia/divprice.csv")
+	write.csv(rexp,file="~/Dropbox/mobility/output/model/R2julia/p2y.csv")
+	write.csv(normalize,file="~/Dropbox/mobility/output/model/R2julia/normalize.csv")
 
 	if (!is.null(path)){
+
+
 
 		ggsave(plot=r$price$plevel,filename=file.path(path,"DivisionPriceLevel.pdf"),width=23,height=15,units="cm")
 		ggsave(plot=r$price$pdevs,filename=file.path(path,"DivisionPriceDevs.pdf"),width=23,height=15,units="cm")
 		ggsave(plot=r$income$plevel,filename=file.path(path,"DivisionIncomeLevel.pdf"),width=23,height=15,units="cm")
 		ggsave(plot=r$income$pdevs,filename=file.path(path,"DivisionIncomeDevs.pdf"),width=23,height=15,units="cm")
+		ggsave(plot=r$price$p_p2y,filename=file.path(path,"price2income.pdf"),width=23,height=15,units="cm")
+
 	}
 
 
@@ -183,7 +215,7 @@ makeDivDifferences <- function(path=NULL){
 #' Estimate deviations models
 #' 
 #' @family ExpectationsModel
-estimateDivDeviations <- function(dat){
+estimateDivDeviations <- function(dat,path="~/Dropbox/mobility/output/model/R2julia"){
 
 	stopifnot( is(dat,c("list","divData")) )
 
@@ -218,6 +250,11 @@ estimateDivDeviations <- function(dat){
 	colnames(tmpd)[3] <- "sigma"
 
 	r$price <- tmpd
+
+	write.csv(r$price,file=file.path(path,"rho-price.csv"))
+	write.csv(r$inc,file=file.path(path,"rho-income.csv"))
+
+
 
 	class(r) <- c("list","divModels")
 

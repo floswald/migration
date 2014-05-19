@@ -2,8 +2,6 @@
 
 
 # testing solver.jl
-# test computation functions here and not
-# correct array contents. thats in test_model
 
 module test_solver
 

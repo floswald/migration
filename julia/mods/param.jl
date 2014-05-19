@@ -41,6 +41,7 @@ type Param
 	maxAge::Int 	# maximal age in model
 	minAge::Int 	# maximal age in model
 	euler::Float64
+	medinc::Float64 # median income in 1996
 
 	# numerical setup
 	# points in each dimension
@@ -58,12 +59,17 @@ type Param
 
 	# bounds on grids
 	bounds  :: Dict{ASCIIString,(Float64,Float64)}
-	pbounds :: Dict{ASCIIString,Dict{Int,Array{Float64,1}}}
+	pbounds :: Dict{ASCIIString,Array{Any,2}}
 
 
 	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
 	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
 	dimnames::Array{ASCIIString}
+	regnames::Array{ASCIIString}
+
+	Ageprof::Array{Any,2}
+	IncomeParams::Array{Any,2}
+	distance::Array{Any,2}
 
 
 
@@ -73,13 +79,32 @@ type Param
 		bounds = ["asset_own" => (-10.0,10.0)]   
 		bounds["asset_rent"] = (0.01,10.0)
 		bounds["tau"]        = (0.0,1.0)
-		bounds["P"]          = (1.0,5.0)
 		# bounds["Y"]          = (0.5,1.5)
-		pbounds = ["p" => [i => sort(rand(2)) for i = 1:9] ]
-		pbounds["y"] = [i => sort(rand(2)) for i = 1:9] 
 
-		
-		
+		# get bounds data from R
+		xy = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/divincome.csv")
+		xy = xy[2:end,2:end]
+		pbounds = ["y" => xy[:,3:4]]
+
+		xp = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/divprice.csv")
+		xp = xp[2:end,2:end]
+		pbounds["p"] = xp[:,3:4]
+
+		regnames = xy[:,1]
+
+		AgeP = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/BBL/inc-process/Div-AgeProfile.csv")
+		AgeP = AgeP[2:end,:]
+		IncomeParams = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/BBL/inc-process/Div-IncParams.csv")
+
+		dist = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/distance.csv")
+
+		xP = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/p2y.csv")
+		xP = xP[2:end,2:end]
+		xP = xP[xP[:,1] .> 1995,:]
+		bounds["P"]  = (minimum(xP[:,2]),maximum(xP[:,2]))
+
+		medinc = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/normalize.csv")
+
 		if size==1
 
 			# super small: use for tests
@@ -123,6 +148,10 @@ type Param
 
 		end		
 
+		# TODO
+		# find the middle indices of p and y
+		# to compute "unconditional expectation"
+
 		dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 		dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 		dimnames = ["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ]
@@ -137,16 +166,20 @@ type Param
 		taudist = rand(ntau)
 		taudist = taudist/sum(taudist)
 		xi      = 0.5
-		omega   = [1.0, 0.8]
+		omega   = [0.1, 0.1]
 
 		# other parameters
 		MC    = [0.1, 0.2, 0.3] # parameters in moving cost: alpha1, alpha2, alpha3
 		kappa = [rand() for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
 
-		rhop = rand(nJ)
-		rhoy = rand(nJ)
-		rhoz = rand(nJ)
+
+		x = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/rho-income.csv")
+		rhoy = x[2:end,3]
+		x = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/rho-price.csv")
+		rhop =  x[2:end,3]
+
+		rhoz = IncomeParams[2:end,2]
 		rhoP = rand()
 		# rhoY = rand()
 
@@ -155,12 +188,13 @@ type Param
 		chi = 0.2   # downpayment ratio
 		myNA = -999
 		maxAge = 50
-		minAge = 50
+		minAge = 20
 		euler = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 
 		# create object
 
-			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimnames)
+			# return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny)
+			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,medinc,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimnames,regnames,AgeP,IncomeParams,dist)
 	end
 
 	

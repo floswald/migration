@@ -72,6 +72,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# return value for findmax: tuple (value,index)
 	r = (0.0,0)
 
+	canbuy = false
+
 	movecost = m.gridsXD["movecost"]
 
 	Gz = m.gridsXD["Gz"]
@@ -116,6 +118,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								for iy=1:p.ny 				# regional income deviation
 
 									y     = m.gridsXD["y"][iy,ij]
+									yy    = income(y,ageeffect,z)
+
+									canbuy = grossSaving(a,p) + yy > p.chi * price
 
 									# now you know the index of the
 									# current state
@@ -140,47 +145,94 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# you stay: therefore you have got a housing choice
 										if ij==ik
 
+
 											# vstay is a triple (value, optimal index, consumption)
-											fill!(vstay,0.0)
+											fill!(vstay,p.myNA)
 											fill!(sstay,0)
 											fill!(cstay,0.0)
 
+											# optimal housing choice
 											for ihh in 0:1
-												# choose relevant savings grid
-												sgrid = agridChooser(ihh,m)
 
-												# reset w vector
-												fill!(w,p.myNA)
-												fill!(EV,p.myNA)
+												# you can only buy if you have enough cash
+												if ((1-ih)*ihh == 1) && canbuy
 
-												# cashfunction(a,y,ageeffect,z,ih,ihh)
-												cash = cashFunction(a,income(y,ageeffect,z),ih,ihh,price,ij!=ik,ik,p)
+													# you can buy
+													# choose relevant savings grid
+													sgrid = agridChooser(ihh,m)
+													# reset w vector
+													fill!(w,p.myNA)
+													fill!(EV,p.myNA)
 
-												# find moving cost
-												mc = 0.0
+													# cashfunction(a,y,ageeffect,z,ih,ihh)
+													cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
 
-												# find relevant future value:
-												EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+													# find moving cost
+													mc = 0.0
 
-												# optimal savings choice
-												r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+													# find relevant future value:
+													EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
-												# put into vfun, savings and cons policies
-												vstay[ihh+1] = r[1]
-												sstay[ihh+1] = r[2]
-												cstay[ihh+1] = cash - sgrid[ r[2] ]
+													# optimal savings choice
+													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+
+													# put into vfun, savings and cons policies
+													vstay[ihh+1] = r[1]
+													sstay[ihh+1] = r[2]
+													cstay[ihh+1] = cash - sgrid[ r[2] ]
+
+												else
+													# you are a renter staying renter
+													# you are an owner staying owner
+													# you are an owner becoming renter
+
+													# choose relevant savings grid
+													sgrid = agridChooser(ihh,m)
+													# reset w vector
+													fill!(w,p.myNA)
+													fill!(EV,p.myNA)
+
+													# cashfunction(a,y,ageeffect,z,ih,ihh)
+													cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
+
+													# find moving cost
+													mc = 0.0
+
+													# find relevant future value:
+													EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+
+													# optimal savings choice
+													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+
+													# put into vfun, savings and cons policies
+													vstay[ihh+1] = r[1]
+													sstay[ihh+1] = r[2]
+													cstay[ihh+1] = cash - sgrid[ r[2] ]
+
+												end
 
 											end
 
 											# find optimal housing choice
 											r = findmax(vstay)
 											# and store value, discrete choice idx, savings idx and consumption
-											m.v[kidx] = r[1]
-											m.dh[jidx] = r[2]
-											m.s[kidx]  = sstay[r[2]] 
-											m.c[kidx]  = cstay[r[2]] 
 
-										# you move: you must sell
+											# checking for feasible choices
+											if r[1] > p.myNA
+												m.v[kidx]  = r[1]
+												m.dh[jidx] = r[2]
+												m.s[kidx]  = sstay[r[2]] 
+												m.c[kidx]  = cstay[r[2]]								
+											else
+												# infeasible
+												m.v[kidx]  = r[1]
+												m.dh[jidx] = 0
+												m.s[kidx] = 0
+												m.c[kidx] = 0
+											end
+
+
+										# you move locations: you must sell
 										else
 											ihh = 0
 											# choose relevant savings grid
@@ -191,7 +243,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											fill!(EV,p.myNA)	
 
 											# cashfunction(a,y,ageeffect,z,ih,ihh)
-											cash = cashFunction(a,income(y,ageeffect,z),ih,ihh,price,ij!=ik,ik,p)
+											cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
 
 											# find moving cost
 											mc = movecost[age,ij,ik,ih+1,itau]
@@ -199,13 +251,25 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# find relevant future value:
 											EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
+											# TODO
+											# you could just fix (ip,iy) at middle index here
+											# to get "unconditional distribution"
+											# EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+
 											# optimal savings choice
 											r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
 
 											# put into vfun, savings and cons policies
 											m.v[kidx] = r[1]
-											m.s[kidx] = r[2]
-											m.c[kidx] = cash - sgrid[ r[2] ]
+
+											# checking for infeasible choices
+											if r[1] > p.myNA
+												m.s[kidx] = r[2]
+												m.c[kidx] = cash - sgrid[ r[2] ]
+											else
+												m.s[kidx] = 0
+												m.c[kidx] = 0
+											end
 
 										end
 
@@ -230,6 +294,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 								end	# local y-level
 							end	# aggregate p-level 
+							# independent of that: expectation over prices in k
+							# integrateVbark()
+
 						end	# local P-level 
 					end # individual z
 				end	# assets

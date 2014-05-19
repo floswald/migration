@@ -69,45 +69,50 @@ type Model
 		# Distance matrix
 		# ===============
 
-		dist = rand(p.nJ,p.nJ) * 1000.0
-		dist[ diagind(dist,0) ] = 0
-		Base.LinAlg.copytri!(dist,'U')
+		# dist = rand(p.nJ,p.nJ) * 1000.0
+		# dist[ diagind(dist,0) ] = 0
+		# Base.LinAlg.copytri!(dist,'U')
+
 
 		# age profile by region
 		# =====================
 
 		agemat = hcat(ones(p.nt),p.minAge:(p.minAge+p.nt-1))
 		agemat = hcat(agemat,agemat[:,2].^2)
-		AgeP = JSON.parsefile("/Users/florianoswald/Dropbox/mobility/output/model/BBL/inc-process/Div-REcoefs.json")
-		agep = zeros(p.nt,length(AgeP))
+		agep = zeros(p.nt,size(p.Ageprof,1))
 
-		i = 0
-		for j in keys(AgeP)
-			i = i+1
-			agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+		for j=1:9
+			agep[:,j] = agemat * transpose(p.Ageprof[j,2:end])
 		end
+
+		# i = 0
+		# for j in keys(AgeP)
+		# 	i = i+1
+		# 	agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+		# end
 
 		# cut ageprofile to number of regions currently running:
 		ageprofile = agep[:,1:p.nJ]
 
 		# grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
-		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP, "dist" => dist, "ageprof" => ageprofile]
+		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP, "ageprof" => ageprofile]
 
 		# 3D grids
 		# =========
 
 		# regional prices
 		# 3D array (national_price,regional_price,region_id)
+		# these are the percentage deviations from trend
 		ygrid = zeros(p.ny,p.nJ)
 		pgrid = zeros(p.np,p.nJ)
 		for i = 1:p.nJ
-			pgrid[:,i] = linspace(p.pbounds["p"][i][1], p.pbounds["p"][i][2], p.np)
-		    ygrid[:,i] = linspace(p.pbounds["y"][i][1], p.pbounds["y"][i][2], p.ny)
+			pgrid[:,i] = linspace(p.pbounds["p"][i,1], p.pbounds["p"][i,2], p.np)
+		    ygrid[:,i] = linspace(p.pbounds["y"][i,1], p.pbounds["y"][i,2], p.ny)
 		end
 
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
-		pgrid = [grids["P"][i] .+ pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		pgrid = [grids["P"][i] .* (1+pgrid[j,k]) for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
 		# regional transition matrices
@@ -127,7 +132,7 @@ type Model
 				for ik in 1:p.nJ
 					for ih in 0:1
 						for itau in 1:p.ntau
-							mc[it,ij,ik,ih+1,itau] = (ij!=ik) * (p.tau[itau] + p.MC[1]*ih + p.MC[2] * dist[ij,ik] + p.MC[3] * it )
+							mc[it,ij,ik,ih+1,itau] = (ij!=ik) * (p.tau[itau] + p.MC[1]*ih + p.MC[2] * p.distance[ij+1,ik+1] + p.MC[3] * it )
 						end
 					end
 				end
@@ -148,6 +153,15 @@ type Model
 end
 
 
+
+# function logAssets(p::Param,x)
+
+# 	out = zeros(length(x))
+# 		off = 1	# offset for log(0) in case b[1] is positive
+# 		out[1]            <- log(x[1] + off)
+# 		out[end]            <- log(x[end] + off)
+# 		out               <- linspace(out[1],out[end],round(p.na/2)
+# 		out               <- exp( out ) .- off
 
 
 
@@ -192,7 +206,6 @@ function show(io::IO, M::Model)
 		        sizeof(M.s)+
 		        # sizeof(M.grids2D["GY"])+
 		        sizeof(M.grids2D["GP"])+
-		        sizeof(M.grids2D["dist"])+
 		        sizeof(M.grids2D["ageprof"])+
 		        sizeof(M.gridsXD["movecost"])+
 		        sizeof(M.gridsXD["Gy"])+
