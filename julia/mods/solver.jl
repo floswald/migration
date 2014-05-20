@@ -6,6 +6,9 @@
 # main loop
 function solve!(m::Model, p::Param)
 
+	# set v to na
+	fill!(m.v,p.myNA)
+
 	# final period
 	solveFinal!(m,p)
 
@@ -72,6 +75,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# return value for findmax: tuple (value,index)
 	r = (0.0,0)
 
+	first = 1
+
 	canbuy = false
 
 	movecost = m.gridsXD["movecost"]
@@ -97,18 +102,21 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	# V[y,p,P,z,a,h,tau,j,age]
 
+	sgrid = m.grids["asset_own"]
+	agrid = m.grids["asset_own"]
+
 	@inbounds begin
 	for ij=1:p.nJ				# current location
-		ageeffect = m.grids2D["ageprof"][age,ij]
 		for itau=1:p.ntau			# type
 			tau = p.tau[itau]
 			for ih=0:1
 				# choose asset grid for owner/renter
-				agrid = agridChooser(ih,m)
-				for ia=1:p.na
+				# agrid = agridChooser(ih,m)
+				first = ih + (1-ih)*m.aone
+				for ia=first:p.na
 					a = agrid[ia]
 					for iz=1:p.nz				# individual income shock
-						z = m.grids["z"][iz]
+						z = m.gridsXD["z"][iz,ij,age]
 						for ip=1:p.np 				# regional price deviation
 							for iP=1:p.nP 				# national price index
 								price = m.gridsXD["p"][iP,ip,ij]
@@ -118,7 +126,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								for iy=1:p.ny 				# regional income deviation
 
 									y     = m.gridsXD["y"][iy,ij]
-									yy    = income(y,ageeffect,z)
+									# yy    = income(y,ageeffect,z)
+									yy    = income(y,z)
 
 									canbuy = grossSaving(a,p) + yy > p.chi * price
 
@@ -146,7 +155,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										if ij==ik
 
 
-											# vstay is a triple (value, optimal index, consumption)
 											fill!(vstay,p.myNA)
 											fill!(sstay,0)
 											fill!(cstay,0.0)
@@ -159,7 +167,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 													# you can buy
 													# choose relevant savings grid
-													sgrid = agridChooser(ihh,m)
+													# sgrid = sgridChooser(ihh,age,m,p)
 													# reset w vector
 													fill!(w,p.myNA)
 													fill!(EV,p.myNA)
@@ -174,7 +182,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
 													# optimal savings choice
-													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV,m.aone)
 
 													# put into vfun, savings and cons policies
 													vstay[ihh+1] = r[1]
@@ -187,7 +195,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													# you are an owner becoming renter
 
 													# choose relevant savings grid
-													sgrid = agridChooser(ihh,m)
+													# sgrid = sgridChooser(ihh,age,m,p)
 													# reset w vector
 													fill!(w,p.myNA)
 													fill!(EV,p.myNA)
@@ -202,7 +210,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
 													# optimal savings choice
-													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+													r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV,m.aone)
 
 													# put into vfun, savings and cons policies
 													vstay[ihh+1] = r[1]
@@ -236,7 +244,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										else
 											ihh = 0
 											# choose relevant savings grid
-											sgrid = agridChooser(ihh,m)
+											# sgrid = sgridChooser(ihh,age,m,p)
 
 											# reset w vector
 											fill!(w,p.myNA)
@@ -257,7 +265,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
 
 											# optimal savings choice
-											r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV)
+											r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV,m.aone)
 
 											# put into vfun, savings and cons policies
 											m.v[kidx] = r[1]
@@ -379,14 +387,21 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(x::Float64,p::Param,s::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1})
+function maxvalue(x::Float64,p::Param,s::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},aone::Int)
 
 	@assert length(s) == length(w)
 	@assert length(s) == length(EV)
 
 	# v = max u(cash - s) + beta EV(s,h=1,j,t+1)
 
-	for i=1:p.na
+	first = 1
+
+	if own==0
+		first = aone
+	end
+
+
+	for i=first:p.na
 		if x-s[i] > 0
 			w[i] = ufun(x-s[i],own,mc,def,p) + p.beta * EV[i]
 		end
@@ -433,9 +448,8 @@ function grossSaving(x::Float64,p::Param)
 end
 
 
-function income(muy::Float64,ageeff::Float64,shock::Float64)
-	# y = muy + f(i,j,t) + shock
-	y = muy + ageeff + shock
+function income(muy::Float64,shock::Float64)
+	y = muy*shock
 end
 
 
@@ -449,8 +463,8 @@ function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price::Float64,m
 end
 
 
-# sgridChooser
-# chooses the appropriate savings grid
+# agridChooser
+# chooses the appropriate asset grid
 function agridChooser( own::Int ,m::Model)
 	if (own==1)
 		return m.grids["asset_own"]
@@ -458,6 +472,15 @@ function agridChooser( own::Int ,m::Model)
 		return m.grids["asset_rent"]
 	end
 end
+
+function sgridChooser( own::Int ,age::Int ,m::Model,p::Param)
+	if (age<(p.nt-1) && own==1) 
+		return m.grids["asset_own"]
+	else
+		return m.grids["asset_rent"]
+	end
+end
+
 
 
 # TODO slow

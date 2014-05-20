@@ -1,7 +1,7 @@
 module mig
 
-import Base.LinAlg: copytri! 
-using JSON, Debug, PyPlot
+using JSON, Debug, PyPlot, DataFrames 
+import Distributions: Categorical, rand
 
 export Param, Model
 
@@ -11,6 +11,7 @@ include("model.jl")
 include("E_tensors.jl")
 include("solver.jl")
 include("plotting.jl")
+include("simulator.jl")
 
 end
 

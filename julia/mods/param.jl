@@ -40,6 +40,7 @@ type Param
 	myNA:: Float64
 	maxAge::Int 	# maximal age in model
 	minAge::Int 	# maximal age in model
+	ages::UnitRange{Int} 	# maximal age in model
 	euler::Float64
 	medinc::Float64 # median income in 1996
 
@@ -57,6 +58,9 @@ type Param
 	np   ::Int # number of price levels in each location
 	ny   ::Int # number of income levels by location
 
+	# used in simulations
+	nsim::Int # number of individuals in each location
+
 	# bounds on grids
 	bounds  :: Dict{ASCIIString,(Float64,Float64)}
 	pbounds :: Dict{ASCIIString,Array{Any,2}}
@@ -64,7 +68,8 @@ type Param
 
 	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
 	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
-	dimnames::Array{ASCIIString}
+	# dimnames::Array{ASCIIString}
+	dimnames::DataFrame
 	regnames::Array{ASCIIString}
 
 	Ageprof::Array{Any,2}
@@ -73,15 +78,16 @@ type Param
 
 
 
+
 	# constructor assigning initial values
 	function Param(size::Int)
 
 		bounds = ["asset_own" => (-10.0,10.0)]   
 		bounds["asset_rent"] = (0.01,10.0)
-		bounds["tau"]        = (0.0,1.0)
+		bounds["tau"]        = (0.0,0.1)
 		# bounds["Y"]          = (0.5,1.5)
 
-		# get bounds data from R
+		# get data from R
 		xy = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/divincome.csv")
 		xy = xy[2:end,2:end]
 		pbounds = ["y" => xy[:,3:4]]
@@ -104,6 +110,8 @@ type Param
 		bounds["P"]  = (minimum(xP[:,2]),maximum(xP[:,2]))
 
 		medinc = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/normalize.csv")
+		medinc = medinc[2,2]
+
 
 		if size==1
 
@@ -118,6 +126,7 @@ type Param
 			ny    = 2
 			nJ    = 3
 			nt    = 4
+			nsim  = 100
 
 		elseif size==2
 			# small: runs on my box
@@ -131,6 +140,7 @@ type Param
 			ny    = 3
 			nJ    = 9
 			nt    = 30
+			nsim  = 10000
 
 		elseif size==3
 		# big: maximal size for memory on my box
@@ -145,8 +155,12 @@ type Param
 			ny    = 3
 			nJ    = 9
 			nt    = 30
+			nsim  = 10000
 
 		end		
+
+
+
 
 		# TODO
 		# find the middle indices of p and y
@@ -154,7 +168,8 @@ type Param
 
 		dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 		dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-		dimnames = ["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ]
+		dimnames = DataFrame(dimension=["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
+			                  points = [nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 ])
 
 		beta    = 0.95
 		gamma   = 2
@@ -169,7 +184,7 @@ type Param
 		omega   = [0.1, 0.1]
 
 		# other parameters
-		MC    = [0.1, 0.2, 0.3] # parameters in moving cost: alpha1, alpha2, alpha3
+		MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: alpha1, alpha2, alpha3
 		kappa = [rand() for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
 
@@ -186,15 +201,17 @@ type Param
 		R   = 1.03 	# gross interest rate savings: 1+r
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
 		chi = 0.2   # downpayment ratio
-		myNA = -999
-		maxAge = 50
+		myNA = -99
 		minAge = 20
+		maxAge = minAge + nt
+		ages = minAge:maxAge
 		euler = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 
+
+		
 		# create object
 
-			# return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny)
-			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,euler,medinc,na,nz,nh,nt,ntau,nP,nJ,np,ny,bounds,pbounds,dimvec,dimvec2,dimnames,regnames,AgeP,IncomeParams,dist)
+			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega,MC,kappa,phi,rhop,rhoy,rhoz,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,medinc,na,nz,nh,nt,ntau,nP,nJ,np,ny,nsim,bounds,pbounds,dimvec,dimvec2,dimnames,regnames,AgeP,IncomeParams,dist)
 	end
 
 	
@@ -208,7 +225,7 @@ function nPoints(p::Param)
 	return r
 end
 # show(io::IO, p::Param) = print(io,"number of points=$(p.na*p.nz*p.nt)")
-show(io::IO, p::Param) = if nPoints(p) > 160000000 print(io,"number of savings problems to solve:$(nPoints(p))\nnumber of dims  :$(length(p.dimvec))\n CAUTION: this will not fit in 16GB of RAM!") else print(io,"number of dims  :$(length(p.dimvec))\nnumber of savings problems to solve:$(nPoints(p))") end
+show(io::IO, p::Param) = if nPoints(p) > 160000000 print(io,"number of savings problems to solve: $(nPoints(p))\nnumber of dims  :$(length(p.dimvec))\n CAUTION: this will not fit in 16GB of RAM!\ndimensions:\n") ;print(p.dimnames) else print(io,"number of dims  :$(length(p.dimvec))\nnumber of savings problems to solve: $(nPoints(p))\ndimensions:\n"); print(p.dimnames) end
 
 
 

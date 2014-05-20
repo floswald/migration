@@ -4,6 +4,38 @@
 # mig module plotting functions
 
 
+function vhplot(m::Model,p::Param,idx)
+
+
+	# choose a state
+
+	ik   = idx[1]
+	iy   = idx[2]
+	ip   = idx[3]
+	iP   = idx[4]
+	iz   = idx[5]
+	itau = idx[6]
+	ij   = idx[7]
+	it   = idx[8]
+
+	subplot(131)
+	plot(reshape(m.v[ik,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
+	plot(reshape(m.v[ik,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	ylabel("v")
+	xlabel("a")
+	title("value")
+
+	subplot(132)
+	plot(reshape(m.s[ik,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
+	plot(reshape(m.s[ik,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	title("savings")
+	
+	subplot(133)
+	plot(reshape(m.c[ik,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
+	plot(reshape(m.c[ik,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	title("consumption")
+
+end
 
 function vplot(m::Model,p::Param)
 
@@ -15,7 +47,6 @@ function vplot(m::Model,p::Param)
 	iy   = rand(1:p.ny)
 	ip   = rand(1:p.np)
 	iP   = rand(1:p.nP)
-	iz   = rand(1:p.nz)
 	itau = rand(1:p.ntau)
 	ij   = rand(1:p.nJ)
 	it   = rand(1:(p.nt-1))

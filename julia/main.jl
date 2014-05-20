@@ -15,9 +15,10 @@ include("test/test_Tensors.jl")
 p = mig.Param(2)
 m = mig.Model(p)
 @time mig.solve!(m,p)
-@profile mig.solve!(m,p)
+# @profile mig.solve!(m,p)
 
-# plot value function
+# plot value functions
+mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
 mig.vplot(m,p)
 
 
@@ -50,4 +51,5 @@ mig.vplot(m,p)
 	# 		ny    = 3
 	# 		nJ    = 9
 	# 		nt    = 30
+
 

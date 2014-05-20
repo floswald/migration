@@ -22,18 +22,22 @@ type Model
 	# dimensions: a,h,P,j,pj
 	EVfinal :: Array{Float64,5}
 
+	# index of the first asset element > 0
+	aone :: Int
+
 	# grids
 	grids   :: Dict{ASCIIString,Array{Float64,1}}
 	grids2D :: Dict{ASCIIString,Array{Float64,2}}
 	gridsXD :: Dict{ASCIIString,Array{Float64}}
+
 
 	# constructor
 	function Model(p::Param)
 
 
 		v= reshape(rand(prod((p.dimvec))),p.dimvec)
-		s= fill(-1,p.dimvec)
-		c= fill(p.myNA,p.dimvec)
+		s= fill(0,p.dimvec)
+		c= fill(0.0,p.dimvec)
 		rho = reshape(rand(prod((p.dimvec))),p.dimvec)
 
 		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
@@ -56,6 +60,8 @@ type Model
 		grids["W"]          = zeros(p.na)
 		grids["z"]          = zeros(p.nz)
 
+		aone  = findfirst(grids["asset_own"].>0)
+
 		# 2D grids
 		# =========
 
@@ -74,28 +80,28 @@ type Model
 		# Base.LinAlg.copytri!(dist,'U')
 
 
-		# age profile by region
-		# =====================
+		# # age profile by region
+		# # =====================
 
-		agemat = hcat(ones(p.nt),p.minAge:(p.minAge+p.nt-1))
-		agemat = hcat(agemat,agemat[:,2].^2)
-		agep = zeros(p.nt,size(p.Ageprof,1))
+		# agemat = hcat(ones(p.nt),p.minAge:(p.minAge+p.nt-1))
+		# agemat = hcat(agemat,agemat[:,2].^2)
+		# agep = zeros(p.nt,size(p.Ageprof,1))
 
-		for j=1:9
-			agep[:,j] = agemat * transpose(p.Ageprof[j,2:end])
-		end
-
-		# i = 0
-		# for j in keys(AgeP)
-		# 	i = i+1
-		# 	agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+		# for j=1:9
+		# 	agep[:,j] = agemat * transpose(p.Ageprof[j,2:end])
 		# end
 
-		# cut ageprofile to number of regions currently running:
-		ageprofile = agep[:,1:p.nJ]
+		# # i = 0
+		# # for j in keys(AgeP)
+		# # 	i = i+1
+		# # 	agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
+		# # end
 
-		# grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
-		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP, "ageprof" => ageprofile]
+		# # cut ageprofile to number of regions currently running:
+		# ageprofile = agep[:,1:p.nJ]
+
+		# # grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
+		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP]
 
 		# 3D grids
 		# =========
@@ -106,14 +112,37 @@ type Model
 		ygrid = zeros(p.ny,p.nJ)
 		pgrid = zeros(p.np,p.nJ)
 		for i = 1:p.nJ
-			pgrid[:,i] = linspace(p.pbounds["p"][i,1], p.pbounds["p"][i,2], p.np)
-		    ygrid[:,i] = linspace(p.pbounds["y"][i,1], p.pbounds["y"][i,2], p.ny)
+			pgrid[:,i] = linspace(1+p.pbounds["p"][i,1], 1+p.pbounds["p"][i,2], p.np)
+		    ygrid[:,i] = linspace(1+p.pbounds["y"][i,1], 1+p.pbounds["y"][i,2], p.ny)
 		end
 
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
-		pgrid = [grids["P"][i] .* (1+pgrid[j,k]) for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		pgrid = [grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
+
+		# get z supports
+		if p.nz==3
+			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n3.csv")	
+		elseif p.nz==4
+			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n4.csv")	
+		elseif p.nz==5
+			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n5.csv")
+		else
+			error("have prepared only zsupport 3,4,5")
+		end
+
+		# subset to min/max age
+		zsupp = zsupp[(zsupp[:age] .>= p.minAge) & (zsupp[:age] .<= p.maxAge), 2:end]
+
+		zgrid = zeros(p.nz,p.nJ,p.nt-1)
+		for iz = 1:p.nz
+			for ij=1:p.nJ
+				for it =1:(p.nt-1)
+					zgrid[iz,ij,it] = 0.01 * zsupp[it + (p.nt-1)*(ij-1) ,2+iz]
+				end
+			end
+		end
 
 		# regional transition matrices
 		# ============================
@@ -140,11 +169,11 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "p" => pgrid, "y" => ygrid, "movecost" => mc ]
+		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ]
 
 
 
-		return new(v,s,c,rho,EV,vbar,dh,EVfinal,grids,grids2D,gridsXD)
+		return new(v,s,c,rho,EV,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD)
 
 	end
 
@@ -206,7 +235,7 @@ function show(io::IO, M::Model)
 		        sizeof(M.s)+
 		        # sizeof(M.grids2D["GY"])+
 		        sizeof(M.grids2D["GP"])+
-		        sizeof(M.grids2D["ageprof"])+
+		        # sizeof(M.grids2D["ageprof"])+
 		        sizeof(M.gridsXD["movecost"])+
 		        sizeof(M.gridsXD["Gy"])+
 		        sizeof(M.gridsXD["Gp"])+
