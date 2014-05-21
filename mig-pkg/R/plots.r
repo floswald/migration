@@ -703,7 +703,7 @@ plotSimTruthDeviations <- function(path=NULL) {
 
 	N <- 3
 	d <- makeDivDifferences()
-	s <- buildDivDeviations(n=d$price$d[,length(unique(date))],N=N)
+	s <- buildDivDeviations(n=d$price$d[,length(unique(date))],N=N,burn=40)
 
 	# price
 
@@ -726,11 +726,11 @@ plotSimTruthDeviations <- function(path=NULL) {
 	p <- p + geom_line(data=ds,aes(x=date,y=value*100,color=Replication)) + facet_wrap(~Division) + theme_bw()
 	p <- p + scale_y_continuous(name="percent deviation") + scale_color_manual(values=c("blue","green","red","black"))
 
-	ggsave(filename=file.path(path,"priceSimTruthDevs.pdf"),plot=p,width=23,height=15,units="cm")
+	if (!is.null(path))	ggsave(filename=file.path(path,"priceSimTruthDevs.pdf"),plot=p,width=23,height=15,units="cm")
 
 	# income
 
-	s <- buildDivDeviations(n=d$income$d[,length(unique(Year))],N=N)
+	s <- buildDivDeviations(n=d$income$d[,length(unique(Year))],N=N,burn=300)
 	dy <- d$inc$d[Division!="USA"]
 	dy[,Replication :="truth"]
 
@@ -750,7 +750,7 @@ plotSimTruthDeviations <- function(path=NULL) {
 	y <- y + geom_line(data=ds,aes(x=Year,y=value*100,color=Replication)) + facet_wrap(~Division) + theme_bw()
 	y <- y + scale_y_continuous(name="percent deviation") + scale_color_manual(values=c("blue","green","red","black"))
 
-	ggsave(filename=file.path(path,"incomeSimTruthDevs.pdf"),plot=y,width=23,height=15,units="cm")
+	if (!is.null(path))ggsave(filename=file.path(path,"incomeSimTruthDevs.pdf"),plot=y,width=23,height=15,units="cm")
 
 	return(list(price=p,income=y))
 
@@ -913,6 +913,29 @@ PlotSippTransitionMatrix <- function(ttable,path="~/Dropbox/mobility/output/data
 	return(p)
 
 }
+
+
+#' Plot Sipp Migration Rates by Age
+#'
+PlotSippMigrationRates <- function(){
+
+	 load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+
+	 m=merged[age>29&age<61&college==TRUE,list(moved.S2S = weighted.mean(S2S,HHweight,na.rm=T),moved.D2D = weighted.mean(D2D,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
+	 p1 <- ggplot(m,aes(age,y=moved.S2S,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
+	 p2 <- ggplot(m,aes(age,y=moved.D2D,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red"))
+	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
+	 ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
+
+	 return(list(S2S=p1,D2D=p2))
+
+
+}
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' m=merged[age>29&age<61&college==TRUE,list(proportion.moved = weighted.mean(S2S,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
+#' p <- ggplot(m,aes(age,y=proportion.moved,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
+#' ggsave(plot=p,file="~/Dropbox/mobility/output/data/sipp/raw-movers.pdf",width=13,height=9,scale=0.6)
+
 
 
 

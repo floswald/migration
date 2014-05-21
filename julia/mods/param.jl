@@ -151,7 +151,7 @@ type Param
 			ntau  = 2
 			nP    = 3
 			# nY    = 3
-			np    = 4
+			np    = 3
 			ny    = 3
 			nJ    = 9
 			nt    = 30
@@ -184,7 +184,8 @@ type Param
 		omega   = [0.1, 0.1]
 
 		# other parameters
-		MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: alpha1, alpha2, alpha3
+		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
+		MC    = [0.1, 0.0001, 0.0] # parameters in moving cost: alpha1, alpha2, alpha3
 		kappa = [rand() for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
 
@@ -201,7 +202,7 @@ type Param
 		R   = 1.03 	# gross interest rate savings: 1+r
 		Rm  = 1.06 	# gross interest rate mortgage: 1+rm
 		chi = 0.2   # downpayment ratio
-		myNA = -99
+		myNA = -999
 		minAge = 20
 		maxAge = minAge + nt
 		ages = minAge:maxAge

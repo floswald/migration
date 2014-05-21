@@ -120,6 +120,10 @@ f.oswald@ucl.ac.uk
 \end_inset
 
 
+\begin_inset Newline newline
+\end_inset
+
+UCL
 \end_layout
 
 \begin_layout Date
@@ -569,8 +573,8 @@ A succinct description of the prices process
 \begin_inset Formula 
 \begin{eqnarray*}
 \mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
-Y_{t+t} & = & \rho_{Y}Y_{t-1}+\nu_{Y}\\
-P_{t+t} & = & \rho_{P}P_{t-1}+\nu_{P}\\
+Y_{t+t} & = & \rho_{Y}Y_{t}+\nu_{Y}\\
+P_{t+t} & = & \rho_{P}P_{t}+\nu_{P}\\
 \overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
 p_{jt} & = & P_{t}+\tilde{p}_{jt}\\
 E\overline{y}_{kt+1} & = & E[Y_{t+1}|Y_{t}]+E\tilde{y}_{kt}\\
@@ -1031,6 +1035,7 @@ v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right) & = & \begin{cases}
 \end{cases}\label{eq:conditional-value}\\
 \bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)\\
 \text{subject to}\nonumber \\
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\\
 r(a_{t}) & = & \begin{cases}
 r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
@@ -1039,7 +1044,9 @@ r^{m} & \text{if }a_{t}<0
 (1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
 \begin{array}{c}
--(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)\end{array} & \text{if }h_{t-1}=1
+-\left\{ \mathbf{1}\left[j=k\right](1-h_{t})+\mathbf{1}\left[j\neq k\right]\right\} \\
+\times\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)
+\end{array} & \text{if }h_{t-1}=1
 \end{cases}\label{eq:budget-housing}\\
 a_{t+1} & \geq & \begin{cases}
 0 & \text{if }h_{t}=0\\

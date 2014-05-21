@@ -1,4 +1,4 @@
-
+	
 
 
 # functions for aggregate prices
@@ -285,14 +285,18 @@ simDivDeviations <- function(d,n=20,N=1,burn){
 #' Build Deviations Models
 #'
 #' @family ExpectationsModel
-buildDivDeviations <- function(n=20,N=2){
+buildDivDeviations <- function(n=20,N=2,burn=40){
 
 	d <- makeDivDifferences()
 	e <- estimateDivDeviations(d)
-	s <- simDivDeviations(d=e,n,N,burn=40)
+	s <- simDivDeviations(d=e,n,N,burn)
 
 	return(s)
 }
+
+
+
+
 
 
 

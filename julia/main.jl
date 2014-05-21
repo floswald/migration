@@ -11,8 +11,21 @@ include("test/test_solver.jl")
 include("test/test_Tensors.jl")
 	
 
+# run experiments
+MC1 = mig.experMC(1,3);
+MC2 = mig.experMC(2,3);
+# MC3 = mig.experMC(3,3);
+
+# save experiments
+mig.writetable("/Users/florianoswald/Dropbox/mobility/output/model/Julia2R/MC1.csv",MC1[1])
+mig.writetable("/Users/florianoswald/Dropbox/mobility/output/model/Julia2R/MC2.csv",MC2[1])
+mig.writetable("/Users/florianoswald/Dropbox/mobility/output/model/Julia2R/MC3.csv",MC3[1])
+
+
 # running
 p = mig.Param(2)
+
+
 m = mig.Model(p)
 @time mig.solve!(m,p)
 # @profile mig.solve!(m,p)

@@ -1,6 +1,6 @@
 module mig
 
-using JSON, Debug, PyPlot, DataFrames 
+using JSON, Debug, PyPlot, DataFrames
 import Distributions: Categorical, rand
 
 export Param, Model
@@ -12,6 +12,7 @@ include("E_tensors.jl")
 include("solver.jl")
 include("plotting.jl")
 include("simulator.jl")
+include("experiments.jl")
 
 end
 

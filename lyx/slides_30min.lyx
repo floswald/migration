@@ -867,10 +867,33 @@ incoem process is quite rich!
 
 \begin_inset Formula 
 \begin{eqnarray*}
-y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\\
-z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
+y_{ijt} & = & \overline{y}_{jt}\times z_{ijt}\\
+z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
 \end{eqnarray*}
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $z$
+\end_inset
+
+ is individual productivity, or 
+\emph on
+rank 
+\emph default
+of 
+\begin_inset Formula $i$
+\end_inset
+
+ in distribution of 
+\begin_inset Formula $j$
+\end_inset
+
+ at age 
+\begin_inset Formula $t$
 \end_inset
 
 
@@ -1341,20 +1364,25 @@ assets
 
 \end_deeper
 \begin_layout BeginFrame
-Estimation
+Solution Method
 \end_layout
 
 \begin_layout Itemize
-Working on Bajari, Benkard and Levin (ECTA 2007) extension -- complicated
- by unobserved type
+Tried Bajari, Benkard and Levin (ECTA 2007) extension -- complicated by
+ unobserved type
 \end_layout
 
 \begin_layout Itemize
-Need full solution for policy experiment anyway: setting up SMM
+Now full solution: Nested Fixed Point
 \end_layout
 
 \begin_layout Itemize
-Large state space: Can estimate full model only at division level
+Current implmentation solves 15 million savings problems for one value of
+ the parameter vector
+\end_layout
+
+\begin_layout Itemize
+(in 9 seconds)
 \end_layout
 
 \begin_layout Section

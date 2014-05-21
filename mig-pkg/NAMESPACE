@@ -1,7 +1,6 @@
-
-exportPattern("^[[:alpha:]]+")
-
-
+export(make.income)
+export(plot.assetgrid)
+export(plot.experiments)
 import(RSQLite)
 import(data.table)
 import(ggplot2)
@@ -11,10 +10,4 @@ import(stringr)
 import(survey)
 import(texreg)
 import(zoo)
-import(quantreg)
-import(grid)
-import(splines)
-import(xtable)
-import(xts)
-	
-
+exportPattern("^[^\\.]")

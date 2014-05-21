@@ -98,7 +98,11 @@ vspace{10pt}
 
 \end_inset
 
-Yale Prospectus Seminar
+UCL SWIPS
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -250,12 +254,21 @@ Estimate parameters on micro panel data
 \end_layout
 
 \begin_layout Itemize
-Can be used to simulate responses of labor mobility to different housing
- policies
+Output:
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Simulate responses of labor mobility to different housing policies
+\end_layout
+
+\begin_layout Itemize
+Evaluate welfare implications of those policies
+\end_layout
+
+\end_deeper
 \begin_layout BeginFrame
-US Migration Rates: How many people moved?
+US Migration Rates: How many do move?
 \end_layout
 
 \begin_layout Standard
@@ -583,7 +596,7 @@ Work: new job, attend/leave college, other job reason, look for job, closer
 \end_layout
 
 \begin_layout BeginFrame
-Reasons to migrate across states II
+Determinants of migration
 \end_layout
 
 \begin_layout Standard
@@ -620,19 +633,6 @@ Probit of cross state moves.
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Roadmap
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset toc
-LatexCommand tableofcontents
 
 \end_inset
 
@@ -699,25 +699,17 @@ Bajari, Chan, Krueger, Miller (2013)
 Attanasio, Bottazzi, Low, Nesheim, Wakefield (2012)
 \end_layout
 
+\end_deeper
+\begin_layout Itemize
+Bankruptcy and Default institutions matter
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Li, Meghir, Oswald (2014)
 \end_layout
 
 \end_deeper
-\end_deeper
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Methodology: CCP estimation
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Bajari, Benkard and Levin (2007)
-\end_layout
-
 \end_deeper
 \begin_layout Section
 Model
@@ -769,18 +761,18 @@ savings:
 
 \end_deeper
 \begin_layout BeginFrame
-What is a Location?
+What 
+\emph on
+is
+\emph default
+ a Location?
 \end_layout
 
 \begin_layout Itemize
-A bundle of attributes: price, mean income and amenity
-\end_layout
-
-\begin_layout Itemize
-Location is a triple 
+Location is a bundle of attributes 
 \begin_inset Formula 
 \[
-\left(p_{jt},\overline{y}_{jt},\psi_{ij}\right)
+\left(p_{jt},\overline{y}_{jt}\right)
 \]
 
 \end_inset
@@ -789,20 +781,20 @@ Location is a triple
 \end_layout
 
 \begin_layout Itemize
-Agents know the stochastic process driving 
-\begin_inset Formula $p_{jt},\overline{y}_{jt}$
+When in 
+\begin_inset Formula $j$
 \end_inset
 
- is a VAR(1) denoted 
-\begin_inset Formula $\mathbf{P}_{t}$
+, 
+\begin_inset Formula $\left(p_{jt},\overline{y}_{jt}\right)$
 \end_inset
 
-
+ are known
 \end_layout
 
 \begin_layout Itemize
-imperfect information about 
-\begin_inset Formula $\left(p_{kt},\overline{y}_{kt},\psi_{ik}\right)$
+But imperfect information about 
+\begin_inset Formula $\left(p_{kt},\overline{y}_{kt}\right)$
 \end_inset
 
 : 
@@ -812,85 +804,122 @@ location
  is an experience good.
 \end_layout
 
+\begin_layout Itemize
+Also know the geographic location in the plane of 
+\begin_inset Formula $j$
+\end_inset
+
+: distance.
+\end_layout
+
 \begin_layout BeginFrame
-Searching across locations
+Information Structure
 \end_layout
 
 \begin_layout Itemize
-iid location taste shock 
-\begin_inset Formula $\varepsilon_{ijt},\forall j$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Location attributes 
-\begin_inset Formula $\left(p_{kt},\overline{y}_{kt},\psi_{ik}\right)$
-\end_inset
-
- are observed
-\emph on
- after
-\emph default
- arrival at location 
-\begin_inset Formula $k$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Agents know distributions of attributes in 
-\begin_inset Formula $k$
-\end_inset
-
-:
+Aggregate components
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-\begin_inset Formula $\psi_{ik}\sim F$
-\end_inset
-
-: Unobserved heterogeneity.
-\end_layout
-
-\begin_layout Itemize
-unconditional mean of process 
-\begin_inset Formula $\left[p_{kt},\overline{y}_{kt}\right]$
+GDP and aggregate price index: 
+\begin_inset Formula $Y_{t},P_{t}$
 \end_inset
 
 
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+Regional deviations from aggregates: 
+\begin_inset Formula 
+\begin{eqnarray*}
+\overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
+p_{jt} & = & P_{t}+\tilde{p}_{jt}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Pause
 
 \end_layout
 
 \begin_layout Itemize
-Labor income is
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-incoem process is quite rich!
-\end_layout
+Prices entering the state space:
+\begin_inset Formula 
+\[
+\mathbf{P}_{jt}=(Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})
+\]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+all elements in 
+\begin_inset Formula $\mathbf{P}_{jt}$
+\end_inset
+
+ are AR(1)
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Assumption:
+\end_layout
+
+\begin_layout Itemize
+current deviations in 
+\begin_inset Formula $k\neq j$
+\end_inset
+
+ are unknown, forecast prices using unconditional mean
+\end_layout
+
+\begin_layout BeginFrame
+Labor Income
+\end_layout
+
+\begin_layout Itemize
+Labor income is
 \begin_inset Formula 
 \begin{eqnarray*}
-y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\\
-z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
+y_{ijt} & = & \overline{y}_{jt}\times z_{ijt}\\
+z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
 \end{eqnarray*}
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $z$
+\end_inset
+
+ is individual productivity, or 
+\emph on
+rank 
+\emph default
+of 
+\begin_inset Formula $i$
+\end_inset
+
+ in distribution of 
+\begin_inset Formula $j$
+\end_inset
+
+ at age 
+\begin_inset Formula $t$
 \end_inset
 
 
@@ -963,7 +992,7 @@ Owners are required to occupy the house they own; change of location requires
 \end_deeper
 \begin_layout Itemize
 Payment function 
-\begin_inset Formula $\pi(h_{t-1},h_{t},\mathbf{p}_{t})$
+\begin_inset Formula $\pi(h_{t-1},h_{t},p_{t})$
 \end_inset
 
 
@@ -974,38 +1003,6 @@ Timing within each period
 \end_layout
 
 \begin_layout Enumerate
-if duration of 
-\begin_inset Formula $i$
-\end_inset
-
- in 
-\begin_inset Formula $j$
-\end_inset
-
-, 
-\begin_inset Formula $d_{it}=0$
-\end_inset
-
-, draw 
-\begin_inset Formula $\psi_{ij}\sim F$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-onslide+<2->
-\end_layout
-
-\end_inset
-
 observe 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
@@ -1026,7 +1023,19 @@ observe
 \begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
 \end_inset
 
-
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ iid location taste shock 
 \end_layout
 
 \begin_layout Enumerate
@@ -1037,7 +1046,7 @@ status open
 
 
 \backslash
-onslide+<3->
+onslide+<2->
 \end_layout
 
 \end_inset
@@ -1054,7 +1063,7 @@ status open
 
 
 \backslash
-onslide+<4->
+onslide+<3->
 \end_layout
 
 \end_inset
@@ -1091,14 +1100,6 @@ consume and incur moving cost
 
 \end_layout
 
-\begin_layout Enumerate
-set duration 
-\begin_inset Formula $d_{it+1}=0$
-\end_inset
-
-
-\end_layout
-
 \end_deeper
 \begin_layout Enumerate
 \begin_inset ERT
@@ -1108,7 +1109,7 @@ status open
 
 
 \backslash
-onslide+<5->
+onslide+<4->
 \end_layout
 
 \end_inset
@@ -1141,15 +1142,63 @@ choose
 consume
 \end_layout
 
-\begin_layout Enumerate
-set duration 
-\begin_inset Formula $d_{it+1}=d_{it}+1$
+\end_deeper
+\end_deeper
+\begin_layout BeginFrame
+Moving Costs and Types
+\end_layout
+
+\begin_layout Itemize
+In terms of utility: psychological costs
+\end_layout
+
+\begin_layout Itemize
+Costs differ by ownership status and type
+\end_layout
+
+\begin_layout Itemize
+Owners incur time and effort cost from having to sell, proportional to value
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
+\]
+
 \end_inset
 
+
+\end_layout
+
+\begin_layout Itemize
+Permanent unobserved types 
+\begin_inset Formula $\tau\in\left\{ \tau_{1},\dots,\tau_{K}\right\} $
+\end_inset
+
+.
  
 \end_layout
 
-\end_deeper
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+Movers 
+\emph default
+and 
+\emph on
+Stayers
+\end_layout
+
+\begin_layout Itemize
+Could also represent an unobserved location preference
+\end_layout
+
+\begin_layout Itemize
+Likelihood is a finite mixture 
+\end_layout
+
 \end_deeper
 \begin_layout BeginFrame
 Budget Constraint
@@ -1170,78 +1219,25 @@ Budget Constraint
 \color none
 \begin_inset Formula 
 \begin{eqnarray*}
-a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},\mathbf{p}_{t})\\
+a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\\
 \onslide+<2->r(a_{t}) & = & \begin{cases}
 r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
 \end{cases},r^{m}>r\\
-\onslide+<3->\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
+\onslide+<3->\pi(h_{t-1},h_{t},p_{t}) & = & \begin{cases}
 (1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
 \\
-\begin{array}{c}
--(1-h_{t})\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)\end{array} & \text{if }h_{t-1}=1
+\onslide+<4->\begin{array}{c}
+-\left\{ \mathbf{1}\left[j=k\right](1-h_{t})+\mathbf{1}\left[j\neq k\right]\right\} \\
+\times\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)
+\end{array} & \text{if }h_{t-1}=1
 \end{cases}\\
-\onslide+<4->a_{t+1} & \geq & \begin{cases}
+\onslide+<5->a_{t+1} & \geq & \begin{cases}
 0 & \text{if }h_{t}=0\\
 \min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{jt}\right\}  & \text{if }h_{t}=1
-\end{cases}
+\end{cases}\\
+\onslide+<5->a_{T} & \geq & 0
 \end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Downpayment Constraint and Default
-\end_layout
-
-\begin_layout Itemize
-Buyer's budget constraint and 
-\begin_inset Formula $c>0$
-\end_inset
-
- imply:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{t}(1+r(a_{t}))+y_{t}-p_{t} & > & a_{t+1}\\
- & > & -(1-\chi)p_{t}\\
-a_{t}(1+r(a_{t}))+y_{t} & > & \chi p_{t}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Moving locations with negative equity means mortgage default: 
-\begin_inset Formula 
-\[
-def_{t}=\mathbf{1}\left[j\neq k,p_{t}(1-\phi)+a_{t}(1+r(a_{t}))<0\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Incurs default cost 
-\begin_inset Formula $\lambda>0$
-\end_inset
-
-
-\begin_inset Formula 
-\[
-\]
 
 \end_inset
 
@@ -1268,7 +1264,7 @@ State space of individual is
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\psi_{ij},t\right)\in X
+x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau_{i},t\right)\in X
 \]
 
 \end_inset
@@ -1293,9 +1289,9 @@ Period utility is given by
 \begin_inset Formula 
 \[
 u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
 \\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\psi_{ij}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
+\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
 -\Delta\left(k,x_{it}\right)-\lambda def_{it}
 \end{cases}
 \]
@@ -1323,33 +1319,76 @@ b\left(a_{T},h_{T-1},p_{jT}\right) & = & \omega_{0}+\omega_{1}\ln\left(a+h_{T-1}
 \end_layout
 
 \begin_layout BeginFrame
-Moving Costs
+Identification
 \end_layout
 
 \begin_layout Itemize
-In terms of utility: psychological costs
+Nonparametric identification of finite mixtures in dynamic discrete choice
+ models
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Kasahara and Shimotsu (ECTA 2009)
 \end_layout
 
 \begin_layout Itemize
-Costs differ by ownership status
-\end_layout
-
-\begin_layout Itemize
-Owners incur time and effort cost from having to sell, proportional to value
-\end_layout
-
-\begin_layout Itemize
-Additionally depends on distance and age
-\begin_inset Formula 
-\[
-\Delta(k,x)=\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
-\]
-
+panel length 
+\begin_inset Formula $T\geq3$
 \end_inset
 
 
 \end_layout
 
+\begin_layout Itemize
+different types must respond to variation in 
+\begin_inset Formula $x$
+\end_inset
+
+ differently
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Use variation in
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+incomes
+\end_layout
+
+\begin_layout Itemize
+house prices
+\end_layout
+
+\begin_layout Itemize
+distance between locations
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+	Key Moments
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+number of moves
+\end_layout
+
+\begin_layout Itemize
+number of moves per mover
+\end_layout
+
+\begin_layout Itemize
+housing choices
+\end_layout
+
+\begin_layout Itemize
+assets
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Data
 \end_layout
@@ -1446,8 +1485,30 @@ Sipp Raw Data
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-movers.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf
 	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Sipp Summary Statistics
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/stats.tex}
+\end_layout
 
 \end_inset
 
@@ -1459,535 +1520,29 @@ Implementation
 \end_layout
 
 \begin_layout BeginFrame
-Empirical Strategy
-\end_layout
-
-\begin_layout Enumerate
-Estimate some parts outside of the structural model in a first step
-\end_layout
-
-\begin_layout Enumerate
-In second step, find preference parameters that rationalize the data
-\end_layout
-
-\begin_layout Enumerate
-See model implications
-\end_layout
-
-\begin_layout Enumerate
-Conduct policy analysis
-\end_layout
-
-\begin_layout Pause
-
+Solution Method
 \end_layout
 
 \begin_layout Itemize
-Problem: At reasonable grid sizes, state space has 375 million points.
- 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{StateSpace}{
-\backslash
-beamergotobutton{State Space Count}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{EmpiricalStrategy}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49text%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-SMM
-\end_layout
-
-\begin_layout Enumerate
-Estimate exogenous processes
-\end_layout
-
-\begin_layout Enumerate
-Compute target moments from data
-\end_layout
-
-\begin_layout Enumerate
-Given current parameters, compute decision rules from model
-\end_layout
-
-\begin_layout Enumerate
-Given decision rules, simulate moments from model
-\end_layout
-
-\begin_layout Enumerate
-Stop at parameter vector that makes model and data moments 
-\begin_inset Quotes eld
-\end_inset
-
-equal
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vrule{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49text%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-SMM
-\end_layout
-
-\begin_layout Enumerate
-Estimate exogenous processes
-\end_layout
-
-\begin_layout Enumerate
-Compute target moments from data
-\end_layout
-
-\begin_layout Enumerate
-
-\color red
-Given current parameters, compute decision rules from model
-\end_layout
-
-\begin_layout Enumerate
-
-\color red
-Given decision rules, simulate moments from model
-\end_layout
-
-\begin_layout Enumerate
-Stop at parameter vector that makes model and data moments 
-\begin_inset Quotes eld
-\end_inset
-
-equal
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vrule{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-SMM vs Bajari, Benkard and Levin (BBL, ECTA 2007)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49text%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-SMM
-\end_layout
-
-\begin_layout Enumerate
-Estimate exogenous processes
-\end_layout
-
-\begin_layout Enumerate
-Compute target moments from data
-\end_layout
-
-\begin_layout Enumerate
-
-\color red
-Given current parameters, compute decision rules from model
-\end_layout
-
-\begin_layout Enumerate
-
-\color red
-Given decision rules, simulate moments from model
-\end_layout
-
-\begin_layout Enumerate
-Stop at parameter vector that makes model and data moments 
-\begin_inset Quotes eld
-\end_inset
-
-equal
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vrule{}
-\end_layout
-
-\end_inset
-
-
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49text%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-BBL
-\end_layout
-
-\begin_layout Enumerate
-Estimate exogenous processes
-\end_layout
-
-\begin_layout Enumerate
-Compute reduced form policy functions
-\end_layout
-
-\begin_layout Enumerate
-Estimate value function by forward simulating many lifecycle paths
-\end_layout
-
-\begin_layout Enumerate
-Estimate 
-\emph on
-all other 
-\emph default
-(non-optimal) value functions by using perturbed policies
-\end_layout
-
-\begin_layout Enumerate
-Find parameter vector s.t.
- value in 3.
- is highest
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-BBL: First Stage Policy Functions
+Tried Bajari, Benkard and Levin (ECTA 2007) extension -- complicated by
+ unobserved type
 \end_layout
 
 \begin_layout Itemize
-Define savings, location and housing policies on state space 
-\begin_inset Formula $X$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-g_{A}: &  & X\mapsto\mathbb{R}\\
-g_{L}: &  & X\mapsto J\\
-g_{H}: &  & X\mapsto\left\{ 0,1\right\} 
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-BBL: Second Stage
+Now full solution: Nested Fixed Point
 \end_layout
 
 \begin_layout Itemize
-given reduced form policy function 
-\begin_inset Formula $g(x)$
-\end_inset
-
-, lifetime utility is
-\begin_inset Formula 
-\[
-U=\sum_{t=1}^{T}\beta^{t-1}u\left(g\left(x_{t}\right),\theta\right)+\beta^{T}b\left(\cdot\right)
-\]
-
-\end_inset
-
-
+Current implementation solves 15 million savings problems for one value
+ of the parameter vector
 \end_layout
 
 \begin_layout Itemize
-Agents behave optimally in data: 
-\begin_inset Formula $U$
-\end_inset
-
- must be best value
+(in 9 seconds)
 \end_layout
 
 \begin_layout Itemize
-any other policy 
-\begin_inset Formula $\tilde{g}(x)$
-\end_inset
-
- must yield lower utility:
-\begin_inset Formula 
-\[
-\tilde{U}=\sum_{t=1}^{T}\beta^{t-1}u\left(\tilde{g}\left(x_{t}\right),\theta\right)+\beta^{T}b\left(\cdot\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-estimator finds 
-\begin_inset Formula $\theta$
-\end_inset
-
- such that 
-\begin_inset Formula 
-\[
-U\geq\tilde{U}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Estimation: Recovering 
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\psi_{ij}$
-\end_inset
-
- is 
-\begin_inset Quotes eld
-\end_inset
-
-permanent
-\begin_inset Quotes erd
-\end_inset
-
- unobserved heterogeneity.
- Permanent for length of stay in 
-\begin_inset Formula $j$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-need to have a consistent estimate of policy functions
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\psi\sim F$
-\end_inset
-
- is identified by variation in durations of stay
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Requires extension of BBL -- work in progress
-\end_layout
-
-\begin_layout Itemize
-Arcidiacono-Miller (2011) type EM algorithm
-\end_layout
-
-\begin_layout Itemize
-Start decision rules on data, assume arbitrary distribution of types 
-\begin_inset Formula $F^{(0)}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Use bayes rule and structural model to update 
-\begin_inset Formula $ $
-\end_inset
-
-(m-th iteration)
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-structural parameters, 
-\begin_inset Formula $\theta^{(m)}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-distribution of types 
-\begin_inset Formula $F^{(m)}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-policy functions 
-\begin_inset Formula $g^{(m)}\left(F^{(m)}\right)$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Section
-Results
-\end_layout
-
-\begin_layout BeginFrame
-Exogenous Processes: House Price and mean Income
-\end_layout
-
-\begin_layout Itemize
-Data spans period 1996--2012
-\end_layout
-
-\begin_layout Itemize
-Huge nationwide increase and subsequent drop in house price levels
-\end_layout
-
-\begin_layout Itemize
-Strong common (national) component
-\end_layout
-
-\begin_layout Itemize
-Split by regions (Census Divisions)
-\end_layout
-
-\begin_layout Itemize
-How to represent this?
+Challenges: Break down high dimension of price process
 \end_layout
 
 \begin_layout BeginFrame
@@ -2005,20 +1560,6 @@ Hierarchical Price and Income model
 \end_layout
 
 \begin_layout BeginFrame
-Hierarchical Price and Income model
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/mba-graph2.pdf
-	width 100text%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
 Exogenous Price and Income Process: 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
@@ -2027,27 +1568,33 @@ Exogenous Price and Income Process:
 \end_layout
 
 \begin_layout Itemize
-States are a subset of census 
-\emph on
-divisions, 
-\emph default
+Price/income in division 
+\begin_inset Formula $d$
+\end_inset
 
-\begin_inset Formula $s\in d\subset J$
+ is made of national component plus current division deviation
+\begin_inset Formula 
+\begin{eqnarray*}
+p_{dt} & = & P_{t}+\tilde{p}_{t}^{d}\\
+\overline{y}_{dt} & = & Y_{t}+\tilde{y}_{t}^{d}
+\end{eqnarray*}
+
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-Price/income in state 
-\begin_inset Formula $s$
-\end_inset
+\begin_layout Pause
 
- is made of national component, division deviation, and constant state shifter
+\end_layout
+
+\begin_layout Itemize
+State of economy summarized by 
 \begin_inset Formula 
 \begin{eqnarray*}
-p_{st} & = & P_{t}+\tilde{p}_{t}^{d}+\overline{m}_{s},\forall s\in d\\
-\overline{y}_{st} & = & Y_{t}+\tilde{y}_{t}^{d}+\overline{q}_{s},\forall s\in d
+\mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
+Y_{t+t} & = & \rho_{Y}Y_{t-1}+\nu_{Y}\\
+P_{t+t} & = & \rho_{P}P_{t-1}+\nu_{P}
 \end{eqnarray*}
 
 \end_inset
@@ -2087,24 +1634,6 @@ hypertarget{AggPricesSlide}{}
 
 \end_layout
 
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-State of economy summarized by 
-\begin_inset Formula 
-\begin{eqnarray*}
-\mathbf{P}_{t} & \equiv & \left(\left\{ P_{t},\tilde{\mathbf{p}}_{t}\right\} ,\left\{ Y_{t},\tilde{\mathbf{y}}_{t}\right\} \right)\\
-\tilde{\mathbf{p}}_{t} & = & \left[\tilde{p}_{t}^{1},\dots,\tilde{p}_{t}^{9}\right]\\
-\tilde{\mathbf{y}}_{t} & = & \left[\tilde{y}_{t}^{1},\dots,\tilde{y}_{t}^{9}\right]
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout BeginFrame
 Exogenous Price and Income Process: 
 \begin_inset Formula $\mathbf{P}_{t}$
@@ -2114,15 +1643,7 @@ Exogenous Price and Income Process:
 \end_layout
 
 \begin_layout Itemize
-Assume AR(1) processes on deviations and aggregates 
-\begin_inset Formula $Y_{t}$
-\end_inset
-
- and 
-\begin_inset Formula $P_{t}$
-\end_inset
-
-
+Assume AR(1) process on deviations
 \begin_inset Formula 
 \begin{eqnarray*}
 \tilde{y}_{t}^{d} & = & \beta_{0d}+\beta_{1d}\tilde{y}_{t-1}^{d}+\nu_{\tilde{y}t,d}\\
@@ -2238,53 +1759,8 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{AggPricesSlide}{
-\backslash
-beamergotobutton{Back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Division Deviations from National Index
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{PriceDeviations}{}
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{AggPricesSlide2}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
+Division Deviations from National Index: 
+\begin_inset Formula $\tilde{p}_{dt}$
 \end_inset
 
 
@@ -2301,12 +1777,12 @@ beamergotobutton{back}}
 \end_layout
 
 \begin_layout BeginFrame
-Division Prices and Simulated Paths
+Simulated Price Deviations
 \end_layout
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/factor/priceSimTruthDevs.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/incomeSimTruthDevs.pdf
 	scale 50
 
 \end_inset
@@ -2315,133 +1791,91 @@ Division Prices and Simulated Paths
 \end_layout
 
 \begin_layout BeginFrame
-State level Income Processes
+Division Income Deviations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/DivisionIncomeDevs.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Simulated Division Income Deviations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/incomeSimTruthDevs.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Individual Income Processes by Region
 \end_layout
 
 \begin_layout Itemize
-Random effects model with AR1 error disturbance
-\end_layout
-
-\begin_layout Itemize
-State by state
+from income data net out regional macro effect: 
 \begin_inset Formula 
-\begin{eqnarray*}
-\ln y_{ijt} & = & \beta_{j0}+\beta_{j1}\text{age}_{it}+\beta_{j2}\left(\text{age}_{it}\right)^{2}+\beta_{j3}\text{cohort}_{i}+\alpha_{i}+z_{it}\\
-z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})\\
-\alpha_{i} & \sim & N(0,\sigma_{\alpha}^{2})\\
-u_{ijt} & \sim & N(0,\sigma_{u_{j}}^{2})
-\end{eqnarray*}
+\[
+\hat{y}_{ijt}=y_{ijt}-\bar{y}_{jt},\forall t\in\left\{ \text{1996,1997,...}\right\} 
+\]
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout BeginFrame
-Selected Income Processes
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-incomes.pdf
-	scale 90
-
+\begin_layout Itemize
+obtain quantiles of 
+\begin_inset Formula $\hat{y}_{ijt}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Omitted coefficients: cohort dummies.
- Reject Null that age profiles are identical at 
-\begin_inset Formula $p<0.01$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Savings policy function
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{nonh_policy}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-nonh-small.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{fullnonh_policy}{
-\backslash
-beamergotobutton{Full table}}
-\end_layout
-
+ by age 
+\begin_inset Formula $\Rightarrow$
 \end_inset
 
  
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
+\begin_inset Formula $z_{ijt}$
+\end_inset
 
 
-\backslash
-hyperlink{mean_median_nonH}{
-\backslash
-beamergotobutton{Mean vs median}}
 \end_layout
+
+\begin_layout Itemize
+obtain the rank correlation of 
+\begin_inset Formula $\hat{y}_{ijt}$
+\end_inset
+
+
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $\rho_{j}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Income Ranks by Region
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/z-quantiles-pct.pdf
+	scale 50
 
 \end_inset
 
@@ -2449,188 +1883,59 @@ beamergotobutton{Mean vs median}}
 \end_layout
 
 \begin_layout BeginFrame
-Housing Policy Functions
+Model Mechanism: Making Owners move less
 \end_layout
 
 \begin_layout Itemize
-housing is binary:
-\begin_inset Formula 
-\begin{eqnarray*}
-h & = & \mathbf{1}\left[h^{*}>0\right]\\
- & = & \mathbf{1}\left[x\beta+u>0\right]
-\end{eqnarray*}
+Decision to move depends on entire state vector 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 
+\begin_inset Formula $x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau_{i},t\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-variables in 
+remember 
+\begin_inset Formula $\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+varying 
+\begin_inset Formula $\alpha_{1}$
+\end_inset
+
+ must make owners less likely to move given a state 
 \begin_inset Formula $x$
 \end_inset
 
- are in state space of model
-\end_layout
-
-\begin_layout Itemize
-Key: flexible specifications
-\end_layout
-
-\begin_layout BeginFrame
-Housing Policy for Renters: Switch to owner?
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-buy.pdf
-	scale 90
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Omitted: State fixed effects.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
 \begin_layout BeginFrame
-Housing Policy for Owners: Switch to renter?
+Model Mechanism: Making Owners move less
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-sell.pdf
-	scale 90
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Omitted: cubic spline in home equity and state fixed effects.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Location Policy Function: Where to go?
-\end_layout
-
-\begin_layout Itemize
-Implemented as a multinomial logit model.
- 
-\end_layout
-
-\begin_layout Itemize
-Choose location 
-\begin_inset Formula $k\in J$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Choosing 
-\begin_inset Formula $k$
-\end_inset
-
- while 
-\begin_inset Formula $\delta(j,k)=0$
-\end_inset
-
- means you stay.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-W_{ijkt} & = & \beta_{1k}\text{age}_{it}+\beta_{2k}\text{age}_{it}^{2}+\beta_{3k}\text{own}_{it}+\gamma_{k}y_{ikt}\\
- & + & \alpha_{1}p_{kt}+\alpha_{2}\delta(j,k)+\epsilon_{ijkt}\\
-\epsilon_{ijkt} & \sim & \text{EV}(0,\sigma_{\epsilon}^{2})
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Show observed vs predicted sample proportion of movers and stayer by state.
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/logit-stay.pdf
-	scale 55
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/logit-move.pdf
-	scale 55
+	filename /Users/florianoswald/Dropbox/mobility/output/model/full/expMC/alpha1.pdf
+	scale 60
 
 \end_inset
 
@@ -3571,502 +2876,6 @@ So far: first stage policy functions unconditional of unobserved heterogeneity
 Proof of BBL estimator is work in progress
 \end_layout
 
-\begin_layout BeginFrame
-State Space Sizes
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{StateSpace}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Number of points is:
-\begin_inset Formula 
-\[
-\left(\mathcal{A}\times\mathcal{Z}\times\left(\mathcal{Y}\times\mathcal{P}\times(J-1)\right)\times\{0,1\}\times J\times\Psi\times T\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="2">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Dimension
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Points
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{A}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Z}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{Y}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\mathcal{H}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $J$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-50
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\Psi$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-30
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-total
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-367.500.000
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{EmpiricalStrategy}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-SIPP
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{Sipp}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="4">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-SIPP
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-PSID
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-NLSY79
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-N
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-128.815
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-10.802
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2.439
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-years
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1996--2011
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1994--2011
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1979--
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-moves
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3521
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2414
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-124
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{SippInfo}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout BeginPlainFrame
 
 \end_layout
@@ -4093,96 +2902,6 @@ hypertarget{SippTrans}{}
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/SIPP-transition.pdf
 	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Full Savings Policy
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{fullnonh_policy}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-nonh.pdf
-	scale 50
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{nonh_policy}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Why Quantile Regression on non-housing wealth?
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{mean_median_nonH}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/median-nonh_wealth.pdf
-	scale 55
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{nonh_policy}{
-\backslash
-beamergotobutton{back}}
-\end_layout
 
 \end_inset
 
