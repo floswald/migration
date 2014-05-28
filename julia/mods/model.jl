@@ -58,9 +58,9 @@ type Model
 		grids["P"]          = linspace(p.bounds["P"][1],p.bounds["P"][2],p.nP)
 		# grids["Y"]          = linspace(p.bounds["Y"][1],p.bounds["Y"][2],p.nY)
 		grids["W"]          = zeros(p.na)
-		grids["z"]          = zeros(p.nz)
+		# grids["z"]          = zeros(p.nz)
 
-		aone  = findfirst(grids["asset_own"].>0)
+		aone  = findfirst(grids["asset_own"].>=0)
 
 		# 2D grids
 		# =========

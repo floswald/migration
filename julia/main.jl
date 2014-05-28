@@ -24,8 +24,6 @@ mig.writetable("/Users/florianoswald/Dropbox/mobility/output/model/Julia2R/MC3.c
 
 # running
 p = mig.Param(2)
-
-
 m = mig.Model(p)
 @time mig.solve!(m,p)
 # @profile mig.solve!(m,p)
@@ -36,7 +34,11 @@ mig.vplot(m,p)
 
 
 # simulating
+@time s = mig.simulate(m,p)
 
+mms = mig.computeMoments(s,p)
+
+	
 
 
 # without linear index: 96 secs

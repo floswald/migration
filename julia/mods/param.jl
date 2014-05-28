@@ -185,8 +185,8 @@ type Param
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
-		MC    = [0.1, 0.0001, 0.0] # parameters in moving cost: alpha1, alpha2, alpha3
-		kappa = [rand() for i=1:9] # rent to price ratio in each region
+		MC    = [0.1, 0.001, 0.1] # parameters in moving cost: alpha1, alpha2, alpha3
+		kappa = [rand()*0.01 for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
 
 
