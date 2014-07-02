@@ -47,7 +47,7 @@ println("Started julia")
 bind_pe_procs()
 
 # here a function that runs your estimation:
-include("src/estimation.jl")
+include("src/slices.jl")
 
 println("done. quitting cluster.")
 

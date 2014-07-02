@@ -9,7 +9,7 @@ module load sge/2011.11
 # here's the SGE directives
 # ------------------------------------------
 #$ -q batch.q   # <- the name of the Q you want to submit to
-#$ -pe mpich 10  #  <- load the openmpi parallel env w/ $(arg1) slots
+#$ -pe mpich 30  #  <- load the openmpi parallel env w/ $(arg1) slots
 #$ -S /bin/bash   # <- run the job under bash
 #$ -N mpi-testing # <- name of the job in the qstat output
 #$ -o timer.out # direct output stream to here
@@ -18,4 +18,4 @@ module load sge/2011.11
 
 echo "calling mpirun now"
 
-julia /data/uctpfos/git/migration/julia/src/sge.jl
+julia /data/uctpfos/git/migration/julia/src/sge_slices.jl
