@@ -827,21 +827,50 @@ plotMortgageRentSipp <- function(sipp,path="~/Dropbox/mobility/output/data/sipp/
 
 	
 	m1=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=state]
+	m1[,own.rate := merged[age>25&age<65,weighted.mean(own,HHweight),by=list(state)][,V1]]
 	m1[,mort2rent := mort / rent]
+	m1[order(mort2rent),plot(mort,own.rate)]
+
 	m2=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)]),by=list(state,year)]
 	m2 <- melt(m2,id=c("state","year"))
 
+	m3=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],mortmed=.SD[own==TRUE,wtd.quantile(mortg.rent,HHweight,probs=0.5,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rentmed=.SD[own==FALSE,wtd.quantile(mortg.rent,HHweight,probs=0.5,na.rm=T)]),by=Division]
+	m3[,mort2rent := mort / rent]
+	m3[,mort2rentMed := mortmed / rentmed]
+
+	m4=sipp[mortg.rent>0,list(mort=.SD[own==TRUE,weighted.mean(mortg.rent,HHweight,na.rm=T)],mortmed=.SD[own==TRUE,wtd.quantile(mortg.rent,HHweight,probs=0.5,na.rm=T)],rent=.SD[own==FALSE,weighted.mean(mortg.rent,HHweight,na.rm=T)],rentmed=.SD[own==FALSE,wtd.quantile(mortg.rent,HHweight,probs=0.5,na.rm=T)]),by=list(Division,year)]
+	m4[,mort2rent := mort / rent]
+	m4[,mort2rentmed := mortmed / rentmed]
+
 	p <- list()
-	p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012')
+	# p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012') + theme_bw()
+	p$rent <- ggplot(m1,aes(x=state,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + labs(y="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012') + theme_bw() + theme(axis.title.x = element_text(colour = c(rep("black",2),"red",rep("black",2),"blue",rep("black",4))))
+
+
+# + theme(axis.title.y = element_text(colour = c(rep("black",2),"red",rep("black",2),"blue",rep("black",4))))
+
+
+	p$rentDiv <- ggplot(m3,aes(x=Division,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012') + theme_bw()
+	p$rentDivMedian <- ggplot(m3,aes(x=Division,ymin=rentmed*1000/12,ymax=mortmed*1000/12)) + geom_point(aes(y=rentmed*1000/12),color="red",size=2.5) + geom_point(aes(y=mortmed*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('median monthly rent and mortgage payments 1996-2012') + theme_bw()
+
+	p$rentDivYear <- ggplot(m4,aes(x=Division,ymin=rent*1000/12,ymax=mort*1000/12)) + geom_point(aes(y=rent*1000/12),color="red",size=2.5) + geom_point(aes(y=mort*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Average monthly rent and mortgage payments 1996-2012') + facet_wrap(~year) + theme_bw()
+	p$rentDivYearMedian <- ggplot(m4,aes(x=Division,ymin=rentmed*1000/12,ymax=mortmed*1000/12)) + geom_point(aes(y=rentmed*1000/12),color="red",size=2.5) + geom_point(aes(y=mortmed*1000/12),color="blue",size=2.5) + geom_linerange() + coord_flip() + scale_y_continuous(name="monthly rent (red) or mortgage (blue) payment in 1996 USD") + ggtitle('Median monthly rent and mortgage payments 1996-2012') + theme_bw()+ facet_wrap(~year) 
+
 	m1 <- m1[order(mort2rent)]
 	m1[,state := factor(state)]
 	p$m2r  <- ggplot(m1,aes(x=state,y=mort2rent)) + geom_line()  + coord_flip() 
 	p$dist <- ggplot(m2,aes(x=value*1000,color=factor(year))) + geom_density() + ggtitle("distribution of monthly rent or mortgage payments") + facet_wrap(~variable) + scale_x_continuous(name="monthly rent or mortgage payment in 1996 USD")
 
-	pdf(file=file.path(path,"mort-rent.pdf"))
+	pdf(file=file.path(path,"mort-rent-state.pdf"))
 	print(p$rent)
-
 	dev.off()
+	pdf(file=file.path(path,"mort-rent-div.pdf"))
+	print(p$rentDiv)
+	dev.off()
+	pdf(file=file.path(path,"mort-rent-divYear.pdf"))
+	print(p$rentDivYear)
+	dev.off()
+
 	pdf(file=file.path(path,"mort-rent-dist.pdf"))
 	print(p$dist)
 	dev.off()
@@ -944,14 +973,19 @@ PlotSippMigrationRates <- function(){
 #' descriptive evidence
 #' @examples
 #' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
-#' pr <- SippProbitMove(d=subset(des,S2S<2 & complete.cases(des$variables)),"~/Dropbox/mobility/output/data/sipp")
+#' pr <- SippProbitMove(d=des,"~/Dropbox/mobility/output/data/sipp")
 #' 
 #' ## goodness of fit
 #' 
 #' dat <- copy(des$variables[S2S<2 & complete.cases(des$variables)])
-#' dat[,probmove := predict(pr,type="response")]
+#' dat[,probmove := predict(pr$S2S,type="response")]
 #' dat[,pred.move := runif(n=nrow(dat))<probmove]
 #' print(dat[,list(actual.moves=sum(S2S),predicted=sum(pred.move))])
+#' 
+#' dat <- copy(des$variables[D2D<2 & complete.cases(des$variables)])
+#' dat[,probmove := predict(pr$D2D,type="response")]
+#' dat[,pred.move := runif(n=nrow(dat))<probmove]
+#' print(dat[,list(actual.moves=sum(D2D),predicted=sum(pred.move))])
 #'
 #' ## plot
 #' ## predict model
@@ -966,12 +1000,14 @@ SippProbitMove <- function(d,path=NULL){
 
 	stopifnot("survey.design" %in% class(d) )
 
-	m <- svyglm(S2S ~ age + age2 + dkids + own + HHincome + home.equity + duration + college, family=binomial(link="probit"),design=d)
+	m <- svyglm(S2S ~ age + age2 + dkids + own + HHincome + duration + college, family=binomial(link="probit"),design=subset(d,S2S<2 & complete.cases(d$variables)))
+	mD <- svyglm(D2D ~ age + age2 + dkids + own + HHincome + home.equity + duration + college, family=binomial(link="probit"),design=subset(d,D2D<2 & complete.cases(d$variables)))
 
 	if (!is.null(path)){
 		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+		texreg(list(mD),file=file.path(path,"D2D-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
 	}
-	return(m)
+	return(list(S2S=m,D2D=mD))
 }
 
 

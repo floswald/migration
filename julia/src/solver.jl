@@ -11,11 +11,10 @@ function solve!(m::Model, p::Param)
 
 	# final period
 	solveFinal!(m,p)
-
 	# loop over time
 	for age=(p.nt-1):-1:1
 
-		info("solving period $age")
+		# info("solving period $age")
 
 		# 	# compute current period values
 		solvePeriod!(age,m,p)
@@ -44,14 +43,14 @@ function solveFinal!(m::Model,p::Param)
 	for ip = 1:p.np 
 
 		if ia == m.aone
-			tmp = p.omega[1] + p.omega[2] * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
-			tmp2 = p.omega[1] + p.omega[2] * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
+			tmp = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
+			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
 
 			m.EVfinal[ia,ih,iP,ip,ij] = tmp + (tmp2-tmp)
 	
 		elseif ia > m.aone
 
-			m.EVfinal[ia,ih,iP,ip,ij] = p.omega[1] + p.omega[2] * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
+			m.EVfinal[ia,ih,iP,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
 		else
 			m.EVfinal[ia,ih,iP,ip,ij] = p.myNA
 		end
@@ -119,7 +118,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	@inbounds begin
 	for ij=1:p.nJ				# current location
 		for itau=1:p.ntau			# type
-			tau = p.tau[itau]
+			tau = m.grids["tau"][itau]
 			for ih=0:1
 				# choose asset grid for owner/renter
 				# agrid = agridChooser(ih,m)
@@ -151,8 +150,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# loop over choices
 									# =================
 
-									fill!(vtmp,0.0)
-									fill!(expv,0.0)
+									# fill!(vtmp,0.0)
+									# fill!(expv,0.0)
 									vbartmp = 0.0
 
 									# location choice

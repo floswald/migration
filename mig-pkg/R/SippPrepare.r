@@ -348,17 +348,16 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 #' US cpi. All dollar values are denoted in 1000s of
 #' US dollars. The SIPP can be cast at different 
 #' time resolutions, i.e. you can look at monthly data
-#' quarterly data, annual, etc. This function outputs
-#' monthly data and a dataset subset to the fourth (i.e. last)
-#' reference month of each wave.
-#' @param agg.by list of variable names by which to aggregate. presumably those should be time variables like qtr, year, age etc
+#' quarterly data, annual, etc. you chose the level of 
+#' aggregation by setting the argument \code{agg.by}
+#' @param agg.by list of variable names by which to aggregate. those should be time variables present in the dataset like qtr, year, age etc
 #' @param TM.idx list with one index vector
 #' of TM waves to use per panel. Name list
 #' elements like "p96" [panel 96]
 #' @param path to output from \code{\link{Extract.wrap}}
 #' events in srefmon 4 are representative of the previous three months. 
 #' @return NULL. Saves 2 data.tables to dropbox. 
-Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
+Clean.Sipp <- function(inpath="~/Dropbox/mobility/SIPP",outpath="~/git/migration/mig-pkg/data",
 					   TM.idx=list(p96=c(3,6,9,12),
 								   p01=c(3,6,9),
 								   p04=c(3,6),
@@ -399,7 +398,7 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 		if (verbose) cat(sprintf("cleaning %s \n",yrs[yr]))
 
-		load(file.path(path,paste0("subset",yrs[yr],".RData")))
+		load(file.path(inpath,paste0("subset",yrs[yr],".RData")))
 
 		# convert ssuid to a string.
 		lapply(topics,function(x) x[,ssuid := as.character(ssuid)])
@@ -573,15 +572,6 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		mergexx[duration_at_current < 0 , duration_at_current := NA]
 
 
-		# create a monthly state-2-state indicator
-		# indicates THAT YOU HAVE JUST MOVED! (AT THE BEGINNING OF CURRENT PERIOD, SAY)
-
-		#mergexx[,S2S.mn := c(FALSE,(diff(FIPS)!=0 )),by=upid]	# NA!=0 returns NA.
-
-
-		## create a per-wave indicator
-		#mergexx[,S2S.wave := max(S2S.mn,na.rm=T),by=list(upid,wave)]	
-
 		mergexx[, panel := yrs[yr]]
 
 		# rbindlist (below) merges by 
@@ -651,6 +641,9 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	merged <- US_states[ merged ]
 	merged[,c("state.bornID","STATE") := NULL]
+
+	# TODO get census estimates of state median income
+	# TODO in EconData
 
 	# end state aggregation
 	# ======================
@@ -773,6 +766,8 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 						   D22D2=sum(D22D2),
 						   from=from[1],
 						   to=to[length(to[!is.na(to)])],
+						   fromD=fromD[1],
+						   toD=toD[length(toD[!is.na(toD)])],
 						   cohort=cohort[1],
 						   duration=duration_at_current[1]),by=list(upid,",agg.by,")]")
 
@@ -782,34 +777,26 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		mcall <- paste0("merged[,timeid := ",agg.by,"]")
 		eval(parse(text=mcall))
 
+		# add the distance matrix
+		data(Division_distMat,package="EconData")
+		divdist = melt(data.table(Division_distMat))
+		divdist[,fromD := rownames(Division_distMat)]
+		setnames(divdist,c("variable","value"),c("toD","km_distance"))
+		setkey(divdist,fromD,toD)
+		setkey(merged,fromD,toD)
 
-	   # # get a unique timeid that is a numeric sequence
-		#mcall <- paste0("tmp <- merged[,list(",agg.by,"=as.numeric(unique(",agg.by,")))]")
-		#eval(parse(text=mcall))
+		merged <- divdist[merged]
 
-		## setkey on the time id
-		#mcall <- paste0("setkey(tmp,",agg.by,")")
-		#eval(parse(text=mcall))
-
-		#tmp[,timeid := 1:nrow(tmp)]
-
-
-		#mcall <- paste0("setkey(merged,",agg.by,")")
-		#eval(parse(text=mcall))
-		#merged <- merged[ tmp ]
-
-
-		#mcall <- paste0("merged[,timeid := as.numeric(",agg.by,")]")
-		#eval(parse(text=mcall))
-
-		# re-add age2
+			# re-add age2
 		merged[,age2 := age^2]
+		merged[,km_distance2 := km_distance^2]
+
 
 		# get rid of duplicate cols
 		nm <- names(merged)
 		merged[,unique(nm),with=FALSE]
 	
-		fname <- paste0("Sipp_aggby_",agg.by,".RData")
+		fname <- paste0("Sipp_",agg.by,".rda")
 		
 	} else {
 
@@ -817,9 +804,15 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 
 	}
 
+	# normalizing constant: median income in 1996
+	medinc <- merged[year==1996,wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)]
+
 	# imputed renters house value assuming a 
 	# effective user cost of 5%	
 	merged[own==FALSE,r_hvalue := mortg.rent / 0.05 ]
+
+	# wealth to income ratio: measure of assets
+	merged[HHincome > 0, w2medinc := wealth / medinc]
 
 	if (use.hvalue.for.p2y){
 		merged[HHincome>0 & own==TRUE ,p2y := hvalue / (HHincome) ] 
@@ -834,10 +827,12 @@ Clean.Sipp <- function(path="~/Dropbox/mobility/SIPP",
 		merged[wealth!= 0,p2w := HValue96 / wealth] 
 	}
 
+	# add savings to income
+
 
 	if (verbose) cat("writing data to disk now.\n")
 
-	save(merged,file=file.path(path,fname))
+	save(merged,file=file.path(outpath,fname))
 
 	return(merged)
 
@@ -945,3 +940,15 @@ getHval.data <- function(data="~/Dropbox/mobility/SIPP/Sipp4mn.RData"){
 
 
 
+#' make SIPP survey Design object
+#'
+SippSvyDesign <- function(merged=NULL){
+	if (is.null(merged)){
+		data(Sipp_age,envir=environment())
+	}
+
+
+ 	des <- svydesign(ids=~1,weights=~HHweight,data=merged)
+ 	save(des,file="~/git/migration/mig-pkg/data/Sipp_age_svy.rda")
+ 	return(des)
+}

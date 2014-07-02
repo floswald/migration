@@ -2,26 +2,15 @@
 
 module test_module
 
+
 using FactCheck
-using mig
+
+include("../src/mig.jl")
 
 facts("testing the model module") do
 
 	p = mig.Param(2)
 	m = mig.Model(p)
-
-	context("Dictionaries have all required elements") do
-
-		b = ["asset_own","asset_rent","housing","P","W","z"]
-		@fact length(setdiff(b, collect(keys(m.grids)))) => 0
-
-		b = ["GP","dist","ageprof"]
-		@fact length(setdiff(b, collect(keys(m.grids2D)))) => 0
-
-		b = ["Gy","Gp","Gz","p","y","movecost"]
-		@fact length(setdiff(b, collect(keys(m.gridsXD)))) => 0
-
-	end
 
 	context("price grids have correct dimenions (p,P,J)") do
 
@@ -29,8 +18,6 @@ facts("testing the model module") do
 		@fact size(m.gridsXD["y"]) == (p.ny,p.nJ) => true
 
 	end
-
-
 
 	context("Transition arrays sum to 1 over dimension 2") do
 
@@ -42,18 +29,6 @@ facts("testing the model module") do
 		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
 	 	end
 
-
- 	context("price grids have correct values for each region") do
-
- 		for i in 1:p.nP
-			for k in 1:p.nJ
-				x =linspace(p.pbounds["p"][k][1], p.pbounds["p"][k][2], p.np) 
-	 			for j in 1:p.np
- 					@fact m.gridsXD["p"][i,j,k] - m.grids["P"][i] - x[j] => roughly(0.0,atol=0.000001)
- 				end
- 			end
- 		end
- 	end
 
  	context("moving cost is zero for j==k") do
 

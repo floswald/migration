@@ -1,13 +1,19 @@
 module mig
 
-using JSON, Debug, PyPlot, DataFrames
+using Debug, Copulas
+using Reexport
+@reexport using DataFrames
 import Distributions: Categorical, rand
+import Base.show
 
 export Param, Model
 
-include("/Users/florianoswald/git/copula.jl/mods/copula.jl")
+
+
+
 include("param.jl")
 include("model.jl")
+include("mig-incl.jl")
 include("E_tensors.jl")
 include("solver.jl")
 include("plotting.jl")

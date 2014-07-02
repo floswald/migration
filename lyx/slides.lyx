@@ -639,6 +639,19 @@ Probit of cross state moves.
 
 \end_layout
 
+\begin_layout BeginFrame
+Roadmap
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Literature
 \end_layout
@@ -906,20 +919,8 @@ z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
 \begin_inset Formula $z$
 \end_inset
 
- is individual productivity, or 
-\emph on
-rank 
-\emph default
-of 
-\begin_inset Formula $i$
-\end_inset
-
- in distribution of 
+ is individual productivity -- distribution depends on region 
 \begin_inset Formula $j$
-\end_inset
-
- at age 
-\begin_inset Formula $t$
 \end_inset
 
 
@@ -1157,13 +1158,13 @@ Costs differ by ownership status and type
 \end_layout
 
 \begin_layout Itemize
-Owners incur time and effort cost from having to sell, proportional to value
+Owners incur additional time and effort cost from having to sell
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
+\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
 \]
 
 \end_inset
@@ -1782,7 +1783,7 @@ Simulated Price Deviations
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/incomeSimTruthDevs.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/PriceSimTruthDevs.pdf
 	scale 50
 
 \end_inset

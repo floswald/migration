@@ -154,6 +154,10 @@ INCOMPLETE
 \begin_layout Abstract
 In this paper I propose a lifecycle model of internal migration in the US
  which explicitly takes the decision to buy or rent a home into account.
+ The aim of the paper is to deliver estimates of the elasticity of the mobility
+ rate with respect to several tax instruments related to housing, such as
+ the mortgage interest deduction or the capital gains tax exemption for
+ the sale of primary residence housing.
  Homeowners have greater costs of relocation, resulting in a lower propensity
  to move relative to renters.
  To the extent that labor market mobility can be viewed as an important
@@ -178,6 +182,7 @@ The main purpose of this paper is to show that in a dynamic context, expected
  that homeownership status, and house price shocks matter as well.
  This consideration is more important the greater the frictions are in the
  housing market; I will argue that those frictions are substantial.
+ (how?)
 \end_layout
 
 \begin_layout Standard
@@ -1763,7 +1768,7 @@ tbc
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "/Users/florianoswald/Dropbox/mybib"
-options "econometrica"
+options "ecta"
 
 \end_inset
 

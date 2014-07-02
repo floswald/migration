@@ -66,16 +66,18 @@ function simulate(m::Model,p::Param)
 	# initial distributions
 	# TODO
 	# all of those should be non-uniform probably
-	G0tau = Categorical(p.taudist)	# type distribution
+	G0tau = Categorical([1-p.taudist, p.taudist])	# type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
 	G0y   = Categorical([1/p.ny for i=1:p.ny])
 	G0p   = Categorical([1/p.np for i=1:p.np])
 	G0P   = Categorical([1/p.nP for i=1:p.nP])
-	G0a   = Categorical(Float64[1/length(m.aone:p.na) for i=1:length(m.aone:p.na)])
+	x     = [1/i^2 for i=1:length(m.aone:p.na)]
+	x     = x / sum(x)
+	G0a   = Categorical(x)
 	G0j    = Categorical([1/p.nJ for i=1:p.nJ])	# TODO popdist
 
 	# prepare cumsum of probability matrices
-	cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
+	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
 	cumGP  = cumsum(m.grids2D["GP"],2)	# transition matrices cumulate over dim 2
 	cumGp  = cumsum(m.gridsXD["Gy"],2)
 	cumGy  = cumsum(m.gridsXD["Gp"],2)
@@ -112,7 +114,7 @@ function simulate(m::Model,p::Param)
 	DMt     = zeros(Int,p.nsim*(T))	# move
 
 	ktmp = zeros(p.nJ)
-
+	ktmp2 = zeros(p.nJ)
 
 	# begin simulation loop
 	# =====================
@@ -123,7 +125,8 @@ function simulate(m::Model,p::Param)
 		iy   = rand(G0y)
 		ip   = rand(G0p)
 		iP   = rand(G0P)
-		iz   = rand(G0z)
+		# iz   = rand(G0z)
+		iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
 		ia   = rand(G0a) + m.aone - 1
 		ih   = 0
 		itau = rand(G0tau)
@@ -139,10 +142,11 @@ function simulate(m::Model,p::Param)
 			# move to where?
 			# get probabilities of moving to k
 			for ik in 1:p.nJ
-				ktmp[ik] = cumrho[idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+				ktmp[ik] = m.rho[idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			end
-
-			moveto = findfirst(ktmp .> rand())
+			cumsum!(ktmp2,ktmp,1)
+			# TODO slow
+			moveto = searchsortedfirst(ktmp2,rand())
 			move = ij != moveto
 
 			if move
@@ -160,7 +164,7 @@ function simulate(m::Model,p::Param)
 			Di[age + T*(i-1)] = i
 			Dh[age + T*(i-1)] = ih
 			Da[age + T*(i-1)] =	agrid[ ia ]
-			Dy[age + T*(i-1)] = ygrid[iy,ij]
+			Dy[age + T*(i-1)] = ygrid[iy,ij]	# SLOW
 			Dz[age + T*(i-1)] = zgrid[iz,ij,age]
 			Dp[age + T*(i-1)] = pgrid[iP,ip,ij]
 			Dincome[age + T*(i-1)] = income(zgrid[ iz,ij,age ], ygrid[iy,ij])
@@ -206,10 +210,10 @@ function simulate(m::Model,p::Param)
 			# you are moving to
 			# -----------------------
 
-			iP = findfirst( cumGP[iP,:] .> rand() )
-			ip = findfirst( cumGp[ip,:,moveto] .> rand() )
-			iy = findfirst( cumGy[iy,:,moveto] .> rand() )
-			iz = findfirst( cumGz[iz,:,moveto] .> rand() )
+			iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
+			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
+			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
+			iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
 
 
 		end	# age t
@@ -222,6 +226,8 @@ function simulate(m::Model,p::Param)
 	eq = (Dp .- Da) .* Dh  
 
 	df = DataFrame(id=Di,age=Dt,j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,eq=eq)
+	df = join(df,m.regnames,on=:j)
+	sort!(df,cols=[1,2]	)
 
 	return df
 end
@@ -229,7 +235,7 @@ end
 
 
 # computing moments from simulation
-function computeMoments(df::DataFrame,p::Param)
+function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# overall ownership rate
 	own = mean(df[: ,:h])
@@ -243,20 +249,24 @@ function computeMoments(df::DataFrame,p::Param)
 	nomove = 1 - length(movers) / p.nsim
 
 	# fraction of people who move twice/more
-	x = by(df[df[:move].==true,:], [:id], d -> DataFrame(N=size(d,1)))
+	x = by(df[df[:move].==true,:], :id, d -> DataFrame(N=size(d,1)))    
 	nummoves = by(x,:N,d -> DataFrame(Num=size(d,1))) 
 
 	# moving rate by ownership
-	movebyh = by(df, :h, d -> DataFrame(moverate=mean(d[:,:move])))
+	movebyh = DataFrames.by(df, :h, d -> DataFrames.DataFrame(moverate=mean(d[:move])))
 
 	# moving rate by age
-	movebyh = by(df, :age, d -> DataFrame(moverate=mean(d[:,:move])))
+	movebyage = by(df, :age, d -> DataFrame(moverate=mean(d[:move])))
 
 	# assets by ownership and age
+	# aggregate in 5-year bins
+	
 	# assets_hage = by(df, [:age, :h], d -> DataFrame(assets=mean(d[:,:a])))
-	# assets by ownership 
-	assets_h = by(df,  :h, d -> DataFrame(assets=mean(d[:,:a])))
-	assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:,:a])))
+
+
+	assets_h = by(df,  :h, d -> DataFrame(assets=mean(d[:a])))
+	assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:a])))
+	assets_hage = by(df, [ :h, :age] , d -> DataFrame(assets=mean(d[:a])))
 
 	# autocorrelation of income by region
 	# make a lagged income for each id
@@ -270,14 +280,14 @@ function computeMoments(df::DataFrame,p::Param)
 		end
 	end
 
-	rhos = by( ly[ly[:,:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:,:y],d[:,:Ly])))
+	rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
 
 	# equity
 	equity = by(df,:age,d->DataFrame(equity=mean(d[:,:eq])))
 
 	# fraction of people who move with neg equity
 
-	out = ["own" => own, "ownage" => ownage, "nomove" => nomove, "nummoves" => nummoves, "movebyh" => movebyh, "assets_h" => assets_h, "assets_age" => assets_age, "rhos" => rhos, "equity" => equity]
+	out = ["own" => own, "ownage" => ownage, "nomove" => nomove, "nummoves" => nummoves, "movebyh" => movebyh, "movebyage" => movebyage, "assets_h" => assets_h, "assets_age" => assets_age, "assets_hage" => assets_hage,"rhos" => rhos, "equity" => equity]
 
 	return out
 
@@ -311,3 +321,4 @@ end
 
 
 
+	

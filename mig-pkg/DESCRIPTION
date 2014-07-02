@@ -11,13 +11,13 @@ Imports:
     stringr,
     texreg,
     RSQLite,
-    xts,
     grid,
+    mnlogit,
     splines,
-    Hmisc
 Depends:
     zoo,
-    mnlogit,
+    Hmisc,
+    xts,
     survey,
     nlme,
     quantreg,
@@ -27,7 +27,8 @@ Depends:
     xtable,
     devtools,
     ggplot2,
-    testthat
+    testthat,
+    plyr
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
@@ -43,3 +44,4 @@ Collate:
     'income.r'
     'prices.r'
     'incomeProcess-class.r'
+    'plotjulia.R'

@@ -129,7 +129,7 @@ makeDivDifferences <- function(path=NULL){
 	div <- d[,list(meanmedinc=mean(log(medinc)),minmedinc=min(log(medinc)),maxmedinc=max(log(medinc))),by=list(Year,Division)]
 
 	# normalizing constant for model:
-	normalize = d[Year==1996,mean(medinc)]
+	r$normalize = d[Year==1996,mean(medinc)]
 
 	# define "deviation" as difference in logs i.e. percentage difference
 	div[,dev := meanmedinc - .SD[Division=="USA"][["meanmedinc"]] ]
@@ -168,7 +168,7 @@ makeDivDifferences <- function(path=NULL){
 
 	r$price <- list()
 	r$price$meanstate <- dat[,list(mean=mean(log(y)),min=min(log(y)),max=max(log(y))),by=state]
-	div2 <- div[Division!="USA",list(meddev=mean(dev),mindev=min(dev),maxdev=max(dev)),by=Division]
+	div2 <- divH[Division!="USA",list(meddev=mean(dev),mindev=min(dev),maxdev=max(dev)),by=Division]
 	div2[,Division := abbreviate(Division,3)]
 	setkey(div2,Division)
 	r$price$meandiv <- div2
@@ -185,14 +185,14 @@ makeDivDifferences <- function(path=NULL){
 	r$price$p2y = data.table(year=seq(from=as.Date("1984-1-1"),to=as.Date("2012-1-1"),by="year"),p2y=r$price$d[date>1983 & date<2013 & Division=="USA", exp(p)] / r$inc$d[Division=="USA",exp(meanmedinc)])
 
 	rexp = r$price$p2y
-	rexp[,year := year(year)]
+	r$price$p2y[,year := year(year)]
 
 	r$price$p_p2y <- ggplot(r$price$p2y,aes(x=year,y=p2y)) + geom_line(size=1.2) + theme_bw() + scale_y_continuous(name="US Price to Income ratio")
 
-	write.csv(r$income$d2,file="~/Dropbox/mobility/output/model/R2julia/divincome.csv")
-	write.csv(r$price$meandiv,file="~/Dropbox/mobility/output/model/R2julia/divprice.csv")
-	write.csv(rexp,file="~/Dropbox/mobility/output/model/R2julia/p2y.csv")
-	write.csv(normalize,file="~/Dropbox/mobility/output/model/R2julia/normalize.csv")
+	# write.csv(r$income$d2,file="~/Dropbox/mobility/output/model/R2julia/divincome.csv")
+	# write.csv(r$price$meandiv,file="~/Dropbox/mobility/output/model/R2julia/divprice.csv")
+	# write.csv(rexp,file="~/Dropbox/mobility/output/model/R2julia/p2y.csv")
+	# write.csv(r$normalize,file="~/Dropbox/mobility/output/model/R2julia/normalize.csv")
 
 	if (!is.null(path)){
 

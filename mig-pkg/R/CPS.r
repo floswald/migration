@@ -35,6 +35,9 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	# create a dummy for cross state move
 	d[, S2S.move := mig_mtr3 %in% c("Different state, same division","Different division, same region","Different region")]
 	d[, S2S.move := factor(S2S.move,labels=c("No","Yes"))]
+	# create a dummy for cross Division move
+	d[, D2D.move := mig_mtr3 %in% c("Different division, same region","Different region")]
+	d[, D2D.move := factor(D2D.move,labels=c("No","Yes"))]
 
 	# encode race
 	d[,race := prdtrace]
@@ -73,7 +76,18 @@ tabfun <- function(yr,des){
 	tabs$mv5 <- tabs$mv5[order(tabs$mv5$Percent,decreasing=TRUE),]
 
 	# TODO
-	tabs$mv5$Percent.Within <- data.frame(round(svtytable(~main.reason, des$desmv[[yr]], N=100),1))
+	# tabs$mv5$Percent.Within <- data.frame(round(svytable(~main.reason, des$desmv[[yr]], N=100),1))
+
+	tabs$mv6 <- data.frame(svytable(formula=~D2D.move, des$des[[yr]],N=100,exclude="Not in universe (children under"))
+	names(tabs$mv6) <- c("Did you move to another Division?","Percent")
+
+	tabs$mv7 <- data.frame(round(svytable(~nxtresf, des$desmv.div[[yr]], N=100),1))
+	names(tabs$mv7) <- c("main reason for moving","Percent")
+	tabs$mv7 <- tabs$mv7[order(tabs$mv7$Percent,decreasing=TRUE),]
+
+	tabs$mv8 <- data.frame(round(svytable(~main.reason, des$desmv.div[[yr]], N=100,exclude="NIU"),1))
+	names(tabs$mv8) <- c("main reason for moving","Percent.D2D")
+	tabs$mv8 <- tabs$mv8[order(tabs$mv8$Percent,decreasing=TRUE),]
 
 	return(tabs)
 
@@ -88,9 +102,10 @@ CPS.makeDesign <- function(d){
 	des      <- lapply(d[,unique(h_year)], function(x) svydesign(ids=~1,weights=~fsup_wgt,data=d[h_year==x]))
 	names(des) <- paste0("year",d[,unique(h_year)])
 	desmv    <- lapply(des,function(x) subset(x,as.numeric(migsame)==3))		# mover sample
-	desmv.st <- lapply(des,function(x) subset(x,S2S.move==TRUE))		# mover sample across state
+	desmv.st <- lapply(des,function(x) subset(x,S2S.move=="Yes"))		# mover sample across state
+	desmv.div <- lapply(des,function(x) subset(x,D2D.move=="Yes"))		# mover sample across state
 
-	return(list(des=des,desmv.st=desmv.st))
+	return(list(des=des,desmv.st=desmv.st,desmv.div=desmv.div))
 
 }
 

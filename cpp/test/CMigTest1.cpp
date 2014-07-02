@@ -1,6 +1,6 @@
 
 
-#include "BBLsim.h" // Include the code that we are testing
+#include "CMig.h" // Include the code that we are testing
 #include <gtest/gtest.h> // Include the google test framework
 
 using namespace arma;

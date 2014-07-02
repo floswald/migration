@@ -291,6 +291,10 @@ end
 
 facts("testing maxvalue function") do
 
+	p = mig.Param(1)
+	m = mig.Model(p)
+	s = m.grids["asset_own"]
+
 	context("maxalue for owners non default") do
 
 		p = mig.Param(1)
@@ -306,7 +310,6 @@ facts("testing maxvalue function") do
 		EV = rand(p.na)
 		own = 1
 
-		s = mig.agridChooser( own, m)
 
 		for i=1:p.na
 			if x-s[i] > 0
@@ -316,13 +319,13 @@ facts("testing maxvalue function") do
 
 		r = findmax(w)
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => r
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => r
 
 		fill!(w,p.myNA)
 		x = -10000.0
 		def = false
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => (p.myNA,1)
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => (p.myNA,1)
 	end
 
 
@@ -341,8 +344,6 @@ facts("testing maxvalue function") do
 		EV = rand(p.na)
 		own = 1
 
-		s = mig.agridChooser( own, m)
-
 		for i=1:p.na
 			if x-s[i] > 0
 				w[i] = mig.ufun(x-s[i],own,mc,def,p) + p.beta * EV[i]
@@ -351,13 +352,13 @@ facts("testing maxvalue function") do
 
 		r = findmax(w)
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => r
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => r
 
 		fill!(w,p.myNA)
 		x = -10000.0
 		def = false
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => (p.myNA,1)
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => (p.myNA,1)
 	end
 
 
@@ -376,8 +377,6 @@ facts("testing maxvalue function") do
 		EV = rand(p.na)
 		own = 0
 
-		s = mig.agridChooser( own, m)
-
 		for i=1:p.na
 			if x-s[i] > 0
 				w[i] = mig.ufun(x-s[i],own,mc,def,p) + p.beta * EV[i]
@@ -386,13 +385,13 @@ facts("testing maxvalue function") do
 
 		r = findmax(w)
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => r
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => r
 
 		fill!(w,p.myNA)
 		x = -100000.0
 		def = false
 
-		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV) => (p.myNA,1)
+		@fact mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) => (p.myNA,1)
 	end
 
 
@@ -411,9 +410,8 @@ facts("testing maxvalue function") do
 		def = false
 		own = 0
 
-		s = mig.agridChooser( own, m)
 		EV = rand(p.na-1)
-		@fact_throws mig.maxvalue(x,p,s,w,own,mc,def,EV) 
+		@fact_throws mig.maxvalue(x,p,s,w,own,mc,def,EV,m.aone) 
 	end
 
 end
@@ -536,7 +534,7 @@ facts("test integration of vbar: getting EV") do
 		p    = mig.Param(1)
 		m    = mig.Model(p)
 
-		myEV = zeros(p.dimvec2[1:8])
+		myEV = zeros(m.dimvec2[1:8])
 
 		age = p.nt-2
 

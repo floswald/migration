@@ -1,15 +1,56 @@
 
 
 # main programme
-cd("/Users/florianoswald/git/migration/julia")
-include("mods/mig.jl")
+home = ENV["HOME"]
+cd("$home/git/migration/julia")
+include("src/estimation.jl")
+include("src/slices.jl")
+
+include("src/mig.jl")
+
+# session 1
+p = mig.Param(2)
+m = mig.Model(p)
+@time mig.solve!(m,p)
+
+# session 2
+@time mig.mywrap()
+
+function wrap2(p::mig.Param,m::mig.Model)
+
+	# p0 = mig.Param(2)	# constructing p inside doubles time.
+	# m0 = Model(p0)
+	# mig.solve!(m0,p0)
+
+	mig.solve!(m,p)
+
+end
+
+
+p0 = mig.Param(2)
+function wrap3(p::mig.Param)
+	# mig.update!(p,x)
+	# println(p)
+	wrap2(p)
+end
+
+
+@time s = mig.simulate(m,p);
+@time mms = mig.computeMoments(s,p,m);
+
 	
+
+
+
+
 # testing
 include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
 include("test/test_Tensors.jl")
 	
+
+
 
 # run experiments
 MC1 = mig.experMC(1,3);
@@ -23,9 +64,6 @@ mig.writetable("/Users/florianoswald/Dropbox/mobility/output/model/Julia2R/MC3.c
 
 
 # running
-p = mig.Param(2)
-m = mig.Model(p)
-@time mig.solve!(m,p)
 # @profile mig.solve!(m,p)
 
 # plot value functions
@@ -34,10 +72,10 @@ mig.vplot(m,p)
 
 
 # simulating
-@time s = mig.simulate(m,p)
 
-mms = mig.computeMoments(s,p)
 
+showall(by(s,:age,d -> mean(d[:income])))
+	
 	
 
 

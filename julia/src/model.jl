@@ -30,35 +30,78 @@ type Model
 	grids2D :: Dict{ASCIIString,Array{Float64,2}}
 	gridsXD :: Dict{ASCIIString,Array{Float64}}
 
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	# dimnames::Array{ASCIIString}
+	dimnames::DataFrame
+	regnames::DataFrame
+	distance::Array{Any,2}
 
 	# constructor
 	function Model(p::Param)
 
+		dimvec  = (p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+		dimvec2 = (p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
 
-		v= reshape(rand(prod((p.dimvec))),p.dimvec)
-		s= fill(0,p.dimvec)
-		c= fill(0.0,p.dimvec)
-		rho = reshape(rand(prod((p.dimvec))),p.dimvec)
+		v= reshape(rand(prod((dimvec))),dimvec)
+		s= fill(0,dimvec)
+		c= fill(0.0,dimvec)
+		rho = reshape(rand(prod((dimvec))),dimvec)
 
 		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
 
-		dh = fill(0,p.dimvec2)
+		dh = fill(0,dimvec2)
 
-		EV = reshape(rand(prod((p.dimvec2))),p.dimvec2)
-		vbar = reshape(rand(prod((p.dimvec2))),p.dimvec2)
+		EV = reshape(rand(prod((dimvec2))),dimvec2)
+		vbar = reshape(rand(prod((dimvec2))),dimvec2)
+
+		bounds = Dict{ASCIIString,(Float64,Float64)}()
+		bounds["asset_own"] = (-5.0,10.0)
+		bounds["asset_rent"] = (0.01,10.0)
+		bounds["tau"]        = (0.0,0.1)
+		# bounds["Y"]          = (0.5,1.5)
+
+
+		# import data from R
+		# ==================
+
+		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/R2Julia")
+
+		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
+		divinc = DataFrame(read_rda(joinpath(indir,"divincome.rda"))["divincome"])
+
+
+		pbounds = Dict{ASCIIString,DataFrame}()
+		pbounds["y"] = divinc[1:p.nJ,[:Division,:mindev,:maxdev]]
+		regnames = DataFrame(j=1:p.nJ,Division=divinc[1:p.nJ,:Division])
+
+		divprice = DataFrame(read_rda(joinpath(indir,"divprice.rda"))["divprice"])
+		pbounds["p"] = divprice[1:p.nJ,[:Division,:mindev,:maxdev]]
+
+		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["df"])
+		dist = array(distdf)
+
+		p2y = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
+		p2y = p2y[p2y[:year].>1995,:]
+		bounds["P"]  = (minimum(p2y[:,:p2y]),maximum(p2y[:,:p2y]))
 
 		
+
 
 		# 1D grids
 		# =========
 
-		grids = (ASCIIString => Array{Float64,1})["asset_own" => linspace(p.bounds["asset_own"][1],p.bounds["asset_own"][2],p.na)]
-		grids["asset_rent"] = linspace(p.bounds["asset_rent"][1],p.bounds["asset_rent"][2],p.na)
+		# grids = (ASCIIString => Array{Float64,1})["asset_own" => linspace(p.bounds["asset_own"][1],p.bounds["asset_own"][2],p.na)]
+		x = sinh(linspace(asinh(bounds["asset_own"][1]),asinh(bounds["asset_own"][2]),p.na))
+		# center on zero
+		x = x .- x[ indmin(abs(x)) ] 
+		grids = Dict{ASCIIString,Array{Float64,1}}()
+		grids["asset_own"] = x
+		grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
-		grids["P"]          = linspace(p.bounds["P"][1],p.bounds["P"][2],p.nP)
-		# grids["Y"]          = linspace(p.bounds["Y"][1],p.bounds["Y"][2],p.nY)
+		grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
 		grids["W"]          = zeros(p.na)
-		# grids["z"]          = zeros(p.nz)
+		grids["tau"]        = linspace(0.0,1.0,p.ntau)
 
 		aone  = findfirst(grids["asset_own"].>=0)
 
@@ -72,35 +115,7 @@ type Model
 		# GY = makeTransition(p.nY,p.rhoY)
 		GP = makeTransition(p.nP,p.rhoP)
 
-		# Distance matrix
-		# ===============
 
-		# dist = rand(p.nJ,p.nJ) * 1000.0
-		# dist[ diagind(dist,0) ] = 0
-		# Base.LinAlg.copytri!(dist,'U')
-
-
-		# # age profile by region
-		# # =====================
-
-		# agemat = hcat(ones(p.nt),p.minAge:(p.minAge+p.nt-1))
-		# agemat = hcat(agemat,agemat[:,2].^2)
-		# agep = zeros(p.nt,size(p.Ageprof,1))
-
-		# for j=1:9
-		# 	agep[:,j] = agemat * transpose(p.Ageprof[j,2:end])
-		# end
-
-		# # i = 0
-		# # for j in keys(AgeP)
-		# # 	i = i+1
-		# # 	agep[:,i] = agemat * convert(Array{Float64,1},AgeP[j]["fixed"])
-		# # end
-
-		# # cut ageprofile to number of regions currently running:
-		# ageprofile = agep[:,1:p.nJ]
-
-		# # grids2D = (ASCIIString => Array{Float64,2})["GY"=> GY, "GP" => GP, "dist" => dist, "ageprof" => ageprofile]
 		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP]
 
 		# 3D grids
@@ -109,16 +124,16 @@ type Model
 		# regional prices
 		# 3D array (national_price,regional_price,region_id)
 		# these are the percentage deviations from trend
-		ygrid = zeros(p.ny,p.nJ)
-		pgrid = zeros(p.np,p.nJ)
+		ygrid = zeros(Float64,p.ny,p.nJ)
+		pgrid = zeros(Float64,p.np,p.nJ)
 		for i = 1:p.nJ
-			pgrid[:,i] = linspace(1+p.pbounds["p"][i,1], 1+p.pbounds["p"][i,2], p.np)
-		    ygrid[:,i] = linspace(1+p.pbounds["y"][i,1], 1+p.pbounds["y"][i,2], p.ny)
+			pgrid[:,i] = 1.0 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np)   # (1 + %-deviation)
+		    ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
 		end
 
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
-		pgrid = [grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		pgrid = Float64[grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
 		# get z supports
@@ -135,7 +150,7 @@ type Model
 		# subset to min/max age
 		zsupp = zsupp[(zsupp[:age] .>= p.minAge) & (zsupp[:age] .<= p.maxAge), 2:end]
 
-		zgrid = zeros(p.nz,p.nJ,p.nt-1)
+		zgrid = zeros(Float64,p.nz,p.nJ,p.nt-1)
 		for iz = 1:p.nz
 			for ij=1:p.nJ
 				for it =1:(p.nt-1)
@@ -150,7 +165,8 @@ type Model
 		# [LocalPrice(t),LocalPrice(t+1),Location]
 		Gy = makeTransition(p.ny,p.rhoy)
 		Gp = makeTransition(p.np,p.rhop)
-		Gz = makeTransition(p.nz,p.rhoz)
+		rhoz = [0.4 for i in 1:p.nJ]
+		Gz = makeTransition(p.nz,rhoz)
 
 		# moving cost function
 		# ====================
@@ -161,7 +177,7 @@ type Model
 				for ik in 1:p.nJ
 					for ih in 0:1
 						for itau in 1:p.ntau
-							mc[it,ij,ik,ih+1,itau] = (ij!=ik) * (p.tau[itau] + p.MC[1]*ih + p.MC[2] * p.distance[ij+1,ik+1] + p.MC[3] * it )
+							mc[it,ij,ik,ih+1,itau] = (ij!=ik) * (grids["tau"][itau] + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it )
 						end
 					end
 				end
@@ -171,9 +187,11 @@ type Model
 
 		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ]
 
+		dimnames = DataFrame(dimension=["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
+			                  points = [p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
-		return new(v,s,c,rho,EV,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD)
+		return new(v,s,c,rho,EV,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
 
 	end
 
@@ -197,14 +215,14 @@ end
 function makeTransition(n,rho)
 
 	u = linspace(1/n, 1-1/n, n)
-	u =[repmat(u,n,1) repmat(u,1,n)'[:] ]
+	u = [repmat(u,n,1) repmat(u,1,n)'[:] ]
 	
 	J = length(rho)
 
 	if J==1
 		G = zeros(n,n)
-		Cop = Copmod.Copula(2,rho)
-		G = reshape(Copmod.dnormCopula(u,Cop),n,n)
+		Cop = NormalCopula(2,rho)
+		G = reshape(dnormCopula(u,Cop),n,n)
 
 		# normalize by row sums
 		G = G./sum(G,2)
@@ -214,8 +232,8 @@ function makeTransition(n,rho)
 
 		G = zeros(n,n,J)
 		for i=1:J
-			Cop = Copmod.Copula(2,rho[i])
-			G[:,:,i] = reshape(Copmod.dnormCopula(u,Cop),n,n)
+			Cop = NormalCopula(2,rho[i])
+			G[:,:,i] = reshape(dnormCopula(u,Cop),n,n)
 		end
 
 		# normalize by row sums
