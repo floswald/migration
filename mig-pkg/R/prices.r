@@ -93,7 +93,7 @@ makeDivDifferences <- function(path=NULL){
 
 	# income
 	data(US_medinc_current,package="EconData")
-	d <- data.table(medinc_current$inc)
+	d <- data.table(medinc_current$incl)
 
 	# in 1996 dollars
 	data("CPIAUCSL",package="EconData")
@@ -123,7 +123,7 @@ makeDivDifferences <- function(path=NULL){
 	setkey(d,State)
 
 	d <- US_states[d]
-	d[STATE=="     united states",c("state","Division") := list("USA","USA")]
+	d[STATE=="united states",c("state","Division") := list("USA","USA")]
 	d[,STATE := NULL]
 	
 	div <- d[,list(meanmedinc=mean(log(medinc)),minmedinc=min(log(medinc)),maxmedinc=max(log(medinc))),by=list(Year,Division)]
@@ -251,8 +251,6 @@ estimateDivDeviations <- function(dat,path="~/Dropbox/mobility/output/model/R2ju
 
 	r$price <- tmpd
 
-	write.csv(r$price,file=file.path(path,"rho-price.csv"))
-	write.csv(r$inc,file=file.path(path,"rho-income.csv"))
 
 
 

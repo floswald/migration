@@ -357,7 +357,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 #' @param path to output from \code{\link{Extract.wrap}}
 #' events in srefmon 4 are representative of the previous three months. 
 #' @return NULL. Saves 2 data.tables to dropbox. 
-Clean.Sipp <- function(inpath="~/Dropbox/mobility/SIPP",outpath="~/git/migration/mig-pkg/data",
+Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migration/mig-pkg/data",
 					   TM.idx=list(p96=c(3,6,9,12),
 								   p01=c(3,6,9),
 								   p04=c(3,6),
@@ -642,8 +642,31 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/SIPP",outpath="~/git/migration
 	merged <- US_states[ merged ]
 	merged[,c("state.bornID","STATE") := NULL]
 
-	# TODO get census estimates of state median income
-	# TODO in EconData
+	
+	# census estimates of median income in current dollars
+	# ====================================================
+
+	data(US_medinc_current,package="EconData")
+	d <- data.table(medinc_current$incl)
+	# normalizing constant: median income in 1996
+
+	d[,c("State","Year") := list(tolower(as.character(State)),as.numeric(as.character(Year))) ]
+	setnames(d,c("STATE","year","CensusMedinc"))
+	rm(US_states)
+	data(US_states,package="EconData")
+	US_states[,STATE := tolower(STATE)]
+	US_states <- US_states[,list(STATE,state)]
+	setkey(US_states,STATE)
+	setkey(d,STATE)
+
+	d <- US_states[d]
+	medinc = d[year==1996 & STATE == "united states",CensusMedinc]
+	d[,STATE := NULL]
+	setkey(d,state,year)
+	setkey(merged,state,year)
+
+	merged <- d[ merged ]
+
 
 	# end state aggregation
 	# ======================
@@ -660,9 +683,11 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/SIPP",outpath="~/git/migration
 	cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi96=coredata(cpi),key="qtr")
 
 	merged <- cpi[ merged ]
-
+         
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue)],function(x) x / (cpi96 * 1000)) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","CensusMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue,CensusMedinc)],function(x) x / (cpi96 * 1000)) ]
+
+
 
 	
 	# get average home values at state level
@@ -804,14 +829,21 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/SIPP",outpath="~/git/migration
 
 	}
 
-	# normalizing constant: median income in 1996
-	medinc <- merged[year==1996,wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)]
+	# TODO add CensusMedinc only here (after age aggregation)
+	# that needs again deflating.
+	# data("CPIAUCSL",package="EconData")
+	# cpi           <- to.yearly(CPIAUCSL)[,1]
+	# coredata(cpi) <- coredata(cpi)/ as.numeric(cpi['1996'])
+	# cpi           <- data.table(year=year(index(cpi)),cpi=coredata(cpi),key="Year")
+	# setnames(cpi,"cpi.CPIAUCSL.Open","cpi96")
+
 
 	# imputed renters house value assuming a 
 	# effective user cost of 5%	
 	merged[own==FALSE,r_hvalue := mortg.rent / 0.05 ]
 
 	# wealth to income ratio: measure of assets
+	# TODO
 	merged[HHincome > 0, w2medinc := wealth / medinc]
 
 	if (use.hvalue.for.p2y){
