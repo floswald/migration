@@ -772,8 +772,9 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   Div2=Div2[1],
 						   HHincome=sum(HHincome,na.rm=T),
 						   metro=tmetro[1]	,
-						   numkids=numkids[1],
+						   kids=kids[1],
 						   HHweight=mean(HHweight,na.rm=T),
+						   CensusMedinc=mean(CensusMedinc,na.rm=T),
 						   age=min(age,na.rm=T),
 						   year=min(year,na.rm=T),
 						   wealth=mean(wealth,na.rm=T),
@@ -820,10 +821,12 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 		merged[,age2 := age^2]
 		merged[,km_distance2 := km_distance^2]
 
-
-		# get rid of duplicate cols
-		nm <- names(merged)
-		merged[,unique(nm),with=FALSE]
+		# # get rid of duplicate cols
+		# nm <- names(merged)
+		# if ("age.1" %in% nm){
+		# 	merged[,age.1 := NULL]
+		# }
+		# merged[,unique(nm),with=FALSE]
 	
 		fname <- paste0("Sipp_",agg.by,".rda")
 		

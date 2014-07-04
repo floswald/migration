@@ -57,12 +57,6 @@ function simulate(m::Model,p::Param)
 	# drawing the shocks 
 	# ==================
 
-	# there are at least 2 ways to do this
-	# 1) draw macro shocks for each region before simulation starts. all i in the same j then experience the exact same sequence of prices
-	# 2) draw for each inidividual their own, private, sequence of macro shocks. that is equivalent to saying that there are many parallel universes I'm considering. 
-	# 3) There is no point where individuals interact with each other, so option 2) seems to give a better coverage of the model space.
-
-
 	# initial distributions
 	# TODO
 	# all of those should be non-uniform probably
@@ -75,6 +69,7 @@ function simulate(m::Model,p::Param)
 	x     = x / sum(x)
 	G0a   = Categorical(x)
 	G0j   = Categorical([1/p.nJ for i=1:p.nJ])	# TODO popdist
+	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 
 	# prepare cumsum of probability matrices
 	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
@@ -83,15 +78,7 @@ function simulate(m::Model,p::Param)
 	cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
 	cumGzM = cumsum(m.gridsXD["GzM"],2)
-
-
-	# macro shocks for all
-	# you draw a lot of unnecessary stuff here
-	# most of those histories are never visited for each i
-	# Hy = [drawMarkov(m.gridsXD["Gy"][:,:,i],Float64[1/p.ny for i=1:p.ny],N,T) for i=1:p.nJ]
-	# Hp = [drawMarkov(m.gridsXD["Gp"][:,:,i],Float64[1/p.np for i=1:p.np],N,T) for i=1:p.nJ]
-	# HP = drawMarkov(m.grids2D["GP"],Float64[1/p.nP for i=1:p.nP],N,T)
-
+	cumGs  = cumsum(m.gridsXD["Gs"],2)
 
 	# storage
 	Dt      = zeros(Int,p.nsim*(T))	# age
@@ -103,16 +90,18 @@ function simulate(m::Model,p::Param)
 	Dz      = zeros(p.nsim*(T))	# income shock value
 	Dincome = zeros(p.nsim*(T))	# income value
 	Dp      = zeros(p.nsim*(T))	# house price value
-	Dj      = zeros(Int,p.nsim*(T))	# location
-	Dh      = zeros(Int,p.nsim*(T))	# housing state
+	Dj      = zeros(Int,p.nsim*(T))	# location index
+	Dh      = @pdata(zeros(Int,p.nsim*(T)))	# housing state
 	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
 	DiP     = zeros(Int,p.nsim*(T))	# macro P index
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
 	DiS     = zeros(Int,p.nsim*(T))	# savings index
 	Diz     = zeros(Int,p.nsim*(T))	# z index
-	DM      = zeros(Bool,p.nsim*(T))	# move
+	DM      = @pdata(zeros(Bool,p.nsim*(T)))	# move
 	DMt     = zeros(Int,p.nsim*(T))	# move
+	Dkids   = @pdata(zeros(Int,p.nsim*(T)))	# kids yes/no
+	Ddist   = zeros(p.nsim*(T))
 
 	ktmp = zeros(p.nJ)
 	ktmp2 = zeros(p.nJ)
@@ -123,6 +112,7 @@ function simulate(m::Model,p::Param)
 	# @inbounds begin
 	for i = 1:p.nsim
 
+		is   = rand(G0k)
 		iy   = rand(G0y)
 		ip   = rand(G0p)
 		iP   = rand(G0P)
@@ -132,6 +122,7 @@ function simulate(m::Model,p::Param)
 		ih   = 0
 		itau = rand(G0tau)
 		ij   = rand(G0j)
+
 
 		# tmp vars
 		move = false	# move indidicator
@@ -143,7 +134,7 @@ function simulate(m::Model,p::Param)
 			# move to where?
 			# get probabilities of moving to k
 			for ik in 1:p.nJ
-				ktmp[ik] = m.rho[idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+				ktmp[ik] = m.rho[idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			end
 			cumsum!(ktmp2,ktmp,1)
 			# TODO slow
@@ -154,7 +145,7 @@ function simulate(m::Model,p::Param)
 				ihh = 0
 			else
 				# find housing choice
-				ihh = m.dh[idx9(iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+				ihh = m.dh[idx10(is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			end
 
 			# record current period state
@@ -173,20 +164,21 @@ function simulate(m::Model,p::Param)
 			DiP[age + T*(i-1)] = iP
 			Dip[age + T*(i-1)] = ip
 			Diy[age + T*(i-1)] = iy
-			Dv[age + T*(i-1)] = m.v[idx10(moveto,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			Dv[age + T*(i-1)] = m.v[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			Dkids[age + T*(i-1)] = is-1
+			Ddist[age + T*(i-1)] = m.distance[ij,moveto]
 
 			# current choices
 			# ---------------
 			
 			DM[age + T*(i-1)] = move
 			DMt[age + T*(i-1)] = moveto
-			DiS[age + T*(i-1)] = m.s[idx10(moveto,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
-			Dc[age + T*(i-1)] = m.c[idx10(moveto,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			DiS[age + T*(i-1)] = m.s[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			Dc[age + T*(i-1)] = m.c[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			Dhh[age + T*(i-1)] = ihh	# housign choice
 
 			# transition to new state
 			# -----------------------
-			
 
 			if DiS[age + T*(i-1)]==0
 				# println(ktmp)
@@ -201,11 +193,9 @@ function simulate(m::Model,p::Param)
 				error("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,a=$(agrid[ia]),ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
 			end
 
-
 			ia = DiS[age + T*(i-1)]
 			ij = moveto
 			ih = ihh
-
 
 			# get new shocks in region 
 			# you are moving to
@@ -219,7 +209,7 @@ function simulate(m::Model,p::Param)
 			else
 				iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
 			end
-
+			is = searchsortedfirst( cumGs[is,:,age][:], rand() )
 
 		end	# age t
 
@@ -228,9 +218,9 @@ function simulate(m::Model,p::Param)
 	# end # inbounds
 
 	# collect all data into a dataframe
-	eq = (Dp .- Da) .* Dh  
+	tw = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,eq=eq)
+	df = DataFrame(id=Di,age=Dt,kids=Dkids,j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,tw=tw,distance=Ddist)
 	df = join(df,m.regnames,on=:j)
 	sort!(df,cols=[1,2]	)
 
@@ -241,6 +231,24 @@ end
 
 # computing moments from simulation
 function computeMoments(df::DataFrame,p::Param,m::Model)
+
+	# moved0
+	# moved1
+	# moved2
+
+	# linear probability model of mobility
+	# ====================================
+	# move ~ age + age^2 + dist + dist2 + own + kids
+	lm1 = fit(LinearModel, move ~ age + age^2 + distance + distance^2 + kids)
+
+
+	# linear probability model of homeownership
+	# =========================================
+	lm2 = fit(LinearModel, own ~ age + age^2 + distance + distance^2 + kids)
+
+
+	# linear regression of total wealth
+	# =================================
 
 	# overall ownership rate
 	own = mean(df[: ,:h])
@@ -273,19 +281,19 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:a])))
 	assets_hage = by(df, [ :h, :age] , d -> DataFrame(assets=mean(d[:a])))
 
-	# autocorrelation of income by region
-	# make a lagged income for each id
-	ly = df[:,[:j, :id ,:age, :y]]
-	ly = hcat(ly,DataFrame(Ly=@data([0.0 for i in 1:nrow(ly)])))
-	for i in 1:nrow(ly)
-		if ly[i,:age] == 1 
-			ly[i,:Ly] = NA
-		else
-			ly[i,:Ly] = ly[i-1,:y]
-		end
-	end
+	# # autocorrelation of income by region
+	# # make a lagged income for each id
+	# ly = df[:,[:j, :id ,:age, :y]]
+	# ly = hcat(ly,DataFrame(Ly=@data([0.0 for i in 1:nrow(ly)])))
+	# for i in 1:nrow(ly)
+	# 	if ly[i,:age] == 1 
+	# 		ly[i,:Ly] = NA
+	# 	else
+	# 		ly[i,:Ly] = ly[i-1,:y]
+	# 	end
+	# end
 
-	rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
+	# rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
 
 	# equity
 	equity = by(df,:age,d->DataFrame(equity=mean(d[:,:eq])))

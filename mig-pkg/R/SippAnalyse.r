@@ -50,7 +50,7 @@ Sipp.moments <- function(d,svy){
 	# linear probability model of homeownership
 	# =========================================
 
-	dlm = summary(svyglm(own ~ age + age2 + Division,svy))
+	dlm = summary(svyglm(own ~ age + age2 + Division + kids,svy))
 	nms = paste0("lm_h_",rownames(dlm$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$own_rate_reg = data.table(moment=nms,value=dlm$coefficients[,"Estimate"],sd=dlm$coefficients[,"Std. Error"])
@@ -59,7 +59,7 @@ Sipp.moments <- function(d,svy){
 	# linear probability model of mobility
 	# ====================================
 
-	mv_reg = summary(svyglm(D2D ~ age + age2 + km_distance + km_distance2 + own,svy))
+	mv_reg = summary(svyglm(D2D ~ age + age2 + km_distance + km_distance2 + own + kids,svy))
 	nms = paste0("lm_mv_",rownames(mv_reg$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$mv_rate_reg = data.table(moment=nms,value=mv_reg$coefficients[,"Estimate"],sd=mv_reg$coefficients[,"Std. Error"])

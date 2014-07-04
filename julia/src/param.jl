@@ -16,8 +16,8 @@ type Param
 	lambda  :: Float64          # default penalty
 	tau     :: Float64 			# value of tau for high type
 	taudist :: Float64 			# population prob of being high type
-	xi      :: Float64          # utility of housing for HHsize 1
-	# xi2     :: Float64          # utility of housing
+	xi1     :: Float64          # utility of housing for HHsize 1
+	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
 
@@ -25,6 +25,7 @@ type Param
 	MC1    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC2    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC3    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
+	MC4    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 
 	# fixed parameters
 	# ================
@@ -43,6 +44,7 @@ type Param
 	minAge :: Int 	# maximal age in model
 	ages   :: UnitRange{Int} 	# maximal age in model
 	euler  :: Float64
+	sscale :: Float64
 
 	# numerical setup
 	# points in each dimension
@@ -57,7 +59,7 @@ type Param
 	            # nk = nj - 1 is the number of destination locations
 	np   ::Int # number of price levels in each location
 	ny   ::Int # number of income levels by location
-	# ns   ::Int # number of HHsizes
+	ns   ::Int # number of HHsizes
 
 	# used in simulations
 	nsim::Int # number of individuals in each location
@@ -121,7 +123,8 @@ type Param
 		lambda  = 10.0
 		tau     = 1.0
 		taudist = 0.2
-		xi      = 0.5
+		xi1     = 0.2
+		xi2     = 0.5
 		omega1  = 0.1
 		omega2  = 0.1
 
@@ -130,9 +133,10 @@ type Param
 		MC1    = 0.1
 		MC2    = 0.001
 		MC3    = 0.1
-		kappa = Float64[rand()*0.01 for i=1:9] # rent to price ratio in each region
-		phi   = 0.06		  # fixed cost of selling
-		rhoP = 0.9
+		MC4    = 0.05
+		kappa  = Float64[rand()*0.01 for i=1:9] # rent to price ratio in each region
+		phi    = 0.06		  # fixed cost of selling
+		rhoP   = 0.9
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
@@ -142,11 +146,12 @@ type Param
 		maxAge = minAge + nt
 		ages   = minAge:maxAge
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
+		sscale = 0.8 	# with kids your consumption goes down 20%
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega1,omega2,MC1,MC2,MC3,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,nsim)
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim)
 	end
 end
 
@@ -162,18 +167,20 @@ end
 
 
 function show(io::IO, p::Param)
-	print(io,"number of points=$(p.na*p.nz*p.nh*p.ntau*p.nP*p.np*p.ny*p.nJ*p.nt)\n")
+	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.nP*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
 	print(io,"free params:
 	gamma   = $(p.gamma)		      
 	lambda  = $(p.lambda)
 	tau     = $(p.tau)
 	taudist = $(p.taudist)
-	xi      = $(p.xi)
+	xi1     = $(p.xi1)
+	xi2     = $(p.xi2)
 	omega1  = $(p.omega1)
 	omega2  = $(p.omega2)
 	MC1     = $(p.MC1)
 	MC2     = $(p.MC2)
-	MC3     = $(p.MC3)")
+	MC3     = $(p.MC3)
+	MC4     = $(p.MC4)")
 end
 
 

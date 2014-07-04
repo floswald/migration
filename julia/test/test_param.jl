@@ -2,9 +2,7 @@
 
 module test_param
 
-using FactCheck
-# using mig
-include("../src/mig.jl")
+using FactCheck, using
 
 
 

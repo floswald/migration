@@ -6,18 +6,18 @@
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-	v   :: Array{Float64,10}
-	s   :: Array{Int,10}
-	c   :: Array{Float64,10}
-	rho :: Array{Float64,10}
+	# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+	v   :: Array{Float64,11}
+	s   :: Array{Int,11}
+	c   :: Array{Float64,11}
+	rho :: Array{Float64,11}
 
 	# top-level value maxed over housing and location
-	# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-	EV   :: Array{Float64,9}
-	EVMove   :: Array{Float64,9}
-	vbar :: Array{Float64,9}
-	dh   :: Array{Int,9}
+	# dimvec2 = (ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+	EV   :: Array{Float64,10}
+	EVMove   :: Array{Float64,10}
+	vbar :: Array{Float64,10}
+	dh   :: Array{Int,10}
 
 	# expected final period value
 	# dimensions: a,h,P,j,pj
@@ -31,8 +31,8 @@ type Model
 	grids2D :: Dict{ASCIIString,Array{Float64,2}}
 	gridsXD :: Dict{ASCIIString,Array{Float64}}
 
-	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
 	# dimnames::Array{ASCIIString}
 	dimnames::DataFrame
 	regnames::DataFrame
@@ -41,8 +41,8 @@ type Model
 	# constructor
 	@debug function Model(p::Param)
 
-		dimvec  = (p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvec2 = (p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
+		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+		dimvec2 = (p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
 
 		v= reshape(rand(prod((dimvec))),dimvec)
 		s= fill(0,dimvec)
@@ -99,6 +99,7 @@ type Model
 		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
 
 		regnames = DataFrame(j=1:p.nJ,Division=divinc[1:p.nJ,:Division])
+		regnames[:Division] = convert(PooledDataArray,regnames[:Division])
 
 		# price to income ratio: gives bounds on aggregate P
 		p2y          = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
@@ -112,7 +113,15 @@ type Model
 		transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
 
 		# kids transition matrix
-		# ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
+		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
+
+		kmat = zeros(p.ns,p.ns,p.nt)
+		for ir in eachrow(ktrans)
+			if ir[:age] < p.maxAge && ir[:age] >= p.minAge
+				kmat[ir[:kids]+1,ir[:kids2]+1,findin(p.ages,ir[:age])[1]] = ir[:Freq]
+			end
+		end
+
 
 
 		# 1D grids
@@ -192,13 +201,13 @@ type Model
 		# moving cost function
 		# ====================
 
-		mc = zeros(p.nt-1,p.nJ,p.nJ,p.nh,p.ntau)
+		mc = zeros(p.nt-1,p.nJ,p.nJ,p.nh,p.ns)
 		for it in 1:p.nt-1
 			for ij in 1:p.nJ
 				for ik in 1:p.nJ
 					for ih in 0:1
-						for itau in 1:p.ntau
-							mc[it,ij,ik,ih+1,itau] = (ij!=ik) * (grids["tau"][itau] + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it )
+						for is in 0:(p.ns-1)
+							mc[it,ij,ik,ih+1,is+1] = (ij!=ik) * (p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + is*p.MC4 )
 						end
 					end
 				end
@@ -206,10 +215,10 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "GzM"=> GzM, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ]
+		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "GzM"=> GzM, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
 
-		dimnames = DataFrame(dimension=["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
-			                  points = [p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
+		dimnames = DataFrame(dimension=["k", "s", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
+			                  points = [p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
 		return new(v,s,c,rho,EV,EVMove,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
@@ -277,19 +286,21 @@ function show(io::IO, M::Model)
 	r = sizeof(M.v)+
 		        sizeof(M.c)+
 		        sizeof(M.s)+
-		        # sizeof(M.grids2D["GY"])+
 		        sizeof(M.grids2D["GP"])+
-		        # sizeof(M.grids2D["ageprof"])+
 		        sizeof(M.gridsXD["movecost"])+
 		        sizeof(M.gridsXD["Gy"])+
 		        sizeof(M.gridsXD["Gp"])+
+		        sizeof(M.gridsXD["Gz"])+
+		        sizeof(M.gridsXD["GzM"])+
+		        sizeof(M.gridsXD["Gs"])+
 		        sizeof(M.gridsXD["p"])+
 		        sizeof(M.gridsXD["y"])+
 		        sizeof(M.dh)+
 		        sizeof(M.rho)+
 		        sizeof(M.vbar)+
 		        sizeof(M.EVfinal)+
-		        sizeof(M.EV)
+		        sizeof(M.EV) +
+		        sizeof(M.EVMove)
 
 	mb = round(r/1.049e+6,1)
 	gb = round(r/1.074e+9,1)
