@@ -74,7 +74,7 @@ function simulate(m::Model,p::Param)
 	x     = [1/i^2 for i=1:length(m.aone:p.na)]
 	x     = x / sum(x)
 	G0a   = Categorical(x)
-	G0j    = Categorical([1/p.nJ for i=1:p.nJ])	# TODO popdist
+	G0j   = Categorical([1/p.nJ for i=1:p.nJ])	# TODO popdist
 
 	# prepare cumsum of probability matrices
 	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
@@ -82,6 +82,7 @@ function simulate(m::Model,p::Param)
 	cumGp  = cumsum(m.gridsXD["Gy"],2)
 	cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
+	cumGzM = cumsum(m.gridsXD["GzM"],2)
 
 
 	# macro shocks for all
@@ -213,7 +214,11 @@ function simulate(m::Model,p::Param)
 			iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
 			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
 			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
-			iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
+			if move
+				iz = searchsortedfirst( cumGzM[iz,:,moveto][:], rand() )
+			else
+				iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
+			end
 
 
 		end	# age t

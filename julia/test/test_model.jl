@@ -26,6 +26,7 @@ facts("testing the model module") do
 
 		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gz"],2)[:] .- 1.0 => roughly(zeros(p.nz*p.nJ)[:],atol=0.00001)
+		@fact sum(m.gridsXD["GzM"],2)[:] .- 1.0 => roughly(zeros(p.nz*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
 	 	end
 
@@ -49,7 +50,11 @@ facts("testing the model module") do
 	end
 
 
+
 end
+
+
+	
 
 
 

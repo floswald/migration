@@ -10,18 +10,18 @@ type Param
 	# ===============
 
 	# utility function parameters
-	beta    :: Float64			# discount factor
 	gamma   :: Float64			# CRRA
 	mgamma  :: Float64			# (1-CRRA)
 	imgamma :: Float64			# 1/(1-CRRA)
 	lambda  :: Float64          # default penalty
 	tau     :: Float64 			# value of tau for high type
 	taudist :: Float64 			# population prob of being high type
-	xi      :: Float64          # utility of housing
+	xi      :: Float64          # utility of housing for HHsize 1
+	# xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
 
-	# other parameters
+	# moving cost parameters
 	MC1    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC2    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC3    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
@@ -29,11 +29,9 @@ type Param
 	# fixed parameters
 	# ================
 
+	beta   :: Float64			# discount factor
 	kappa  :: Array{Float64,1} # rent to price ratio in each region
 	phi    :: Float64		  # fixed cost of selling
-	rhop   :: Array{Float64,1} # vector of AR1 coefs for each region price deviation
-	rhoy   :: Array{Float64,1} # vector of AR1 coefs for each region income deviation
-	# rhoz  :: Array{Float64,1} # vector of AR1 coefs for each region individual-specific income shock
 	rhoP   :: Float64          # AR1 coef for the national process
 	# rhoY  :: Float64          # AR1 coef for the national process
 
@@ -59,14 +57,13 @@ type Param
 	            # nk = nj - 1 is the number of destination locations
 	np   ::Int # number of price levels in each location
 	ny   ::Int # number of income levels by location
+	# ns   ::Int # number of HHsizes
 
 	# used in simulations
 	nsim::Int # number of individuals in each location
 
 	# constructor assigning initial values
 	function Param(size::Int)
-
-
 
 		if size==1
 
@@ -81,6 +78,7 @@ type Param
 			ny    = 2
 			nJ    = 3
 			nt    = 4
+			ns    = 2
 			nsim  = 100
 
 		elseif size==2
@@ -95,6 +93,7 @@ type Param
 			ny    = 3
 			nJ    = 9
 			nt    = 30
+			ns    = 2
 			nsim  = 10000
 
 		elseif size==3
@@ -110,6 +109,7 @@ type Param
 			ny    = 3
 			nJ    = 9
 			nt    = 30
+			ns    = 2
 			nsim  = 10000
 
 		end		
@@ -132,32 +132,22 @@ type Param
 		MC3    = 0.1
 		kappa = Float64[rand()*0.01 for i=1:9] # rent to price ratio in each region
 		phi   = 0.06		  # fixed cost of selling
-
-
-		x = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/rho-income.csv")
-		rhoy = x[2:end,3]
-		x = readcsv("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/rho-price.csv")
-		rhop =  x[2:end,3]
-
-		# rhoz = IncomeParams[2:end,2]
 		rhoP = 0.9
-		# rhoY = rand()
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
 		chi    = 0.2   # downpayment ratio
 		myNA   = -999
-		minAge = 20
+		minAge = 21
 		maxAge = minAge + nt
 		ages   = minAge:maxAge
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 
 		# create object
 
-			return new(beta,gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega1,omega2,MC1,MC2,MC3,kappa,phi,rhop,rhoy,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,nsim)
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi,omega1,omega2,MC1,MC2,MC3,beta,
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,na,nz,nh,nt,ntau,nP,nJ,np,ny,nsim)
 	end
-
-	
 end
 
 
@@ -171,15 +161,9 @@ function update!(p::Param,pd::Dict)
 end
 
 
-
-
-
-
-
 function show(io::IO, p::Param)
 	print(io,"number of points=$(p.na*p.nz*p.nh*p.ntau*p.nP*p.np*p.ny*p.nJ*p.nt)\n")
 	print(io,"free params:
-	beta    = $(p.beta)
 	gamma   = $(p.gamma)		      
 	lambda  = $(p.lambda)
 	tau     = $(p.tau)

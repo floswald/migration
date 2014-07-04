@@ -15,7 +15,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
 	# info("simulation/computation of moments")
 	s   = simulate(m,p)
-	mms = computeMoments(s,p,m)
+	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
 
     nm0 = names(mom)
     DataFrames.insert_single_column!(mom,zeros(nrow(mom)),ncol(mom)+1)

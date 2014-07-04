@@ -92,13 +92,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	movecost = m.gridsXD["movecost"]
 
 	Gz = m.gridsXD["Gz"]
+	GzM = m.gridsXD["GzM"]
 	Gy = m.gridsXD["Gy"]
 	Gp = m.gridsXD["Gp"]
 	GP = m.grids2D["GP"]
 
 	vtmp = zeros(p.nJ) 
 	expv = zeros(p.nJ) 
-	vbartmp = 0.0
+	vbartmp = (0.0,0.0)
 
 	# indexes the current state: y, p, P, z, a, h, tau, current loc, age
 	jidx = 0
@@ -152,7 +153,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 									# fill!(vtmp,0.0)
 									# fill!(expv,0.0)
-									vbartmp = 0.0
 
 									# location choice
 									for ik=1:p.nJ
@@ -186,7 +186,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												mc = 0.0
 
 												# find relevant future value:
-												EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+												EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ij,ik,age,m,p)
 
 												# optimal savings choice
 												r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV,m.aone)
@@ -233,12 +233,17 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											mc = movecost[age,ij,ik,ih+1,itau]
 
 											# find relevant future value:
-											EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+											EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ij,ik,age,m,p)
 
 											# TODO
 											# you could just fix (ip,iy) at middle index here
 											# to get "unconditional distribution"
 											# EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
+
+											# TODO
+											# EVfunChooser should depend on whether you move or not?
+											# if you move, must select the EV that corresponds to movers, 
+											# i.e. reversion to the mean of the shock? (for example)
 
 											# optimal savings choice
 											r = maxvalue(cash,p,sgrid,w,ihh,mc,def,EV,m.aone)
@@ -276,14 +281,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									m.rho[idx10(ik,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)] = exp( vtmp[ik] - logsum)
 									end
 
-									# integrate vbar to get EV
-									m.EV[jidx] = integrateVbar(ia,ih+1,iy,ip,iP,iz,itau,ij,age,p,Gz,Gy,Gp,GP,m)
+									# integrate vbar to get EV and EVbar
+									vbartmp = integrateVbar(ia,ih+1,iy,ip,iP,iz,itau,ij,age,p,Gz,GzM,Gy,Gp,GP,m)
+									m.EV[jidx] = vbartmp[1]
+									m.EVMove[jidx] = vbartmp[2]
 
 								end	# local y-level
 							end	# aggregate p-level 
-							# independent of that: expectation over prices in k
-							# integrateVbark()
-
 						end	# local P-level 
 					end # individual z
 				end	# assets
@@ -297,18 +301,19 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param,Gz::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},GP::Array{Float64,2},m::Model)
+function integrateVbar(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param,Gz::Array{Float64,3},GzM::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},GP::Array{Float64,2},m::Model)
 	# set index
 	idx = 0
 	# set value
 	tmp = 0.0
+	tmp2 = 0.0
 	# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	# for iz=1:p.nz				# current z
 	# 	for iP=1:p.nP 				# current P
 	# 		for ip=1:p.np 				# current p
 	# 			for iy=1:p.ny 				# current y
 	# ===========================================================
-					for iz1 = 1:p.nz			# future z
+					for iz1 = 1:p.nz			# future z 		
 						for iP1 = 1:p.nP 			# future P
 							for ip1 = 1:p.np 			# future p
 								for iy1=1:p.ny 				# future y
@@ -319,6 +324,7 @@ function integrateVbar(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int
 
 					         	    # construct sum
 									tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)]
+									tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)]
 
 								end
 							end
@@ -329,9 +335,8 @@ function integrateVbar(ia::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int
 	# 		end
 	# 	end
 	# end
-	return tmp
+	return (tmp,tmp2)
 end
-
 
 
 # linear index functions
@@ -466,18 +471,21 @@ end
 # EV selector
 # given current state and discrete choice, which portion of
 # EV is relevant for current choice?
-function EVfunChooser!(ev::Array{Float64,1},iz::Int,ihh::Int, itau::Int, iP::Int,ip::Int,iy::Int, ik::Int,age::Int,m::Model,p::Param)
-
-
+function EVfunChooser!(ev::Array{Float64,1},iz::Int,ihh::Int, itau::Int, iP::Int,ip::Int,iy::Int, ij::Int, ik::Int,age::Int,m::Model,p::Param)
 	if age==p.nt-1
 		for ia in 1:p.na
 			ev[ia] = m.EVfinal[ia,ihh,iP,ip,ik]
 		end
 	else 
-		for ia in 1:p.na
-			ev[ia] = m.EV[idx9(iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+		if ik==ij
+			for ia in 1:p.na
+				ev[ia] = m.EV[idx9(iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+			end
+		else
+			for ia in 1:p.na
+				ev[ia] = m.EVMove[idx9(iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+			end
 		end
-		
 	end
 
 	return nothing

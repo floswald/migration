@@ -77,7 +77,7 @@ facts("testing utility function") do
 	mc = 10.0
 	z = (1/(1-p.gamma)) * x^(1-p.gamma) + own*p.xi - def*p.lambda - mc
 
-	@fact z == mig.mig.ufun(x,own,mc,def,p) => true
+	@fact z == mig.ufun(x,own,mc,def,p) => true
 
 	def = false 
 	mc = -10.0
@@ -445,11 +445,11 @@ facts("testing EVfunChooser") do
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 
-			EV = m.EVfinal[:,ih,iP,ip,ij]
+			EV = m.EVfinal[:,ih,iP,ip,ik]
 
-			mig.EVfunChooser!(ev,iz,ih,itau,iP,ip,iy,ij,ti,m,p)
+			mig.EVfunChooser!(ev,iz,ih,itau,iP,ip,iy,ij,ik,ti,m,p)
 
-			@fact ev[:] => EV[:] 
+			@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
 
 		end
 	end
@@ -475,11 +475,16 @@ facts("testing EVfunChooser") do
 			ij   = rand(1:p.nJ)
 
 		# V[y,p,P,z,a,h,tau,j,age]
-			EV = m.EV[iy,ip,iP,iz,:,ih,itau,ij,ti+1]
+			EV = m.EV[iy,ip,iP,iz,:,ih,itau,ik,ti+1]
+			EVM = m.EVMove[iy,ip,iP,iz,:,ih,itau,ik,ti+1]
 
-			mig.EVfunChooser!(ev,iz,ih,itau,iP,ip,iy,ij,ti,m,p)
+			mig.EVfunChooser!(ev,iz,ih,itau,iP,ip,iy,ij,ik,ti,m,p)
 
-			@fact ev[:] => EV[:] 
+			if ij==ik
+				@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
+			else
+				@fact ev[:] .- EVM[:] => roughly(zeros(p.na),atol=0.000001)
+			end
 
 		end
 	end
@@ -497,6 +502,7 @@ facts("test integration of vbar: getting EV") do
 
 
 		Gz = m.gridsXD["Gz"]
+		GzM = m.gridsXD["GzM"]
 		Gy = m.gridsXD["Gy"]
 		Gp = m.gridsXD["Gp"]
 		GP = m.grids2D["GP"]
@@ -505,6 +511,7 @@ facts("test integration of vbar: getting EV") do
 		num = p.nz * p.ny * p.np * p.nP
 		fill!(m.vbar,1/num)
 		fill!(Gz,1/p.nz)
+		fill!(GzM,1/p.nz)
 		fill!(Gy,1/p.ny)
 		fill!(Gp,1/p.np)
 		fill!(GP,1/p.nP)
@@ -523,8 +530,10 @@ facts("test integration of vbar: getting EV") do
 			it   = rand(1:(p.nt-1))
 
 			# calling integrateVbar must return vbar.
+			tmp = mig.integrateVbar(ia,ih,iy,ip,iP,iz,itau,ij,it,p,Gz,GzM,Gy,Gp,GP,m)
 
-			@fact mig.integrateVbar(ia,ih,iy,ip,iP,iz,itau,ij,it,p,Gz,Gy,Gp,GP,m) - m.vbar[mig.idx9(iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
+			@fact tmp[1] - m.vbar[mig.idx9(iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
+			@fact tmp[2] - m.vbar[mig.idx9(iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
 
 		end
 	end
@@ -535,10 +544,12 @@ facts("test integration of vbar: getting EV") do
 		m    = mig.Model(p)
 
 		myEV = zeros(m.dimvec2[1:8])
+		myEVM = zeros(m.dimvec2[1:8])
 
 		age = p.nt-2
 
 		Gz = m.gridsXD["Gz"]
+		GzM = m.gridsXD["GzM"]
 		Gy = m.gridsXD["Gy"]
 		Gp = m.gridsXD["Gp"]
 		GP = m.grids2D["GP"]
@@ -561,6 +572,7 @@ facts("test integration of vbar: getting EV") do
 			for iy1=1:p.ny 				# regional income deviation
 
 				myEV[iy,ip,iP,iz,ia,ih,itau,ij] += m.vbar[mig.idx9(iy1,ip1,iP1,iz1,ia,ih,itau,ij,age,p)] * Gz[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * GP[iP,iP1]
+				myEVM[iy,ip,iP,iz,ia,ih,itau,ij] += m.vbar[mig.idx9(iy1,ip1,iP1,iz1,ia,ih,itau,ij,age,p)] * GzM[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * GP[iP,iP1]
 			end
 			end
 			end
@@ -589,14 +601,14 @@ facts("test integration of vbar: getting EV") do
 		for iP=1:p.nP 				# national price index
 		for iy=1:p.ny 				# regional income deviation
 
-			@fact myEV[iy,ip,iP,iz,ia,ih,itau,ij] - mig.integrateVbar(ia,ih,iy,ip,iP,iz,itau,ij,age,p,Gz,Gy,Gp,GP,m) => roughly(0.0,atol=0.00001)
+			tmp = mig.integrateVbar(ia,ih,iy,ip,iP,iz,itau,ij,age,p,Gz,GzM,Gy,Gp,GP,m)
+			@fact myEV[iy,ip,iP,iz,ia,ih,itau,ij] - tmp[1] => roughly(0.0,atol=0.00001)
+			@fact myEVM[iy,ip,iP,iz,ia,ih,itau,ij] - tmp[2] => roughly(0.0,atol=0.00001)
 		end
 		end
 		end
 		end
 		# end test locationp
-
-
 	end
 end
 

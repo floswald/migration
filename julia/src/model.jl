@@ -15,6 +15,7 @@ type Model
 	# top-level value maxed over housing and location
 	# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	EV   :: Array{Float64,9}
+	EVMove   :: Array{Float64,9}
 	vbar :: Array{Float64,9}
 	dh   :: Array{Int,9}
 
@@ -38,7 +39,7 @@ type Model
 	distance::Array{Any,2}
 
 	# constructor
-	function Model(p::Param)
+	@debug function Model(p::Param)
 
 		dimvec  = (p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
 		dimvec2 = (p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
@@ -53,6 +54,7 @@ type Model
 		dh = fill(0,dimvec2)
 
 		EV = reshape(rand(prod((dimvec2))),dimvec2)
+		EVMove = reshape(rand(prod((dimvec2))),dimvec2)
 		vbar = reshape(rand(prod((dimvec2))),dimvec2)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
@@ -65,27 +67,52 @@ type Model
 		# import data from R
 		# ==================
 
-		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/R2Julia")
+		# if on my machine
+		if Sys.OS_NAME == :Darwin
+			indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+		else
+			indir = joinpath(ENV["HOME"],"data_repo/mig")
+			run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/ $indir`)
+		end
 
-		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
-		divinc = DataFrame(read_rda(joinpath(indir,"divincome.rda"))["divincome"])
+		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
+		# rhoy = h52df(joinpath(indir,"mig_db_in.h5"),"rhoy/")	# function makes a dataframe from all cols in rhoy
 
-
-		pbounds = Dict{ASCIIString,DataFrame}()
-		pbounds["y"] = divinc[1:p.nJ,[:Division,:mindev,:maxdev]]
-		regnames = DataFrame(j=1:p.nJ,Division=divinc[1:p.nJ,:Division])
-
-		divprice = DataFrame(read_rda(joinpath(indir,"divprice.rda"))["divprice"])
-		pbounds["p"] = divprice[1:p.nJ,[:Division,:mindev,:maxdev]]
-
+		# distance matrix
 		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["df"])
 		dist = array(distdf)
 
-		p2y = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
-		p2y = p2y[p2y[:year].>1995,:]
+		# population weights
+		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
+
+		# AR1 coefficients of regional price/income deviations from national index
+		rhoy = DataFrame(read_rda(joinpath(indir,"rho-income.rda"))["rhoincome"])
+		rhop = DataFrame(read_rda(joinpath(indir,"rho-price.rda"))["rhoprice"])
+
+		# bounds on price and income deviations
+		divinc       = DataFrame(read_rda(joinpath(indir,"divincome.rda"))["divincome"])
+		divprice     = DataFrame(read_rda(joinpath(indir,"divprice.rda"))["divprice"])
+		pbounds      = Dict{ASCIIString,DataFrame}()
+		pbounds["y"] = divinc[1:p.nJ,[:Division,:mindev,:maxdev]]
+		pbounds["p"] = divprice[1:p.nJ,[:Division,:mindev,:maxdev]]
+
+		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
+
+		regnames = DataFrame(j=1:p.nJ,Division=divinc[1:p.nJ,:Division])
+
+		# price to income ratio: gives bounds on aggregate P
+		p2y          = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
+		p2y          = p2y[p2y[:year].>1995,:]
 		bounds["P"]  = (minimum(p2y[:,:p2y]),maximum(p2y[:,:p2y]))
 
-		
+		# Transition matrices of idiosyncratic term of income: z
+		# get z supports and transition matrics (in long form)
+		zsupp       = DataFrame(read_rda(joinpath(indir,"zsupp_n$(p.nz).rda"))["z"])
+		trans_z     = DataFrame(read_rda(joinpath(indir,"trans_n$(p.nz).rda"))["longtrans"])
+		transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
+
+		# kids transition matrix
+		# ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
 
 
 		# 1D grids
@@ -97,7 +124,7 @@ type Model
 		x = x .- x[ indmin(abs(x)) ] 
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		grids["asset_own"] = x
-		grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
+		# grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
 		grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
 		grids["W"]          = zeros(p.na)
@@ -114,7 +141,6 @@ type Model
 
 		# GY = makeTransition(p.nY,p.rhoY)
 		GP = makeTransition(p.nP,p.rhoP)
-
 
 		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP]
 
@@ -136,25 +162,13 @@ type Model
 		pgrid = Float64[grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
-		# get z supports
-		if p.nz==3
-			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n3.csv")	
-		elseif p.nz==4
-			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n4.csv")	
-		elseif p.nz==5
-			zsupp = readtable("/Users/florianoswald/Dropbox/mobility/output/model/R2julia/zsupp_n5.csv")
-		else
-			error("have prepared only zsupport 3,4,5")
-		end
-
-		# subset to min/max age
-		zsupp = zsupp[(zsupp[:age] .>= p.minAge) & (zsupp[:age] .<= p.maxAge), 2:end]
-
+		# supports of regional idiosyncratic income shocks z
 		zgrid = zeros(Float64,p.nz,p.nJ,p.nt-1)
-		for iz = 1:p.nz
-			for ij=1:p.nJ
-				for it =1:(p.nt-1)
-					zgrid[iz,ij,it] = 0.01 * zsupp[it + (p.nt-1)*(ij-1) ,2+iz]
+		for ij=1:p.nJ
+			for it =1:(p.nt-1)
+				for iz = 1:p.nz
+					# multiply by 0.01 here to scale down from percent
+					zgrid[iz,ij,it] = 0.01 * zsupp[(zsupp[:state].==regnames[ij,:Division]) & (zsupp[:age].==p.ages[it]) ,2+iz][1]
 				end
 			end
 		end
@@ -163,10 +177,17 @@ type Model
 		# ============================
 
 		# [LocalPrice(t),LocalPrice(t+1),Location]
-		Gy = makeTransition(p.ny,p.rhoy)
-		Gp = makeTransition(p.np,p.rhop)
-		rhoz = [0.4 for i in 1:p.nJ]
-		Gz = makeTransition(p.nz,rhoz)
+		Gy  = makeTransition(p.ny,array(rhoy[:Ldev]))
+		Gp  = makeTransition(p.np,array(rhop[:Ldev]))
+		Gz  = zeros(p.nz,p.nz,p.nJ)
+		GzM = zeros(p.nz,p.nz,p.nJ)
+
+		# [z(t),z(t+1),(move or stay in) region]
+		for ir in 1:nrow(trans_z)
+			jj = regnames[regnames[:Division].==trans_z[ir,:Division],:j]
+			Gz[trans_z[ir,:from],trans_z[ir,:to],jj] = trans_z[ir,:prob]
+			GzM[transMove_z[ir,:from],transMove_z[ir,:to],jj] = transMove_z[ir,:prob]
+		end
 
 		# moving cost function
 		# ====================
@@ -185,13 +206,13 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ]
+		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "GzM"=> GzM, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ]
 
 		dimnames = DataFrame(dimension=["k", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
 			                  points = [p.nJ, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
-		return new(v,s,c,rho,EV,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
+		return new(v,s,c,rho,EV,EVMove,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
 
 	end
 
@@ -244,6 +265,11 @@ function makeTransition(n,rho)
 
 end
 
+
+
+# function(ff::HDF5File,path)
+# 	fid = h5open(ff,"r")
+# 	for obj in fid[path] 
 
 
 
