@@ -47,7 +47,9 @@ Sipp.moments <- function(d,svy){
 	# check whether same ballpark
 	c(r$own_rate[,value], 1-r$own_rate[,value]) %*% c(r$mv_rate_h0[,value],r$mv_rate_h1[,value])
 
-	# homeownership rates by region
+	# linear probability model of homeownership
+	# =========================================
+
 	dlm = summary(svyglm(own ~ age + age2 + Division,svy))
 	nms = paste0("lm_h_",rownames(dlm$coefficients))
 	nms = gsub("\\(|\\)","",nms)

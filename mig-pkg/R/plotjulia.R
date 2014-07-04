@@ -42,8 +42,8 @@ export.Julia <- function(){
 
 	r = makeDivDifferences()
 	e <- estimateDivDeviations(r)
-	rhoincome <- as.data.frame(e$inc)
-	rhoprice <- as.data.frame(e$price)
+	rhoincome <- as.data.frame(e$inc)	# AR1 coef of lagged income deviation
+	rhoprice <- as.data.frame(e$price)	# AR1 coef of lagged price deviation
 	save(rhoprice,file=file.path(out,"rho-price.rda"))
 	save(rhoincome,file=file.path(out,"rho-income.rda"))
 
@@ -52,7 +52,7 @@ export.Julia <- function(){
 
 	divincome = as.data.frame(r$income$d2)
 	divprice  = as.data.frame(r$price$meandiv)
-	p2y       = as.data.frame(r$price$p2y)
+	p2y       = as.data.frame(r$price$p2y)	# average price to income ratio
 	normalize = as.data.frame(r$normalize)
 
 	# distance matrix
@@ -62,9 +62,18 @@ export.Julia <- function(){
 	# data moments
 	m <- as.data.frame(Sipp.moments(merged,des))
 
+	# income ranks by region
 	ranks <- Rank.HHincome(merged,n=3,path=out)
 	ranks <- Rank.HHincome(merged,n=4,path=out)
 	ranks <- Rank.HHincome(merged,n=5,path=out)
+
+	# transition matrices for kids by age
+	kids_trans=merged[,xtabs(~kids+kids2+age)]
+	for (i in 1:dims(kids_trans)[3]){
+		kids_trans[,,i] = kids_trans[,,i] / rowSums(kids_trans[,,i])
+	}
+
+	kids_trans = data.frame(kids_trans)
 
 	rm(merged,des)
 	gc()
@@ -72,6 +81,8 @@ export.Julia <- function(){
 	# write to disk
 	save(df,file=file.path(out,"distance.rda"))
 	save(m,file=file.path(out,"moments.rda"))
+	save(kids_trans,file=file.path(out,"kidstrans.rda"))
+
 
 	save(prop,file=file.path(out,"prop.rda"))
 	save(divincome,file=file.path(out,"divincome.rda"))
@@ -155,15 +166,28 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 	sts = dat[,unique(state)]
 	longtrans = dat[,prop.table(table(yrank,yrank_plus),margin=1),by=state]
 	longtrans = cbind(longtrans,expand.grid(from=1:n,to=1:n))
+	names(longtrans) <- c("Division","prob","from","to")
+
+	# for movers: we're interested in y(t,k) vs y(t-1,j)
+	# i.e need to condition period after D2D==TRUE
+	mvid = dat[D2D==TRUE,list(upid=unique(upid))]
+	setkey(mvid,upid)
+	setkey(dat,upid,timeid)
+	movers <- dat[mvid]
+	setkey(movers,upid,timeid)
+	longtransMove <- movers[movers[D2D==TRUE,list(upid,timeid=timeid+1)],prop.table(table(Lyrank,yrank),margin=1),by=state]
 	longtransMove = dat[D2D==TRUE,prop.table(table(yrank,yrank_plus),margin=1),by=state]
 	longtransMove = cbind(longtransMove,expand.grid(from=1:n,to=1:n))
+	names(longtransMove) <- c("Division","prob","from","to")
 
 	trmats <- lapply(sts, function(x) dat[state==x,prop.table(table(yrank,yrank_plus),margin=1)])
-	trmatsMove <- lapply(sts, function(x) dat[state==x&D2D==TRUE,prop.table(table(yrank,yrank_plus),margin=1)])
+	setkey(movers,upid,timeid,state)
+	trmatsMove <- lapply(sts, function(x) movers[movers[D2D==TRUE,list(upid,timeid=timeid+1,x)]][,prop.table(table(Lyrank,yrank),margin=1)])
 	names(trmats) <- sts
 	names(trmatsMove) <- sts
 
 	stopifnot( all( unlist(lapply(trmats,function(x) rowSums(x) == rep(1,n)))))
+	stopifnot( all( unlist(lapply(trmatsMove,function(x) rowSums(x) == rep(1,n)))))
 
 	# get breaks for model:
 	# center of bins of percentage deviations from state median income
@@ -178,15 +202,15 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 	rhoMove <- dat[D2D==TRUE,list(rho=cor(yrank,yrank_plus,use="pairwise")),by=state]
 
 
-	tmp <- as.data.frame(longtrans)
-	tmp2 <- as.data.frame(longtransMove)
+	longtrans <- as.data.frame(longtrans)
+	longtransMove <- as.data.frame(longtransMove)
 
 	# write to dataframe
 	save(z,file=file.path(path,zname))
 	save(rho,file=file.path(path,rhoname))
 	save(rhoMove,file=file.path(path,rhoMovename))
-	save(tmp,file=file.path(path,transname))
-	save(tmp2,file=file.path(path,transMovename))
+	save(longtrans,file=file.path(path,transname))
+	save(longtransMove,file=file.path(path,transMovename))
 
 
 

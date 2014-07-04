@@ -745,6 +745,10 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged[,dkids := c(diff(nkids),0),by=upid]
 	merged[,nkids2 := c(nkids[-1],NA),by=upid] # next period kids
 
+	merged[,kids := numkids >0]
+	merged[,kids2 := c(kids[-1],NA),by=upid]	# next period kids
+
+
 
 
 	# do time aggregation

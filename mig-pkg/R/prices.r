@@ -129,7 +129,8 @@ makeDivDifferences <- function(path=NULL){
 	div <- d[,list(meanmedinc=mean(log(medinc)),minmedinc=min(log(medinc)),maxmedinc=max(log(medinc))),by=list(Year,Division)]
 
 	# normalizing constant for model:
-	r$normalize = d[Year==1996,mean(medinc)]
+	# medinc income in 1996 dollars
+	r$normalize = d[Year==1996&Division=="USA",medinc]
 
 	# define "deviation" as difference in logs i.e. percentage difference
 	div[,dev := meanmedinc - .SD[Division=="USA"][["meanmedinc"]] ]
@@ -219,7 +220,7 @@ estimateDivDeviations <- function(dat,path="~/Dropbox/mobility/output/model/R2ju
 
 	stopifnot( is(dat,c("list","divData")) )
 
-	# estimate income AR1s
+	# estimate AR1s of income deviations in each region
 	r <- list()
 
 	tmp <- copy(dat$income$d[Division!="USA"])
