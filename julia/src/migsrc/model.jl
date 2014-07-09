@@ -39,7 +39,7 @@ type Model
 	distance::Array{Any,2}
 
 	# constructor
-	@debug function Model(p::Param;dropbox=false)
+	function Model(p::Param;dropbox=false)
 
 		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
 		dimvec2 = (p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
