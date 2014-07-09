@@ -11,7 +11,7 @@ slices:
 
 estim:
   name:   mig-SMM
-  desc:   testing estimation of MOpt
+  desc:   SMM estimation of mig
   ncore:   5
   logout:   mig.log
   logerr:   mig.err

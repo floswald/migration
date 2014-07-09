@@ -17,7 +17,8 @@ plotSlices(mprob,mig_slice[1],mig_slice[2],facet="moments")
 
 tdir = joinpath(ENV["HOME"],"JL_tempdir")
 cd(tdir)
-run(`rm -rf *`)
+writetable(joinpath(tdir,"migslice1.csv"),mig_slice[1])
+writetable(joinpath(tdir,"migslice2.csv"),mig_slice[2])
 savePlots(tdir,"png")
 
 # save on dropbox
