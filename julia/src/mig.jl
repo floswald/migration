@@ -1,6 +1,6 @@
 module mig
 
-using Debug, Copulas, GLM, MOpt.transpose
+using Copulas, GLM, MOpt.transpose
 using Reexport
 @reexport using DataFrames
 import Distributions: Categorical, rand
