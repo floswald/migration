@@ -1,6 +1,6 @@
 
 
-using mig
+using mig, MOpt
 
 # get moments from dropbox:
 if Sys.OS_NAME == :Darwin
@@ -39,4 +39,4 @@ pb["MC2"]    = [0.0,0.5]
 pb["MC3"]    = [0.0,0.5]
 pb["MC4"]    = [0.0,0.5]
 
-mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
+mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))

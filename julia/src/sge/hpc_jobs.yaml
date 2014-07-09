@@ -1,6 +1,6 @@
 slices:
-  name:   MOpt-slices
-  desc:   testing slices of MOpt
+  name:   mig-slices
+  desc:   slices of mig
   ncore:   5
   logout:   migslices.log
   logerr:   migslices.err
@@ -10,11 +10,11 @@ slices:
 
 
 estim:
-  name:   MOpt-estimate
+  name:   mig-SMM
   desc:   testing estimation of MOpt
   ncore:   5
-  logout:   mopttest.log
-  logerr:   mopttest.err
+  logout:   mig.log
+  logerr:   mig.err
   template: cmd.qsub
   wd: /data/uctpfos/git/migration/julia/src/sge
   run:   sge_estim.jl 

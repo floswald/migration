@@ -8,12 +8,12 @@ require("nodes.jl")
 
 # if on my machine test with n points
 if length(workers())==1
-	mig_slice = MOpt.slices(mprob,2)
+	mig_slice = slices(mprob,2)
 else
-	mig_slice = MOpt.slices(mprob,length(workers()))
+	mig_slice = slices(mprob,length(workers()))
 end
 
-MOpt.plotSlices(mprob,mig_slice[1],mig_slice[2],facet="moments")
+plotSlices(mprob,mig_slice[1],mig_slice[2],facet="moments")
 
 tdir = joinpath(ENV["HOME"],"JL_tempdir")
 cd(tdir)
