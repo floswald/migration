@@ -39,7 +39,7 @@ type Model
 	distance::Array{Any,2}
 
 	# constructor
-	@debug function Model(p::Param)
+	@debug function Model(p::Param;dropbox=false)
 
 		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
 		dimvec2 = (p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
@@ -71,9 +71,13 @@ type Model
 		if Sys.OS_NAME == :Darwin
 			indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
 		else
-			indir = joinpath(ENV["HOME"],"data_repo/mig")
-			run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/ $indir`)
-			indir = joinpath(indir,"in_data_jl")
+			if dropbox
+				indir = joinpath(ENV["HOME"],"data_repo/mig")
+				run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/ $indir`)
+				indir = joinpath(indir,"in_data_jl")
+			else
+				indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
+			end
 		end
 
 		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
