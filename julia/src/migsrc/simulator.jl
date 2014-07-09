@@ -91,16 +91,16 @@ function simulate(m::Model,p::Param)
 	Dincome = zeros(p.nsim*(T))	# income value
 	Dp      = zeros(p.nsim*(T))	# house price value
 	Dj      = zeros(Int,p.nsim*(T))	# location index
-	Dh      = @pdata(zeros(Int,p.nsim*(T)))	# housing state
+	Dh      = zeros(Int,p.nsim*(T))	# housing state
 	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
 	DiP     = zeros(Int,p.nsim*(T))	# macro P index
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
 	DiS     = zeros(Int,p.nsim*(T))	# savings index
 	Diz     = zeros(Int,p.nsim*(T))	# z index
-	DM      = @pdata(zeros(Bool,p.nsim*(T)))	# move
+	DM      = zeros(Int,p.nsim*(T))	# move
 	DMt     = zeros(Int,p.nsim*(T))	# move
-	Dkids   = @pdata(zeros(Int,p.nsim*(T)))	# kids yes/no
+	Dkids   = zeros(Int,p.nsim*(T))	# kids yes/no
 	Ddist   = zeros(p.nsim*(T))
 
 	ktmp = zeros(p.nJ)
@@ -218,9 +218,9 @@ function simulate(m::Model,p::Param)
 	# end # inbounds
 
 	# collect all data into a dataframe
-	tw = (Dp .* Dh) .+ Da
+	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,kids=Dkids,j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,tw=tw,distance=Ddist)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)))
 	df = join(df,m.regnames,on=:j)
 	sort!(df,cols=[1,2]	)
 
@@ -239,70 +239,101 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# linear probability model of mobility
 	# ====================================
 	# move ~ age + age^2 + dist + dist2 + own + kids
-	lm1 = fit(LinearModel, move ~ age + age^2 + distance + distance^2 + kids)
+	lm_mv = fit(LinearModel, move ~ age + age2 + km_distance + km_distance2 + kids + own,df)
 
 
 	# linear probability model of homeownership
 	# =========================================
-	lm2 = fit(LinearModel, own ~ age + age^2 + distance + distance^2 + kids)
+	lm_h = fit(LinearModel, h ~ age + age2 + Division + kids,df)
 
 
 	# linear regression of total wealth
 	# =================================
+	lm_w = fit(LinearModel, wealth ~ age + age2 + own + Division,df )
 
-	# overall ownership rate
-	own = mean(df[: ,:h])
+	# collect estimates
+	# =================
+	cc_mv = coeftable(lm_mv)
+	cc_h  = coeftable(lm_h)
+	cc_w  = coeftable(lm_w)
 
-	# ownership by age?
-	ownage = by(df, :age, d -> mean(d[:h]))
+	nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+	nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
+	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
 
-	# find all movers, i.e. people who move at least once
-	movers = unique(df[df[:,:move].==true, :id])
-	# fraction of people who never move
-	nomove = 1 - length(movers) / p.nsim
+	nms = vcat(nm_mv,nm_h,nm_w)
 
-	# fraction of people who move twice/more
-	x = by(df[df[:move].==true,:], :id, d -> DataFrame(N=size(d,1)))    
-	nummoves = by(x,:N,d -> DataFrame(Num=size(d,1))) 
+	# get rid of parens and hyphens
+	# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
+	for i in 1:length(nms)
+		ss = replace(nms[i]," - ","")
+		ss = replace(ss,")","")
+		ss = replace(ss,"(","")
+		ss = replace(ss,"kidstrue","kidsTRUE")
+		ss = replace(ss,"owntrue","ownTRUE")
+		nms[i] = ss
+	end
 
-	# moving rate by ownership
-	movebyh = DataFrames.by(df, :h, d -> DataFrames.DataFrame(moverate=mean(d[:move])))
 
-	# moving rate by age
-	movebyage = by(df, :age, d -> DataFrame(moverate=mean(d[:move])))
+	dfout = DataFrame(moment = nms, model_value = DataArray([coef(lm_mv),coef(lm_h),coef(lm_w)]), model_sd = DataArray([stderr(lm_mv),stderr(lm_h),stderr(lm_w)]))
 
-	# assets by ownership and age
-	# aggregate in 5-year bins
+	return dfout
+
+
+
+	# # overall ownership rate
+	# own = mean(df[: ,:h])
+
+	# # ownership by age?
+	# ownage = by(df, :age, d -> mean(d[:h]))
+
+	# # find all movers, i.e. people who move at least once
+	# movers = unique(df[df[:,:move].==true, :id])
+	# # fraction of people who never move
+	# nomove = 1 - length(movers) / p.nsim
+
+	# # fraction of people who move twice/more
+	# x = by(df[df[:move].==true,:], :id, d -> DataFrame(N=size(d,1)))    
+	# nummoves = by(x,:N,d -> DataFrame(Num=size(d,1))) 
+
+	# # moving rate by ownership
+	# movebyh = DataFrames.by(df, :h, d -> DataFrames.DataFrame(moverate=mean(d[:move])))
+
+	# # moving rate by age
+	# movebyage = by(df, :age, d -> DataFrame(moverate=mean(d[:move])))
+
+	# # assets by ownership and age
+	# # aggregate in 5-year bins
 	
-	# assets_hage = by(df, [:age, :h], d -> DataFrame(assets=mean(d[:,:a])))
+	# # assets_hage = by(df, [:age, :h], d -> DataFrame(assets=mean(d[:,:a])))
 
 
-	assets_h = by(df,  :h, d -> DataFrame(assets=mean(d[:a])))
-	assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:a])))
-	assets_hage = by(df, [ :h, :age] , d -> DataFrame(assets=mean(d[:a])))
+	# assets_h = by(df,  :h, d -> DataFrame(assets=mean(d[:a])))
+	# assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:a])))
+	# assets_hage = by(df, [ :h, :age] , d -> DataFrame(assets=mean(d[:a])))
 
-	# # autocorrelation of income by region
-	# # make a lagged income for each id
-	# ly = df[:,[:j, :id ,:age, :y]]
-	# ly = hcat(ly,DataFrame(Ly=@data([0.0 for i in 1:nrow(ly)])))
-	# for i in 1:nrow(ly)
-	# 	if ly[i,:age] == 1 
-	# 		ly[i,:Ly] = NA
-	# 	else
-	# 		ly[i,:Ly] = ly[i-1,:y]
-	# 	end
-	# end
+	# # # autocorrelation of income by region
+	# # # make a lagged income for each id
+	# # ly = df[:,[:j, :id ,:age, :y]]
+	# # ly = hcat(ly,DataFrame(Ly=@data([0.0 for i in 1:nrow(ly)])))
+	# # for i in 1:nrow(ly)
+	# # 	if ly[i,:age] == 1 
+	# # 		ly[i,:Ly] = NA
+	# # 	else
+	# # 		ly[i,:Ly] = ly[i-1,:y]
+	# # 	end
+	# # end
 
-	# rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
+	# # rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
 
-	# equity
-	equity = by(df,:age,d->DataFrame(equity=mean(d[:,:eq])))
+	# # equity
+	# equity = by(df,:age,d->DataFrame(equity=mean(d[:,:eq])))
 
-	# fraction of people who move with neg equity
+	# # fraction of people who move with neg equity
 
-	out = ["own" => own, "ownage" => ownage, "nomove" => nomove, "nummoves" => nummoves, "movebyh" => movebyh, "movebyage" => movebyage, "assets_h" => assets_h, "assets_age" => assets_age, "assets_hage" => assets_hage,"rhos" => rhos, "equity" => equity]
+	# out = ["own" => own, "ownage" => ownage, "nomove" => nomove, "nummoves" => nummoves, "movebyh" => movebyh, "movebyage" => movebyage, "assets_h" => assets_h, "assets_age" => assets_age, "assets_hage" => assets_hage,"rhos" => rhos, "equity" => equity]
 
-	return out
+	# return out
 
 end
 

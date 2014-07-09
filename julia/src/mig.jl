@@ -1,6 +1,6 @@
 module mig
 
-using Debug, Copulas
+using Debug, Copulas, GLM, MOpt.transpose
 using Reexport
 @reexport using DataFrames
 import Distributions: Categorical, rand
@@ -11,14 +11,14 @@ export Param, Model
 
 
 
-include("param.jl")
-include("model.jl")
-include("mig-incl.jl")
-include("E_tensors.jl")
-include("solver.jl")
-include("plotting.jl")
-include("simulator.jl")
-include("experiments.jl")
+include("migsrc/param.jl")
+include("migsrc/model.jl")
+include("migsrc/mig-incl.jl")
+include("migsrc/E_tensors.jl")
+include("migsrc/solver.jl")
+include("migsrc/plotting.jl")
+include("migsrc/simulator.jl")
+include("migsrc/experiments.jl")
 
 end
 

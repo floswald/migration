@@ -17,18 +17,16 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	s   = simulate(m,p)
 	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
 
-    nm0 = names(mom)
-    DataFrames.insert_single_column!(mom,zeros(nrow(mom)),ncol(mom)+1)
-    names!(mom,[nm0,:model_value])
+	println("time till mms = $(time()-time0)")
 
-    mout = transpose(mom[[:moment,:model_value]],1)
-	# get obj value
-	# mom - mms
-	# TODO: setup mms in a way that you can also subset with whichmom
-	retval = mom[findin(mom[:moment],whichmom),:value] - mms["nomove"]
+	mom2 = join(mom,mms,on=:moment)
+
+	fval = sum((mom2[findin(mom2[:moment],whichmom),:data_value] - mom2[findin(mom2[:moment],whichmom),:model_value]).^2)
+
+    mout = transpose(mom2[[:moment,:model_value]],1)
 
 	time1 = round(time()-time0)
-	ret = ["value" => retval, "params" => deepcopy(pd), "time" => time1, "status" => 1, "moments" => mout]
+	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => 1, "moments" => mout]
 	return ret
 end
 
@@ -37,4 +35,16 @@ function mywrap()
 	m = mig.Model(p)
     mig.solve!(m,p)
 end
+
+
+function runSim()
+	p = mig.Param(2)
+	m = mig.Model(p)
+    mig.solve!(m,p)
+	s   = simulate(m,p)
+	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
+end
+
+# converts
+# convert(::Type{Array{Int64,1}}, PooledDataArray{Int64,Uint32,1})
 

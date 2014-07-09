@@ -68,7 +68,6 @@ export.Julia <- function(){
 	ranks <- Rank.HHincome(merged,n=5,path=out)
 
 	# transition matrices for kids by age
-	merged[,kids := numkids >0]
 	merged[,kids2 := c(kids[-1],NA),by=upid]	# next period kids
 	kids_trans=merged[,xtabs(~kids+kids2+age)]
 	for (i in 1:dim(kids_trans)[3]){

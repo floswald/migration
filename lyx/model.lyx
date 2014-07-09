@@ -247,7 +247,7 @@ reference "fig:SIPP-sample-proportion"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -489,21 +489,85 @@ reference "eq:income-model-1"
 
  maps invidiual and time specific characteristics into the deterministic
  part of income.
- There is an AR1 component of income uncertainty in the form of 
+ There is a persistent source of income uncertainty in the form of 
 \begin_inset Formula $z_{it}$
+\end_inset
+
+, which evolves according to the stationary markov chain 
+\begin_inset Formula $\Gamma_{z}(j,k)$
+\end_inset
+
+.
+ Notice that transitions of 
+\begin_inset Formula $z$
+\end_inset
+
+ follow the location specific markov chain 
+\begin_inset Formula $\Gamma_{z}(j,j)$
+\end_inset
+
+ if no move is undertaken, whereas it follows a different chain 
+\begin_inset Formula $\Gamma_{z}(j,k)$
+\end_inset
+
+ when moving from 
+\begin_inset Formula $j$
+\end_inset
+
+ to 
+\begin_inset Formula $k$
 \end_inset
 
 .
  
+\end_layout
+
+\begin_layout Standard
+CAUTION: YOU CANNOT ESTIMATE THE TRANSITION OF z from z' for movers from
+ mover data.
+ movers moved because they got an extraordinary opportunity (potentially
+ -- at any rate, we don't know).
+ so you keep your z! it's a personality trait.
+ THE PROBLEM IS: WHAT IS THE CORRECT MODEL FOR 
+\begin_inset Formula $z_{it+1,k}|z_{it,j}$
+\end_inset
+
+?????
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
 y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\nonumber \\
-z_{it} & = & \rho_{j}z_{it-1}+u_{ijt},\, u_{ijt}\sim N(0,\sigma_{j}^{2})\label{eq:income-model-1}
+\Pr\left(z_{it+1}|z_{it},j,k\right) & = & \Gamma_{z}(j,k)\label{eq:income-model-1}
 \end{eqnarray}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+ALTERNATIVE INCOME MODEL
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{ijt}=\bar{y}_{jt}+v_{ij}+f(i,j,t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+you don't need v and z.
+ one random component is enough.
+ z seems like a better version of v.
+ z allows v to change.
+ you just need something to draw the new z from.
 \end_layout
 
 \begin_layout Standard
@@ -599,6 +663,22 @@ Ep_{kt+1} & = & E[P_{t+1}|P_{t}]+E\tilde{p}_{kt}\\
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+TODO
+\end_layout
+
+\begin_layout Standard
+specify copula on 
+\begin_inset Formula $(Y_{t+1},P_{t+1},Y_{t},P_{t})$
+\end_inset
+
+ and on 
+\begin_inset Formula $(\tilde{y}_{t+1},\tilde{p}_{t+1},\tilde{y}_{t},\tilde{p}_{t})$
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -700,6 +780,57 @@ Whenever an individual is not owning, they must obtain housing services
 \end_layout
 
 \begin_layout Subsection
+Household size/presence of children
+\end_layout
+
+\begin_layout Standard
+There is a markov chain 
+\begin_inset Formula $\Gamma_{s}(t)$
+\end_inset
+
+ that maps states (children today, no children today) into (children tomorrow,
+ no children tomorrow) dependent on the age 
+\begin_inset Formula $t$
+\end_inset
+
+ of the household head.
+ Presence of children is reduced form for 
+\begin_inset Quotes eld
+\end_inset
+
+household size
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Unobserve Location Preference
+\end_layout
+
+\begin_layout Standard
+Upon arrival in a new location, an individual draws 
+\begin_inset Formula $\tau\sim F_{\tau}$
+\end_inset
+
+, which we interpret as their unobservable lcoation preference.
+ 
+\begin_inset Formula $\tau$
+\end_inset
+
+ is fixed for the duration of stay in 
+\begin_inset Formula $j$
+\end_inset
+
+ and enters period utility with a factor loading 
+\begin_inset Formula $\alpha_{\tau}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
 Moving Costs
 \end_layout
 
@@ -740,7 +871,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(j,k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t\label{eq:moving-cost}
+\Delta(j,k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
 \end{equation}
 
 \end_inset
@@ -772,11 +903,15 @@ reference "eq:moving-cost"
 \begin_inset Formula $k$
 \end_inset
 
-, and 
+, 
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
- is an age effect.
+ is an age effect and 
+\begin_inset Formula $\alpha_{4}$
+\end_inset
+
+ measures moving cost differential arising from family size s.
 \end_layout
 
 \begin_layout Subsection
@@ -799,7 +934,7 @@ The state space of an individual is given by
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau,t\right)
+x_{it}=\left(a_{it},z_{it},s_{it,}\mathbf{P}_{t},h_{it-1},j,\tau,t\right)
 \]
 
 \end_inset
@@ -809,8 +944,8 @@ x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau,t\right)
 
 \begin_layout Standard
 where the variables stand, in order, for assets, persistent income shock,
- the map of prices and incomes in each location, last period ownership status,
- current location, type and age.
+ household size, the map of prices and incomes in each location, last period
+ ownership status, current location, type and age.
  
 \end_layout
 
@@ -901,33 +1036,42 @@ Utility
 \end_layout
 
 \begin_layout Standard
-Current period utility depends on consumption, ownership status whether
- a move to 
-\begin_inset Formula $k$
+Current period utility:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $g$
 \end_inset
 
- is undertaken.
- The parameter 
-\begin_inset Formula $\xi$
+ is a scale parameter measuring the average reduction in per capita consumption
+ when children are present
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\xi(s_{it})$
 \end_inset
 
- measures utility from ownership.
- 
-\begin_inset Formula $h=\{0,1\}$
+ is the utility premium of owning when household size is 
+\begin_inset Formula $s$
 \end_inset
 
- is today's choice of housing, the benefits and costs of which materialize
- immeditately.
- 
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is the cost of default
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
 \\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
 -\Delta\left(k,x_{it}\right)-\lambda def_{it}
 \end{cases}\label{eq:period-utility}
 \end{equation}

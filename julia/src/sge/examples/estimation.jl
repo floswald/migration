@@ -3,7 +3,7 @@
 
 # run estimation
 
-require("src/nodes.jl")
+require("nodes.jl")
 
 opts =[
 	"N"=>2,

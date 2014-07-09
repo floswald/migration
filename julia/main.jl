@@ -3,44 +3,34 @@
 # main programme
 home = ENV["HOME"]
 cd("$home/git/migration/julia")
-include("src/estimation.jl")
-include("src/slices.jl")
+
+
+# include("src/estimation.jl")
+cd("$home/git/migration/julia/src/sge")
+include("examples/slices.jl")
 
 include("src/mig.jl")
 
+# run simulation
+x = mig.runSim()
+
 # session 1
+
 p = mig.Param(2)
-m = mig.Model(p)
-@time mig.solve!(m,p)
+@time m = mig.Model(p)	# 1.5 secs
+@time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
+@time s = mig.simulate(m,p);	
+@time mms = mig.computeMoments(s,p,m);
+
+# run objective
+p2 = Dict{ASCIIString,Float64}()
+p2["gamma"] = 1.1
+
+x = mig.objfunc(p2,moms,setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
+mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
 
 # session 2
 @time mig.mywrap()
-
-function wrap2(p::mig.Param,m::mig.Model)
-
-	# p0 = mig.Param(2)	# constructing p inside doubles time.
-	# m0 = Model(p0)
-	# mig.solve!(m0,p0)
-
-	mig.solve!(m,p)
-
-end
-
-
-p0 = mig.Param(2)
-function wrap3(p::mig.Param)
-	# mig.update!(p,x)
-	# println(p)
-	wrap2(p)
-end
-
-
-@time s = mig.simulate(m,p);
-@time mms = mig.computeMoments(s,p,m);
-
-	
-
-
 
 
 # testing

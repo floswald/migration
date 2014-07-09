@@ -119,7 +119,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	@inbounds begin
 	for ij=1:p.nJ				# current location
-		for itau=1:p.ntau			# type
+		for itau=1:p.ntau			# type TODO this must be random if you move!
 			tau = m.grids["tau"][itau]
 			for ih=0:1
 				# choose asset grid for owner/renter
@@ -163,7 +163,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# TODO
 										# get a temporary copy of EV[possible.choices|all.states]
-										fillTempEV!(tempEV,jidx)
+										# fillTempEV!(tempEV,jidx)
 
 										# location choice
 										for ik=1:p.nJ
@@ -331,12 +331,15 @@ function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,i
 
 		         	    # construct sum
 						tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
+
+						# mover's future value: mover specific transitions of z
 						tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
 					end
 				end
 			end
 		end
 	end
+	# 
 	return (tmp,tmp2)
 end
 
