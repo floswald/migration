@@ -73,6 +73,7 @@ type Model
 		else
 			indir = joinpath(ENV["HOME"],"data_repo/mig")
 			run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/ $indir`)
+			indir = joinpath(indir,"in_data_jl")
 		end
 
 		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
