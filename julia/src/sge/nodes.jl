@@ -3,9 +3,12 @@
 using mig
 
 # get moments from dropbox:
-tmpfile = tempname()
-run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/moments.rda $tmpfile`)
-moms = mig.DataFrame(mig.read_rda(tmpfile)["m"])
+if Sys.OS_NAME == :Darwin
+	indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+else
+	indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
+end
+moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
 # setup parameters to estimate:
 
