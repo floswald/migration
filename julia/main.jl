@@ -12,7 +12,7 @@ include("examples/slices.jl")
 include("src/mig.jl")
 
 # run simulation
-x = mig.runSim()
+@time x = mig.runSim()
 
 # session 1
 
@@ -20,6 +20,9 @@ p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
+show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
+mig.simplot(s,5)
+
 @time mms = mig.computeMoments(s,p,m);
 
 # run objective

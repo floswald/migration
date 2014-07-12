@@ -93,4 +93,72 @@ end
 
 
 
+# plot simulation histories
+
+function simplot(sim::DataFrame,n::Int)
+
+	# choose n random individs
+	nr = rand(1:maximum(sim[:id]),n)
+
+	sim  = sim[findin(sim[:id],nr),:] 
+
+	gdf = groupby(sim,:id)
+
+	subplot(3,3,1)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:income])
+		end
+	title("income")
+	subplot(3,3,2)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:c])
+		end
+	title("cons")
+	subplot(3,3,3)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:a])
+		end
+	title("assets")
+	subplot(3,3,4)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:h])
+		end
+	title("own")
+	subplot(3,3,5)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:wealth])
+		end
+	title("wealth")
+	subplot(3,3,6)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:j])
+		end
+	title("location")
+	subplot(3,3,7)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:y])
+		end
+	title("region income")
+	subplot(3,3,8)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:p])
+		end
+	title("region price")
+	subplot(3,3,9)
+		for sdf in gdf
+			plot(sdf[:age],sdf[:v])
+		end
+	title("lifetime utility(v)")
+	suptitle("ids: $nr")
+end
+
+
+
+
+
+
+
+
+
+
 

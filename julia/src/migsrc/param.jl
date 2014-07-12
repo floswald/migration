@@ -63,6 +63,7 @@ type Param
 
 	# used in simulations
 	nsim::Int # number of individuals in each location
+	rseed::Int # seed for the random number generators
 
 	# constructor assigning initial values
 	function Param(size::Int)
@@ -123,18 +124,18 @@ type Param
 		lambda  = 10.0
 		tau     = 1.0
 		taudist = 0.2
-		xi1     = 0.2
-		xi2     = 0.5
-		omega1  = 0.1
-		omega2  = 0.1
+		xi1     = 100.2
+		xi2     = 100.5
+		omega1  = 1.1
+		omega2  = 1.1
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
-		MC1    = 0.1
-		MC2    = 0.001
-		MC3    = 0.1
-		MC4    = 0.05
-		kappa  = Float64[rand()*0.01 for i=1:9] # rent to price ratio in each region
+		MC1    = 0.01
+		MC2    = 0.01
+		MC3    = 0.01
+		MC4    = 0.01
+		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
 		rhoP   = 0.9
 
@@ -148,10 +149,12 @@ type Param
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 		sscale = 0.8 	# with kids your consumption goes down 20%
 
+		rseed = 12345
+
 		# create object
 
 			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim)
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim,rseed)
 	end
 end
 

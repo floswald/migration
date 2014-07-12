@@ -48,6 +48,9 @@ function simulate(m::Model,p::Param)
 
 	T = p.nt-1
 
+	# set random seed
+	srand(p.rseed)
+
 	# grids
 	agrid = m.grids["asset_own"]
 	ygrid = m.gridsXD["y"]
@@ -68,7 +71,7 @@ function simulate(m::Model,p::Param)
 	x     = [1/i^2 for i=1:length(m.aone:p.na)]
 	x     = x / sum(x)
 	G0a   = Categorical(x)
-	G0j   = Categorical([1/p.nJ for i=1:p.nJ])	# TODO popdist
+	G0j   = Categorical(array(m.regnames[:prop]))	# TODO popdist
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 
 	# prepare cumsum of probability matrices
@@ -129,7 +132,6 @@ function simulate(m::Model,p::Param)
 		moveto = 0
 	
 		for age = 1:T
-
 
 			# move to where?
 			# get probabilities of moving to k

@@ -1,12 +1,12 @@
 module mig
 
-using Copulas, GLM, MOpt.transpose
+using Copulas, GLM, MOpt.transpose, PyPlot
 using Reexport
 @reexport using DataFrames
 import Distributions: Categorical, rand
 import Base.show
 
-export Param, Model
+export Param, Model, simplot
 
 
 

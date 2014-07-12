@@ -89,6 +89,7 @@ type Model
 
 		# population weights
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
+		sort!(popweights,cols=1)
 
 		# AR1 coefficients of regional price/income deviations from national index
 		rhoy = DataFrame(read_rda(joinpath(indir,"rho-income.rda"))["rhoincome"])
@@ -103,8 +104,7 @@ type Model
 
 		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
 
-		regnames = DataFrame(j=1:p.nJ,Division=divinc[1:p.nJ,:Division])
-		regnames[:Division] = convert(PooledDataArray,regnames[:Division])
+		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(divinc[1:p.nJ,:Division]),prop=popweights[:proportion])
 
 		# price to income ratio: gives bounds on aggregate P
 		p2y          = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
@@ -113,9 +113,9 @@ type Model
 
 		# Transition matrices of idiosyncratic term of income: z
 		# get z supports and transition matrics (in long form)
-		zsupp       = DataFrame(read_rda(joinpath(indir,"zsupp_n$(p.nz).rda"))["z"])
-		trans_z     = DataFrame(read_rda(joinpath(indir,"trans_n$(p.nz).rda"))["longtrans"])
-		transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
+		zsupp       = DataFrame(read_rda(joinpath(indir,"zsupp_n$(p.nz).rda"))["zsupp"])
+		trans_z     = DataFrame(read_rda(joinpath(indir,"trans_n$(p.nz).rda"))["ztrans"])
+		# transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
 
 		# kids transition matrix
 		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
