@@ -52,7 +52,7 @@ function simulate(m::Model,p::Param)
 	srand(p.rseed)
 
 	# grids
-	agrid = m.grids["asset_own"]
+	agrid = m.grids["assets"]
 	ygrid = m.gridsXD["y"]
 	pgrid = m.gridsXD["p"]
 	zgrid = m.gridsXD["z"]
@@ -80,7 +80,7 @@ function simulate(m::Model,p::Param)
 	cumGp  = cumsum(m.gridsXD["Gy"],2)
 	cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
-	cumGzM = cumsum(m.gridsXD["GzM"],2)
+	# cumGzM = cumsum(m.gridsXD["GzM"],2)
 	cumGs  = cumsum(m.gridsXD["Gs"],2)
 
 	# storage
@@ -100,11 +100,13 @@ function simulate(m::Model,p::Param)
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
 	DiS     = zeros(Int,p.nsim*(T))	# savings index
+	DS     = zeros(p.nsim*(T))	# savings values
 	Diz     = zeros(Int,p.nsim*(T))	# z index
 	DM      = zeros(Int,p.nsim*(T))	# move
 	DMt     = zeros(Int,p.nsim*(T))	# move
 	Dkids   = zeros(Int,p.nsim*(T))	# kids yes/no
 	Ddist   = zeros(p.nsim*(T))
+	Dtau    = zeros(Int,p.nsim*(T))
 
 	ktmp = zeros(p.nJ)
 	ktmp2 = zeros(p.nJ)
@@ -121,7 +123,8 @@ function simulate(m::Model,p::Param)
 		iP   = rand(G0P)
 		# iz   = rand(G0z)
 		iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
-		ia   = rand(G0a) + m.aone - 1
+		# ia   = rand(G0a) + m.aone - 1
+		ia   =  m.aone 
 		ih   = 0
 		itau = rand(G0tau)
 		ij   = rand(G0j)
@@ -135,6 +138,8 @@ function simulate(m::Model,p::Param)
 
 			# move to where?
 			# get probabilities of moving to k
+
+			# need to 
 			for ik in 1:p.nJ
 				ktmp[ik] = m.rho[idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			end
@@ -155,6 +160,7 @@ function simulate(m::Model,p::Param)
 
 			Dj[age + T*(i-1)] = ij
 			Dt[age + T*(i-1)] = age
+			Dtau[age + T*(i-1)] = itau
 			Di[age + T*(i-1)] = i
 			Dh[age + T*(i-1)] = ih
 			Da[age + T*(i-1)] =	agrid[ ia ]
@@ -172,46 +178,65 @@ function simulate(m::Model,p::Param)
 
 			# current choices
 			# ---------------
+
+			ss = m.s[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			
 			DM[age + T*(i-1)] = move
 			DMt[age + T*(i-1)] = moveto
-			DiS[age + T*(i-1)] = m.s[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			Dc[age + T*(i-1)] = m.c[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			Dhh[age + T*(i-1)] = ihh	# housign choice
 
 			# transition to new state
 			# -----------------------
 
-			if DiS[age + T*(i-1)]==0
-				# println(ktmp)
-				println("ia=$ia")
-				inc = income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age])
-				cash = cashFunction(Da[age + T*(i-1)],income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age]),ih,ihh,m.gridsXD["p"][iP,ip,ij],move,moveto,p)
-				println("current value=$(Dv[age + T*(i-1)])")
-				println("current cons=$(Dc[age + T*(i-1)])")
-				println("income = $inc")
-				println("grossA = $(grossSaving(agrid[ia],p))")
-				println("cash = $cash")
-				error("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,a=$(agrid[ia]),ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
-			end
 
-			ia = DiS[age + T*(i-1)]
+
+
+			# catching simulation errors
+			# =========================
+			if ss==0
+				# println(ktmp)
+				ia = 1
+				println("id=$i")
+				println("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
+				println("age=$age")
+				println("ia=$ia")
+				DiS[age + T*(i-1)]=1
+				DS[age + T*(i-1)]=agrid[1]
+				# inc = income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age])
+				# cash = cashFunction(Da[age + T*(i-1)],income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age]),ih,ihh,m.gridsXD["p"][iP,ip,ij],move,moveto,p)
+				# println("current value=$(Dv[age + T*(i-1)])")
+				# println("current cons=$(Dc[age + T*(i-1)])")
+				# println("income = $inc")
+				# println("grossA = $(grossSaving(agrid[ia],p))")
+				# println("cash = $cash")
+				# error("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,a=$(agrid[ia]),ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
+			else
+
+				DiS[age + T*(i-1)] = ss
+				ia = ss
+				DS[age + T*(i-1)] = agrid[ ss ] 
+
+			end
+			# =========================
+
+
+
 			ij = moveto
 			ih = ihh
-
 			# get new shocks in region 
 			# you are moving to
 			# -----------------------
 
-			iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
-			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
-			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
-			if move
-				iz = searchsortedfirst( cumGzM[iz,:,moveto][:], rand() )
-			else
-				iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
-			end
-			is = searchsortedfirst( cumGs[is,:,age][:], rand() )
+			# iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
+			# ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
+			# iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
+			# if move
+				# iz = searchsortedfirst( cumGzM[iz,:,moveto][:], rand() )
+			# else
+				# iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
+			# end
+			# is = searchsortedfirst( cumGs[is,:,age][:], rand() )
 
 		end	# age t
 
@@ -222,7 +247,7 @@ function simulate(m::Model,p::Param)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,save=DiS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)))
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,saveidx=DiS,save=DS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)))
 	df = join(df,m.regnames,on=:j)
 	sort!(df,cols=[1,2]	)
 

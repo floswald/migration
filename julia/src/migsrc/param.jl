@@ -49,6 +49,7 @@ type Param
 	# numerical setup
 	# points in each dimension
 	na   ::Int 	# number of asset points
+	namax   ::Int 	# number of asset points
 	nz   ::Int 	# number of inidividual income states
 	nh   ::Int 	# number of housing states
 	nt   ::Int 	# number of periods
@@ -72,6 +73,7 @@ type Param
 
 			# super small: use for tests
 			na    = 5
+			namax    = 150
 			nz    = 3
 			nh    = 2
 			ntau  = 2
@@ -87,6 +89,7 @@ type Param
 		elseif size==2
 			# small: runs on my box
 			na    = 15
+			namax    = 150
 			nz    = 4
 			nh    = 2
 			ntau  = 2
@@ -97,7 +100,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 10000
+			nsim  = 100
 
 		elseif size==3
 		# big: maximal size for memory on my box
@@ -117,17 +120,17 @@ type Param
 
 		end		
 
-		beta    = 0.95
-		gamma   = 2.0
+		beta    = 0.93
+		gamma   = 3.0
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
 		lambda  = 10.0
 		tau     = 1.0
 		taudist = 0.2
-		xi1     = 100.2
-		xi2     = 100.5
-		omega1  = 1.1
-		omega2  = 1.1
+		xi1     = 1.2
+		xi2     = 1.5
+		omega1  = 0.1
+		omega2  = 50.1
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
@@ -154,7 +157,7 @@ type Param
 		# create object
 
 			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim,rseed)
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim,rseed)
 	end
 end
 

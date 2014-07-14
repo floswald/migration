@@ -17,9 +17,22 @@ include("src/mig.jl")
 # session 1
 
 p = mig.Param(2)
+m2 = mig.Model2(p)	# 1.5 secs
+@time mig.solve!(m2,p)
+s = mig.simulate(m2,p)
+mig.vhplot(m2,p,(2,2))
+mig.simplot2(s,5)
+
+
+p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
+m.EVfinal[:,:,1,1,1]
+
+# plots
+mig.vhplot(m,p,(1,1,1,1,1,1,1,1,29))
+
 show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
 mig.simplot(s,5)
 

@@ -33,7 +33,7 @@ end
 function solveFinal!(m::Model,p::Param)
 
 	# extract grids for faster lookup
-	agrid = m.grids["asset_own"]
+	agrid = m.grids["assets"]
 	hgrid = m.grids["housing"]
 	# loop over all states
 	for ia = 1:p.na
@@ -43,10 +43,10 @@ function solveFinal!(m::Model,p::Param)
 	for ip = 1:p.np 
 
 		if ia == m.aone
-			tmp = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
+			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
 			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][iP,ip,ij] ) )
 
-			m.EVfinal[ia,ih,iP,ip,ij] = tmp + (tmp2-tmp)
+			m.EVfinal[ia,ih,iP,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
 	
 		elseif ia > m.aone
 
@@ -62,7 +62,7 @@ function solveFinal!(m::Model,p::Param)
 	end
 
 	# integrate
-	m.EVfinal = E_tensors.T_Final(m.grids2D["GP"],m.gridsXD["p"],m.EVfinal)
+	# m.EVfinal = E_tensors.T_Final(m.grids2D["GP"],m.gridsXD["p"],m.EVfinal)
 
 	return nothing
 end
@@ -92,7 +92,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	movecost = m.gridsXD["movecost"]
 
 	Gz = m.gridsXD["Gz"]
-	GzM = m.gridsXD["GzM"]
+	# GzM = m.gridsXD["GzM"]
 	Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
 	Gy = m.gridsXD["Gy"]
 	Gp = m.gridsXD["Gp"]
@@ -114,8 +114,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	# V[s,y,p,P,z,a,h,tau,j,age]
 
-	sgrid = m.grids["asset_own"]
-	agrid = m.grids["asset_own"]
+	agrid = m.grids["assets"]
+	sgrid = m.grids["saving"]
 
 	@inbounds begin
 	for ij=1:p.nJ				# current location
@@ -143,9 +143,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 									y     = m.gridsXD["y"][iy,ij]
 									# yy    = income(y,ageeffect,z)
-									yy    = income(y,z)
+									# yy    = income(y,z)
+									yy    = z
 
-									canbuy = grossSaving(a,p) + yy > p.chi * price
+									canbuy = a + yy > p.chi * price
 
 									for is=1:p.ns
 
@@ -173,7 +174,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											kidx = idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)
 
 											# you stay
-											if ij==ik && (ih==1 || canbuy)
+											if ij==ik && (ih==1 || (ih==0 && canbuy))
+
+												def = false
+
 												# you have a housing choice
 												# if you are
 												# 1) a current owner or
@@ -187,8 +191,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												for ihh in 0:1
 
 													# reset w vector
-													fill!(w,p.myNA)
 													fill!(EV,p.myNA)
+													fill!(w,p.myNA)
 
 													cash = cashFunction(a,yy,is,ih,ihh,price,ij!=ik,ik,p)
 
@@ -205,6 +209,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													vstay[ihh+1] = r[1]
 													sstay[ihh+1] = r[2]
 													cstay[ihh+1] = cash - sgrid[ r[2] ]
+
+													if cash < 0 && ihh==0 && ih==0
+														println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
+														println("cash at ihh=$ihh is $cash")
+														println("maxvalue = $(r[1])")
+													end
 
 												end
 
@@ -231,11 +241,16 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# you either move or you are a 
 											# current renter who cannot buy
 											else
+
+												# TODO
+												# moving with a < 0 means default = true
+												def = (ih*(ia<m.aone) == true)
+
 												ihh = 0
 
 												# reset w vector
-												fill!(w,p.myNA)
 												fill!(EV,p.myNA)	
+												fill!(w,p.myNA)
 
 												# cashfunction(a,y,ageeffect,z,ih,ihh)
 												cash = cashFunction(a,yy,is,ih,ihh,price,ij!=ik,ik,p)
@@ -259,17 +274,25 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# optimal savings choice
 												r = maxvalue(cash,is,itau,p,sgrid,w,ihh,mc,def,EV,m.aone)
 
-												# put into vfun, savings and cons policies
-												m.v[kidx] = r[1]
-
 												# checking for infeasible choices
 												if r[1] > p.myNA
+													m.v[kidx]  = r[1]
+													m.dh[jidx] = 0
 													m.s[kidx] = r[2]
 													m.c[kidx] = cash - sgrid[ r[2] ]
 												else
+													m.v[kidx]  = p.myNA
+													m.dh[jidx] = 0
 													m.s[kidx] = 0
 													m.c[kidx] = 0
 												end
+
+													if cash < 0 && ih==0
+														println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
+														println("cash at ihh=$ihh is $cash")
+														println("maxvalue = $(r[1])")
+														println("maxindex = $(r[2])")
+													end
 
 											end
 
@@ -293,9 +316,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										end
 
 										# integrate vbar to get EV and EVbar
-										vbartmp = integrateVbar(ia,is,ih+1,iy,ip,iP,iz,itau,ij,age,p,Gz,GzM,Gy,Gp,GP,Gs,m)
-										m.EV[jidx] = vbartmp[1]
-										m.EVMove[jidx] = vbartmp[2]
+										vbartmp = integrateVbar(ia,is,ih+1,iy,ip,iP,iz,itau,ij,age,p,Gz,Gy,Gp,GP,Gs,m)
+										m.EV[jidx] = vbartmp
+										# m.EVMove[jidx] = vbartmp[2]
 
 									end # house size
 
@@ -314,12 +337,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param,Gz::Array{Float64,3},GzM::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},GP::Array{Float64,2},Gs::Array{Float64,2},m::Model)
+function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,itau::Int,ij::Int,age::Int,p::Param,Gz::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},GP::Array{Float64,2},Gs::Array{Float64,2},m::Model)
 	# set index
 	idx = 0
 	# set value
 	tmp = 0.0
-	tmp2 = 0.0
+	# tmp2 = 0.0
 	for iz1 = 1:p.nz			# future z 		
 		for iP1 = 1:p.nP 			# future P
 			for ip1 = 1:p.np 			# future p
@@ -333,14 +356,14 @@ function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,i
 						tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
 
 						# mover's future value: mover specific transitions of z
-						tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
+						# tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
 					end
 				end
 			end
 		end
 	end
 	# 
-	return (tmp,tmp2)
+	return tmp
 end
 
 
@@ -381,11 +404,12 @@ function maxvalue(x::Float64,is::Int,itau::Int,p::Param,s::Array{Float64,1},w::A
 	@assert length(s) == length(w)
 	@assert length(s) == length(EV)
 
-	# v = max u(cash - s) + beta EV(s,h=1,j,t+1)
+	# v = max u(cash - s/(1+r)) + beta EV(s,h=1,j,t+1)
 
 	first = 1
 
 	if own==0
+		# goldenSection(objfun,0,upper.b)
 		first = aone
 	end
 
@@ -406,7 +430,7 @@ function ufun(x::Float64,is::Int,own::Int,itau::Int,mc::Float64,def::Bool,p::Par
 	if is==1
 		r = p.imgamma * x^p.mgamma + own*p.xi1 - def*p.lambda - mc + (itau-1)*p.tau
 	else 
-		r = p.imgamma * x^p.mgamma + own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
+		r = p.imgamma * (x*p.sscale)^p.mgamma + own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
 	end
 end
 
@@ -450,14 +474,7 @@ end
 # computes cash on hand given a value of the
 # state vector and a value of the discrete choices
 function cashFunction(a::Float64, y::Float64, is::Int, ih::Int, ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
-
-	r = grossSaving(a,p) + y - pifun(ih,ihh,price,move,ik,p)
-
-	if is==2
-		r = r/p.sscale
-	end
-	return r
-
+	a + y - pifun(ih,ihh,price,move,ik,p)
 end
 
 
@@ -471,13 +488,6 @@ function agridChooser( own::Int ,m::Model)
 	end
 end
 
-function sgridChooser( own::Int ,age::Int ,m::Model,p::Param)
-	if (age<(p.nt-1) && own==1) 
-		return m.grids["asset_own"]
-	else
-		return m.grids["asset_rent"]
-	end
-end
 
 
 
@@ -497,7 +507,8 @@ function EVfunChooser!(ev::Array{Float64,1},is::Int,iz::Int,ihh::Int, itau::Int,
 			end
 		else
 			for ia in 1:p.na
-				ev[ia] = m.EVMove[idx10(is,iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+				ev[ia] = m.EV[idx10(is,iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
+				# ev[ia] = m.EVMove[idx10(is,iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
 			end
 		end
 	end

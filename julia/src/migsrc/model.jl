@@ -58,8 +58,7 @@ type Model
 		vbar = reshape(rand(prod((dimvec2))),dimvec2)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
-		bounds["asset_own"] = (-5.0,10.0)
-		bounds["asset_rent"] = (0.01,10.0)
+		bounds["assets"] = (-2.0,2.0)
 		bounds["tau"]        = (0.0,0.1)
 		# bounds["Y"]          = (0.5,1.5)
 
@@ -114,7 +113,7 @@ type Model
 		# Transition matrices of idiosyncratic term of income: z
 		# get z supports and transition matrics (in long form)
 		zsupp       = DataFrame(read_rda(joinpath(indir,"zsupp_n$(p.nz).rda"))["zsupp"])
-		trans_z     = DataFrame(read_rda(joinpath(indir,"trans_n$(p.nz).rda"))["ztrans"])
+		trans_z     = DataFrame(read_rda(joinpath(indir,"ztrans_n$(p.nz).rda"))["ztrans"])
 		# transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
 
 		# kids transition matrix
@@ -133,18 +132,24 @@ type Model
 		# =========
 
 		# grids = (ASCIIString => Array{Float64,1})["asset_own" => linspace(p.bounds["asset_own"][1],p.bounds["asset_own"][2],p.na)]
-		x = sinh(linspace(asinh(bounds["asset_own"][1]),asinh(bounds["asset_own"][2]),p.na))
+		x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.na))
 		# center on zero
 		x = x .- x[ indmin(abs(x)) ] 
 		grids = Dict{ASCIIString,Array{Float64,1}}()
-		grids["asset_own"] = x
+		# x = [-4.0,-3.0,-2.0,-1.0,linspace(0.0,0.5,5),0.6,0.7,1.0,2.0,3.0,4.0]
+		grids["assets"] = x
+
+		grids["saving"] = deepcopy(x)
+		grids["saving"][x.<0]  = grids["saving"][x.<0] ./ p.Rm
+		grids["saving"][x.>=0]  = grids["saving"][x.>=0] ./ p.R
 		# grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
-		grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
+		# grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
+		grids["P"]          = linspace(1.0,1.0,p.nP)
 		grids["W"]          = zeros(p.na)
 		grids["tau"]        = linspace(0.0,1.0,p.ntau)
 
-		aone  = findfirst(grids["asset_own"].>=0)
+		aone  = findfirst(grids["assets"].>=0)
 
 		# 2D grids
 		# =========
@@ -168,24 +173,30 @@ type Model
 		pgrid = zeros(Float64,p.np,p.nJ)
 		for i = 1:p.nJ
 			pgrid[:,i] = 1.0 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np)   # (1 + %-deviation)
-		    ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
+		    # ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
+		    ygrid[:,i] = 1.0 .+ linspace(0.5,0.5 , p.ny)
 		end
 
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
-		pgrid = Float64[grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		# pgrid = Float64[grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
+		pgrid = Float64[3.0 for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
 
 		# supports of regional idiosyncratic income shocks z
 		zgrid = zeros(Float64,p.nz,p.nJ,p.nt-1)
-		for ij=1:p.nJ
-			for it =1:(p.nt-1)
-				for iz = 1:p.nz
-					# multiply by 0.01 here to scale down from percent
-					zgrid[iz,ij,it] = 0.01 * zsupp[(zsupp[:state].==regnames[ij,:Division]) & (zsupp[:age].==p.ages[it]) ,2+iz][1]
+		for sdf in groupby(zsupp,[:Division,:age])
+			jj = regnames[regnames[:Division] .== sdf[1,:Division],:j]
+			it = findin(p.ages,sdf[:age])
+			if length(it) > 0 && it[1] < p.nt
+				for iz in 1:p.nz
+					zgrid[iz,jj,it] = sdf[1,2+iz]
 				end
 			end
 		end
+		# convert to levels normalized by median income in 1000's of dollars
+		zgrid = exp(zgrid) ./ (medinc[1] / 1000)
+
 
 		# regional transition matrices
 		# ============================
@@ -194,13 +205,12 @@ type Model
 		Gy  = makeTransition(p.ny,array(rhoy[:Ldev]))
 		Gp  = makeTransition(p.np,array(rhop[:Ldev]))
 		Gz  = zeros(p.nz,p.nz,p.nJ)
-		GzM = zeros(p.nz,p.nz,p.nJ)
+		# GzM = zeros(p.nz,p.nz,p.nJ)
 
 		# [z(t),z(t+1),(move or stay in) region]
-		for ir in 1:nrow(trans_z)
-			jj = regnames[regnames[:Division].==trans_z[ir,:Division],:j]
-			Gz[trans_z[ir,:from],trans_z[ir,:to],jj] = trans_z[ir,:prob]
-			GzM[transMove_z[ir,:from],transMove_z[ir,:to],jj] = transMove_z[ir,:prob]
+		for sdf in groupby(trans_z,:Division)
+			jj = regnames[regnames[:Division] .== sdf[1,:Division],:j]
+			Gz[:,:,jj] = array(sdf[:, 2:ncol(trans_z)])
 		end
 
 		# moving cost function
@@ -220,7 +230,7 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz, "GzM"=> GzM, "p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
+		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
 
 		dimnames = DataFrame(dimension=["k", "s", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
@@ -233,7 +243,6 @@ type Model
 
 
 end
-
 
 
 # function logAssets(p::Param,x)
@@ -296,7 +305,7 @@ function show(io::IO, M::Model)
 		        sizeof(M.gridsXD["Gy"])+
 		        sizeof(M.gridsXD["Gp"])+
 		        sizeof(M.gridsXD["Gz"])+
-		        sizeof(M.gridsXD["GzM"])+
+		        # sizeof(M.gridsXD["GzM"])+
 		        sizeof(M.gridsXD["Gs"])+
 		        sizeof(M.gridsXD["p"])+
 		        sizeof(M.gridsXD["y"])+

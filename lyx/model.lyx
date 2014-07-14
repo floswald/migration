@@ -1184,7 +1184,7 @@ v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right) & = & \begin{cases}
 \end{cases}\label{eq:conditional-value}\\
 \bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)\\
 \text{subject to}\nonumber \\
-a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\\
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\right)\\
 r(a_{t}) & = & \begin{cases}
 r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
