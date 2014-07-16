@@ -20,7 +20,7 @@ p = mig.Param(2)
 m2 = mig.Model2(p)	# 1.5 secs
 @time mig.solve!(m2,p)
 s = mig.simulate(m2,p)
-mig.vhplot(m2,p,(2,2))
+mig.vhplot(m2,p,(1,2))
 mig.simplot2(s,5)
 
 
@@ -110,5 +110,15 @@ showall(by(s,:age,d -> mean(d[:income])))
 	# 		ny    = 3
 	# 		nJ    = 9
 	# 		nt    = 30
+
+
+
+function gethostname()
+  hostname = Array(Uint8, 128)
+  ccall( (:gethostname, "libc"), Int32,
+        (Ptr{Uint8}, Uint),
+        hostname, length(hostname))
+  return bytestring(convert(Ptr{Uint8}, hostname))
+end
 
 

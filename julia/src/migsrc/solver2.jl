@@ -77,7 +77,7 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 	EV = zeros(p.na)
 
 	# return value for findmax: tuple (value,index)
-	r = (0.0,0)
+	r = (0.0,0.0,0.0)
 
 	first = 1
 
@@ -117,6 +117,8 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 
 				canbuy = a + z > p.chi * price
 
+				blim = (-1) * (1-p.chi) * price
+
 				# =================
 				# loop over choices
 				# =================
@@ -137,7 +139,7 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 				if ih==1 || (ih==0 && canbuy)
 
 					fill!(vstay,p.myNA)
-					fill!(sstay,0)
+					fill!(sstay,0.0)
 					fill!(cstay,0.0)
 
 					# optimal housing choice
@@ -153,12 +155,12 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 						EVfunChooser!(EV,iz,ihh+1,age,m,p)
 
 						# optimal savings choice
-						r = maxvalue(cash,p,agrid,sgrid0,sgrid1,w,ihh,EV,m.aonemax)
+						r = maxvalue(cash,p,agrid,w,ihh,EV,ihh*blim)
 
 						# put into vfun, savings and cons policies
 						vstay[ihh+1] = r[1]
-						sstay[ihh+1] = sgrid0[ r[2] ]
-						cstay[ihh+1] = cash - sgrid0[ r[2] ]
+						sstay[ihh+1] = r[2] 
+						cstay[ihh+1] = r[3]
 
 					end
 
@@ -197,19 +199,12 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 					EVfunChooser!(EV,iz,ihh+1,age,m,p)
 
 					# optimal savings choice
-					r = maxvalue(cash,p,agrid,sgrid0,sgrid1,w,ihh,EV,m.aonemax)
+					r = maxvalue(cash,p,agrid,w,ihh,EV,ihh*blim)
 
 					# put into vfun, savings and cons policies
-					m.v[iz,ia,ih,age] = r[1]
-
-					# checking for infeasible choices
-					if r[1] > p.myNA
-						m.s[iz,ia,ih+1,age] = sgrid0[ r[2] ]
-						m.c[iz,ia,ih+1,age] = cash - sgrid0[ r[2] ]
-					else
-						m.s[iz,ia,ih+1,age] = 0
-						m.c[iz,ia,ih+1,age] = 0
-					end
+					m.v[iz,ia,ih,age]   = r[1]
+					m.s[iz,ia,ih+1,age] = r[2] 
+					m.c[iz,ia,ih+1,age] = r[3] 
 
 				end
 
@@ -249,31 +244,51 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(x::Float64,p::Param,a::Array{Float64,1},s0::Array{Float64,1},s1::Array{Float64,1},w::Array{Float64,1},own::Int,EV::Array{Float64,1},aone::Int)
+function maxvalue(cash::Float64,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,EV::Array{Float64,1},lb::Float64)
 
-	@assert length(s0) == length(w)
+	# if your current cash debt is lower than 
+	# maximum borrowing, infeasible
+	if (lb < 0) && (cash < lb / p.Rm)
+		return (p.myNA,0.0,0.0)
+	else
+		# compute value of all savings choices
 
-	# v = max u(cash - s/(1+r)) + beta EV(s,h=1,j,t+1)
-
-	first = 1
-
-	if own==0
-		first = aone
-	end
-
-
-	for i=first:p.namax
-		if x-s0[i] > 0
-			w[i] = ufun(x-s0[i],own,p) + p.beta * linearapprox(a,EV,s1[i])
+		# grid for next period assets
+		s = linspace(lb,cash-0.0001,p.namax)
+		# grid for current period savings
+		s0 = copy(s)
+		# adjust with inverse interest rate
+		s0 = s0 ./ p.R
+		if lb < 0
+			s0[s0.<0] = s[s0.<0] / p.Rm
 		end
-	end
-	
-	# println(w)
+		# fix upper bound of search grid
+		ub = minimum([cash-0.0001,a[end]])
 
-	r = findmax(w)
-	return r
+		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
+		vsavings2!(w,a,EV,s,s0,cash,lb,ub,own,p)	
+
+		r = findmax(w)
+		return (r[1],s[r[2]],cash-s0[r[2]])	# (value,saving,consumption)
+
+	end
 end
 
+
+
+function vsavings2!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},s0::Array{Float64,1},cash,lb,ub,own::Int,p::Param)
+	n = p.namax
+	jinf = 1
+	jsup = findfirst(a.>=ub)
+	for i=1:n
+		lin = linearapprox(a,EV,s[i],jinf,jsup)
+		w[i] = ufun(cash-s0[i],own,p) + p.beta * lin[1]
+		jinf = lin[2]
+		# println("jsup = $jsup")
+		# println("jinf = $jinf")
+	end
+	return w
+end
 
 
 function ufun(x::Float64,own::Int,p::Param)
@@ -326,18 +341,6 @@ end
 
 
 
-
-function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64)
-	n = length(y)
-	if xi < x[1]
-		return y[1]
-	elseif xi> x[n]
-		return y[n]
-	else
-		jinf = searchsortedlast(x,xi)
-	end
-	return (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
-end
 
 
 

@@ -8,7 +8,7 @@ type Model
 	# values and policies conditional on moving to k
 	# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	v   :: Array{Float64,11}
-	s   :: Array{Int,11}
+	s   :: Array{Float64,11}
 	c   :: Array{Float64,11}
 	rho :: Array{Float64,11}
 
@@ -25,6 +25,8 @@ type Model
 
 	# index of the first asset element > 0
 	aone :: Int
+	# index of the first savings indes with s>=0
+	aonemax :: Int
 
 	# grids
 	grids   :: Dict{ASCIIString,Array{Float64,1}}
@@ -137,11 +139,19 @@ type Model
 		x = x .- x[ indmin(abs(x)) ] 
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		# x = [-4.0,-3.0,-2.0,-1.0,linspace(0.0,0.5,5),0.6,0.7,1.0,2.0,3.0,4.0]
-		grids["assets"] = x
+		grids["assets"] = deepcopy(x)
 
-		grids["saving"] = deepcopy(x)
-		grids["saving"][x.<0]  = grids["saving"][x.<0] ./ p.Rm
-		grids["saving"][x.>=0]  = grids["saving"][x.>=0] ./ p.R
+		# savings grid
+		x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.namax))
+		# center on zero
+		x = x .- x[ indmin(abs(x)) ] 
+		grids["saving0"] = deepcopy(x)
+		grids["saving1"] = deepcopy(x)
+
+		# adjust today's savings by inverse interest rate
+		grids["saving0"][x.<0]   = grids["saving0"][x.<0] ./ p.Rm
+		grids["saving0"][x.>=0]  = grids["saving0"][x.>=0] ./ p.R
+
 		# grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
 		# grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
@@ -150,6 +160,7 @@ type Model
 		grids["tau"]        = linspace(0.0,1.0,p.ntau)
 
 		aone  = findfirst(grids["assets"].>=0)
+		aonemax  = findfirst(grids["saving0"].>=0)
 
 		# 2D grids
 		# =========
@@ -236,7 +247,7 @@ type Model
 			                  points = [p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
-		return new(v,s,c,rho,EV,EVMove,vbar,dh,EVfinal,aone,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
+		return new(v,s,c,rho,EV,EVMove,vbar,dh,EVfinal,aone,aonemax,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
 
 	end
 

@@ -49,7 +49,7 @@ type Model2
 		EV = reshape(rand(prod((dimvec))),dimvec)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
-		bounds["assets"] = (-2.0,2.0)
+		bounds["assets"] = (-2.0,4.0)
 
 
 		# import data from R

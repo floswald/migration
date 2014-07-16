@@ -73,7 +73,7 @@ type Param
 
 			# super small: use for tests
 			na    = 5
-			namax    = 150
+			namax  = 150
 			nz    = 3
 			nh    = 2
 			ntau  = 2
@@ -88,8 +88,8 @@ type Param
 
 		elseif size==2
 			# small: runs on my box
-			na    = 15
-			namax    = 150
+			na    = 12
+			namax    = 36
 			nz    = 4
 			nh    = 2
 			ntau  = 2
@@ -127,8 +127,8 @@ type Param
 		lambda  = 10.0
 		tau     = 1.0
 		taudist = 0.2
-		xi1     = 1.2
-		xi2     = 1.5
+		xi1     = 1.6
+		xi2     = 1.9
 		omega1  = 0.1
 		omega2  = 50.1
 

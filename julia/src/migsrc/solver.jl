@@ -14,7 +14,7 @@ function solve!(m::Model, p::Param)
 	# loop over time
 	for age=(p.nt-1):-1:1
 
-		# info("solving period $age")
+		info("solving period $age")
 
 		# 	# compute current period values
 		solvePeriod!(age,m,p)
@@ -76,14 +76,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# initialise some objects
 
 	vstay = zeros(2)
-	sstay = [0, 0]
+	sstay = zeros(2)
 	cstay = zeros(2)
 
-	w = zeros(p.na)
+	w = zeros(p.namax)
 	EV = zeros(p.na)
 
 	# return value for findmax: tuple (value,index)
-	r = (0.0,0)
+	r = (0.0,0.0,0.0)
 
 	first = 1
 
@@ -114,8 +114,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 	# V[s,y,p,P,z,a,h,tau,j,age]
 
-	agrid = m.grids["assets"]
-	sgrid = m.grids["saving"]
+	agrid  = m.grids["assets"]
+	sgrid0 = m.grids["saving0"]
+	sgrid1 = m.grids["saving1"]
 
 	@inbounds begin
 	for ij=1:p.nJ				# current location
@@ -134,7 +135,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					for iz=1:p.nz				# individual income shock
 						z = m.gridsXD["z"][iz,ij,age]
 						for ip=1:p.np 				# regional price deviation
-							for iP=1:p.nP 				# national price index
+							iP = 1
 								price = m.gridsXD["p"][iP,ip,ij]
 								# given h, price and a, figure out if in neg equtiy
 								def=false
@@ -147,6 +148,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									yy    = z
 
 									canbuy = a + yy > p.chi * price
+									# borrowing limit
+									blim = (-1) * (1-p.chi) * price
 
 									for is=1:p.ns
 
@@ -184,7 +187,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# 2) a renter who can buy
 
 												fill!(vstay,p.myNA)
-												fill!(sstay,0)
+												fill!(sstay,0.0)
 												fill!(cstay,0.0)
 
 												# optimal housing choice
@@ -203,12 +206,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													EVfunChooser!(EV,is,iz,ihh+1,itau,iP,ip,iy,ij,ik,age,m,p)
 
 													# optimal savings choice
-													r = maxvalue(cash,is,itau,p,sgrid,w,ihh,mc,def,EV,m.aone)
+													r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,ihh * blim)
 
 													# put into vfun, savings and cons policies
 													vstay[ihh+1] = r[1]
-													sstay[ihh+1] = r[2]
-													cstay[ihh+1] = cash - sgrid[ r[2] ]
+													sstay[ihh+1] = r[2] 
+													cstay[ihh+1] = r[3]
 
 													if cash < 0 && ihh==0 && ih==0
 														println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
@@ -229,7 +232,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													m.dh[jidx] = r[2] - 1
 													m.s[kidx]  = sstay[r[2]] 
 													m.c[kidx]  = cstay[r[2]]								
-												else
+													else
 													# infeasible
 													m.v[kidx]  = r[1]
 													m.dh[jidx] = 0
@@ -272,14 +275,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# i.e. reversion to the mean of the shock? (for example)
 
 												# optimal savings choice
-												r = maxvalue(cash,is,itau,p,sgrid,w,ihh,mc,def,EV,m.aone)
+												r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,ihh * blim)
 
 												# checking for infeasible choices
 												if r[1] > p.myNA
-													m.v[kidx]  = r[1]
+													m.v[kidx]   = r[1]
 													m.dh[jidx] = 0
-													m.s[kidx] = r[2]
-													m.c[kidx] = cash - sgrid[ r[2] ]
+													m.s[kidx] = r[2] 
+													m.c[kidx] = r[3] 
 												else
 													m.v[kidx]  = p.myNA
 													m.dh[jidx] = 0
@@ -323,7 +326,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									end # house size
 
 								end	# local y-level
-							end	# aggregate p-level 
 						end	# local P-level 
 					end # individual z
 				end	# assets
@@ -343,8 +345,11 @@ function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,i
 	# set value
 	tmp = 0.0
 	# tmp2 = 0.0
+
+		iP1 = 1
+		
 	for iz1 = 1:p.nz			# future z 		
-		for iP1 = 1:p.nP 			# future P
+		# for iP1 = 1:p.nP 			# future P
 			for ip1 = 1:p.np 			# future p
 				for iy1=1:p.ny 				# future y
 					for is1=1:p.ns 				# future HHsize
@@ -360,7 +365,7 @@ function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iP::Int,iz::Int,i
 					end
 				end
 			end
-		end
+		# end
 	end
 	# 
 	return tmp
@@ -399,31 +404,52 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(x::Float64,is::Int,itau::Int,p::Param,s::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},aone::Int)
+function maxvalue(cash::Float64,is::Int,itau::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},lb::Float64)
 
-	@assert length(s) == length(w)
-	@assert length(s) == length(EV)
+	# if your current cash debt is lower than 
+	# maximum borrowing, infeasible
+	if (lb < 0) && (cash < lb / p.Rm)
+		return (p.myNA,0.0,0.0)
+	else
+		# compute value of all savings choices
 
-	# v = max u(cash - s/(1+r)) + beta EV(s,h=1,j,t+1)
-
-	first = 1
-
-	if own==0
-		# goldenSection(objfun,0,upper.b)
-		first = aone
-	end
-
-
-	for i=first:p.na
-		if x-s[i] > 0
-			w[i] = ufun(x-s[i],is,own,itau,mc,def,p) + p.beta * EV[i]
+		# grid for next period assets
+		s = linspace(lb,cash-0.0001,p.namax)
+		# grid for current period savings
+		s0 = copy(s)
+		# adjust with inverse interest rate
+		s0 = s0 ./ p.R
+		if lb < 0
+			s0[s0.<0] = s[s0.<0] / p.Rm
 		end
-	end
+		# fix upper bound of search grid
+		ub = minimum([cash-0.0001,a[end]])
 
-	r = findmax(w)
-	return r
+		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
+		vsavings!(w,a,EV,s,s0,cash,lb,ub,is,own,itau,mc,def,p)	
+
+		r = findmax(w)
+		return (r[1],s[r[2]],cash-s0[r[2]])	# (value,saving,consumption)
+
+	end
 end
 
+
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},s0::Array{Float64,1},cash,lb,ub,is::Int,own::Int,itau::Int,mc::Float64,def::Bool,p::Param)
+	n = p.namax
+	jinf = 1
+	jsup = searchsortedfirst(a,ub)
+	for i=1:n
+		lin = linearapprox(a,EV,s[i],jinf,jsup)
+		# println("s=$(s[i]), i=$i")
+		# println("lin = $lin")
+		w[i] = ufun(cash-s0[i],is,own,itau,mc,def,p) + p.beta * lin[1]
+		jinf = lin[2]
+		# println("jsup = $jsup")
+		# println("jinf = $jinf")
+	end
+	return w
+end
 
 
 function ufun(x::Float64,is::Int,own::Int,itau::Int,mc::Float64,def::Bool,p::Param)
@@ -548,7 +574,27 @@ end
 	# }
 	# return sum;
 
-
+function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::Int,hi::Int)
+	n = length(y)
+	# determining bounds 
+	if xi <= x[1]
+		# get linear approx below
+		r = y[1] + (y[2] - y[1]) * (xi - x[1])  / (x[2] - x[1])
+		return (r,1)
+	elseif xi>= x[n]
+		# get linear approx above
+		r = y[n] + (y[n] - y[n-1]) * (xi - x[n])  / (x[n] - x[n-1])
+		return (r,n)
+	# if have to find interval
+	elseif hi - lo > 1
+		jinf = searchsortedlast(x,xi,lo,hi,Base.Forward)
+	# if not, lo is jinf
+	else
+		jinf = lo
+	end
+	r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
+	return (r,jinf)
+end
 
 
 function integrateFinal!(m::Model)

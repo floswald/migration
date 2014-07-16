@@ -26,6 +26,8 @@ function vhplot(m::Model,p::Param,idx)
 	v1[v1.==p.myNA] = minimum(v1[v1.>p.myNA])
 	v2[v2.==p.myNA] = minimum(v2[v2.>p.myNA])
 
+	figure()
+
 	subplot(141)
 	plot(a,v1)
 	plot(a,v2)
@@ -45,6 +47,7 @@ function vhplot(m::Model,p::Param,idx)
 
 
 	subplot(144)
+	ylim( (-0.1,1.1) )
 	plot(a,reshape(m.dh[is,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
 	plot(a,reshape(m.dh[is,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
 	title("housing choice")
@@ -211,6 +214,7 @@ function vhplot(m::Model2,p::Param,idx)
 	# s1[s1.==p.myNA] = minimum(s1[s1.>p.myNA])
 	# s2[s2.==p.myNA] = minimum(s2[s2.>p.myNA])
 
+	figure()
 	subplot(141)
 	plot(a,v1)
 	plot(a,v2)
@@ -230,6 +234,7 @@ function vhplot(m::Model2,p::Param,idx)
 
 
 	subplot(144)
+	ylim((-0.1,1.1))
 	plot(a,reshape(m.dh[iz,:,1,it],p.na,1))
 	plot(a,reshape(m.dh[iz,:,2,it],p.na,1))
 	title("housing choice")
