@@ -9,8 +9,8 @@ using FactCheck, mig
 
 facts("test linear index functions") do
 
-	p = mig.Param(1)
-	m = mig.Model(p)
+	p = mig.Param(2)
+	m = mig.Model(p,testing=true)
 
 	context("testing 11 dim index") do
 
@@ -23,13 +23,12 @@ facts("test linear index functions") do
 			ih   = rand(1:p.nh)
 			iy   = rand(1:p.ny)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-1))
 
-			@fact m.v[ik,is,iy,ip,iP,iz,ia,ih,itau,ij,it] == m.v[mig.idx11(ik,is,iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => true
+			@fact m.v[ik,is,iy,ip,iz,ia,ih,itau,ij,it] == m.v[mig.idx10(ik,is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
 		end
 	end
 
@@ -43,13 +42,12 @@ facts("test linear index functions") do
 			ih   = rand(1:p.nh)
 			iy   = rand(1:p.ny)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-1))
 
-			@fact m.vbar[is,iy,ip,iP,iz,ia,ih,itau,ij,it] == m.vbar[mig.idx10(is,iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => true
+			@fact m.vbar[is,iy,ip,iz,ia,ih,itau,ij,it] == m.vbar[mig.idx9(is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
 		end
 	end
 
@@ -62,9 +60,8 @@ facts("test linear index functions") do
 			ia   = rand(1:p.na)
 			ih   = rand(1:p.nh)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 
-			@fact m.EVfinal[ia,ih,iP,ip,ik] == m.EVfinal[mig.idxFinal(ia,ih,iP,ip,ik,p)] => true
+			@fact m.EVfinal[ia,ih,ip,ik] == m.EVfinal[mig.idxFinal(ia,ih,ip,ik,p)] => true
 		end
 	end
 
@@ -210,20 +207,14 @@ facts("testing cashFunction") do
 						a = rand()
 						y = rand()
 						pr = rand()*10
-						z = mig.grossSaving(a,p) + y - mig.pifun(ih,ihh,pr,move,ik,p)
-						if is==2
-							z = z/p.sscale
-						end
+						z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
 						@fact abs(mig.cashFunction(a,y,is,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
 					else
 						for ihh in 0:1
 							a = rand()
 							y = rand()
 							pr = rand()*10
-							z = mig.grossSaving(a,p) + y - mig.pifun(ih,ihh,pr,move,ik,p)
-						if is==2
-							z = z/p.sscale
-						end
+							z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
 							@fact abs(mig.cashFunction(a,y,is,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
 						end
 					end
@@ -237,14 +228,12 @@ end
 
 facts("testing maxvalue function") do
 
-	p = mig.Param(1)
-	m = mig.Model(p)
-	s = m.grids["asset_own"]
 
 	context("maxalue for owners non default") do
 
 		p = mig.Param(1)
-		m = mig.Model(p)
+		m = mig.Model(p,testing=true)
+		s = m.grids["assets"]
 
 		w = zeros(p.na)
 		fill!(w,p.myNA)
@@ -284,7 +273,8 @@ facts("testing maxvalue function") do
 
 
 		p = mig.Param(1)
-		m = mig.Model(p)
+		m = mig.Model(p,testing=true)
+		s = m.grids["assets"]
 
 		w = zeros(p.na)
 		fill!(w,p.myNA)
@@ -306,7 +296,7 @@ end
 facts("testing EVfunChooser") do
 
 	p    = mig.Param(1)
-	m    = mig.Model(p)
+	m    = mig.Model(p,testing=true)
 
 	
 
@@ -326,14 +316,13 @@ facts("testing EVfunChooser") do
 			is   = rand(1:p.ns)
 			iy   = rand(1:p.ny)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 
-			EV = m.EVfinal[:,ih,iP,ip,ik]
+			EV = m.EVfinal[:,ih,ip,ik]
 
-			mig.EVfunChooser!(ev,is,iz,ih,itau,iP,ip,iy,ij,ik,ti,m,p)
+			mig.EVfunChooser!(ev,is,iz,ih,itau,ip,iy,ij,ik,ti,m,p)
 
 			@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
 
@@ -356,16 +345,15 @@ facts("testing EVfunChooser") do
 			ih   = rand(1:p.nh)
 			iy   = rand(1:p.ny)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 
 		# V[y,p,P,z,a,h,tau,j,age]
-			EV = m.EV[is,iy,ip,iP,iz,:,ih,itau,ik,ti+1]
-			EVM = m.EVMove[is,iy,ip,iP,iz,:,ih,itau,ik,ti+1]
+			EV = m.EV[is,iy,ip,iz,:,ih,itau,ik,ti+1]
+			EVM = m.EVMove[is,iy,ip,iz,:,ih,itau,ik,ti+1]
 
-			mig.EVfunChooser!(ev,is,iz,ih,itau,iP,ip,iy,ij,ik,ti,m,p)
+			mig.EVfunChooser!(ev,is,iz,ih,itau,ip,iy,ij,ik,ti,m,p)
 
 			if ij==ik
 				@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
@@ -385,23 +373,19 @@ facts("test integration of vbar: getting EV") do
 	context("test uniform weights return original array") do
 
 		p    = mig.Param(1)
-		m    = mig.Model(p)
+		m    = mig.Model(p,testing=true)
 
 
 		Gz = m.gridsXD["Gz"]
-		GzM = m.gridsXD["GzM"]
 		Gy = m.gridsXD["Gy"]
 		Gp = m.gridsXD["Gp"]
-		GP = m.grids2D["GP"]
 
 		# 1/number of all integration states
-		num = p.nz * p.ny * p.np * p.nP
+		num = p.nz * p.ny * p.np 
 		fill!(m.vbar,1/num)
 		fill!(Gz,1/p.nz)
-		fill!(GzM,1/p.nz)
 		fill!(Gy,1/p.ny)
 		fill!(Gp,1/p.np)
-		fill!(GP,1/p.nP)
 
 		for itest = 1:50
 
@@ -411,7 +395,6 @@ facts("test integration of vbar: getting EV") do
 			ih   = rand(1:p.nh)
 			iy   = rand(1:p.ny)
 			ip   = rand(1:p.np)
-			iP   = rand(1:p.nP)
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
@@ -420,10 +403,9 @@ facts("test integration of vbar: getting EV") do
 			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
 
 			# calling integrateVbar must return vbar.
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iP,iz,itau,ij,it,p,Gz,GzM,Gy,Gp,GP,Gs,m)
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,it,p,Gz,Gy,Gp,Gs,m)
 
-			@fact tmp[1] - m.vbar[mig.idx10(is,iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
-			@fact tmp[2] - m.vbar[mig.idx10(is,iy,ip,iP,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
+			@fact tmp - m.vbar[mig.idx9(is,iy,ip,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
 
 		end
 	end
@@ -431,18 +413,15 @@ facts("test integration of vbar: getting EV") do
 	context("test whether equal to hand integration") do
 
 		p    = mig.Param(1)
-		m    = mig.Model(p)
+		m    = mig.Model(p,testing=true)
 
-		myEV = zeros(m.dimvec2[1:9])
-		myEVM = zeros(m.dimvec2[1:9])
+		myEV = zeros(m.dimvec2[1:8])
 
 		age = p.nt-2
 
 		Gz = m.gridsXD["Gz"]
-		GzM = m.gridsXD["GzM"]
 		Gy = m.gridsXD["Gy"]
 		Gp = m.gridsXD["Gp"]
-		GP = m.grids2D["GP"]
 		Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
 
 		for ij=1:p.nJ				# current location
@@ -452,26 +431,21 @@ facts("test integration of vbar: getting EV") do
 
 		# start integration loop
 		for iz=1:p.nz				# individual income shock
-		for iP=1:p.nP 				# national price index
 		for ip=1:p.np 				# regional price deviation
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
 
 		# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 			for iz1=1:p.nz				# individual income shock
-			for iP1=1:p.nP 				# national price index
 			for ip1=1:p.np 				# regional price deviation
 			for iy1=1:p.ny 				# regional income deviation
 			for is1=1:p.ns 				# regional income deviation
 
-				myEV[is,iy,ip,iP,iz,ia,ih,itau,ij] += m.vbar[mig.idx10(is1,iy1,ip1,iP1,iz1,ia,ih,itau,ij,age,p)] * Gz[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * GP[iP,iP1]* Gs[is,is1]
-				myEVM[is,iy,ip,iP,iz,ia,ih,itau,ij] += m.vbar[mig.idx10(is1,iy1,ip1,iP1,iz1,ia,ih,itau,ij,age,p)] * GzM[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * GP[iP,iP1]* Gs[is,is1]
+				myEV[is,iy,ip,iz,ia,ih,itau,ij] += m.vbar[mig.idx9(is1,iy1,ip1,iz1,ia,ih,itau,ij,age,p)] * Gz[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * Gs[is,is1]
 			end
 			end
 			end
 			end
-			end
-		end
 		end
 		end
 		end
@@ -493,14 +467,11 @@ facts("test integration of vbar: getting EV") do
 		# start test loop
 		for iz=1:p.nz				# individual income shock
 		for ip=1:p.np 				# regional price deviation
-		for iP=1:p.nP 				# national price index
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
 
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iP,iz,itau,ij,age,p,Gz,GzM,Gy,Gp,GP,Gs,m)
-			@fact myEV[is,iy,ip,iP,iz,ia,ih,itau,ij] - tmp[1] => roughly(0.0,atol=0.00001)
-			@fact myEVM[is,iy,ip,iP,iz,ia,ih,itau,ij] - tmp[2] => roughly(0.0,atol=0.00001)
-		end
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,age,p,Gz,Gy,Gp,Gs,m)
+			@fact myEV[is,iy,ip,iz,ia,ih,itau,ij] - tmp => roughly(0.0,atol=0.00001)
 		end
 		end
 		end

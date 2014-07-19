@@ -54,8 +54,6 @@ type Param
 	nh   ::Int 	# number of housing states
 	nt   ::Int 	# number of periods
 	ntau ::Int 	# number of types
-	nP   ::Int 	# aggregate price levels
-	# nY   ::Int 	# aggregate income levels
 	nJ   ::Int 	# number of origin locations
 	            # nk = nj - 1 is the number of destination locations
 	np   ::Int # number of price levels in each location
@@ -73,28 +71,24 @@ type Param
 
 			# super small: use for tests
 			na    = 5
-			namax  = 150
+			namax  = 15
 			nz    = 3
 			nh    = 2
 			ntau  = 2
-			nP    = 2
-			# nY    = 3
-			np    = 4
+			np    = 2
 			ny    = 2
-			nJ    = 3
+			nJ    = 9
 			nt    = 4
 			ns    = 2
 			nsim  = 100
 
 		elseif size==2
 			# small: runs on my box
-			na    = 12
-			namax    = 36
+			na    = 17
+			namax    = 21
 			nz    = 4
 			nh    = 2
 			ntau  = 2
-			nP    = 3
-			# nY    = 3
 			np    = 3
 			ny    = 3
 			nJ    = 9
@@ -109,8 +103,6 @@ type Param
 			nz    = 4
 			nh    = 2
 			ntau  = 2
-			nP    = 3
-			# nY    = 3
 			np    = 3
 			ny    = 3
 			nJ    = 9
@@ -121,7 +113,7 @@ type Param
 		end		
 
 		beta    = 0.93
-		gamma   = 3.0
+		gamma   = 1.4
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
 		lambda  = 10.0
@@ -130,7 +122,7 @@ type Param
 		xi1     = 1.6
 		xi2     = 1.9
 		omega1  = 0.1
-		omega2  = 50.1
+		omega2  = 2.1
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
@@ -145,7 +137,7 @@ type Param
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
 		chi    = 0.2   # downpayment ratio
-		myNA   = -999
+		myNA   = -99.0
 		minAge = 21
 		maxAge = minAge + nt
 		ages   = minAge:maxAge
@@ -157,7 +149,7 @@ type Param
 		# create object
 
 			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nP,nJ,np,ny,ns,nsim,rseed)
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed)
 	end
 end
 
@@ -173,7 +165,7 @@ end
 
 
 function show(io::IO, p::Param)
-	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.nP*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
+	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
 	print(io,"free params:
 	gamma   = $(p.gamma)		      
 	lambda  = $(p.lambda)

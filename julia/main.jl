@@ -11,6 +11,15 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 
+
+using BSplines
+
+
+
+
+
+
+
 # run simulation
 @time x = mig.runSim()
 
@@ -27,11 +36,17 @@ mig.simplot2(s,5)
 p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
+@profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
 m.EVfinal[:,:,1,1,1]
 
 # plots
-mig.vhplot(m,p,(1,1,1,1,1,1,1,1,29))
+
+tt=1
+hcat(m.c[1,1,1,1,1,:,2,1,1,tt][:],m.cash1[1,1,1,1,1,:,2,1,1,tt][:] - m.s[1,1,1,1,1,:,2,1,1,tt][:]./p.R)
+mig.vhplot(m,p,(1,1,1,1,1,1,1,tt))
+
+
 
 show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
 mig.simplot(s,5)
@@ -54,6 +69,7 @@ include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
 include("test/test_Tensors.jl")
+include("test/test_approx.jl")
 	
 
 

@@ -13,45 +13,88 @@ function vhplot(m::Model,p::Param,idx)
 	is   = idx[2]
 	iy   = idx[3]
 	ip   = idx[4]
-	iP   = idx[5]
-	iz   = idx[6]
-	itau = idx[7]
-	ij   = idx[8]
-	it   = idx[9]
+	iz   = idx[5]
+	itau = idx[6]
+	ij   = idx[7]
+	it   = idx[8]
 
-	a = m.grids["assets"]
-	v1 = m.v[ik,is,iy,ip,iP,iz,:,1,itau,ij,it][:]
-	v2 = m.v[ik,is,iy,ip,iP,iz,:,2,itau,ij,it][:]
+	a  = m.grids["assets"]
+	a1 = copy(m.grids["assets"])
+	a2 = copy(m.grids["assets"])
+	v1 = m.v[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	v2 = m.v[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	s1 = m.s[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	s2 = m.s[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	c1 = m.c[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	c2 = m.c[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	h1 = m.dh[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	h2 = m.dh[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
 
-	v1[v1.==p.myNA] = minimum(v1[v1.>p.myNA])
-	v2[v2.==p.myNA] = minimum(v2[v2.>p.myNA])
+	# cash for choosign 0
+	cash0_0 = m.cash0[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	cash0_1 = m.cash0[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	# cash for choosign 1
+	cash1_0 = m.cash1[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	cash1_1 = m.cash1[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+
+
+	# get infeasible region
+	i1 = v1.==p.myNA
+	i2 = v2.==p.myNA
+
+	v1[i1] = NaN
+	v2[i2] = NaN
+	s1[i1] = NaN
+	s2[i2] = NaN
+	c1[i1] = NaN
+	c2[i2] = NaN
+	a1[i1] = NaN
+	a2[i2] = NaN
 
 	figure()
 
-	subplot(141)
-	plot(a,v1)
-	plot(a,v2)
+	subplot(231)
+	p_v1, = plot(a1,v1,"o-")
+	p_v2, = plot(a2,v2,"o-")
 	ylabel("v")
 	xlabel("a")
 	title("value")
+	legend((p_v1,p_v2),("renter","owner"),"lower right")
 
-	subplot(142)
-	plot(a,reshape(m.s[ik,is,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
-	plot(a,reshape(m.s[ik,is,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	subplot(232)
+	ylim( ( minimum([s1,s2,0.0]), maximum([s1,s2,c1,c2]) ) )
+	p_s1 = plot(a1,s1,"o-")
+	p_s2 = plot(a2,s2,"o-")
+	grid()
 	title("savings")
 	
-	subplot(143)
-	plot(a,reshape(m.c[ik,is,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
-	plot(a,reshape(m.c[ik,is,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	subplot(233)
+	ylim( ( minimum([s1,s2,0.0]), maximum([s1,s2,c1,c2]) ) )
+	p_c1 = plot(a1,c1,"o-")
+	p_c2 = plot(a2,c2,"o-")
+	grid()
 	title("consumption")
 
 
-	subplot(144)
+	subplot(234)
 	ylim( (-0.1,1.1) )
-	plot(a,reshape(m.dh[is,iy,ip,iP,iz,:,1,itau,ij,it],p.na,1))
-	plot(a,reshape(m.dh[is,iy,ip,iP,iz,:,2,itau,ij,it],p.na,1))
+	p_h1 = plot(a[!i1],h1[!i1],"o-")
+	p_h2 = plot(a[!i2],h2[!i2],"o-")
 	title("housing choice")
 
+	subplot(235)
+	ylim( ( minimum(cash1_1[!i2]), maximum(cash0_1[!i2]) ) )
+	p_ca01 = plot(a[!i1],cash0_0[!i1],"o-")
+	p_ca02 = plot(a[!i2],cash0_1[!i2],"o-")
+	grid()
+	title("cash when choosing h(t+1)=0")
+
+	subplot(236)
+	ylim( ( minimum(cash1_1[!i2]), maximum(cash0_1[!i2]) ) )
+	p_ca11 = plot(a[!i1],cash1_0[!i1],"o-")
+	p_ca12 = plot(a[!i2],cash1_1[!i2],"o-")
+	grid()
+	title("cash when choosing h(t+1)=1")
 end
 
 function vplot(m::Model,p::Param)
@@ -64,49 +107,48 @@ function vplot(m::Model,p::Param)
 	is   = rand(1:p.ns)
 	iy   = rand(1:p.ny)
 	ip   = rand(1:p.np)
-	iP   = rand(1:p.nP)
 	itau = rand(1:p.ntau)
 	ij   = rand(1:p.nJ)
 	it   = rand(1:(p.nt-1))
 
 	subplot(231,projection="3d")
-	mesh(reshape(m.v[ik,is,iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.v[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("z")
 	ylabel("a")
 	zlabel("value")
 	title("value")
 
 	subplot(232,projection="3d")
-	mesh(reshape(m.s[ik,is,iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.s[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("z")
 	ylabel("a")
 	zlabel("save index")
 	title("savings")
 
 	subplot(233,projection="3d")
-	mesh(reshape(m.c[ik,is,iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.c[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("consumption")
 	title("consumption")
 
 	subplot(234)
-	mesh(reshape(m.rho[ik,is,iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.rho[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("prob of moving")
 	title("prob of moving j=>k:\n$ij => $ik")
-	println(reshape(m.rho[ik,is,iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	println(reshape(m.rho[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 
 	subplot(235,projection="3d")
-	# contour(1:p.na,1:p.nz,reshape(m.dh[iy,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na),	3)
-	mesh(reshape(m.dh[iy,is,ip,iP,:,:,ih,itau,ij,it],p.nz,p.na))
+	# contour(1:p.na,1:p.nz,reshape(m.dh[iy,:,:,ih,itau,ij,it],p.nz,p.na),	3)
+	mesh(reshape(m.dh[ik,iy,is,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("housing choice")
 	title("housing choice")
 
-	suptitle("index(ik,ih,iy,ip,iP,itau,ij,it)=($ik,$ih,$iy,$ip,$iP,$itau,$ij,$it)")
+	suptitle("index(ik,ih,iy,ip,itau,ij,it)=($ik,$ih,$iy,$ip,$itau,$ij,$it)")
 
 end
 

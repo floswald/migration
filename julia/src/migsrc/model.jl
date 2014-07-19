@@ -6,22 +6,23 @@
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-	v   :: Array{Float64,11}
-	s   :: Array{Float64,11}
-	c   :: Array{Float64,11}
-	rho :: Array{Float64,11}
-
-	# top-level value maxed over housing and location
-	# dimvec2 = (ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-	EV   :: Array{Float64,10}
-	EVMove   :: Array{Float64,10}
-	vbar :: Array{Float64,10}
+	# dimvec  = (nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	v   :: Array{Float64,10}
+	s   :: Array{Float64,10}
+	c   :: Array{Float64,10}
+	cash0  :: Array{Float64,10}
+	cash1  :: Array{Float64,10}
+	rho :: Array{Float64,10}
 	dh   :: Array{Int,10}
 
+	# top-level value maxed over housing and location
+	# dimvec2 = (ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	EV   :: Array{Float64,9}
+	vbar :: Array{Float64,9}
+
 	# expected final period value
-	# dimensions: a,h,P,j,pj
-	EVfinal :: Array{Float64,5}
+	# dimensions: a,h,j,pj
+	EVfinal :: Array{Float64,4}
 
 	# index of the first asset element > 0
 	aone :: Int
@@ -30,34 +31,49 @@ type Model
 
 	# grids
 	grids   :: Dict{ASCIIString,Array{Float64,1}}
-	grids2D :: Dict{ASCIIString,Array{Float64,2}}
 	gridsXD :: Dict{ASCIIString,Array{Float64}}
 
-	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	dimvec ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
+	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
 	# dimnames::Array{ASCIIString}
 	dimnames::DataFrame
 	regnames::DataFrame
 	distance::Array{Any,2}
 
 	# constructor
-	function Model(p::Param;dropbox=false)
+	function Model(p::Param;dropbox=false,testing=false)
 
-		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvec2 = (p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
+		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+		dimvec2 = (p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
 
-		v= reshape(rand(prod((dimvec))),dimvec)
-		s= fill(0,dimvec)
-		c= fill(0.0,dimvec)
-		rho = reshape(rand(prod((dimvec))),dimvec)
+		if testing
+			v= reshape(rand(prod((dimvec))),dimvec)
+			s= fill(0,dimvec)
+			c= fill(0.0,dimvec)
+			rho = reshape(rand(prod((dimvec))),dimvec)
 
-		EVfinal = reshape(rand(prod((p.na,p.nh,p.nP,p.np,p.nJ))),(p.na,p.nh,p.nP,p.np,p.nJ))
+			EVfinal = reshape(rand(prod((p.na,p.nh,p.np,p.nJ))),(p.na,p.nh,p.np,p.nJ))
 
-		dh = fill(0,dimvec2)
+			dh = fill(0,dimvec)
 
-		EV = reshape(rand(prod((dimvec2))),dimvec2)
-		EVMove = reshape(rand(prod((dimvec2))),dimvec2)
-		vbar = reshape(rand(prod((dimvec2))),dimvec2)
+			EV = reshape(rand(prod((dimvec2))),dimvec2)
+			EVMove = reshape(rand(prod((dimvec2))),dimvec2)
+			vbar = reshape(rand(prod((dimvec2))),dimvec2)
+		else
+			v= fill(p.myNA,dimvec)
+			s= fill(0,dimvec)
+			c= fill(0.0,dimvec)
+			cash0= fill(0.0,dimvec)
+			cash1= fill(0.0,dimvec)
+			rho = fill(0.0,dimvec)
+
+			EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.nJ))
+
+			dh = fill(0,dimvec)
+
+			EV = fill(p.myNA,dimvec2)
+			vbar = fill(p.myNA,dimvec2)
+		end
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
 		bounds["assets"] = (-2.0,2.0)
@@ -105,12 +121,11 @@ type Model
 
 		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
 
-		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(divinc[1:p.nJ,:Division]),prop=popweights[:proportion])
+		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(divinc[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
 
 		# price to income ratio: gives bounds on aggregate P
 		p2y          = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
 		p2y          = p2y[p2y[:year].>1995,:]
-		bounds["P"]  = (minimum(p2y[:,:p2y]),maximum(p2y[:,:p2y]))
 
 		# Transition matrices of idiosyncratic term of income: z
 		# get z supports and transition matrics (in long form)
@@ -134,12 +149,15 @@ type Model
 		# =========
 
 		# grids = (ASCIIString => Array{Float64,1})["asset_own" => linspace(p.bounds["asset_own"][1],p.bounds["asset_own"][2],p.na)]
-		x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.na))
-		# center on zero
-		x = x .- x[ indmin(abs(x)) ] 
+		# x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.na))
+		# # center on zero
+		# x = x .- x[ indmin(abs(x)) ] 
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		# x = [-4.0,-3.0,-2.0,-1.0,linspace(0.0,0.5,5),0.6,0.7,1.0,2.0,3.0,4.0]
-		grids["assets"] = deepcopy(x)
+		# grids["assets"] = deepcopy(x)
+		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,0.5)
+		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
+		grids["assets"] = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 
 		# savings grid
 		x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.namax))
@@ -155,7 +173,6 @@ type Model
 		# grids["asset_rent"] = linspace(bounds["asset_rent"][1],bounds["asset_rent"][2],p.na)
 		grids["housing"]    = linspace(0.0,1.0,p.nh)
 		# grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
-		grids["P"]          = linspace(1.0,1.0,p.nP)
 		grids["W"]          = zeros(p.na)
 		grids["tau"]        = linspace(0.0,1.0,p.ntau)
 
@@ -170,9 +187,6 @@ type Model
 		# ============================
 
 		# GY = makeTransition(p.nY,p.rhoY)
-		GP = makeTransition(p.nP,p.rhoP)
-
-		grids2D = (ASCIIString => Array{Float64,2})["GP" => GP]
 
 		# 3D grids
 		# =========
@@ -180,6 +194,7 @@ type Model
 		# regional prices
 		# 3D array (national_price,regional_price,region_id)
 		# these are the percentage deviations from trend
+		# TODO put p2y for each region here
 		ygrid = zeros(Float64,p.ny,p.nJ)
 		pgrid = zeros(Float64,p.np,p.nJ)
 		for i = 1:p.nJ
@@ -190,9 +205,7 @@ type Model
 
 		# rebuild as 3D array
 		# pgrid[AggState,LocalState,Location]
-		# pgrid = Float64[grids["P"][i] .* pgrid[j,k] for i=1:p.nP, j=1:p.np, k=1:p.nJ]
-		pgrid = Float64[3.0 for i=1:p.nP, j=1:p.np, k=1:p.nJ]
-		# ygrid = [grids["Y"][i] .+ ygrid[j,k] for i=1:p.nY, j=1:p.ny, k=1:p.nJ]
+		# pgrid = Float64[3.0 for i=1:p.nP, j=1:p.np, k=1:p.nJ]
 
 		# supports of regional idiosyncratic income shocks z
 		zgrid = zeros(Float64,p.nz,p.nJ,p.nt-1)
@@ -243,11 +256,11 @@ type Model
 
 		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
 
-		dimnames = DataFrame(dimension=["k", "s", "y", "p", "P", "z", "a", "h", "tau", "j", "age" ],
-			                  points = [p.nJ, p.ns, p.ny, p.np, p.nP, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
+		dimnames = DataFrame(dimension=["k", "s", "y", "p", "z", "a", "h", "tau", "j", "age" ],
+			                  points = [p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
-		return new(v,s,c,rho,EV,EVMove,vbar,dh,EVfinal,aone,aonemax,grids,grids2D,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
+		return new(v,s,c,cash0,cash1,rho,dh,EV,vbar,EVfinal,aone,aonemax,grids,gridsXD,dimvec,dimvec2,dimnames,regnames,dist)
 
 	end
 
@@ -311,7 +324,6 @@ function show(io::IO, M::Model)
 	r = sizeof(M.v)+
 		        sizeof(M.c)+
 		        sizeof(M.s)+
-		        sizeof(M.grids2D["GP"])+
 		        sizeof(M.gridsXD["movecost"])+
 		        sizeof(M.gridsXD["Gy"])+
 		        sizeof(M.gridsXD["Gp"])+
@@ -324,8 +336,7 @@ function show(io::IO, M::Model)
 		        sizeof(M.rho)+
 		        sizeof(M.vbar)+
 		        sizeof(M.EVfinal)+
-		        sizeof(M.EV) +
-		        sizeof(M.EVMove)
+		        sizeof(M.EV) 
 
 	mb = round(r/1.049e+6,1)
 	gb = round(r/1.074e+9,1)

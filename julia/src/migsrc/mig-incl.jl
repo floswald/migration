@@ -45,6 +45,49 @@ function runSim()
 	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
 end
 
+		
+# asset grid scaling
+function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,partition=0.5) 
+	out = zeros(n)
+	if order==1
+		off = 1
+		if lb<0 
+			off = 1 - lb #  adjust in case of neg bound
+		end
+		out[1] = log(lb + off) 
+		out[n] = log(ub + off) 
+		out    = linspace(out[1],out[n],n)
+		out    = exp(out) - off  
+	elseif order==2
+		off = 1
+		if lb<0 
+			off = 1 - lb #  adjust in case of neg bound
+		end
+		out[1] = log( log(lb + off) + off )
+		out[n] = log( log(ub + off) + off )
+		out    = linspace(out[1],out[n],n)
+		out    = exp( exp(out) - off ) - off
+	elseif order == 3
+		npos = int(ceil(n*partition))
+		nneg = n-npos
+		if nneg < 1
+			error("need at least one point in neg space")
+		end
+		nneg += 1
+		# positive: log scale
+		pos = exp( exp( linspace(0.0,log( log( ub + 1) + 1),npos) ) -1 ) -1
+		# negative: linear scale
+		neg = linspace(lb,0.0,nneg)
+		return [neg[1:(nneg-1)],pos]
+	else
+		error("supports only double log grid")
+	end
+end
+
+
 # converts
 # convert(::Type{Array{Int64,1}}, PooledDataArray{Int64,Uint32,1})
-
+mylog(x::Float64) = ccall((:log, "libm"), Float64, (Float64,), x)
+myexp(x::Float64) = ccall((:exp, "libm"), Float64, (Float64,), x)
+mylog2(x::Float64) = ccall(:log, Cdouble, (Cdouble,), x)
+myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)

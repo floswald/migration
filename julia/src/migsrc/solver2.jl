@@ -117,7 +117,7 @@ function solvePeriod!(age::Int,m::Model2,p::Param)
 
 				canbuy = a + z > p.chi * price
 
-				blim = (-1) * (1-p.chi) * price
+				blim = (-ih) * (1-p.chi) * price
 
 				# =================
 				# loop over choices
