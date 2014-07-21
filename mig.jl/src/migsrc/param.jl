@@ -115,7 +115,7 @@ type Param
 		end		
 
 		beta    = 0.93
-		gamma   = 1.4
+		gamma   = 1.4	
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
 		lambda  = 10.0

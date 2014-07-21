@@ -30,14 +30,14 @@ end
 pb = Dict{ASCIIString,Array{Float64,1}}()
 pb["gamma"]  = [1.1,3]
 pb["lambda"] = [0.0,10]
-pb["xi1"]    = [0.0,3.0]
-pb["xi2"]    = [0.0,3.0]
-pb["omega1"] = [0.0,1.0]
-pb["omega2"] = [0.0,1.0]
-pb["MC1"]    = [0.0,0.5]
-pb["MC2"]    = [0.0,0.5]
-pb["MC3"]    = [0.0,0.5]
-pb["MC4"]    = [0.0,0.5]
+pb["xi1"]    = [0.0,8.0]
+pb["xi2"]    = [0.0,8.0]
+pb["omega1"] = [0.0,3.0]
+pb["omega2"] = [0.0,3.0]
+pb["MC1"]    = [0.0,0.1]
+pb["MC2"]    = [0.0,0.1]
+pb["MC3"]    = [0.0,5]
+pb["MC4"]    = [0.0,5]
 pb["Rm"]    = [1.03,1.2]
 
 mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))

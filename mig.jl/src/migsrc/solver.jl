@@ -6,6 +6,9 @@
 # main loop
 function solve!(m::Model, p::Param)
 
+	# make sure gamma got updated
+	p.mgamma  = 1.0-p.gamma
+	p.imgamma = 1.0/p.mgamma
 	# set v to na
 	fill!(m.v,p.myNA)
 
@@ -450,6 +453,10 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 		size2 = true
 		consta =  own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
 	end
+
+	# compute consumption at each potential savings choice
+	# consumption is cash - x, where x is s/(1+interest)
+	# and interest depends on whether borrow or save
 
 	 for i=1:n
 		lin = linearapprox(a,EV,s[i],jinf,jsup)
