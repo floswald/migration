@@ -67,7 +67,7 @@ function simulate(m::Model,p::Param)
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
 	G0y   = Categorical([1/p.ny for i=1:p.ny])
 	G0p   = Categorical([1/p.np for i=1:p.np])
-	G0P   = Categorical([1/p.nP for i=1:p.nP])
+	# G0P   = Categorical([1/p.nP for i=1:p.nP])
 	x     = [1/i^2 for i=1:length(m.aone:p.na)]
 	x     = x / sum(x)
 	G0a   = Categorical(x)
@@ -76,7 +76,7 @@ function simulate(m::Model,p::Param)
 
 	# prepare cumsum of probability matrices
 	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
-	cumGP  = cumsum(m.grids2D["GP"],2)	# transition matrices cumulate over dim 2
+	# cumGP  = cumsum(m.grids2D["GP"],2)	# transition matrices cumulate over dim 2
 	cumGp  = cumsum(m.gridsXD["Gy"],2)
 	cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
@@ -96,10 +96,10 @@ function simulate(m::Model,p::Param)
 	Dj      = zeros(Int,p.nsim*(T))	# location index
 	Dh      = zeros(Int,p.nsim*(T))	# housing state
 	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
-	DiP     = zeros(Int,p.nsim*(T))	# macro P index
+	# DiP     = zeros(Int,p.nsim*(T))	# macro P index
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
-	DiS     = zeros(Int,p.nsim*(T))	# savings index
+	# DiS     = zeros(Int,p.nsim*(T))	# savings index
 	DS     = zeros(p.nsim*(T))	# savings values
 	Diz     = zeros(Int,p.nsim*(T))	# z index
 	DM      = zeros(Int,p.nsim*(T))	# move
@@ -108,8 +108,14 @@ function simulate(m::Model,p::Param)
 	Ddist   = zeros(p.nsim*(T))
 	Dtau    = zeros(Int,p.nsim*(T))
 
-	ktmp = zeros(p.nJ)
+	ktmp = zeros(Float64,p.nJ)
 	ktmp2 = zeros(p.nJ)
+
+	avec = zeros(p.na)
+	avec2= zeros(p.na)
+
+	v1tmp = 0.0
+	v2tmp = 0.0
 
 	# begin simulation loop
 	# =====================
@@ -120,11 +126,11 @@ function simulate(m::Model,p::Param)
 		is   = rand(G0k)
 		iy   = rand(G0y)
 		ip   = rand(G0p)
-		iP   = rand(G0P)
+		# iP   = rand(G0P)
 		# iz   = rand(G0z)
 		iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
 		# ia   = rand(G0a) + m.aone - 1
-		ia   =  m.aone 
+		a   =  rand()
 		ih   = 0
 		itau = rand(G0tau)
 		ij   = rand(G0j)
@@ -139,9 +145,20 @@ function simulate(m::Model,p::Param)
 			# move to where?
 			# get probabilities of moving to k
 
+			# TODO interpolate rho at a
+
+
+
 			# need to 
 			for ik in 1:p.nJ
-				ktmp[ik] = m.rho[idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			# get a-dim of all k value functions
+				for iia in 1:p.na
+					avec[iia] = m.rho[idx10(ik,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+				end
+				# evaluate at a
+				ktmp[ik] = linearapprox(agrid,avec,a,1,p.na)[1]
+				# ktmp[ik] = m.rho[idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+
 			end
 			cumsum!(ktmp2,ktmp,1)
 			# TODO slow
@@ -150,9 +167,21 @@ function simulate(m::Model,p::Param)
 
 			if move
 				ihh = 0
+				for iia in 1:p.na
+					avec[iia] = m.v[idx10(moveto,is,iy,ip,iz,iia,1,itau,ij,age,p)]
+				end
+				val = linearapprox(agrid,avec,a,1,p.na)[1]
 			else
+			# TODO interpolate rho at a
 				# find housing choice
-				ihh = m.dh[idx10(is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+				for iia in 1:p.na
+					avec[iia]  = m.v[idx10(moveto,is,iy,ip,iz,iia,1,itau,ij,age,p)]
+					avec2[iia] = m.v[idx10(moveto,is,iy,ip,iz,iia,2,itau,ij,age,p)]
+				end
+				v1tmp = linearapprox(agrid,avec,a,1,p.na)[1]
+				v2tmp = linearapprox(agrid,avec2,a,1,p.na)[1]
+				ihh = v1tmp > v2tmp ? 0 : 1
+				val = v1tmp > v2tmp ? v1tmp : v2tmp
 			end
 
 			# record current period state
@@ -163,27 +192,36 @@ function simulate(m::Model,p::Param)
 			Dtau[age + T*(i-1)] = itau
 			Di[age + T*(i-1)] = i
 			Dh[age + T*(i-1)] = ih
-			Da[age + T*(i-1)] =	agrid[ ia ]
+			Da[age + T*(i-1)] =	a
 			Dy[age + T*(i-1)] = ygrid[iy,ij]	# SLOW
 			Dz[age + T*(i-1)] = zgrid[iz,ij,age]
-			Dp[age + T*(i-1)] = pgrid[iP,ip,ij]
+			Dp[age + T*(i-1)] = pgrid[ip,ij]
 			Dincome[age + T*(i-1)] = income(zgrid[ iz,ij,age ], ygrid[iy,ij])
 			Diz[age + T*(i-1)] = iz
-			DiP[age + T*(i-1)] = iP
 			Dip[age + T*(i-1)] = ip
 			Diy[age + T*(i-1)] = iy
-			Dv[age + T*(i-1)] = m.v[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			# TODO interpolate rho at a
+			# Dv[age + T*(i-1)] = m.v[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			Dv[age + T*(i-1)] = val
 			Dkids[age + T*(i-1)] = is-1
 			Ddist[age + T*(i-1)] = m.distance[ij,moveto]
 
 			# current choices
 			# ---------------
 
-			ss = m.s[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			# TODO interpolate savings and consumption at a
+			for iia in 1:p.na
+				avec[iia]  = m.s[idx10(moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+				avec2[iia] = m.c[idx10(moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+			end
+			ss = linearapprox(agrid,avec,a,1,p.na)[1]
+			Dc[age + T*(i-1)] = linearapprox(agrid,avec2,a,1,p.na)[1]
+			# ss = m.s[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			
 			DM[age + T*(i-1)] = move
 			DMt[age + T*(i-1)] = moveto
-			Dc[age + T*(i-1)] = m.c[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
+			# TODO interpolate rho at a
+			# Dc[age + T*(i-1)] = m.c[idx11(moveto,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
 			Dhh[age + T*(i-1)] = ihh	# housign choice
 
 			# transition to new state
@@ -194,15 +232,13 @@ function simulate(m::Model,p::Param)
 
 			# catching simulation errors
 			# =========================
-			if ss==0
-				# println(ktmp)
-				ia = 1
-				println("id=$i")
-				println("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
-				println("age=$age")
-				println("ia=$ia")
-				DiS[age + T*(i-1)]=1
-				DS[age + T*(i-1)]=agrid[1]
+			# if ss==0
+			# 	# println(ktmp)
+			# 	ia = 1
+			# 	println("id=$i")
+			# 	println("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iz=$iz,ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
+			# 	println("age=$age")
+			# 	DS[age + T*(i-1)]=0
 				# inc = income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age])
 				# cash = cashFunction(Da[age + T*(i-1)],income(m.gridsXD["y"][iy,ij],m.gridsXD["z"][iz,ij,age]),ih,ihh,m.gridsXD["p"][iP,ip,ij],move,moveto,p)
 				# println("current value=$(Dv[age + T*(i-1)])")
@@ -211,13 +247,13 @@ function simulate(m::Model,p::Param)
 				# println("grossA = $(grossSaving(agrid[ia],p))")
 				# println("cash = $cash")
 				# error("next period asset state is zero at\nik=$moveto,iy=$iy,ip=$ip,iP=$iP,iz=$iz,a=$(agrid[ia]),ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
-			else
+			# else
 
-				DiS[age + T*(i-1)] = ss
-				ia = ss
-				DS[age + T*(i-1)] = agrid[ ss ] 
+				# DiS[age + T*(i-1)] = ss
+				a = ss
+				DS[age + T*(i-1)] =  ss  
 
-			end
+			# end
 			# =========================
 
 
@@ -229,14 +265,14 @@ function simulate(m::Model,p::Param)
 			# -----------------------
 
 			# iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
-			# ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
-			# iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
+			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
+			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
 			# if move
 				# iz = searchsortedfirst( cumGzM[iz,:,moveto][:], rand() )
 			# else
-				# iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
+				iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
 			# end
-			# is = searchsortedfirst( cumGs[is,:,age][:], rand() )
+			is = searchsortedfirst( cumGs[is,:,age][:], rand() )
 
 		end	# age t
 
@@ -247,7 +283,7 @@ function simulate(m::Model,p::Param)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,saveidx=DiS,save=DS,c=Dc,iz=Diz,ip=Dip,iy=Diy,iP=DiP,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)))
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,save=DS,c=Dc,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)))
 	df = join(df,m.regnames,on=:j)
 	sort!(df,cols=[1,2]	)
 

@@ -94,7 +94,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 100
+			nsim  = 1000
 
 		elseif size==3
 		# big: maximal size for memory on my box

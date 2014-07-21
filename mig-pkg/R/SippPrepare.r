@@ -135,6 +135,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "rhcalyr",		# cal year
 	                "tfipsst",		# state
 	                "eoutcome",		# interview outcome
+	                "ehhnumpp",		# number of persons in HH
 	                "eppintvw",		# person interview outcome
 	                "tmetro",		# metropolitan area/residual
 	                "etenure",		# housing tenure
@@ -193,6 +194,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "tfipsst",       # state
 	                "tmovrflg",      # mover flag
 	                "eoutcome",      # interview outcome
+	                "ehhnumpp",		# number of persons in HH
 	                "eppintvw",      # person interview outcome
 	                "tmetro",        # metropolitan area/residual
 	                "etenure",       # housing tenure
@@ -237,6 +239,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "tfipsst",         # state
 	                "tmovrflg",        # mover flag
 	                "eoutcome",        # interview outcome
+	                "ehhnumpp",		# number of persons in HH
 	                "eppintvw",        # person interview outcome
 	                "tmetro",          # metropolitan area/residual
 	                "etenure",         # housing tenure
@@ -278,6 +281,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "tfipsst",      # state
 	                "tmovrflg",     # mover flag
 	                "eoutcome",     # interview outcome
+	                "ehhnumpp",		# number of persons in HH
 	                "eppintvw",     # person interview outcome
 	                "tmetro",       # metropolitan area/residual
 	                "etenure",      # housing tenure
@@ -668,6 +672,10 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged <- d[ merged ]
 
 
+	# my estimate of median income
+	merged[,MyMedinc := Hmisc::wtd.quantile(HHincome,HHweight,na.rm=T,probs=0.5),by=list(year,Division)]
+
+
 	# end state aggregation
 	# ======================
 
@@ -675,6 +683,9 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# =========
 
 	# adjust prices by inflation
+
+	# HHincome is monthly. make annual and then average by age
+	merged[,HHincome := HHincome * 12]
 
 	setkey(merged,qtr)
 	data(cpi)
@@ -751,6 +762,8 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 
 
+
+
 	# do time aggregation
 	# ===================
 
@@ -770,12 +783,13 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   Region=Region[1],
 						   Division=Division[1],
 						   Div2=Div2[1],
-						   HHincome=sum(HHincome,na.rm=T),
+						   HHincome=mean(HHincome,na.rm=T),
 						   metro=tmetro[1]	,
 						   kids=kids[1],
 						   numkids=numkids[1],
 						   HHweight=mean(HHweight,na.rm=T),
-						   CensusMedinc=mean(CensusMedinc,na.rm=T),
+						   CensusMedinc=CensusMedinc[1],
+						   MyMedinc=MyMedinc[1],
 						   age=min(age,na.rm=T),
 						   year=min(year,na.rm=T),
 						   wealth=mean(wealth,na.rm=T),
@@ -852,7 +866,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 	# wealth to income ratio: measure of assets
 	# TODO
-	merged[HHincome > 0, w2medinc := wealth / medinc]
+	merged[HHincome > 0, w2medinc := wealth / (medinc/1000)]
 
 	if (use.hvalue.for.p2y){
 		merged[HHincome>0 & own==TRUE ,p2y := hvalue / (HHincome) ] 

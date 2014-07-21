@@ -183,6 +183,7 @@ function simplot(sim::DataFrame,n::Int)
 		end
 	title("assets")
 	subplot(4,4,4)
+	ylim((-0.1,1.1))
 		for sdf in gdf
 			plot(sdf[:age],sdf[:h])
 		end
@@ -213,6 +214,7 @@ function simplot(sim::DataFrame,n::Int)
 		end
 	title("lifetime utility(v)")
 	subplot(4,4,10)
+	ylim((-0.1,1.1))
 		for sdf in gdf
 			plot(sdf[:age],sdf[:kids])
 		end
@@ -228,6 +230,7 @@ function simplot(sim::DataFrame,n::Int)
 		end
 	title("moveto")
 	subplot(4,4,13)
+	ylim((-0.1,1.1))
 		for sdf in gdf
 			plot(sdf[:age],sdf[:hh])
 		end

@@ -48,7 +48,11 @@ export.Julia <- function(){
 	save(rhoincome,file=file.path(out,"rho-income.rda"))
 
 	# pop proportion in each state
-	prop=as.data.frame(merged[,list(Division=unique(Division),proportion=.SD[,length(unique(upid)),by=Division][["V1"]] / length(unique(upid)))])
+	prop = merged[,list(N = length(upid)),by=Division]
+	prop[,proportion:= N / .SD[,sum(N)]]
+	prop=as.data.frame(prop)
+
+	stopifnot(sum(prop$proportion)==1)
 
 	divincome = as.data.frame(r$income$d2)
 	divprice  = as.data.frame(r$price$meandiv)
@@ -93,6 +97,109 @@ export.Julia <- function(){
 	save(divprice ,file=file.path(out,"divprice.rda"))
 	save(p2y      ,file=file.path(out,"p2y.rda"))
 	save(normalize,file=file.path(out,"normalize.rda"))
+}
+
+
+
+Export.IncomeProcess <- function(dat,nz=3,path="~/Dropbox/mobility/output/model/data_repo/in_data_jl"){
+
+	q <- dat[,quantile(HHincome,probs=c(0.05,0.95))]	# trim data
+	cd <- dat[HHincome>q[1] & HHincome < q[2],list(upid,timeid,CensusMedinc,HHincome,age,Division)]
+	cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
+	cd <- cd[complete.cases(cd)]
+
+	# get models of individual income
+	divs = cd[,unique(Division)]
+	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3),cd)
+
+	# slightly more general?
+	lmods = lapply(divs, function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
+	names(lmods) = divs
+
+	# add residuals indiv data
+	cd[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3)))]
+
+	# get lagged resids
+	setkey(cd,upid,timeid)
+	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
+
+	# get autocorrelation coefficient of residuals
+	rhos = lapply(divs,function(x) lm(resid ~ Lresid,cd[Division==x]))
+	names(rhos) = divs
+
+	# why are those rhos so low?????
+	# use 0.97 as in french 2005 for now. shit.
+
+	# get rouwenhorst approximation for each division
+	rou = lapply(rhos, function(x) rutils:::rouwenhorst(mu=0.0,rho=0.97,n=nz,sigma=0.11))
+
+	# rou = lapply(rhos, function(x) rutils:::rouwenhorst(mu=coef(x)["(Intercept)"],rho=coef(x)["Lresid"],n=nz,sigma=summary(x)$sigma))
+
+
+	# make plot of potential profiles by division
+	# ===========================================
+
+	# predict age profiles for each division without shocks!
+	newd = data.frame(expand.grid(age = 20:50,Division=factor(cd[,unique(Division)])))
+	x = merge(newd,cd[,median(CensusMedinc),by=Division],by="Division")
+	names(x)[3] = "CensusMedinc"
+	x = cbind(x,predict(lmod,x))
+	names(x)[4] = "log_y_z0"
+
+	# matrix with shock values for each division
+	mx = data.table(x)
+	setnames(mx,"CensusMedinc","censmed")
+	for (id in divs){
+		for (iz in 1:nz){
+			str <- paste0("mx[ ,CensusMedinc := censmed + rou$",id,"$zgrid[",iz,"] ]")
+			eval(parse(text=str))
+			str <- paste0("mx[ ,log_y_z",iz," := predict(lmod,mx) ]")
+			eval(parse(text=str))
+
+		}
+
+	}
+
+	mmx = melt(mx[,c(1,2,4,6:ncol(mx)),with=FALSE],id.vars=c("Division","age"))
+	pl <- ggplot(mmx, aes(x=age,y=exp(value),color=variable)) + geom_line() + facet_wrap(~Division)
+
+	# simulate 5 guys per division.
+	# ============================
+
+	# TODO
+
+
+	# make an example plot of ranges where that
+	# profile could be shifted if state median income goes
+	# up or down 5%
+	# MACRO effect of shifing ybar around
+	# names(x)[3] = "Medinc"
+	# x = merge(x,cd[,median(CensusMedinc)*0.95,by=Division],by="Division")
+	# names(x)[5] = "CensusMedinc"
+	# x = cbind(x,predict(lmod,x))
+	# names(x)[5] = "MedincLow"
+	# x = merge(x,cd[,median(CensusMedinc)*1.05,by=Division],by="Division")
+	# names(x)[ncol(x)] = "CensusMedinc"
+	# x = cbind(x,predict(lmod,x))
+	# names(x)[c(4,6,8)] = c("ymed","ylow","yhigh")
+
+	# ggplot(x,aes(x=age,y=ymed,color=Division)) + geom_line() + geom_ribbon(aes(ymin=ylow,ymax=yhigh),alpha=0.2)
+
+
+	# export supports
+	zname <- paste0("zsupp_n",nz,".rda")
+	tname <- paste0("ztrans_n",nz,".rda")
+	zsupp <- as.data.frame(mx[,c("Division","age",paste0("log_y_z",1:nz)),with=FALSE])
+	save(zsupp,file=file.path(path,zname))
+
+	# export transition matrices
+	ztrans <- data.frame(Division=names(rou)[1],rou[[1]]$Pmat)
+	for (id in 2:length(divs)){
+		ztrans = rbind(ztrans,data.frame(Division=names(rou)[id],rou[[id]]$Pmat))
+	}
+	save(ztrans,file=file.path(path,tname))
+	return(list(supp=zsupp,trans=ztrans))
+
 }
 
 
@@ -157,6 +264,80 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 	dat[,yrank := cut(ytilde,breaks=Hmisc::wtd.quantile(ytilde,weights=HHweight,probs=prange2),labels=FALSE,include.lowest=TRUE,right=TRUE),by=list(age,state)]
 	# dat[D,yrank := cut(ytilde,breaks=Hmisc::wtd.quantile(ytilde,weights=HHweight,probs=prange),labels=FALSE,include.lowest=TRUE,right=TRUE),by=list(age,state)]
 
+
+	# cd[,resid:= residuals(lm(HHincome ~ age + I(age^2)+ LHHincome))]
+
+
+	# # estimate this linear model:
+	# cd = dat[complete.cases(dat)]
+	# setkey(cd,upid,timeid)
+	# lmod = cd[,lm(log(HHincome) ~ Division:log(CensusMedinc) + age + age2)]
+	# # get residuals of this regression
+	# cd[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + age + age2))]
+
+	# # investigate residuals for unit root
+	# cd[,Lresid := cd[list(upid,timeid-1)][["resid"]] ]
+	# lres = cd[,lm(resid ~ Lresid)]
+	# cd[,adf.test(resid)]	# reject unit root!
+
+	# # solution 1) use a copula with param coef(lres)["Lresid"]
+
+	# # normalize to [0,1]
+	# cd[,nresid := linear.map(resid,1)]
+	# # trim hi and lo
+	# cd[nresid==0]
+	# cd[nresid==0,nresid := 0.0001]
+	# cd[nresid==1]
+	# cd[nresid==1,nresid:=0.99999]
+	# cd[,Lnresid := cd[list(upid,timeid-1)][["nresid"]] ]
+	# ccd = cd[,list(nresid,Lnresid)]
+	# # fit a beta distribution
+	# fit.b = fitdistr(cd[,nresid],"beta",start=list(shape1=2,shape2=2))
+	# x.b=rbeta(1e5,fit.b$estimate[[1]],fit.b$estimate[[2]])
+	# plot(density(cd[,nresid]))
+	# lines(density(x.b),col="red")
+	# # ggplot(cd,aes(x=resid)) + geom_density() + facet_wrap(~Division)
+	# G = getNormCop(Qn=seq(0.1,0.9,le=4),n=4,cond=TRUE,rho=coef(lres)["Lresid"])
+
+	# # solution 2) use rouwenhorst discretization by division
+	# # =======================================================
+
+	# lmod = cd[,lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3))]
+	# newd = data.frame(expand.grid(age = 20:50,Division=factor(cd[,unique(Division)])))
+	# x = merge(newd,cd[,median(CensusMedinc),by=Division],by="Division")
+	# names(x)[3] = "CensusMedinc"
+	# x = cbind(x,predict(lmod,x))
+	# names(x)[3] = "Medinc"
+	# x = merge(x,cd[,median(CensusMedinc)*0.95,by=Division],by="Division")
+	# names(x)[5] = "CensusMedinc"
+	# x = cbind(x,predict(lmod,x))
+	# names(x)[5] = "MedincLow"
+	# x = merge(x,cd[,median(CensusMedinc)*1.05,by=Division],by="Division")
+	# names(x)[ncol(x)] = "CensusMedinc"
+	# x = cbind(x,predict(lmod,x))
+	# names(x)[c(4,6,8)] = c("ymed","ylow","yhigh")
+
+	# ggplot(x,aes(x=age,y=ymed,color=Division)) + geom_line() + geom_ribbon(aes(ymin=ylow,ymax=yhigh),alpha=0.2)
+
+
+
+
+
+	# x$regime = "baseline"
+	# x = cbind(x,predict(lmod,newd))
+
+	# lmod = lapply(cd[,unique(Division)],function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + age2,cd[Division==x]))
+	# names(lmod) = cd[,unique(Division)]
+
+	# rhos = lapply(lmod, function(x) dynlm(resid(x) ~ L(resid(x))))
+	# names(rhos) = cd[,unique(Division)]
+
+	# rou = lapply(rhos, function(x) rouwenhorst(mu=coef(x)["(Intercept)"],rho=coef(x)["Lresid"],n=n,sigma=summary(x)$sigma))
+
+
+
+
+
 	# compute lagged rank
 	setkey(dat,upid,age)
 	dat[,timeid := 1:.N ,by=upid]
@@ -164,6 +345,8 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 	setkey(dat,upid,timeid)
 	dat[,Lyrank := dat[list(upid,timeid-1)][["yrank"]] ]
 	dat[,yrank_plus := dat[list(upid,timeid+1)][["yrank"]] ]
+	dat[,LHHincome := dat[list(upid,timeid-1)][["HHincome"]] ]
+
 
 	# get the empricial transition matrices
 	setkey(dat,state)
@@ -229,8 +412,8 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 
 	plmacro <- ggplot(dat[,mean(CensusMedinc),by=list(year,state)],aes(x=year,y=V1,color=state)) + geom_line() + ggtitle("macro effects")
 
-	pltrans <- ggplot(longtrans,aes(x=from,y=to,z=V1,fill=V1)) + geom_tile() + facet_wrap(~state) + ggtitle("Stayer' Income Rank Transition Matrix")
-	pltransMove <- ggplot(longtransMove,aes(x=from,y=to,z=V1,fill=V1)) + geom_tile() + facet_wrap(~state) + ggtitle("Movers' Income Rank Transition Matrix")
+	pltrans <- ggplot(longtrans,aes(x=from,y=to,z=prob,fill=prob)) + geom_tile() + facet_wrap(~Division) + ggtitle("Stayer' Income Rank Transition Matrix")
+	pltransMove <- ggplot(longtransMove,aes(x=from,y=to,z=prob,fill=prob)) + geom_tile() + facet_wrap(~Division) + ggtitle("Movers' Income Rank Transition Matrix")
 
 	if (plot){
 

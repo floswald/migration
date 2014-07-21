@@ -11,6 +11,7 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 
+include("test/test_approx.jl")
 
 using BSplines
 
@@ -36,9 +37,9 @@ mig.simplot2(s,5)
 p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
-@profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
-m.EVfinal[:,:,1,1,1]
+
+mig.simplot(s,5)
 
 # plots
 
@@ -49,7 +50,6 @@ mig.vhplot(m,p,(1,1,1,1,1,1,1,tt))
 
 
 show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
-mig.simplot(s,5)
 
 @time mms = mig.computeMoments(s,p,m);
 
@@ -69,7 +69,6 @@ include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
 include("test/test_Tensors.jl")
-include("test/test_approx.jl")
 	
 
 
@@ -129,12 +128,5 @@ showall(by(s,:age,d -> mean(d[:income])))
 
 
 
-function gethostname()
-  hostname = Array(Uint8, 128)
-  ccall( (:gethostname, "libc"), Int32,
-        (Ptr{Uint8}, Uint),
-        hostname, length(hostname))
-  return bytestring(convert(Ptr{Uint8}, hostname))
-end
 
 

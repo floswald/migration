@@ -87,9 +87,6 @@ makeDivDifferences <- function(path=NULL){
 
 	r <- list()
 
-	pal <- getcbPalette(n=9)
-	# add a red color to palette for USA
-	pal <- c("red",pal)
 
 	# income
 	data(US_medinc_current,package="EconData")
@@ -125,8 +122,99 @@ makeDivDifferences <- function(path=NULL){
 	d <- US_states[d]
 	d[STATE=="united states",c("state","Division") := list("USA","USA")]
 	d[,STATE := NULL]
+	d[,Division := factor(Division)]
+	d[,Division := relevel(Division,"USA")]
+	d[,logm := log(medinc)]
 	
 	div <- d[,list(meanmedinc=mean(log(medinc)),minmedinc=min(log(medinc)),maxmedinc=max(log(medinc))),by=list(Year,Division)]
+
+	# get wide data
+	dw <- d[,list(mm=mean(logm)),by=list(Year,Division)]
+	dw = reshape(dw,direction="wide",idvar="Year",timevar="Division")
+	setnames(dw,2:11, c(d[Division!="USA",abbreviate(unique(Division),3)],"USA"))
+
+	# use GDP per capita?
+	# problem: GDP seems quite unrelated to median income.
+	# getSymbols('USARGDPC',src="FRED")
+	# USARGDPC$Year = year(index(USARGDPC))
+	# USARGDPC$USARGDPC = log(USARGDPC$USARGDPC)
+	# dw = merge(dw,as.data.frame(USARGDPC),by="Year")
+	# dw[,c("USA") := NULL]
+	# lw = melt(dw,id.vars="Year")
+	# ggplot(lw,aes(x=Year,y=value,color=variable)) + geom_line()
+	# dw[,c("Year") := NULL]
+
+	# # blanchard-kahn models: state_k ~ aggregate + u
+	# bk <- list()
+	# for (i in names(dw)[-10]){
+	# 	fm = as.formula(paste0(i,"~ USARGDPC"))
+	# 	bk[[i]] <- lm(formula=fm,dw )
+	# }
+	# lapply(bk,summary)
+
+	# use mean of all divisions as national index
+	# blanchard-kahn models: state_k ~ aggregate + u
+	dw[,c("Year") := NULL]
+	bk <- list()
+	for (i in names(dw)[-10]){
+		fm = as.formula(paste0(i,"~ USA"))
+		bk[[i]] <- lm(formula=fm,dw )
+	}
+	lapply(bk,summary)
+
+	# get residuals
+	bk_resid = lapply(bk,resid)
+
+	# dynamic reg of residuals
+	dlm_resid = lapply(bk_resid,function(x) {tx = ts(x); dynlm(tx ~ L(tx))})
+
+
+	# data(HValue96_dynF_yearly)
+	# divH <- dat[,list(p=mean(log(y))),by=list(date,Division)]
+	# US <- divH[,list(p=mean(p)),by=date]
+	# US[,Division:="USA"]
+	# divH
+	# divH[Division=="East South Central"]
+	# divH[Division=="East South Central"][10:39]
+	# divH[Division=="East South Central"][11:39]
+	# dw2$pESC = divH[Division=="East South Central"][11:39][,p]
+	# dw2$pUSA = divH[Division=="United States"][11:39][,p]
+	# dw2
+	# dw2$pUSA = divH[Division=="USA"][11:39][,p]
+	# dw2
+	# divH[Division=="USA"]
+	# divH[Division=="    United States"]
+	# divH[,table(Division)]
+	# US <- divH[,list(p=mean(p)),by=date]
+	# US[,Division:="USA"]
+	# divH <- rbind(divH,US,use.names=TRUE)
+	# divH
+	# dw2$pUSA = divH[Division=="USA"][11:39][,p]
+	# dw2
+	# eqy = yESC ~ yUSA + pUSA
+	# eqp = pESC ~ yUSA + pUSA
+	# fit = systemfit(list(income=eqy,price=eqp),data=dw2)
+	# library(systemfit)
+	# fit = systemfit(list(income=eqy,price=eqp),data=dw2)
+	# print(fit)
+	# summary(fit)
+	# predict.systemfit
+	# predict(fit,newdata=data.frame(yUSA=5.5,pUSA=9.8))
+	# coef(fit)
+	# summary(fit)
+		
+
+
+
+
+
+	div[, Division := factor(Division)]
+	us = div[,which(levels(Division)=="USA")]
+
+	# insert into color palette as red
+	pal <- getcbPalette(n=9)
+	# add a red color to palette for USA
+	pal <- c(pal[1:(us-1)],"red",pal[(us):length(pal)])
 
 	# normalizing constant for model:
 	# medinc income in 1996 dollars
@@ -148,7 +236,10 @@ makeDivDifferences <- function(path=NULL){
 	r$income$d2 <- div2
 
 	# plots
-	r$income$plevel <- ggplot(div,aes(x=Year,y=meanmedinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=c(1.5,rep(1,9)))+ theme_bw()
+	sz = rep(1,10)
+	sz[us] = 1.5
+	r$income$plevel <- ggplot(div,aes(x=Year,y=meanmedinc,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('median log income levels') + scale_size_manual(values=sz) + theme_bw()
+
 
 	r$income$pdevs  <- ggplot(div,aes(x=Year,y=dev,color=Division,size=Division)) + geom_line() + scale_color_manual(values=pal) + ggtitle('percent deviations from US median log income') + scale_size_manual(values=c(1.5,rep(1,9))) + theme_bw()
 

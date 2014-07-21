@@ -199,8 +199,8 @@ type Model
 		pgrid = zeros(Float64,p.np,p.nJ)
 		for i = 1:p.nJ
 			pgrid[:,i] = 1.0 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np)   # (1 + %-deviation)
-		    # ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
-		    ygrid[:,i] = 1.0 .+ linspace(0.5,0.5 , p.ny)
+		    ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
+		    # ygrid[:,i] = 1.0 .+ linspace(0.5,0.5 , p.ny)
 		end
 
 		# rebuild as 3D array
