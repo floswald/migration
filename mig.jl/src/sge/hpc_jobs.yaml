@@ -5,7 +5,7 @@ slices:
   logout:   migslices.log
   logerr:   migslices.err
   template: cmd.qsub
-  wd: /data/uctpfos/git/migration/julia/src/sge
+  wd: /data/uctpfos/git/migration/mig.jl/src/sge
   run:   sge_slices.jl 
 
 
@@ -16,5 +16,5 @@ estim:
   logout:   mig.log
   logerr:   mig.err
   template: cmd.qsub
-  wd: /data/uctpfos/git/migration/julia/src/sge
+  wd: /data/uctpfos/git/migration/mig.jl/src/sge
   run:   sge_estim.jl 

@@ -48,17 +48,17 @@ type Param
 
 	# numerical setup
 	# points in each dimension
-	na   ::Int 	# number of asset points
-	namax   ::Int 	# number of asset points
-	nz   ::Int 	# number of inidividual income states
-	nh   ::Int 	# number of housing states
-	nt   ::Int 	# number of periods
-	ntau ::Int 	# number of types
-	nJ   ::Int 	# number of origin locations
+	na    :: Int 	# number of asset points
+	namax :: Int 	# number of asset points
+	nz    :: Int 	# number of inidividual income states
+	nh    :: Int 	# number of housing states
+	nt    :: Int 	# number of periods
+	ntau  :: Int 	# number of types
+	nJ    :: Int 	# number of origin locations
 	            # nk = nj - 1 is the number of destination locations
-	np   ::Int # number of price levels in each location
-	ny   ::Int # number of income levels by location
-	ns   ::Int # number of HHsizes
+	np    :: Int # number of price levels in each location
+	ny    :: Int # number of income levels by location
+	ns    :: Int # number of HHsizes
 
 	# used in simulations
 	nsim::Int # number of individuals in each location
@@ -125,10 +125,10 @@ type Param
 		omega2  = 2.1
 
 		# other parameters
-		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3
+		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
 		MC1    = 0.01
 		MC2    = 0.01
-		MC3    = 0.01
+		MC3    = 0.1
 		MC4    = 0.01
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
