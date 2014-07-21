@@ -2,11 +2,11 @@
 
 # main programme
 home = ENV["HOME"]
-cd("$home/git/migration/julia")
+cd("$home/git/migration/mig.jl")
 
 
 # include("src/estimation.jl")
-cd("$home/git/migration/julia/src/sge")
+cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
@@ -34,10 +34,14 @@ mig.vhplot(m2,p,(1,2))
 mig.simplot2(s,5)
 
 
-p = mig.Param(2)
+p = mig.Param(2,1)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
+@profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
+ reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
+reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
+reshape(m.rho[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 
 mig.simplot(s,5)
 

@@ -41,39 +41,25 @@ type Model
 	distance::Array{Any,2}
 
 	# constructor
-	function Model(p::Param;dropbox=false,testing=false)
+	function Model(p::Param;dropbox=false)
 
 		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
 		dimvec2 = (p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
 
-		if testing
-			v= reshape(rand(prod((dimvec))),dimvec)
-			s= fill(0,dimvec)
-			c= fill(0.0,dimvec)
-			rho = reshape(rand(prod((dimvec))),dimvec)
+		v= fill(p.myNA,dimvec)
+		s= fill(0,dimvec)
+		c= fill(0.0,dimvec)
+		cash0= fill(0.0,dimvec)
+		cash1= fill(0.0,dimvec)
+		rho = fill(0.0,dimvec)
 
-			EVfinal = reshape(rand(prod((p.na,p.nh,p.np,p.nJ))),(p.na,p.nh,p.np,p.nJ))
+		EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.nJ))
+		# EVfinal = fill(0.0,(p.na,p.nh,p.np,p.nJ))
 
-			dh = fill(0,dimvec)
+		dh = fill(0,dimvec)
 
-			EV = reshape(rand(prod((dimvec2))),dimvec2)
-			EVMove = reshape(rand(prod((dimvec2))),dimvec2)
-			vbar = reshape(rand(prod((dimvec2))),dimvec2)
-		else
-			v= fill(p.myNA,dimvec)
-			s= fill(0,dimvec)
-			c= fill(0.0,dimvec)
-			cash0= fill(0.0,dimvec)
-			cash1= fill(0.0,dimvec)
-			rho = fill(0.0,dimvec)
-
-			EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.nJ))
-
-			dh = fill(0,dimvec)
-
-			EV = fill(p.myNA,dimvec2)
-			vbar = fill(p.myNA,dimvec2)
-		end
+		EV = fill(p.myNA,dimvec2)
+		vbar = fill(p.myNA,dimvec2)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
 		bounds["assets"] = (-2.0,2.0)
@@ -198,7 +184,7 @@ type Model
 		ygrid = zeros(Float64,p.ny,p.nJ)
 		pgrid = zeros(Float64,p.np,p.nJ)
 		for i = 1:p.nJ
-			pgrid[:,i] = 1.0 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np)   # (1 + %-deviation)
+			pgrid[:,i] = 3.5 .* ( 1 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np) )  # (1 + %-deviation)
 		    ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
 		    # ygrid[:,i] = 1.0 .+ linspace(0.5,0.5 , p.ny)
 		end

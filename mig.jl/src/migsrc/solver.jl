@@ -41,10 +41,11 @@ function solveFinal!(m::Model,p::Param)
 	agrid = m.grids["assets"]
 	hgrid = m.grids["housing"]
 	# loop over all states
-	for ia = 1:p.na
 	for ih = 1:p.nh
 	for ij = 1:p.nJ
 	for ip = 1:p.np 
+
+	for ia = m.aone:p.na
 
 		if ia == m.aone
 			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
@@ -55,11 +56,16 @@ function solveFinal!(m::Model,p::Param)
 		elseif ia > m.aone
 
 			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
-		else
-			m.EVfinal[ia,ih,ip,ij] = p.myNA
 		end
-
 	end
+
+	# linear approximation below 0
+	y1 = m.EVfinal[m.aone,ih,ip,ij]
+	y2 = m.EVfinal[m.aone+1,ih,ip,ij]
+	for ia = 1:(m.aone-1)
+		m.EVfinal[ia,ih,ip,ij] = y1 + (y2 - y1) * (agrid[ia] - agrid[m.aone]) / (agrid[m.aone+1] - agrid[m.aone])
+	end
+		
 	end
 	end
 	end
@@ -87,6 +93,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	# return value for findmax: tuple (value,index)
 	r = (0.0,0.0,0.0)
+	rh = (0.0,0.0,0.0)
 
 	first = 1
 
@@ -100,7 +107,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	Gp = m.gridsXD["Gp"]
 
 	vtmp = zeros(p.nJ) 
-	expv = zeros(p.nJ) 
+	feasible_k = falses(p.nJ)
 	vbartmp = (0.0,0.0)
 
 	# indexes the current state: s, y, p, z, a, h, tau, current loc, age
@@ -145,7 +152,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								yy    = z
 
 								canbuy = a + yy > p.chi * price
-								blim = (-1) * (1-p.chi) * price
 
 								for is=1:p.ns
 
@@ -160,6 +166,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 									# fill!(vtmp,0.0)
 									# fill!(expv,0.0)
+									expv = Float64[]
+									fill!(feasible_k,false)
 
 									# TODO
 									# get a temporary copy of EV[possible.choices|all.states]
@@ -172,8 +180,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# state when moving to k
 										kidx = idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
 
-										# you stay
+										# you stay and you have a housing choice
 										if ij==ik && (ih==1 || (ih==0 && canbuy))
+
+											# you have a housing choice
+											# if ih==1 || (ih==0 && canbuy)
 
 											def = false
 
@@ -189,11 +200,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# optimal housing choice
 											for ihh in 0:1
 
+												blim = age < p.nt-1 ? (-ihh) * (1-p.chi) * price : 0.0
+
 												# reset w vector
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-												cash = cashFunction(a,yy,is,ih,ihh,price,ij!=ik,ik,p)
+												cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
 												if ihh==0
 													m.cash0[kidx] = cash
 												else
@@ -207,12 +220,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
 												# optimal savings choice
-												r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,ihh * blim,age)
+												rh = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
 
 												# put into vfun, savings and cons policies
-												vstay[ihh+1] = r[1]
-												sstay[ihh+1] = r[2] 
-												cstay[ihh+1] = r[3]
+												vstay[ihh+1] = rh[1]
+												sstay[ihh+1] = rh[2] 
+												cstay[ihh+1] = rh[3]
 
 												if cash < 0 && ihh==0 && ih==0
 													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
@@ -241,23 +254,21 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.c[kidx] = 0
 											end
 
-
-										# you either move or you are a 
-										# current renter who cannot buy
-										else
+										else   # you move or you're a renter who cannot buy
 
 											# TODO
 											# moving with a < 0 means default = true
 											def = (ih*(ia<m.aone) == true)
 
 											ihh = 0
+											blim = 0.0
 
 											# reset w vector
 											fill!(EV,p.myNA)	
 											fill!(w,p.myNA)
 
 											# cashfunction(a,y,ageeffect,z,ih,ihh)
-											cash = cashFunction(a,yy,is,ih,ihh,price,ij!=ik,ik,p)
+											cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
 											m.cash0[kidx] = cash
 
 											# find moving cost
@@ -276,8 +287,25 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# if you move, must select the EV that corresponds to movers, 
 											# i.e. reversion to the mean of the shock? (for example)
 
+
 											# optimal savings choice
-											r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,ihh * blim,age)
+											r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
+											if ij==1 && is==1 && itau==1 && age==1 && ia == m.aone && ih==0
+												println("                                        ")
+												println("========================================")
+												println("age = $age")
+												println("ih = $ih")
+												println("ihh = $ihh")
+												println("ij = $ij")
+												println("ik = $ik")
+												println("cash = $cash")
+												println("EV = $EV")
+												println("blim = $(ihh * blim)")
+												println("mc= $mc")
+												println("maxvalue = $r")
+												println("========================================")
+												println("                                        ")
+											end
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -292,33 +320,38 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.c[kidx] = 0
 											end
 
-												if cash < 0 && ih==0
-													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
-													println("cash at ihh=$ihh is $cash")
-													println("maxvalue = $(r[1])")
-													println("maxindex = $(r[2])")
-												end
+											if cash < 0 && ih==0
+												println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
+												println("cash at ihh=$ihh is $cash")
+												println("maxvalue = $(r[1])")
+												println("maxindex = $(r[2])")
+											end
 
-										end
+										end  # end if stay and houseing choice
 
 										# store optimal value in tmp vector
 										# used in vbar calculation
 										if r[1] > p.myNA
 											vtmp[ik] = r[1]
-											expv[ik]  = exp(r[1])
+											# expv[ik]  = exp(r[1])
+											push!(expv,exp(r[1]))
+											feasible_k[ik] = true
 										else
 											vtmp[ik] = r[1]
-											expv[ik]  = 0.0
+											# expv[ik]  = 0.0
 										end
 
 									end	# choice: location 
 
 									# compute vbar and rho
-									logsum = log( sum(expv) )
-									if !isfinite(logsum)
-										m.vbar[jidx] = p.myNA
-									else
+
+									# TODO was faster before
+									if any(feasible_k)
+										logsum = log( sum(expv) )
 										m.vbar[jidx] = p.euler + logsum
+									else
+										# TODO that will pull the integration down a lot
+										m.vbar[jidx] = p.myNA
 									end
 									# println(vtmp)
 									# println(logsum)
@@ -326,7 +359,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 									# compute rho: probability of moving to k given j
 									for ik in 1:p.nJ
-										m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = exp( vtmp[ik] - logsum)
+										if feasible_k[ik]
+											# TODO this has numerical underflow problems
+											# need to make sure that vtmp[ik] - logsum is in a numerically stable range
+											# of the exp function!
+											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = exp( vtmp[ik] - logsum)
+										else
+											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = 0.0
+										end
 									end
 
 									# integrate vbar to get EV and EVbar
@@ -446,13 +486,16 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 	cons = 0.0
 	jinf = 1
 	jsup = searchsortedfirst(a,ub)
-	size2 = false
-	if is ==1
-		consta =  own*p.xi1 - def*p.lambda - mc + (itau-1)*p.tau
-	else
-		size2 = true
+	
+	# check which hh size
+	size2 = is == 1 ? false : true
+
+	if size2
 		consta =  own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
+	else
+		consta =  own*p.xi1 - def*p.lambda - mc + (itau-1)*p.tau
 	end
+
 
 	# compute consumption at each potential savings choice
 	# consumption is cash - x, where x is s/(1+interest)
@@ -472,22 +515,15 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 		# note: cons^(1-gamma) = exp( (1-gamma)*log(cons) )
 		if size2
 			cons = (cash-x)*p.sscale
-			if cons < 0
-				w[i] = p.myNA				
-			else
-				w[i] = p.imgamma * myexp2(p.mgamma * mylog2(cons) ) + p.beta * lin[1]
-				# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
-				w[i] += consta
-			end
 		else
 			cons = cash-x
-			if cons < 0
-				w[i] = p.myNA
-			else
-				# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
-				w[i] = p.imgamma * myexp2(p.mgamma * mylog2(cons) ) + p.beta * lin[1]
-				w[i] += consta
-			end
+		end
+		if cons < 0
+			w[i] = p.myNA				
+		else
+			w[i] = ufun(cons,lin[1],p)
+			# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
+			w[i] += consta
 		end
 		jinf = lin[2]
 
@@ -499,15 +535,9 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 	return 
 end
 
-
-function ufun(x::Float64,is::Int,own::Int,itau::Int,mc::Float64,def::Bool,p::Param)
-	if is==1
-		r = p.imgamma * x^p.mgamma + own*p.xi1 - def*p.lambda - mc + (itau-1)*p.tau
-	else 
-		r = p.imgamma * (x*p.sscale)^p.mgamma + own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
-	end
+function ufun(c::Float64,ev::Float64,p::Param)
+	p.imgamma * myexp2(p.mgamma * mylog2(c) ) + p.beta * ev
 end
-
 
 # housing payment function
 function pifun(ih::Int,ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
@@ -547,7 +577,7 @@ end
 # cashfunction
 # computes cash on hand given a value of the
 # state vector and a value of the discrete choices
-function cashFunction(a::Float64, y::Float64, is::Int, ih::Int, ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
+function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
 	a + y - pifun(ih,ihh,price,move,ik,p)
 end
 

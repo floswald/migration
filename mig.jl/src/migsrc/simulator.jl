@@ -113,6 +113,7 @@ function simulate(m::Model,p::Param)
 
 	avec = zeros(p.na)
 	avec2= zeros(p.na)
+	asum = 0.0
 
 	v1tmp = 0.0
 	v2tmp = 0.0
@@ -152,9 +153,27 @@ function simulate(m::Model,p::Param)
 			# need to 
 			for ik in 1:p.nJ
 			# get a-dim of all k value functions
+
+			# TODO check first which choices are fesible
+			
+				asum = 0.0
 				for iia in 1:p.na
 					avec[iia] = m.rho[idx10(ik,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+					asum += avec[iia]
 				end
+			if i < 10
+				println("id = $i, age = $age")
+				println("avec = $avec")
+				println("asum = $asum")
+			end
+				# take care of numerical error: sometimes you approximate 1.00000000000887 instead of 1
+				for iia in 1:p.na
+					avec[iia] /= asum
+				end
+			if i < 10
+				println("avec = $avec")
+			end
+
 				# evaluate at a
 				ktmp[ik] = linearapprox(agrid,avec,a,1,p.na)[1]
 				# ktmp[ik] = m.rho[idx11(ik,is,iy,ip,iP,iz,ia,ih+1,itau,ij,age,p)]
