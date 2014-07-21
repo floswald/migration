@@ -229,12 +229,20 @@ function simplot(sim::DataFrame,n::Int)
 			plot(sdf[:age],sdf[:moveto])
 		end
 	title("moveto")
+	plts = Array(Any,n)
 	subplot(4,4,13)
 	ylim((-0.1,1.1))
-		for sdf in gdf
-			plot(sdf[:age],sdf[:hh])
+		for i in 1:length(nr)
+			plt, = plot(sim[sim[:id].==nr[i],:age],sim[sim[:id].==nr[i],:hh])
+			plts[i] = plt
 		end
+		# for sdf in gdf
+		# 	plot(sdf[:age],sdf[:hh])
+		# end
 	title("hchoice")
+	pltslab = ["indiv $x" for x in nr]
+	PyPlot.fontproperties
+	legend(plts,pltslab,"lower right")
 	suptitle("ids: $nr")
 end
 

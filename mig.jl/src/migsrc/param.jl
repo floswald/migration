@@ -64,8 +64,10 @@ type Param
 	nsim::Int # number of individuals in each location
 	rseed::Int # seed for the random number generators
 
+	verbose :: Int
+
 	# constructor assigning initial values
-	function Param(size::Int)
+	function Param(size::Int,verbose=0)
 
 		if size==1
 
@@ -149,7 +151,7 @@ type Param
 		# create object
 
 			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed)
+				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed,verbose)
 	end
 end
 
