@@ -10,9 +10,9 @@ using FactCheck, mig
 facts("test linear index functions") do
 
 	p = mig.Param(2)
-	m = mig.Model(p,testing=true)
+	m = mig.Model(p)
 
-	context("testing 11 dim index") do
+	context("testing 10 dim index") do
 
 		for itest in 1:50
 
@@ -32,7 +32,7 @@ facts("test linear index functions") do
 		end
 	end
 
-	context("testing 10 dim index") do
+	context("testing 9 dim index") do
 
 		for itest in 1:50
 
@@ -70,23 +70,14 @@ end
 facts("testing utility function") do
 
 	p = mig.Param(1)
-	for iown in 0:1
-		for itau in 1:p.ntau
-			for is in 1:p.ns
-				for idef in [true,false]
-					for mc in [-10.0,0,10.0]
-						x = rand()
-						if is==1
-							z = (1/(1-p.gamma)) * x^(1-p.gamma) + iown*p.xi1 - idef*p.lambda - mc + (itau-1) * p.tau
-						else
-							z = (1/(1-p.gamma)) * x^(1-p.gamma) + iown*p.xi2 - idef*p.lambda - mc + (itau-1) * p.tau
-						end
-						@fact z - mig.ufun(x,is,iown,itau,mc,idef,p) => roughly(0.0,atol=0.00001)
-					end
-				end
-			end
-		end
-	end
+
+	c = rand()
+	ev = rand()
+
+	u = (1/(1-p.gamma)) * c^(1-p.gamma) + p.beta * ev
+
+	@fact u - mig.ufun(c,ev,p) => roughly(0.0,atol=1e-8)
+
 end
 
 
@@ -208,14 +199,14 @@ facts("testing cashFunction") do
 						y = rand()
 						pr = rand()*10
 						z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
-						@fact abs(mig.cashFunction(a,y,is,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
+						@fact abs(mig.cashFunction(a,y,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
 					else
 						for ihh in 0:1
 							a = rand()
 							y = rand()
 							pr = rand()*10
 							z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
-							@fact abs(mig.cashFunction(a,y,is,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
+							@fact abs(mig.cashFunction(a,y,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
 						end
 					end
 				end
@@ -226,79 +217,68 @@ end
 
 
 
-facts("testing maxvalue function") do
+facts("testing vsavings!()") do
+	
+	# assumptions
+	# ===========
+	p = Param(1)
+	m = Model(p)
 
+    w = zeros(p.namax)
+    cons = zeros(p.namax)
+    a = m.grids["assets"]
 
-	context("maxalue for owners non default") do
+    w_t = 0.0
+    cons_t = 0.0
 
-		p = mig.Param(1)
-		m = mig.Model(p,testing=true)
-		s = m.grids["assets"]
+    fac = 2.25
+    EV = a.*fac  	# just take a straight line with slope fac
+    cash = rand()
+    mc = rand()
+    lb = 0
+    s = linspace(lb,cash-0.01,p.namax)
+	ub = a[end]
+	for is = 1:p.ns
+	for ih = 0:1
+	for itau = 1:p.ntau
+	for def in [true, false]
 
-		w = zeros(p.na)
-		fill!(w,p.myNA)
+		# compute vsavings!()
+		mig.vsavings!(w,a,EV,s,cons,cash,ub,is,ih,itau,mc,def,p)
 
+		# compute values at each savings grid
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - def*p.lambda - mc + (itau-1)*p.tau
 
-		for is in 1:p.ns
-			for itau in 1:p.ntau
-				for own in 0:1
-					for def in [false,true]
-						x = rand()
-						mc = rand()
-						EV = rand(p.na)
+		for i = 1:p.namax
+			# get savings vector
+			x = s[i] / p.R
 
-
-						for i=1:p.na
-							if x-s[i] > 0
-								w[i] = mig.ufun(x-s[i],is,own,itau,mc,def,p) + p.beta * EV[i]
-							end
-						end
-
-						r = findmax(w)
-
-						@fact mig.maxvalue(x,is,itau,p,s,w,own,mc,def,EV,m.aone) => r
-
-						fill!(w,p.myNA)
-						x = -10000.0
-						def = false
-
-						@fact mig.maxvalue(x,is,itau,p,s,w,own,mc,def,EV,m.aone) => (p.myNA,1)
-					end
-				end
+			# get cons at that choice
+			cc = (is==1)*(cash-x) + (is==2)*(cash-x)*p.sscale
+			if cc < 0
+				w_t = p.myNA
+			else
+				w_t = mig.ufun(cc,s[i]*fac,p)
+				w_t += consta
 			end
+			@fact cc => cons[i]
+			@fact w_t => w[i]
 		end
+
 	end
-
-	context("maxvalue throws errors") do
-
-
-		p = mig.Param(1)
-		m = mig.Model(p,testing=true)
-		s = m.grids["assets"]
-
-		w = zeros(p.na)
-		fill!(w,p.myNA)
-
-
-		x = rand()
-		mc = rand()
-		def = false
-		own = 0
-
-		EV = rand(p.na-1)
-		@fact_throws mig.maxvalue(x,1,1,p,s,w,own,mc,def,EV,m.aone) 
 	end
-
+	end
+	end
 end
+
+
 
 
 
 facts("testing EVfunChooser") do
 
 	p    = mig.Param(1)
-	m    = mig.Model(p,testing=true)
-
-	
+	m    = mig.Model(p)
 
 	context("testing EVfunChooser in period T-1") do
 
@@ -351,15 +331,10 @@ facts("testing EVfunChooser") do
 
 		# V[y,p,P,z,a,h,tau,j,age]
 			EV = m.EV[is,iy,ip,iz,:,ih,itau,ik,ti+1]
-			EVM = m.EVMove[is,iy,ip,iz,:,ih,itau,ik,ti+1]
 
 			mig.EVfunChooser!(ev,is,iz,ih,itau,ip,iy,ij,ik,ti,m,p)
 
-			if ij==ik
-				@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
-			else
-				@fact ev[:] .- EVM[:] => roughly(zeros(p.na),atol=0.000001)
-			end
+			@fact ev[:] .- EV[:] => roughly(zeros(p.na),atol=0.000001)
 
 		end
 	end
@@ -373,7 +348,7 @@ facts("test integration of vbar: getting EV") do
 	context("test uniform weights return original array") do
 
 		p    = mig.Param(1)
-		m    = mig.Model(p,testing=true)
+		m    = mig.Model(p)
 
 
 		Gz = m.gridsXD["Gz"]
@@ -403,7 +378,7 @@ facts("test integration of vbar: getting EV") do
 			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
 
 			# calling integrateVbar must return vbar.
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,it,p,Gz,Gy,Gp,Gs,m)
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,it,Gz,Gy,Gp,Gs,m,p)
 
 			@fact tmp - m.vbar[mig.idx9(is,iy,ip,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
 
@@ -413,7 +388,7 @@ facts("test integration of vbar: getting EV") do
 	context("test whether equal to hand integration") do
 
 		p    = mig.Param(1)
-		m    = mig.Model(p,testing=true)
+		m    = mig.Model(p)
 
 		myEV = zeros(m.dimvec2[1:8])
 
@@ -470,7 +445,7 @@ facts("test integration of vbar: getting EV") do
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
 
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,age,p,Gz,Gy,Gp,Gs,m)
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,age,Gz,Gy,Gp,Gs,m,p)
 			@fact myEV[is,iy,ip,iz,ia,ih,itau,ij] - tmp => roughly(0.0,atol=0.00001)
 		end
 		end
@@ -479,6 +454,81 @@ facts("test integration of vbar: getting EV") do
 		# end test locationp
 	end
 end
+
+
+
+facts("checking some properties of the solution") do
+
+	p = Param(1)
+	m = Model(p)
+	mig.solve!(m,p)
+
+	context("test the range of outputs from final value") do
+
+		mval = p.omega1 + p.omega2 * log(maximum(m.grids["assets"]) + maximum(m.gridsXD["p"]) )
+		
+		@fact minimum(m.EVfinal) => p.myNA
+		@fact maximum(m.EVfinal) => mval
+		@fact all(m.EVfinal[1:(m.aone-1),:,:,:] .== p.myNA) => true
+
+	end
+
+	context("check conditional v is never decreasing in a") do
+
+		tt = mapslices(x -> diff(x),m.v,6)
+		@fact all(tt .>= 0.0) => true
+
+	end
+
+	context("check conditional v is never decreasing in z") do
+
+		tt = mapslices(x -> diff(x),m.v,5)
+		@fact all(tt .>= 0.0) => true
+
+	end
+
+	context("check prob of moving") do
+
+		for is in 1:p.ns
+			for iy in 1:p.ny
+				for ip in 1:p.np 
+					for iz in 1:p.nz
+						for ia in 1:p.na
+							for ih in 1:p.nh
+								for itau in 1:p.ntau
+									for ij in 1:p.nJ
+										for age in 1:(p.nt-1)
+
+											if any(m.v[:,is,iy,ip,iz,ia,ih,itau,ij,age][:] .> p.myNA)
+												tt = m.rho[:,is,iy,ip,iz,ia,ih,itau,ij,age][:]
+
+												@fact sum(tt) => roughly(1.0,atol=1e-9)
+												@fact minimum(tt) >= 0.0 => true
+												@fact maximum(tt) <= 1.0 => true
+											end
+
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	context("check whether cons positive at feasible states") do
+
+		feas = m.v .> p.myNA
+
+		@fact all(m.c[feas] .> 0.0) => true
+
+	end
+
+
+end
+
 
 
 

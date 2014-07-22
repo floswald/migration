@@ -59,11 +59,13 @@ function solveFinal!(m::Model,p::Param)
 		end
 	end
 
-	# linear approximation below 0
-	y1 = m.EVfinal[m.aone,ih,ip,ij]
-	y2 = m.EVfinal[m.aone+1,ih,ip,ij]
+	# linear approximation below 0 or p.NA?
+	# truth is that this section of assets can never be chosen anyway
+	# y1 = m.EVfinal[m.aone,ih,ip,ij]
+	# y2 = m.EVfinal[m.aone+1,ih,ip,ij]
 	for ia = 1:(m.aone-1)
-		m.EVfinal[ia,ih,ip,ij] = y1 + (y2 - y1) * (agrid[ia] - agrid[m.aone]) / (agrid[m.aone+1] - agrid[m.aone])
+		# m.EVfinal[ia,ih,ip,ij] = y1 + (y2 - y1) * (agrid[ia] - agrid[m.aone]) / (agrid[m.aone+1] - agrid[m.aone])
+		m.EVfinal[ia,ih,ip,ij] = p.myNA
 	end
 		
 	end
@@ -290,22 +292,22 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# optimal savings choice
 											r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
-											if ij==1 && is==1 && itau==1 && age==1 && ia == m.aone && ih==0
-												println("                                        ")
-												println("========================================")
-												println("age = $age")
-												println("ih = $ih")
-												println("ihh = $ihh")
-												println("ij = $ij")
-												println("ik = $ik")
-												println("cash = $cash")
-												println("EV = $EV")
-												println("blim = $(ihh * blim)")
-												println("mc= $mc")
-												println("maxvalue = $r")
-												println("========================================")
-												println("                                        ")
-											end
+											# if ij==1 && is==1 && itau==1 && age==1 && ia == m.aone && ih==0
+											# 	println("                                        ")
+											# 	println("========================================")
+											# 	println("age = $age")
+											# 	println("ih = $ih")
+											# 	println("ihh = $ihh")
+											# 	println("ij = $ij")
+											# 	println("ik = $ik")
+											# 	println("cash = $cash")
+											# 	println("EV = $EV")
+											# 	println("blim = $(ihh * blim)")
+											# 	println("mc= $mc")
+											# 	println("maxvalue = $r")
+											# 	println("========================================")
+											# 	println("                                        ")
+											# end
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -363,7 +365,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# TODO this has numerical underflow problems
 											# need to make sure that vtmp[ik] - logsum is in a numerically stable range
 											# of the exp function!
-											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = exp( vtmp[ik] - logsum)
+											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
 										else
 											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = 0.0
 										end

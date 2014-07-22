@@ -21,10 +21,9 @@ facts("testing the model module") do
 
 	context("Transition arrays sum to 1 over dimension 2") do
 
-		@fact sum(m.grids2D["GP"],2)[:] .-1.0 => roughly(zeros(p.nP)[:],atol=0.00001)
+		# @fact sum(m.grids2D["GP"],2)[:] .-1.0 => roughly(zeros(p.nP)[:],atol=0.00001)
 		# @fact sum(m.grids2D["GY"],2)[:] .-1.0 => roughly(zeros(p.nY)[:],atol=0.00001)
 
-		@fact sum(m.gridsXD["Gp"],2)[:] .- 1.0 => roughly(zeros(p.np*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gz"],2)[:] .- 1.0 => roughly(zeros(p.nz*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["GzM"],2)[:] .- 1.0 => roughly(zeros(p.nz*p.nJ)[:],atol=0.00001)
 		@fact sum(m.gridsXD["Gs"],2)[:] .- 1.0 => roughly(zeros(p.ns*p.nt)[:],atol=0.00001)

@@ -39,7 +39,9 @@ p = mig.Param(2,1)
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
- reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
+
+
+reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 reshape(m.rho[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 
