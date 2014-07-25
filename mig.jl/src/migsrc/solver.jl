@@ -87,8 +87,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# initialise some objects
 
 	vstay = zeros(2)
-	sstay = zeros(2)
-	cstay = zeros(2)
 
 	w = zeros(p.namax)
 	EV = zeros(p.na)
@@ -115,7 +113,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# indexes the current state: s, y, p, z, a, h, tau, current loc, age
 	jidx = 0
 	# indexes the state when moving to k: k, s, y, p, z, a, h, tau, current loc, age
-	kidx = 0
+	# dimvecH = (p.nh, p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+	hidx = 0
 
 	# ================
 	# loop over states
@@ -125,8 +124,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# V[s,y,p,z,a,h,tau,j,age]
 
 	agrid  = m.grids["assets"]
-	sgrid0 = m.grids["saving0"]
-	sgrid1 = m.grids["saving1"]
 
 	for ij=1:p.nJ				# current location
 		for itau=1:p.ntau			# type TODO this must be random if you move!
@@ -151,7 +148,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							for iy=1:p.ny 				# regional income deviation
 
 								y     = m.gridsXD["y"][iy,ij]
-								yy    = z
+								yy    = income(y,z)
 
 								canbuy = a + yy > p.chi * price
 
@@ -185,6 +182,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# you stay and you have a housing choice
 										if ij==ik && (ih==1 || (ih==0 && canbuy))
 
+											# compute vstay(ij,ih,ihh)
+
 											# you have a housing choice
 											# if ih==1 || (ih==0 && canbuy)
 
@@ -196,11 +195,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# 2) a renter who can buy
 
 											fill!(vstay,p.myNA)
-											fill!(sstay,0.0)
-											fill!(cstay,0.0)
 
 											# optimal housing choice
 											for ihh in 0:1
+
+												hidx = idx11(ihh+1,ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
 
 												blim = age < p.nt-1 ? (-ihh) * (1-p.chi) * price : 0.0
 
@@ -209,11 +208,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(w,p.myNA)
 
 												cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
-												if ihh==0
-													m.cash0[kidx] = cash
-												else
-													m.cash1[kidx] = cash
-												end
+												m.cash[hidx] = cash
 
 												# find moving cost
 												mc = 0.0
@@ -225,9 +220,19 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												rh = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
 
 												# put into vfun, savings and cons policies
+												# keep vstay for discrete housing choice function and envelope
 												vstay[ihh+1] = rh[1]
-												sstay[ihh+1] = rh[2] 
-												cstay[ihh+1] = rh[3]
+
+												# store save and cons in h-conditional arrays
+												if rh[1] > p.myNA
+													m.vfeas[hidx] = true
+													m.vh[hidx] = rh[1] 
+													m.sh[hidx] = rh[2] 
+													m.ch[hidx] = rh[3]
+												else
+													m.sh[hidx] = p.myNA
+													m.ch[hidx] = 0.0
+												end
 
 												if cash < 0 && ihh==0 && ih==0
 													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
@@ -238,7 +243,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 											# find optimal housing choice
-											# TODO is that slow?
 											r = findmax(vstay)
 											# and store value, discrete choice idx, savings idx and consumption
 
@@ -246,23 +250,24 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											if r[1] > p.myNA
 												m.v[kidx]  = r[1]
 												m.dh[kidx] = r[2] - 1
-												m.s[kidx]  = sstay[r[2]] 
-												m.c[kidx]  = cstay[r[2]]								
 												else
 												# infeasible
 												m.v[kidx]  = r[1]
 												m.dh[kidx] = 0
-												m.s[kidx] = 0
-												m.c[kidx] = 0
 											end
 
 										else   # you move or you're a renter who cannot buy
 
+
+											# compute vmove(k,j,h)
 											# TODO
 											# moving with a < 0 means default = true
 											def = (ih*(ia<m.aone) == true)
 
 											ihh = 0
+
+											hidx = idx11(ihh+1,ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
+
 											blim = 0.0
 
 											# reset w vector
@@ -271,7 +276,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# cashfunction(a,y,ageeffect,z,ih,ihh)
 											cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
-											m.cash0[kidx] = cash
+											m.cash[hidx] = cash
 
 											# find moving cost
 											mc = movecost[age,ij,ik,ih+1,is]
@@ -311,15 +316,18 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
-												m.v[kidx]   = r[1]
+												m.vfeas[hidx] = true
+												m.vh[hidx]   = r[1]
+												m.sh[hidx]   = r[2] 
+												m.ch[hidx]   = r[3] 
+												m.v[kidx]    = r[1]
 												m.dh[kidx] = 0
-												m.s[kidx] = r[2] 
-												m.c[kidx] = r[3] 
 											else
+												m.vh[hidx]   = p.myNA
+												m.sh[hidx]   = p.myNA
+												m.ch[hidx]   = 0.0
 												m.v[kidx]  = p.myNA
 												m.dh[kidx] = 0
-												m.s[kidx] = 0
-												m.c[kidx] = 0
 											end
 
 											if cash < 0 && ih==0
@@ -421,6 +429,12 @@ end
 # linear index functions
 # ======================
 
+# dimvecH  = (nh, nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
+function idx11(ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+
+	 r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iy + p.ny * (ip + p.np * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	return r
+end
 
 # dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
 function idx10(ik::Int,is::Int,iy::Int,ip::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
@@ -572,7 +586,7 @@ end
 
 
 function income(muy::Float64,shock::Float64)
-	y = muy*shock
+	y = muy+shock
 end
 
 
@@ -654,16 +668,25 @@ end
 	# }
 	# return sum;
 
-function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::Int,hi::Int)
+function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::Int,hi::Int,extrapolate=true)
 	n = length(y)
+	r = 0.0
 	# determining bounds 
 	if xi <= x[1]
-		# get linear approx below
-		r = y[1] + (y[2] - y[1]) * (xi - x[1])  / (x[2] - x[1])
+		if extrapolate
+			# get linear approx below
+			r = y[1] + (y[2] - y[1]) * (xi - x[1])  / (x[2] - x[1])
+		else # return lower bound
+			r = y[1] 
+		end
 		return (r,1)
 	elseif xi>= x[n]
-		# get linear approx above
-		r = y[n] + (y[n] - y[n-1]) * (xi - x[n])  / (x[n] - x[n-1])
+		if extrapolate
+			# get linear approx above
+			r = y[n] + (y[n] - y[n-1]) * (xi - x[n])  / (x[n] - x[n-1])
+		else # return upper bound
+			r = y[n] 
+		end
 		return (r,n)
 	# if have to find interval
 	elseif hi - lo > 1
@@ -676,6 +699,43 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 	return (r,jinf)
 end
 
+function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasible::BitArray{1},p::Param)
+	n = length(y)
+	lo = 1
+	hi = n
+	r = 0.0
+	# behaviour on bounds 
+	if xi <= x[1]
+		if feasible[1]
+			r = y[1] 
+		else 
+			r = p.myNA
+		end
+		return (r,1)
+
+	elseif xi>= x[n]
+		if feasible[n]
+			r = y[n] 
+		else
+			r = p.myNA
+		end
+		return (r,n)
+
+	# if have to find interval
+	elseif hi - lo > 1
+		jinf = searchsortedlast(x,xi,lo,hi,Base.Forward)
+	# if not, lo is jinf
+	else
+		jinf = lo
+	end
+	# only if both points are feasible do we consider them
+	if feasible[jinf] && feasible[jinf+1]
+		r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
+	else 
+		r = p.myNA
+	end
+	return (r,jinf)
+end
 
 function integrateFinal!(m::Model)
 

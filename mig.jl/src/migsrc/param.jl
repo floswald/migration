@@ -22,6 +22,7 @@ type Param
 	omega2  :: Float64			# final period utility parameters
 
 	# moving cost parameters
+	MC0    :: Float64 # parameters in moving cost: alpha0, intercept
 	MC1    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC2    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC3    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
@@ -121,15 +122,16 @@ type Param
 		lambda  = 10.0
 		tau     = 1.0
 		taudist = 0.2
-		xi1     = 1.6
-		xi2     = 1.9
+		xi1     = 1.0
+		xi2     = 1.1
 		omega1  = 0.1
 		omega2  = 2.1
 
 		# other parameters
-		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
-		MC1    = 0.001
-		MC2    = 0.001
+		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (intercept) alpha0, (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
+		MC0    = 0.03
+		MC1    = 0.01
+		MC2    = 0.01
 		MC3    = 0.03
 		MC4    = 0.1
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
@@ -150,7 +152,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC1,MC2,MC3,MC4,beta,
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,
 				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed,verbose)
 	end
 end

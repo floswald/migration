@@ -12,6 +12,30 @@ facts("test linear index functions") do
 	p = mig.Param(2)
 	m = mig.Model(p)
 
+	# set arrays to random numbers
+	mig.setrand!(m)
+
+	context("testing 11 dim index") do
+
+		for itest in 1:50
+
+			# choose a random state
+			ihh  = rand(1:p.nh)
+			ik   = rand(1:p.nJ)
+			is   = rand(1:p.ns)
+			ia   = rand(1:p.na)
+			ih   = rand(1:p.nh)
+			iy   = rand(1:p.ny)
+			ip   = rand(1:p.np)
+			iz   = rand(1:p.nz)
+			itau = rand(1:p.ntau)
+			ij   = rand(1:p.nJ)
+			it   = rand(1:(p.nt-1))
+
+			@fact m.vh[ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,it] == m.vh[mig.idx11(ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
+		end
+	end
+
 	context("testing 10 dim index") do
 
 		for itest in 1:50
@@ -262,7 +286,7 @@ facts("testing vsavings!()") do
 				w_t += consta
 			end
 			@fact cc => cons[i]
-			@fact w_t => w[i]
+			@fact w_t => roughly(w[i],atol=0.00001)
 		end
 
 	end
@@ -279,6 +303,7 @@ facts("testing EVfunChooser") do
 
 	p    = mig.Param(1)
 	m    = mig.Model(p)
+	mig.setrand!(m)
 
 	context("testing EVfunChooser in period T-1") do
 
@@ -350,6 +375,7 @@ facts("test integration of vbar: getting EV") do
 		p    = mig.Param(1)
 		m    = mig.Model(p)
 
+		mig.setrand!(m)
 
 		Gz = m.gridsXD["Gz"]
 		Gy = m.gridsXD["Gy"]
@@ -389,6 +415,7 @@ facts("test integration of vbar: getting EV") do
 
 		p    = mig.Param(1)
 		m    = mig.Model(p)
+		mig.setrand!(m)
 
 		myEV = zeros(m.dimvec2[1:8])
 
@@ -520,9 +547,9 @@ facts("checking some properties of the solution") do
 
 	context("check whether cons positive at feasible states") do
 
-		feas = m.v .> p.myNA
+		feas = m.vh .> p.myNA
 
-		@fact all(m.c[feas] .> 0.0) => true
+		@fact all(m.ch[feas] .> 0.0) => true
 
 	end
 

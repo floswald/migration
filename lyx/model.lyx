@@ -871,7 +871,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(j,k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
+\Delta(j,k,x)=\alpha_{0}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
 \end{equation}
 
 \end_inset

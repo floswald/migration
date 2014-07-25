@@ -429,3 +429,29 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 	r <- list(d=dat,z=z,rho=rho,rhoMove=rhoMove,pl=pl,ply=ply,pltrans=pltrans,pltransMove=pltransMove,trmats=trmats,trmatsMove=trmatsMove,longtrans=longtrans,longtransMove=longtransMove)
 	return(r)
 }
+
+
+
+# plot model slices
+plotModelSlices <- function(path="~/Dropbox/mobility/output/model/data_repo/out_graphs_jl/JL_tempdir"){
+	# load data
+	vals = read.csv(file.path(path,"migslice1.csv"))
+	moms = read.csv(file.path(path,"migslice2.csv"))
+
+	p1 = ggplot(vals,aes(x=p_val,y=f_val)) + geom_line() + facet_wrap(~p_name,scales="free") + ggtitle('Value of Ojbective Function vs Parameters')
+	ggsave(plot=p1,filename=file.path(path,"objfun.pdf"),width=297,height=210,units="mm")
+
+	m = list()
+	for (pp in unique(moms$p_name)){
+		tstring = paste0("Moments_vs_",pp)
+		m[[pp]] = ggplot(subset(moms,p_name == pp),aes(x=p_val,y=m_val)) + geom_line() + facet_wrap(~m_name,scales="free") + ggtitle(tstring) + scale_x_continuous(name=pp) + scale_y_continuous(name="value of Moment")
+		ggsave(plot=m[[pp]], filename=file.path(path,paste0(tstring,".pdf")),width=297,height=210,units="mm")
+
+	}
+
+	return(list(fvals = p1,moms = m))
+
+}
+
+
+

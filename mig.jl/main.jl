@@ -13,31 +13,14 @@ include("src/mig.jl")
 
 include("test/test_approx.jl")
 
-using BSplines
-
-
-
-
-
-
-
 # run simulation
 @time x = mig.runSim()
-
-# session 1
-
-p = mig.Param(2)
-m2 = mig.Model2(p)	# 1.5 secs
-@time mig.solve!(m2,p)
-s = mig.simulate(m2,p)
-mig.vhplot(m2,p,(1,2))
-mig.simplot2(s,5)
-
 
 p = mig.Param(2,1)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
-@profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
+mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
+# @profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
 
 
@@ -47,16 +30,10 @@ reshape(m.rho[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 
 mig.simplot(s,5)
 
-# plots
-
-tt=1
-hcat(m.c[1,1,1,1,1,:,2,1,1,tt][:],m.cash1[1,1,1,1,1,:,2,1,1,tt][:] - m.s[1,1,1,1,1,:,2,1,1,tt][:]./p.R)
-mig.vhplot(m,p,(1,1,1,1,1,1,1,tt))
-
 
 
 show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
-
+	
 @time mms = mig.computeMoments(s,p,m);
 
 # run objective

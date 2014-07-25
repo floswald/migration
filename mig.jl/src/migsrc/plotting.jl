@@ -19,82 +19,155 @@ function vhplot(m::Model,p::Param,idx)
 	it   = idx[8]
 
 	a  = m.grids["assets"]
-	a1 = copy(m.grids["assets"])
-	a2 = copy(m.grids["assets"])
+	a11 = copy(m.grids["assets"])
+	a12 = copy(m.grids["assets"])
+	a21 = copy(m.grids["assets"])
+	a22 = copy(m.grids["assets"])
+
+	# current renter
+	vh11   = m.vh[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	vh12   = m.vh[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	sh11   = m.sh[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	sh12   = m.sh[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	ch11   = m.ch[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	ch12   = m.ch[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	cash11 = m.cash[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	cash12 = m.cash[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	# current owner
+	vh21   = m.vh[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	vh22   = m.vh[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	ch21   = m.ch[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	ch22   = m.ch[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	sh21   = m.sh[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	sh22   = m.sh[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	cash21 = m.cash[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	cash22 = m.cash[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+
+	# envelopes, i.e. v = max(vh[1],vh[2])
 	v1 = m.v[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
 	v2 = m.v[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	s1 = m.s[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	s2 = m.s[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	c1 = m.c[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	c2 = m.c[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
 	h1 = m.dh[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
 	h2 = m.dh[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	rho1 = m.rho[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	rho2 = m.rho[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
 
-	# cash for choosign 0
-	cash0_0 = m.cash0[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	cash0_1 = m.cash0[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	# cash for choosign 1
-	cash1_0 = m.cash1[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	cash1_1 = m.cash1[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	# get infeasible regions
+	i11 = vh11.==p.myNA
+	i12 = vh12.==p.myNA
+	i21 = vh21.==p.myNA
+	i22 = vh22.==p.myNA
+
+	# set infeasi to NaN
+	vh11[i11]   = NaN
+	vh12[i12]   = NaN
+	sh11[i11]   = NaN
+	sh12[i12]   = NaN
+	ch11[i11]   = NaN
+	ch12[i12]   = NaN
+	cash11[i11] = NaN
+	cash11[i11] = NaN
+	a11[i11]    = NaN
+	a12[i12]    = NaN
+	v1[v1.==p.myNA] = NaN
+	v2[v2.==p.myNA] = NaN
+	a1 = a[v1.!=p.myNA]
+	a2 = a[v2.!=p.myNA]
 
 
-	# get infeasible region
-	i1 = v1.==p.myNA
-	i2 = v2.==p.myNA
+	vh21[i21]   = NaN
+	vh22[i22]   = NaN
+	sh21[i21]   = NaN
+	sh22[i22]   = NaN
+	ch21[i21]   = NaN
+	ch22[i22]   = NaN
+	cash21[i21] = NaN
+	cash22[i22] = NaN
+	a21[i21]    = NaN
+	a22[i22]    = NaN
 
-	v1[i1] = NaN
-	v2[i2] = NaN
-	s1[i1] = NaN
-	s2[i2] = NaN
-	c1[i1] = NaN
-	c2[i2] = NaN
-	a1[i1] = NaN
-	a2[i2] = NaN
+	vscale = (minimum([vh11,vh12,vh21,vh22]) - 0.5, maximum([vh11,vh12,vh21,vh22]) + 0.5)
+	xscale = (minimum([a11,a12,a21,a22]) - 0.5, maximum([a11,a12,a21,a22]) + 0.5)
 
 	figure()
 
-	subplot(231)
-	p_v1, = plot(a1,v1,"o-")
-	p_v2, = plot(a2,v2,"o-")
-	ylabel("v")
-	xlabel("a")
-	title("value")
-	legend((p_v1,p_v2),("renter","owner"),"lower right")
-
-	subplot(232)
-	ylim( ( minimum([s1,s2,0.0]), maximum([s1,s2,c1,c2]) ) )
-	p_s1 = plot(a1,s1,"o-")
-	p_s2 = plot(a2,s2,"o-")
+	subplot(331)
+	ylim( vscale )
+	xlim( xscale )
+	p_v1, = plot(a11,vh11,"o-")
+	p_v2, = plot(a21,vh21,"o-")
+	ylabel("v_h_0")
 	grid()
-	title("savings")
+	title("value h(t+1)=0")
+	legend((p_v1,p_v2),("renter","owner"),"upper left")
+
+	subplot(332)
+	ylim( ( minimum([sh11,sh21,0.0]) - 0.5, maximum([sh11,sh21,ch11,ch21]) + 0.5 ) )
+	xlim( xscale )
+	plot(a11,sh11,"o-")
+	plot(a21,sh21,"o-")
+	grid()
+	title("savings h(t+1)=0")
 	
-	subplot(233)
-	ylim( ( minimum([s1,s2,0.0]), maximum([s1,s2,c1,c2]) ) )
-	p_c1 = plot(a1,c1,"o-")
-	p_c2 = plot(a2,c2,"o-")
+	subplot(333)
+	ylim( ( minimum([sh11,sh21,0.0])- 0.5, maximum([sh11,sh21,ch11,ch21]) + 0.5) )
+	xlim( xscale )
+	plot(a11,ch11,"o-")
+	plot(a21,ch21,"o-")
 	grid()
-	title("consumption")
+	title("consumption h(t+1)=0")
+
+	subplot(334)
+	ylim( vscale )
+	xlim( xscale )
+	plot(a12,vh12,"o-")
+	plot(a22,vh22,"o-")
+	grid()
+	ylabel("v_h_1")
+	title("value h(t+1)=1")
+
+	subplot(335)
+	ylim( ( minimum([sh12,sh22,0.0])- 0.5, maximum([sh12,sh22,ch12,ch22]) + 0.5) )
+	xlim( xscale )
+	plot(a12,sh12,"o-")
+	plot(a22,sh22,"o-")
+	grid()
+	title("savings h(t+1)=1")
+	
+	subplot(336)
+	ylim( ( minimum([sh12,sh22,0.0])- 0.5, maximum([sh12,sh22,ch12,ch22]) + 0.5) )
+	xlim( xscale )
+	plot(a12,ch12,"o-")
+	plot(a22,ch22,"o-")
+	grid()
+	title("consumption h(t+1)=1")
+
+	subplot(337)
+	xlim( xscale )
+	ylim( vscale )
+	plot(a1,v1,"o-")
+	plot(a2,v2,"o-")
+	grid()
+	title("v = max(v0,v1)")
+	xlabel("assets")
 
 
-	subplot(234)
-	ylim( (-0.1,1.1) )
-	p_h1 = plot(a[!i1],h1[!i1],"o-")
-	p_h2 = plot(a[!i2],h2[!i2],"o-")
+	subplot(338)
+	ylim( (-0.2,1.1) )
+	xlim( xscale )
+	plot(a1,h1[v1.!=p.myNA]-0.1,"o-")
+	plot(a2,h2[v2.!=p.myNA],"o-")
 	title("housing choice")
+	xlabel("assets")
 
-	subplot(235)
-	ylim( ( minimum(cash1_1[!i2]), maximum(cash0_1[!i2]) ) )
-	p_ca01 = plot(a[!i1],cash0_0[!i1],"o-")
-	p_ca02 = plot(a[!i2],cash0_1[!i2],"o-")
-	grid()
-	title("cash when choosing h(t+1)=0")
+	subplot(339)
+	xlim( xscale )
+	ylim( (-0.2,1.1) )
+	plot(a1,rho1[v1.!=p.myNA],"o-")
+	plot(a2,rho2[v2.!=p.myNA],"o-")
+	title("probability of moving")
+	xlabel("assets")
+	suptitle("Model in period $it")
 
-	subplot(236)
-	ylim( ( minimum(cash1_1[!i2]), maximum(cash0_1[!i2]) ) )
-	p_ca11 = plot(a[!i1],cash1_0[!i1],"o-")
-	p_ca12 = plot(a[!i2],cash1_1[!i2],"o-")
-	grid()
-	title("cash when choosing h(t+1)=1")
 end
 
 function vplot(m::Model,p::Param)
@@ -132,7 +205,7 @@ function vplot(m::Model,p::Param)
 	zlabel("consumption")
 	title("consumption")
 
-	subplot(234)
+	subplot(234,projection="3d")
 	mesh(reshape(m.rho[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
@@ -148,7 +221,7 @@ function vplot(m::Model,p::Param)
 	zlabel("housing choice")
 	title("housing choice")
 
-	suptitle("index(ik,ih,iy,ip,itau,ij,it)=($ik,$ih,$iy,$ip,$itau,$ij,$it)")
+	suptitle("index(ik,is,iy,ip,itau,ij,it)=($ik,$is,$iy,$ip,$ih,$itau,$ij,$it)")
 
 end
 
@@ -240,9 +313,6 @@ function simplot(sim::DataFrame,n::Int)
 		# 	plot(sdf[:age],sdf[:hh])
 		# end
 	title("hchoice")
-	pltslab = ["indiv $x" for x in nr]
-	PyPlot.fontproperties
-	legend(plts,pltslab,"lower right")
 	suptitle("ids: $nr")
 end
 

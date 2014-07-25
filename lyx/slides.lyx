@@ -611,8 +611,8 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/pasted-pr-move.pdf
-	scale 85
+	filename /Users/florianoswald/Dropbox/Screenshots/Screenshot 2014-07-23 10.59.35.png
+	scale 70
 
 \end_inset
 
@@ -785,7 +785,7 @@ is
 Location is a bundle of attributes 
 \begin_inset Formula 
 \[
-\left(p_{jt},\overline{y}_{jt}\right)
+\left(p_{jt},\overline{y}_{jt},\tau_{ij}\right)
 \]
 
 \end_inset
@@ -799,7 +799,7 @@ When in
 \end_inset
 
 , 
-\begin_inset Formula $\left(p_{jt},\overline{y}_{jt}\right)$
+\begin_inset Formula $\left(p_{jt},\overline{y}_{jt},\tau_{ij}\right)$
 \end_inset
 
  are known
@@ -818,6 +818,18 @@ location
 \end_layout
 
 \begin_layout Itemize
+Agents know the mean of 
+\begin_inset Formula $\left(p_{kt},\overline{y}_{kt}\right)$
+\end_inset
+
+ in 
+\begin_inset Formula $k\neq j$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 Also know the geographic location in the plane of 
 \begin_inset Formula $j$
 \end_inset
@@ -825,88 +837,31 @@ Also know the geographic location in the plane of
 : distance.
 \end_layout
 
-\begin_layout BeginFrame
-Information Structure
-\end_layout
-
 \begin_layout Itemize
-Aggregate components
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-GDP and aggregate price index: 
-\begin_inset Formula $Y_{t},P_{t}$
+In each location, 
+\begin_inset Formula $\mathbf{P}_{jt}\equiv\left(p_{jt},\overline{y}_{jt}\right)$
 \end_inset
 
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Regional deviations from aggregates: 
-\begin_inset Formula 
-\begin{eqnarray*}
-\overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
-p_{jt} & = & P_{t}+\tilde{p}_{jt}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
+ is markovian
 \end_layout
 
 \begin_layout Itemize
-Prices entering the state space:
-\begin_inset Formula 
-\[
-\mathbf{P}_{jt}=(Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})
-\]
-
+\begin_inset Formula $\tau_{ij}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Itemize
-all elements in 
-\begin_inset Formula $\mathbf{P}_{jt}$
-\end_inset
-
- are AR(1)
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Assumption:
-\end_layout
-
-\begin_layout Itemize
-current deviations in 
-\begin_inset Formula $k\neq j$
-\end_inset
-
- are unknown, forecast prices using unconditional mean
+ is unobserved location preference.
+ Permanent for duration of stay.
 \end_layout
 
 \begin_layout BeginFrame
-Labor Income
+Labor Income and Household Size
 \end_layout
 
 \begin_layout Itemize
 Labor income is
 \begin_inset Formula 
 \begin{eqnarray*}
-y_{ijt} & = & \overline{y}_{jt}\times z_{ijt}\\
+\ln y_{ijt} & = & \overline{y}_{jt}+f\left(j,t\right)+z_{it}\\
 z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
 \end{eqnarray*}
 
@@ -919,8 +874,20 @@ z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
 \begin_inset Formula $z$
 \end_inset
 
- is individual productivity -- distribution depends on region 
-\begin_inset Formula $j$
+ is individual productivity / time-varying match effect
+\end_layout
+
+\begin_layout Itemize
+Household size 
+\begin_inset Formula $s$
+\end_inset
+
+ proxied by presence or not of children 
+\end_layout
+
+\begin_layout Itemize
+children arrive/leave according to a markov process 
+\begin_inset Formula $\Gamma_{s}(t)$
 \end_inset
 
 
@@ -967,6 +934,10 @@ Renters cannot borrow: one-period bond
 
 \end_layout
 
+\begin_layout Itemize
+can buy subject to downpayment constraint
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Owners:
@@ -985,15 +956,51 @@ Selling incurs proportional costs
 
 \end_layout
 
-\begin_layout Itemize
-Owners are required to occupy the house they own; change of location requires
- sale of house.
-\end_layout
-
 \end_deeper
 \begin_layout Itemize
 Payment function 
 \begin_inset Formula $\pi(h_{t-1},h_{t},p_{t})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Assumptions about Movers
+\end_layout
+
+\begin_layout Itemize
+movers loose their 
+\begin_inset Formula $z_{ijt}$
+\end_inset
+
+ when going to 
+\begin_inset Formula $k$
+\end_inset
+
+: 
+\begin_inset Formula $z_{ikt+1}\sim U[\underline{z},\overline{z}]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+movers cannot own in 
+\begin_inset Formula $j$
+\end_inset
+
+ while moving to 
+\begin_inset Formula $k$
+\end_inset
+
+: moving implies selling.
+\end_layout
+
+\begin_layout Itemize
+movers get a draw from the location preference distribution upon arrival:
+ 
+\begin_inset Formula $\tau_{ik}\sim U[0,\overline{\tau}]$
 \end_inset
 
 
@@ -1146,7 +1153,68 @@ consume
 \end_deeper
 \end_deeper
 \begin_layout BeginFrame
-Moving Costs and Types
+Mechanisms
+\end_layout
+
+\begin_layout Enumerate
+Why do people move?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ gets low (match quality deteriorates)
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\bar{y}_{jt}$
+\end_inset
+
+ gets low (recession in region 
+\begin_inset Formula $j$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $p_{jt}$
+\end_inset
+
+ gets high/low (depends on renter/owner)
+\end_layout
+
+\begin_layout Enumerate
+unexplained preference shock
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Why do people buy houses?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+final period value of owning (form of precautionary saving)
+\end_layout
+
+\begin_layout Enumerate
+potential of capital gains (and losses)
+\end_layout
+
+\begin_layout Enumerate
+utility from owning increases in family size 
+\end_layout
+
+\begin_layout Enumerate
+financing: implied user cost of owning may be lower than rent
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Moving Costs
 \end_layout
 
 \begin_layout Itemize
@@ -1164,7 +1232,7 @@ Owners incur additional time and effort cost from having to sell
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t
+\Delta(j,k,x)=\alpha_{0}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}
 \]
 
 \end_inset
@@ -1172,35 +1240,6 @@ Owners incur additional time and effort cost from having to sell
 
 \end_layout
 
-\begin_layout Itemize
-Permanent unobserved types 
-\begin_inset Formula $\tau\in\left\{ \tau_{1},\dots,\tau_{K}\right\} $
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-
-\emph on
-Movers 
-\emph default
-and 
-\emph on
-Stayers
-\end_layout
-
-\begin_layout Itemize
-Could also represent an unobserved location preference
-\end_layout
-
-\begin_layout Itemize
-Likelihood is a finite mixture 
-\end_layout
-
-\end_deeper
 \begin_layout BeginFrame
 Budget Constraint
 \end_layout
@@ -1220,7 +1259,7 @@ Budget Constraint
 \color none
 \begin_inset Formula 
 \begin{eqnarray*}
-a_{t+1} & = & a_{t}(1+r(a_{t}))+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\\
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\right)\\
 \onslide+<2->r(a_{t}) & = & \begin{cases}
 r & \text{if }a_{t}\geq0\\
 r^{m} & \text{if }a_{t}<0
@@ -1265,7 +1304,7 @@ State space of individual is
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau_{i},t\right)\in X
+x_{it}=\left(a_{it},z_{it},s_{it,}\mathbf{P}_{t},h_{it-1},j,\tau,t\right)\in X
 \]
 
 \end_inset
@@ -1290,10 +1329,11 @@ Period utility is given by
 \begin_inset Formula 
 \[
 u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}\\
++\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
 \\
-\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi h_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
--\Delta\left(k,x_{it}\right)-\lambda def_{it}
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}\\
++\alpha_{\tau}\times\tau_{it}-\Delta\left(k,x_{it}\right)-\lambda def_{it}+\varepsilon_{ijt} & \text{if }j\neq k
 \end{cases}
 \]
 
@@ -1323,73 +1363,62 @@ b\left(a_{T},h_{T-1},p_{jT}\right) & = & \omega_{0}+\omega_{1}\ln\left(a+h_{T-1}
 Identification
 \end_layout
 
-\begin_layout Itemize
-Nonparametric identification of finite mixtures in dynamic discrete choice
- models
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Kasahara and Shimotsu (ECTA 2009)
-\end_layout
-
-\begin_layout Itemize
-panel length 
-\begin_inset Formula $T\geq3$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-different types must respond to variation in 
+\begin_layout Enumerate
+Heterogeneous moving probabilities in data: given observable 
 \begin_inset Formula $x$
 \end_inset
 
- differently
+, some owners move, some don't 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ different location preference 
+\begin_inset Formula $\tau$
+\end_inset
+
+
 \end_layout
 
-\end_deeper
-\begin_layout Itemize
-Use variation in
+\begin_layout Enumerate
+variation in mean wages 
+\begin_inset Formula $\overline{y}_{jt}$
+\end_inset
+
+ across and 
+\begin_inset Formula $j,t$
+\end_inset
+
+ 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ income -- migration link
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-incomes
+\begin_layout Enumerate
+variation in prices 
+\begin_inset Formula $p_{jt}$
+\end_inset
+
+: different realizations of 
+\begin_inset Formula $p$
+\end_inset
+
+ allow different sets of people to buy
 \end_layout
 
-\begin_layout Itemize
-house prices
+\begin_layout Enumerate
+household size: 
 \end_layout
 
-\begin_layout Itemize
-distance between locations
+\begin_layout Enumerate
+variation in initial draws 
+\begin_inset Formula $z$
+\end_inset
+
+: initial wage of movers
 \end_layout
 
-\end_deeper
-\begin_layout Itemize
-	Key Moments
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-number of moves
-\end_layout
-
-\begin_layout Itemize
-number of moves per mover
-\end_layout
-
-\begin_layout Itemize
-housing choices
-\end_layout
-
-\begin_layout Itemize
-assets
-\end_layout
-
-\end_deeper
 \begin_layout Section
 Data
 \end_layout
@@ -1521,46 +1550,6 @@ Implementation
 \end_layout
 
 \begin_layout BeginFrame
-Solution Method
-\end_layout
-
-\begin_layout Itemize
-Tried Bajari, Benkard and Levin (ECTA 2007) extension -- complicated by
- unobserved type
-\end_layout
-
-\begin_layout Itemize
-Now full solution: Nested Fixed Point
-\end_layout
-
-\begin_layout Itemize
-Current implementation solves 15 million savings problems for one value
- of the parameter vector
-\end_layout
-
-\begin_layout Itemize
-(in 9 seconds)
-\end_layout
-
-\begin_layout Itemize
-Challenges: Break down high dimension of price process
-\end_layout
-
-\begin_layout BeginFrame
-Hierarchical Price and Income model
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/slides/mba-graph.pdf
-	width 100text%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
 Exogenous Price and Income Process: 
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
@@ -1569,93 +1558,22 @@ Exogenous Price and Income Process:
 \end_layout
 
 \begin_layout Itemize
-Price/income in division 
-\begin_inset Formula $d$
+Assume AR(1) process in each region 
+\begin_inset Formula $j$
 \end_inset
 
- is made of national component plus current division deviation
+
 \begin_inset Formula 
 \begin{eqnarray*}
-p_{dt} & = & P_{t}+\tilde{p}_{t}^{d}\\
-\overline{y}_{dt} & = & Y_{t}+\tilde{y}_{t}^{d}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-State of economy summarized by 
-\begin_inset Formula 
-\begin{eqnarray*}
-\mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
-Y_{t+t} & = & \rho_{Y}Y_{t-1}+\nu_{Y}\\
-P_{t+t} & = & \rho_{P}P_{t-1}+\nu_{P}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Why? 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Prices}{
-\backslash
-beamergotobutton{House Prices}}
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{AggPricesSlide}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Exogenous Price and Income Process: 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Assume AR(1) process on deviations
-\begin_inset Formula 
-\begin{eqnarray*}
-\tilde{y}_{t}^{d} & = & \beta_{0d}+\beta_{1d}\tilde{y}_{t-1}^{d}+\nu_{\tilde{y}t,d}\\
-\tilde{p}_{t}^{d} & = & \gamma_{0d}+\gamma_{1d}\tilde{p}_{t-1}^{d}+\nu_{\tilde{p}t,d}\\
+\overline{y}_{jt} & = & \beta_{0j}+\beta_{1j}\overline{y}_{jt-1}+\nu_{yjt}\\
+p_{jt} & = & \gamma_{0j}+\gamma_{1j}p_{jt-1}+\nu_{pjt}\\
 \left[\begin{array}{cc}
-\nu_{\tilde{p}t,d} & \nu_{\tilde{y}t,d}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
+\nu_{yjt} & \nu_{pjt}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
 0\\
 0
 \end{array}\right]\left[\begin{array}{cc}
-\sigma_{\tilde{y},d}^{2} & \sigma_{\tilde{y}\tilde{p},d}\\
- & \sigma_{\tilde{p},d}^{2}
+\sigma_{yj}^{2} & \sigma_{ypj}\\
+ & \sigma_{pj}^{2}
 \end{array}\right]\right)
 \end{eqnarray*}
 
