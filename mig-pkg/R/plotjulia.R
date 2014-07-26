@@ -35,17 +35,23 @@ df2hdf5 <- function(ff,df,path){
 
 
 # export data to julia
-export.Julia <- function(){
+export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
-	out <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
 
-	r = makeDivDifferences()
-	e <- estimateDivDeviations(r)
-	rhoincome <- as.data.frame(e$inc)	# AR1 coef of lagged income deviation
-	rhoprice <- as.data.frame(e$price)	# AR1 coef of lagged price deviation
-	save(rhoprice,file=file.path(out,"rho-price.rda"))
-	save(rhoincome,file=file.path(out,"rho-income.rda"))
+	if (!is.null(print.tabs)){
+		cat(sprintf("printing tables to %s",print.tabs))
+	}
+	if (!is.null(print.plots)){
+		cat(sprintf("printing tables to %s",print.plots))
+	}
+
+	# regional processes for p and y
+	reg <- Export.VAR(merged)
+
+	# individual income processes by region
+	ind <- Export.IncomeProcess(merged)
 
 	# pop proportion in each state
 	prop = merged[,list(N = length(upid)),by=Division]
@@ -54,22 +60,12 @@ export.Julia <- function(){
 
 	stopifnot(sum(prop$proportion)==1)
 
-	divincome = as.data.frame(r$income$d2)
-	divprice  = as.data.frame(r$price$meandiv)
-	p2y       = as.data.frame(r$price$p2y)	# average price to income ratio
-	normalize = as.data.frame(r$normalize)
-
 	# distance matrix
 	data(Division_distMat,package="EconData")
 	df=data.frame(Division_distMat)
 
 	# data moments
 	m <- as.data.frame(Sipp.moments(merged,des))
-
-	# income ranks by region
-	ranks <- Rank.HHincome(merged,n=3,path=out)
-	ranks <- Rank.HHincome(merged,n=4,path=out)
-	ranks <- Rank.HHincome(merged,n=5,path=out)
 
 	# transition matrices for kids by age
 	merged[,kids2 := c(kids[-1],NA),by=upid]	# next period kids
@@ -87,37 +83,146 @@ export.Julia <- function(){
 	gc()
 
 	# write to disk
-	save(df,file=file.path(out,"distance.rda"))
-	save(m,file=file.path(out,"moments.rda"))
-	save(kids_trans,file=file.path(out,"kidstrans.rda"))
+	save(df,file=file.path(path,"distance.rda"))
+	save(m,file=file.path(path,"moments.rda"))
+	save(kids_trans,file=file.path(path,"kidstrans.rda"))
+	save(prop,file=file.path(path,"prop.rda"))
 
-
-	save(prop,file=file.path(out,"prop.rda"))
-	save(divincome,file=file.path(out,"divincome.rda"))
-	save(divprice ,file=file.path(out,"divprice.rda"))
-	save(p2y      ,file=file.path(out,"p2y.rda"))
-	save(normalize,file=file.path(out,"normalize.rda"))
+	rcoefs <- reg$coefs
+	sig    <- reg$sigmas
+	z      <- ind$ztab
+	rho    <- ind$rtab
+	rcoefs <- rcoefs[order(rcoefs$Division), ]
+	sig    <- sig   [order(sig   $Division), ]
+	z      <- z     [order(z     $Division), ]
+	rho    <- rho   [order(rho   $Division), ]
+	save(rcoefs,file=file.path(path,"region-coefs.rda"))
+	save(sig,file=file.path(path,"region-sig.rda"))
+	save(z,file=file.path(path,"ztable.rda"))
+	save(rho,file=file.path(path,"rtable.rda"))
 }
 
 
+# TODO exporting for region level processes
+# ytable: div, ylow, yhigh, beta0, betay, betap
+# ptable: div, plow, phigh, beta0, betay, betap
+# sigmas: array(J,2,2)
+# 
 
-Export.IncomeProcess <- function(dat,nz=3,path="~/Dropbox/mobility/output/model/data_repo/in_data_jl"){
+#' this is a var with uncorrelated shocks at the moment
+#'
+Export.VAR <- function(merged){
+	py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
+	m = melt(py,id.vars=c("year","Division"))
 
-	q <- dat[,quantile(HHincome,probs=c(0.05,0.95))]	# trim data
-	cd <- dat[HHincome>q[1] & HHincome < q[2],list(upid,timeid,CensusMedinc,HHincome,age,Division)]
+	pl = ggplot(m,aes(x=year,y=value,color = variable)) + geom_line()+geom_point() + facet_wrap(~Division) 
+	# make lagged vars
+	setkey(py,year,Division)
+	py[,Lp := py[list(year-1,Division)][["p"]] ]
+	py
+	py[,Ly := py[list(year-1,Division)][["y"]] ]
+	dy = py[complete.cases(py)]
+	divs = py[,unique(Division)]
+
+	# SUR
+	ep <- p ~ Lp + Ly
+	ey <- y ~ Lp + Ly
+	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=dy[Division==x]))
+	names(mods) = divs
+
+	dy[,yhat := 0]
+	dy[,phat := 0]
+
+	for (d in divs){
+		dy[Division==d,c("yhat","phat") := predict(mods[[d]])]
+		# dy[Division==d,phat := predict(pmods[[d]])]
+	}
+
+	# visualize fit
+
+	mdy = melt(dy,c("year","Division"))
+	mdy[,type := "data"]
+	mdy[variable %in% c("phat","yhat"), type := "prediction"]
+	mdy[,var := "p"]
+	mdy[variable %in% c("y","yhat"), var := "y"]
+
+	pred <- ggplot(subset(mdy,variable %in% c("p","y","phat","yhat")),aes(x=year,y=value,linetype=type,color=var)) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to data") + scale_y_continuous(name="1000s of Dollars")
+
+	# visualize simulation
+
+	sim0 <- copy(dy[year==1996,list(year,Division,y,p)])
+	sim <- copy(dy[year==1996,list(year,Division,y,p)])
+
+	for (yr in 1997:2030) {
+		sim0[,year := yr]
+		sim <- rbind(sim,sim0)
+		for (d in divs){
+			sig = mods[[d]]$residCov
+			eps = mvtnorm:::rmvnorm(n=1,mean=c(0,0),sigma=sig)
+			# sy = summary(ymods[[d]])
+			# epsy = rnorm(mean=0,sd=sy$sigma,n=1)
+			# sp = summary(pmods[[d]])
+			# epsp = rnorm(mean=0,sd=sp$sigma,n=1)
+			cy = coef(mods[[d]])[1:3]
+			cp = coef(mods[[d]])[4:6]
+			sim[year==yr & Division==d, y := cy %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[1] ]
+			sim[year==yr & Division==d, p := cp %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[2]]
+		}
+	}
+	msim <- melt(sim,id.vars=c("year","Division"))
+	simp <- ggplot(msim,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR Simulation Path") + scale_y_continuous(name="1000s of Dollars")
+
+	# export coefficients as table
+	coefs <- as.data.frame(t(sapply(mods,coef)))
+	coefs$Division = rownames(coefs)
+	coefs <- coefs[order(coefs$Division), ]
+	setkey(py,Division)
+	coefs <- cbind(coefs,py[,list(lb_y=min(y),ub_y=max(y),lb_p=min(p),ub_p=max(p)),by=Division])
+
+	n <- names(coefs)
+	n <- gsub("\\(|\\)","",n)
+	names(coefs) <- n
+
+	# covariance matrices as an array
+	sigmas <- as.data.frame(t(sapply(mods,function(x) as.numeric(x$residCov))))
+	sigmas$Division = rownames(sigmas)
+	names(sigmas)[1:4] <- c("var_y","cov_yp","cov_py","var_p")
+
+	# upper and lower bounds
+	bounds_y = py[,range(y)]
+	bounds_p = py[,range(p)]
+
+	return(list(mods=mods,coefs=coefs,sigmas=sigmas,simp=simp,predp=pred))
+
+}
+
+
+# for individual spec procs
+# div, beta0,beta_medinc,beta_age,beta_age2,beta_age3,sigma
+
+
+
+#' Produce estimates of individual income process
+#' by census division. 
+#'
+#' exports coefficients to julia
+Export.IncomeProcess <- function(dat){
+
+	
 	cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
 	cd <- cd[complete.cases(cd)]
 
 	# get models of individual income
+	setkey(cd,upid,Division)
 	divs = cd[,unique(Division)]
-	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3),cd)
-
-	# slightly more general?
-	lmods = lapply(divs, function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
+	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
 	names(lmods) = divs
 
 	# add residuals indiv data
-	cd[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3)))]
+	cd [ ,resid := 0]
+	for (d in divs){
+		cd[Division==d,resid := resid(lmods[[d]])]
+	}
 
 	# get lagged resids
 	setkey(cd,upid,timeid)
@@ -130,76 +235,24 @@ Export.IncomeProcess <- function(dat,nz=3,path="~/Dropbox/mobility/output/model/
 	# why are those rhos so low?????
 	# use 0.97 as in french 2005 for now. shit.
 
-	# get rouwenhorst approximation for each division
-	rou = lapply(rhos, function(x) rutils:::rouwenhorst(mu=0.0,rho=0.97,n=nz,sigma=0.11))
+	# make a table with those
+	ztab <- as.data.frame(t(sapply(lmods,coef)))
+	ztab$Division <- rownames(ztab)
+	ztab$sigma <- unlist(lapply(lmods,function(x) summary(x)$sigma))
+	rtab <- as.data.frame(t(sapply(rhos,coef)))
+	rtab$Division <- rownames(rtab)
+	rtab$sigma <- unlist(lapply(rhos,function(x) summary(x)$sigma))
 
-	# rou = lapply(rhos, function(x) rutils:::rouwenhorst(mu=coef(x)["(Intercept)"],rho=coef(x)["Lresid"],n=nz,sigma=summary(x)$sigma))
-
-
-	# make plot of potential profiles by division
-	# ===========================================
-
-	# predict age profiles for each division without shocks!
-	newd = data.frame(expand.grid(age = 20:50,Division=factor(cd[,unique(Division)])))
-	x = merge(newd,cd[,median(CensusMedinc),by=Division],by="Division")
-	names(x)[3] = "CensusMedinc"
-	x = cbind(x,predict(lmod,x))
-	names(x)[4] = "log_y_z0"
-
-	# matrix with shock values for each division
-	mx = data.table(x)
-	setnames(mx,"CensusMedinc","censmed")
-	for (id in divs){
-		for (iz in 1:nz){
-			str <- paste0("mx[ ,CensusMedinc := censmed + rou$",id,"$zgrid[",iz,"] ]")
-			eval(parse(text=str))
-			str <- paste0("mx[ ,log_y_z",iz," := predict(lmod,mx) ]")
-			eval(parse(text=str))
-
-		}
-
-	}
-
-	mmx = melt(mx[,c(1,2,4,6:ncol(mx)),with=FALSE],id.vars=c("Division","age"))
-	pl <- ggplot(mmx, aes(x=age,y=exp(value),color=variable)) + geom_line() + facet_wrap(~Division)
-
-	# simulate 5 guys per division.
-	# ============================
-
-	# TODO
+	# fix names
+	nz <- names(ztab)
+	nz <- gsub("\\(|\\)|I\\(|\\^","",nz)
+	names(ztab) <- nz
+	nr <- names(rtab)
+	nr <- gsub("\\(|\\)|I\\(|\\^","",nr)
+	names(rtab) <- nr
 
 
-	# make an example plot of ranges where that
-	# profile could be shifted if state median income goes
-	# up or down 5%
-	# MACRO effect of shifing ybar around
-	# names(x)[3] = "Medinc"
-	# x = merge(x,cd[,median(CensusMedinc)*0.95,by=Division],by="Division")
-	# names(x)[5] = "CensusMedinc"
-	# x = cbind(x,predict(lmod,x))
-	# names(x)[5] = "MedincLow"
-	# x = merge(x,cd[,median(CensusMedinc)*1.05,by=Division],by="Division")
-	# names(x)[ncol(x)] = "CensusMedinc"
-	# x = cbind(x,predict(lmod,x))
-	# names(x)[c(4,6,8)] = c("ymed","ylow","yhigh")
-
-	# ggplot(x,aes(x=age,y=ymed,color=Division)) + geom_line() + geom_ribbon(aes(ymin=ylow,ymax=yhigh),alpha=0.2)
-
-
-	# export supports
-	zname <- paste0("zsupp_n",nz,".rda")
-	tname <- paste0("ztrans_n",nz,".rda")
-	zsupp <- as.data.frame(mx[,c("Division","age",paste0("log_y_z",1:nz)),with=FALSE])
-	save(zsupp,file=file.path(path,zname))
-
-	# export transition matrices
-	ztrans <- data.frame(Division=names(rou)[1],rou[[1]]$Pmat)
-	for (id in 2:length(divs)){
-		ztrans = rbind(ztrans,data.frame(Division=names(rou)[id],rou[[id]]$Pmat))
-	}
-	save(ztrans,file=file.path(path,tname))
-	return(list(supp=zsupp,trans=ztrans))
-
+	return(list(incmods=lmods,rhomods=rhos,ztab=ztab,rtab=rtab))
 }
 
 

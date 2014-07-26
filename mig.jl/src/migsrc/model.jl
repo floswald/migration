@@ -96,30 +96,28 @@ type Model
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
-		# AR1 coefficients of regional price/income deviations from national index
-		rhoy = DataFrame(read_rda(joinpath(indir,"rho-income.rda"))["rhoincome"])
-		rhop = DataFrame(read_rda(joinpath(indir,"rho-price.rda"))["rhoprice"])
+		# VAR(1) regional house price and income
+		VAR_coef = DataFrame(read_rda(joinpath(indir,"region-coefs.rda"))["rcoefs"])
+		VAR_sig  = DataFrame(read_rda(joinpath(indir,"region-sig.rda"))["sig"])
 
-		# bounds on price and income deviations
-		divinc       = DataFrame(read_rda(joinpath(indir,"divincome.rda"))["divincome"])
-		divprice     = DataFrame(read_rda(joinpath(indir,"divprice.rda"))["divprice"])
-		pbounds      = Dict{ASCIIString,DataFrame}()
-		pbounds["y"] = divinc[1:p.nJ,[:Division,:mindev,:maxdev]]
-		pbounds["p"] = divprice[1:p.nJ,[:Division,:mindev,:maxdev]]
+		# sigs as array
+		sigs=Float64[]
+        for e in eachrow(VAR_sig)
+     	  for i in 1:4
+     		  push!(sigs,e[i])
+     	  end
+        end
+        sigs = reshape(sigs,2,2,p.nJ)
 
-		medinc = DataFrame(read_rda(joinpath(indir,"normalize.rda"))["normalize"])
-
+		# population weights
 		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(divinc[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
 
-		# price to income ratio: gives bounds on aggregate P
-		p2y          = DataFrame(read_rda(joinpath(indir,"p2y.rda"))["p2y"])
-		p2y          = p2y[p2y[:year].>1995,:]
+		# individual income process parameters
+		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
+		inc_rho   = DataFrame(read_rda(joinpath(indir,"rtable.rda"))["rho"])
 
-		# Transition matrices of idiosyncratic term of income: z
-		# get z supports and transition matrics (in long form)
-		zsupp       = DataFrame(read_rda(joinpath(indir,"zsupp_n$(p.nz).rda"))["zsupp"])
-		trans_z     = DataFrame(read_rda(joinpath(indir,"ztrans_n$(p.nz).rda"))["ztrans"])
-		# transMove_z = DataFrame(read_rda(joinpath(indir,"transMove_n$(p.nz).rda"))["longtransMove"])
+		# grids for regional prices and incomes
+
 
 		# kids transition matrix
 		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
@@ -136,86 +134,71 @@ type Model
 		# 1D grids
 		# =========
 
-		# grids = (ASCIIString => Array{Float64,1})["asset_own" => linspace(p.bounds["asset_own"][1],p.bounds["asset_own"][2],p.na)]
-		# x = sinh(linspace(asinh(bounds["assets"][1]),asinh(bounds["assets"][2]),p.na))
 		grids = Dict{ASCIIString,Array{Float64,1}}()
-		# x = [-4.0,-3.0,-2.0,-1.0,linspace(0.0,0.5,5),0.6,0.7,1.0,2.0,3.0,4.0]
-		# grids["assets"] = deepcopy(x)
 		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,0.5)
 		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
 		x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 
-		grids["assets"] = x
-
-		grids["housing"]    = linspace(0.0,1.0,p.nh)
-		# grids["P"]          = linspace(bounds["P"][1],bounds["P"][2],p.nP)
-		grids["W"]          = zeros(p.na)
-		grids["tau"]        = linspace(0.0,1.0,p.ntau)
+		grids["assets"]  = x
+		grids["housing"] = linspace(0.0,1.0,p.nh)
+		grids["W"]       = zeros(p.na)
+		grids["tau"]     = linspace(0.0,1.0,p.ntau)
 
 		aone  = findfirst(grids["assets"].>=0)
 
-		# 2D grids
+		# XD grids
 		# =========
 
+		# p and y grids
+		# -------------
 
-		# national transition matrices
-		# ============================
+		pgrid = zeros(p.nJ,p.np)
+		ygrid = zeros(p.nJ,p.ny)
+		for j in 1:p.nJ
+			ygrid[j,:] = linspace(VAR_coef[j,:lb_y][1],VAR_coef[j,:ub_y][1],p.ny)
+			pgrid[j,:] = linspace(VAR_coef[j,:lb_p][1],VAR_coef[j,:ub_p][1],p.np)
+		end
 
-		# GY = makeTransition(p.nY,p.rhoY)
+		# grid for individual income (based on ygrid)
+		# -------------------------------------------
 
-		# 3D grids
-		# =========
+		# TODO rouwenhorst => array (nJ,nz) supports and array (nJ,nz,nz) transitions
+		(zsupp,Gz) = rouwenhorst(inc_rho)
 
-
-		# rebuild as 3D array
-		# pgrid[AggState,LocalState,Location]
-		# pgrid = Float64[3.0 for i=1:p.nP, j=1:p.np, k=1:p.nJ]
-
-		# supports of regional idiosyncratic income shocks z
-		zgrid = zeros(Float64,p.nz,p.nJ,p.nt-1)
-		for sdf in groupby(zsupp,[:Division,:age])
-			jj = regnames[regnames[:Division] .== sdf[1,:Division],:j]
-			it = findin(p.ages,sdf[:age])
-			if length(it) > 0 && it[1] < p.nt
-				for iz in 1:p.nz
-					zgrid[iz,jj,it] = sdf[1,2+iz]
+		zgrid = zeros(p.nJ,p.ny,p.nt-1,p.nz)
+		for j in 1:p.nJ
+			for iy in 1:p.ny
+				for it in 1:p.nt-1
+					for iz in 1:p.nz
+						zgrid[j,iy,it,iz] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * ygrid[j,iy] + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*p.ages[it]^2 + inc_coefs[j,:age3]*p.ages[it]^3 + zsupp[j,iz]
+					end
 				end
 			end
 		end
-		# convert to levels normalized by median income in 1000's of dollars
-		zgrid = exp(zgrid) ./ (medinc[1] / 1000)
-
-		# regional prices
-		# 3D array (national_price,regional_price,region_id)
-		# these are the percentage deviations from trend
-		# TODO put p2y for each region here
-		ygrid = zeros(Float64,p.ny,p.nJ)
-		pgrid = zeros(Float64,p.np,p.nJ)
-		for i = 1:p.nJ
-			# pgrid[:,i] = 4.0 .* ( 1 .+ linspace(pbounds["p"][i,:mindev], pbounds["p"][i,:maxdev], p.np) )  # (1 + %-deviation)
-			pgrid[:,i] = 4.5 .* ( 1 .+ linspace(-0.1, 0.1, p.np) )  # (1 + %-deviation)
-		    # ygrid[:,i] = 1.0 .+ linspace(pbounds["y"][i,:mindev], pbounds["y"][i,:maxdev], p.ny)
-		    ygrid[:,i] = linspace(-mean(zgrid)*0.01,mean(zgrid)*0.1, p.ny)
-		    # ygrid[:,i] = 1.0 .+ linspace(0.5,0.5 , p.ny)
-		end
-
+		# convert to levels
+		zgrid = exp(zgrid)
 
 
 		# regional transition matrices
 		# ============================
 
-		# [LocalPrice(t),LocalPrice(t+1),Location]
-		Gy  = makeTransition(p.ny,array(rhoy[:Ldev]))
-		Gp  = makeTransition(p.np,array(rhop[:Ldev]))
-		Gz  = zeros(p.nz,p.nz,p.nJ)
-		# GzM = zeros(p.nz,p.nz,p.nJ)
+		# the transition matrix for the price VAR is
+		# defined on the tensor product pgrid[j, ] * ygrid[j, ] for all j
+		# it's of dim nJ,ny,np,ny,np
+		# each cell has the density of the event 
+		# Pr(y(t+1) = y_i, p(t+1) = p_k | y(t),p(t) )
+		# where the density if given by a joint normal with 
+		#
+		# mean: ( ymod(y(t),p(t),j), pmod(y(t),p(t),j) )
+		# Cov : sigs[:,:,j]
+		#
+		# here ymod(y,p,j) and pmod(y,p,j) are the linear predictors
+		# of the VAR models for y and p
+		Gyp = get_yp_transition(VAR_coef,p,sigs,pgrid,ygrid)
 
-		# [z(t),z(t+1),(move or stay in) region]
-		for sdf in groupby(trans_z,:Division)
-			jj = regnames[regnames[:Division] .== sdf[1,:Division],:j]
-			Gz[:,:,jj] = array(sdf[:, 2:ncol(trans_z)])
-		end
+
+
 
 		# moving cost function
 		# ====================
@@ -302,7 +285,66 @@ function makeTransition(n,rho)
 
 end
 
+function rouwenhorst(df::DataFrame,p::Param)
 
+	P = zeros(p.nJ,p.nz,p.nz)
+	z = zeros(p.nJ,p.nz)
+
+	for j in 1:p.nJ
+		xz,xp = rouwenh(df[j,:Lresid][1],df[j,:Intercept][1],df[j,:sigma][1],p.nz)
+		P[j,:,:] = xp
+		z[j,:,:] = xz
+	end
+	return (z,P)
+end
+
+
+
+
+function rouwenh(rho::Float64,mu_eps,sigma_eps,n)
+	q = (rho+1)/2
+	nu = ((n-1)/(1-rho^2))^(1/2) * sigma_eps
+	P = reshape([q,1-q,1-q,q],2,2)
+
+	for i=2:n-1
+
+		P = q * vcat(hcat(P , zeros(i,1)),zeros(1,i+1)) .+ (1-q).* vcat( hcat(zeros(i,1),P), zeros(1,i+1)) .+ 
+		(1-q) .* vcat(zeros(1,i+1),hcat(P,zeros(i,1))) .+ q .*vcat(zeros(1,i+1),hcat(zeros(i,1),P))
+		P[2:i,:] = P[2:i,:] ./ 2
+
+	end
+
+	z = linspace(mu_eps/(1-rho)-nu,mu_eps/(1-rho)+nu,n);
+	return (z,P)
+end
+
+function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
+	Gyp = zeros(p.ny,p.np,p.ny,p.np,p.nJ)
+	for ip in 1:p.np
+		for iy in 1:p.ny
+			for j in 1:p.nJ
+
+				# setup MvNormal on that state
+				C = PDMat(sigs[:,:,j])
+				mvn = MvNormal([ygrid[j,iy],pgrid[j,ip]],C)
+				ycoef = array(df[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
+				pcoef = array(df[j,[:p_Intercept, :p_Lp, :p_Ly]])
+
+				for ip1 in 1:p.np
+					for iy1 in 1:p.ny
+						# get points to evaluate at
+						xdata = vcat(1.0,pgrid[j,ip1],ygrid[j,iy1])
+						new_y  = ycoef * xdata
+						new_p  = pcoef * xdata
+						# Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1),j] = pdf(mvn,[new_y,new_p])
+						Gyp[iy,ip,iy1,ip1,j] = pdf(mvn,[new_y,new_p])
+					end
+				end
+			end
+		end
+	end
+	return Gyp
+end
 
 # function(ff::HDF5File,path)
 # 	fid = h5open(ff,"r")
