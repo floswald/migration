@@ -47,7 +47,7 @@ end
 
 		
 # asset grid scaling
-function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,partition=0.5) 
+function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,cutoff::Float64,partition=0.5) 
 	out = zeros(n)
 	if order==1
 		off = 1
@@ -75,9 +75,9 @@ function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,partition=0.5)
 		end
 		nneg += 1
 		# positive: log scale
-		pos = exp( exp( linspace(0.0,log( log( ub + 1) + 1),npos) ) -1 ) -1
+		pos = exp( linspace(log(cutoff),log( ub + 1) ,npos) ) -1 
 		# negative: linear scale
-		neg = linspace(lb,0.0,nneg)
+		neg = linspace(lb,cutoff,nneg)
 		return [neg[1:(nneg-1)],pos]
 	else
 		error("supports only double log grid")

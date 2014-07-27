@@ -6,7 +6,7 @@
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
 	v   :: Array{Float64,10}
 	vh  :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
 	vfeas  :: Array{Bool,1}	# feasibility map
@@ -43,9 +43,10 @@ type Model
 	# constructor
 	function Model(p::Param;dropbox=false)
 
-		dimvec  = (p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvecH = (p.nh, p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvec2 = (p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
+		# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
+		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+		dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+		dimvec2 = (p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
 
 		v = fill(p.myNA,dimvec)
 		vfeas = falses(prod(dimvecH))
@@ -64,7 +65,6 @@ type Model
 		vbar = fill(p.myNA,dimvec2)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
-		bounds["assets"] = (-4.0,5.0)
 		bounds["tau"]        = (0.0,0.1)
 		# bounds["Y"]          = (0.5,1.5)
 
@@ -110,7 +110,7 @@ type Model
         sigs = reshape(sigs,2,2,p.nJ)
 
 		# population weights
-		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(divinc[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
+		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
 
 		# individual income process parameters
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
@@ -129,24 +129,6 @@ type Model
 			end
 		end
 
-
-
-		# 1D grids
-		# =========
-
-		grids = Dict{ASCIIString,Array{Float64,1}}()
-		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,0.5)
-		# grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
-		# center on zero
-		x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
-		x = x .- x[ indmin(abs(x)) ] 
-		grids["assets"]  = x
-		grids["housing"] = linspace(0.0,1.0,p.nh)
-		grids["W"]       = zeros(p.na)
-		grids["tau"]     = linspace(0.0,1.0,p.ntau)
-
-		aone  = findfirst(grids["assets"].>=0)
-
 		# XD grids
 		# =========
 
@@ -164,14 +146,14 @@ type Model
 		# -------------------------------------------
 
 		# TODO rouwenhorst => array (nJ,nz) supports and array (nJ,nz,nz) transitions
-		(zsupp,Gz) = rouwenhorst(inc_rho)
+		(zsupp,Gz) = rouwenhorst(inc_rho,p)
 
-		zgrid = zeros(p.nJ,p.ny,p.nt-1,p.nz)
+		zgrid = zeros(p.nz,p.ny,p.nt-1,p.nJ)
 		for j in 1:p.nJ
 			for iy in 1:p.ny
 				for it in 1:p.nt-1
 					for iz in 1:p.nz
-						zgrid[j,iy,it,iz] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * ygrid[j,iy] + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*p.ages[it]^2 + inc_coefs[j,:age3]*p.ages[it]^3 + zsupp[j,iz]
+						zgrid[iz,iy,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[j,iy]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 					end
 				end
 			end
@@ -179,6 +161,27 @@ type Model
 		# convert to levels
 		zgrid = exp(zgrid)
 
+
+		# 1D grids
+		# =========
+
+		bounds["assets"] = (-maximum(pgrid),maximum(zgrid))
+		grids = Dict{ASCIIString,Array{Float64,1}}()
+		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
+		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
+		# center on zero
+		x = [linspace(bounds["assets"][1],50.0,p.na-4),linspace(70.0,bounds["assets"][2],4)]
+		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
+		x = x .- x[ indmin(abs(x)) ] 
+		println("assets = $x")
+		grids["assets"]  = x
+		grids["housing"] = linspace(0.0,1.0,p.nh)
+		grids["W"]       = zeros(p.na)
+		grids["tau"]     = linspace(0.0,1.0,p.ntau)
+
+		aone  = findfirst(grids["assets"].>=0)
+
+		
 
 		# regional transition matrices
 		# ============================
@@ -217,10 +220,10 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gy" => Gy, "Gp" => Gp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
+		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
 
-		dimnames = DataFrame(dimension=["k", "s", "y", "p", "z", "a", "h", "tau", "j", "age" ],
-			                  points = [p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
+		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "a", "h", "tau", "j", "age" ],
+			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
 		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist)
@@ -287,13 +290,13 @@ end
 
 function rouwenhorst(df::DataFrame,p::Param)
 
-	P = zeros(p.nJ,p.nz,p.nz)
-	z = zeros(p.nJ,p.nz)
+	P = zeros(p.nz,p.nz,p.nJ)
+	z = zeros(p.nz,p.nJ)
 
 	for j in 1:p.nJ
 		xz,xp = rouwenh(df[j,:Lresid][1],df[j,:Intercept][1],df[j,:sigma][1],p.nz)
-		P[j,:,:] = xp
-		z[j,:,:] = xz
+		P[:,:,j] = xp
+		z[:,j] = xz
 	end
 	return (z,P)
 end
@@ -319,10 +322,10 @@ function rouwenh(rho::Float64,mu_eps,sigma_eps,n)
 end
 
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
-	Gyp = zeros(p.ny,p.np,p.ny,p.np,p.nJ)
-	for ip in 1:p.np
-		for iy in 1:p.ny
-			for j in 1:p.nJ
+	Gyp = zeros(p.ny*p.np, p.ny*p.np, p.nJ)
+	for j in 1:p.nJ
+		for ip in 1:p.np
+			for iy in 1:p.ny
 
 				# setup MvNormal on that state
 				C = PDMat(sigs[:,:,j])
@@ -336,13 +339,15 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 						xdata = vcat(1.0,pgrid[j,ip1],ygrid[j,iy1])
 						new_y  = ycoef * xdata
 						new_p  = pcoef * xdata
-						# Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1),j] = pdf(mvn,[new_y,new_p])
-						Gyp[iy,ip,iy1,ip1,j] = pdf(mvn,[new_y,new_p])
+						Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1),j] = pdf(mvn,[new_y,new_p])
+						# Gyp[iy,ip,iy1,ip1,j] = pdf(mvn,[new_y,new_p])
 					end
 				end
 			end
 		end
 	end
+	# normalize for rows to sum to 1
+	Gyp = Gyp ./ sum(Gyp,2)
 	return Gyp
 end
 
@@ -354,12 +359,12 @@ end
 
 function show(io::IO, M::Model)
 	r = sizeof(M.v)+sizeof(M.vh)+
+		        sizeof(M.vfeas)+
 		        sizeof(M.ch)+
 		        sizeof(M.sh)+
 		        sizeof(M.dh)+
 		        sizeof(M.gridsXD["movecost"])+
-		        sizeof(M.gridsXD["Gy"])+
-		        sizeof(M.gridsXD["Gp"])+
+		        sizeof(M.gridsXD["Gyp"])+
 		        sizeof(M.gridsXD["Gz"])+
 		        # sizeof(M.gridsXD["GzM"])+
 		        sizeof(M.gridsXD["Gs"])+

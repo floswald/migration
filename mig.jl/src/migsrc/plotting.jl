@@ -11,9 +11,9 @@ function vhplot(m::Model,p::Param,idx)
 
 	ik   = idx[1]
 	is   = idx[2]
-	iy   = idx[3]
-	ip   = idx[4]
-	iz   = idx[5]
+	iz   = idx[3]
+	iy   = idx[4]
+	ip   = idx[5]
 	itau = idx[6]
 	ij   = idx[7]
 	it   = idx[8]
@@ -25,31 +25,31 @@ function vhplot(m::Model,p::Param,idx)
 	a22 = copy(m.grids["assets"])
 
 	# current renter
-	vh11   = m.vh[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	vh12   = m.vh[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	sh11   = m.sh[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	sh12   = m.sh[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	ch11   = m.ch[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	ch12   = m.ch[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	cash11 = m.cash[1,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	cash12 = m.cash[2,ik,is,iy,ip,iz,:,1,itau,ij,it][:]
+	vh11   = m.vh  [1,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	vh12   = m.vh  [2,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	sh11   = m.sh  [1,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	sh12   = m.sh  [2,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	ch11   = m.ch  [1,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	ch12   = m.ch  [2,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	cash11 = m.cash[1,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	cash12 = m.cash[2,ik,is,iz,iy,ip,:,1,itau,ij,it][:]
 	# current owner
-	vh21   = m.vh[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	vh22   = m.vh[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	ch21   = m.ch[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	ch22   = m.ch[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	sh21   = m.sh[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	sh22   = m.sh[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	cash21 = m.cash[1,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	cash22 = m.cash[2,ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	vh21   = m.vh  [1,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	vh22   = m.vh  [2,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	ch21   = m.ch  [1,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	ch22   = m.ch  [2,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	sh21   = m.sh  [1,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	sh22   = m.sh  [2,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	cash21 = m.cash[1,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	cash22 = m.cash[2,ik,is,iz,iy,ip,:,2,itau,ij,it][:]
 
 	# envelopes, i.e. v = max(vh[1],vh[2])
-	v1 = m.v[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	v2 = m.v[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	h1 = m.dh[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	h2 = m.dh[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
-	rho1 = m.rho[ik,is,iy,ip,iz,:,1,itau,ij,it][:]
-	rho2 = m.rho[ik,is,iy,ip,iz,:,2,itau,ij,it][:]
+	v1 = m.v    [ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	v2 = m.v    [ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	h1 = m.dh   [ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	h2 = m.dh   [ik,is,iz,iy,ip,:,2,itau,ij,it][:]
+	rho1 = m.rho[ik,is,iz,iy,ip,:,1,itau,ij,it][:]
+	rho2 = m.rho[ik,is,iz,iy,ip,:,2,itau,ij,it][:]
 
 	# get infeasible regions
 	i11 = vh11.==p.myNA
@@ -85,8 +85,11 @@ function vhplot(m::Model,p::Param,idx)
 	a21[i21]    = NaN
 	a22[i22]    = NaN
 
-	vscale = (minimum([vh11,vh12,vh21,vh22]) - 0.5, maximum([vh11,vh12,vh21,vh22]) + 0.5)
-	xscale = (minimum([a11,a12,a21,a22]) - 0.5, maximum([a11,a12,a21,a22]) + 0.5)
+	xpad = 10
+	ypad = 0.5
+
+	vscale = (minimum([vh11,vh12,vh21,vh22]) - ypad, maximum([vh11,vh12,vh21,vh22]) + ypad)
+	xscale = (minimum([a11,a12,a21,a22]) - xpad, maximum([a11,a12,a21,a22]) + xpad)
 
 	figure()
 
@@ -98,10 +101,10 @@ function vhplot(m::Model,p::Param,idx)
 	ylabel("v_h_0")
 	grid()
 	title("value h(t+1)=0")
-	legend((p_v1,p_v2),("renter","owner"),"upper left")
+	legend((p_v1,p_v2),("renter","owner"),"lower right",borderpad=0.2,labelspacing=0.1,handlelength=0.7)
 
 	subplot(332)
-	ylim( ( minimum([sh11,sh21,0.0]) - 0.5, maximum([sh11,sh21,ch11,ch21]) + 0.5 ) )
+	ylim( ( minimum([sh11,sh21,0.0]) -xpad , maximum([sh11,sh21,ch11,ch21]) + xpad ) )
 	xlim( xscale )
 	plot(a11,sh11,"o-")
 	plot(a21,sh21,"o-")
@@ -109,7 +112,7 @@ function vhplot(m::Model,p::Param,idx)
 	title("savings h(t+1)=0")
 	
 	subplot(333)
-	ylim( ( minimum([sh11,sh21,0.0])- 0.5, maximum([sh11,sh21,ch11,ch21]) + 0.5) )
+	ylim( ( minimum([sh11,sh21,0.0])- xpad, maximum([sh11,sh21,ch11,ch21]) + xpad) )
 	xlim( xscale )
 	plot(a11,ch11,"o-")
 	plot(a21,ch21,"o-")
@@ -126,7 +129,7 @@ function vhplot(m::Model,p::Param,idx)
 	title("value h(t+1)=1")
 
 	subplot(335)
-	ylim( ( minimum([sh12,sh22,0.0])- 0.5, maximum([sh12,sh22,ch12,ch22]) + 0.5) )
+	ylim( ( minimum([sh12,sh22,0.0])- xpad, maximum([sh12,sh22,ch12,ch22]) + xpad) )
 	xlim( xscale )
 	plot(a12,sh12,"o-")
 	plot(a22,sh22,"o-")
@@ -134,7 +137,7 @@ function vhplot(m::Model,p::Param,idx)
 	title("savings h(t+1)=1")
 	
 	subplot(336)
-	ylim( ( minimum([sh12,sh22,0.0])- 0.5, maximum([sh12,sh22,ch12,ch22]) + 0.5) )
+	ylim( ( minimum([sh12,sh22,0.0])- xpad, maximum([sh12,sh22,ch12,ch22]) + xpad) )
 	xlim( xscale )
 	plot(a12,ch12,"o-")
 	plot(a22,ch22,"o-")
@@ -185,37 +188,37 @@ function vplot(m::Model,p::Param)
 	it   = rand(1:(p.nt-1))
 
 	subplot(231,projection="3d")
-	mesh(reshape(m.v[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.v[ik,is,:,iy,ip,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("z")
 	ylabel("a")
 	zlabel("value")
 	title("value")
 
 	subplot(232,projection="3d")
-	mesh(reshape(m.s[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.s[ik,is,:,iy,ip,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("z")
 	ylabel("a")
 	zlabel("save index")
 	title("savings")
 
 	subplot(233,projection="3d")
-	mesh(reshape(m.c[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.c[ik,is,:,iy,ip,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("consumption")
 	title("consumption")
 
 	subplot(234,projection="3d")
-	mesh(reshape(m.rho[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.rho[ik,is,:,iy,ip,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("prob of moving")
 	title("prob of moving j=>k:\n$ij => $ik")
-	println(reshape(m.rho[ik,is,iy,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	println(reshape(m.rho[ik,is,:,iy,ip,:,ih,itau,ij,it],p.nz,p.na))
 
 	subplot(235,projection="3d")
 	# contour(1:p.na,1:p.nz,reshape(m.dh[iy,:,:,ih,itau,ij,it],p.nz,p.na),	3)
-	mesh(reshape(m.dh[ik,iy,is,ip,:,:,ih,itau,ij,it],p.nz,p.na))
+	mesh(reshape(m.dh[ik,:,iy,is,ip,:,ih,itau,ij,it],p.nz,p.na))
 	xlabel("x")
 	ylabel("a")
 	zlabel("housing choice")

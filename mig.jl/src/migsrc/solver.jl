@@ -48,14 +48,14 @@ function solveFinal!(m::Model,p::Param)
 	for ia = m.aone:p.na
 
 		if ia == m.aone
-			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
-			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
+			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
 
 			m.EVfinal[ia,ih,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
 	
 		elseif ia > m.aone
 
-			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
 		end
 	end
 
@@ -103,24 +103,22 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	Gz = m.gridsXD["Gz"]
 	Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
-	Gy = m.gridsXD["Gy"]
-	Gp = m.gridsXD["Gp"]
+	Gyp = m.gridsXD["Gyp"]
 
 	vtmp = zeros(p.nJ) 
 	feasible_k = falses(p.nJ)
 	vbartmp = (0.0,0.0)
 
-	# indexes the current state: s, y, p, z, a, h, tau, current loc, age
 	jidx = 0
-	# indexes the state when moving to k: k, s, y, p, z, a, h, tau, current loc, age
-	# dimvecH = (p.nh, p.nJ, p.ns, p.ny, p.np, p.nz, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
+	# indexes the state when moving to k: k, s, z, y, p, a, h, tau, current loc, age
+	# dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
 	hidx = 0
 
 	# ================
 	# loop over states
 	# ================
 
-	# dimvec  = (nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
 	# V[s,y,p,z,a,h,tau,j,age]
 
 	agrid  = m.grids["assets"]
@@ -138,25 +136,23 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					# start loop over stochastic states
 					# ---------------------------------
 
-					for iz=1:p.nz				# individual income shock
-						z = m.gridsXD["z"][iz,ij,age]
-						for ip=1:p.np 				# regional price deviation
-							price = m.gridsXD["p"][ip,ij]
-							# given h, price and a, figure out if in neg equtiy
-							def=false
+					for ip=1:p.np 				# regional price deviation
+						price = m.gridsXD["p"][ij,ip]
+						# given h, price and a, figure out if in neg equtiy
+						def=false
 
-							for iy=1:p.ny 				# regional income deviation
+						for iy=1:p.ny 				# regional income deviation
+							for iz=1:p.nz				# individual income shock
+								
+								z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
 
-								y     = m.gridsXD["y"][iy,ij]
-								yy    = income(y,z)
-
-								canbuy = a + yy > p.chi * price
+								canbuy = a + z > p.chi * price
 
 								for is=1:p.ns
 
 									# now you know the index of the
 									# current state
-									jidx = idx9(is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
+									jidx = idx9(is,iz,iy,ip,ia,ih+1,itau,ij,age,p)
 
 
 									# =================
@@ -177,7 +173,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# now you know the index of the 
 										# state when moving to k
-										kidx = idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
+										kidx = idx10(ik,is,iz,iy,ip,ia,ih+1,itau,ij,age,p)
 
 										# you stay and you have a housing choice
 										if ij==ik && (ih==1 || (ih==0 && canbuy))
@@ -199,7 +195,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# optimal housing choice
 											for ihh in 0:1
 
-												hidx = idx11(ihh+1,ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
+												hidx = idx11(ihh+1,ik,is,iz,iy,ip,ia,ih+1,itau,ij,age,p)
 
 												blim = age < p.nt-1 ? (-ihh) * (1-p.chi) * price : 0.0
 
@@ -207,7 +203,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-												cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
+												cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ik,p)
 												m.cash[hidx] = cash
 
 												# find moving cost
@@ -266,7 +262,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											ihh = 0
 
-											hidx = idx11(ihh+1,ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)
+											hidx = idx11(ihh+1,ik,is,iz,iy,ip,ia,ih+1,itau,ij,age,p)
 
 											blim = 0.0
 
@@ -274,8 +270,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											fill!(EV,p.myNA)	
 											fill!(w,p.myNA)
 
-											# cashfunction(a,y,ageeffect,z,ih,ihh)
-											cash = cashFunction(a,yy,ih,ihh,price,ij!=ik,ik,p)
+											cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ik,p)
 											m.cash[hidx] = cash
 
 											# find moving cost
@@ -373,14 +368,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# TODO this has numerical underflow problems
 											# need to make sure that vtmp[ik] - logsum is in a numerically stable range
 											# of the exp function!
-											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
+											m.rho[idx10(ik,is,iz,iy,ip,ia,ih+1,itau,ij,age,p)] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
 										else
-											m.rho[idx10(ik,is,iy,ip,iz,ia,ih+1,itau,ij,age,p)] = 0.0
+											m.rho[idx10(ik,is,iz,iy,ip,ia,ih+1,itau,ij,age,p)] = 0.0
 										end
 									end
 
 									# integrate vbar to get EV and EVbar
-									m.EV[jidx] = integrateVbar(ia,is,ih+1,iy,ip,iz,itau,ij,age,Gz,Gy,Gp,Gs,m,p)
+									m.EV[jidx] = integrateVbar(ia,is,ih+1,iy,ip,iz,itau,ij,age,Gz,Gyp,Gs,m,p)
 									# m.EVMove[jidx] = vbartmp[2]
 
 								end # household size
@@ -396,24 +391,25 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iz::Int,itau::Int,ij::Int,age::Int,Gz::Array{Float64,3},Gy::Array{Float64,3},Gp::Array{Float64,3},Gs::Array{Float64,2},m::Model,p::Param)
+function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iz::Int,itau::Int,ij::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},m::Model,p::Param)
 	# set index
 	idx = 0
 	# set value
 	tmp = 0.0
 	# tmp2 = 0.0
 		
-	for iz1 = 1:p.nz			# future z 		
-		for ip1 = 1:p.np 			# future p
-			for iy1=1:p.ny 				# future y
+	for ip1 = 1:p.np 			# future p
+		for iy1=1:p.ny 				# future y
+			for iz1 = 1:p.nz			# future z 		
 				for is1=1:p.ns 				# future HHsize
 
 					# compute index in integrand: uses ix1 indices!
-	         	     idx = idx9(is1,iy1,ip1,iz1,ia,ih,itau,ij,age,p)
+	         	     idx = idx9(is1,iz1,iy1,ip1,ia,ih,itau,ij,age,p)
 	         	     # idx = is1 + p.ns * (iy1 + p.ny * (ip1 + p.np * (iz1 + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
 
 	         	    # construct sum
-					 tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * Gs[is + p.ns * (is1-1)]
+					 # tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * Gs[is + p.ns * (is1-1)]
+					 tmp += m.vbar[idx] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ] * Gs[is + p.ns * (is1-1)]
 
 					# mover's future value: mover specific transitions of z
 					# tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
@@ -426,27 +422,30 @@ function integrateVbar(ia::Int,is::Int,ih::Int,iy::Int,ip::Int,iz::Int,itau::Int
 end
 
 
+
+
+
 # linear index functions
 # ======================
 
-# dimvecH  = (nh, nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-function idx11(ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+# dimvecH  = (nh, nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
+function idx11(ihh::Int,ik::Int,is::Int,iz::Int,iy::Int,ip::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
 
-	 r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iy + p.ny * (ip + p.np * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	 r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
-# dimvec  = (nJ, ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-function idx10(ik::Int,is::Int,iy::Int,ip::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+# dimvec  = (nJ, ns, nz, ny, np, nP, na, nh, ntau,  nJ, nt-1 )
+function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
 
-	 r = ik + p.nJ * (is + p.ns * (iy + p.ny * (ip + p.np * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	 r = ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
-# dimvec2 = (ns, ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-function idx9(is::Int,iy::Int,ip::Int,iz::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+# dimvec2 = (ns, nz, ny, np, nP, na, nh, ntau,  nJ, nt-1 )
+function idx9(is::Int,iz::Int,iy::Int,ip::Int,ia::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
 
-	 r = is + p.ns * (iy + p.ny * (ip + p.np * (iz + p.nz * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
+	 r = is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (ia + p.na * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
@@ -623,11 +622,11 @@ function EVfunChooser!(ev::Array{Float64,1},is::Int,iz::Int,ihh::Int, itau::Int,
 	else 
 		if ik==ij
 			 for ia in 1:p.na
-				ev[ia] = m.EV[idx9(is,iy,ip,iz,ia,ihh,itau,ik,age+1,p)]
+				ev[ia] = m.EV[idx9(is,iz,iy,ip,ia,ihh,itau,ik,age+1,p)]
 			end
 		else
 			 for ia in 1:p.na
-				ev[ia] = m.EV[idx9(is,iy,ip,iz,ia,ihh,itau,ik,age+1,p)]
+				ev[ia] = m.EV[idx9(is,iz,iy,ip,ia,ihh,itau,ik,age+1,p)]
 				# ev[ia] = m.EVMove[idx10(is,iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
 			end
 		end

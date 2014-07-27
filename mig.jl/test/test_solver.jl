@@ -32,7 +32,7 @@ facts("test linear index functions") do
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-1))
 
-			@fact m.vh[ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,it] == m.vh[mig.idx11(ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
+			@fact m.vh[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,it] => roughly(m.vh[mig.idx11(ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)],atol=1e-6)
 		end
 	end
 
@@ -52,7 +52,7 @@ facts("test linear index functions") do
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-1))
 
-			@fact m.v[ik,is,iy,ip,iz,ia,ih,itau,ij,it] == m.v[mig.idx10(ik,is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
+			@fact m.v[ik,is,iz,iy,ip,ia,ih,itau,ij,it] => roughly(m.v[mig.idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)],atol=1e-6)
 		end
 	end
 
@@ -71,7 +71,7 @@ facts("test linear index functions") do
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-1))
 
-			@fact m.vbar[is,iy,ip,iz,ia,ih,itau,ij,it] == m.vbar[mig.idx9(is,iy,ip,iz,ia,ih,itau,ij,it,p)] => true
+			@fact m.vbar[is,iz,iy,ip,ia,ih,itau,ij,it] == m.vbar[mig.idx9(is,iz,iy,ip,ia,ih,itau,ij,it,p)] => true
 		end
 	end
 
@@ -355,7 +355,7 @@ facts("testing EVfunChooser") do
 			ij   = rand(1:p.nJ)
 
 		# V[y,p,P,z,a,h,tau,j,age]
-			EV = m.EV[is,iy,ip,iz,:,ih,itau,ik,ti+1]
+			EV = m.EV[is,iz,iy,ip,:,ih,itau,ik,ti+1]
 
 			mig.EVfunChooser!(ev,is,iz,ih,itau,ip,iy,ij,ik,ti,m,p)
 
@@ -378,15 +378,13 @@ facts("test integration of vbar: getting EV") do
 		mig.setrand!(m)
 
 		Gz = m.gridsXD["Gz"]
-		Gy = m.gridsXD["Gy"]
-		Gp = m.gridsXD["Gp"]
+		Gyp = m.gridsXD["Gyp"]
 
 		# 1/number of all integration states
 		num = p.nz * p.ny * p.np 
 		fill!(m.vbar,1/num)
 		fill!(Gz,1/p.nz)
-		fill!(Gy,1/p.ny)
-		fill!(Gp,1/p.np)
+		fill!(Gyp,1/(p.ny*p.ny))
 
 		for itest = 1:50
 
@@ -404,16 +402,16 @@ facts("test integration of vbar: getting EV") do
 			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
 
 			# calling integrateVbar must return vbar.
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,it,Gz,Gy,Gp,Gs,m,p)
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,it,Gz,Gyp,Gs,m,p)
 
-			@fact tmp - m.vbar[mig.idx9(is,iy,ip,iz,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
+			@fact tmp - m.vbar[mig.idx9(is,iz,iy,ip,ia,ih,itau,ij,it,p)] => roughly(0.0,atol=0.00001)
 
 		end
 	end
 
 	context("test whether equal to hand integration") do
 
-		p    = mig.Param(1)
+		p    = mig.Param(2)
 		m    = mig.Model(p)
 		mig.setrand!(m)
 
@@ -422,8 +420,7 @@ facts("test integration of vbar: getting EV") do
 		age = p.nt-2
 
 		Gz = m.gridsXD["Gz"]
-		Gy = m.gridsXD["Gy"]
-		Gp = m.gridsXD["Gp"]
+		Gyp = m.gridsXD["Gyp"]
 		Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
 
 		for ij=1:p.nJ				# current location
@@ -443,7 +440,7 @@ facts("test integration of vbar: getting EV") do
 			for iy1=1:p.ny 				# regional income deviation
 			for is1=1:p.ns 				# regional income deviation
 
-				myEV[is,iy,ip,iz,ia,ih,itau,ij] += m.vbar[mig.idx9(is1,iy1,ip1,iz1,ia,ih,itau,ij,age,p)] * Gz[iz,iz1,ij] * Gp[ip,ip1,ij] * Gy[iy,iy1,ij] * Gs[is,is1]
+				myEV[is,iz,iy,ip,ia,ih,itau,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,ia,ih,itau,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1), ij ] * Gs[is,is1]
 			end
 			end
 			end
@@ -472,8 +469,8 @@ facts("test integration of vbar: getting EV") do
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
 
-			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,age,Gz,Gy,Gp,Gs,m,p)
-			@fact myEV[is,iy,ip,iz,ia,ih,itau,ij] - tmp => roughly(0.0,atol=0.00001)
+			tmp = mig.integrateVbar(ia,is,ih,iy,ip,iz,itau,ij,age,Gz,Gyp,Gs,m,p)
+			@fact myEV[is,iz,iy,ip,ia,ih,itau,ij] - tmp => roughly(0.0,atol=0.00001)
 		end
 		end
 		end
@@ -509,7 +506,7 @@ facts("checking some properties of the solution") do
 
 	context("check conditional v is never decreasing in z") do
 
-		tt = mapslices(x -> diff(x),m.v,5)
+		tt = mapslices(x -> diff(x),m.v,3)
 		@fact all(tt .>= 0.0) => true
 
 	end
@@ -526,8 +523,8 @@ facts("checking some properties of the solution") do
 									for ij in 1:p.nJ
 										for age in 1:(p.nt-1)
 
-											if any(m.v[:,is,iy,ip,iz,ia,ih,itau,ij,age][:] .> p.myNA)
-												tt = m.rho[:,is,iy,ip,iz,ia,ih,itau,ij,age][:]
+											if any(m.v[:,is,iz,iy,ip,ia,ih,itau,ij,age][:] .> p.myNA)
+												tt = m.rho[:,is,iz,iy,ip,ia,ih,itau,ij,age][:]
 
 												@fact sum(tt) => roughly(1.0,atol=1e-9)
 												@fact minimum(tt) >= 0.0 => true

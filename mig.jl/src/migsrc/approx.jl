@@ -229,32 +229,115 @@ function evalTensor3(mat1::Array{Float64,1},mat2::Array{Float64,1},mat3::Array{F
 	return r
 end
 
-# type BSpline
-# 	degree :: Int
-# 	numKnots :: Int
-# 	lower :: Float64
-# 	upper :: Float64
-# 	vecKnots :: Array{Float64,1}
+type BSpline
+	degree   :: Int
+	numKnots :: Int
+	lower    :: Float64
+	upper    :: Float64
+	vecKnots :: Array{Float64,1}
 
-# 	function BSpline(nKnots,deg,lb,ub)
-# 		new(nKnots,deg,lb,ub)
-# 	end
+	function BSpline(nKnots,deg,lb,ub)
+		vecKnots = zeros(nKnots+2*deg)
+		@assert nKnots > 1
+		@assert deg > 0
+		@assert ub > lb
 
-# 	function BSpline(knots,deg,extend=false)
-# 		if !issorted(knots)
-# 			error("knots must be sorted")
-# 		end
-# 		numKnots = length(knots) - 2*deg*extend
-# 		lb = knots[1]
-# 		ub = knots[end]
-# 		vecKnots = zeros( numKnots + 2*deg*(1-extend) )
-# 		# fill knot vector
-# 		for i in 1:length(knotVec)
-# 			if i < deg
+		h = (ub - lb) / (nKnots - 1)
+		for i=1:length(vecKnots)
+			if i < deg + 1
+				vecKnots[i] = lb
+			elseif i > nKnots + deg 
+				vecKnots[i] = ub
+			else
+				vecKnots[i] = lb + (i-deg-1)*h
+			end
+		end
+		new(deg,nKnots,lb,ub,vecKnots)
+	end
+
+	# function BSpline(knots,deg,extend=false)
+	# 	if !issorted(knots)
+	# 		error("knots must be sorted")
+	# 	end
+	# 	numKnots = length(knots) - 2*deg*extend
+	# 	lb = knots[1]
+	# 	ub = knots[end]
+	# 	vecKnots = zeros( numKnots + 2*deg*(1-extend) )
+	# 	# fill knot vector
+	# 	for i in 1:length(knotVec)
+	# 		if i < deg
 
 
+	# 		end
+	# 	end
+	# end
+
+end
 
 
+function show(io::IO, b::BSpline)
+	print(io,"BSpline object with\n")
+	print(io,"degree: $(b.degree)\n")
+	print(io,"number of knots: $(b.numKnots)\n")
+	print(io,"[lower,upper]: [$(b.lower),$(b.upper)]\n")
+	print(io,"knot vector: $(b.vecKnots)\n")
+end
+
+function getNumKnots(b::BSpline) return b.numKnots end
+function getNumCoefs(b::BSpline) return b.numKnots + b.degree -1 end
+function getDegree(b::BSpline) return b.degree end
+
+
+ 
+function getBasis(point::Float64,b::BSpline)
+
+	num_nodes = getNumCoefs(b)
+	vec_bs = sparsevec(zeros(num_nodes))
+
+	bf_index = 1
+	d = 0.0
+	e = 0.0
+
+	# extrapolate below and above
+	if point <= b.lower 
+		bf_index = b.degree + 1
+	elseif point >= b.upper
+		bf_index = num_nodes 
+
+
+	else
+		# internal knot vector starts here
+		bf_index = b.degree +1
+		while point > b.vecKnots[bf_index+1]
+			bf_index+=1
+		end
+	end
+
+	vec_bs[bf_index] = 1.0
+
+	for k=1:b.degree
+
+		for j=bf_index-k:bf_index
+
+			vec_bs[j] = vec_bs[j] * (point - b.vecKnots[j])/(b.vecKnots[j+k]-b.vecKnots[j]) + (b.vecKnots[j+k+1] - point) / (b.vecKnots[j+k+1] - b.vecKnots[j+1]) * vec_bs[j+1]
+
+			# if j+k <= b.degree
+			# 	d = 0.0
+			# else
+			# 	d =  (point - b.vecKnots[j])/(b.vecKnots[j+k]-b.vecKnots[j]) * vec_bs[j] 
+			# end
+
+			# if j +1 >= num_nodes
+			# 	e = 0.0
+			# else
+			# 	e = (b.vecKnots[j+k+1] - point) / (b.vecKnots[j+k+1] - b.vecKnots[j+1]) * vec_bs[j+1]
+			# end
+			# vec_bs[j] = d + e
+		end
+	end
+
+	return vec_bs
+end
 
 
 
@@ -322,8 +405,7 @@ end
 #         }
 #     }
 
-# B0(u::Vector{Float64}, i::Integer) = x::Real -> (u[i] <= x < u[i+1]) ? float(1) : float(0) ## non-continuous
-# B(p::Integer,u::Vector{Float64},i::Integer) = (p==0) ? B0(u,i) : x -> float(((x-u[i])/(u[i+p]-u[i]))*B(p-1,u,i)(x) + ((u[i+p+1]-x)/(u[i+p+1]-u[i+1]))*B(p-1,u,i+1)(x))
+
 
 
 

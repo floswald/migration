@@ -127,13 +127,19 @@ end
 facts("visual test of approximation") do
 
 	# dims
-	d1 = linspace(0.1,1,10)
-	d2 = linspace(-2.1,4,10)
+
+	r1 = (0.1,1.0)
+	r2 = (-2.1,4)
+
+	d1 = linspace(r1[1],r1[2],10)
+	d2 = linspace(r2[1],r2[2],11)
 
 	# set of basis functions
 	d = Dict{Int,Array{Float64,2}}()
-	d[1] = mig.quadraticSplineBFE(d1,(d1[1],d1[end]),length(d1)-1)
-	d[2] = mig.quadraticSplineBFE(d2,(d2[1],d2[end]),length(d2)-1)
+	d[1] = mig.linearSplineBFE(d1,(r1[1],r1[2]),length(d1))
+	d[2] = mig.linearSplineBFE(d2,(r2[1],r2[2]),length(d2))
+	println(d[1])
+	println(d[2])
 
 	# set of INVERSE basis functions
 	id = Dict{Int,Array{Float64,2}}()
@@ -153,21 +159,31 @@ facts("visual test of approximation") do
 	yvec = y[:]
 
 	# get coefs using the function
+	 ikrons = kron(id[2],id[1])
+	 coef1 = ikrons * yvec
 	 mycoef = mig.getTensorCoef(id,yvec)
 
-	pred = mig.evalTensor2(d[2],d[1],mycoef)
+	 @fact sumabs(coef1 - mycoef) =>roughly(0.0,atol=0.00001)
+ 
+	B = kron(d[2],d[1])
+	pred2 = B * mycoef
+
+	pred = mig.evalTensor2(d[1],d[2],mycoef)
+	 @fact sumabs(pred2 - pred) =>roughly(0.0,atol=0.00001)
+	 @fact sumabs(pred2 - yvec) =>roughly(0.0,atol=0.00001)
 	@fact sumabs(pred - yvec) => roughly(0.0,atol=0.00001)
 
 	# predict on values off grid points
 	nn1 = 10
-	nn2 = 10
-	newd1 = linspace(0.1,5,nn1)
-	newd2 = linspace(-2.1,4,nn2)
+	nn2 = 11
+	newd1 = linspace(r1[1],r1[2],nn1)
+	newd2 = linspace(r2[1],r2[2],nn2)
+
 	newb = Dict{Int,Array{Float64,2}}()
 	# newb[1] = mig.quadraticSplineBFE(newd1,(d1[1],d1[end]),length(d1)-1)
 	# newb[2] = mig.quadraticSplineBFE(newd2,(d2[1],d2[end]),length(d2)-1)
-	newb[1] = mig.quadraticSplineBFE(newd1,(d1[1],d1[end]),length(d1)-1)
-	newb[2] = mig.quadraticSplineBFE(newd2,(d2[1],d2[end]),length(d2)-1)
+	newb[1] = mig.linearSplineBFE(newd1,(d1[1],d1[end]),length(d1))
+	newb[2] = mig.linearSplineBFE(newd2,(d2[1],d2[end]),length(d2))
 
 	# # TODO a function that evaluates tensor products of basis functions and a coefficient vector
 	# pred2 = zeros(nn2,nn1)
@@ -178,15 +194,27 @@ facts("visual test of approximation") do
 	# 		pred2[i2,i1] = mig.evalTensor2(t2,t1,mycoef)
 	# 	end
 	# end
-	pred2 = mig.evalTensor2(newb[2],newb[1],mycoef)
-	@fact sumabs(pred2 - yvec) => roughly(0.0,atol=0.00001)
+	# pred2 = mig.evalTensor2(newb[1],newb[2],mycoef)
+
+	println(d[1])
+	println(d[2])
+	println(newb[1])
+	println(newb[2])
+	println(size(newb[1]))
+	println(size(newb[2]))
+	println(size(mycoef))
+	pred2 = kron(newb[2],newb[1]) * mycoef
+
+	println(pred2)
+	println(yvec)
+
 
 	mig.subplot(121,projection="3d")
 	mig.mesh(y)	
 	mig.title("true values on grid")
 
 	mig.subplot(122,projection="3d")
-	tmp = reshape(pred2,(nn1,nn2))
+	tmp = reshape(pred2,(nn2,nn1))
 	mig.mesh(tmp)
 	mig.title("values off grid")
 
