@@ -117,8 +117,7 @@ function evalTensor2(mat1::Array{Float64,2},mat2::Array{Float64,2},c::Vector)
 end
 
 
-
-function evalTensor2(mat1::Array{Float64,1},mat2::Array{Float64,1},c::Vector)
+function evalTensor2{T}(mat1::Vector{T},mat2::Vector{T},c::Vector)
 
 	# TODO
 	# sparse
@@ -139,6 +138,49 @@ function evalTensor2(mat1::Array{Float64,1},mat2::Array{Float64,1},c::Vector)
 		for col_idx2 in 1:m2
 
 			r += factor * mat2[col_idx2] * c[col_offset + col_idx2]
+		end
+	end
+	return r
+end
+
+function evalTensor2{T}(mat1::SparseMatrixCSC{T,Int64},mat2::SparseMatrixCSC{T,Int64},c::Vector{T})
+
+	# assume that the basis matrix is stored colwise
+	# i.e. the first column are the basis functions
+	# evaluated at the first point.
+
+	# FIXME
+	# julia 0.4 will introduce sparse row compression
+	# so this can be changed in BSplines.jl
+
+	if size(mat1)[2] > 1
+		error("only doing column vector so far, sorry")
+	end
+
+	m1 = length(mat1)
+	m2 = length(mat2)
+	offset = 0
+	factor = 0.0
+
+	r = 0.0
+
+	# full idiom is 
+	# for c in 1:size(mat1)[2]
+	#    non_zero_indices[c] = mat1[mat1.colptr[c] : mat1.colptr[c+1]-1]
+	#
+
+	# for now (one column only) this is safe:
+	# non_zero_indices = mat.rowval
+
+	# loop over non-zero entries of mat1
+	for idx1 in mat1.rowval
+		offset = (idx1-1) * m2
+		factor = mat1[idx1]
+
+		# loop over non-zeros of mat2
+		for idx2 in mat2.rowval
+
+			r += factor * mat2[idx2] * c[offset + idx2]
 		end
 	end
 	return r
@@ -229,181 +271,151 @@ function evalTensor3(mat1::Array{Float64,1},mat2::Array{Float64,1},mat3::Array{F
 	return r
 end
 
-type BSpline
-	degree   :: Int
-	numKnots :: Int
-	lower    :: Float64
-	upper    :: Float64
-	vecKnots :: Array{Float64,1}
 
-	function BSpline(nKnots,deg,lb,ub)
-		vecKnots = zeros(nKnots+2*deg)
-		@assert nKnots > 1
-		@assert deg > 0
-		@assert ub > lb
+function evalTensor3{T}(mat1::SparseMatrixCSC{T,Int64},mat2::SparseMatrixCSC{T,Int64},mat3::SparseMatrixCSC{T,Int64},c::Vector{T})
 
-		h = (ub - lb) / (nKnots - 1)
-		for i=1:length(vecKnots)
-			if i < deg + 1
-				vecKnots[i] = lb
-			elseif i > nKnots + deg 
-				vecKnots[i] = ub
-			else
-				vecKnots[i] = lb + (i-deg-1)*h
+	if size(mat1)[2] > 1
+		error("only doing column vector so far, sorry")
+	end
+
+	m1 = length(mat1)
+	m2 = length(mat2)
+	m3 = length(mat3)
+	offset1= 0
+	factor1= 0.0
+	offset2= 0
+	factor2= 0.0
+
+	r = 0.0
+
+	# loop over non-zeros in mat1
+	for idx1 in mat1.rowval
+		offset1 = (idx1-1) * m2
+		factor1 = mat1[idx1]
+
+		# loop over non-zeros in mat2
+		for idx2 in mat2.rowval
+			offset2 = (offset1 + (idx2-1)) * m3
+			factor2 = factor1 * mat2[idx2]
+
+			# cols mat3
+			for idx3 in 1:m3
+				r += factor2 * mat3[idx3] * c[offset2 + idx3]
 			end
 		end
-		new(deg,nKnots,lb,ub,vecKnots)
 	end
-
-	# function BSpline(knots,deg,extend=false)
-	# 	if !issorted(knots)
-	# 		error("knots must be sorted")
-	# 	end
-	# 	numKnots = length(knots) - 2*deg*extend
-	# 	lb = knots[1]
-	# 	ub = knots[end]
-	# 	vecKnots = zeros( numKnots + 2*deg*(1-extend) )
-	# 	# fill knot vector
-	# 	for i in 1:length(knotVec)
-	# 		if i < deg
-
-
-	# 		end
-	# 	end
-	# end
-
+	return r
 end
 
 
-function show(io::IO, b::BSpline)
-	print(io,"BSpline object with\n")
-	print(io,"degree: $(b.degree)\n")
-	print(io,"number of knots: $(b.numKnots)\n")
-	print(io,"[lower,upper]: [$(b.lower),$(b.upper)]\n")
-	print(io,"knot vector: $(b.vecKnots)\n")
-end
+# loops over matrix rows
+function evalTensor4(mat1::Array{Float64,2},mat2::Array{Float64,2},mat3::Array{Float64,2},mat4::Array{Float64,2},c::Vector)
 
-function getNumKnots(b::BSpline) return b.numKnots end
-function getNumCoefs(b::BSpline) return b.numKnots + b.degree -1 end
-function getDegree(b::BSpline) return b.degree end
+	n1,m1 = size(mat1)
+	n2,m2 = size(mat2)
+	n3,m3 = size(mat3)
+	n4,m4 = size(mat4)
 
+	row_offset1 = 0
+	col_offset1 = 0
+	factor1     = 0.0
+	row_offset2 = 0
+	col_offset2 = 0
+	factor2     = 0.0
+	row_offset3 = 0
+	col_offset3 = 0
+	factor3     = 0.0
 
- 
-function getBasis(point::Float64,b::BSpline)
+	r = zeros(n1 * n2 * n3 * n4)
 
-	num_nodes = getNumCoefs(b)
-	vec_bs = sparsevec(zeros(num_nodes))
+	# loop over rows of 1
+	for row_idx1 in 1:n1
+		row_offset1 = (row_idx1-1) * n2
 
-	bf_index = 1
-	d = 0.0
-	e = 0.0
+		# loop over rows of 2
+		for row_idx2 in 1:n2
+			row_offset2 = (row_offset1 + (row_idx2-1)) * n3
 
-	# extrapolate below and above
-	if point <= b.lower 
-		bf_index = b.degree + 1
-	elseif point >= b.upper
-		bf_index = num_nodes 
+			# loop rows 3
+			for row_idx3 in 1:n3
+				row_offset3 = (row_offset2 + (row_idx3-1)) * n4
+				# println(row_offset2 + row_idx3)
 
+				for row_idx4 in 1:n4
 
-	else
-		# internal knot vector starts here
-		bf_index = b.degree +1
-		while point > b.vecKnots[bf_index+1]
-			bf_index+=1
+					# loop over cols of 1
+					for col_idx1 in 1:m1
+						col_offset1 = (col_idx1-1) * m2
+						factor1 = mat1[row_idx1,col_idx1]
+
+						# loop over cols of 2
+						for col_idx2 in 1:m2
+							col_offset2 = (col_offset1 + (col_idx2-1)) * m3
+							factor2 = factor1 * mat2[row_idx2,col_idx2]
+
+							# cols mat3
+							for col_idx3 in 1:m3
+								col_offset3 = (col_offset2 + (col_idx3-1)) * m4
+								factor3 = factor2 * mat3[row_idx3,col_idx3]
+
+								for col_idx4 in 1:m4
+
+									r[row_offset3 + row_idx4] += factor3 * mat4[row_idx4,col_idx4] * c[col_offset3 + col_idx4]
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 	end
+	return r
+end
 
-	vec_bs[bf_index] = 1.0
+function evalTensor4{T}(mat1::SparseMatrixCSC{T,Int64},mat2::SparseMatrixCSC{T,Int64},mat3::SparseMatrixCSC{T,Int64},mat4::SparseMatrixCSC{T,Int64},c::Vector{T})
 
-	for k=1:b.degree
-
-		for j=bf_index-k:bf_index
-
-			vec_bs[j] = vec_bs[j] * (point - b.vecKnots[j])/(b.vecKnots[j+k]-b.vecKnots[j]) + (b.vecKnots[j+k+1] - point) / (b.vecKnots[j+k+1] - b.vecKnots[j+1]) * vec_bs[j+1]
-
-			# if j+k <= b.degree
-			# 	d = 0.0
-			# else
-			# 	d =  (point - b.vecKnots[j])/(b.vecKnots[j+k]-b.vecKnots[j]) * vec_bs[j] 
-			# end
-
-			# if j +1 >= num_nodes
-			# 	e = 0.0
-			# else
-			# 	e = (b.vecKnots[j+k+1] - point) / (b.vecKnots[j+k+1] - b.vecKnots[j+1]) * vec_bs[j+1]
-			# end
-			# vec_bs[j] = d + e
-		end
+	if size(mat1)[2] > 1
+		error("only doing column vector so far, sorry")
 	end
 
-	return vec_bs
+	m1 = length(mat1)
+	m2 = length(mat2)
+	m3 = length(mat3)
+	m4 = length(mat4)
+	offset1= 0
+	factor1= 0.0
+	offset2= 0
+	factor2= 0.0
+	offset3= 0
+	factor3= 0.0
+
+	r = 0.0
+
+	# loop over non-zeros in mat1
+	for idx1 in mat1.rowval
+		offset1 = (idx1-1) * m2
+		factor1 = mat1[idx1]
+
+		# loop over non-zeros in mat2
+		for idx2 in mat2.rowval
+			offset2 = (offset1 + (idx2-1)) * m3
+			factor2 = factor1 * mat2[idx2]
+
+			# cols mat3
+			for idx3 in mat3.rowval
+				offset3 = (offset2 + (idx3-1)) * m4
+				factor3 = factor2 * mat3[idx3]
+
+				for idx4 in mat4.rowval
+					r += factor3 * mat4[idx4] * c[offset3 + idx4]
+				end
+			end
+		end
+	end
+	return r
 end
 
 
-
-# function evalBasis(point,bs::BSpline)
-
-
-
-
-# end
-
-# Eigen::SparseVector<double> BSpline::calc(
-#         double point, 
-#         int derivative /* DEFAULT = 0 */ )  	// first line to change to use sparse vectors
-# {
-#     // declare sparse basis function of length num_nodes
-#     int num_nodes = getNumCoefs();
-#     Eigen::SparseVector<double> vec_bs( num_nodes );
-#     vec_bs.reserve( d_degree+1 );   // SparseVector has d_degree+1 non-zero elements
-
-#     // NOTE: the derivatives do not work for the case where point==upper_bound or lower_bound yet (and extrapolations either)
-    
-#     // calculate the zero order basis functions, which has d_numKnots - 1 elements
-#     int bf_index;
-
-#     if ( point <= d_lowerBound ) { // extrapolation below
-#         bf_index = d_degree;
-#         //std::cout << "Warning: point is outside interpolation interval" << std::endl;
-#     }
-#     else if ( point >= d_upperBound ) { // extrapolation above
-#         bf_index = num_nodes - 1;
-#         //std::cout << "Warning: point is outside interpolation interval" << std::endl;
-#     }
-#     else {
-#         // determine index of first non-zero entry
-#         bf_index = d_degree; // non-extended vecKnot starts here
-#         while ( point > d_vecKnots(bf_index+1) ) {
-#             bf_index++;
-#         }
-#     }
-        
-#     vec_bs.insert( bf_index ) = 1.0;
-        
-#     for (int k=1;k<=(d_degree-derivative);k++) { // loop over current degree
-        
-#         // maybe we should calculate the minimum and maximum, so we don't have to use the if statements below
-#         for (int j=bf_index-k;j<=bf_index;j++) {
-                
-#             double d, e;
-#             if ( j+k <= d_degree ) {
-#                 d = 0.0;
-#             }
-#             else { 
-#                 d = (point - d_vecKnots(j))/(d_vecKnots(j+k)-d_vecKnots(j))*vec_bs.coeff(j);
-#             }
-            
-#             if ( j+1 >= vec_bs.size() ) {
-#                    e = 0.0;
-#             }	
-#             else {
-#                 e = (d_vecKnots(j+k+1) - point)/(d_vecKnots(j+k+1)-d_vecKnots(j+1))*vec_bs.coeff(j+1);
-#             }
-#             // insert or update element j
-#             vec_bs.coeffRef(j) = d + e;
-
-#         }
-#     }
 
 
 

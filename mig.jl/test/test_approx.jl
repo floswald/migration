@@ -6,7 +6,10 @@ module test_approx
 using mig, FactCheck
 
 
-facts("testing tensorProduct function on random data") do
+
+
+
+facts("testing coefficient estimation on random data") do
 
 	d = Dict{Int,Array{Float64,2}}()
 	for i=1:3 
@@ -42,18 +45,41 @@ facts("testing tensorProduct function on random data") do
 
 end
 
-facts("testing tensorProduct evaluating on grid") do
 
-	# dims
-	d1 = linspace(0.1,5,10)
-	d2 = linspace(-2.1,4,6)
-	d3 = linspace(1.2,5.4,7)
+
+
+facts("testing computation of coefficients") do
+	
+	# 3D approximation example
+
+	# bounds
+	lb = [-1.1,2.5,0.1]
+	ub = [3.2,5.4,9.1]
+
+	# number of eval points and basis functions:
+	# we require square basis matrices!
+	npoints = [10,6,7]
+
+	# number of basis funcs
+	nbasis = npoints
+
+	# splien degrees
+	degs = [3,2,1]
+
+	# implies a number of knots for each spline
+	nknots = {i => nbasis[i] - degs[i] + 1 for i=1:3}
+
+	# eval points
+	points = {i => linspace(lb[i],ub[i],npoints[i]) for i=1:3}
+
+	# set up BSplines
+	bsp = {i => mig.BSpline(nknots[i],degs[i],lb[i],ub[i]) for i=1:3}
 
 	# set of basis functions
 	d = Dict{Int,Array{Float64,2}}()
-	d[1] = mig.quadraticSplineBFE(d1,(d1[1],d1[end]),length(d1)-1)
-	d[2] = mig.quadraticSplineBFE(d2,(d2[1],d2[end]),length(d2)-1)
-	d[3] = mig.quadraticSplineBFE(d3,(d3[1],d3[end]),length(d3)-1)
+	for i=1:3
+		d[i] = full(mig.getBasis(points[i],bsp[i]))
+	end
 
 	# set of INVERSE basis functions
 	id = Dict{Int,Array{Float64,2}}()
@@ -68,7 +94,7 @@ facts("testing tensorProduct evaluating on grid") do
 
 	# compute function values so that
 	# k is fastest varying index
-	y = Float64[f(i,j,k) for k in d3 , j in d2, i in d1]
+	y = Float64[f(i,j,k) for k in points[3] , j in points[2], i in points[1]]
 
 	yvec = y[:]
 
@@ -80,66 +106,68 @@ facts("testing tensorProduct evaluating on grid") do
 	 # get coefs using the function
 	 mycoef = mig.getTensorCoef(id,yvec)
 
+	 # testing tolerance
+	 tol = 3e-6
+
 	 # check coefs are the same
-	@fact sumabs(coef1 - mycoef) => roughly(0.0,atol=0.00001)
+	@fact maxabs(coef1 - mycoef) => roughly(0.0,atol=tol)
 
 	# approximate the function values on the original grid
 	# by using the basis in d. this is just reverse of getting coefs!
 	pred = mig.getTensorCoef(d,mycoef)
-	@fact sumabs(pred - yvec) => roughly(0.0,atol=0.00001)
+	@fact maxabs(pred - yvec) => roughly(0.0,atol=tol)
 
 	t1 = reshape(pred,7,6,10)
-	@fact sumabs(t1 .- y) => roughly(0.0,atol=10e-5)
+	@fact maxabs(t1 .- y) => roughly(0.0,atol=tol)
 
 	# is that really doing what you want?
 	# you want B * coefs
 	B = kron(d[3],kron(d[2],d[1]))
 	pred2 = B * mycoef
-	@fact sumabs(pred2 - yvec) => roughly(0.0,atol=0.00001)
+	@fact maxabs(pred2 - yvec) => roughly(0.0,atol=tol)
 
 	# predict usign the predict function	
 	pred = mig.evalTensor3(d[3],d[2],d[1],mycoef)
-	@fact sumabs(pred - yvec) => roughly(0.0,atol=0.00001)
-
-
-
-	# 
+	@fact maxabs(pred - yvec) => roughly(0.0,atol=tol)
 
 end
 
-facts("test evaluating off grid") do
 
-	m1 = rand(3,5)
-	m2 = rand(3,4)
 
-	co = [1.0:20]
-	truth = kron(m1,m2) * co
-
-	# try to get that with evalTensor2
-	myres = mig.evalTensor2(m1,m2,co)
-
-	@fact sumabs(truth - myres) => roughly(0.0,atol=0.000001)
-
+facts("testing 2D tensorProduct evaluating off grid") do
 	
-end
+	# 2D approximation example
 
+	ndims = 2
 
-facts("visual test of approximation") do
+	# bounds
+	lb = [-2.1,-2.5]
+	ub = [2.2,2.6]
 
-	# dims
+	# number of eval points and basis functions:
+	# we require square basis matrices!
+	npoints = [11,12]
 
-	r1 = (0.1,1.0)
-	r2 = (-2.1,4)
+	# number of basis funcs
+	nbasis = npoints
 
-	d1 = linspace(r1[1],r1[2],10)
-	d2 = linspace(r2[1],r2[2],11)
+	# splien degrees
+	degs = [3,3]
+
+	# implies a number of knots for each spline
+	nknots = {i => nbasis[i] - degs[i] + 1 for i=1:ndims}
+
+	# eval points
+	points = {i => linspace(lb[i],ub[i],npoints[i]) for i=1:ndims}
+
+	# set up BSplines
+	bsp = {i => mig.BSpline(nknots[i],degs[i],lb[i],ub[i]) for i=1:ndims}
 
 	# set of basis functions
 	d = Dict{Int,Array{Float64,2}}()
-	d[1] = mig.linearSplineBFE(d1,(r1[1],r1[2]),length(d1))
-	d[2] = mig.linearSplineBFE(d2,(r2[1],r2[2]),length(d2))
-	println(d[1])
-	println(d[2])
+	for i=1:ndims
+		d[i] = full(mig.getBasis(points[i],bsp[i]))
+	end
 
 	# set of INVERSE basis functions
 	id = Dict{Int,Array{Float64,2}}()
@@ -149,77 +177,303 @@ facts("visual test of approximation") do
 
 	#  get a function
 	function f(x,y) 
-		(x+y).^2 
+		sin(sqrt(x^2+y^2))
 	end
 
-	# (7,6,10)
-	# (k,j,i)
-	y = Float64[f(i,j) for j in d2, i in d1 ]
+	# compute function values so that
+	# k is fastest varying index
+	y = Float64[f(i,j) for i in points[1], j in points[2]]
 
 	yvec = y[:]
 
 	# get coefs using the function
-	 ikrons = kron(id[2],id[1])
-	 coef1 = ikrons * yvec
-	 mycoef = mig.getTensorCoef(id,yvec)
+	mycoef = mig.getTensorCoef(id,yvec)
 
-	 @fact sumabs(coef1 - mycoef) =>roughly(0.0,atol=0.00001)
- 
-	B = kron(d[2],d[1])
-	pred2 = B * mycoef
+	 # testing tolerance
+	 tol = 1e-2
 
-	pred = mig.evalTensor2(d[1],d[2],mycoef)
-	 @fact sumabs(pred2 - pred) =>roughly(0.0,atol=0.00001)
-	 @fact sumabs(pred2 - yvec) =>roughly(0.0,atol=0.00001)
-	@fact sumabs(pred - yvec) => roughly(0.0,atol=0.00001)
+	# predict values off grid
 
-	# predict on values off grid points
-	nn1 = 10
-	nn2 = 11
-	newd1 = linspace(r1[1],r1[2],nn1)
-	newd2 = linspace(r2[1],r2[2],nn2)
+	for it in 1:10
 
-	newb = Dict{Int,Array{Float64,2}}()
-	# newb[1] = mig.quadraticSplineBFE(newd1,(d1[1],d1[end]),length(d1)-1)
-	# newb[2] = mig.quadraticSplineBFE(newd2,(d2[1],d2[end]),length(d2)-1)
-	newb[1] = mig.linearSplineBFE(newd1,(d1[1],d1[end]),length(d1))
-	newb[2] = mig.linearSplineBFE(newd2,(d2[1],d2[end]),length(d2))
+		rval1 = lb[1] + rand()
+		rval2 = lb[2] + rand()
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor2(b2,b1,mycoef) => roughly(f(rval1,rval2),atol=tol)
 
-	# # TODO a function that evaluates tensor products of basis functions and a coefficient vector
-	# pred2 = zeros(nn2,nn1)
-	# for i1 = 1:nn1
-	# 	for i2 = 1:nn2
-	# 		t1 = squeeze(newb[1][i1,: ],1)
-	# 		t2 = squeeze(newb[2][i2,:],1)
-	# 		pred2[i2,i1] = mig.evalTensor2(t2,t1,mycoef)
-	# 	end
-	# end
-	# pred2 = mig.evalTensor2(newb[1],newb[2],mycoef)
-
-	println(d[1])
-	println(d[2])
-	println(newb[1])
-	println(newb[2])
-	println(size(newb[1]))
-	println(size(newb[2]))
-	println(size(mycoef))
-	pred2 = kron(newb[2],newb[1]) * mycoef
-
-	println(pred2)
-	println(yvec)
+		rval1 = ub[1] - rand()
+		rval2 = ub[2] - rand()
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor2(b2,b1,mycoef) => roughly(f(rval1,rval2),atol=tol)
+	end
 
 
+	 # make a plot
+	 # ===========
+
+	new_npoints = [17,16]
+	# new_npoints = npoints
+	new_points = {i => linspace(lb[i],ub[i],new_npoints[i]) for i=1:ndims}
+	# set of new basis functions
+	nd = Dict{Int,Array{Float64,2}}()
+	for i=1:ndims
+		nd[i] = full(mig.getBasis(new_points[i],bsp[i]))
+	end
+
+	pred = mig.evalTensor2(nd[2],nd[1],mycoef)
+	
+	mig.figure()
 	mig.subplot(121,projection="3d")
-	mig.mesh(y)	
+	mig.mesh(points[2],points[1],y)	
 	mig.title("true values on grid")
 
 	mig.subplot(122,projection="3d")
-	tmp = reshape(pred2,(nn2,nn1))
-	mig.mesh(tmp)
-	mig.title("values off grid")
+	pp = reshape(pred,new_npoints[1],new_npoints[2])
+	mig.mesh(new_points[2],new_points[1],pp)	
+	mig.title("Approximation off grid")
+
+	mig.suptitle("2D TEST")
 
 end
 
+
+facts("testing 3D tensorProduct approximations") do
+	
+	# 3D approximation example
+
+	ndims = 3
+
+	# bounds
+	lb = [-2.1,-2.5,0.9]
+	ub = [2.2,2.6,5.0]
+
+	# number of eval points and basis functions:
+	# we require square basis matrices!
+	npoints = [12,16,13]
+
+	# number of basis funcs
+	nbasis = npoints
+
+	# splien degrees
+	degs = [3,3,3]
+
+	# implies a number of knots for each spline
+	nknots = {i => nbasis[i] - degs[i] + 1 for i=1:ndims}
+
+	# eval points
+	points = {i => linspace(lb[i],ub[i],npoints[i]) for i=1:ndims}
+
+	# set up BSplines
+	bsp = {i => mig.BSpline(nknots[i],degs[i],lb[i],ub[i]) for i=1:ndims}
+
+	# set of basis functions
+	d = Dict{Int,Array{Float64,2}}()
+	for i=1:ndims
+		d[i] = full(mig.getBasis(points[i],bsp[i]))
+	end
+
+	# set of INVERSE basis functions
+	id = Dict{Int,Array{Float64,2}}()
+	for k in collect(keys(d))
+		id[k] = inv(d[k])
+	end
+
+	#  get a function
+	function f(x,y,z) 
+		sin(sqrt(x^2+y^2)) - z^2
+	end
+
+	# compute function values so that
+	# k is fastest varying index
+	y = Float64[f(i,j,k) for i in points[1], j in points[2], k in points[3]]
+
+	yvec = y[:]
+
+	# get coefs using the function
+	mycoef = mig.getTensorCoef(id,yvec)
+
+	 # testing tolerance
+	 tol = 1e-2
+
+	# predict values off grid
+
+	for it in 1:10
+
+		rval1 = lb[1] + rand()
+		rval2 = lb[2] + rand()
+		rval3 = lb[3] + rand()
+		b3 = mig.getBasis(rval3,bsp[3])
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor3(b3,b2,b1,mycoef) => roughly(f(rval1,rval2,rval3),atol=tol)
+
+		rval1 = ub[1] - rand()
+		rval2 = ub[2] - rand()
+		rval3 = ub[3] - rand()
+		b3 = mig.getBasis(rval3,bsp[3])
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor3(b3,b2,b1,mycoef) => roughly(f(rval1,rval2,rval3),atol=tol)
+	end
+
+
+	 # make a plot
+	 # ===========
+
+	new_npoints = [17,16,5]
+	# new_npoints = npoints
+	new_points = {i => linspace(lb[i],ub[i],new_npoints[i]) for i=1:ndims}
+	# set of new basis functions
+	nd = Dict{Int,Array{Float64,2}}()
+	for i=1:ndims
+		nd[i] = full(mig.getBasis(new_points[i],bsp[i]))
+	end
+
+	pred = mig.evalTensor3(nd[3],nd[2],nd[1],mycoef)
+	
+	mig.figure()
+	mig.subplot(221,projection="3d")
+	mig.mesh(points[2],points[1],y[:,:,1])	
+	mig.title("true values at lowest 3D state")
+
+	mig.subplot(222,projection="3d")
+	pp = reshape(pred,new_npoints[1],new_npoints[2],new_npoints[3])
+	mig.mesh(new_points[2],new_points[1],pp[:,:,1])	
+	mig.title("Approximation")
+
+	mig.subplot(223,projection="3d")
+	mig.mesh(points[2],points[1],y[:,:,npoints[3]])	
+	mig.title("true values at highest 3D state")
+
+	mig.subplot(224,projection="3d")
+	pp = reshape(pred,new_npoints[1],new_npoints[2],new_npoints[3])
+	mig.mesh(new_points[2],new_points[1],pp[:,:,new_npoints[3]])	
+	mig.title("Approximation")
+	mig.suptitle("3D TEST")
+
+end
+
+
+facts("testing 4D tensorProduct approximations") do
+	
+	ndims = 4
+
+	# bounds
+	lb = [-1.1,-1.5,-0.9,-1.0]
+	ub = [1.2,1.6,0.9,1]
+
+	# number of eval points and basis functions:
+	# we require square basis matrices!
+	npoints = [13,13,13,13]
+
+	# number of basis funcs
+	nbasis = npoints
+
+	# splien degrees
+	degs = [3,3,3,3]
+
+	# implies a number of knots for each spline
+	nknots = {i => nbasis[i] - degs[i] + 1 for i=1:ndims}
+
+	# eval points
+	points = {i => linspace(lb[i],ub[i],npoints[i]) for i=1:ndims}
+
+	# set up BSplines
+	bsp = {i => mig.BSpline(nknots[i],degs[i],lb[i],ub[i]) for i=1:ndims}
+
+	# set of basis functions
+	d = Dict{Int,Array{Float64,2}}()
+	for i=1:ndims
+		d[i] = full(mig.getBasis(points[i],bsp[i]))
+	end
+
+	# set of INVERSE basis functions
+	id = Dict{Int,Array{Float64,2}}()
+	for k in collect(keys(d))
+		id[k] = inv(d[k])
+	end
+
+	#  get a function
+	function f(x,y,z,w) 
+		sin(sqrt(x^2+y^2)) + (z-w)^3
+	end
+
+	# compute function values so that
+	# k is fastest varying index
+	y = Float64[f(i,j,k,w) for i in points[1], j in points[2], k in points[3], w in points[4]]
+
+	yvec = y[:]
+
+	# get coefs using the function
+	mycoef = mig.getTensorCoef(id,yvec)
+
+	 # testing tolerance
+	 tol = 3e-3
+
+	# predict values off grid
+
+	for it in 1:10
+
+		rval1 = lb[1] + rand()
+		rval2 = lb[2] + rand()
+		rval3 = lb[3] + rand()
+		rval4 = lb[4] + rand()
+		b4 = mig.getBasis(rval4,bsp[4])
+		b3 = mig.getBasis(rval3,bsp[3])
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor4(b4,b3,b2,b1,mycoef) => roughly(f(rval1,rval2,rval3,rval4),atol=tol)
+
+		rval1 = ub[1] - rand()
+		rval2 = ub[2] - rand()
+		rval3 = ub[3] - rand()
+		rval4 = ub[4] - rand()
+		b4 = mig.getBasis(rval4,bsp[4])
+		b3 = mig.getBasis(rval3,bsp[3])
+		b2 = mig.getBasis(rval2,bsp[2])
+		b1 = mig.getBasis(rval1,bsp[1])
+		@fact mig.evalTensor4(b4,b3,b2,b1,mycoef) => roughly(f(rval1,rval2,rval3,rval4),atol=tol)
+	end
+
+
+	 # make a plot
+	 # ===========
+
+	new_npoints = [17,16,5,7]
+	# new_npoints = npoints
+	new_points = {i => linspace(lb[i],ub[i],new_npoints[i]) for i=1:ndims}
+	# set of new basis functions
+	nd = Dict{Int,Array{Float64,2}}()
+	for i=1:ndims
+		nd[i] = full(mig.getBasis(new_points[i],bsp[i]))
+	end
+
+	# predict everywhere
+	pred = mig.evalTensor4(nd[4],nd[3],nd[2],nd[1],mycoef)
+	
+	mig.figure()
+	mig.subplot(221,projection="3d")
+	mig.mesh(points[2],points[1],y[:,:,1,1])	
+	mig.title("true values at lowest state (:,:,1,1)")
+
+	mig.subplot(222,projection="3d")
+	pp = reshape(pred,new_npoints[1],new_npoints[2],new_npoints[3],new_npoints[4])
+	mig.mesh(new_points[2],new_points[1],pp[:,:,1,1])	
+	mig.title("Approximation")
+
+	mig.subplot(223,projection="3d")
+	mig.mesh(points[2],points[1],y[:,:,npoints[3],npoints[4]])	
+	mig.title("true values at state (:,:,end,end)")
+
+	mig.subplot(224,projection="3d")
+	pp = reshape(pred,new_npoints[1],new_npoints[2],new_npoints[3],new_npoints[4])
+	mig.mesh(new_points[2],new_points[1],pp[:,:,new_npoints[3],new_npoints[4]])	
+	mig.title("Approximation")
+	mig.suptitle("4D TEST")
+
+end
 
 
 

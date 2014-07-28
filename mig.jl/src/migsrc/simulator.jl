@@ -51,6 +51,36 @@ function simulate(m::Model,p::Param)
 	# set random seed
 	srand(p.rseed)
 
+	# compute approximating coefficients from
+	# *) m.vh
+	# *) m.rho
+	# *) m.sh
+	# *) m.ch
+	# at each discrete index (age,is,ij,ij,tau,ih,ihh)
+	# 
+	# continuous variables are (a,z,y,p). for those compute a constant basis function
+	# on nx evaluation points each. get inverse of those and store in ibm dict
+	#
+	# then for each i in prod(age,is,ij,ij,tau,ih,ihh), there is a different section of the function you want to approximate and therefore a different approximation coefficient vector
+	# for any function f you want to approx:
+	# coeff_mat_f = zeros(n_cont_coefs,n_discrete_states)
+	# for i in discrete_states
+	# 	  ftemp = get_cont_vals(f,i)
+	#     coeff_mat_f[:,i] = getTensorCoef(ibm,ftemp)
+	# end
+	#
+	# in simulation
+	# =============
+	#
+	# you enter the period on state idx in {age,is,ij,ij,tau,ih,ihh}
+	# for each cont fuction f_j there is an FspaceXD object
+	# this contains the coeff_mat_f_j and the 4 univariate spline objects
+	
+	# 2 methods
+	# 1. setindex(fx::FSpaceXD,idx::Int) set the current index
+	# 2. getValue(point, fx::FSpaceXD). computes each individual basis_function[i] at point[i], using the corresponding coefficient vector coeff_mat_f[:,idx]
+	# and then puts it into evalTensor4 to obtain the function value.
+
 	# grids
 	agrid = m.grids["assets"]
 	ygrid = m.gridsXD["y"]
