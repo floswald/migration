@@ -412,6 +412,38 @@ end
 
 
 
+# compute approximating coefficients from
+# *) m.vh
+# *) m.rho
+# *) m.sh
+# *) m.ch
+# at each discrete index (age,is,ij,ij,tau,ih,ihh)
+# 
+# continuous variables are (a,z,y,p). for those compute a constant basis function
+# on nx evaluation points each. get inverse of those and store in ibm dict
+#
+# then for each i in prod(age,is,ij,ij,tau,ih,ihh), there is a different section of the function you want to approximate and therefore a different approximation coefficient vector
+# for any function f you want to approx:
+# coeff_mat_f = zeros(n_cont_coefs,n_discrete_states)
+# for i in discrete_states
+# 	  ftemp = get_cont_vals(f,i)
+#     coeff_mat_f[:,i] = getTensorCoef(ibm,ftemp)
+# end
+#
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+
 # computing moments from simulation
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
@@ -461,63 +493,6 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	dfout = DataFrame(moment = nms, model_value = DataArray([coef(lm_mv),coef(lm_h),coef(lm_w)]), model_sd = DataArray([stderr(lm_mv),stderr(lm_h),stderr(lm_w)]))
 
 	return dfout
-
-
-
-	# # overall ownership rate
-	# own = mean(df[: ,:h])
-
-	# # ownership by age?
-	# ownage = by(df, :age, d -> mean(d[:h]))
-
-	# # find all movers, i.e. people who move at least once
-	# movers = unique(df[df[:,:move].==true, :id])
-	# # fraction of people who never move
-	# nomove = 1 - length(movers) / p.nsim
-
-	# # fraction of people who move twice/more
-	# x = by(df[df[:move].==true,:], :id, d -> DataFrame(N=size(d,1)))    
-	# nummoves = by(x,:N,d -> DataFrame(Num=size(d,1))) 
-
-	# # moving rate by ownership
-	# movebyh = DataFrames.by(df, :h, d -> DataFrames.DataFrame(moverate=mean(d[:move])))
-
-	# # moving rate by age
-	# movebyage = by(df, :age, d -> DataFrame(moverate=mean(d[:move])))
-
-	# # assets by ownership and age
-	# # aggregate in 5-year bins
-	
-	# # assets_hage = by(df, [:age, :h], d -> DataFrame(assets=mean(d[:,:a])))
-
-
-	# assets_h = by(df,  :h, d -> DataFrame(assets=mean(d[:a])))
-	# assets_age = by(df,  :age, d -> DataFrame(assets=mean(d[:a])))
-	# assets_hage = by(df, [ :h, :age] , d -> DataFrame(assets=mean(d[:a])))
-
-	# # # autocorrelation of income by region
-	# # # make a lagged income for each id
-	# # ly = df[:,[:j, :id ,:age, :y]]
-	# # ly = hcat(ly,DataFrame(Ly=@data([0.0 for i in 1:nrow(ly)])))
-	# # for i in 1:nrow(ly)
-	# # 	if ly[i,:age] == 1 
-	# # 		ly[i,:Ly] = NA
-	# # 	else
-	# # 		ly[i,:Ly] = ly[i-1,:y]
-	# # 	end
-	# # end
-
-	# # rhos = by( ly[ly[:age].!=1,:], :j, d -> DataFrame(rho = cor(d[:y],d[:Ly])))
-
-	# # equity
-	# equity = by(df,:age,d->DataFrame(equity=mean(d[:,:eq])))
-
-	# # fraction of people who move with neg equity
-
-	# out = ["own" => own, "ownage" => ownage, "nomove" => nomove, "nummoves" => nummoves, "movebyh" => movebyh, "movebyage" => movebyage, "assets_h" => assets_h, "assets_age" => assets_age, "assets_hage" => assets_hage,"rhos" => rhos, "equity" => equity]
-
-	# return out
-
 end
 
 

@@ -1,8 +1,9 @@
 module mig
 
-using Copulas, GLM, MOpt.transpose, PyPlot, PDMats, Distributions, BSplines #, Debug , BSplines
+using Copulas, GLM, MOpt.transpose, PyPlot, PDMats, Distributions #, Debug , BSplines
 using Reexport
 @reexport using DataFrames
+@reexport using BSplines
 import Base.show
 
 export Param, Model, simplot
