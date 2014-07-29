@@ -48,14 +48,14 @@ function solveFinal!(m::Model,p::Param)
 	for ia = m.aone:p.na
 
 		if ia == m.aone
-			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
-			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
+			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
 
 			m.EVfinal[ia,ih,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
 	
 		elseif ia > m.aone
 
-			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ij,ip] ) )
+			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
 		end
 	end
 
@@ -137,7 +137,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					# ---------------------------------
 
 					for ip=1:p.np 				# regional price deviation
-						price = m.gridsXD["p"][ij,ip]
+						price = m.gridsXD["p"][ip,ij]
 						# given h, price and a, figure out if in neg equtiy
 						def=false
 

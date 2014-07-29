@@ -11,8 +11,8 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 
-include("test/test_approx.jl")
-
+include("test/test_sim.jl")
+	
 # run simulation
 @time x = mig.runSim()
 

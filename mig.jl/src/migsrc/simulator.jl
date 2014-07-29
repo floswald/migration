@@ -69,6 +69,20 @@ function simulate(m::Model,p::Param)
 	#     coeff_mat_f[:,i] = getTensorCoef(ibm,ftemp)
 	# end
 	#
+	# setup FXpaceXD objects:
+	# fx_sh
+	# fx_ch
+	# fx_vh
+	# fx_rho
+
+	# TODO a function that returns a dict of fx objects
+	# this is basically identical to test_FSpaceXD.jl in BSPlines.jl
+	fx = setupFSpaceXD(m::Model)
+
+
+	# 
+
+	# collect in FX = FSpaceXD_collection([fx_sh,fx_ch,fx_vh,fx_rho])
 	# in simulation
 	# =============
 	#
@@ -157,6 +171,10 @@ function simulate(m::Model,p::Param)
 	ss = 0.0
 	yy = 0.0
 
+
+
+
+
 	# begin simulation loop
 	# =====================
 
@@ -183,6 +201,8 @@ function simulate(m::Model,p::Param)
 		moveto = 0
 	
 		for age = 1:T
+
+			# point = [a,y,p,z]
 
 			# record beginning of period state
 			# --------------------------------
@@ -233,6 +253,10 @@ function simulate(m::Model,p::Param)
 				# ktmp[ik] = m.rho[idx10(ik,is,iy,ip,iz,imya,ih+1,itau,ij,age,p)]
 
 				# approximate rho at "a" off grid
+
+				# setindex!(fx["rho"],idx)	# set discrete choice ind on rho
+				# ktmp[ik] = getValue(point,fx["rho"])
+
 				ktmp[ik] = linearapprox(agrid,avec,a,1,p.na)[1]
 			end
 
@@ -283,12 +307,22 @@ function simulate(m::Model,p::Param)
 					avec[iia] = m.vh[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
 					fvec[iia] = m.vfeas[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
 				end
+
+				# setindex!(fx["vh"],idx)
+				# val = getValue(point,fx["vh"])
+				# ss  = getValue(point,fx["sh"])
+				# cons = getValue(point,fx["ch"])
+
 				val = linearapprox(agrid,avec,a,fvec,p)[1]
 				# find consumption and savings
 				for iia in 1:p.na
 					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
 					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
 				end
+
+				# setindex!(ss_fx,idx)
+				# ss = getValue([a,y,p,z],ss_fx)
+				# no way to exclude infeasible values though!
 
 				ss                   = linearapprox(agrid,avec,a,fvec,p)[1] 
 				Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
@@ -389,6 +423,8 @@ function simulate(m::Model,p::Param)
 			ih = ihh
 
 			# iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
+			# draw new values for z,y and p
+
 			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
 			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
 			iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
@@ -412,24 +448,7 @@ end
 
 
 
-# compute approximating coefficients from
-# *) m.vh
-# *) m.rho
-# *) m.sh
-# *) m.ch
-# at each discrete index (age,is,ij,ij,tau,ih,ihh)
-# 
-# continuous variables are (a,z,y,p). for those compute a constant basis function
-# on nx evaluation points each. get inverse of those and store in ibm dict
-#
-# then for each i in prod(age,is,ij,ij,tau,ih,ihh), there is a different section of the function you want to approximate and therefore a different approximation coefficient vector
-# for any function f you want to approx:
-# coeff_mat_f = zeros(n_cont_coefs,n_discrete_states)
-# for i in discrete_states
-# 	  ftemp = get_cont_vals(f,i)
-#     coeff_mat_f[:,i] = getTensorCoef(ibm,ftemp)
-# end
-#
+
 
 
 
@@ -501,9 +520,176 @@ end
 
 
 
+# setting up the FSpace objects for simulation
+function setupFSpaceXD(m::Model,p::Param)
+
+	ndims = 4 # number of cont dimensions
+
+	# ordering of continuous dims
+	# 1) a
+	# 2) y
+	# 3) p
+	# 4) z
+
+	# the return object: a dict of collections of fspaces.
+	fx = Dict{ASCIIString,Dict{Integer,FSpaceXD}}()
+	fx["rho"] = Dict{Integer,FSpaceXD}()
+	fx["vh"]  = Dict{Integer,FSpaceXD}()
+	fx["ch"]  = Dict{Integer,FSpaceXD}()
+	fx["sh"]  = Dict{Integer,FSpaceXD}()
+
+	points = Dict{Integer,Array}()
+	bounds = Dict{Integer,Array}()
+	bsp = Dict{Integer,BSpline}()
+
+	# full basis to compute inverses
+	d = Dict{Integer,Matrix}()
+	id = Dict{Integer,Array{Float64,2}}()
+
+	points[1] = m.grids["assets"]
+	bounds[1] = [m.grids["assets"][1],m.grids["assets"][end]]
+
+	# construct asset basis with custom knots
+	# bsp[1] = BSpline(m.knots["assets"],m.degs["assets"])
+	bsp[1] = BSpline(m.nknots["assets"],m.degs["assets"],bounds[1][1],bounds[1][2])
+
+	for ij   = 1:p.nJ	
+
+		points[2] = m.gridsXD["y"][:,ij]
+		points[3] = m.gridsXD["p"][:,ij]
+		points[4] = m.gridsXD["zsupp"][:,ij]
+
+		bounds[2] = [ points[2][1],points[2][end] ]
+		bounds[3] = [ points[3][1],points[3][end] ]
+		bounds[4] = [ points[4][1],points[4][end] ]
+
+		bsp[2] = BSpline(m.nknots["y"],m.degs["y"],bounds[2][1],bounds[2][2])
+		bsp[3] = BSpline(m.nknots["p"],m.degs["p"],bounds[3][1],bounds[3][2])
+		bsp[4] = BSpline(m.nknots["z"],m.degs["z"],bounds[4][1],bounds[4][2])
+
+		# get full basis for inverses
+		for i=1:ndims
+			d[i] = full(getBasis(points[i],bsp[i]))
+		end
+		for k in collect(keys(d))
+			id[k] = inv(d[k])
+		end
+
+
+		for age  = 1:p.nt-1		
+		for itau = 1:p.ntau		
+		for ih   = 1:2
+		for is   = 1:p.ns
+		for ik   = 1:p.nJ
+
+			# get FSpace for rho
+			# ------------------
+
+			rhotmp = get_cont_vals(ik,is,ih,itau,ij,age,m.rho,p)
+			mycoef1 = getTensorCoef(id,rhotmp)
+			rhoidx = fx_idx_rho(ik,is,ih,itau,ij,age,p)
+			# info("at index $rhoidx")
+			fx["rho"][rhoidx] = FSpaceXD(ndims,mycoef1,bsp)
+
+
+			for ihh  = 1:2
+
+				# get FSpace for vh, ch and sh
+				# ----------------------------
+
+				# vh
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.vh,p)
+				mycoef = getTensorCoef(id,vtmp)
+
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				fx["vh"][idx] = FSpaceXD(ndims,mycoef,bsp)
+
+				# ch
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.ch,p)
+				mycoef = getTensorCoef(id,vtmp)
+
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				fx["ch"][idx] = FSpaceXD(ndims,mycoef,bsp)
+
+				# sh                 ihh,ik,is,ih,itau,ij,it,m.vh,p
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.sh,p)
+				mycoef = getTensorCoef(id,vtmp)
+
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				fx["sh"][idx] = FSpaceXD(ndims,mycoef,bsp)
+
+			end
+
+		end
+		end
+		end
+		end
+		end
+
+	end
+
+	return fx
+
+end
+
+
+# FSpace Indexer functions
+function fx_idx_rho(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+	ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)
+end
+
+function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+	 
+	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)
+end
+
+function fx_idx_cont(ia::Int,ip::Int,iy::Int,iz::Int,p::Param)
+	ia + p.na * (ip + p.np * (iy + p.ny * (iz-1) -1) -1)
+end
 
 
 
+# get values in continuous dims at given discrete state
+# method for idx11
+function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+
+	vout = zeros(p.na*p.np*p.ny*p.nz)
+
+	for iz = 1:p.nz
+	for iy = 1:p.ny
+	for ip = 1:p.np
+	for ia = 1:p.na
+
+		vout[fx_idx_cont(ia,ip,iy,iz,p)] = v[idx11(ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,age,p)]
+
+	end
+	end
+	end
+	end
+
+	return vout
+end
+
+
+# method for idx10
+function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+
+	vout = zeros(p.na*p.np*p.ny*p.nz)
+
+	for ia = 1:p.na
+	for ip = 1:p.np
+	for iy = 1:p.ny
+	for iz = 1:p.nz
+
+		vout[fx_idx_cont(ia,ip,iy,iz,p)] = v[idx10(ik,is,iy,ip,iz,ia,ih,itau,ij,age,p)]
+
+	end
+	end
+	end
+	end
+
+	return vout
+end
 
 
 

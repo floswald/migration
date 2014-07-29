@@ -1,5 +1,4 @@
 
-
 # setting up a model
 
 
@@ -39,6 +38,11 @@ type Model
 	dimnames::DataFrame
 	regnames::DataFrame
 	distance::Array{Any,2}
+
+	# spline approximation settings
+	nknots :: Dict{ASCIIString,Integer}
+	degs   :: Dict{ASCIIString,Integer}
+	knots  :: Dict{ASCIIString,Vector}
 
 	# constructor
 	function Model(p::Param;dropbox=false)
@@ -135,11 +139,11 @@ type Model
 		# p and y grids
 		# -------------
 
-		pgrid = zeros(p.nJ,p.np)
-		ygrid = zeros(p.nJ,p.ny)
+		pgrid = zeros(p.np,p.nJ)
+		ygrid = zeros(p.ny,p.nJ)
 		for j in 1:p.nJ
-			ygrid[j,:] = linspace(VAR_coef[j,:lb_y][1],VAR_coef[j,:ub_y][1],p.ny)
-			pgrid[j,:] = linspace(VAR_coef[j,:lb_p][1],VAR_coef[j,:ub_p][1],p.np)
+			ygrid[:,j] = linspace(VAR_coef[j,:lb_y][1],VAR_coef[j,:ub_y][1],p.ny)
+			pgrid[:,j] = linspace(VAR_coef[j,:lb_p][1],VAR_coef[j,:ub_p][1],p.np)
 		end
 
 		# grid for individual income (based on ygrid)
@@ -153,7 +157,7 @@ type Model
 			for iy in 1:p.ny
 				for it in 1:p.nt-1
 					for iz in 1:p.nz
-						zgrid[iz,iy,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[j,iy]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+						zgrid[iz,iy,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 					end
 				end
 			end
@@ -170,10 +174,11 @@ type Model
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
-		x = [linspace(bounds["assets"][1],50.0,p.na-4),linspace(70.0,bounds["assets"][2],4)]
-		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
+		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
+		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
+		x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 
-		println("assets = $x")
+		# println("assets = $x")
 		grids["assets"]  = x
 		grids["housing"] = linspace(0.0,1.0,p.nh)
 		grids["W"]       = zeros(p.na)
@@ -220,13 +225,34 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "movecost" => mc ,"Gs" => kmat]
+		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat]
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "a", "h", "tau", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
 
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist)
+		# spline settings
+		# ===============
+
+		degs   = Dict{ASCIIString,Int}()
+		nknots = Dict{ASCIIString,Int}()
+		knots  = Dict{ASCIIString,Vector}()
+
+		degs["assets"] = 3
+		degs["y"] = 1
+		degs["p"] = 1
+		degs["z"] = 1
+
+		nknots["assets"] = p.na - degs["assets"] + 1
+		nknots["p"] = p.np - degs["p"] + 1
+		nknots["y"] = p.ny - degs["y"] + 1
+		nknots["z"] = p.nz - degs["z"] + 1
+
+		# making sure all knot spans are active
+		knots["assets"] = [linspace(grids["assets"][1],grids["assets"][end-1]-1,p.na - degs["assets"] ) , grids["assets"][end]]
+
+
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,nknots,degs,knots)
 
 	end
 
@@ -240,7 +266,17 @@ function setrand!(m::Model)
 	m.v = reshape(rand(length(m.v)),size(m.v))
 	m.vh = reshape(rand(length(m.vh)),size(m.vh))
 	m.vbar = reshape(rand(length(m.vbar)),size(m.vbar))
+	m.rho  = reshape(rand(length(m.rho)),size(m.rho))
 	m.EVfinal = reshape(rand(length(m.EVfinal)),size(m.EVfinal))
+	return nothing
+end
+
+function setincreasing!(m::Model)
+	m.v = reshape(1.0:length(m.v),size(m.v))
+	m.vh = reshape(1.0:length(m.vh),size(m.vh))
+	m.vbar = reshape(1.0:length(m.vbar),size(m.vbar))
+	m.rho  = reshape(1.0:length(m.rho),size(m.rho))
+	m.EVfinal = reshape(1.0:length(m.EVfinal),size(m.EVfinal))
 	return nothing
 end
 
@@ -329,14 +365,14 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 
 				# setup MvNormal on that state
 				C = PDMat(sigs[:,:,j])
-				mvn = MvNormal([ygrid[j,iy],pgrid[j,ip]],C)
+				mvn = MvNormal([ygrid[iy,j],pgrid[ip,j]],C)
 				ycoef = array(df[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
 				pcoef = array(df[j,[:p_Intercept, :p_Lp, :p_Ly]])
 
 				for ip1 in 1:p.np
 					for iy1 in 1:p.ny
 						# get points to evaluate at
-						xdata = vcat(1.0,pgrid[j,ip1],ygrid[j,iy1])
+						xdata = vcat(1.0,pgrid[ip1,j],ygrid[iy1,j])
 						new_y  = ycoef * xdata
 						new_p  = pcoef * xdata
 						Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1),j] = pdf(mvn,[new_y,new_p])
