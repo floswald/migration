@@ -3,6 +3,8 @@
 
 # mig module plotting functions
 
+using PyPlot
+
 
 function vhplot(m::Model,p::Param,idx)
 

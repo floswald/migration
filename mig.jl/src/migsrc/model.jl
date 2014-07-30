@@ -296,37 +296,37 @@ end
 
 
 
-function makeTransition(n,rho)
+# function makeTransition(n,rho)
 
-	u = linspace(1/n, 1-1/n, n)
-	u = [repmat(u,n,1) repmat(u,1,n)'[:] ]
+# 	u = linspace(1/n, 1-1/n, n)
+# 	u = [repmat(u,n,1) repmat(u,1,n)'[:] ]
 	
-	J = length(rho)
+# 	J = length(rho)
 
-	if J==1
-		G = zeros(n,n)
-		Cop = NormalCopula(2,rho)
-		G = reshape(dnormCopula(u,Cop),n,n)
+# 	if J==1
+# 		G = zeros(n,n)
+# 		Cop = NormalCopula(2,rho)
+# 		G = reshape(dnormCopula(u,Cop),n,n)
 
-		# normalize by row sums
-		G = G./sum(G,2)
-		return G
+# 		# normalize by row sums
+# 		G = G./sum(G,2)
+# 		return G
 
-	else
+# 	else
 
-		G = zeros(n,n,J)
-		for i=1:J
-			Cop = NormalCopula(2,rho[i])
-			G[:,:,i] = reshape(dnormCopula(u,Cop),n,n)
-		end
+# 		G = zeros(n,n,J)
+# 		for i=1:J
+# 			Cop = NormalCopula(2,rho[i])
+# 			G[:,:,i] = reshape(dnormCopula(u,Cop),n,n)
+# 		end
 
-		# normalize by row sums
-		G = G./sum(G,2)
-		return G
+# 		# normalize by row sums
+# 		G = G./sum(G,2)
+# 		return G
 
-	end
+# 	end
 
-end
+# end
 
 function rouwenhorst(df::DataFrame,bounds::DataFrame,ygrid::Matrix,p::Param)
 
