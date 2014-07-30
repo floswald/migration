@@ -221,7 +221,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 												# store save and cons in h-conditional arrays
 												if rh[1] > p.myNA
-													m.vfeas[hidx] = true
+													# m.vfeas[hidx] = true
 													m.vh[hidx] = rh[1] 
 													m.sh[hidx] = rh[2] 
 													m.ch[hidx] = rh[3]
@@ -231,7 +231,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												end
 
 												if cash < 0 && ihh==0 && ih==0
-													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
+													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
 													println("cash at ihh=$ihh is $cash")
 													println("maxvalue = $(r[1])")
 												end
@@ -311,7 +311,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
-												m.vfeas[hidx] = true
+												# m.vfeas[hidx] = true
 												m.vh[hidx]   = r[1]
 												m.sh[hidx]   = r[2] 
 												m.ch[hidx]   = r[3] 
@@ -326,7 +326,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 											if cash < 0 && ih==0
-												println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),P=$iP,p=$price,y=$(round(y)),s=$is,k=$ik")
+												println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
 												println("cash at ihh=$ihh is $cash")
 												println("maxvalue = $(r[1])")
 												println("maxindex = $(r[2])")
@@ -733,6 +733,31 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasib
 	else 
 		r = p.myNA
 	end
+	return (r,jinf)
+end
+
+function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,p::Param)
+	n = length(y)
+	lo = 1
+	hi = n
+	r = 0.0
+	# behaviour on bounds 
+	if xi <= x[1]
+		r = y[1] 
+		return (r,1)
+
+	elseif xi>= x[n]
+		r = y[n] 
+		return (r,n)
+
+	# if have to find interval
+	elseif hi - lo > 1
+		jinf = searchsortedlast(x,xi,lo,hi,Base.Forward)
+		# if not, lo is jinf
+	else
+		jinf = lo
+	end
+	r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
 	return (r,jinf)
 end
 

@@ -73,8 +73,8 @@ type Param
 		if size==1
 
 			# super small: use for tests
-			na    = 5
-			namax  = 15
+			na    = 10
+			namax  = 11
 			nz    = 3
 			nh    = 2
 			ntau  = 2
@@ -97,7 +97,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 1000
+			nsim  = 10000
 
 		elseif size==3
 		# big: maximal size for memory on my box

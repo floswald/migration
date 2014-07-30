@@ -120,6 +120,10 @@ type Model
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
 		inc_rho   = DataFrame(read_rda(joinpath(indir,"rtable.rda"))["rho"])
 
+		# TODO fix those estimates!
+		# for now manually overwrite with higher rho values
+		inc_rho[:,:Lresid] = [0.98 for i=1:p.nJ]
+
 		# grids for regional prices and incomes
 
 
@@ -150,7 +154,7 @@ type Model
 		# -------------------------------------------
 
 		# TODO rouwenhorst => array (nJ,nz) supports and array (nJ,nz,nz) transitions
-		(zsupp,Gz) = rouwenhorst(inc_rho,p)
+		(zsupp,Gz) = rouwenhorst(inc_rho,inc_coefs,ygrid,p)
 
 		zgrid = zeros(p.nz,p.ny,p.nt-1,p.nJ)
 		for j in 1:p.nJ
@@ -174,9 +178,9 @@ type Model
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
+		x = [linspace(bounds["assets"][1],50.0,p.na-5),linspace(70.0,bounds["assets"][2],5)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
-		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
-		x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
+		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 
 		# println("assets = $x")
 		grids["assets"]  = x
@@ -324,7 +328,7 @@ function makeTransition(n,rho)
 
 end
 
-function rouwenhorst(df::DataFrame,p::Param)
+function rouwenhorst(df::DataFrame,bounds::DataFrame,ygrid::Matrix,p::Param)
 
 	P = zeros(p.nz,p.nz,p.nJ)
 	z = zeros(p.nz,p.nJ)
@@ -332,7 +336,11 @@ function rouwenhorst(df::DataFrame,p::Param)
 	for j in 1:p.nJ
 		xz,xp = rouwenh(df[j,:Lresid][1],df[j,:Intercept][1],df[j,:sigma][1],p.nz)
 		P[:,:,j] = xp
-		z[:,j] = xz
+		# scale z into bounds
+		ybar = mean(log(ygrid[:,j]))
+		zlow = log(bounds[j,:q20]) - ybar
+		zhigh = log(bounds[j,:q95]) - ybar
+		z[:,j] = linspace(zlow,zhigh,p.nz)
 	end
 	return (z,P)
 end
@@ -391,6 +399,27 @@ end
 # 	fid = h5open(ff,"r")
 # 	for obj in fid[path] 
 
+function Gyp_indices(p::Param,show=false)
+
+	idx = zeros(Int,p.np*p.ny,3)
+	for ip in 1:p.np
+		for iy in 1:p.ny
+
+			idx[iy + p.ny*(ip-1),1] = iy
+			idx[iy + p.ny*(ip-1),2] = ip
+			idx[iy + p.ny*(ip-1),3] = iy + p.ny*(ip-1)
+
+			if show
+				for ip1 in 1:p.np
+					for iy1 in 1:p.ny
+						println("iy  = $iy, ip  = $ip || iy1 = $iy1, ip1 = $ip1 || (row,col) = ($(iy + p.ny*(ip-1)), $(iy1 + p.ny*(ip1-1)))")
+					end
+				end
+			end
+		end
+	end
+	return idx
+end
 
 
 function show(io::IO, M::Model)

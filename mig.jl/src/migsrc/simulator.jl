@@ -75,12 +75,10 @@ function simulate(m::Model,p::Param)
 	# fx_vh
 	# fx_rho
 
-	# TODO a function that returns a dict of fx objects
-	# this is basically identical to test_FSpaceXD.jl in BSPlines.jl
-	fx = setupFSpaceXD(m::Model)
-
-
-	# 
+	# TODO this function is much too slow.
+	# this basically puts the continuous approximation of (y,p,z,a) to death. for now at least.
+	# way out: also approximate age dimension
+	# fx = setupFSpaceXD(m::Model)
 
 	# collect in FX = FSpaceXD_collection([fx_sh,fx_ch,fx_vh,fx_rho])
 	# in simulation
@@ -100,6 +98,7 @@ function simulate(m::Model,p::Param)
 	ygrid = m.gridsXD["y"]
 	pgrid = m.gridsXD["p"]
 	zgrid = m.gridsXD["z"]
+	ypidx = Gyp_indices(p)  # array with cols iy,ip,idx
 
 	# drawing the shocks 
 	# ==================
@@ -109,8 +108,8 @@ function simulate(m::Model,p::Param)
 	# all of those should be non-uniform probably
 	G0tau = Categorical([1-p.taudist, p.taudist])	# type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
-	G0y   = Categorical([1/p.ny for i=1:p.ny])
-	G0p   = Categorical([1/p.np for i=1:p.np])
+	G0yp   = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
+	# G0p   = Categorical([1/p.np for i=1:p.np])
 	# G0P   = Categorical([1/p.nP for i=1:p.nP])
 	x     = [1/i^2 for i=1:length(m.aone:p.na)]
 	x     = x / sum(x)
@@ -121,9 +120,10 @@ function simulate(m::Model,p::Param)
 	# prepare cumsum of probability matrices
 	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
 	# cumGP  = cumsum(m.grids2D["GP"],2)	# transition matrices cumulate over dim 2
-	cumGp  = cumsum(m.gridsXD["Gy"],2)
-	cumGy  = cumsum(m.gridsXD["Gp"],2)
+	# cumGp  = cumsum(m.gridsXD["Gy"],2)
+	# cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
+	cumGyp  = cumsum(m.gridsXD["Gyp"],2)
 	# cumGzM = cumsum(m.gridsXD["GzM"],2)
 	cumGs  = cumsum(m.gridsXD["Gs"],2)
 
@@ -135,17 +135,15 @@ function simulate(m::Model,p::Param)
 	Dcash   = zeros(p.nsim*(T))	# consu
 	Da      = zeros(p.nsim*(T))	# asset value
 	Dy      = zeros(p.nsim*(T))	# region y value
-	Dz      = zeros(p.nsim*(T))	# income shock value
 	Dincome = zeros(p.nsim*(T))	# income value
 	Dp      = zeros(p.nsim*(T))	# house price value
 	Dj      = zeros(Int,p.nsim*(T))	# location index
 	Dh      = zeros(Int,p.nsim*(T))	# housing state
 	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
-	# DiP     = zeros(Int,p.nsim*(T))	# macro P index
+	Diyp    = zeros(Int,p.nsim*(T))	# region yp joint index
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
-	# DiS     = zeros(Int,p.nsim*(T))	# savings index
-	DS     = zeros(p.nsim*(T))	# savings values
+	DS      = zeros(p.nsim*(T))	# savings values
 	Diz     = zeros(Int,p.nsim*(T))	# z index
 	DM      = zeros(Int,p.nsim*(T))	# move
 	DMt     = zeros(Int,p.nsim*(T))	# move
@@ -182,10 +180,9 @@ function simulate(m::Model,p::Param)
 	for i = 1:p.nsim
 
 		is   = rand(G0k)
-		iy   = rand(G0y)
-		# ip   = rand(G0p)
-		ip   = 2
-		# iP   = rand(G0P)
+		iyp  = rand(G0yp)
+		iy   = ypidx[iyp,1]
+		ip   = ypidx[iyp,2]
 		# iz   = rand(G0z)
 		iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
 		# ia   = rand(G0a) + m.aone - 1
@@ -207,7 +204,7 @@ function simulate(m::Model,p::Param)
 			# record beginning of period state
 			# --------------------------------
 
-			yy = income(zgrid[ iz,ij,age ], ygrid[iy,ij])
+			yy = zgrid[ iz,iy,age,ij ]
 
 			# flag for downpayment constraint
 			canbuy = a + yy > p.chi * m.gridsXD["p"][ip,ij]
@@ -218,15 +215,15 @@ function simulate(m::Model,p::Param)
 			Di[age + T*(i-1)]      = i
 			Dh[age + T*(i-1)]      = ih
 			Da[age + T*(i-1)]      = a
-			Dy[age + T*(i-1)]      = ygrid[iy,ij]	# SLOW
-			Dz[age + T*(i-1)]      = zgrid[iz,ij,age]
+			Dy[age + T*(i-1)]      = ygrid[iy,ij]	
 			Dp[age + T*(i-1)]      = pgrid[ip,ij]
 			Dincome[age + T*(i-1)] = yy
 			Diz[age + T*(i-1)]     = iz
+			Diyp[age + T*(i-1)]    = iyp
 			Dip[age + T*(i-1)]     = ip
 			Diy[age + T*(i-1)]     = iy
 			Dkids[age + T*(i-1)]   = is-1
-			Dcanbuy[age + T*(i-1)]   = canbuy
+			Dcanbuy[age + T*(i-1)] = canbuy
 
 
 			# get value for each location
@@ -234,7 +231,7 @@ function simulate(m::Model,p::Param)
 
 				# interpolate rho function in asset dim
 				for iia in 1:p.na
-					avec[iia] = m.rho[idx10(ik,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+					avec[iia] = m.rho[idx10(ik,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 				end
 
 				# there is an approximation issue here:
@@ -304,8 +301,14 @@ function simulate(m::Model,p::Param)
 
 				ihh = 0
 				for iia in 1:p.na
-					avec[iia] = m.vh[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-					fvec[iia] = m.vfeas[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+					avec[iia] = m.vh[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+
+					# note: i have an additional feasibility flag stored in vfeas.
+					# this basically forces an approximation to return myNA if any of the two
+					# interpolating points are myNA (and not just their average!)
+					# this was necessary for some approximations.
+					# turned off now
+					# fvec[iia] = m.vfeas[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 				end
 
 				# setindex!(fx["vh"],idx)
@@ -313,28 +316,22 @@ function simulate(m::Model,p::Param)
 				# ss  = getValue(point,fx["sh"])
 				# cons = getValue(point,fx["ch"])
 
-				val = linearapprox(agrid,avec,a,fvec,p)[1]
+				# val = linearapprox(agrid,avec,a,fvec,p)[1]
+				val = linearapprox(agrid,avec,a,p)[1]
 				# find consumption and savings
 				for iia in 1:p.na
-					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 				end
 
 				# setindex!(ss_fx,idx)
 				# ss = getValue([a,y,p,z],ss_fx)
 				# no way to exclude infeasible values though!
 
-				ss                   = linearapprox(agrid,avec,a,fvec,p)[1] 
-				Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
-					if (i==1) & (age==8)
-						println("you are in MOVE")
-						println("fvec = $fvec")
-						println("avec = $avec")
-						println("avec2 = $avec2")
-						println("val = $val")
-						println("ss = $ss")
-						println("a = $a")
-					end
+				# ss                   = linearapprox(agrid,avec,a,fvec,p)[1] 
+				# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
+				ss                   = linearapprox(agrid,avec,a,p)[1] 
+				Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
 			
 			else # stay
 
@@ -343,61 +340,51 @@ function simulate(m::Model,p::Param)
 
 					# find housing choice
 					for iia in 1:p.na
-						avec[iia]  = m.vh[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.vh[idx11(2,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						fvec[iia]  = m.vfeas[idx11(1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						fvec2[iia] = m.vfeas[idx11(2,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.vh[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						avec2[iia] = m.vh[idx11(2,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						# fvec[iia]  = m.vfeas[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						# fvec2[iia] = m.vfeas[idx11(2,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
 					# if either of a[low] and a[high] are NA, approximation must return NA
-					v1tmp = linearapprox(agrid,avec,a,fvec,p)[1]
-					v2tmp = linearapprox(agrid,avec2,a,fvec2,p)[1]
+					# v1tmp = linearapprox(agrid,avec,a,fvec,p)[1]
+					# v2tmp = linearapprox(agrid,avec2,a,fvec2,p)[1]
+					v1tmp = linearapprox(agrid,avec,a,p)[1]
+					v2tmp = linearapprox(agrid,avec2,a,p)[1]
 					ihh = v1tmp > v2tmp ? 0 : 1
 					val = v1tmp > v2tmp ? v1tmp : v2tmp
 					# find consumption and savings
 					for iia in 1:p.na
-						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
 
-					fvecs = (fvec,fvec2)
+					# fvecs = (fvec,fvec2)
 
-					ss                   = linearapprox(agrid,avec,a,fvecs[ihh+1],p)[1] 	# false here for NOT linearly extrapolating
-					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvecs[ihh+1],p)[1]
-					if (i==1) & (age==8)
-						println("you are in STAY and can buy")
-						println("fvec = $fvec")
-						println("avec = $avec")
-						println("avec2 = $avec2")
-						println("val = $val")
-						println("ss = $ss")
-						println("a = $a")
-					end
+					# ss                   = linearapprox(agrid,avec,a,fvecs[ihh+1],p)[1] 	
+					# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvecs[ihh+1],p)[1]
+					ss                   = linearapprox(agrid,avec,a,p)[1] 	
+					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
+					
 
 				# current renter who cannot buy
 				else
 					ihh = 0
 					for iia in 1:p.na
-						avec[iia]  = m.vh   [idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						fvec[iia]  = m.vfeas[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.vh   [idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						# fvec[iia]  = m.vfeas[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
 					val = linearapprox(agrid,avec,a,fvec,p)[1]
 					# find consumption and savings
 					for iia in 1:p.na
-						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iy,ip,iz,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
 
-					ss                   = linearapprox(agrid,avec, a,fvec,p)[1] 	# false here for NOT linearly extrapolating
-					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
-					if (i==1) & (age==8)
-						println("you are in STAY and canNOT buy")
-						println("fvec = $fvec")
-						println("avec = $avec")
-						println("avec2 = $avec2")
-						println("val = $val")
-						println("ss = $ss")
-						println("a = $a")
-					end
+					# ss                   = linearapprox(agrid,avec, a,fvec,p)[1] 	
+					# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
+					ss                   = linearapprox(agrid,avec, a,p)[1] 	
+					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
+				
 				end
 			end
 
@@ -405,7 +392,7 @@ function simulate(m::Model,p::Param)
 			# ----------------------
 
 			DS[age + T*(i-1)]    = ss
-			Dcash[age + T*(i-1)] = cashFunction(a,income(zgrid[ iz,ij,age ], ygrid[iy,ij]),ih,ihh,m.gridsXD["p"][ip,moveto],move,moveto,p)
+			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,m.gridsXD["p"][ip,moveto],move,moveto,p)
 
 			Dv[age + T*(i-1)]      = val
 			Ddist[age + T*(i-1)]   = m.distance[ij,moveto]
@@ -422,13 +409,14 @@ function simulate(m::Model,p::Param)
 			ij = moveto
 			ih = ihh
 
-			# iP = searchsortedfirst( cumGP[iP,:][:] , rand() ) 	# SLOW, all of them
 			# draw new values for z,y and p
 
-			ip = searchsortedfirst( cumGp[ip,:,moveto][:], rand() )
-			iy = searchsortedfirst( cumGy[iy,:,moveto][:], rand() )
-			iz = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
-			is = searchsortedfirst( cumGs[is,:,age][:], rand() )
+			iyp = searchsortedfirst( cumGyp[iy + p.np * (ip-1),:,moveto][:], rand())
+			iz  = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
+			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
+
+			iy   = ypidx[iyp,1]
+			ip   = ypidx[iyp,2]
 
 		end	# age t
 

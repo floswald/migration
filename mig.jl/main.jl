@@ -11,7 +11,6 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 
-include("test/test_sim.jl")
 	
 # run simulation
 @time x = mig.runSim()
@@ -51,7 +50,8 @@ mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],[
 include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
-include("test/test_Tensors.jl")
+# include("test/test_Tensors.jl")
+# include("test/test_sim.jl")    # disabled
 	
 
 

@@ -235,10 +235,17 @@ Export.IncomeProcess <- function(dat){
 	# why are those rhos so low?????
 	# use 0.97 as in french 2005 for now. shit.
 
+	# add the 0.2 and 0.95 percentiles of income in each region 
+	# to scale the shocks
+	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.2,0.95),na.rm=T)) 
+	names(bounds)[-1] <- c("q20","q95")
+
+
 	# make a table with those
 	ztab <- as.data.frame(t(sapply(lmods,coef)))
 	ztab$Division <- rownames(ztab)
 	ztab$sigma <- unlist(lapply(lmods,function(x) summary(x)$sigma))
+	ztab <- merge(ztab,bounds,by="Division")
 	rtab <- as.data.frame(t(sapply(rhos,coef)))
 	rtab$Division <- rownames(rtab)
 	rtab$sigma <- unlist(lapply(rhos,function(x) summary(x)$sigma))

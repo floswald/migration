@@ -244,78 +244,103 @@ function simplot(sim::DataFrame,n::Int)
 	gdf = groupby(sim,:id)
 
 	subplot(4,4,1)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:income])
-		end
+	ylim((0.0,maximum(sim[:income])+5))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:income])
+	end
 	title("income")
+
 	subplot(4,4,2)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:c])
-		end
+	ylim((0.0,maximum(sim[:income])+5))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:c])
+	end
 	title("cons")
+
 	subplot(4,4,3)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:a])
-		end
+	for sdf in gdf
+		plot(sdf[:age],sdf[:a])
+	end
 	title("assets")
+
 	subplot(4,4,4)
-	ylim((-0.1,1.1))
-		for sdf in gdf
-			plot(sdf[:age],sdf[:h])
-		end
-	title("own")
-	subplot(4,4,5)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:wealth])
-		end
-	title("wealth")
-	subplot(4,4,6)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:j])
-		end
-	title("location")
-	subplot(4,4,7)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:y])
-		end
-	title("region income")
-	subplot(4,4,8)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:p])
-		end
-	title("region price")
-	subplot(4,4,9)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:v])
-		end
-	title("lifetime utility(v)")
-	subplot(4,4,10)
-	ylim((-0.1,1.1))
-		for sdf in gdf
-			plot(sdf[:age],sdf[:kids])
-		end
-	title("kids")
-	subplot(4,4,11)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:save])
-		end
+	for sdf in gdf
+		plot(sdf[:age],sdf[:save])
+	end
 	title("save")
+
+	subplot(4,4,5)
+	ylim((-0.1,1.1))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:h])
+	end
+	title("own")
+
+	subplot(4,4,6)
+	for sdf in gdf
+		plot(sdf[:age],sdf[:wealth])
+	end
+	title("wealth")
+
+	subplot(4,4,7)
+	ylim((0.5,9.5))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:j])
+	end
+	title("current location")
+
+	subplot(4,4,8)
+	for sdf in gdf
+		plot(sdf[:age],sdf[:y])
+	end
+	title("region income")
+
+	subplot(4,4,9)
+	for sdf in gdf
+		plot(sdf[:age],sdf[:p])
+	end
+	title("region price")
+
+	subplot(4,4,10)
+	for sdf in gdf
+		plot(sdf[:age],sdf[:v])
+	end
+	title("lifetime utility(v)")
+
+	subplot(4,4,11)
+	ylim((-0.1,1.1))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:kids])
+	end
+	title("kids")
+
 	subplot(4,4,12)
-		for sdf in gdf
-			plot(sdf[:age],sdf[:moveto])
-		end
+	ylim((0.5,9.5))
+	for sdf in gdf
+		plot(sdf[:age],sdf[:moveto])
+	end
 	title("moveto")
-	plts = Array(Any,n)
+
 	subplot(4,4,13)
 	ylim((-0.1,1.1))
-		for i in 1:length(nr)
-			plt, = plot(sim[sim[:id].==nr[i],:age],sim[sim[:id].==nr[i],:hh])
-			plts[i] = plt
-		end
-		# for sdf in gdf
-		# 	plot(sdf[:age],sdf[:hh])
-		# end
+	for sdf in gdf
+		plot(sdf[:age],sdf[:hh])
+	end
 	title("hchoice")
+
+	plts = Any[]
+	ids = Int[]
+	idcount = 1
+	subplot(4,4,14)
+	ylim((0.5,n + 0.5))
+	for sdf in gdf
+		plt, = plot(sdf[:age],ones(length(sdf[:age])).*idcount)
+		push!(plts,plt)
+		push!(ids,sdf[1,:id])
+		idcount += 1
+	end
+	legend(plts,["indiv $(ids[i])" for i=1:n],"lower right")
+	title("legend")
 	suptitle("ids: $nr")
 end
 
