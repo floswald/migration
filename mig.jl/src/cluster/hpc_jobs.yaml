@@ -31,7 +31,7 @@ irid_slices:
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  run:   slices.jl 
+  run:   pbs_slices.jl 
   exec:   /home/eisuc151/local/bin/julia
 
 
@@ -46,5 +46,5 @@ irid_estim:
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  run:   estimation.jl 
+  run:   pbs_estim.jl 
   exec:   /home/eisuc151/local/bin/julia
