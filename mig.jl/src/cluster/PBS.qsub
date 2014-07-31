@@ -10,7 +10,7 @@
 #PBS -m ea
 
 # Change to working directory
-cd {{wd}}
+cd $PBS_O_WORKDIR
 
 # load all modules required for julia
 module load gcc/4.8.1

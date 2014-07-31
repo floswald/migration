@@ -17,7 +17,7 @@ ucl_estim:
   logerr:   mig.err
   template: SGE.qsub
   wd: /data/uctpfos/git/migration/mig.jl/src/cluster
-  run:   sge_estim.jl 
+  run:   estimation.jl 
 
 
 irid_slices:
@@ -26,13 +26,12 @@ irid_slices:
   nnodes:   3
   ppnodes:   12
   numprocs:   36
-  hours: 00
-  mins: 45
+  hours: 02
+  mins: 10
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  wd: /home/eisuc151/git/migration/mig.jl/src/cluster
-  run:   pbs_slices.jl 
+  run:   slices.jl 
 
 
 irid_estim:
@@ -46,5 +45,4 @@ irid_estim:
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  wd: /home/eisuc151/git/migration/mig.jl/src/cluster
-  run:   pbs_estim.jl 
+  run:   estimation.jl 
