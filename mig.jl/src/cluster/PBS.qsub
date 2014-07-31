@@ -6,6 +6,8 @@
 #PBS -N {{name}}
 #PBS -o {{logout}}
 #PBS -e {{logerr}}
+#PBS -M florian.oswald@gmail.com
+#PBS -m ea
 
 # Change to working directory
 cd {{wd}}
