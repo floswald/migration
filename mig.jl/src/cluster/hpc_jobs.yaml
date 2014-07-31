@@ -1,0 +1,48 @@
+ucl_slices:
+  name:   mig-slices
+  desc:   slices of mig
+  ncore:   5
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: SGE.qsub
+  wd: /data/uctpfos/git/migration/mig.jl/src/cluster
+  run:   sge_slices.jl 
+
+
+ucl_estim:
+  name:   mig-smm
+  desc:   SMM estimation of mig
+  ncore:   5
+  logout:   mig.log
+  logerr:   mig.err
+  template: SGE.qsub
+  wd: /data/uctpfos/git/migration/mig.jl/src/cluster
+  run:   sge_estim.jl 
+
+
+irid_slices:
+  name:   mig-slices  
+  desc:   slices of mig
+  nnodes:   3
+  ppnodes:   12
+  numprocs:   36
+  walltime: 05:00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  wd: /home/eisuc151/git/migration/mig.jl/src/cluster
+  run:   pbs_slices.jl 
+
+
+irid_estim:
+  name:   mig-slices  
+  desc:   SMM of mig
+  nnodes:   3
+  ppnodes:   12
+  numprocs:   36
+  walltime: 05:00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  wd: /home/eisuc151/git/migration/mig.jl/src/cluster
+  run:   pbs_estim.jl 

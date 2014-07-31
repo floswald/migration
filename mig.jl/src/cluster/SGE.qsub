@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 echo "starting julia qsub script file"
 source ~/.bash_profile
@@ -20,4 +20,4 @@ module load sge/2011.11
 echo ""
 
 echo "calling julia now"
-julia {{run}}
+julia {{run}} 
