@@ -32,6 +32,7 @@ irid_slices:
   logerr:   migslices.err
   template: PBS.qsub
   run:   slices.jl 
+  exec:   /home/eisuc151/local/bin/julia
 
 
 irid_estim:
@@ -46,3 +47,4 @@ irid_estim:
   logerr:   migslices.err
   template: PBS.qsub
   run:   estimation.jl 
+  exec:   /home/eisuc151/local/bin/julia
