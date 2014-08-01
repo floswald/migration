@@ -181,7 +181,8 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset96.RData"),verbose)
 		if (verbose) cat("done with 1996 panel.\n")
 
-	} else if ("2001" %in% which){
+	} 
+	if ("2001" %in% which){
 
 		# extract 2001
 		# ============
@@ -226,7 +227,9 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset01.RData"),verbose)
 		if (verbose) cat("done with 2001 panel.\n")
 
-	} else if ("2004" %in% which){
+	} 
+
+	if ("2004" %in% which){
 
 		# extract 2004
 		# ============
@@ -266,7 +269,9 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset04.RData"),verbose)
 		if (verbose) cat("done with 2004 panel.\n")
 
-	} else if ("2008" %in% which){
+	} 
+   
+    if ("2008" %in% which){
 
 		# extract 2008
 		# ============
@@ -309,7 +314,9 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		ExtractorSippDB(dbfile,ck,which.core,which.tm,which.wgt,tk,subset,outfile=file.path(dropbox,"subset08.RData"),verbose)
 		if (verbose) cat("done with 2008 panel.\n")
 
-	} else if ("Mig_2008" %in% which){	
+	} 
+
+	if ("Mig_2008" %in% which){	
 
 		# extract 2008 Migration history
 		# ============
