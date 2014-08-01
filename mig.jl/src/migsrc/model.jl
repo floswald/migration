@@ -220,7 +220,7 @@ type Model
 				for ik in 1:p.nJ
 					for ih in 0:1
 						for is in 1:p.ns
-							mc[it,ij,ik,ih+1,is+1] = (ij!=ik) * (p.MC0 + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
+							mc[it,ij,ik,ih+1,is] = (ij!=ik) * (p.MC0 + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
 						end
 					end
 				end
