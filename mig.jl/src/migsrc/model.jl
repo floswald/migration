@@ -69,7 +69,6 @@ type Model
 		vbar = fill(p.myNA,dimvec2)
 
 		bounds = Dict{ASCIIString,(Float64,Float64)}()
-		bounds["tau"]        = (0.0,0.1)
 		# bounds["Y"]          = (0.5,1.5)
 
 
@@ -186,7 +185,7 @@ type Model
 		grids["assets"]  = x
 		grids["housing"] = linspace(0.0,1.0,p.nh)
 		grids["W"]       = zeros(p.na)
-		grids["tau"]     = linspace(0.0,1.0,p.ntau)
+		grids["tau"]     = linspace(0.0,p.tau,p.ntau)
 
 		aone  = findfirst(grids["assets"].>=0)
 
@@ -220,8 +219,8 @@ type Model
 			for ij in 1:p.nJ
 				for ik in 1:p.nJ
 					for ih in 0:1
-						for is in 0:(p.ns-1)
-							mc[it,ij,ik,ih+1,is+1] = (ij!=ik) * (p.MC0 +	 p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + is*p.MC4 )
+						for is in 1:p.ns
+							mc[it,ij,ik,ih+1,is+1] = (ij!=ik) * (p.MC0 + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
 						end
 					end
 				end
