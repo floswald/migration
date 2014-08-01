@@ -493,7 +493,7 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 
 
 # plot model slices
-plotModelSlices <- function(path="~/Dropbox/mobility/output/model/data_repo/out_graphs_jl/JL_tempdir"){
+plotModelSlices <- function(path="~/Dropbox/mobility/output/model/data_repo/out_data_jl"){
 	# load data
 	vals = read.csv(file.path(path,"migslice1.csv"))
 	moms = read.csv(file.path(path,"migslice2.csv"))

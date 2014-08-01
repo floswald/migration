@@ -166,14 +166,15 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 						 "thhtwlth",    # total HH wealth 
 						 "thhtheq",     # total HH home equity
 						 "thhmortg",    # HH mortgage principal
+						 "thhore",      # equity in real estate that is not your home such as rental properties and other real estate
 						 "ehbuyyr",     # year bought
 						 "thomeamt",    # monthly rent/mortgage payment
 						 "thhintbk",    # Interest Earning assets held in banking institutions
 						 "thhintot",    # Interest Earning assets held in other institutions
 						 "tpropval"),   # how much do you think you could sell your house for today?
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore","thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore","thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 		which.wgt <- "wgtw12"
 		subset = "WHERE eoutcome < 203 AND errp IN (1,2) AND tage > 15"
 
@@ -214,9 +215,9 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		which.tm <- c(2,3,6,9)
                                              
 		tk     <- list(c("ssuid", "epppnum", "tbrstate","eprevres", "toutinyr", "tmovest","tmovyryr", "eprevten","tprstate"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhore", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 		which.wgt <- "wgtw9"
 
 		# subset: correct interview status and only reference persons of age > 15.
@@ -257,8 +258,8 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		which.core <- 1:12
 		which.tm <- c(2,3,6)
 		tk     <- list(c("ssuid", "epppnum", "tbrstate", "eprevres", "toutinyr", "tmovest","tmovyryr", "eprevten","tprstate"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		               c("ssuid", "epppnum", "thhtwlth", "thhore", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhore", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 		which.wgt <- "wgtw12"                                                                                                        
 		subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
@@ -299,9 +300,9 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 		which.core <- 1:13
 		which.tm <- c(2,4,7,10)
 		tk     <- list(c("ssuid", "epppnum", "eprevres", "toutinyr", "tmovest", "eprevten","tmovyryr","tbrstate","tprstate"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
-		               c("ssuid", "epppnum", "thhtwlth", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
+		               c("ssuid", "epppnum", "thhtwlth", "thhore", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhore", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"),
+		               c("ssuid", "epppnum", "thhtwlth", "thhore", "thhtheq", "thhmortg", "ehbuyyr","thomeamt","thhintbk","thhintot","tpropval"))
 		which.wgt <- "wgtw7"
 		subset = "WHERE eppintvw < 3 AND errp IN (1,2) AND tage > 15"
 
