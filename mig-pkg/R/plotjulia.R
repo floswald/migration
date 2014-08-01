@@ -493,19 +493,27 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 
 
 # plot model slices
-plotModelSlices <- function(path="~/Dropbox/mobility/output/model/data_repo/out_data_jl"){
+plotModelSlices <- function(iridis=TRUE,path="~/Dropbox/mobility/output/model/data_repo"){
 	# load data
-	vals = read.csv(file.path(path,"migslice1.csv"))
-	moms = read.csv(file.path(path,"migslice2.csv"))
+	if (iridis){
+		cmd <- paste0("scp -r iridis:~/data_repo/mig/out_data_jl/ ",file.path(path,"iridis"))
+		system(cmd)
+		vals = read.csv(file.path(path,"iridis","migslice1.csv"))
+		moms = read.csv(file.path(path,"iridis","migslice2.csv"))
+	} else {
+		vals = read.csv(file.path(path,"out_data_jl","migslice1.csv"))
+		moms = read.csv(file.path(path,"out_data_jl","migslice2.csv"))
+
+	}
 
 	p1 = ggplot(vals,aes(x=p_val,y=f_val)) + geom_line() + facet_wrap(~p_name,scales="free") + ggtitle('Value of Ojbective Function vs Parameters')
-	ggsave(plot=p1,filename=file.path(path,"objfun.pdf"),width=297,height=210,units="mm")
+	ggsave(plot=p1,filename=file.path(path,"out_graphs_jl","objfun.pdf"),width=297,height=210,units="mm")
 
 	m = list()
 	for (pp in unique(moms$p_name)){
 		tstring = paste0("Moments_vs_",pp)
 		m[[pp]] = ggplot(subset(moms,p_name == pp),aes(x=p_val,y=m_val)) + geom_line() + facet_wrap(~m_name,scales="free") + ggtitle(tstring) + scale_x_continuous(name=pp) + scale_y_continuous(name="value of Moment")
-		ggsave(plot=m[[pp]], filename=file.path(path,paste0(tstring,".pdf")),width=297,height=210,units="mm")
+		ggsave(plot=m[[pp]], filename=file.path(path,"out_graphs_jl",paste0(tstring,".pdf")),width=297,height=210,units="mm")
 
 	}
 

@@ -1,17 +1,17 @@
 
 
 
-#' Principal Component Scree plot
-#' 
-#' @param m matrix (T by N)
+# Principal Component Scree plot
+# 
+# @param m matrix (T by N)
 scree <- function(m){
   p <- princomp(m)
   screeplot(p)
 }
 
 
-#' transform R into a compact interval
-#'
+# transform R into a compact interval
+#
 y2z.transform <- function(y,high,low=0){
 
 	stopifnot(high > low)
@@ -20,8 +20,8 @@ y2z.transform <- function(y,high,low=0){
 	return(z)
 }
 
-#' inverse of transform R into a compact interval
-#'
+# inverse of transform R into a compact interval
+#
 z2y.transform <- function(z,high,low=0){
 
 	stopifnot(high > low)
@@ -31,11 +31,11 @@ z2y.transform <- function(z,high,low=0){
 
 
 
-#' construct a numeric matrix with time varying across columns
-#'
-#' @param dat data.frame in long format with columns y, quarter and state
-#' @param trans transformation
-#' @return list with detrended data matrix and data.table with means and sds
+#construct a numeric matrix with time varying across columns
+#
+#@param dat data.frame in long format with columns y, quarter and state
+#@param trans transformation
+#@return list with detrended data matrix and data.table with means and sds
 makeTimeMatrix <- function(dat,trans){
 
 	stopifnot( c("y","date","state") %in% names(dat) )
@@ -87,9 +87,9 @@ makeTimeMatrix <- function(dat,trans){
 }
 	
 	
-#' inverse diff function
-#'
-#' performs revers operation of \code{diff}
+# inverse diff function
+#
+# performs revers operation of \code{diff}
 idiff <- function(x0=0,x){
 
 	y <- c(x0,rep(0,length(x)))
@@ -103,8 +103,8 @@ idiff <- function(x0=0,x){
 }
 
 	
-#' grow x by a percentage increase
-#'
+# grow x by a percentage increase
+#
 ipercent <- function(x0=0,x){
 
 	y <- c(x0,rep(0,length(x)))
@@ -121,11 +121,11 @@ ipercent <- function(x0=0,x){
 
 
 
-#' Dynamic Factor model for Lincoln Home Values
-#'
-#' @examples
-#' data(HValue96_dynF_quarterly)
-#' m <- dynPrices(dat=dat,facs=3,maxite=300,demean=TRUE,detrend=TRUE,meth="BFGS")
+# Dynamic Factor model for Lincoln Home Values
+#
+# @examples
+# data(HValue96_dynF_quarterly)
+# m <- dynPrices(dat=dat,facs=3,maxite=300,demean=TRUE,detrend=TRUE,meth="BFGS")
 runDynFactorsLincoln <- function(){
 	NULL
 }
@@ -135,19 +135,19 @@ runDynFactorsLincoln <- function(){
 
 
 
-#' MARSS Dynamic Factor Model
-#'
-#' estimates a dynamic factor model
-#' 
-#' @param dat dataset 
-#' @param trans integer which transformation
-#' @examples
-#' data(HValue96_dynF_yearly)
-#' dd <- copy(dat)
-#' l <- dynPrices(dat=dd,facs=2,maxite=5000,trans="pct.increase")
-#' sim <- MARSSsimulate(l$marss,tSteps=20,nsim=1)
-#' #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
-#' #matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")
+# MARSS Dynamic Factor Model
+#
+# estimates a dynamic factor model
+# 
+# @param dat dataset 
+# @param trans integer which transformation
+# @examples
+# data(HValue96_dynF_yearly)
+# dd <- copy(dat)
+# l <- dynPrices(dat=dd,facs=2,maxite=5000,trans="pct.increase")
+# sim <- MARSSsimulate(l$marss,tSteps=20,nsim=1)
+# #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
+# #matplot(t(sim$sim.data[ , , 1]),type="l",main="simulated outcomes")
 dynPrices <- function(dat,facs,maxite=50,trans=1,meth="BFGS"){
 
 	mmat <- makeTimeMatrix(dat=dat,trans)
@@ -200,25 +200,25 @@ dynPrices <- function(dat,facs,maxite=50,trans=1,meth="BFGS"){
 
 }
 
-#' MARSS Dynamic Factor Model on growth by Division
-#'
-#' estimates a dynamic factor model
-#' 
-#' @param dat dataset 
-#' @param detrend formula for detrending outcome var
-#' @param demean TRUE if want to do a z-transformation on detrended outcome
-#' @param meth method for maximizing the likelihood
-#' @param facs number of hidden factors
-#' @examples
-#' data(HValue96_dynF_yearly)
-#' div=dat[,list(HV=mean(hpi)),by=list(Division,date)]
-#' setnames(div,c("state","date","y"))
-#' d <- dynGrowth(div,facs=2,trans="pct.increase",maxite=1000)
-#' sim <- MARSSsimulate(d$marss,tSteps=20,nsim=10)
-#' #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
-#' par(mfrow=c(3,3))
-#' for (i in 1:9) {matplot(t(sim$sim.data[ , , i]),type="l",main=sprintf("sim number %d",i));abline(a=0,b=0,col="red")}
-#' par(mfrow=c(1,1))
+# MARSS Dynamic Factor Model on growth by Division
+#
+# estimates a dynamic factor model
+# 
+# @param dat dataset 
+# @param detrend formula for detrending outcome var
+# @param demean TRUE if want to do a z-transformation on detrended outcome
+# @param meth method for maximizing the likelihood
+# @param facs number of hidden factors
+# @examples
+# data(HValue96_dynF_yearly)
+# div=dat[,list(HV=mean(hpi)),by=list(Division,date)]
+# setnames(div,c("state","date","y"))
+# d <- dynGrowth(div,facs=2,trans="pct.increase",maxite=1000)
+# sim <- MARSSsimulate(d$marss,tSteps=20,nsim=10)
+# #matplot(t(sim$sim.states[ , , 1]),type="l",main="simulated hidden factors")
+# par(mfrow=c(3,3))
+# for (i in 1:9) {matplot(t(sim$sim.data[ , , i]),type="l",main=sprintf("sim number %d",i));abline(a=0,b=0,col="red")}
+# par(mfrow=c(1,1))
 dynGrowth <- function(dat,facs,maxite=50,trans="pct.increase",meth="BFGS",rwalks=1){
 
 	mmat <- makeTimeMatrix(dat=dat,trans)
@@ -300,11 +300,11 @@ dynGrowth <- function(dat,facs,maxite=50,trans="pct.increase",meth="BFGS",rwalks
 }
 
 
-#' Back out price levels from MARSS simulation
-#'
-#' @param l the output of \code{\link{dynPrices}}
-#' @param n number of periods to simulate
-#' @param N number of different simulations
+# Back out price levels from MARSS simulation
+#
+# @param l the output of \code{\link{dynPrices}}
+# @param n number of periods to simulate
+# @param N number of different simulations
 backOutLevels <- function(l,n,N=1,x0=1,saveto=NULL){
 
 	# simulate series

@@ -1,14 +1,9 @@
 
 
-#' Initiate a BBL simulation dataset
-#'
-#' builds the initial BBL dataset. Selects a random sample
-#' from SIPP data at it's first observation in the data.
-#'
-#' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-#' BBL <- list(maxAge=60,FE=TRUE,n=0.1)
-#' l <- InitBBLData(merged,RE.coefs,BBLpars=BBL)
+# Initiate a BBL simulation dataset
+#
+# builds the initial BBL dataset. Selects a random sample
+# from SIPP data at it's first observation in the data.
 InitBBLData <- function(logi,BBLpars,saveto="~/Dropbox/mobility/output/model/BBL/BBLSimData.RData"){
 
 	
@@ -54,9 +49,6 @@ InitBBLData <- function(logi,BBLpars,saveto="~/Dropbox/mobility/output/model/BBL
 
 
 
-#' Build BBL Logit dataset
-#'
-#' expand flat data into data with predictions for each location
 buildLogitBBL <- function(logi,RE.coefs,with.FE,prices){
 
 	cohorts <- model.matrix(~cohort - 1,data=logi)
@@ -86,14 +78,6 @@ buildLogitBBL <- function(logi,RE.coefs,with.FE,prices){
 }
 
 
-#' Create the BBL data set
-#'
-#' forward simulate lifecycle profiles based 
-#' on policy functions and initial conditions
-#'
-#' @param data full SIPP dataset
-#' @param RFmodels list with reduced form models
-#' @param BBLpars list with simulation parameters
 CreateBBLData <- function(data,RFmodels,BBLpars){
 
 	# check input

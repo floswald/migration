@@ -97,7 +97,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 10000
+			nsim  = 30000
 
 		elseif size==3
 		# big: maximal size for memory on my box
@@ -148,7 +148,7 @@ type Param
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 		sscale = 0.8 	# with kids your consumption goes down 20%
 
-		rseed = 12345
+		rseed = 1052014
 
 		# create object
 

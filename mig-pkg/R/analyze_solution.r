@@ -1,55 +1,11 @@
 
-##' plot savings and consumption functions
-##' 
-##' plot policy functions at
-##' two sets of indices for 
-##' owner and renter state
-##' @param m list with model description
-##' @param b list of results from \code{\link{dev8}}
-##plot.cfuns <- function( m, b , path="~/git/migration/output/mgraphs"){
-
-	### plot asset vs V(asset) at different slices location
-	### keeping fixed asset and location dimension
-	##slice <- c(1,1,1)
-	###     slice <- sapply(m$dimshere[-c(1,4)],function(x) sample(1:x,size=1))
 
 
 
-	##d <- expand.grid(assets=m$agrid,where=1:m$nL,type=c("Sown","Srent","EVown","EVrent"))
-	##d$value <- c(as.numeric(b$Values$Vown[ ,slice[1],slice[2], ,slice[3] ]), 
-				 ##as.numeric(b$Values$Vrent[ ,slice[1],slice[2], ,slice[3] ]),
-				 ##as.numeric(b$Values$EVown[ ,slice[1],slice[2], ,slice[3]]), 
-				 ##as.numeric(b$Values$EVrent[ ,slice[1],slice[2], ,slice[3]]))
-
-	##d[d$assets<0 & (d$type=="Vrent"|d$type=="EVrent"), ]$value <- NA
-	
-	##ggplot(d,aes(x=assets,y=value,color=factor(where),group=factor(where))) + geom_line() + facet_wrap(~type,scales="free_y") + theme_bw() + ggtitle(sprintf('V(here) = max_{h=0,1} v(here,h)\nat y=%g, p=%g, age=%g',slice[1],slice[2],slice[3])) 
-	
-	##ggsave(file.path(path,"vfuns1.pdf"))
-	
-	##slice <- c(m$nY,m$nP,m$nT-1)
-	
-	##d <- expand.grid(assets=m$agrid,where=1:m$nL,type=c("Vown","Vrent","EVown","EVrent"))
-	##d$value <- c(as.numeric(b$Values$Vown[ ,slice[1],slice[2], ,slice[3] ]), 
-				 ##as.numeric(b$Values$Vrent[ ,slice[1],slice[2], ,slice[3] ]),
-				 ##as.numeric(b$Values$EVown[ ,slice[1],slice[2], ,slice[3]]), 
-				 ##as.numeric(b$Values$EVrent[ ,slice[1],slice[2], ,slice[3]]))
-
-	##d[d$assets<0 & (d$type=="Vrent"|d$type=="EVrent"), ]$value <- NA
-	
-	##ggplot(d,aes(x=assets,y=value,color=factor(where),group=factor(where))) + geom_line() + facet_wrap(~type,scales="free_y") + theme_bw() + ggtitle(sprintf('V(here) = max_{h=0,1} v(here,h)\nat y=%g, p=%g, age=%g',slice[1],slice[2],slice[3])) 
- 
-	
-	##ggsave(file.path(path,"vfuns2.pdf"))
-
-##}
-
-
-
-#' Plot Tenure Choice Function
-#' 
-#' @param m list with model description
-#' @param b list of results from \code{\link{dev8}}
+# Plot Tenure Choice Function
+# 
+# @param m list with model description
+# @param b list of results from \code{\link{dev8}}
 plot.TenureChoice <- function( m, b , path="~/git/migration/output/mgraphs"){
 
 	X <- cbind(expand.grid(assets=1:m$nA,price=m$grids$p[,3]),as.numeric(b$policies$TenureOwn[ ,1, ,10,10,10]))
@@ -88,13 +44,13 @@ plot.TenureChoice <- function( m, b , path="~/git/migration/output/mgraphs"){
 
 
 
-#' plot value functions
-#' 
-#' plot value functions at
-#' two sets of indices for 
-#' owner and renter state. Plots at 3 locations.
-#' @param m list with model description
-#' @param b list of results from \code{\link{dev8}}
+# plot value functions
+# 
+# plot value functions at
+# two sets of indices for 
+# owner and renter state. Plots at 3 locations.
+# @param m list with model description
+# @param b list of results from \code{\link{dev8}}
 plot.vfuns <- function( m, b , path="~/git/migration/output/mgraphs"){
 
 	# plot asset vs V(asset) at different slices location
@@ -134,9 +90,9 @@ plot.vfuns <- function( m, b , path="~/git/migration/output/mgraphs"){
 }
 
 
-#' plot income, price and amenity grids
-#'
-#' @param m list with model description
+# plot income, price and amenity grids
+#
+# @param m list with model description
 plot.ypgrids <- function( m, path="~/git/migration/output/mgraphs" ){
 
 	trellis.device(device=pdf,file=file.path(path,"movecost.pdf"))

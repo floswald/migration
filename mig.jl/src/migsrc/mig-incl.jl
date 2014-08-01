@@ -25,6 +25,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
+
 	time1 = round(time()-time0)
 	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => 1, "moments" => mout]
 	return ret
