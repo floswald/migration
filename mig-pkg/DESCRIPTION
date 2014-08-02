@@ -42,5 +42,4 @@ Collate:
     'housing_saving.r'
     'income.r'
     'prices.r'
-    'incomeProcess-class.r'
     'plotjulia.R'
