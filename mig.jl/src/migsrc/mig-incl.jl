@@ -20,7 +20,11 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
 	mom2 = join(mom,mms,on=:moment)
 
-	fval = sum((mom2[findin(mom2[:moment],whichmom),:data_value] - mom2[findin(mom2[:moment],whichmom),:model_value]).^2)
+	# get percentage difference of each moment and square that
+
+	perc = (mom2[findin(mom2[:moment],whichmom),:data_value] - mom2[findin(mom2[:moment],whichmom),:model_value]) ./ mom2[findin(mom2[:moment],whichmom),:data_value]
+
+	fval = sum((perc).^2)
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
