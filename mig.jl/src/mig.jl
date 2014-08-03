@@ -21,7 +21,7 @@ include("migsrc/simulator.jl")
 include("migsrc/simulator2.jl")
 include("migsrc/experiments.jl")
 
-if ENV["USER"] != "eisuc151" 
+if Sys.OS_NAME == :Darwin
 	include("migsrc/plotting.jl")
 end
 
