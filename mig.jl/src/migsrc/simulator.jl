@@ -454,9 +454,20 @@ end
 # computing moments from simulation
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
-	# moved0
-	# moved1
-	# moved2
+	mom1 = DataFrame(moment="move_rate", model_value = mean(df[:move]), model_sd = std(df[:move]))
+	push!(mom1,["move_rate_h0",mean(df[df[:h].==0,:move]),std(df[df[:h].==0,:move])])
+	push!(mom1,["move_rate_h1",mean(df[df[:h].==1,:move]),std(df[df[:h].==1,:move])])
+	push!(mom1,["own_rate",mean(df[:h]),std(df[:h])])
+
+	movecount=by(df,:id,x -> sum(x[:move]))
+	moved0 = sum(movecount[:x1].==0)
+	moved1 = sum(movecount[:x1].==1)
+	moved2 = sum(movecount[:x1].==2)
+
+	push!(mom1,["moved0",moved0,0.0])
+	push!(mom1,["moved1",moved1,0.0])
+	push!(mom1,["moved2",moved2,0.0])
+
 
 	# linear probability model of mobility
 	# ====================================
@@ -497,7 +508,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	end
 
 
-	dfout = DataFrame(moment = nms, model_value = DataArray([coef(lm_mv),coef(lm_h),coef(lm_w)]), model_sd = DataArray([stderr(lm_mv),stderr(lm_h),stderr(lm_w)]))
+	mom2 = DataFrame(moment = nms, model_value = DataArray([coef(lm_mv),coef(lm_h),coef(lm_w)]), model_sd = DataArray([stderr(lm_mv),stderr(lm_h),stderr(lm_w)]))
+
+	dfout = rbind(mom1,mom2)
 
 	return dfout
 end
