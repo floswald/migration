@@ -17,7 +17,6 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	s   = simulate(m,p)
 	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
 
-	println("time till mms = $(time()-time0)")
 
 	mom2 = join(mom,mms,on=:moment)
 
@@ -26,6 +25,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
     mout = transpose(mom2[[:moment,:model_value]],1)
 
 
+	println("objfunc runtime = $(time()-time0)")
 	time1 = round(time()-time0)
 	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => 1, "moments" => mout]
 	return ret

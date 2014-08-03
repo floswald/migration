@@ -78,6 +78,8 @@ type Model
 		# if on my machine
 		if Sys.OS_NAME == :Darwin
 			indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+		elseif Sys.OS_NAME == :Windows
+			indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
 		else
 			if dropbox
 				indir = joinpath(ENV["HOME"],"data_repo/mig")

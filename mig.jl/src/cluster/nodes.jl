@@ -6,6 +6,9 @@ using mig, MOpt
 if Sys.OS_NAME == :Darwin
 	indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
 	outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
+elseif Sys.OS_NAME == :Windows
+	indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
+	outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
 else
 	indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 	outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")

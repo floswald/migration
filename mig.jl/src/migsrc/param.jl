@@ -119,11 +119,11 @@ type Param
 		gamma   = 1.4	
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
-		lambda  = 10.0
+		lambda  = 0.5
 		tau     = 1.0
 		taudist = 0.2
-		xi1     = 1.0
-		xi2     = 1.1
+		xi1     = 0.25
+		xi2     = 0.1
 		omega1  = 0.1
 		omega2  = 2.1
 
