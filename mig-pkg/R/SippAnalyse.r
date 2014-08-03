@@ -99,6 +99,215 @@ Sipp.moments <- function(d,svy){
 }
 
 
+Sipp.own_in_j_rent_in_k <- function(){
+	data(Sipp_aggby_NULL,envir=environment())
+	mv <- merged[D2D==TRUE,unique(upid)]
+	setkey(mv,upid)
+	mvs <- merged[mv]
+
+	# get "other equity" in period after move
+	mvs[,other_eq_lead := mvs[list(upid,timeid+1)][["RE.equity.other"]] ]
+
+	# how many movers have more "real estate equity other than your home"
+	# after move than before?
+	# answers the question of "how many movers keep their house"
+
+	# get correlation between other equity today and tomorrow for movers
+	eqcor <- mvs[D2D==TRUE,cor(RE.equity.other,other_eq_lead,use="complete.obs")]
+
+	# get count of people with other equity before and after move. 
+	# if movers keep house, that count should go up.
+	eq_before_after <- mvs[D2D==TRUE,list(other.eq.before=sum(RE.equity.other!=0.0),other.eq.after=sum(other_eq_lead!=0.0,na.rm=T))]
+
+	# how robust is this to definition of "after"?
+	mvs[,other_eq_lead2 := mvs[list(upid,timeid+2)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead3 := mvs[list(upid,timeid+3)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead4 := mvs[list(upid,timeid+4)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead5 := mvs[list(upid,timeid+5)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead6 := mvs[list(upid,timeid+6)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead7 := mvs[list(upid,timeid+7)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead8 := mvs[list(upid,timeid+8)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead9 := mvs[list(upid,timeid+9)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead10 := mvs[list(upid,timeid+10)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead11 := mvs[list(upid,timeid+11)][["RE.equity.other"]] ]
+	mvs[,other_eq_lead12 := mvs[list(upid,timeid+12)][["RE.equity.other"]] ]
+
+	eq_robust <- mvs[D2D==TRUE,list(other.eq.before=sum(RE.equity.other!=0.0),other.eq.after1=sum(other_eq_lead!=0.0,na.rm=T),other.eq.after2=sum(other_eq_lead2!=0.0,na.rm=T),other.eq.after3=sum(other_eq_lead3!=0.0,na.rm=T),other.eq.after4=sum(other_eq_lead4!=0.0,na.rm=T),other.eq.after5=sum(other_eq_lead5!=0.0,na.rm=T),other.eq.after6=sum(other_eq_lead6!=0.0,na.rm=T),other.eq.after7=sum(other_eq_lead7!=0.0,na.rm=T),other.eq.after8=sum(other_eq_lead8!=0.0,na.rm=T),other.eq.after9=sum(other_eq_lead9!=0.0,na.rm=T),other.eq.after10=sum(other_eq_lead10!=0.0,na.rm=T),other.eq.after11=sum(other_eq_lead11!=0.0,na.rm=T),other.eq.after12=sum(other_eq_lead12!=0.0,na.rm=T))]
+
+	# conditioning on the ones who had other equity before
+
+	eq_robust2 <- mvs[D2D==TRUE & RE.equity.other!=0,list(other.eq.before=sum(RE.equity.other!=0.0),other.eq.after1=sum(other_eq_lead!=0.0,na.rm=T),other.eq.after2=sum(other_eq_lead2!=0.0,na.rm=T),other.eq.after3=sum(other_eq_lead3!=0.0,na.rm=T),other.eq.after4=sum(other_eq_lead4!=0.0,na.rm=T),other.eq.after5=sum(other_eq_lead5!=0.0,na.rm=T),other.eq.after6=sum(other_eq_lead6!=0.0,na.rm=T),other.eq.after7=sum(other_eq_lead7!=0.0,na.rm=T),other.eq.after8=sum(other_eq_lead8!=0.0,na.rm=T),other.eq.after9=sum(other_eq_lead9!=0.0,na.rm=T),other.eq.after10=sum(other_eq_lead10!=0.0,na.rm=T),other.eq.after11=sum(other_eq_lead11!=0.0,na.rm=T),other.eq.after12=sum(other_eq_lead12!=0.0,na.rm=T))]
+
+	# conditioning on the ones who did not have other equity before
+
+	eq_robust3 <- mvs[D2D==TRUE & RE.equity.other==0,list(other.eq.before=sum(RE.equity.other!=0.0),other.eq.after1=sum(other_eq_lead!=0.0,na.rm=T),other.eq.after2=sum(other_eq_lead2!=0.0,na.rm=T),other.eq.after3=sum(other_eq_lead3!=0.0,na.rm=T),other.eq.after4=sum(other_eq_lead4!=0.0,na.rm=T),other.eq.after5=sum(other_eq_lead5!=0.0,na.rm=T),other.eq.after6=sum(other_eq_lead6!=0.0,na.rm=T),other.eq.after7=sum(other_eq_lead7!=0.0,na.rm=T),other.eq.after8=sum(other_eq_lead8!=0.0,na.rm=T),other.eq.after9=sum(other_eq_lead9!=0.0,na.rm=T),other.eq.after10=sum(other_eq_lead10!=0.0,na.rm=T),other.eq.after11=sum(other_eq_lead11!=0.0,na.rm=T),other.eq.after12=sum(other_eq_lead12!=0.0,na.rm=T))]
+
+	eq_robust3_pos <- mvs[D2D==TRUE & RE.equity.other==0,list(other.eq.before=sum(RE.equity.other>0.0),other.eq.after1=sum(other_eq_lead>0.0,na.rm=T),other.eq.after2=sum(other_eq_lead2>0.0,na.rm=T),other.eq.after3=sum(other_eq_lead3>0.0,na.rm=T),other.eq.after4=sum(other_eq_lead4>0.0,na.rm=T),other.eq.after5=sum(other_eq_lead5>0.0,na.rm=T),other.eq.after6=sum(other_eq_lead6>0.0,na.rm=T),other.eq.after7=sum(other_eq_lead7>0.0,na.rm=T),other.eq.after8=sum(other_eq_lead8>0.0,na.rm=T),other.eq.after9=sum(other_eq_lead9>0.0,na.rm=T),other.eq.after10=sum(other_eq_lead10>0.0,na.rm=T),other.eq.after11=sum(other_eq_lead11>0.0,na.rm=T),other.eq.after12=sum(other_eq_lead12>0.0,na.rm=T))]
+
+
+	# whats the percentage of movers who had 0 other equity before move, that now do have positive other RE equity?
+	num.movers <- nrow(mv)
+
+	eq_cor_robust <- mvs[D2D==TRUE&RE.equity.other!=0.0,list(cor_0_1=cor(RE.equity.other,other_eq_lead,use="complete.obs"),cor_1_2=cor(other_eq_lead,other_eq_lead2,use="complete.obs"),
+		cor_2_3=cor(other_eq_lead2,  other_eq_lead3,use="complete.obs"),
+		cor_3_4=cor(other_eq_lead3,  other_eq_lead4,use="complete.obs"),
+		cor_4_5=cor(other_eq_lead4,  other_eq_lead5,use="complete.obs"),
+		cor_5_6=cor(other_eq_lead5,  other_eq_lead6,use="complete.obs"),
+		cor_6_7=cor(other_eq_lead6,  other_eq_lead7,use="complete.obs"),
+		cor_7_8=cor(other_eq_lead7,  other_eq_lead8,use="complete.obs"),
+		cor_8_9=cor(other_eq_lead8,  other_eq_lead9,use="complete.obs"),
+		cor_9_10=cor(other_eq_lead9, other_eq_lead10,use="complete.obs"),
+		cor_10_11=cor(other_eq_lead10,other_eq_lead11,use="complete.obs"),
+		cor_11_12=cor(other_eq_lead11,other_eq_lead12,use="complete.obs"))]
+
+	r = data.frame(t(eq_robust))
+	r$months_after <- seq(0,nrow(r)-1,le=nrow(r))
+	names(r)[1] = "otherRE"
+	rownames(r) = NULL
+	pl <- ggplot(r,aes(x=months_after,y=otherRE)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="Number answering Yes") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+
+
+	# conditional on having had before
+	r2 = data.frame(t(eq_robust2))
+	names(r2) <- "otherRE"
+	r2$months_after <- seq(0,nrow(r)-1,le=nrow(r))
+	rownames(r2) = NULL
+	r2$type <- "had other\nequity"
+
+	r3 = data.frame(t(eq_robust3))
+	names(r3) <- "otherRE"
+	rownames(r3) = NULL
+	r3$months_after <- seq(0,nrow(r)-1,le=nrow(r))
+	r3$type <- "had none"
+
+	r2 <- rbind(r2,r3)
+	names(r2)[3] <- "when_moving"
+
+	pl2 <- ggplot(r2,aes(x=months_after,y=otherRE,color=when_moving)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="Number answering Yes") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+
+
+
+	# whats the percentage of movers who had 0 other equity before move, that now do have positive other RE equity?
+	num.movers <- nrow(mv)
+	r3p = data.frame(t(eq_robust3_pos))
+	names(r3p) <- "otherRE"
+	rownames(r3p) = NULL
+	r3p$months_after <- seq(0,nrow(r)-1,le=nrow(r))
+	r3p$percent <- 100*r3p$otherRE / num.movers
+
+	pl3 <- ggplot(r3p,aes(x=months_after,y=percent)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Percentage of movers with positive equity in other real estate") + scale_y_continuous(name="%") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+	pdf(file="~/Dropbox/mobility/output/data/sipp/move_2_landlord.pdf",width=10,h=7)
+	print(pl3)
+	dev.off()
+
+}
+
+
+
+Sipp.movers_wage_residual <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+	# get monthly sipp data
+	data(Sipp_aggby_NULL,envir=environment())
+
+	# get movers
+	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+	setkey(mv,upid)
+	setkey(merged,upid,timeid)
+	mvs <- merged[mv]
+
+	mvs <- copy(mvs[HHincome > 0])
+
+	# log wage = beta0 + state +  beta1  *age + beta2*college + u
+
+	# get wage residual
+	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
+
+	# aim: get cor( u(t), u(t+1) ) when move happened in t
+	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
+	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
+
+	cor0_1minus = mvs[D2D==TRUE,cor(u,u_minus1,use="complete.obs")]
+	cor0_1plus  = mvs[D2D==TRUE,cor(u,u_plus1,use="complete.obs")]
+
+	# get rank correlation
+	# absolute rank
+	mvs[,R_u := rank(u)]
+	# percentage rank
+	mvs[,pR_u := rank(u) / nrow(mvs)]
+	mvs[,R_u_plus1 := mvs[list(upid,timeid+1)][["R_u"]] ]
+	mvs[,R_u_minus1 := mvs[list(upid,timeid-1)][["R_u"]] ]
+	mvs[,pR_u_plus1 := mvs[list(upid,timeid+1)][["pR_u"]] ]
+	mvs[,pR_u_minus1 := mvs[list(upid,timeid-1)][["pR_u"]] ]
+
+	# rank difference
+	mvs[,p_rankdiff := pR_u_plus1 - pR_u]
+	mvs[,rankdiff := R_u_plus1 - R_u]
+	mvs[,p_rankdiff_0 := pR_u - pR_u_minus1]
+	mvs[,rankdiff_0 := R_u - R_u_minus1]
+
+	Rcor0_1minus = mvs[D2D==TRUE,cor(R_u,R_u_minus1,use="complete.obs")]
+	Rcor0_1plus  = mvs[D2D==TRUE,cor(R_u,R_u_plus1,use="complete.obs")]
+
+	# stats table
+	stab <- matrix(c(cor0_1minus,cor0_1plus,Rcor0_1minus,Rcor0_1plus),byrow=T,c(2,2))
+	rownames(stab) <- c("Correlation","Rank Correlation")
+	colnames(stab) <- c("$cor(u_t,u_{t-1})$","$cor(u_{t+1},u_t)$")
+
+	print(xtable(stab),sanitize.text.function=function(x){x},file=file.path(path,"u_corrtab.tex"),floating=FALSE,booktabs=TRUE)
+
+	# plot quantiles and density
+
+	m <- data.frame(mvs[D2D==TRUE,quantile(p_rankdiff,seq(0.05,0.95,le=100),na.rm=T)])
+	names(m)[1] <- "rank(u(t+1)) - rank(u(t))"
+	m$quantile <- seq(0.05,0.95,le=100)
+	m$rankdiff_0 <- mvs[D2D==TRUE,quantile(p_rankdiff_0,seq(0.05,0.95,le=100),na.rm=T)]
+	names(m)[3] <- "rank(u(t)) - rank(u(t-1))"
+
+	mm <- melt(m,id.vars="quantile")
+
+	p <- list()
+
+	p$quantiles <- ggplot(mm,aes(x=quantile,y=value)) + facet_wrap(~variable) + geom_point() + theme_bw() + scale_x_continuous(breaks=c(0.1,0.25,0.5,0.75,0.9)) + scale_y_continuous(name="rank difference (rank in [0,1])") + ggtitle("Quantiles of Mover's residual rank difference")
+
+	mm2 <- melt(mvs[D2D==TRUE,list(p_rankdiff,p_rankdiff_0)])
+	p$densities <- ggplot(subset(mm2,abs(value) > 1e-3),aes(x=value)) + facet_wrap(~variable) + geom_density() + theme_bw() + ggtitle("Densities of Mover's residual rank difference")
+
+	# fit a beta dist 
+	# normalize data to [0,1]
+	mbeta <- mvs[!is.na(p_rankdiff),list(p_rankdiff)]
+	mbeta <- mbeta[order(p_rankdiff)]
+	mbeta[,nrank := rutils:::linear.map(p_rankdiff,1)]
+	 # trim hi and lo
+	mbeta[nrank==0,nrank := 0.0001]
+	mbeta[nrank==1,nrank := 0.9999]
+	# fit a beta distribution
+	fit.b = MASS:::fitdistr(mbeta[,nrank],"beta",start=list(shape1=2,shape2=2))
+	x.b=rbeta(1e5,fit.b$estimate[[1]],fit.b$estimate[[2]])
+	plot(density(x.b))
+	# lines(density(x.b),col="red")
+
+	p$beta <- ggplot(subset(mm2,abs(value) > 1e-3 & variable=="p_rankdiff"),aes(x=value)) + geom_density() + theme_bw() 	
+	bdf <- data.frame(x=seq(-1,1,le=100),xn = seq(0,1,le=100))
+	bdf$dbeta <- dbeta(bdf$xn,shape1=fit.b$estimate[[1]],shape2=fit.b$estimate[[2]])
+	p$beta <- p$beta + geom_line(data=bdf,aes(x=x,y=dbeta),color="red")
+
+	# robust
+	# ======
+
+	# this is robust to observables, i.e. the distribution is remarkably stable
+	mvs[D2D==TRUE,summary(lm(p_rankdiff ~ age + I(age^2) + college+factor(Division) ))]
+
+	# even unconditional on moving or not
+	mvs[,summary(lm(p_rankdiff ~ age + I(age^2) + college+factor(Division) ))]
+
+
+	# save plots
+	ggsave(plot=p$quantiles,file=file.path(path,"u_quantiles.pdf"))
+	ggsave(plot=p$densities,file=file.path(path,"u_densities.pdf"))
+
+	return(p)
+}
+
 
 
 #' Summary Statistics from Sipp

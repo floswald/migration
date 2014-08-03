@@ -497,13 +497,14 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "tprstate",          
 								   "eprevres",               
 								   "tbrstate",            
-								   "toutinyr",                   
+								   "toutinyr",    
 								   "tmovest",                
 								   "eprevten",    
 								   "thtotinc",
 								   "ehbuyyr",
 								   "thomeamt",
 								   "tpropval",
+								   "thhore",
 								   "whfnwgt"),
 						 newname=c("FIPS",  
 								   "mover",   
@@ -526,6 +527,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "yr_bought",
 								   "mortg.rent",
 								   "hvalue",
+								   "RE.equity.other",
 								   "HHweight"))
 		if (verbose) print(nm)
 
@@ -704,7 +706,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged <- cpi[ merged ]
          
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue,CensusMedinc,MyMedinc)],function(x) x / (cpi96 * 1000)) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","RE.equity.other","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue,RE.equity.other,CensusMedinc,MyMedinc)],function(x) x / (cpi96 * 1000)) ]
 
 
 
@@ -804,6 +806,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   nonh_wealth=mean(nonh_wealth,na.rm=T),
 						   saving=mean(saving,na.rm=T),
 						   hvalue=mean(hvalue,na.rm=T),
+						   RE.equity.other=mean(RE.equity.other,na.rm=T),
 						   home.equity=mean(home.equity,na.rm=T),
 						   mortg.rent=mean(mortg.rent,na.rm=T),
 						   dkids=sum(dkids,na.rm=T),
