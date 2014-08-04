@@ -21,7 +21,8 @@ moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
 if mc_only
 
-	plist = ["MC0","MC1","MC2","MC3","MC4"]
+	# plist = ["MC0","MC1","MC2","MC3","MC4"]
+	plist = ["MC0","MC1"]
 
 	p2 = Dict{ASCIIString,Float64}()
 
@@ -40,11 +41,11 @@ if mc_only
 	# pb["xi2"]    = [-0.1,1.0]
 	# pb["omega1"] = [-1.0,3.0]
 	# pb["omega2"] = [-1.0,3.0]
-	pb["MC0"]    = [0.0,5]
+	pb["MC0"]    = [0.0,10]
 	pb["MC1"]    = [0.0,10]
-	pb["MC2"]    = [-1.0,1]
-	pb["MC3"]    = [-1.0,5]
-	pb["MC4"]    = [-1.0,10]
+	# pb["MC2"]    = [-1.0,1]
+	# pb["MC3"]    = [-1.0,5]
+	# pb["MC4"]    = [-1.0,10]
 	# pb["Rm"]    = [1.03,1.2]
 	# pb["tau"]    = [-2.0,2]
 	# pb["taudist"]    = [0.01,0.99]

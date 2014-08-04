@@ -460,9 +460,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	push!(mom1,["own_rate",mean(df[:h]),std(df[:h])])
 
 	movecount=by(df,:id,x -> sum(x[:move]))
-	moved0 = sum(movecount[:x1].==0)
-	moved1 = sum(movecount[:x1].==1)
-	moved2 = sum(movecount[:x1].==2)
+	moved0 = mean(movecount[:x1].==0)
+	moved1 = mean(movecount[:x1].==1)
+	moved2 = mean(movecount[:x1].==2)
 
 	push!(mom1,["moved0",moved0,0.0])
 	push!(mom1,["moved1",moved1,0.0])

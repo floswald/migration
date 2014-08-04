@@ -19,15 +19,19 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
 
 	mom2 = join(mom,mms,on=:moment)
+	insert!(mom2,6,zeros(nrow(mom2)),:perc)
 
 	# get percentage difference of each moment and square that
+	subset = findin(mom2[:moment],whichmom)
 
-	perc = (mom2[findin(mom2[:moment],whichmom),:data_value] - mom2[findin(mom2[:moment],whichmom),:model_value]) ./ mom2[findin(mom2[:moment],whichmom),:data_value]
+	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
 
-	fval = sum((perc).^2)
+	fval = sumabs(mom2[subset,:perc])
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
+    showall(mom2)
+    println()
 
 	println("objfunc runtime = $(time()-time0)")
 	time1 = round(time()-time0)
