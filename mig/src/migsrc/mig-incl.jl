@@ -30,8 +30,10 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
-    showall(mom2)
-    println()
+    if Sys.OS_NAME == :Darwin
+	    showall(mom2)
+	    println()
+	end
 
 	println("objfunc runtime = $(time()-time0)")
 	time1 = round(time()-time0)
