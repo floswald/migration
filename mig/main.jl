@@ -21,7 +21,7 @@ p = mig.Param(2,1)
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
 # @profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
-
+	
 
 reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
@@ -51,7 +51,7 @@ include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
 # include("test/test_Tensors.jl")
-# include("test/test_sim.jl")    # disabled
+include("test/test_sim.jl")    # disabled
 	
 
 

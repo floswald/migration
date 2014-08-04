@@ -73,8 +73,8 @@ type Param
 		if size==1
 
 			# super small: use for tests
-			na    = 10
-			namax  = 11
+			na    = 7
+			namax  = 8
 			nz    = 3
 			nh    = 2
 			ntau  = 2

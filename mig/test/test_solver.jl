@@ -483,7 +483,7 @@ end
 
 facts("checking some properties of the solution") do
 
-	p = Param(2)
+	p = Param(1)
 	m = Model(p)
 	mig.solve!(m,p)
 

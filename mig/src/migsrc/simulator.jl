@@ -472,27 +472,54 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# linear probability model of mobility
 	# ====================================
 	# move ~ age + age^2 + dist + dist2 + own + kids
-	lm_mv = fit(LinearModel, move ~ age + age2 + km_distance + km_distance2 + kids + own,df)
+	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
+
+		nm_mv = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2","lm_mv_km_distance","lm_mv_km_distance2","lm_mv_kidstrue","lm_mv_owntrue"]  
+		coef_mv = DataArray(Float64,7)
+		std_mv = DataArray(Float64,7)
+	else
+		lm_mv = fit(LinearModel, move ~ age + age2 + km_distance + km_distance2 + kids + own,df)
+		cc_mv = coeftable(lm_mv)
+		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+		coef_mv = coef(lm_mv)
+		std_mv = stderr(lm_mv)
+	end
 
 
 	# linear probability model of homeownership
 	# =========================================
-	lm_h = fit(LinearModel, h ~ age + age2 + Division + kids,df)
+
+	if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
+		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2","lm_h_" * m.regnames[2:p.nJ,:Division],"lm_h_kidstrue"]  
+		coef_h = DataArray(Float64,4+(p.nJ-1))
+		std_h =  DataArray(Float64,4+(p.nJ-1))
+	else
+		lm_h = fit(LinearModel, h ~ age + age2 + Division + kids,df)
+		cc_h  = coeftable(lm_h)
+		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
+		coef_h = coef(lm_h)
+		std_h = stderr(lm_h)
+	end
 
 
 	# linear regression of total wealth
 	# =================================
-	lm_w = fit(LinearModel, wealth ~ age + age2 + own + Division,df )
+	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
+		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_" * m.regnames[2:p.nJ,:Division],"lm_w_owntrue"]  
+		coef_w = DataArray(Float64,4+(p.nJ-1))
+		std_w =  DataArray(Float64,4+(p.nJ-1))
+	else
+		lm_w = fit(LinearModel, wealth ~ age + age2 + own + Division,df )
+		cc_w  = coeftable(lm_w)
+		nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
+		coef_w = coef(lm_w)
+		std_w = stderr(lm_w)
+	end
+
 
 	# collect estimates
 	# =================
-	cc_mv = coeftable(lm_mv)
-	cc_h  = coeftable(lm_h)
-	cc_w  = coeftable(lm_w)
 
-	nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
-	nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
-	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
 
 	nms = vcat(nm_mv,nm_h,nm_w)
 
@@ -507,8 +534,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		nms[i] = ss
 	end
 
-
-	mom2 = DataFrame(moment = nms, model_value = DataArray([coef(lm_mv),coef(lm_h),coef(lm_w)]), model_sd = DataArray([stderr(lm_mv),stderr(lm_h),stderr(lm_w)]))
+	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
 
 	dfout = rbind(mom1,mom2)
 
@@ -524,13 +550,14 @@ end
 # setting up the FSpace objects for simulation
 function setupFSpaceXD(m::Model,p::Param)
 
-	ndims = 4 # number of cont dimensions
+	ndims = 5 # number of cont dimensions
 
 	# ordering of continuous dims
 	# 1) a
 	# 2) y
 	# 3) p
 	# 4) z
+	# 5) age
 
 	# the return object: a dict of collections of fspaces.
 	fx = Dict{ASCIIString,Dict{Integer,FSpaceXD}}()
@@ -567,6 +594,8 @@ function setupFSpaceXD(m::Model,p::Param)
 		bsp[2] = BSpline(m.nknots["y"],m.degs["y"],bounds[2][1],bounds[2][2])
 		bsp[3] = BSpline(m.nknots["p"],m.degs["p"],bounds[3][1],bounds[3][2])
 		bsp[4] = BSpline(m.nknots["z"],m.degs["z"],bounds[4][1],bounds[4][2])
+		bsp[5] = speye(p.nt-1)
+
 
 		# get full basis for inverses
 		for i=1:ndims
@@ -577,7 +606,6 @@ function setupFSpaceXD(m::Model,p::Param)
 		end
 
 
-		for age  = 1:p.nt-1		
 		for itau = 1:p.ntau		
 		for ih   = 1:2
 		for is   = 1:p.ns
@@ -586,9 +614,9 @@ function setupFSpaceXD(m::Model,p::Param)
 			# get FSpace for rho
 			# ------------------
 
-			rhotmp = get_cont_vals(ik,is,ih,itau,ij,age,m.rho,p)
+			rhotmp = get_cont_vals(ik,is,ih,itau,ij,m.rho,p)
 			mycoef1 = getTensorCoef(id,rhotmp)
-			rhoidx = fx_idx_rho(ik,is,ih,itau,ij,age,p)
+			rhoidx = fx_idx_rho(ik,is,ih,itau,ij,p)
 			# info("at index $rhoidx")
 			fx["rho"][rhoidx] = FSpaceXD(ndims,mycoef1,bsp)
 
@@ -599,29 +627,28 @@ function setupFSpaceXD(m::Model,p::Param)
 				# ----------------------------
 
 				# vh
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.vh,p)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.vh,p)
 				mycoef = getTensorCoef(id,vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
 				fx["vh"][idx] = FSpaceXD(ndims,mycoef,bsp)
 
 				# ch
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.ch,p)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.ch,p)
 				mycoef = getTensorCoef(id,vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
 				fx["ch"][idx] = FSpaceXD(ndims,mycoef,bsp)
 
 				# sh                 ihh,ik,is,ih,itau,ij,it,m.vh,p
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.sh,p)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.sh,p)
 				mycoef = getTensorCoef(id,vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
 				fx["sh"][idx] = FSpaceXD(ndims,mycoef,bsp)
 
 			end
 
-		end
 		end
 		end
 		end
@@ -635,34 +662,36 @@ end
 
 
 # FSpace Indexer functions
-function fx_idx_rho(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
-	ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)
+function fx_idx_rho(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,p::Param)
+	ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij -1)-1)-1)-1)
 end
 
-function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,p::Param)
 	 
-	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)
+	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij-1)-1)-1)-1)-1)
 end
 
-function fx_idx_cont(ia::Int,ip::Int,iy::Int,iz::Int,p::Param)
-	ia + p.na * (ip + p.np * (iy + p.ny * (iz-1) -1) -1)
+function fx_idx_cont(ia::Int,ip::Int,iy::Int,iz::Int,age::Int,p::Param)
+	ia + p.na * (ip + p.np * (iy + p.ny * (iz + p.nz *(age-1)-1) -1) -1)
 end
 
 
 
 # get values in continuous dims at given discrete state
 # method for idx11
-function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
 
-	vout = zeros(p.na*p.np*p.ny*p.nz)
+	vout = zeros(p.na*p.np*p.ny*p.nz*(p.nt-1))
 
-	for iz = 1:p.nz
-	for iy = 1:p.ny
-	for ip = 1:p.np
 	for ia = 1:p.na
+	for ip = 1:p.np
+	for iy = 1:p.ny
+	for iz = 1:p.nz
+	for it = 1:p.nt-1
 
-		vout[fx_idx_cont(ia,ip,iy,iz,p)] = v[idx11(ihh,ik,is,iy,ip,iz,ia,ih,itau,ij,age,p)]
+		vout[fx_idx_cont(ia,ip,iy,iz,it,p)] = v[idx11(ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)]
 
+	end
 	end
 	end
 	end
@@ -673,17 +702,19 @@ end
 
 
 # method for idx10
-function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
 
-	vout = zeros(p.na*p.np*p.ny*p.nz)
+	vout = zeros(p.na*p.np*p.ny*p.nz*(p.nt-1))
 
 	for ia = 1:p.na
 	for ip = 1:p.np
 	for iy = 1:p.ny
 	for iz = 1:p.nz
+	for it = 1:p.nt-1
 
-		vout[fx_idx_cont(ia,ip,iy,iz,p)] = v[idx10(ik,is,iy,ip,iz,ia,ih,itau,ij,age,p)]
+		vout[fx_idx_cont(ia,ip,iy,iz,it,p)] = v[idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)]
 
+	end
 	end
 	end
 	end
