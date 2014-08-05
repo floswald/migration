@@ -490,7 +490,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# =========================================
 
 	if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
-		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2","lm_h_" * m.regnames[2:p.nJ,:Division],"lm_h_kidstrue"]  
+		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2","lm_h_Division" * m.regnames[2:p.nJ,:Division],"lm_h_kidstrue"]  
 		coef_h = DataArray(Float64,4+(p.nJ-1))
 		std_h =  DataArray(Float64,4+(p.nJ-1))
 	else
@@ -505,7 +505,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# linear regression of total wealth
 	# =================================
 	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
-		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_" * m.regnames[2:p.nJ,:Division],"lm_w_owntrue"]  
+		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_Division" * m.regnames[2:p.nJ,:Division],"lm_w_owntrue"]  
 		coef_w = DataArray(Float64,4+(p.nJ-1))
 		std_w =  DataArray(Float64,4+(p.nJ-1))
 	else
@@ -548,6 +548,7 @@ end
 
 
 # setting up the FSpace objects for simulation
+using BSplines
 function setupFSpaceXD(m::Model,p::Param)
 
 	ndims = 5 # number of cont dimensions
@@ -576,10 +577,13 @@ function setupFSpaceXD(m::Model,p::Param)
 
 	points[1] = m.grids["assets"]
 	bounds[1] = [m.grids["assets"][1],m.grids["assets"][end]]
+	points[5] = linspace(1.0,p.nt-1,p.nt-1)
+	bounds[5] = [1.0,convert(Float64,p.nt-1)]
 
 	# construct asset basis with custom knots
 	# bsp[1] = BSpline(m.knots["assets"],m.degs["assets"])
 	bsp[1] = BSpline(m.nknots["assets"],m.degs["assets"],bounds[1][1],bounds[1][2])
+	bsp[5] = BSpline(m.nknots["age"],m.degs["age"],bounds[5][1],bounds[5][2])
 
 	for ij   = 1:p.nJ	
 
@@ -594,7 +598,6 @@ function setupFSpaceXD(m::Model,p::Param)
 		bsp[2] = BSpline(m.nknots["y"],m.degs["y"],bounds[2][1],bounds[2][2])
 		bsp[3] = BSpline(m.nknots["p"],m.degs["p"],bounds[3][1],bounds[3][2])
 		bsp[4] = BSpline(m.nknots["z"],m.degs["z"],bounds[4][1],bounds[4][2])
-		bsp[5] = speye(p.nt-1)
 
 
 		# get full basis for inverses
@@ -623,6 +626,7 @@ function setupFSpaceXD(m::Model,p::Param)
 
 			for ihh  = 1:2
 
+
 				# get FSpace for vh, ch and sh
 				# ----------------------------
 
@@ -631,6 +635,7 @@ function setupFSpaceXD(m::Model,p::Param)
 				mycoef = getTensorCoef(id,vtmp)
 
 				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
+				info("doing state $idx11x")
 				fx["vh"][idx] = FSpaceXD(ndims,mycoef,bsp)
 
 				# ch
