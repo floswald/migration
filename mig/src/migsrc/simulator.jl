@@ -548,7 +548,6 @@ end
 
 
 # setting up the FSpace objects for simulation
-using BSplines
 function setupFSpaceXD(m::Model,p::Param)
 
 	ndims = 5 # number of cont dimensions
