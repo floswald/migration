@@ -15,7 +15,7 @@ require("nodes.jl")
 
 # plotSlices(mprob,mig_slice[1],mig_slice[2],facet="moments")
 
-mig_slice = slices(mprob,24)
+mig_slice = slices(mprob,40)
 writetable(joinpath(outdir,"migslice1.csv"),mig_slice[1])
 writetable(joinpath(outdir,"migslice2.csv"),mig_slice[2])
 # savePlots(tdir,"png")
