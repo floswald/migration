@@ -15,18 +15,19 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
 	# info("simulation/computation of moments")
 	s   = simulate(m,p)
+
+	# mms can contain NA!
 	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
 
-
 	mom2 = join(mom,mms,on=:moment)
-	insert!(mom2,6,zeros(nrow(mom2)),:perc)
+	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:perc)
 
 	# get percentage difference of each moment and square that
 	subset = findin(mom2[:moment],whichmom)
 
 	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
 
-	fval = sumabs(mom2[subset,:perc])
+	fval = sum(abs(mom2[subset,:perc]))
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
