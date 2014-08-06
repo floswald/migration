@@ -73,15 +73,15 @@ type Param
 		if size==1
 
 			# super small: use for tests
-			na    = 7
-			namax  = 8
+			na    = 10
+			namax  = 10
 			nz    = 3
 			nh    = 2
 			ntau  = 2
 			np    = 2
 			ny    = 2
 			nJ    = 9
-			nt    = 4
+			nt    = 8
 			ns    = 2
 			nsim  = 100
 
@@ -97,7 +97,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 10000
+			nsim  = 20000
 
 		elseif size==3
 		# big: maximal size for memory on my box
@@ -121,7 +121,7 @@ type Param
 		imgamma = 1.0/mgamma
 		lambda  = 0.5
 		tau     = 5.0
-		taudist = 0.2
+		taudist = 0.5
 		xi1     = 0.25
 		xi2     = 0.1
 		omega1  = 0.1
