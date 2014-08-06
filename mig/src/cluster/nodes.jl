@@ -52,7 +52,7 @@ if mc_only
 
 else
 
-	plist = ["gamma","xi1","xi2","omega1","omega2","MC0","MC1","MC2","MC3","MC4","Rm","tau","taudist"]
+	plist = ["gamma","xi1","xi2","omega1","omega2","MC0","MC1","MC3","MC4","Rm","tau","taudist"]
 
 	p2 = Dict{ASCIIString,Float64}()
 
@@ -73,9 +73,9 @@ else
 	pb["omega2"] = [2.5,15.0]
 	pb["MC0"]    = [0.0,15]
 	pb["MC1"]    = [-5.0,10]
-	pb["MC2"]    = [0.0,0.25]
+	# pb["MC2"]    = [0.0,0.25]
 	pb["MC3"]    = [0.0,20]
-	pb["MC4"]    = [-4.0,15]
+	pb["MC4"]    = [-5.0,15]
 	pb["Rm"]    = [1.03,1.2]
 	pb["tau"]    = [0.0,15]
 	pb["taudist"]    = [0.01,0.99]
