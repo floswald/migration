@@ -25,7 +25,6 @@ irid_slices:
   desc:   slices of mig
   nnodes:   3
   ppnodes:   12
-  numprocs:   36
   hours: 00
   mins: 15
   logout:   migslices.log
@@ -40,7 +39,6 @@ irid_estim:
   desc:   SMM of mig
   nnodes:   3
   ppnodes:   12
-  numprocs:   36
   hours: 00
   mins: 45
   logout:   migslices.log

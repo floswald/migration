@@ -13,4 +13,4 @@
 cd $PBS_O_WORKDIR
 
 echo "calling julia now"
-{{exec}} -p {{numprocs}} {{run}} 
+{{exec}} {{run}} 
