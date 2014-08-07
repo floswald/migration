@@ -289,6 +289,54 @@ name "fig:SIPP-sample-proportion"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/u_corrtab.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Correlation measures of log income residual of cross-divison movers in SIPP
+ data.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Literature
 \end_layout
@@ -404,142 +452,133 @@ key "kennan2003effect"
 Model
 \end_layout
 
-\begin_layout Subsection
-Locations, House Price and Income
+\begin_layout Standard
+In the model I view households as unitary units, and I'll use the terms
+ 
+\emph on
+household 
+\emph default
+and 
+\emph on
+individual
+\emph default
+ interchangeably -- 
+\emph on
+individual 
+\emph default
+in this case refers to the household reference person.
+ [maybe some discussion here?]
 \end_layout
 
 \begin_layout Standard
-Let 
-\begin_inset Formula $i$
+Individuals live in one of 
+\begin_inset Formula $D$
 \end_inset
 
- index individuals, and let 
-\begin_inset Formula $t$
+ census divisions (
+\emph on
+regions
+\emph default
+)
+\emph on
+ 
+\emph default
+for a total of 
+\begin_inset Formula $J$
 \end_inset
 
- be age.
- This is a model of geographic mobility across 
-\begin_inset Formula $r\in J$
-\end_inset
-
- regions of the US.
- I will use 
+ years of age.
+ At each age 
 \begin_inset Formula $j$
 \end_inset
 
- to denote the current (origin) location, and 
-\begin_inset Formula $k$
+, they have to decide whether to move to a different region, whether to
+ own or rent, and how much of their labor income to save.
+ They derive utility from household size 
+\begin_inset Formula $s$
 \end_inset
 
- any other (destination) location, i.e.
- 
-\begin_inset Formula $k\in J\backslash j$
+ adjusted consumption 
+\begin_inset Formula $\left(\frac{c}{s}\right)$
+\end_inset
+
+, from owning a house 
+\begin_inset Formula $(h)$
+\end_inset
+
+ and from an unobserved local amenity 
+\begin_inset Formula $(\tau)$
 \end_inset
 
 .
- From the perspective of individual 
-\begin_inset Formula $i$
-\end_inset
+\end_layout
 
-, location 
-\begin_inset Formula $j$
+\begin_layout Standard
+Indivudals are subject to uncertainty at both regional and individual level.
+ Regional uncertainty comes in the form of shocks to regional productivity,
+ which affects personal labor income, and shocks to regional house prices,
+ which affect their balance sheet and or their choice set (for example,
+ if prices are high, buying is not an option for some individuals).
+ Individual--specific uncertainty enters the model through an idiosyncratic
+ component of income risk, a markovian process that models changes of household
+ size over the lifecycle (in particular, it models the random arrival of
+ children into the household), and finally a location--specific preference
+ shock, which is assumed identically and independently distributed across
+ agents and time.
+\end_layout
+
+\begin_layout Subsection
+Individual Labor Income
+\end_layout
+
+\begin_layout Standard
+I model the logarithm of labor income of individual 
+\begin_inset Formula $i$
 \end_inset
 
  at age 
-\begin_inset Formula $t$
-\end_inset
-
- is characterized by a tuple of values 
-\begin_inset Formula 
-\begin{equation}
-\left(p_{jt},\overline{y}_{jt}\right)\label{eq:triple-location}
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $p_{jt}$
-\end_inset
-
- is the average house price and 
-\begin_inset Formula $\overline{y}_{jt}$
-\end_inset
-
- stands for the average level of income.
- 
-\end_layout
-
-\begin_layout Standard
-Individuals inelastically supply one unit of labor in each period.
- The income process of individual 
-\begin_inset Formula $i$
-\end_inset
-
- is given in equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:income-model-1"
-
-\end_inset
-
-.
- Function 
-\begin_inset Formula $f$
-\end_inset
-
- maps invidiual and time specific characteristics into the deterministic
- part of income.
- There is a persistent source of income uncertainty in the form of 
-\begin_inset Formula $z_{it}$
-\end_inset
-
-, which evolves according to the stationary markov chain 
-\begin_inset Formula $\Gamma_{z}(j,k)$
-\end_inset
-
-.
- Notice that transitions of 
-\begin_inset Formula $z$
-\end_inset
-
- follow the location specific markov chain 
-\begin_inset Formula $\Gamma_{z}(j,j)$
-\end_inset
-
- if no move is undertaken, whereas it follows a different chain 
-\begin_inset Formula $\Gamma_{z}(j,k)$
-\end_inset
-
- when moving from 
 \begin_inset Formula $j$
 \end_inset
 
- to 
-\begin_inset Formula $k$
+ and residing in region 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $\ln y_{ijdt}$
+\end_inset
+
+, as being composed of a region--date specific part 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+, an age--region specific profile 
+\begin_inset Formula $f(j,d)$
+\end_inset
+
+ and an individual--region specific persistent idiosyncratic shock process
+ 
+\begin_inset Formula $(z_{idt})$
+\end_inset
+
+, as defined in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:income-process"
+
 \end_inset
 
 .
  
-\end_layout
-
-\begin_layout Standard
-CAUTION: YOU CANNOT ESTIMATE THE TRANSITION OF z from z' for movers from
- mover data.
- movers moved because they got an extraordinary opportunity (potentially
- -- at any rate, we don't know).
- so you keep your z! it's a personality trait.
- THE PROBLEM IS: WHAT IS THE CORRECT MODEL FOR 
-\begin_inset Formula $z_{it+1,k}|z_{it,j}$
-\end_inset
-
-?????
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\nonumber \\
-\Pr\left(z_{it+1}|z_{it},j,k\right) & = & \Gamma_{z}(j,k)\label{eq:income-model-1}
+\ln y_{ijdt} & = & \overline{y}_{dt}+f(j,d)+z_{idt}\nonumber \\
+z_{idt} & = & \rho_{d}z_{idt-1}+\varepsilon_{idt-1}\nonumber \\
+\varepsilon_{d} & \sim & N(0,\sigma_{d}^{2})\label{eq:income-process}
 \end{eqnarray}
 
 \end_inset
@@ -548,30 +587,164 @@ y_{ijt} & = & \overline{y}_{jt}+f\left(i,j,t\right)+z_{it}\nonumber \\
 \end_layout
 
 \begin_layout Standard
-ALTERNATIVE INCOME MODEL
+In this setup I interpret 
+\begin_inset Formula $\overline{y}_{dt}+f(j,d)$
+\end_inset
+
+ as the price of human capital in a labor market that is segmented by age
+ and where wages vary with local economic conditions.
+ Underlying this structure is an assumption about non--equalizing factor
+ prices across regions.
+ It is plausible to think that within a single country, wages should tend
+ to converge to a common level, particularly in the presence of large migratory
+ flows from one region to the next.
+ In assuming no relative factor price equality across US regions I rely
+ on a host of evidence showing that relative wages vary considerably across
+ regions over a long time horizon (see for example 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "redding"
+
+\end_inset
+
+).
+ I will refer to 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ as 
+\emph on
+mean wages
+\emph default
+ and they are allowed to vary over time in a fashion that is outlined in
+ greater detail below.
 \end_layout
 
 \begin_layout Standard
+With regards to variation in wages with age, I assume that human capital
+ at different ages is competing in age--segmented markets and therefore
+ commands a different price at each age.
+ Finally, 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ should be interpreted as as a time-varying workplace match effect between
+ the individual and their current occupation in region 
+\begin_inset Formula $d$
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+viewing 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ as person-specific productivity is equivalent.
+\end_layout
+
+\end_inset
+
+ The persistence 
+\begin_inset Formula $\rho_{d}$
+\end_inset
+
+ and the variance of innovations to this process, 
+\begin_inset Formula $\sigma_{d}^{2}$
+\end_inset
+
+, are allowed to vary by region because of differential industry compositions
+ across different regions, which may lead to differential compositions of
+ risks and according insurance mechanisms at the local level.
+ 
+\end_layout
+
+\begin_layout Subsection
+Region--specific house price and income
+\end_layout
+
+\begin_layout Standard
+Each region in the economy features a separate stationary vector autoregression
+ of order one (VAR(1)) describing the joint dynamics of house prices and
+ average region labor income, as defined in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-process"
+
+\end_inset
+
+.
+ In this definition, 
+\begin_inset Formula $A$
+\end_inset
+
+ is a matrix of coefficients and 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is the variance-covariance matrix of the bivariate normal VAR(1) innovation
+ 
+\begin_inset Formula $\nu$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+At date 
+\begin_inset Formula $t$
+\end_inset
+
+, region 
+\begin_inset Formula $d$
+\end_inset
+
+ is described by house price 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and mean income 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+, which is equal for all individuals who currently reside in region 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ Agents observe the value of the VAR process for the region they are currently
+ living in, but they only know the unconditional mean of the processes in
+ other regions.
+ In other words, when agents want to forecast the house price in the next
+ period in a different region, they set their forecast equal to the unconditiona
+l mean of the VAR(1) on house price and mean income.
+ This is a time-invariant forecast, but it differs across locations.
+ 
 \begin_inset Formula 
-\[
-y_{ijt}=\bar{y}_{jt}+v_{ij}+f(i,j,t)
-\]
+\begin{eqnarray}
+\begin{bmatrix}\overline{y}_{dt}\\
+p_{dt}
+\end{bmatrix} & = & A\begin{bmatrix}\overline{y}_{dt-1}\\
+p_{dt-1}
+\end{bmatrix}+\nu_{dt-1}\nonumber \\
+\nu_{dt} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma_{d}\right)\label{eq:VAR-process}
+\end{eqnarray}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-you don't need v and z.
- one random component is enough.
- z seems like a better version of v.
- z allows v to change.
- you just need something to draw the new z from.
+\begin_layout Subsection
+Preferences
 \end_layout
 
 \begin_layout Standard
-Agents know that 
+
 \family roman
 \series medium
 \shape up
@@ -583,153 +756,130 @@ Agents know that
 \uwave off
 \noun off
 \color none
-
-\begin_inset Formula $\left(p_{jt},\overline{y}_{jt}\right)$
-\end_inset
-
- are first order markovian in all 
-\begin_inset Formula $j$
-\end_inset
-
-, but they do not observe the current value in locations other than 
-\begin_inset Formula $j$
-\end_inset
-
-.
- In other words, there is incomplete information with respect to prices
- in locations other then the current one.
- I assume agents observe a national index 
-\begin_inset Formula $\left(Y_{t},P_{t}\right)$
-\end_inset
-
- and the current deviation from that index in the current location, denoted
- by 
-\begin_inset Formula $\left(\tilde{y}_{jt},\tilde{p}_{jt}\right)$
-\end_inset
-
-.
- Therefore the relevant state variable is 
-\begin_inset Formula $\mathbf{P}_{jt}=(Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})$
-\end_inset
-
-.
- For all locations 
-\begin_inset Formula $j\neq k$
-\end_inset
-
- other than the current location, agents use unconditional the mean of 
-\begin_inset Formula $\left(\tilde{y}_{kt},\tilde{p}_{kt}\right)$
-\end_inset
-
- to forecast prices.
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-A succinct description of the prices process 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
- is thus as follows:
 \begin_inset Formula 
-\begin{eqnarray*}
-\mathbf{P}_{jt} & = & (Y_{t},P_{t},\tilde{y}_{jt},\tilde{p}_{jt})\\
-Y_{t+t} & = & \rho_{Y}Y_{t}+\nu_{Y}\\
-P_{t+t} & = & \rho_{P}P_{t}+\nu_{P}\\
-\overline{y}_{jt} & = & Y_{t}+\tilde{y}_{jt}\\
-p_{jt} & = & P_{t}+\tilde{p}_{jt}\\
-E\overline{y}_{kt+1} & = & E[Y_{t+1}|Y_{t}]+E\tilde{y}_{kt}\\
-Ep_{kt+1} & = & E[P_{t+1}|P_{t}]+E\tilde{p}_{kt}\\
-\tilde{y}_{jt} & = & \beta_{0}+\beta_{1}\tilde{y}_{jt-1}+\nu_{\tilde{y}t,d}\\
-\tilde{p}_{jt} & = & \gamma_{0}+\gamma_{1}\tilde{p}_{jt-1}+\nu_{\tilde{p}t,d}\\
-\left[\begin{array}{cc}
-\nu_{\tilde{p}t,d} & \nu_{\tilde{y}t,d}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
-0\\
-0
-\end{array}\right]\left[\begin{array}{cc}
-\sigma_{\tilde{y},d}^{2} & \sigma_{\tilde{y}\tilde{p},d}\\
- & \sigma_{\tilde{p},d}^{2}
-\end{array}\right]\right)
-\end{eqnarray*}
+\[
+u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
+\\
+\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
+-\Delta\left(k,x_{it}\right)-\lambda def_{it}
+\end{cases}
+\]
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-TODO
-\end_layout
-
-\begin_layout Standard
-specify copula on 
-\begin_inset Formula $(Y_{t+1},P_{t+1},Y_{t},P_{t})$
-\end_inset
-
- and on 
-\begin_inset Formula $(\tilde{y}_{t+1},\tilde{p}_{t+1},\tilde{y}_{t},\tilde{p}_{t})$
-\end_inset
-
- 
 \end_layout
 
 \begin_layout Subsection
-Housing
+Housing Tenure
 \end_layout
 
 \begin_layout Standard
-The current version of the model does not admit any choice over the size
- of housing, i.e.
- housing is discrete such that 
-\begin_inset Formula $h=0$
+Housing tenure choice is discrete, 
+\begin_inset Formula $h_{t}\in\left\{ 0,1\right\} $
 \end_inset
 
- means the individual is a renter while 
-\begin_inset Formula $h=1$
+ and there is no quantity choice of housing.
+ While renting, i.e.
+ whenever 
+\begin_inset Formula $h_{t}=0$
 \end_inset
 
- stands for an owner.
- The assumption about discrete housing is not strictly necessary and was
- made only for simplifying reasons.
+, individuals must pay rent which amounts to a constant fraction 
+\begin_inset Formula $\kappa_{d}$
+\end_inset
+
+ of the current region house price 
+\begin_inset Formula $p_{d}$
+\end_inset
+
+.
+ In order to buy, a proportion 
+\begin_inset Formula $(1-\chi)p_{dt}$
+\end_inset
+
+ of the house value needs to be paid up front as a downpayment, while the
+ remainder 
+\begin_inset Formula $\chi p_{dt}$
+\end_inset
+
+ is financed by a standard fixed rate mortgage.
+ In other words, only owners are allowed to borrow with their house as a
+ collateral, and there is no unsecured debt.
+ Similar to the setup in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Attanasio20121"
+
+\end_inset
+
+, I denote nonhousing wealth as 
+\begin_inset Quotes eld
+\end_inset
+
+assets
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ and assume a terminal condition 
+\begin_inset Formula $a_{T}\geq0$
+\end_inset
+
+, which translates into an implicit borrowing limit for owners.
+ They will not borrow more than what can be repaid with certainty, although
+ this constraint is partially relaxed by allowing for mortgage default,
+ as detailed below.
+ Furthermore, this setup does not require the owner to fulfil the downpayment
+ (or margin) constraint in every period, but only in the period of purchase.
+ This implies that when prices fall, owners do not have to adjust the size
+ of their mortgage by remortgaging or selling the home, for as long as the
+ make the required interest payment.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In contrast to a fully specified mortgage repayment schedule, which requires
+ knowledge of remaining mortgage debt and 
+\begin_inset Quotes eld
+\end_inset
+
+periods paid
+\begin_inset Quotes erd
+\end_inset
+
+, this approach saves on the counting state variable 
+\begin_inset Quotes eld
+\end_inset
+
+periods paid
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Housing is financed by a standard fixed rate mortgage, and only owners can
- borrow.
- I assume an endogenous repayment schedule for the mortgage, which avoids
- having to carry either remaining mortgage debt or age of the mortgage as
- a state variable.
- The particulars are that individuals can buy subject to a downpayment constrain
-t on assets which basically requires to hold a fraction 
-\begin_inset Formula $\chi$
+Formally, the constraints relating to next period assets 
+\begin_inset Formula $a_{t+1}$
 \end_inset
 
- of the house value in cash, 
+ can be stated as follows:
 \begin_inset Formula 
-\[
-a'\geq-\chi ph
-\]
-
-\end_inset
-
-and under the restriction that final period assets must be positive, implying
- that the mortgage is paid off before time 
-\begin_inset Formula $T$
-\end_inset
-
-:
-\begin_inset Formula 
-\[
-a_{T}\geq0
-\]
+\begin{eqnarray*}
+a_{t+1} & \geq & 0\,\text{if }h_{t}=0\\
+a_{t+1} & \geq & -\chi p_{dt}\,\text{if }h_{t-1}=0,h_{t}=1\\
+a_{t+1} & \geq & \,\text{if }h_{t-1}=0,h_{t}=1
+\end{eqnarray*}
 
 \end_inset
 
