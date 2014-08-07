@@ -289,54 +289,6 @@ name "fig:SIPP-sample-proportion"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/u_corrtab.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Correlation measures of log income residual of cross-divison movers in SIPP
- data.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Literature
 \end_layout
@@ -527,6 +479,20 @@ Indivudals are subject to uncertainty at both regional and individual level.
  agents and time.
 \end_layout
 
+\begin_layout Standard
+The job search process is modeled as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+ in the sense that individuals do not search for jobs before they move.
+ The model posits that, once arrived in a new location, the individual acquires
+ information about the quality of their job and location match by drawing
+ from the initial distributions of both.
+\end_layout
+
 \begin_layout Subsection
 Individual Labor Income
 \end_layout
@@ -659,6 +625,269 @@ viewing
  across different regions, which may lead to differential compositions of
  risks and according insurance mechanisms at the local level.
  
+\end_layout
+
+\begin_layout Standard
+When moving from region 
+\begin_inset Formula $d$
+\end_inset
+
+ to region 
+\begin_inset Formula $k$
+\end_inset
+
+, the individual's income will be composed of the corresponding mean income
+ at the current date, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\overline{y}_{kt}$
+\end_inset
+
+, and the deterministic age 
+\begin_inset Formula $j$
+\end_inset
+
+ effect in region 
+\begin_inset Formula $k$
+\end_inset
+
+, 
+\begin_inset Formula $f(j,k)$
+\end_inset
+
+.
+ The individual--specific idiosyncratic component 
+\begin_inset Formula $z_{ikt}$
+\end_inset
+
+ is drawn from the density of a bivariate copula 
+\begin_inset Formula $C$
+\end_inset
+
+ with normal margins, which is invariant to date and region.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+A copula is a multivariate probability distribution function which connects
+ univariate margins by taking into account the underlying dependence structure.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+To provide some evidence for the particular parametric form of the evolution
+ of 
+\begin_inset Formula $z$
+\end_inset
+
+ when moving across regions, it is useful to view 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:income-process"
+
+\end_inset
+
+ as the residual from an ordinary least squares regression of log wages
+ on time and region effects, as well as person specific demographic predictors.
+ The question is whether individuals with a particularly high residual 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ are likely to have a high residual 
+\begin_inset Formula $z_{ikt+1}$
+\end_inset
+
+ after their move to region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ In other words, we want to investigate the joint distribution of 
+\begin_inset Formula $\left(z_{idt},z_{ikt+1}\right)$
+\end_inset
+
+.
+ In a first step I estimate the marginal distributions, which is just the
+ cross-sectional distribution of both margins.
+ Unsurprisingly, both margins are close to normal, which indicates a well-specif
+ied regression model.
+ The margins can be seen in figure s x and y.
+ The next step involves fitting the copula 
+\begin_inset Formula $C$
+\end_inset
+
+ via maximum likelihood to those data.
+ The results indicate that there is a relatively high degree of dependence
+ in the residual, with the estimated copula parameter of the order of 0.7.
+ This estimate is in line with a simple correlation measure between 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{ikt+1}$
+\end_inset
+
+ in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Correlation-z"
+
+\end_inset
+
+.
+ A surface plot of the resulting copula density is plotted in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:density-of-copula"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/z_corrtab.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Correlation measures of log income residual of cross-divison movers in SIPP
+ data in period before and after the move at dat 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Correlation-z"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/z_cop_surf.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+density of copula fitted to movers' wage residuals
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:density-of-copula"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -878,7 +1107,7 @@ Formally, the constraints relating to next period assets
 \begin{eqnarray*}
 a_{t+1} & \geq & 0\,\text{if }h_{t}=0\\
 a_{t+1} & \geq & -\chi p_{dt}\,\text{if }h_{t-1}=0,h_{t}=1\\
-a_{t+1} & \geq & \,\text{if }h_{t-1}=0,h_{t}=1
+a_{t+1} & \geq & (1+r)\,\text{if }h_{t-1}=0,h_{t}=1
 \end{eqnarray*}
 
 \end_inset
