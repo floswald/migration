@@ -23,11 +23,11 @@ ucl_estim:
 irid_slices:
   name:   mig-slices  
   desc:   slices of mig
-  nnodes:   1
+  nnodes:   3
   ppnodes:   12
-  numprocs:   12
-  hours: 01
-  mins: 10
+  numprocs:   36
+  hours: 00
+  mins: 15
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub

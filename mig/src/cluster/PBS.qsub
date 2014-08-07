@@ -12,10 +12,5 @@
 # Change to working directory
 cd $PBS_O_WORKDIR
 
-# load all modules required for julia
-module load gcc/4.8.1
-module load openmpi/1.6.5/gcc-4.8.1
-module load python
-
 echo "calling julia now"
 {{exec}} -p {{numprocs}} {{run}} 
