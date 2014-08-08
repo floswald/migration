@@ -109,9 +109,7 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 # sigmas: array(J,2,2)
 # 
 
-#' this is a var with uncorrelated shocks at the moment
-#'
-Export.VAR <- function(merged){
+Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
 	m = melt(py,id.vars=c("year","Division"))
 
@@ -146,7 +144,7 @@ Export.VAR <- function(merged){
 	mdy[,var := "p"]
 	mdy[variable %in% c("y","yhat"), var := "y"]
 
-	pred <- ggplot(subset(mdy,variable %in% c("p","y","phat","yhat")),aes(x=year,y=value,linetype=type,color=var)) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to data") + scale_y_continuous(name="1000s of Dollars")
+	pred <- ggplot(subset(mdy,variable %in% c("p","y","phat","yhat")),aes(x=year,y=value,linetype=type,color=var)) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","y"="blue"))
 
 	# visualize simulation
 
@@ -167,10 +165,14 @@ Export.VAR <- function(merged){
 			cp = coef(mods[[d]])[4:6]
 			sim[year==yr & Division==d, y := cy %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[1] ]
 			sim[year==yr & Division==d, p := cp %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[2]]
+
+			if (sim[year==yr & Division==d, p<30] ){
+				sim[year==yr & Division==d, p := 30]
+			}
 		}
 	}
 	msim <- melt(sim,id.vars=c("year","Division"))
-	simp <- ggplot(msim,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR Simulation Path") + scale_y_continuous(name="1000s of Dollars")
+	simp <- ggplot(msim,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR Simulation Path") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","y"="blue"))
 
 	# export coefficients as table
 	coefs <- as.data.frame(t(sapply(mods,coef)))
@@ -493,27 +495,28 @@ Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobi
 
 
 # plot model slices
-plotModelSlices <- function(iridis=TRUE,path="~/Dropbox/mobility/output/model/data_repo"){
+plotModelSlices <- function(who="mac",path="~/Dropbox/mobility/output/model/data_repo",outpath="~/Dropbox/mobility/output/model/data_repo"){
 	# load data
-	if (iridis){
-		cmd <- paste0("scp -r iridis:~/data_repo/mig/out_data_jl/ ",file.path(path,"iridis"))
+	if (who=="iridis"){
+		cmd <- paste0("scp -r iridis:~/data_repo/mig/out_data_jl/ ",path)
 		system(cmd)
-		vals = read.csv(file.path(path,"iridis","migslice1.csv"))
-		moms = read.csv(file.path(path,"iridis","migslice2.csv"))
-	} else {
-		vals = read.csv(file.path(path,"out_data_jl","migslice1.csv"))
-		moms = read.csv(file.path(path,"out_data_jl","migslice2.csv"))
+	} else if (who=="sherlock"){
+		cmd <- paste0("scp -r sherlock:~/data_repo/mig/out_data_jl/ ",path)
+		system(cmd)
+	} 
 
-	}
+	vals = read.csv(file.path(path,"out_data_jl","migslice1.csv"))
+	moms = read.csv(file.path(path,"out_data_jl","migslice2.csv"))
+
 
 	p1 = ggplot(vals,aes(x=p_val,y=f_val)) + geom_line() + facet_wrap(~p_name,scales="free") + ggtitle('Value of Ojbective Function vs Parameters')
-	ggsave(plot=p1,filename=file.path(path,"out_graphs_jl","objfun.pdf"),width=297,height=210,units="mm")
+	ggsave(plot=p1,filename=file.path(outpath,"out_graphs_jl","objfun.pdf"),width=297,height=210,units="mm")
 
 	m = list()
 	for (pp in unique(moms$p_name)){
 		tstring = paste0("Moments_vs_",pp)
 		m[[pp]] = ggplot(subset(moms,p_name == pp),aes(x=p_val,y=m_val)) + geom_line() + facet_wrap(~m_name,scales="free") + ggtitle(tstring) + scale_x_continuous(name=pp) + scale_y_continuous(name="value of Moment")
-		ggsave(plot=m[[pp]], filename=file.path(path,"out_graphs_jl",paste0(tstring,".pdf")),width=297,height=210,units="mm")
+		ggsave(plot=m[[pp]], filename=file.path(outpath,"out_graphs_jl",paste0(tstring,".pdf")),width=297,height=210,units="mm")
 
 	}
 

@@ -67,7 +67,8 @@ Sipp.moments <- function(d,svy){
 	# linear regression of total wealth
 	# =================================
 
-	wlm = summary(svyglm(w2medinc ~ age + age2 + own + Division, svy))
+	# wlm = summary(svyglm(w2medinc ~ age + age2 + own + Division, svy))
+	wlm = summary(svyglm(wealth ~ age + age2 + own + Division, svy))
 	nms = paste0("lm_w_",rownames(wlm$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$wealth_reg = data.table(moment=nms,data_value=wlm$coefficients[,"Estimate"],data_sd=wlm$coefficients[,"Std. Error"])
@@ -204,7 +205,10 @@ Sipp.own_in_j_rent_in_k <- function(){
 
 
 
-Sipp.movers_wage_residual <- function(path="~/Dropbox/mobility/output/data/sipp"){
+Sipp.movers_wage_residual_plots <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+	# you call the residual u in the code
+	# but z in the paper.
 
 	# get monthly sipp data
 	data(Sipp_aggby_NULL,envir=environment())
@@ -242,35 +246,47 @@ Sipp.movers_wage_residual <- function(path="~/Dropbox/mobility/output/data/sipp"
 	# rank difference
 	mvs[,p_rankdiff := pR_u_plus1 - pR_u]
 	mvs[,rankdiff := R_u_plus1 - R_u]
-	mvs[,p_rankdiff_0 := pR_u - pR_u_minus1]
-	mvs[,rankdiff_0 := R_u - R_u_minus1]
+	mvs[,p_rankdiff_0 := pR_u - pR_u_minus1]	# in period before move
+	mvs[,rankdiff_0 := R_u - R_u_minus1]		# in period before move
 
+	# conditional on moving, what is correlation of those two variables?
 	Rcor0_1minus = mvs[D2D==TRUE,cor(R_u,R_u_minus1,use="complete.obs")]
 	Rcor0_1plus  = mvs[D2D==TRUE,cor(R_u,R_u_plus1,use="complete.obs")]
 
 	# stats table
 	stab <- matrix(c(cor0_1minus,cor0_1plus,Rcor0_1minus,Rcor0_1plus),byrow=T,c(2,2))
 	rownames(stab) <- c("Correlation","Rank Correlation")
-	colnames(stab) <- c("$cor(u_t,u_{t-1})$","$cor(u_{t+1},u_t)$")
+	colnames(stab) <- c("$cor(z_t,z_{t-1})$","$cor(z_{t+1},z_t)$")
 
-	print(xtable(stab),sanitize.text.function=function(x){x},file=file.path(path,"u_corrtab.tex"),floating=FALSE,booktabs=TRUE)
+	print(xtable(stab),sanitize.text.function=function(x){x},file=file.path(path,"z_corrtab.tex"),floating=FALSE,booktabs=TRUE)
 
 	# plot quantiles and density
 
-	m <- data.frame(mvs[D2D==TRUE,quantile(p_rankdiff,seq(0.05,0.95,le=100),na.rm=T)])
-	names(m)[1] <- "rank(u(t+1)) - rank(u(t))"
+	m2D <- data.frame(mvs[D2D==TRUE,quantile(pR_u,seq(0.05,0.95,le=100),na.rm=T)])
+	names(m2D)[1] <- "rank(t)"
+	m2D$quantile <- seq(0.05,0.95,le=100)
+	m2D$rankt1 <- mvs[D2D==TRUE,quantile(pR_u,seq(0.05,0.95,le=100),na.rm=T)]
+	names(m2D)[3] <- "rank(t+1)"
+
+	m <- data.frame(mvs[D2D==TRUE,quantile(p_rankdiff_0,seq(0.05,0.95,le=100),na.rm=T)])
+	names(m)[1] <- "before: rank(z(t)) - rank(z(t-1))"
 	m$quantile <- seq(0.05,0.95,le=100)
-	m$rankdiff_0 <- mvs[D2D==TRUE,quantile(p_rankdiff_0,seq(0.05,0.95,le=100),na.rm=T)]
-	names(m)[3] <- "rank(u(t)) - rank(u(t-1))"
+	m$rankdiff <- mvs[D2D==TRUE,quantile(p_rankdiff,seq(0.05,0.95,le=100),na.rm=T)]
+	names(m)[3] <- "after: rank(z(t+1)) - rank(z(t))"
 
 	mm <- melt(m,id.vars="quantile")
 
 	p <- list()
 
-	p$quantiles <- ggplot(mm,aes(x=quantile,y=value)) + facet_wrap(~variable) + geom_point() + theme_bw() + scale_x_continuous(breaks=c(0.1,0.25,0.5,0.75,0.9)) + scale_y_continuous(name="rank difference (rank in [0,1])") + ggtitle("Quantiles of Mover's residual rank difference")
+	p$quantiles <- ggplot(mm,aes(x=quantile,y=value)) + facet_wrap(~variable) + geom_point() + theme_bw() + scale_x_continuous(breaks=c(0.1,0.25,0.5,0.75,0.9)) + scale_y_continuous(name="rank difference (rank in [0,1])") + ggtitle("Quantiles of Mover residual rank difference before and after move in t")
 
-	mm2 <- melt(mvs[D2D==TRUE,list(p_rankdiff,p_rankdiff_0)])
-	p$densities <- ggplot(subset(mm2,abs(value) > 1e-3),aes(x=value)) + facet_wrap(~variable) + geom_density() + theme_bw() + ggtitle("Densities of Mover's residual rank difference")
+	mm2 <- melt(mvs[D2D==TRUE,list(p_rankdiff_0,p_rankdiff)])
+	mm2[,var := variable]
+	mm2[variable=="p_rankdiff",var := "after: rank(z(t+1)) - rank(z(t))"]
+	mm2[variable=="p_rankdiff_0",var := "before: rank(z(t)) - rank(z(t-1))"]
+	mm2[,variable := NULL]
+	setnames(mm2,"var","variable")
+	p$densities <- ggplot(subset(mm2,abs(value) > 1e-3),aes(x=value)) + facet_wrap(~variable) + geom_density() + theme_bw() + ggtitle("Densities of Mover residual rank difference before and after move in t")
 
 	# fit a beta dist 
 	# normalize data to [0,1]
@@ -302,10 +318,79 @@ Sipp.movers_wage_residual <- function(path="~/Dropbox/mobility/output/data/sipp"
 
 
 	# save plots
-	ggsave(plot=p$quantiles,file=file.path(path,"u_quantiles.pdf"))
-	ggsave(plot=p$densities,file=file.path(path,"u_densities.pdf"))
+	ggsave(plot=p$quantiles,file=file.path(path,"z_quantiles.pdf"))
+	ggsave(plot=p$densities,file=file.path(path,"z_densities.pdf"))
+
+
+	# but you want the CONDITIONAL distbirution of z(t+1)!!!!!!
+
+
 
 	return(p)
+}
+
+
+
+Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+	library(copula)
+
+	data(Sipp_aggby_NULL,envir=environment())
+
+	# get movers
+	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+	setkey(mv,upid)
+	setkey(merged,upid,timeid)
+	mvs <- merged[mv]
+
+	mvs <- copy(mvs[HHincome > 0])
+
+	# log wage = beta0 + state +  beta1  *age + beta2*college + u
+
+	# get wage residual
+	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
+
+	# aim: get cor( u(t), u(t+1) ) when move happened in t
+	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
+	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
+	dat = mvs[D2D==TRUE,list(u,u_plus1)]
+	dat = dat[complete.cases(dat)]
+
+	# look at densities
+	pl <- list()
+	md = melt(dat)
+	pl$margins <- ggplot(subset(md,value>-3),aes(x=value)) + geom_density() + facet_wrap(~variable) + theme_bw() + ggtitle("Cross section distribution of residuals before and after move")
+
+	ggsave(plot=pl$margins,filename=file.path(path,"z_margins.pdf"))
+
+
+	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
+	mat = as.matrix(dat)
+	fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
+	coefs = coef(fit)
+	myc = mvdc(copula=ellipCopula(family="normal",param=coefs["rho.1"]),margins=c("norm","norm"),paramMargins=list(list(mean=coefs["m1.mean"],sd=coefs["m1.sd"]),list(mean=coefs["m2.mean"],sd=coefs["m2.sd"])))
+
+	pdf(file=file.path(path,"z_cop_contour.pdf"))
+	contour(myc,dmvdc,xlim=c(-3,3),ylim=c(-3,3));
+	dev.off()
+
+	n = 40
+	mat <- matrix(0,n,n)
+	uvec = seq(-3,3,le=n)
+	for (i in 1:n){
+		for (j in 1:n){
+			mat[i,j] <- dMvdc(c(uvec[i],uvec[j]),myc)
+		}
+	}
+
+	surf <- wireframe(mat,drape=TRUE,scales=list(arrows=FALSE),xlab="z(t)",ylab="z(t+1)",zlab="density")
+
+
+	pdf(file=file.path(path,"z_cop_surf.pdf"))
+	print(surf)
+	dev.off()
+
+	return(list(plots=surf,copula=fit))
 }
 
 
