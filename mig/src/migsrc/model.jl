@@ -247,11 +247,13 @@ type Model
 		degs["y"] = 1
 		degs["p"] = 1
 		degs["z"] = 1
+		degs["age"] = 2
 
 		nknots["assets"] = p.na - degs["assets"] + 1
 		nknots["p"] = p.np - degs["p"] + 1
 		nknots["y"] = p.ny - degs["y"] + 1
 		nknots["z"] = p.nz - degs["z"] + 1
+		nknots["age"] = (p.nt-1) - degs["age"] + 1
 
 		# making sure all knot spans are active
 		knots["assets"] = [linspace(grids["assets"][1],grids["assets"][end-1]-1,p.na - degs["assets"] ) , grids["assets"][end]]
@@ -270,6 +272,8 @@ end
 function setrand!(m::Model)
 	m.v = reshape(rand(length(m.v)),size(m.v))
 	m.vh = reshape(rand(length(m.vh)),size(m.vh))
+	m.sh = reshape(rand(length(m.vh)),size(m.vh))
+	m.ch = reshape(rand(length(m.vh)),size(m.vh))
 	m.vbar = reshape(rand(length(m.vbar)),size(m.vbar))
 	m.rho  = reshape(rand(length(m.rho)),size(m.rho))
 	m.EVfinal = reshape(rand(length(m.EVfinal)),size(m.EVfinal))
@@ -279,6 +283,8 @@ end
 function setincreasing!(m::Model)
 	m.v = reshape(1.0:length(m.v),size(m.v))
 	m.vh = reshape(1.0:length(m.vh),size(m.vh))
+	m.sh = reshape(1.0:length(m.vh),size(m.vh))
+	m.ch = reshape(1.0:length(m.vh),size(m.vh))
 	m.vbar = reshape(1.0:length(m.vbar),size(m.vbar))
 	m.rho  = reshape(1.0:length(m.rho),size(m.rho))
 	m.EVfinal = reshape(1.0:length(m.EVfinal),size(m.EVfinal))

@@ -548,16 +548,18 @@ end
 
 
 # setting up the FSpace objects for simulation
+if Sys.OS_NAME == :Darwin 
+	using BSplines
+end
 function setupFSpaceXD(m::Model,p::Param)
 
-	ndims = 5 # number of cont dimensions
+	ndims = 4 # number of cont dimensions
 
 	# ordering of continuous dims
 	# 1) a
 	# 2) y
 	# 3) p
 	# 4) z
-	# 5) age
 
 	# the return object: a dict of collections of fspaces.
 	fx = Dict{ASCIIString,Dict{Integer,FSpaceXD}}()
@@ -566,45 +568,52 @@ function setupFSpaceXD(m::Model,p::Param)
 	fx["ch"]  = Dict{Integer,FSpaceXD}()
 	fx["sh"]  = Dict{Integer,FSpaceXD}()
 
-	points = Dict{Integer,Array}()
-	bounds = Dict{Integer,Array}()
-	bsp = Dict{Integer,BSpline}()
+	points = Dict{Int,Dict{Integer,Array}}()
+	bounds = Dict{Int,Dict{Integer,Array}}()
+	bsp = Dict{Int,Dict{Integer,BSpline}}()
 
 	# full basis to compute inverses
-	d = Dict{Integer,Matrix}()
-	id = Dict{Integer,Array{Float64,2}}()
-
-	points[1] = m.grids["assets"]
-	bounds[1] = [m.grids["assets"][1],m.grids["assets"][end]]
-	points[5] = linspace(1.0,p.nt-1,p.nt-1)
-	bounds[5] = [1.0,convert(Float64,p.nt-1)]
-
-	# construct asset basis with custom knots
-	# bsp[1] = BSpline(m.knots["assets"],m.degs["assets"])
-	bsp[1] = BSpline(m.nknots["assets"],m.degs["assets"],bounds[1][1],bounds[1][2])
-	bsp[5] = BSpline(m.nknots["age"],m.degs["age"],bounds[5][1],bounds[5][2])
+	d = Dict{Int,Dict{Integer,Matrix}}()
+	id = Dict{Int,Dict{Integer,Array{Float64,2}}}()
+	# bsp[5] = BSpline(m.nknots["age"],m.degs["age"],bounds[5][1],bounds[5][2])
 
 	for ij   = 1:p.nJ	
 
-		points[2] = m.gridsXD["y"][:,ij]
-		points[3] = m.gridsXD["p"][:,ij]
-		points[4] = m.gridsXD["zsupp"][:,ij]
+		points[ij] = Dict{Integer,Array}()
+		bounds[ij] = Dict{Integer,Array}()
+		bsp[ij] = Dict{Integer,BSpline}()
 
-		bounds[2] = [ points[2][1],points[2][end] ]
-		bounds[3] = [ points[3][1],points[3][end] ]
-		bounds[4] = [ points[4][1],points[4][end] ]
+		# full basis to compute inverses
+		d[ij] = Dict{Integer,Matrix}()
+		id[ij] = Dict{Integer,Array{Float64,2}}()
 
-		bsp[2] = BSpline(m.nknots["y"],m.degs["y"],bounds[2][1],bounds[2][2])
-		bsp[3] = BSpline(m.nknots["p"],m.degs["p"],bounds[3][1],bounds[3][2])
-		bsp[4] = BSpline(m.nknots["z"],m.degs["z"],bounds[4][1],bounds[4][2])
+		points[ij][1] = m.grids["assets"]
+		bounds[ij][1] = [m.grids["assets"][1],m.grids["assets"][end]]
+		# points[5] = linspace(1.0,p.nt-1,p.nt-1)
+		# bounds[5] = [1.0,convert(Float64,p.nt-1)]
+
+		# construct asset basis with custom knots
+		# bsp[1] = BSpline(m.knots["assets"],m.degs["assets"])
+		bsp[ij][1] = BSpline(m.nknots["assets"],m.degs["assets"],bounds[ij][1][1],bounds[ij][1][2])
+		points[ij][2] = m.gridsXD["y"][:,ij]
+		points[ij][3] = m.gridsXD["p"][:,ij]
+		points[ij][4] = m.gridsXD["zsupp"][:,ij]
+
+		bounds[ij][2] = [ points[ij][2][1],points[ij][2][end] ]
+		bounds[ij][3] = [ points[ij][3][1],points[ij][3][end] ]
+		bounds[ij][4] = [ points[ij][4][1],points[ij][4][end] ]
+
+		bsp[ij][2] = BSpline(m.nknots["y"],m.degs["y"],bounds[ij][2][1],bounds[ij][2][2])
+		bsp[ij][3] = BSpline(m.nknots["p"],m.degs["p"],bounds[ij][3][1],bounds[ij][3][2])
+		bsp[ij][4] = BSpline(m.nknots["z"],m.degs["z"],bounds[ij][4][1],bounds[ij][4][2])
 
 
 		# get full basis for inverses
 		for i=1:ndims
-			d[i] = full(getBasis(points[i],bsp[i]))
+			d[ij][i] = full(getBasis(points[ij][i],bsp[ij][i]))
 		end
-		for k in collect(keys(d))
-			id[k] = inv(d[k])
+		for k in collect(keys(d[ij]))
+			id[ij][k] = inv(d[ij][k])
 		end
 
 
@@ -612,15 +621,16 @@ function setupFSpaceXD(m::Model,p::Param)
 		for ih   = 1:2
 		for is   = 1:p.ns
 		for ik   = 1:p.nJ
+		for age  = 1:p.nt-1
 
 			# get FSpace for rho
 			# ------------------
 
-			rhotmp = get_cont_vals(ik,is,ih,itau,ij,m.rho,p)
-			mycoef1 = getTensorCoef(id,rhotmp)
-			rhoidx = fx_idx_rho(ik,is,ih,itau,ij,p)
+			rhotmp = get_cont_vals(ik,is,ih,itau,ij,age,m.rho,p)
+			mycoef1 = getTensorCoef(id[ij],rhotmp)
+			rhoidx = fx_idx_rho(ik,is,ih,itau,ij,age,p)
 			# info("at index $rhoidx")
-			fx["rho"][rhoidx] = FSpaceXD(ndims,mycoef1,bsp)
+			fx["rho"][rhoidx] = FSpaceXD(ndims,mycoef1,bsp[ij])
 
 
 			for ihh  = 1:2
@@ -630,29 +640,30 @@ function setupFSpaceXD(m::Model,p::Param)
 				# ----------------------------
 
 				# vh
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.vh,p)
-				mycoef = getTensorCoef(id,vtmp)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.vh,p)
+				mycoef = getTensorCoef(id[ij],vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
-				info("doing state $idx11x")
-				fx["vh"][idx] = FSpaceXD(ndims,mycoef,bsp)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				# info("doing state $idx")
+				fx["vh"][idx] = FSpaceXD(ndims,mycoef,bsp[ij])
 
 				# ch
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.ch,p)
-				mycoef = getTensorCoef(id,vtmp)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.ch,p)
+				mycoef = getTensorCoef(id[ij],vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
-				fx["ch"][idx] = FSpaceXD(ndims,mycoef,bsp)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				fx["ch"][idx] = FSpaceXD(ndims,mycoef,bsp[ij])
 
 				# sh                 ihh,ik,is,ih,itau,ij,it,m.vh,p
-				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,m.sh,p)
-				mycoef = getTensorCoef(id,vtmp)
+				vtmp = get_cont_vals(ihh,ik,is,ih,itau,ij,age,m.sh,p)
+				mycoef = getTensorCoef(id[ij],vtmp)
 
-				idx = fx_idx(ihh,ik,is,ih,itau,ij,p)
-				fx["sh"][idx] = FSpaceXD(ndims,mycoef,bsp)
+				idx = fx_idx(ihh,ik,is,ih,itau,ij,age,p)
+				fx["sh"][idx] = FSpaceXD(ndims,mycoef,bsp[ij])
 
 			end
 
+		end
 		end
 		end
 		end
@@ -666,36 +677,38 @@ end
 
 
 # FSpace Indexer functions
-function fx_idx_rho(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,p::Param)
-	ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij -1)-1)-1)-1)
+function fx_idx_rho(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
+	ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ*(age-1)-1)-1)-1)-1)
 end
 
-function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,p::Param)
+function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
 	 
-	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij-1)-1)-1)-1)-1)
+	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ*(age-1)-1)-1)-1)-1)-1)
 end
 
-function fx_idx_cont(ia::Int,ip::Int,iy::Int,iz::Int,age::Int,p::Param)
-	ia + p.na * (ip + p.np * (iy + p.ny * (iz + p.nz *(age-1)-1) -1) -1)
+function fx_idx_cont(ia::Int,iy::Int,ip::Int,iz::Int,p::Param)
+	ia + p.na * (iy + p.ny * (ip + p.np * (iz-1) -1) -1)
 end
 
 
 
 # get values in continuous dims at given discrete state
 # method for idx11
-function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
+function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+# function get_cont_vals(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
 
-	vout = zeros(p.na*p.np*p.ny*p.nz*(p.nt-1))
+	# vout = zeros(p.na*p.np*p.ny*p.nz*(p.nt-1))
+	vout = zeros(p.na*p.np*p.ny*p.nz)
 
 	for ia = 1:p.na
-	for ip = 1:p.np
 	for iy = 1:p.ny
+	for ip = 1:p.np
 	for iz = 1:p.nz
-	for it = 1:p.nt-1
+	# for it = 1:p.nt-1
 
-		vout[fx_idx_cont(ia,ip,iy,iz,it,p)] = v[idx11(ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)]
+		@inbounds vout[fx_idx_cont(ia,iy,ip,iz,p)] = v[idx11(ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,age,p)]
 
-	end
+	# end
 	end
 	end
 	end
@@ -706,19 +719,21 @@ end
 
 
 # method for idx10
-function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
+function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,v::Array,p::Param)
+# function get_cont_vals(ik::Int,is::Int,ih::Int,itau::Int,ij::Int,v::Array,p::Param)
 
-	vout = zeros(p.na*p.np*p.ny*p.nz*(p.nt-1))
+	vout = zeros(p.na*p.np*p.ny*p.nz)
 
 	for ia = 1:p.na
-	for ip = 1:p.np
 	for iy = 1:p.ny
+	for ip = 1:p.np
 	for iz = 1:p.nz
-	for it = 1:p.nt-1
+	# for it = 1:p.nt-1
 
-		vout[fx_idx_cont(ia,ip,iy,iz,it,p)] = v[idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)]
+		# vout[fx_idx_cont(ia,ip,iy,iz,it,p)] = v[idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,it,p)]
+		@inbounds vout[fx_idx_cont(ia,iy,ip,iz,p)] = v[idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,age,p)]
 
-	end
+	# end
 	end
 	end
 	end
