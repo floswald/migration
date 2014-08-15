@@ -454,47 +454,23 @@ end
 # computing moments from simulation
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
-	mom1 = DataFrame(moment="move_rate", model_value = mean(df[:move]), model_sd = std(df[:move]))
-	push!(mom1,["move_rate_h0",mean(df[df[:h].==0,:move]),std(df[df[:h].==0,:move])])
-	push!(mom1,["move_rate_h1",mean(df[df[:h].==1,:move]),std(df[df[:h].==1,:move])])
-	push!(mom1,["own_rate",mean(df[:h]),std(df[:h])])
+	# create a dataframe to push moments on to
+	mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
 
-	movecount=by(df,:id,x -> sum(x[:move]))
-	moved0 = mean(movecount[:x1].==0)
-	moved1 = mean(movecount[:x1].==1)
-	moved2 = mean(movecount[:x1].==2)
-
-	push!(mom1,["moved0",moved0,0.0])
-	push!(mom1,["moved1",moved1,0.0])
-	push!(mom1,["moved2",moved2,0.0])
-
-
-	# linear probability model of mobility
-	# ====================================
-	# move ~ age + age^2 + dist + dist2 + own + kids
-	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
-
-		nm_mv = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2","lm_mv_km_distance","lm_mv_km_distance2","lm_mv_kidstrue","lm_mv_owntrue"]  
-		coef_mv = DataArray(Float64,7)
-		std_mv = DataArray(Float64,7)
-	else
-		lm_mv = fit(LinearModel, move ~ age + age2 + km_distance + km_distance2 + kids + own,df)
-		cc_mv = coeftable(lm_mv)
-		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
-		coef_mv = coef(lm_mv)
-		std_mv = stderr(lm_mv)
-	end
-
+	# grouped dfs
+	g_div = groupby(df, :Division)
+	g_kids = groupby(df, :kids)
+	g_own = groupby(df, :h)
 
 	# linear probability model of homeownership
 	# =========================================
 
 	if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
-		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2","lm_h_Division" * m.regnames[2:p.nJ,:Division],"lm_h_kidstrue"]  
-		coef_h = DataArray(Float64,4+(p.nJ-1))
-		std_h =  DataArray(Float64,4+(p.nJ-1))
+		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
+		coef_h = DataArray(Float64,3)
+		std_h =  DataArray(Float64,3)
 	else
-		lm_h = fit(LinearModel, h ~ age + age2 + Division + kids,df)
+		lm_h = fit(LinearModel, h ~ age + age2 ,df)
 		cc_h  = coeftable(lm_h)
 		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
 		coef_h = coef(lm_h)
@@ -502,19 +478,87 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	end
 
 
+	# own ~ Division
+	for div in g_div
+		push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])])
+	end
+
+	# own ~ kids
+	for div in g_kids
+		kk = "$(div[1,:kids])"
+		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
+	end
+	# TODO std error
+	push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),0.0])
+
+
+	# linear probability model of mobility
+	# ====================================
+
+	lm_mv = fit(LinearModel, move ~ age + age2 ,df)
+	cc_mv = coeftable(lm_mv)
+	nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+	coef_mv = coef(lm_mv)
+	std_mv = stderr(lm_mv)
+
+	# move count
+	# ----------
+
+	movecount=by(df,:id,x -> sum(x[:move]))
+	moved0 = mean(movecount[:x1].==0)
+	moved1 = mean(movecount[:x1].==1)
+	moved2 = mean(movecount[:x1].==2)
+
+	# TODO std error
+	push!(mom1,["moved0",moved0,0.0])
+	push!(mom1,["moved1",moved1,0.0])
+	push!(mom1,["moved2",moved2,0.0])
+
+
+	# move ~ own
+	# ----------
+
+	for idf in g_own
+		kk = "$(idf[1,:own])"
+		push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+	end
+	# TODO std error
+	push!(mom1,["cov_move_h",cov(df[:h],df[:move]),0.0])
+
+
+	# move ~ kids
+	# ----------
+
+	for idf in g_kids
+		kk = "$(idf[1,:kids])"
+		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+	end
+	# TODO std error
+	push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),0.0])
+
+
 	# linear regression of total wealth
 	# =================================
+
 	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
-		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_Division" * m.regnames[2:p.nJ,:Division],"lm_w_owntrue"]  
-		coef_w = DataArray(Float64,4+(p.nJ-1))
-		std_w =  DataArray(Float64,4+(p.nJ-1))
+		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_owntrue"]  
+		coef_w = DataArray(Float64,4)
+		std_w =  DataArray(Float64,4)
 	else
-		lm_w = fit(LinearModel, wealth ~ age + age2 + own + Division,df )
+		lm_w = fit(LinearModel, wealth ~ age + age2 + own,df )
 		cc_w  = coeftable(lm_w)
 		nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
 		coef_w = coef(lm_w)
 		std_w = stderr(lm_w)
 	end
+
+	# wealth ~ division
+	# -----------------
+
+	for idf in g_div
+		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])])
+	end
+
 
 
 	# collect estimates
@@ -529,8 +573,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		ss = replace(nms[i]," - ","")
 		ss = replace(ss,")","")
 		ss = replace(ss,"(","")
-		ss = replace(ss,"kidstrue","kidsTRUE")
-		ss = replace(ss,"owntrue","ownTRUE")
+		# ss = replace(ss,"kidstrue","kidsTRUE")
+		# ss = replace(ss,"owntrue","ownTRUE")
 		nms[i] = ss
 	end
 

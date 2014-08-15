@@ -18,13 +18,64 @@ Sipp.SumStats <- function(d){
 
 }
 
-Sipp.moments <- function(d,svy){
+var.sd <- function(name,x,y=c()) {
+  # x = x - mean(x,na.rm=T)
+  # if (length(y)==0) {
+  #   y = x
+  # } else {
+  #   y = y - mean(y,na.rm=T)
+  # }
+  # sfit1 = summary(lm( x*y ~1))
+  att <- list()
+  att$momemt = name
+  # att$data_value  = sfit1$coef[1,1]
+  # att$data_sd     = sfit1$coef[1,2]
+  att$data_value  = cov(x,y,use="complete.obs")
+  att$data_sd     = 0.0
+  return(att)
+}
+
+
+Sipp.moments <- function(d,svy,ages=c(21,51)){
 
 	r <- list()
 
-	# Population Proportions and Counts
+	# subset data do age range
+	d <- copy(d[age>=ages[1] & age <= ages[2]])
+
+	# moments relating to homeownership
 	# =================================
-	
+
+	# ownership ~ age
+
+	dlm = summary(svyglm(own ~ age + age2,svy))
+	nms = paste0("lm_h_",rownames(dlm$coefficients))
+	nms = gsub("\\(|\\)","",nms)
+	r$own_rate_reg = data.table(moment=nms,data_value=dlm$coefficients[,"Estimate"],data_sd=dlm$coefficients[,"Std. Error"])
+
+	# own ~ Division
+	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T))),by=Division][order(Division)]
+	r$mean_own_div[,moment := paste0(moment,"_",Division)]
+	r$mean_own_div[,Division := NULL]
+
+	# own ~ kids
+	r$mean_own_kids = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T))),by=kids][order(kids)]
+	r$mean_own_kids[,moment := paste0(moment,"_kids",kids)]
+	r$mean_own_kids[,kids:= NULL]
+	r$cov_own_kids = d[,var.sd("cov_own_kids",own,kids)]
+
+
+	# moments relating to mobility
+	# ============================
+
+	# linear prob model move ~ age
+	# ----------------------------
+
+	mv_reg = summary(svyglm(D2D ~ age + age2,svy))
+	nms = paste0("lm_mv_",rownames(mv_reg$coefficients))
+	nms = gsub("\\(|\\)","",nms)
+	r$mv_rate_reg = data.table(moment=nms,data_value=mv_reg$coefficients[,"Estimate"],data_sd=mv_reg$coefficients[,"Std. Error"])
+
 	# number of moves per household as percentage of population
 	nmoves = d[,list(moves=sum(D2D,na.rm=T),HHweight),by=upid]
 	nmoves[,c("moved0","moved1","moved2") := list(moves==0,moves==1,moves>1)]
@@ -34,44 +85,38 @@ Sipp.moments <- function(d,svy){
 	r$moves1 <- nmoves[,list(moment="moved1",data_value=weighted.mean(moved1,HHweight), data_sd=sqrt(wtd.var(moved1,HHweight)))]
 	r$moves2 <- nmoves[,list(moment="moved2",data_value=weighted.mean(moved2,HHweight), data_sd=sqrt(wtd.var(moved2,HHweight)))]
 
-	# moving rate 
-	r$mv_rate <- d[age>25&age<65,list(moment="move_rate",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))] 
 
-	# moving rate by ownership status
-	r$mv_rate_h0 = d[age>25&age<65&own==0,list(moment="move_rate_h0",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
-	r$mv_rate_h1 = d[age>25&age<65&own==1,list(moment="move_rate_h1",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
+	# move ~ own
+	# -----------
 
-	# homeownership rate
-	r$own_rate = d[age>25&age<65,list(moment="own_rate",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T)))]
+	r$mean_move_h0 = d[own==0,list(moment="mean_move_ownFALSE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
+	r$mean_move_h1 = d[own==1,list(moment="mean_move_ownTRUE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
+	r$cov_move_h = d[,var.sd("cov_move_h",D2D,own)]
 
-	# check whether same ballpark
-	c(r$own_rate[,data_value], 1-r$own_rate[,data_value]) %*% c(r$mv_rate_h0[,data_value],r$mv_rate_h1[,data_value])
+	# moving and kids
+	# ---------------
 
-	# linear probability model of homeownership
-	# =========================================
-
-	dlm = summary(svyglm(own ~ age + age2 + Division + kids,svy))
-	nms = paste0("lm_h_",rownames(dlm$coefficients))
-	nms = gsub("\\(|\\)","",nms)
-	r$own_rate_reg = data.table(moment=nms,data_value=dlm$coefficients[,"Estimate"],data_sd=dlm$coefficients[,"Std. Error"])
-
-
-	# linear probability model of mobility
-	# ====================================
-
-	mv_reg = summary(svyglm(D2D ~ age + age2 + km_distance + km_distance2 + own + kids,svy))
-	nms = paste0("lm_mv_",rownames(mv_reg$coefficients))
-	nms = gsub("\\(|\\)","",nms)
-	r$mv_rate_reg = data.table(moment=nms,data_value=mv_reg$coefficients[,"Estimate"],data_sd=mv_reg$coefficients[,"Std. Error"])
+	r$mean_move_kids = d[,list(moment="mean_move",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T))),by=kids][order(kids)]
+	r$mean_move_kids[,moment := paste0(moment,"_kids",kids)]
+	r$mean_move_kids[,kids:= NULL]
+	r$cov_move_kids = d[,var.sd("cov_move_kids",D2D,kids)]
 
 	# linear regression of total wealth
 	# =================================
 
-	# wlm = summary(svyglm(w2medinc ~ age + age2 + own + Division, svy))
-	wlm = summary(svyglm(wealth ~ age + age2 + own + Division, svy))
+	wlm = summary(svyglm(wealth ~ age + age2 + own, svy))
 	nms = paste0("lm_w_",rownames(wlm$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$wealth_reg = data.table(moment=nms,data_value=wlm$coefficients[,"Estimate"],data_sd=wlm$coefficients[,"Std. Error"])
+
+	# mean wealth conditional on Division
+	# -----------------------------------
+	r$mean_wealth_div <- d[,list(moment="mean_wealth",data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T))),by=list(Division)][order(Division)] 
+	r$mean_wealth_div[,moment := paste0(moment,"_",Division)]
+	r$mean_wealth_div[,c("Division") := NULL]
+
+
+	# wlm = summary(svyglm(w2medinc ~ age + age2 + own + Division, svy))
 
 
 	# l = lapply(d[,unique(Division)],function(x) lm(own ~ ns(age,df=4),data=merged[Division==x]))
@@ -85,13 +130,6 @@ Sipp.moments <- function(d,svy){
 	# nonh_wealth and total wealth by ownership and age and region
 	wealth_h_age_div = ddply(d,c("own","age","Division"),summarise,nonh = wtd.quantile(nonh_wealth,HHweight,0.5),wealth=wtd.quantile(wealth,HHweight,0.5))
 
-	# include wealth moments?
-	# TODO should be wealth relative to region and year median income
-
-	# r$wealth_h = data.table(moment=paste0("wealth_h_",wealth_h$own),data_value=wealth_h$wealth,data_sd = 0.0)
-	
-	# r$wealth_h_age = data.table(moment=paste0("wealth_h_",wealth_h_age$own,"_age_",wealth_h_age$age),value=wealth_h_age$wealth,data_sd = 0.0)
-	# r$wealth_h_age_div = data.table(moment=paste0("wealth_age_div_h_",wealth_h_age_div$own,"_age_",wealth_h_age_div$age,"_div_",wealth_h_age_div$Division),value=wealth_h_age$wealth,data_sd = 0.0)
 
 	# pp <- ggplot(wealth_h_age_div,aes(x=age,y=nonh,color=Division)) + geom_line() + facet_wrap(~own) + ggtitle('total wealth in 1000s of dollars')
 
