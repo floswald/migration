@@ -119,14 +119,6 @@ type Model
 
 		# individual income process parameters
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
-		inc_rho   = DataFrame(read_rda(joinpath(indir,"rtable.rda"))["rho"])
-
-		# TODO fix those estimates!
-		# for now manually overwrite with higher rho values
-		# inc_rho[:,:Lresid] = [0.98 for i=1:p.nJ]
-
-		# grids for regional prices and incomes
-
 
 		# kids transition matrix
 		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])

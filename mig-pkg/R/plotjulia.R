@@ -52,6 +52,10 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 
 	# individual income processes by region
 	ind <- Export.IncomeProcess(merged)
+	
+	# mover's copula
+	cop <- Sipp.movers_wage_residual_copula()
+	coppars <- coef(cop$fit)
 
 	# pop proportion in each state
 	prop = merged[,list(N = length(upid)),by=Division]
@@ -83,6 +87,7 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	gc()
 
 	# write to disk
+    save(coppars,file=file.path(path,"copula.rda"))	
 	save(df,file=file.path(path,"distance.rda"))
 	save(m,file=file.path(path,"moments.rda"))
 	save(kids_trans,file=file.path(path,"kidstrans.rda"))
@@ -91,15 +96,12 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	rcoefs <- reg$coefs
 	sig    <- reg$sigmas
 	z      <- ind$ztab
-	rho    <- ind$rtab
 	rcoefs <- rcoefs[order(rcoefs$Division), ]
 	sig    <- sig   [order(sig   $Division), ]
 	z      <- z     [order(z     $Division), ]
-	rho    <- rho   [order(rho   $Division), ]
 	save(rcoefs,file=file.path(path,"region-coefs.rda"))
 	save(sig,file=file.path(path,"region-sig.rda"))
 	save(z,file=file.path(path,"ztable.rda"))
-	save(rho,file=file.path(path,"rtable.rda"))
 }
 
 
@@ -179,7 +181,10 @@ Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	coefs$Division = rownames(coefs)
 	coefs <- coefs[order(coefs$Division), ]
 	setkey(py,Division)
-	coefs <- cbind(coefs,py[,list(lb_y=min(y),ub_y=max(y),lb_p=min(p),ub_p=max(p)),by=Division])
+	coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
+	coefs <- coefs[, !names(coefs) %in% "Division_1"]
+
+
 
 	n <- names(coefs)
 	n <- gsub("\\(|\\)","",n)
@@ -189,10 +194,6 @@ Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	sigmas <- as.data.frame(t(sapply(mods,function(x) as.numeric(x$residCov))))
 	sigmas$Division = rownames(sigmas)
 	names(sigmas)[1:4] <- c("var_y","cov_yp","cov_py","var_p")
-
-	# upper and lower bounds
-	bounds_y = py[,range(y)]
-	bounds_p = py[,range(p)]
 
 	return(list(mods=mods,coefs=coefs,sigmas=sigmas,simp=simp,predp=pred))
 
@@ -231,7 +232,7 @@ Export.IncomeProcess <- function(dat){
 	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
 
 	# get autocorrelation coefficient of residuals
-	rhos = lapply(divs,function(x) lm(resid ~ Lresid,cd[Division==x]))
+	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
 	names(rhos) = divs
 
 	# why are those rhos so low?????
@@ -248,9 +249,14 @@ Export.IncomeProcess <- function(dat){
 	ztab$Division <- rownames(ztab)
 	ztab$sigma <- unlist(lapply(lmods,function(x) summary(x)$sigma))
 	ztab <- merge(ztab,bounds,by="Division")
-	rtab <- as.data.frame(t(sapply(rhos,coef)))
-	rtab$Division <- rownames(rtab)
-	rtab$sigma <- unlist(lapply(rhos,function(x) summary(x)$sigma))
+	rtab <- as.data.frame(unlist(lapply(rhos,coef)))
+	rtab$Division <- gsub(".Lresid","",rownames(rtab))
+	names(rtab)[1] <- "Lresid"
+	rtab$sigma_resid <- unlist(lapply(rhos,function(x) summary(x)$sigma))
+	rtab <- rtab[order(rtab$Division),]
+	rownames(rtab) <- NULL
+
+	ztab <- merge(ztab,rtab,by="Division")
 
 	# fix names
 	nz <- names(ztab)
@@ -261,7 +267,7 @@ Export.IncomeProcess <- function(dat){
 	names(rtab) <- nr
 
 
-	return(list(incmods=lmods,rhomods=rhos,ztab=ztab,rtab=rtab))
+	return(list(incmods=lmods,rhomods=rhos,ztab=ztab))
 }
 
 

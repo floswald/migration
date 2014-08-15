@@ -409,7 +409,7 @@ Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/dat
 	myc = mvdc(copula=ellipCopula(family="normal",param=coefs["rho.1"]),margins=c("norm","norm"),paramMargins=list(list(mean=coefs["m1.mean"],sd=coefs["m1.sd"]),list(mean=coefs["m2.mean"],sd=coefs["m2.sd"])))
 
 	pdf(file=file.path(path,"z_cop_contour.pdf"))
-	contour(myc,dmvdc,xlim=c(-3,3),ylim=c(-3,3));
+	contour(myc,dMvdc,xlim=c(-3,3),ylim=c(-3,3));
 	dev.off()
 
 	n = 40
@@ -421,7 +421,7 @@ Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/dat
 		}
 	}
 
-	surf <- wireframe(mat,drape=TRUE,scales=list(arrows=FALSE),xlab="z(t)",ylab="z(t+1)",zlab="density")
+	surf <- lattice:::wireframe(mat,drape=TRUE,scales=list(arrows=FALSE),xlab="z(t)",ylab="z(t+1)",zlab="density")
 
 
 	pdf(file=file.path(path,"z_cop_surf.pdf"))
