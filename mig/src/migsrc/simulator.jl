@@ -574,7 +574,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		ss = replace(ss,")","")
 		ss = replace(ss,"(","")
 		# ss = replace(ss,"kidstrue","kidsTRUE")
-		# ss = replace(ss,"owntrue","ownTRUE")
+		ss = replace(ss,"owntrue","ownTRUE")
 		nms[i] = ss
 	end
 
