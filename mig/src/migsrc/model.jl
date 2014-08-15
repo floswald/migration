@@ -123,7 +123,7 @@ type Model
 
 		# TODO fix those estimates!
 		# for now manually overwrite with higher rho values
-		inc_rho[:,:Lresid] = [0.98 for i=1:p.nJ]
+		# inc_rho[:,:Lresid] = [0.98 for i=1:p.nJ]
 
 		# grids for regional prices and incomes
 
@@ -155,7 +155,7 @@ type Model
 		# -------------------------------------------
 
 		# TODO rouwenhorst => array (nJ,nz) supports and array (nJ,nz,nz) transitions
-		(zsupp,Gz) = rouwenhorst(inc_rho,inc_coefs,ygrid,p)
+		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_coef[:,:mean_y],p)
 
 		zgrid = zeros(p.nz,p.ny,p.nt-1,p.nJ)
 		for j in 1:p.nJ
@@ -335,18 +335,18 @@ end
 
 # end
 
-function rouwenhorst(df::DataFrame,bounds::DataFrame,ygrid::Matrix,p::Param)
+function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 
 	P = zeros(p.nz,p.nz,p.nJ)
 	z = zeros(p.nz,p.nJ)
 
 	for j in 1:p.nJ
-		xz,xp = rouwenh(df[j,:Lresid][1],df[j,:Intercept][1],df[j,:sigma][1],p.nz)
+		xz,xp = rouwenh(df[j,:Lresid][1],0.0,df[j,:sigma_resid][1],p.nz)
 		P[:,:,j] = xp
 		# scale z into bounds
-		ybar = mean(log(ygrid[:,j]))
-		zlow = log(bounds[j,:q20]) - ybar
-		zhigh = log(bounds[j,:q95]) - ybar
+		ybar = log(ygrid[j])
+		zlow = log(df[j,:q20]) - ybar
+		zhigh = log(df[j,:q95]) - ybar
 		z[:,j] = linspace(zlow,zhigh,p.nz)
 	end
 	return (z,P)
