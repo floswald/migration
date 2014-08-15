@@ -81,4 +81,4 @@ else
 	pb["taudist"]    = [0.01,0.99]
 end
 
-mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["wealth_h_0","wealth_h_1"]))
+mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=array(moms[:moment]))
