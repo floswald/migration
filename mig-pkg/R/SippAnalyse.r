@@ -140,9 +140,10 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 
 Sipp.own_in_j_rent_in_k <- function(){
 	data(Sipp_aggby_NULL,envir=environment())
-	mv <- merged[D2D==TRUE,unique(upid)]
+	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
 	setkey(mv,upid)
 	mvs <- merged[mv]
+	setkey(mvs,upid,timeid)
 
 	# get "other equity" in period after move
 	mvs[,other_eq_lead := mvs[list(upid,timeid+1)][["RE.equity.other"]] ]
@@ -157,6 +158,9 @@ Sipp.own_in_j_rent_in_k <- function(){
 	# get count of people with other equity before and after move. 
 	# if movers keep house, that count should go up.
 	eq_before_after <- mvs[D2D==TRUE,list(other.eq.before=sum(RE.equity.other!=0.0),other.eq.after=sum(other_eq_lead!=0.0,na.rm=T))]
+
+	# whats the percentage of movers who had 0 other equity before move, that now do have positive other RE equity?
+	num.movers <- nrow(mv)
 
 	# how robust is this to definition of "after"?
 	mvs[,other_eq_lead2 := mvs[list(upid,timeid+2)][["RE.equity.other"]] ]
@@ -184,8 +188,6 @@ Sipp.own_in_j_rent_in_k <- function(){
 	eq_robust3_pos <- mvs[D2D==TRUE & RE.equity.other==0,list(other.eq.before=sum(RE.equity.other>0.0),other.eq.after1=sum(other_eq_lead>0.0,na.rm=T),other.eq.after2=sum(other_eq_lead2>0.0,na.rm=T),other.eq.after3=sum(other_eq_lead3>0.0,na.rm=T),other.eq.after4=sum(other_eq_lead4>0.0,na.rm=T),other.eq.after5=sum(other_eq_lead5>0.0,na.rm=T),other.eq.after6=sum(other_eq_lead6>0.0,na.rm=T),other.eq.after7=sum(other_eq_lead7>0.0,na.rm=T),other.eq.after8=sum(other_eq_lead8>0.0,na.rm=T),other.eq.after9=sum(other_eq_lead9>0.0,na.rm=T),other.eq.after10=sum(other_eq_lead10>0.0,na.rm=T),other.eq.after11=sum(other_eq_lead11>0.0,na.rm=T),other.eq.after12=sum(other_eq_lead12>0.0,na.rm=T))]
 
 
-	# whats the percentage of movers who had 0 other equity before move, that now do have positive other RE equity?
-	num.movers <- nrow(mv)
 
 	eq_cor_robust <- mvs[D2D==TRUE&RE.equity.other!=0.0,list(cor_0_1=cor(RE.equity.other,other_eq_lead,use="complete.obs"),cor_1_2=cor(other_eq_lead,other_eq_lead2,use="complete.obs"),
 		cor_2_3=cor(other_eq_lead2,  other_eq_lead3,use="complete.obs"),
@@ -199,11 +201,15 @@ Sipp.own_in_j_rent_in_k <- function(){
 		cor_10_11=cor(other_eq_lead10,other_eq_lead11,use="complete.obs"),
 		cor_11_12=cor(other_eq_lead11,other_eq_lead12,use="complete.obs"))]
 
+
+	pl <- list()
+
 	r = data.frame(t(eq_robust))
 	r$months_after <- seq(0,nrow(r)-1,le=nrow(r))
 	names(r)[1] = "otherRE"
 	rownames(r) = NULL
-	pl <- ggplot(r,aes(x=months_after,y=otherRE)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="Number answering Yes") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+	r$percent <- 100*r$otherRE / num.movers
+	pl$mv1 <- ggplot(r,aes(x=months_after,y=percent)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="% of Movers") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
 
 
 	# conditional on having had before
@@ -211,33 +217,39 @@ Sipp.own_in_j_rent_in_k <- function(){
 	names(r2) <- "otherRE"
 	r2$months_after <- seq(0,nrow(r)-1,le=nrow(r))
 	rownames(r2) = NULL
+	r2$percent <- 100*r2$otherRE / num.movers
 	r2$type <- "had other\nequity"
 
 	r3 = data.frame(t(eq_robust3))
 	names(r3) <- "otherRE"
 	rownames(r3) = NULL
 	r3$months_after <- seq(0,nrow(r)-1,le=nrow(r))
+	r3$percent <- 100*r3$otherRE / num.movers
 	r3$type <- "had none"
 
 	r2 <- rbind(r2,r3)
-	names(r2)[3] <- "when_moving"
+	names(r2)[4] <- "when_moving"
 
-	pl2 <- ggplot(r2,aes(x=months_after,y=otherRE,color=when_moving)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="Number answering Yes") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+	pl$mv2 <- ggplot(r2,aes(x=months_after,y=percent,color=when_moving)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Movers: Do you have equity in other real estate? (not home)") + scale_y_continuous(name="% of movers saying yes") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
 
+	pdf(file="~/Dropbox/mobility/output/data/sipp/move_2_landlord_2.pdf",width=10,h=7)
+	print(pl$mv2)
+	dev.off()
 
 
 	# whats the percentage of movers who had 0 other equity before move, that now do have positive other RE equity?
 	num.movers <- nrow(mv)
-	r3p = data.frame(t(eq_robust3_pos))
+	r3p = data.frame(t(eq_robust3))
 	names(r3p) <- "otherRE"
 	rownames(r3p) = NULL
 	r3p$months_after <- seq(0,nrow(r)-1,le=nrow(r))
 	r3p$percent <- 100*r3p$otherRE / num.movers
 
-	pl3 <- ggplot(r3p,aes(x=months_after,y=percent)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Percentage of movers with positive equity in other real estate") + scale_y_continuous(name="%") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
+	pl$mv3 <- ggplot(r3p,aes(x=months_after,y=percent)) + geom_point(size=3) + geom_line() + theme_bw() + ggtitle("Percentage of movers with any equity in other real estate") + scale_y_continuous(name="%") + scale_x_continuous(name="months after move",breaks=seq(0,nrow(r)-1,le=nrow(r))) 
 	pdf(file="~/Dropbox/mobility/output/data/sipp/move_2_landlord.pdf",width=10,h=7)
-	print(pl3)
+	print(pl$mv3)
 	dev.off()
+	return(pl)
 
 }
 
