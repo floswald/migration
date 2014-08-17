@@ -97,7 +97,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 10000
+			nsim  = 40000
 
 		elseif size==3
 		# big: maximal size for memory on my box
@@ -129,11 +129,11 @@ type Param
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (intercept) alpha0, (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
-		MC0    = 0.09
-		MC1    = 0.09
-		MC2    = 0.09
-		MC3    = 0.09
-		MC4    = 0.4
+		MC0    = 5.8
+		MC1    = 0.05
+		MC2    = 0.00
+		MC3    = 0.1
+		MC4    = 0.1
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
 		rhoP   = 0.9
