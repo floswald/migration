@@ -94,7 +94,7 @@
 \begin_body
 
 \begin_layout Title
-Internal Migration and Homeownership
+Regional Migration and Homeownership in the USA
 \end_layout
 
 \begin_layout Author
@@ -177,57 +177,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-The main purpose of this paper is to show that in a dynamic context, expected
- income is not the only thing that matters for the migration decision, but
- that homeownership status, and house price shocks matter as well.
- This consideration is more important the greater the frictions are in the
- housing market; I will argue that those frictions are substantial.
- (how?)
-\end_layout
 
-\begin_layout Standard
-In this paper I build a dynamic model of interstate migration in the US,
- focusing in particular on the importance of regional house price and labor
- market shocks.
- The main purpose of the paper is to study short to medium run responses
- of agents to those shocks, and not the general equilibrium attained in
- the long run.
- I will provide evidence that owner--occupiers have a much lower propensity
- to migrate than renters, all else equal, and the model is developed with
- this property in mind.
- Relative differences in regional house prices -- and expectations about
- their future behaviour -- affect owner and renter behaviour in different
- ways.
- In general, owners have a larger financial stake in any given place than
- renters, as a result of their initial financial commitment to purchase
- a property, incurring substantial transaction costs.
- 
-\end_layout
-
-\begin_layout Standard
-It is likely that the initial decision to buy would have been influenced
- by the expected length of stay in the current location.
- If sufficiently long, the duration of stay would enable the owner to recoup
- some or all of the transaction costs by means of enjoying smaller implicit
- rent payments (because of preferential tax treatment of mortgage payments,
- low interest rates), or capital gains, or a combination of both.
- Similarly, if individuals have a simple preference for owned property,
- they could enjoy this premium over rental accomodation for a longer period
- of time.
- 
-\end_layout
-
-\begin_layout Standard
-This implies that upon the arrival of shocks to house prices or labor income,
- owners and renters will display different reactions.
- Firstly, shocks to house prices, for example, can be expected to affect
- renters and owners in opposite directions, as owners' wealth increases
- as prices go up whereas renters' net disposable income decreases (assuming
- a relatively tight relationship between prices and rents).
- Secondly, we can expect that given a certain level of net wealth, an owner
- is likely to accept a larger reduction in labor income than a comparable
- renter; In the model outlined below, this is mainly due to greater moving
- costs of owners.
 \end_layout
 
 \begin_layout Standard
@@ -419,7 +369,6 @@ individual
 individual 
 \emph default
 in this case refers to the household reference person.
- [maybe some discussion here?]
 \end_layout
 
 \begin_layout Standard
@@ -446,20 +395,16 @@ for a total of
 
 , they have to decide whether to move to a different region, whether to
  own or rent, and how much of their labor income to save.
- They derive utility from household size 
-\begin_inset Formula $s$
-\end_inset
-
- adjusted consumption 
-\begin_inset Formula $\left(\frac{c}{s}\right)$
+ They derive utility from consumption 
+\begin_inset Formula $c$
 \end_inset
 
 , from owning a house 
-\begin_inset Formula $(h)$
+\begin_inset Formula $h$
 \end_inset
 
- and from an unobserved local amenity 
-\begin_inset Formula $(\tau)$
+ and from an unobserved preference for local amenities 
+\begin_inset Formula $\tau$
 \end_inset
 
 .
@@ -636,8 +581,16 @@ When moving from region
 \begin_inset Formula $k$
 \end_inset
 
-, the individual's income will be composed of the corresponding mean income
- at the current date, 
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ and age 
+\begin_inset Formula $j$
+\end_inset
+
+, the individual's next period income will be composed of the corresponding
+ mean income at that date, 
 \family roman
 \series medium
 \shape up
@@ -650,11 +603,11 @@ When moving from region
 \noun off
 \color none
 
-\begin_inset Formula $\overline{y}_{kt}$
+\begin_inset Formula $\overline{y}_{kt+t}$
 \end_inset
 
 , and the deterministic age 
-\begin_inset Formula $j$
+\begin_inset Formula $j+1$
 \end_inset
 
  effect in region 
@@ -662,15 +615,1357 @@ When moving from region
 \end_inset
 
 , 
-\begin_inset Formula $f(j,k)$
+\begin_inset Formula $f(j+1,k)$
 \end_inset
 
 .
  The individual--specific idiosyncratic component 
-\begin_inset Formula $z_{ikt}$
+\begin_inset Formula $z_{ikt+1}$
 \end_inset
 
- is drawn from the density of a bivariate copula 
+ for a mover with 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ is drawn from the conditional distribution 
+\begin_inset Formula $z_{ik}|z_{id},\,\forall k\neq d$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Region specific house price and income
+\end_layout
+
+\begin_layout Standard
+Each region in the economy features a separate stationary vector autoregression
+ of order one (VAR(1)) describing the joint dynamics of house prices and
+ average region labor income.
+ At date 
+\begin_inset Formula $t$
+\end_inset
+
+, region 
+\begin_inset Formula $d$
+\end_inset
+
+ is described by price vector 
+\begin_inset Formula $\mathbf{P}_{dt}$
+\end_inset
+
+, which contains house price 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and mean income 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+.
+ All individuals currently residing in region 
+\begin_inset Formula $d$
+\end_inset
+
+ observe 
+\begin_inset Formula $\mathbf{P}_{dt}$
+\end_inset
+
+ and take it as given.
+ In contrast, they only know the unconditional mean of the process, 
+\begin_inset Formula $\overline{\mathbf{P}}_{k}$
+\end_inset
+
+, in other regions.
+ In other words, they do not have an up-to-date estimate for date 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ This is a time-invariant forecast, but it differs across locations.
+\end_layout
+
+\begin_layout Standard
+The VAR(1) process is defined in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-process"
+
+\end_inset
+
+, where 
+\begin_inset Formula $A$
+\end_inset
+
+ is a matrix of coefficients and 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is the variance-covariance matrix of the bivariate normal innovation 
+\begin_inset Formula $\nu$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{eqnarray}
+\mathbf{P}_{dt} & = & A\mathbf{P}_{dt-1}+\nu_{dt-1}\nonumber \\
+\nu_{dt} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma_{d}\right)\label{eq:VAR-process}\\
+\mathbf{P}_{dt} & = & \begin{bmatrix}\overline{y}_{dt}\\
+p_{dt}
+\end{bmatrix}\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Housing Tenure
+\end_layout
+
+\begin_layout Standard
+Housing tenure choice is discrete, 
+\begin_inset Formula $h_{t}\in\left\{ 0,1\right\} $
+\end_inset
+
+ and there is no quantity choice of housing.
+ While renting, i.e.
+ whenever 
+\begin_inset Formula $h_{t}=0$
+\end_inset
+
+, individuals must pay rent which amounts to a constant fraction 
+\begin_inset Formula $\kappa_{d}$
+\end_inset
+
+ of the current region-
+\begin_inset Formula $d$
+\end_inset
+
+ house price 
+\begin_inset Formula $p_{d}$
+\end_inset
+
+.
+ In order to buy, a proportion 
+\begin_inset Formula $\chi p_{dt}$
+\end_inset
+
+ of the house value needs to be paid up front as a downpayment, while the
+ remainder 
+\begin_inset Formula $(1-\chi)p_{dt}$
+\end_inset
+
+ is financed by a standard fixed rate mortgage.
+ In other words, only owners are allowed to borrow with their house as a
+ collateral, and there is no unsecured debt.
+ 
+\end_layout
+
+\begin_layout Standard
+Similar to the setup in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Attanasio20121"
+
+\end_inset
+
+, I denote nonhousing wealth at age 
+\begin_inset Formula $j$
+\end_inset
+
+ as 
+\begin_inset Quotes eld
+\end_inset
+
+assets
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $a_{j}$
+\end_inset
+
+ and assume a terminal condition 
+\begin_inset Formula $a_{J}\geq0$
+\end_inset
+
+, which translates into an implicit borrowing limit for owners.
+ They will not borrow more than what can be repaid with certainty, although
+ this constraint is partially relaxed by allowing for mortgage default,
+ as detailed below.
+ Furthermore, this setup does not require the owner to fulfil the downpayment
+ (or margin) constraint in every period, but only in the period of purchase.
+ This implies that when prices fall, owners do not have to adjust the size
+ of their mortgage by remortgaging or selling the home, as long as the make
+ the required interest payment.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In contrast to a fully specified mortgage repayment schedule, which requires
+ knowledge of remaining mortgage debt and 
+\begin_inset Quotes eld
+\end_inset
+
+periods paid
+\begin_inset Quotes erd
+\end_inset
+
+, this approach saves on the counting state variable 
+\begin_inset Quotes eld
+\end_inset
+
+periods paid
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ I formally define this arrangement below in subsections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Budget-stayers"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Budget-movers"
+
+\end_inset
+
+ which describe the budget constraints.
+\end_layout
+
+\begin_layout Standard
+This arrangement is sufficient to induce individuals to engage in savings
+ behaviour that mimicks the repayment path of a mortgage contract.
+ Selling the house incurs proportional cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+, such that given current house price 
+\begin_inset Formula $p_{t}$
+\end_inset
+
+, upon sale the owner receives 
+\begin_inset Formula $(1-\phi)p_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Moving
+\end_layout
+
+\begin_layout Paragraph
+Moving Costs.
+\end_layout
+
+\begin_layout Standard
+Moving across locations is assumed to be costly in terms of utility.
+ Denote 
+\begin_inset Formula $\Delta(d,k,x)$
+\end_inset
+
+ the utility costs of moving from 
+\begin_inset Formula $d$
+\end_inset
+
+ to 
+\begin_inset Formula $k$
+\end_inset
+
+ at a current value of the state vector 
+\begin_inset Formula $x$
+\end_inset
+
+ (defined below).
+ Moving costs differ between renters and owners.
+ Moving for an owner requires to sell the house, which in turn requires
+ some effort and time costs.
+ This is on top of any other psychological costs incurred from moving states
+ which are common between renters and owners.
+ I specify the moving cost function as linear in parameters 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\Delta(d,k,x)=\alpha_{0}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(d,k)+\alpha_{3}j_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
+\end{equation}
+
+\end_inset
+
+In expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:moving-cost"
+
+\end_inset
+
+, 
+\begin_inset Formula $\alpha_{1}$
+\end_inset
+
+ measures the additional moving cost for owners, 
+\begin_inset Formula $\alpha_{2}$
+\end_inset
+
+ measures the importance of distance 
+\begin_inset Formula $\delta$
+\end_inset
+
+ between locations 
+\begin_inset Formula $d$
+\end_inset
+
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+, 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ is an age effect and 
+\begin_inset Formula $\alpha_{4}$
+\end_inset
+
+ measures moving cost differential arising from family size s.
+\end_layout
+
+\begin_layout Paragraph
+Restrictions.
+\end_layout
+
+\begin_layout Standard
+Moving is subject to a restriction regarding housing choices.
+ I rule out the possibility of owning a home in region 
+\begin_inset Formula $d$
+\end_inset
+
+ while residing in region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ This would apply for example for households who keep their home in 
+\begin_inset Formula $d$
+\end_inset
+
+, rent it out on the rental market, and purchase housing services either
+ in rental or owner--occupied sector in the new region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ I rule out this possibility because I observe very few movers in my sample
+ doing this, presumably deterred by high management costs for letting agents
+ and because of liquidity constraints, i.e.
+ they need the money to buy a new place in the new region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ I illustrate this in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:movers-own-d-rent-k"
+
+\end_inset
+
+, where less than 1% of movers report possessing real estate other than
+ their current home right after a move.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/move_2_landlord.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Percentage of movers in SIPP who did not possess other real estate equity
+ before moving (i.e.
+ they only owned their home, if at all), and who subsequently report possessing
+ real estate equity other than their current home after the move.
+ This would indicate they still own their previous home after the move.
+ The fact that the figure is increasing in time shows that movers gradually
+ acquire other real estate, however, this cannot be their previous home.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:movers-own-d-rent-k"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Preferences
+\end_layout
+
+\begin_layout Standard
+Period utility 
+\begin_inset Formula $u$
+\end_inset
+
+ depends on whether the household moves to a new region 
+\begin_inset Formula $k$
+\end_inset
+
+ or stays put in 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\begin{equation}
+u\left(c_{ij},h_{ij},k,x_{ij}\right)=\begin{cases}
+\frac{\left(\frac{c_{ij}}{\zeta s_{ij}}\right)^{1-\gamma}}{1-\gamma}+\xi(s_{ij})\times h_{ij}+\alpha_{\tau}\times\tau_{i}+\varepsilon_{idj} & \text{if }d=k\\
+\\
+\frac{\left(\frac{c_{ij}}{\zeta s_{ij}}\right)^{1-\gamma}}{1-\gamma}+\xi(s_{ij})\times h_{ij}+\alpha_{\tau}\times\tau_{i}+\varepsilon_{idj} & \text{if }d\neq k\\
+-\Delta\left(k,x_{ij}\right)-\lambda def_{ij}
+\end{cases}\label{eq:utility}
+\end{equation}
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+In case there is no move, the first line of equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:utility"
+
+\end_inset
+
+ applies.
+ In this case, the period payoff is composed of consumption 
+\begin_inset Formula $c$
+\end_inset
+
+, which is adjusted by household size at age 
+\begin_inset Formula $j$
+\end_inset
+
+, 
+\begin_inset Formula $s_{ij}$
+\end_inset
+
+ scaled by 
+\begin_inset Formula $\zeta$
+\end_inset
+
+, utility from owning valued according to household size 
+\begin_inset Formula $\xi(s_{it})$
+\end_inset
+
+, utility from unobservable amenities as valued by type 
+\begin_inset Formula $\tau$
+\end_inset
+
+, and finally the idiosyncratic preference shock for the current region
+ 
+\begin_inset Formula $d$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The second case refers to utility obtained in periods where a move takes
+ place.
+ This adds the moving cost to the first line, as well as a term 
+\begin_inset Formula $\lambda\times def_{ij}$
+\end_inset
+
+, where 
+\begin_inset Formula $def$
+\end_inset
+
+ is an indicator equal to one in case the household wants to move with negative
+ equity when they move.
+ This means they have to default on the mortgage before moving, which incurs
+ a penalty of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ utils.
+ The indicator is defined in expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:default"
+
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+def_{t(j)}=\mathbf{1}\left[d\neq k,p_{t(j)}(1-\phi)+a_{t(j)}(1+r(a_{t(j)}))<0\right]\label{eq:default}
+\end{equation}
+
+\end_inset
+
+where the convention 
+\begin_inset Formula $t(j)$
+\end_inset
+
+ indicates the date corresponding to the invididual's age, for which there
+ is a one-to-one mapping.
+ I adopt this setup mainly to avoid locking in households with negative
+ equity from the side of the model.
+ I do not consider mortgage default for non--movers, mainly because the
+ focus of the model is less to account for mortgage default than it is to
+ account for mobiltiy, and the costs of adding the default option within
+ the region outweigh the benefits.
+\end_layout
+
+\begin_layout Standard
+The unobserved location preference 
+\begin_inset Formula $\tau$
+\end_inset
+
+ stays fixed for as long as the individual does not move from region 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ When a move occurs, a new preference for location 
+\begin_inset Formula $k$
+\end_inset
+
+ is drawn from the distribution function 
+\begin_inset Formula $F_{\tau}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Household size 
+\begin_inset Formula $s$
+\end_inset
+
+ at age 
+\begin_inset Formula $j$
+\end_inset
+
+ is a random variable, and it evolves from one period to the next as described
+ in the following section.
+\end_layout
+
+\begin_layout Subsection
+Recursive Formulation
+\end_layout
+
+\begin_layout Standard
+It is now possible to formulate the problem recursively.
+ The state vector of individual 
+\begin_inset Formula $i$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{dt},h_{it-1},d,\tau,j\right)
+\]
+
+\end_inset
+
+where the variables stand for, in order, assets, individual income shock,
+ household size, price vector in current region, housing status, current
+ region index, amenity preference type and age.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+To spare on notation I will drop the subscript 
+\begin_inset Formula $it$
+\end_inset
+
+ from here on, with the convention that next period variables are labelled
+ with a prime.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The distinction between 
+\emph on
+date 
+\emph default
+and 
+\emph on
+age 
+\emph default
+is irrelevant from the perspective of the individual: The only care about
+ the the current value of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{P}_{dt}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ and how this evolves into the next period.
+\end_layout
+
+\end_inset
+
+ I make the standard assumption of additive separability between utility
+ and idiosyncratic location shock 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ as well as the conditional independence assumption that says that the transitio
+n of 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is independent of 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Furthermore, I assume that 
+\begin_inset Formula $\varepsilon\sim$
+\end_inset
+
+ EV Type 1.
+ 
+\end_layout
+
+\begin_layout Standard
+The laws of motion for 
+\begin_inset Formula $s,z$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+ evolve according to markovian processes.
+ In each case, this is modeled by a transition matrix 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+z'|z & \sim & \Gamma_{z}\\
+s'|s_{j} & \sim & \Gamma_{s,j}\\
+\mathbf{P}'|\mathbf{P} & \sim & \Gamma_{\mathbf{P}}
+\end{eqnarray*}
+
+\end_inset
+
+In what follows I will use the expectations operator 
+\begin_inset Formula $\mathbb{E}_{z',s',\mathbf{P}'}\left[V|z,s,\mathbf{P}\right]$
+\end_inset
+
+ to abbreviate the implied tensor product multiplication used in obtaining
+ the expected future value function.
+ 
+\end_layout
+
+\begin_layout Standard
+It is useful to define the conditional value function 
+\begin_inset Formula $v\left(x,k\right)$
+\end_inset
+
+, which represents the optimal value after making housing and consumption
+ choices at state 
+\begin_inset Formula $x$
+\end_inset
+
+ while moving to location 
+\begin_inset Formula $k$
+\end_inset
+
+, net of 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:V"
+
+\end_inset
+
+ is the top level problem of the consumer which requires to choose one of
+ 
+\begin_inset Formula $D$
+\end_inset
+
+ potential locations.
+ Notice that the value from each discrete choice is additively seperable
+ in the conditional value 
+\begin_inset Formula $v$
+\end_inset
+
+ and the choice specific idiosyncratic shock 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+.
+ The conditional value function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ represents the choices that have to be made conditional on being in a given
+ location 
+\begin_inset Formula $d$
+\end_inset
+
+ while moving to location 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ This formulation conveniently nests all discrete location choice configurations
+ (staying in 
+\begin_inset Formula $d$
+\end_inset
+
+ and moving from 
+\begin_inset Formula $d$
+\end_inset
+
+ to 
+\begin_inset Formula $k,\forall k\neq d$
+\end_inset
+
+).
+ The first line of this equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ applies when no move is undertaken, such that there is a housing choice
+ (subject to constraints).
+ The second line shows the case for movers, in which case the housing status
+ must be set to zero in the period of the move.
+\end_layout
+
+\begin_layout Standard
+Equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:vbar"
+
+\end_inset
+
+ is a result of the distributional assumption on 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+, which admits a closed form expression of the expected value function,
+ whereby 
+\begin_inset Formula $\bar{\gamma}$
+\end_inset
+
+ is Euler's constant.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+V_{j}\left(x\right) & = & \max_{k\in D}\left\{ v_{j}(x,k)+\varepsilon_{ik}\right\} \label{eq:V}\\
+v_{j}(x,k) & = & \begin{cases}
+\max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,d,k)+\beta\mathbb{E}_{z',s',\mathbf{P}'}\left[\overline{v}_{j+1}(x',k)|z,s,\mathbf{P}\right] & \text{if }d=k\\
+\max_{c>0}u(c,0,d,k)+\beta\mathbb{E}_{z',s',\mathbf{P}',\tau'}\left[\overline{v}_{j+1}(x',k)|z,s,\mathbf{P}\right] & \text{if }d\neq k
+\end{cases}\label{eq:v}\\
+\overline{v}_{j}(x,d) & = & E_{\varepsilon}V_{j}(x,d)\nonumber \\
+ & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{j}(x,d,k)\right)\right)\label{eq:vbar}
+\end{eqnarray}
+
+\end_inset
+
+The final period models a terminal value that depends on net wealth in a
+ straightforward way, as shown in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:final-period-value"
+
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+V_{J}(a,h_{J-1},d)=\omega_{0}+\omega_{1}\ln\left(a+h_{J-1}p_{dJ}\right)\label{eq:final-period-value}
+\end{equation}
+
+\end_inset
+
+The maximization problem in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ is subject to several constraints, which vary by housing status and location
+ choice.
+ It is convenient to lay them out here case by case.
+\end_layout
+
+\begin_layout Subsubsection
+Budget constraint for stayers, i.e.
+ 
+\begin_inset Formula $d=k$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Budget-stayers"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In case an individual decides not to move locations, they are eligible for
+ a housing tenure choice.
+ This means that renters may choose to become owners, and owners may choose
+ to remain owners or sell the house and rent.
+\end_layout
+
+\begin_layout Paragraph
+Renters.
+\end_layout
+
+\begin_layout Standard
+The period budget constraint for renters (i.e.
+ individuals who enter the period with 
+\begin_inset Formula $h_{t-1}=0$
+\end_inset
+
+) depends on their housing choice, as shown in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-renter-stay"
+
+\end_inset
+
+.
+ In case they buy at date 
+\begin_inset Formula $t$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $h_{t}=1$
+\end_inset
+
+, they need to pay the date 
+\begin_inset Formula $t$
+\end_inset
+
+ house price in region 
+\begin_inset Formula $d$
+\end_inset
+
+, 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+, otherwise they need to pay the current local rent, 
+\begin_inset Formula $\kappa_{d}p_{dt}$
+\end_inset
+
+.
+ Buyers can borrow against the value of their house and are required to
+ make a proportional downpayment amounting to a fraction 
+\begin_inset Formula $\chi$
+\end_inset
+
+ of the value at purchase, while renters cannot borrow at all.
+ This is embedded in constraint 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-rent-downpay"
+
+\end_inset
+
+, which states that if a renter chooses to buy, their next period assets
+ must be greater or equal to the fraction of the purchase price that was
+ financed via the mortgage, or non-negative otherwise.
+ Constraint number 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-interest"
+
+\end_inset
+
+ defines the interest rate function, which simply states that there is a
+ different interest applicable to savings as opposed to borrowing, both
+ of which are taken as exogenous parameters in the model.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-(1-h_{t})\kappa_{d}p_{dt}-h_{t}p_{dt}\right)\label{eq:budget-renter-stay}\\
+a_{t+1} & \geq & -(1-\chi)p_{dt}h_{t}\label{eq:budget-rent-downpay}\\
+r(a_{t}) & = & \begin{cases}
+r & \text{if }a_{t}\geq0\\
+r^{m} & \text{if }a_{t}<0
+\end{cases},r^{m}>r\label{eq:budget-interest}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Owners.
+\end_layout
+
+\begin_layout Standard
+For individuals entering the period as owners 
+\begin_inset Formula $\left(h_{t-1}=1\right)$
+\end_inset
+
+, the budget constraint is similar except for two differences which relate
+ to the borrowing constraint and transfers in case they sell the house.
+ Owners are not required to make a scheduled mortgage payment -- a gradual
+ reduction of debt, i.e.
+ an increase in 
+\begin_inset Formula $a$
+\end_inset
+
+, arises naturally from the terminal condition 
+\begin_inset Formula $a_{J}>0$
+\end_inset
+
+, as mentioned above.
+ Therefore the budget of the owner is only affected by the house price in
+ case they decide to sell the house, i.e.
+ if 
+\begin_inset Formula $h_{t}=0$
+\end_inset
+
+.
+ In this case, they obtain the purchase price net of the proportional selling
+ cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+, plus they have to pay rent in 
+\begin_inset Formula $d$
+\end_inset
+
+, which is a fraction 
+\begin_inset Formula $\kappa_{d}$
+\end_inset
+
+ of the prevailing house price.
+ 
+\end_layout
+
+\begin_layout Standard
+In terms of the borrowing constraint, I don't require the owner to comply
+ with the downpayment constraint 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-rent-downpay"
+
+\end_inset
+
+ in every period, as this would imply that a reduction in house price requires
+ the owner to reduce the size of their mortgage, similarly to an investor
+ who receives a margin call.
+ Imposing this constraint in every period substantially decreases the amount
+ of insurance against house price fluctuations provided by ownership and
+ to which renters are exposed, thereby shutting down one important motivation
+ to own in the model (see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sinai2005owner"
+
+\end_inset
+
+).
+ Instead, owners are allowed to only make the interest payment on the mortgage,
+ thus keep the balance constant, or borrow up to proportion 
+\begin_inset Formula $(1-\chi)$
+\end_inset
+
+ of the current price as a buyer would, whichever amount is smaller (i.e.
+ less positive).
+ Apart from this, the same interest rate function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-interest"
+
+\end_inset
+
+ applies.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}+(1-h_{t})(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own}\\
+a_{t+1} & \geq & \min\left\{ a_{t},-(1-\chi)p_{dt}\right\} \label{eq:budget-own-borrow}\\
+\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Budget constraint for movers, i.e.
+ 
+\begin_inset Formula $d\neq k$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Budget-movers"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The case for movers is simpler, as there is in fact no housing choice.
+ Renters are not allowed to buy in the period they move, and owners must
+ sell.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Renters.
+\end_layout
+
+\begin_layout Standard
+This is identical to the case for stayers but without the parts of the budget
+ relating to house purchase.
+ We define the budget constraint in this case as in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-rent-move"
+
+\end_inset
+
+.
+ Notice that next period assets for movers are non--negative.
+\begin_inset Formula 
+\begin{eqnarray}
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\kappa_{d}p_{dt}\right)\label{eq:budget-rent-move}\\
+a_{t+1} & \geq & 0\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Owners.
+\end_layout
+
+\begin_layout Standard
+Owners become renters by selling, thus their corresponding budget constraint
+ when moving locations is given in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-own-move"
+
+\end_inset
+
+.
+ If it is the case that the proceeds from sale of the house are insufficient
+ to make up for the contracted debt 
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Formula $a_{t}(1+r(a_{t}))$
+\end_inset
+
+, i.e.
+ in the case there is negative home equity, the indicator in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:default"
+
+\end_inset
+
+ is activated and the utility penalty 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is incurred in the current period.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}+(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own-move}\\
+a_{t+1} & \geq & 0\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Timing
+\end_layout
+
+\begin_layout Enumerate
+observe 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ iid location taste shock 
+\end_layout
+
+\begin_layout Enumerate
+choose whether to move at end of period
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+if yes 
+\begin_inset Formula $(j\neq k)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+sell house: 
+\begin_inset Formula $h_{it}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume and incur moving cost 
+\begin_inset Formula $\Delta(k,x)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+if no 
+\begin_inset Formula $(j=k)$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $h_{it}\in\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose 
+\begin_inset Formula $a_{it+1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consume
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+Parameterization
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+The conditional distribution of 
+\begin_inset Formula $z$
+\end_inset
+
+ for movers is specified as the density of a bivariate copula 
 \begin_inset Formula $C$
 \end_inset
 
@@ -881,840 +2176,11 @@ name "fig:density-of-copula"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
-Region--specific house price and income
-\end_layout
-
-\begin_layout Standard
-Each region in the economy features a separate stationary vector autoregression
- of order one (VAR(1)) describing the joint dynamics of house prices and
- average region labor income, as defined in equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:VAR-process"
-
-\end_inset
-
-.
- In this definition, 
-\begin_inset Formula $A$
-\end_inset
-
- is a matrix of coefficients and 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- is the variance-covariance matrix of the bivariate normal VAR(1) innovation
- 
-\begin_inset Formula $\nu$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-At date 
-\begin_inset Formula $t$
-\end_inset
-
-, region 
-\begin_inset Formula $d$
-\end_inset
-
- is described by house price 
-\begin_inset Formula $p_{dt}$
-\end_inset
-
- and mean income 
-\begin_inset Formula $\overline{y}_{dt}$
-\end_inset
-
-, which is equal for all individuals who currently reside in region 
-\begin_inset Formula $d$
-\end_inset
-
-.
- Agents observe the value of the VAR process for the region they are currently
- living in, but they only know the unconditional mean of the processes in
- other regions.
- In other words, when agents want to forecast the house price in the next
- period in a different region, they set their forecast equal to the unconditiona
-l mean of the VAR(1) on house price and mean income.
- This is a time-invariant forecast, but it differs across locations.
- 
-\begin_inset Formula 
-\begin{eqnarray}
-\begin{bmatrix}\overline{y}_{dt}\\
-p_{dt}
-\end{bmatrix} & = & A\begin{bmatrix}\overline{y}_{dt-1}\\
-p_{dt-1}
-\end{bmatrix}+\nu_{dt-1}\nonumber \\
-\nu_{dt} & \sim & N\left(\begin{bmatrix}0\\
-0
-\end{bmatrix},\Sigma_{d}\right)\label{eq:VAR-process}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Preferences
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-\begin_inset Formula 
-\[
-u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
-\\
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
--\Delta\left(k,x_{it}\right)-\lambda def_{it}
-\end{cases}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Housing Tenure
-\end_layout
-
-\begin_layout Standard
-Housing tenure choice is discrete, 
-\begin_inset Formula $h_{t}\in\left\{ 0,1\right\} $
-\end_inset
-
- and there is no quantity choice of housing.
- While renting, i.e.
- whenever 
-\begin_inset Formula $h_{t}=0$
-\end_inset
-
-, individuals must pay rent which amounts to a constant fraction 
-\begin_inset Formula $\kappa_{d}$
-\end_inset
-
- of the current region house price 
-\begin_inset Formula $p_{d}$
-\end_inset
-
-.
- In order to buy, a proportion 
-\begin_inset Formula $(1-\chi)p_{dt}$
-\end_inset
-
- of the house value needs to be paid up front as a downpayment, while the
- remainder 
-\begin_inset Formula $\chi p_{dt}$
-\end_inset
-
- is financed by a standard fixed rate mortgage.
- In other words, only owners are allowed to borrow with their house as a
- collateral, and there is no unsecured debt.
- Similar to the setup in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Attanasio20121"
-
-\end_inset
-
-, I denote nonhousing wealth as 
-\begin_inset Quotes eld
-\end_inset
-
-assets
-\begin_inset Quotes erd
-\end_inset
-
- 
-\begin_inset Formula $a_{t}$
-\end_inset
-
- and assume a terminal condition 
-\begin_inset Formula $a_{T}\geq0$
-\end_inset
-
-, which translates into an implicit borrowing limit for owners.
- They will not borrow more than what can be repaid with certainty, although
- this constraint is partially relaxed by allowing for mortgage default,
- as detailed below.
- Furthermore, this setup does not require the owner to fulfil the downpayment
- (or margin) constraint in every period, but only in the period of purchase.
- This implies that when prices fall, owners do not have to adjust the size
- of their mortgage by remortgaging or selling the home, for as long as the
- make the required interest payment.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-In contrast to a fully specified mortgage repayment schedule, which requires
- knowledge of remaining mortgage debt and 
-\begin_inset Quotes eld
-\end_inset
-
-periods paid
-\begin_inset Quotes erd
-\end_inset
-
-, this approach saves on the counting state variable 
-\begin_inset Quotes eld
-\end_inset
-
-periods paid
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Formally, the constraints relating to next period assets 
-\begin_inset Formula $a_{t+1}$
-\end_inset
-
- can be stated as follows:
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{t+1} & \geq & 0\,\text{if }h_{t}=0\\
-a_{t+1} & \geq & -\chi p_{dt}\,\text{if }h_{t-1}=0,h_{t}=1\\
-a_{t+1} & \geq & (1+r)\,\text{if }h_{t-1}=0,h_{t}=1
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This arrangement is sufficient to induce individuals to engage in savings
- behaviour that mimicks the repayment path of a mortgage contract.
- Owners have to occupy the house they own, i.e.
- they have to sell the house upon departure from any given location.
- Selling the house incurs proportional cost 
-\begin_inset Formula $\phi$
-\end_inset
-
-, such that given an amount 
-\begin_inset Formula $e$
-\end_inset
-
- equity in the house, upon sale the owner receives 
-\begin_inset Formula $(1-\phi)e$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Whenever an individual is not owning, they must obtain housing services
- in the rental market.
- I assume the rental price in location 
-\begin_inset Formula $j$
-\end_inset
-
- is given by a fraction 
-\begin_inset Formula $\kappa_{j}$
-\end_inset
-
- of the current house price.
- In other words, the rental cost in period 
-\begin_inset Formula $t$
-\end_inset
-
- is 
-\begin_inset Formula $\kappa_{j}p_{jt}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Household size/presence of children
-\end_layout
-
-\begin_layout Standard
-There is a markov chain 
-\begin_inset Formula $\Gamma_{s}(t)$
-\end_inset
-
- that maps states (children today, no children today) into (children tomorrow,
- no children tomorrow) dependent on the age 
-\begin_inset Formula $t$
-\end_inset
-
- of the household head.
- Presence of children is reduced form for 
-\begin_inset Quotes eld
-\end_inset
-
-household size
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Unobserve Location Preference
-\end_layout
-
-\begin_layout Standard
-Upon arrival in a new location, an individual draws 
-\begin_inset Formula $\tau\sim F_{\tau}$
-\end_inset
-
-, which we interpret as their unobservable lcoation preference.
- 
-\begin_inset Formula $\tau$
-\end_inset
-
- is fixed for the duration of stay in 
-\begin_inset Formula $j$
-\end_inset
-
- and enters period utility with a factor loading 
-\begin_inset Formula $\alpha_{\tau}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Moving Costs
-\end_layout
-
-\begin_layout Standard
-Moving across locations is assumed to be costly in terms of utility.
- Denote 
-\begin_inset Formula $\Delta(j,k,x)$
-\end_inset
-
- the utility costs of moving from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
- at a current value of the state vector 
-\begin_inset Formula $x$
-\end_inset
-
- (defined below).
- Moving costs differ between renters and owners.
- Moving for an owner requires to sell the house, which in turn requires
- some effort and time costs.
- This is on top of any other psychological costs incurred from moving states
- which are common between renters and owners.
- There is unobserved heterogeneity in moving costs, specified by a finite
- number of discrete types 
-\begin_inset Formula $\tau$
-\end_inset
-
-.
- I specify the moving cost function as linear in parameters 
-\begin_inset Formula $\alpha$
-\end_inset
-
-:
-\begin_inset Formula 
-\begin{equation}
-\Delta(j,k,x)=\alpha_{0}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
-\end{equation}
-
-\end_inset
-
-In expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:moving-cost"
-
-\end_inset
-
-, 
-\begin_inset Formula $\alpha_{1}$
-\end_inset
-
- measures the additional moving cost for owners, 
-\begin_inset Formula $\alpha_{2}$
-\end_inset
-
- measures the importance of distance 
-\begin_inset Formula $\delta$
-\end_inset
-
- between locations 
-\begin_inset Formula $j$
-\end_inset
-
- and 
-\begin_inset Formula $k$
-\end_inset
-
-, 
-\begin_inset Formula $\alpha_{3}$
-\end_inset
-
- is an age effect and 
-\begin_inset Formula $\alpha_{4}$
-\end_inset
-
- measures moving cost differential arising from family size s.
-\end_layout
-
-\begin_layout Subsection
-State space
-\end_layout
-
-\begin_layout Standard
-The state space of an individual is given by 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{it},z_{it},s_{it,}\mathbf{P}_{t},h_{it-1},j,\tau,t\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where the variables stand, in order, for assets, persistent income shock,
- household size, the map of prices and incomes in each location, last period
- ownership status, current location, type and age.
- 
-\end_layout
-
-\begin_layout Subsection
-Moving Arrangements
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Assumption 1: 
-\series default
-Owners cannot own in location 
-\begin_inset Formula $j$
-\end_inset
-
- and reside in location 
-\begin_inset Formula $k$
-\end_inset
-
-.
- That implies that before a household can move to 
-\begin_inset Formula $k$
-\end_inset
-
-, they must sell their house in 
-\begin_inset Formula $j$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Assumption 2: 
-\series default
-Moving from 
-\begin_inset Formula $j$
-\end_inset
-
- to 
-\begin_inset Formula $k$
-\end_inset
-
- while the house is in negative equity defines the event 
-\begin_inset Quotes eld
-\end_inset
-
-mortgage default
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-This arrangement implies that if an owner wants to move but they have negative
- equity in the home, they default on the mortgage and incur a default cost
- 
-\begin_inset Formula $\lambda>0$
-\end_inset
-
-.
- In other words, default is defined as 
-\begin_inset Formula 
-\[
-def_{t}=\mathbf{1}\left[j\neq k,p_{t}(1-\phi)+a_{t}(1+r(a_{t}))<0\right]
-\]
-
-\end_inset
-
-I don't consider default within the region for the same reasons as I don't
- consider within region moves.
- In practice, the model will fit the observed fraction of homeowner movers
- for which the final equity in 
-\begin_inset Formula $j$
-\end_inset
-
- was negative.
- I do not know from the data whether they actually defaulted, but the definition
- corresponds to the model.
- 
-\end_layout
-
-\begin_layout Subsection
-Utility
-\end_layout
-
-\begin_layout Standard
-Current period utility:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $g$
-\end_inset
-
- is a scale parameter measuring the average reduction in per capita consumption
- when children are present
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\xi(s_{it})$
-\end_inset
-
- is the utility premium of owning when household size is 
-\begin_inset Formula $s$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\lambda$
-\end_inset
-
- is the cost of default
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
-\\
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j\neq k\\
--\Delta\left(k,x_{it}\right)-\lambda def_{it}
-\end{cases}\label{eq:period-utility}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Recursive Formulation
-\end_layout
-
-\begin_layout Standard
-To spare on notation I will drop the subscript 
-\begin_inset Formula $it$
-\end_inset
-
- from here on, with the convention that next period variables are labelled
- with a prime.
- There is an iid location--specific preference shock vector 
-\begin_inset Formula $\varepsilon_{it}$
-\end_inset
-
- of length 
-\begin_inset Formula $J$
-\end_inset
-
-.
- I make the standard assumption of additive separability between utility
- and this shock as well as a conditional independence assumption that says
- that the transition of 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- is independent of 
-\begin_inset Formula $x$
-\end_inset
-
-.
- It is useful to first define the conditional value function 
-\begin_inset Formula $v$
-\end_inset
-
-, net of the iid shock 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
-.
- Also, let 
-\begin_inset Formula $ $
-\end_inset
-
-
-\begin_inset Formula $q$
-\end_inset
-
- stand for the law of motion of the state vector 
-\begin_inset Formula $x$
-\end_inset
-
-.
- I first present an abbreviated version of the recursive program before
- defining the full problem.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-v_{t}(x,j,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,j,k)+\beta\sum_{x'}q\left(x'|x,k\right)\overline{v}_{t+1}(x',k)\\
-\overline{v}_{t}(x,j) & = & E_{\xi}V_{t}(x,j,\varepsilon)\\
- & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}(x,j,k)\right)\right)\\
-\exp\left(\overline{v}(x,j)\right) & = & \exp(\overline{\gamma})\sum_{k=1}^{J}\exp\left(v(x,j,k)\right),\forall j\\
-\rho(x,j,k) & = & \Pr\left[\text{move to }k|x,j\right]\\
- & = & \frac{\exp\left(v_{t}(x,j,k)\right)}{\sum_{z=1}^{J}\exp\left(v_{t}(x,j,z)\right)}\\
- & = & \frac{\exp\left(v_{t}(x,j,k)\right)}{\exp\left(\overline{v}_{t}(x,j)\right)/\exp(\overline{\gamma})}\\
- & = & \exp\left(\overline{\gamma}+v_{t}(x,j,k)-\overline{v}_{t}(x,j)\right)
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The value function of the full problem when at state 
-\begin_inset Formula $\left(a,z,\mathbf{P},h_{-1},j,\tau,t<T\right)$
-\end_inset
-
- is given by expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:full-value"
-
-\end_inset
-
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-V\left(a,z,\mathbf{P},h_{-1},j,\tau,t\right) & = & \max_{k}\left(v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right)+\varepsilon_{it}\right)\label{eq:full-value}\\
-v\left(a,z,\mathbf{P},h_{-1},j,k,\tau,t\right) & = & \begin{cases}
-\max_{h,a'}u\left(c,j,k,h,\psi\right) & \text{if }j=k\\
-+\beta\mathbb{E}_{u,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)|\left(z,\mathbf{P}\right)\right]\\
-\\
-\max_{a'}u\left(c,j,k,0,\tau\right) & \text{if }j\neq k\\
-+\beta\mathbb{E}_{u,\mathbf{P}'}\left[\bar{v}\left(a',z',\mathbf{P}',0,k,\tau,t+1\right)|\left(z,\mathbf{P}\right)\right]
-\end{cases}\label{eq:conditional-value}\\
-\bar{v}\left(a',z',\mathbf{P}',h,k,\tau,t\right) & = & E_{\varepsilon}V\left(a',z',\mathbf{P}',h,k,\tau,t+1\right)\\
-\text{subject to}\nonumber \\
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\right)\\
-r(a_{t}) & = & \begin{cases}
-r & \text{if }a_{t}\geq0\\
-r^{m} & \text{if }a_{t}<0
-\end{cases},r^{m}>r\label{eq:budget}\\
-\pi(h_{t-1},h_{t},\mathbf{p}_{t}) & = & \begin{cases}
-(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
-\\
-\begin{array}{c}
--\left\{ \mathbf{1}\left[j=k\right](1-h_{t})+\mathbf{1}\left[j\neq k\right]\right\} \\
-\times\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)
-\end{array} & \text{if }h_{t-1}=1
-\end{cases}\label{eq:budget-housing}\\
-a_{t+1} & \geq & \begin{cases}
-0 & \text{if }h_{t}=0\\
-\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{jt}\right\}  & \text{if }h_{t}=1
-\end{cases}\label{eq:borrowing-constraint}\\
-a_{T} & \geq & 0\label{eq:interest-rate}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the final period 
-\begin_inset Formula $T$
-\end_inset
-
- I assume a terminal value function that depends on assets and home equity
- and is given by
-\begin_inset Formula 
-\begin{equation}
-V(a,h_{T-1},j)=\omega_{0}+\omega_{1}\ln\left(a+h_{T-1}p_{jt}\right)\label{eq:final-period-value}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Timing
-\end_layout
-
-\begin_layout Enumerate
-observe 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
- and
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
-\end_inset
-
-,
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- iid location taste shock 
-\end_layout
-
-\begin_layout Enumerate
-choose whether to move at end of period
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-if yes 
-\begin_inset Formula $(j\neq k)$
-\end_inset
-
-, 
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-sell house: 
-\begin_inset Formula $h_{it}=0$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume and incur moving cost 
-\begin_inset Formula $\Delta(k,x)$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-if no 
-\begin_inset Formula $(j=k)$
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $h_{it}\in\{0,1\}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume
-\end_layout
-
-\end_deeper
-\end_deeper
 \begin_layout Section
 Solution/Estimation
 \begin_inset CommandInset label
@@ -1753,258 +2219,6 @@ key "keane1997career"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Subsection
-Exogenous Processes: House Price and Mean Income
-\end_layout
-
-\begin_layout Standard
-Ideally, the model would be defined taking into account prices and incomes
- in all 
-\begin_inset Formula $J$
-\end_inset
-
- locations.
- In practice I will want to estimate both processes for income and prices
- outside of the model in a first step.
- Unfortunately, the statistical properties of both mean income and house
- prices time series are such that both contain a unit root for the vast
- majority of states.
- A common approach in such a situation would be to first-difference the
- series and estimate the parameters off that series.
- However, this then requires to track in the state space both the current
- (or past) level of the variable in question, plus their current (or past)
- growth as predicted by this first step estimation.
- This is computationally infeasible.
- For tractability reasons, therefore, I make an assumption about growth
- at the 
-\end_layout
-
-\begin_layout Enumerate
-There are two national indices for house prices and mean income, denoted
- 
-\begin_inset Formula $P_{t}$
-\end_inset
-
- and 
-\begin_inset Formula $Y_{t}$
-\end_inset
-
-.
- Both are assumed to evolve in a standard markovian way:
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-P_{t} & = & \rho_{P}P_{t-1}+\varepsilon_{Pt}\nonumber \\
-Y_{t} & = & \rho_{Y}Y_{t-1}+\varepsilon_{Yt}\nonumber \\
-\left[\begin{array}{cc}
-\varepsilon_{Pt} & \varepsilon_{Yt}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
-\mu_{P}\\
-\mu_{Y}
-\end{array}\right]\left[\begin{array}{cc}
-\sigma_{Y}^{2} & \sigma_{YP}\\
- & \sigma_{P}^{2}
-\end{array}\right]\right)\label{eq:aggreg-prices-1}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-There exists a partition of states into contiguous regions called 
-\emph on
-census divisions 
-\emph default
-such that 
-\emph on
-
-\begin_inset Formula $d\subset J$
-\end_inset
-
-, 
-\emph default
-of which there are nine.
- I assume that there is a relationship between prices and incomes at the
- division level with the national indices, specified in terms of the deviation
- between division and national index.
- Denote the division 
-\begin_inset Formula $d$
-\end_inset
-
- prices as 
-\begin_inset Formula $\left(p_{t}^{d},y_{t}^{d}\right)$
-\end_inset
-
-, and define the deviation from the national index by 
-\begin_inset Formula $\left(\tilde{p}_{t}^{d},\tilde{y}_{t}^{d}\right)$
-\end_inset
-
-, as in expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:division-deviations"
-
-\end_inset
-
- 
-\begin_inset Formula 
-\begin{eqnarray}
-\tilde{p}_{t}^{d} & = & P_{t}-p_{t}^{d}\nonumber \\
-\tilde{y}_{t}^{d} & = & Y_{t}-y_{t}^{d}\label{eq:division-deviations}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-The assumption linking division 
-\begin_inset Formula $d$
-\end_inset
-
- to the national index is embodied in equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:dev-model"
-
-\end_inset
-
-.
- It amounts to saying that the long--run level of deviations from the national
- index (i.e.
- the unconditional mean of each line in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:dev-model"
-
-\end_inset
-
-), as well as their dynamic behaviour are common knowledge.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-\tilde{y}_{t}^{d} & = & \beta_{0d}+\beta_{1d}\tilde{y}_{t-1}^{d}+\nu_{\tilde{y}t,d}\nonumber \\
-\tilde{p}_{t}^{d} & = & \gamma_{0d}+\gamma_{1d}\tilde{p}_{t-1}^{d}+\nu_{\tilde{p}t,d}\nonumber \\
-\left[\begin{array}{cc}
-\nu_{\tilde{p}t,d} & \nu_{\tilde{y}t,d}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
-0\\
-0
-\end{array}\right]\left[\begin{array}{cc}
-\sigma_{\tilde{y},d}^{2} & \sigma_{\tilde{y}\tilde{p},d}\\
- & \sigma_{\tilde{p},d}^{2}
-\end{array}\right]\right)\label{eq:dev-model}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Denote the collection of division deviations of prices and incomes at time
- 
-\begin_inset Formula $t$
-\end_inset
-
- by the 
-\begin_inset Formula $(9\times1)$
-\end_inset
-
- vectors 
-\begin_inset Formula $\tilde{\mathbf{p}}_{t}$
-\end_inset
-
- and 
-\begin_inset Formula $\tilde{\mathbf{y}}_{t}$
-\end_inset
-
-.
-\end_layout
-
-\end_deeper
-\begin_layout Subsection
-Income Process
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-y_{ijt} & = & g\left(i,j,t\right)+z_{it}\nonumber \\
-z_{it} & = & \rho z_{it-1}+u_{it},\, u_{it}\sim N(0,\sigma_{u}^{2})\nonumber \\
-g(i,j,t) & = & \bar{y}_{jt}+\beta_{j1}\text{age}_{it}+\beta_{j2}\left(\text{age}_{it}\right)^{2}+\beta_{j3}\text{cohort}_{i}+\alpha_{i}\label{eq:income-model-details}\\
- & = & \beta_{j0}+\beta_{j1}\text{age}_{it}+\beta_{j2}\left(\text{age}_{it}\right)^{2}+\beta_{j3}\text{cohort}_{i}+\alpha_{i}\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-That is, I view the income data generating process as one cross section,
- such that variation in the mean level of income for state 
-\begin_inset Formula $j$
-\end_inset
-
- over time identifies the regression intercept 
-\begin_inset Formula $\beta_{0j}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-To predict income in state 
-\begin_inset Formula $k$
-\end_inset
-
-, do this:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-\hat{y}_{ikt+1} & = & g(i,k,t+1)+\hat{z}_{it+1}\nonumber \\
- & = & \bar{y}_{jt}+\beta_{1k}\text{age}_{it+1}+\beta_{2k}\left(\text{age}_{it+1}\right)^{2}+\beta_{3k}\text{cohort}_{i}+\alpha_{i}+\hat{z}_{it+1}\nonumber \\
-\hat{z}_{it+1} & = & \rho_{k}z_{it}\label{eq:lin-predictor-income-details}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This is because for individual 
-\begin_inset Formula $i$
-\end_inset
-
-, 
-\begin_inset Formula $\text{age}_{it}$
-\end_inset
-
- is a deterministic mapping of 
-\begin_inset Formula $t$
-\end_inset
-
-, whereas 
-\begin_inset Formula $\text{cohort}_{i}$
-\end_inset
-
- and 
-\begin_inset Formula $\alpha_{i}$
-\end_inset
-
- are known.
- 
 \end_layout
 
 \begin_layout Section
@@ -2058,7 +2272,11 @@ reference "fig:State-to-State-PSID"
  I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a large
  database with 128.515 individuals that I can follow over time and space.
  I observe a total of 4.194 interstate moves.
- Just for comparison, the estimation sample in 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Just for comparison, the estimation sample in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
@@ -2067,6 +2285,11 @@ key "kennan2003effect"
 
  is drawn from the geo-coded version of NLSY79 and contains 124 interstate
  moves.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2285,6 +2508,37 @@ Results
 
 \begin_layout Standard
 tbc
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+computational details
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray}
+\rho(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
+ & = & \frac{\exp\left(v(x,d,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,d,z)\right)}\nonumber \\
+ & = & \frac{\exp\left(v(x,d,k)\right)}{\exp\left(\overline{v}(x,d)\right)/\exp(\overline{\gamma})}\nonumber \\
+ & = & \exp\left(\overline{\gamma}+v(x,d,k)-\overline{v}(x,d)\right)\label{eq:prob-of-moving}
+\end{eqnarray}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
