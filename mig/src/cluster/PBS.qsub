@@ -3,11 +3,8 @@
 #PBS -q consort
 #PBS -l nodes={{nnodes}}:ppn={{ppnodes}}
 #PBS -l walltime={{hours}}:{{mins}}:00
-#PBS -N {{name}}
 #PBS -o {{logout}}
 #PBS -e {{logerr}}
-#PBS -M florian.oswald@gmail.com
-#PBS -m ea
 
 # Change to working directory
 cd $PBS_O_WORKDIR
