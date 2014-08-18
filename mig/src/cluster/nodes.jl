@@ -67,7 +67,7 @@ else
 	pb = Dict{ASCIIString,Array{Float64,1}}()
 	pb["gamma"]  = [1.1,6]
 	# pb["lambda"] = [0.0,2]
-	pb["xi1"]    = [-0.1,0.5]
+	pb["xi1"]    = [0.1,0.5]
 	pb["xi2"]    = [0.1,5]
 	pb["omega1"] = [0.0,15.0]
 	pb["omega2"] = [0.0,15.0]

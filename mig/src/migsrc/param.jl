@@ -99,20 +99,6 @@ type Param
 			ns    = 2
 			nsim  = 40000
 
-		elseif size==3
-		# big: maximal size for memory on my box
-		# much too slow
-			na    = 40
-			nz    = 4
-			nh    = 2
-			ntau  = 2
-			np    = 3
-			ny    = 3
-			nJ    = 9
-			nt    = 30
-			ns    = 2
-			nsim  = 10000
-
 		end		
 
 		beta    = 0.93
@@ -122,8 +108,8 @@ type Param
 		lambda  = 0.5
 		tau     = 5.0
 		taudist = 0.5
-		xi1     = 0.25
-		xi2     = 0.1
+		xi1     = 0.2
+		xi2     = 0.2
 		omega1  = 0.1
 		omega2  = 2.1
 
