@@ -1,5 +1,3 @@
-
-
 function bind_iridis_procs()
 
     home = ENV["HOME"]
@@ -52,4 +50,3 @@ function bind_iridis_procs()
     end
     println("done")
 end
-
