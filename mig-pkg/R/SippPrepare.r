@@ -694,6 +694,8 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 	# HHincome is monthly. make annual and then average by age
 	merged[,HHincome := HHincome * 12]
+	# same for rent/mortgage payment
+	merged[,mortg.rent := mortg.rent * 12]
 	# my estimate of median income
 	merged[HHincome>0,MyMedinc := Hmisc::wtd.quantile(HHincome,HHweight,na.rm=T,probs=0.5),by=list(year,Division)]
 
@@ -706,7 +708,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged <- cpi[ merged ]
          
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","RE.equity.other","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,12*mortg.rent,saving,nonh_wealth,hvalue,RE.equity.other,CensusMedinc,MyMedinc)],function(x) x / (cpi96 * 1000)) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","RE.equity.other","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,nonh_wealth,hvalue,RE.equity.other,CensusMedinc,MyMedinc)],function(x) x / (cpi96 * 1000)) ]
 
 
 

@@ -6,14 +6,14 @@ type Model
 
 	# values and policies conditional on moving to k
 	# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
-	v   :: Array{Float64,10}
-	vh  :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
-	vfeas  :: Array{Bool,1}	# feasibility map
-	sh  :: Array{Float64,11}
-	ch  :: Array{Float64,11}
+	v     :: Array{Float64,10}
+	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	vfeas :: Array{Bool,1}	# feasibility map
+	sh    :: Array{Float64,11}
+	ch    :: Array{Float64,11}
 	cash  :: Array{Float64,11}
-	rho :: Array{Float64,10}
-	dh   :: Array{Int,10}
+	rho   :: Array{Float64,10}
+	dh    :: Array{Int,10}
 
 	# top-level value maxed over housing and location
 	# dimvec2 = (ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
@@ -128,6 +128,11 @@ type Model
 			if ir[:age] < p.maxAge && ir[:age] >= p.minAge
 				kmat[ir[:kids]+1,ir[:kids2]+1,findin(p.ages,ir[:age])[1]] = ir[:Freq]
 			end
+		end
+
+		# fill kappa with correct values
+		for j in 1:p.nJ
+			p.kappa[j] = popweights[j,:r2p]
 		end
 
 		# XD grids

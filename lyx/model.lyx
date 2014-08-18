@@ -177,10 +177,6 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 The main motivation for this paper is illustrated in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -994,7 +990,7 @@ reference "fig:movers-own-d-rent-k"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1945,7 +1941,33 @@ consume
 \end_deeper
 \end_deeper
 \begin_layout Section
-Parameterization
+Estimation
+\end_layout
+
+\begin_layout Standard
+Estimation of preference parameters 
+\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\dots\right\} $
+\end_inset
+
+ is performed using the simulated method of moments approach.
+ I can estimate the house price and income processes outside of the main
+ model using standard methods, to which I will turn first.
+\end_layout
+
+\begin_layout Subsection
+VAR process for 
+\begin_inset Formula $\bar{y}_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I estimate a 
 \end_layout
 
 \begin_layout Standard

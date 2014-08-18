@@ -71,7 +71,7 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	# linear prob model move ~ age
 	# ----------------------------
 
-	mv_reg = summary(svyglm(D2D ~ age + age2,svy))
+	mv_reg = summary(svyglm(D2D ~ age + age2 ,svy))
 	nms = paste0("lm_mv_",rownames(mv_reg$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$mv_rate_reg = data.table(moment=nms,data_value=mv_reg$coefficients[,"Estimate"],data_sd=mv_reg$coefficients[,"Std. Error"])
@@ -81,6 +81,7 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	nmoves[,c("moved0","moved1","moved2") := list(moves==0,moves==1,moves>1)]
     nmoves[,moved1 := moves==1]
     nmoves[,moved2 := moves>1]
+    r$move_rate <- d[,list(moment="mean_move",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
 	r$moves0 <- nmoves[,list(moment="moved0",data_value=weighted.mean(moved0,HHweight), data_sd=sqrt(wtd.var(moved0,HHweight)))]
 	r$moves1 <- nmoves[,list(moment="moved1",data_value=weighted.mean(moved1,HHweight), data_sd=sqrt(wtd.var(moved1,HHweight)))]
 	r$moves2 <- nmoves[,list(moment="moved2",data_value=weighted.mean(moved2,HHweight), data_sd=sqrt(wtd.var(moved2,HHweight)))]
@@ -379,7 +380,76 @@ Sipp.movers_wage_residual_plots <- function(path="~/Dropbox/mobility/output/data
 	return(p)
 }
 
+Sipp.wage_residual_copulas <- function(){
 
+	library(copula)
+
+	data(Sipp_aggby_NULL,envir=environment())
+
+	# stayers
+	# =======
+
+	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+	nmv <- merged[,unique(upid)[!unique(upid) %in% mv[,upid]]]
+	dat <- merged[upid %in% nmv & HHincome >0]
+
+	setkey(dat,upid,timeid,Division)
+
+	# log wage = beta0 + state +  beta1  *age + beta2*college + u
+
+	divs <- dat[,unique(Division)]
+
+	# get wage residual for each region
+	mods <- lapply(divs, function(x) lm(log(HHincome) ~ poly(age,degree=3,raw=T) + college + numkids , data=dat[Division==x]))
+	names(mods) <- divs
+
+	resids <- lapply(mods,resid)
+
+	dat[, u := 0.0]
+	for (d in divs){
+		dat[Division==d,u := resids[[d]]]
+	}
+
+	dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
+	d <- dat[!is.na(u_plus1),list(upid,timeid,Division,u,u_plus1)]
+
+
+	cops <- lapply(divs, function(x) mvdc(copula=ellipCopula(family="normal",param=0.1),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12))))
+	names(cops) <- divs
+
+	subs <- lapply(divs,function(x) as.matrix(d[Division==x][upid %in% sample(unique(upid),round(0.5*length(unique(upid)))),list(u,u_plus1)]))
+	names(subs) <- divs
+
+	fits <- lapply(divs, function(x) fitMvdc(subs[[x]],cops[[x]],start=c(2, 1, 3, 2, 0.5),optim.control=list(trace=10)))
+	names(fits) <- divs
+
+
+	# movers
+	# ======
+
+	setkey(mv,upid)
+	setkey(merged,upid,timeid)
+	mvs <- merged[mv]
+
+	mvs <- copy(mvs[HHincome > 0])
+
+	# log wage = beta0 + state +  beta1  *age + beta2*college + u
+
+	# get wage residual
+	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
+
+	# aim: get cor( u(t), u(t+1) ) when move happened in t
+	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
+	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
+	dat = mvs[D2D==TRUE,list(u,u_plus1)]
+	dat = dat[complete.cases(dat)]
+
+	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
+	mat = as.matrix(dat)
+	m_fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
+
+	return(list(stayers=fits,movers=m_fit))
+}
 
 Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/data/sipp"){
 

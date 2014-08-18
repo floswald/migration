@@ -53,15 +53,26 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	# individual income processes by region
 	ind <- Export.IncomeProcess(merged)
 	
+	# stayer's copula
+	# cops <- Sipp.wage_residual_copulas()
+
 	# mover's copula
-	cop <- Sipp.movers_wage_residual_copula()
-	coppars <- coef(cop$fit)
+	# mcoppars <- coef(cops$movers)
+	# scoppars <- t(sapply(cops$stayers,coef))
 
 	# pop proportion in each state
 	prop = merged[,list(N = length(upid)),by=Division]
 	prop[,proportion:= N / .SD[,sum(N)]]
-	prop=as.data.frame(prop)
 
+	# add rent 2 price ratio
+	rents = merged[own==FALSE,list(rent=mean(mortg.rent)),by=Division]
+	values = merged[own==TRUE,list(value=mean(hvalue)),by=Division]
+	setkey(rents,Division)
+	setkey(values,Division)
+	prop[,r2p := values[rents][,rent / value] ]
+
+	prop=as.data.frame(prop)
+	
 	stopifnot(sum(prop$proportion)==1)
 
 	# distance matrix
@@ -87,7 +98,7 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	gc()
 
 	# write to disk
-    save(coppars,file=file.path(path,"copula.rda"))	
+    # save(mcoppars,file=file.path(path,"mcopula.rda"))	
 	save(df,file=file.path(path,"distance.rda"))
 	save(m,file=file.path(path,"moments.rda"))
 	save(kids_trans,file=file.path(path,"kidstrans.rda"))

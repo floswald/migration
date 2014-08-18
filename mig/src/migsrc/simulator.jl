@@ -510,6 +510,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	moved2 = mean(movecount[:x1].==2)
 
 	# TODO std error
+	push!(mom1,["mean_move",mean(df[:move]),std(df[:move])])	# unconditional mean
 	push!(mom1,["moved0",moved0,0.0])
 	push!(mom1,["moved1",moved1,0.0])
 	push!(mom1,["moved2",moved2,0.0])
