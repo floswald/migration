@@ -106,7 +106,7 @@ type Param
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
 		lambda  = 0.5
-		tau     = 10.0
+		tau     = 1.0
 		taudist = 0.5
 		xi1     = 0.05
 		xi2     = 0.1

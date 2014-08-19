@@ -2,7 +2,6 @@
 
 using mig, MOpt
 
-mc_only = false
 
 # get moments from dropbox:
 if Sys.OS_NAME == :Darwin
@@ -36,17 +35,17 @@ end
 pb = Dict{ASCIIString,Array{Float64,1}}()
 pb["gamma"]  = [1.1,6]
 # pb["lambda"] = [0.0,2]
-pb["xi1"]    = [0.1,10]
-pb["xi2"]    = [0.1,10]
-pb["omega1"] = [0.0,20.0]
-pb["omega2"] = [0.0,20.0]
-pb["MC0"]    = [0.0,50]
-pb["MC1"]    = [0.0,5]
+pb["xi1"]    = [0.0,1.0]
+pb["xi2"]    = [0.0,1]
+pb["omega1"] = [0.0,2.0]
+pb["omega2"] = [0.0,2.0]
+pb["MC0"]    = [0.0,10]
+pb["MC1"]    = [0.0,2]
 # pb["MC2"]    = [0.0,0.25]
 pb["MC3"]    = [0,1]
-pb["MC4"]    = [0.0,10]
+pb["MC4"]    = [0.0,1]
 # pb["Rm"]    = [1.03,1.2]
-pb["tau"]    = [0.0,30]
+pb["tau"]    = [0.0,3]
 pb["taudist"]    = [0.01,0.99]
 
 
