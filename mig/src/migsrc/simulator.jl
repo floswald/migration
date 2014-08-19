@@ -542,8 +542,12 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# move ~ own
 	# ----------
 
-	if sum(df[:own]) == 0.0
+	if sum(df[:own]) == 0
 		push!(mom1,["mean_move_ownTRUE",0.0,0.0])
+		push!(mom1,["mean_move_ownFALSE",1.0,0.0])
+	elseif mean(df[:own]) == 1.0
+		push!(mom1,["mean_move_ownTRUE",1.0,0.0])
+		push!(mom1,["mean_move_ownFALSE",0.0,0.0])
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
