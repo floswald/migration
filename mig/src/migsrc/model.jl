@@ -5,9 +5,9 @@
 type Model 
 
 	# values and policies conditional on moving to k
-	# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
+	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
 	v     :: Array{Float64,10}
-	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	vfeas :: Array{Bool,1}	# feasibility map
 	sh    :: Array{Float64,11}
 	ch    :: Array{Float64,11}
@@ -16,7 +16,7 @@ type Model
 	dh    :: Array{Int,10}
 
 	# top-level value maxed over housing and location
-	# dimvec2 = (ns, ny, np, nz, na, nh, ntau,  nJ, nt-1 )
+	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	EV   :: Array{Float64,9}
 	vbar :: Array{Float64,9}
 
@@ -47,10 +47,10 @@ type Model
 	# constructor
 	function Model(p::Param;dropbox=false)
 
-		# dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
-		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 )
-		dimvec2 = (p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1)
+		# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh, nJ, nt-1 )
+		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+		dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+		dimvec2 = (p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1)
 
 		v = fill(p.myNA,dimvec)
 		vfeas = falses(prod(dimvecH))
@@ -188,6 +188,8 @@ type Model
 
 		aone  = findfirst(grids["assets"].>=0)
 
+		grids["Gtau"] = [(1.0-p.taudist), p.taudist]
+
 		
 
 		# regional transition matrices
@@ -202,7 +204,7 @@ type Model
 		#
 		# mean: ( ymod(y(t),p(t),j), pmod(y(t),p(t),j) )
 		# Cov : sigs[:,:,j]
-		#
+		#aaaa
 		# here ymod(y,p,j) and pmod(y,p,j) are the linear predictors
 		# of the VAR models for y and p
 		Gyp = get_yp_transition(VAR_coef,p,sigs,pgrid,ygrid)
@@ -229,8 +231,8 @@ type Model
 
 		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat]
 
-		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "a", "h", "tau", "j", "age" ],
-			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.na, p.nh, p.ntau,  p.nJ, p.nt-1 ])
+		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
+			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
 
 
 		# spline settings

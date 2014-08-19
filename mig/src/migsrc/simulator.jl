@@ -95,10 +95,13 @@ function simulate(m::Model,p::Param)
 
 	# grids
 	agrid = m.grids["assets"]
+	agrid_rent = m.grids["assets"][m.aone:end]
 	ygrid = m.gridsXD["y"]
 	pgrid = m.gridsXD["p"]
 	zgrid = m.gridsXD["z"]
 	ypidx = Gyp_indices(p)  # array with cols iy,ip,idx
+
+	aone = m.aone
 
 	# drawing the shocks 
 	# ==================
@@ -106,7 +109,7 @@ function simulate(m::Model,p::Param)
 	# initial distributions
 	# TODO
 	# all of those should be non-uniform probably
-	G0tau = Categorical([1-p.taudist, p.taudist])	# type distribution
+	G0tau = Categorical(m.grids["Gtau"])	# type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
 	G0yp   = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
 	# G0p   = Categorical([1/p.np for i=1:p.np])
@@ -132,7 +135,8 @@ function simulate(m::Model,p::Param)
 	Di      = zeros(Int,p.nsim*(T))	# identity
 	Dv      = zeros(p.nsim*(T))	# value
 	Dc      = zeros(p.nsim*(T))	# consu
-	Dcash   = zeros(p.nsim*(T))	# consu
+	Dcash   = zeros(p.nsim*(T))	# cash after rent
+	Drent   = zeros(p.nsim*(T))	# rent
 	Da      = zeros(p.nsim*(T))	# asset value
 	Dy      = zeros(p.nsim*(T))	# region y value
 	Dincome = zeros(p.nsim*(T))	# income value
@@ -157,6 +161,8 @@ function simulate(m::Model,p::Param)
 	ktmp2 = zeros(p.nJ)
 
 	avec = zeros(p.na)
+	avec_rent = zeros(length(agrid_rent))
+	avec2_rent = zeros(length(agrid_rent))
 	avec2= zeros(p.na)
 	fvec = falses(p.na)
 	fvec2= falses(p.na)
@@ -231,7 +237,7 @@ function simulate(m::Model,p::Param)
 
 				# interpolate rho function in asset dim
 				for iia in 1:p.na
-					avec[iia] = m.rho[idx10(ik,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					avec[iia] = m.rho[idx10(ik,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 				end
 
 				# there is an approximation issue here:
@@ -301,7 +307,7 @@ function simulate(m::Model,p::Param)
 
 				ihh = 0
 				for iia in 1:p.na
-					avec[iia] = m.vh[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					avec[iia] = m.vh[idx11(1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 
 					# note: i have an additional feasibility flag stored in vfeas.
 					# this basically forces an approximation to return myNA if any of the two
@@ -320,8 +326,8 @@ function simulate(m::Model,p::Param)
 				val = linearapprox(agrid,avec,a,p)[1]
 				# find consumption and savings
 				for iia in 1:p.na
-					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 				end
 
 				# setindex!(ss_fx,idx)
@@ -340,8 +346,8 @@ function simulate(m::Model,p::Param)
 
 					# find housing choice
 					for iia in 1:p.na
-						avec[iia]  = m.vh[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.vh[idx11(2,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.vh[idx11(1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+						avec2[iia] = m.vh[idx11(2,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 						# fvec[iia]  = m.vfeas[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 						# fvec2[iia] = m.vfeas[idx11(2,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
@@ -354,8 +360,8 @@ function simulate(m::Model,p::Param)
 					val = v1tmp > v2tmp ? v1tmp : v2tmp
 					# find consumption and savings
 					for iia in 1:p.na
-						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 					end
 
 					# fvecs = (fvec,fvec2)
@@ -369,21 +375,26 @@ function simulate(m::Model,p::Param)
 				# current renter who cannot buy
 				else
 					ihh = 0
-					for iia in 1:p.na
-						avec[iia]  = m.vh   [idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					for iia in aone:p.na
+						avec_rent[iia-aone+1]  = m.vh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 						# fvec[iia]  = m.vfeas[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
-					val = linearapprox(agrid,avec,a,fvec,p)[1]
+					val = linearapprox(agrid_rent,avec_rent,a,p)[1]
+					if i == 19748 && age == 1
+						println(avec_rent)
+						println(val)
+						println("on grid = $(m.vh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,m.aone,ih+1,ij,age,p)])")
+					end
 					# find consumption and savings
-					for iia in 1:p.na
-						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
+					for iia in aone:p.na
+						avec_rent[iia-aone+1]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+						avec2_rent[iia-aone+1] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 					end
 
 					# ss                   = linearapprox(agrid,avec, a,fvec,p)[1] 	
 					# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
-					ss                   = linearapprox(agrid,avec, a,p)[1] 	
-					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
+					ss                   = linearapprox(agrid_rent,avec_rent, a,p)[1] 	
+					Dc[age + T*(i-1)]    = linearapprox(agrid_rent,avec2_rent,a,p)[1]
 				
 				end
 			end
@@ -393,6 +404,7 @@ function simulate(m::Model,p::Param)
 
 			DS[age + T*(i-1)]    = ss
 			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,m.gridsXD["p"][ip,moveto],move,moveto,p)
+			Drent[age + T*(i-1)] = pifun(ih,ihh,m.gridsXD["p"][ip,moveto],move,moveto,p)
 
 			Dv[age + T*(i-1)]      = val
 			Ddist[age + T*(i-1)]   = m.distance[ij,moveto]
@@ -415,6 +427,11 @@ function simulate(m::Model,p::Param)
 			iz  = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
 			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
 
+			# if move
+			if move
+				itau = rand(G0tau)
+			end
+
 			iy   = ypidx[iyp,1]
 			ip   = ypidx[iyp,2]
 
@@ -427,7 +444,7 @@ function simulate(m::Model,p::Param)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),j=Dj,a=Da,save=DS,c=Dc,cash=Dcash,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
 	df = join(df,m.regnames,on=:j)
 	sort!(df,cols=[1,2]	)
 
