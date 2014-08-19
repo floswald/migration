@@ -490,8 +490,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		lm_h = fit(LinearModel, h ~ age + age2 ,df)
 		cc_h  = coeftable(lm_h)
 		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
-		coef_h = coef(lm_h)
-		std_h = stderr(lm_h)
+		coef_h = @data(coef(lm_h))
+		std_h = @data(stderr(lm_h))
 	end
 
 
@@ -512,11 +512,17 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# linear probability model of mobility
 	# ====================================
 
-	lm_mv = fit(LinearModel, move ~ age + age2 ,df)
-	cc_mv = coeftable(lm_mv)
-	nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
-	coef_mv = coef(lm_mv)
-	std_mv = stderr(lm_mv)
+	if mean(df[:move]) == 1.0 || sum(df[:move]) == 0.0
+		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
+		coef_mv = DataArray(Float64,3)
+		std_mv =  DataArray(Float64,3)
+	else
+		lm_mv = fit(LinearModel, move ~ age + age2 ,df)
+		cc_mv = coeftable(lm_mv)
+		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+		coef_mv = @data(coef(lm_mv))
+		std_mv = @data(stderr(lm_mv))
+	end
 
 	# move count
 	# ----------
@@ -566,8 +572,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		lm_w = fit(LinearModel, wealth ~ age + age2 + own,df )
 		cc_w  = coeftable(lm_w)
 		nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
-		coef_w = coef(lm_w)
-		std_w = stderr(lm_w)
+		coef_w = @data(coef(lm_w))
+		std_w = @data(stderr(lm_w))
 	end
 
 	# wealth ~ division
