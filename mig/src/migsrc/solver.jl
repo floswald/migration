@@ -115,129 +115,45 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 )
 	hidx = 0
 
-	# ================
-	# loop over states
-	# ================
-
-	# dimvec  = (nJ, ns, nz, ny, np,ntau,  na, nh,  nJ, nt-1 )
-
 	agrid  = m.grids["assets"]
 
-	# # state dependent stochastic states 
-	# for iz=1:p.nz
-	# 	for iy=1:p.ny
-	# 		for ip=1:p.np
-	# 			for is=1:p.ns
-	# 				# compute expected future values given stochastic state
-	# 				# (iz,iy,ip,is)
-	# 				integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,Gtau,m,p)
+	# state dependent stochastic states 
+	for iz=1:p.nz
+		for iy=1:p.ny
+			for ip=1:p.np
+				for is=1:p.ns
+					# compute expected future values given stochastic state
+					# (iz,iy,ip,is)
+					if age < p.nt-1
+						integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,Gtau,m,p)
+					end
 
-	# 				for itau=1:p.ntau
-	# 					tau = m.grids["tau"][itau]
-	# 					for ij=1:p.nJ
-	# 						z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
-	# 						price = m.gridsXD["p"][ip,ij]
-	# 						for ih=0:1
-	# 							first = ih + (1-ih)*m.aone	# first admissible asset index
-	# 							for ia=first:p.na
-	# 								a = agrid[ia]
-	# 								canbuy = a + z > p.chi * price
-	# 								jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
-
-	# 								# =================
-	# 								# loop over choices
-	# 								# =================
-	# 								expv = Float64[]
-	# 								fill!(feasible_k,false)
-									
-	# 								for ik=1:p.nJ
-	# 									for ihh=0:1
-
-	# 									end
-	# 								end
-	# 							end
-	# 						end
-	# 					end
-	# 				end
-	# 			end
-	# 		end
-	# 	end
-	# end
-
-
-	for ij=1:p.nJ				# current location
-		for ih=0:1
-			first = ih + (1-ih)*m.aone	# first admissible asset index
-			for ia=first:p.na
-				a = agrid[ia]
-
-				# start loop over stochastic states
-				# ---------------------------------
-
-				for itau=1:p.ntau			# local taste type 
-					tau = m.grids["tau"][itau]
-					for ip=1:p.np 				# regional price deviation
-						price = m.gridsXD["p"][ip,ij]
-						# given h, price and a, figure out if in neg equtiy
-						def=false
-
-						for iy=1:p.ny 				# regional income deviation
-							for iz=1:p.nz				# individual income shock
-								
-								z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
-
-								canbuy = a + z > p.chi * price
-
-								for is=1:p.ns
-
-									# now you know the index of the
-									# current state
+					for itau=1:p.ntau
+						tau = m.grids["tau"][itau]
+						for ij=1:p.nJ
+							z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
+							price = m.gridsXD["p"][ip,ij]
+							for ih=0:1
+								first = ih + (1-ih)*m.aone	# first admissible asset index
+								for ia=first:p.na
+									a = agrid[ia]
+									canbuy = a + z > p.chi * price
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
-
-									# you can compute here
-									# edx = EVidx(is,iz,iy,ip,itau,age+1)
-									# for
-									# all k and for all h
-
 
 									# =================
 									# loop over choices
 									# =================
-
-									# fill!(vtmp,0.0)
-									# fill!(expv,0.0)
 									expv = Float64[]
 									fill!(feasible_k,false)
-
-									# TODO
-									# get a temporary copy of EV[possible.choices|all.states]
-									# fillTempEV!(tempEV,jidx)
-
-									# location choice
+									
 									for ik=1:p.nJ
-
-										# now you know the index of the 
-										# state when moving to k
 										kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
 										# you stay and you have a housing choice
 										if ij==ik && (ih==1 || (ih==0 && canbuy))
-
-											# compute vstay(ij,ih,ihh)
-
-											# you have a housing choice
-											# if ih==1 || (ih==0 && canbuy)
-
 											def = false
-
-											# you have a housing choice
-											# if you are
-											# 1) a current owner or
-											# 2) a renter who can buy
-
 											fill!(vstay,p.myNA)
 
-											# optimal housing choice
 											for ihh in 0:1
 
 												hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
@@ -260,8 +176,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# optimal savings choice
 												rh = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
 
-												# put into vfun, savings and cons policies
-												# keep vstay for discrete housing choice function and envelope
 												vstay[ihh+1] = rh[1]
 
 												# store save and cons in h-conditional arrays
@@ -280,7 +194,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													println("cash at ihh=$ihh is $cash")
 													println("maxvalue = $(r[1])")
 												end
-
 											end
 
 											# find optimal housing choice
@@ -297,9 +210,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-										else   # you move or you're a renter who cannot buy
-
-
+										else # you move or you're a renter who cannot buy
 											# compute vmove(k,j,h)
 											# TODO
 											# moving with a < 0 means default = true
@@ -337,22 +248,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# optimal savings choice
 											r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
-											# if ij==1 && is==1 && itau==1 && age==1 && ia == m.aone && ih==0
-											# 	println("                                        ")
-											# 	println("========================================")
-											# 	println("age = $age")
-											# 	println("ih = $ih")
-											# 	println("ihh = $ihh")
-											# 	println("ij = $ij")
-											# 	println("ik = $ik")
-											# 	println("cash = $cash")
-											# 	println("EV = $EV")
-											# 	println("blim = $(ihh * blim)")
-											# 	println("mc= $mc")
-											# 	println("maxvalue = $r")
-											# 	println("========================================")
-											# 	println("                                        ")
-											# end
+
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -377,8 +273,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												println("maxindex = $(r[2])")
 											end
 
-										end  # end if stay and houseing choice
-
+										end # end if stay and houseing choice
 										# store optimal value in tmp vector
 										# used in vbar calculation
 										if r[1] > p.myNA
@@ -390,22 +285,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											vtmp[ik] = r[1]
 											# expv[ik]  = 0.0
 										end
+									end 	# end location choice
 
-									end	# choice: location 
-
-									# compute vbar and rho
-
-									# TODO was faster before
 									if any(feasible_k)
 										logsum = log( sum(expv) )
 										m.vbar[jidx] = p.euler + logsum
 									else
-										# TODO that will pull the integration down a lot
 										m.vbar[jidx] = p.myNA
 									end
-									# println(vtmp)
-									# println(logsum)
-
 
 									# compute rho: probability of moving to k given j
 									for ik in 1:p.nJ
@@ -418,20 +305,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)] = 0.0
 										end
 									end
-
-
-								end # household size
-							end	# local y-level
-						end	# local p-level 
-					end # individual z
-				end	# individual tau
-				# integrate vbar to get EV 
-				integrateVbar!(ia,ih+1,ij,age,Gz,Gyp,Gs,Gtau,m,p)
-				# m.EVMove[jidx] = vbartmp[2]
-			end	# assets
-		end	# housing
-	end	# current location
-
+								end 	#assets
+							end 	# h
+						end 	# location
+					end 	#tau
+				end		# s
+			end 	#p
+		end 	#y
+	end 	#z
 	return nothing
 
 end
@@ -451,9 +332,14 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 	f_z = 0.0
 	f_s = 0.0
 		
-	@inbounds begin
+	# @inbounds begin
 
-	# looping over deterministic states
+# dimvec2 = (na, nh, nJ, ntau, ns, np, ny,nz, nt-1 )
+# TODO reorder indices in arrays
+# then will have to do somehting like that builds this index
+# r = ia + p.na * (ih + p.nh * (ij + p.nJ * (itau + p.ntau * (is + p.ns * (ip + p.np * (iy + p.ny * (iz + p.nz * (age-1)-1)-1)-1)-1)-1)-1)-1)
+
+	# looping over states which do not influence integration
 	for ia = 1:p.na
 	for ih = 1:p.nh
 	for ij = 1:p.nJ
@@ -503,7 +389,7 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 	end		
 
 
-	end #inbounds
+	# end #inbounds
 	return nothing
 end
 
@@ -529,9 +415,11 @@ function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int
 end
 
 # dimvec2 = (ns, nz, ny, np, ntau, na, nh,nJ, nt-1 )
+# dimvec2 = (na, nh, nJ, ntau, ns, np, ny,nz, nt-1 )
 function idx9(is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
 
 	 r = is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)
+	 # r = ia + p.na * (ih + p.nh * (ij + p.nJ * (itau + p.ntau * (is + p.ns * (ip + p.np * (iy + p.ny * (iz + p.nz * (age-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 

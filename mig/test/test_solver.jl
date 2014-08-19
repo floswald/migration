@@ -399,12 +399,12 @@ facts("test integration of vbar: getting EV") do
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
-			it   = rand(1:(p.nt-1))
+			it   = rand(1:(p.nt-2))
 
 			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
 
 			# calling integrateVbar must return vbar.
-			mig.integrateVbar!(ia,ih,ij,it,Gz,Gyp,Gs,Gtau,m,p)
+			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,Gtau,m,p)
 
 			@fact m.vbar[mig.idx9(is,iz,iy,ip,itau,ia,ih,ij,it,p)] - m.EV[mig.idx9(is,iz,iy,ip,itau,ia,ih,ij,it,p)] => roughly(0.0,atol=0.00001)
 
@@ -429,9 +429,9 @@ facts("test integration of vbar: getting EV") do
 		for ij=1:p.nJ				# current location
 		for ih=1:p.nh
 		for ia=1:p.na
+		for itau=1:p.ntau			# type
 
 		# start integration loop
-		for itau=1:p.ntau			# type
 		for iz=1:p.nz				# individual income shock
 		for ip=1:p.np 				# regional price deviation
 		for iy=1:p.ny 				# regional income deviation
@@ -467,13 +467,13 @@ facts("test integration of vbar: getting EV") do
 		ia   = rand(1:p.na)
 		ih   = rand(1:p.nh)
 		ij   = rand(1:p.nJ)
-		mig.integrateVbar!(ia,ih,ij,age,Gz,Gyp,Gs,Gtau,m,p)
 		# start test loop
 		for itau=1:p.ntau			# type
 		for iz=1:p.nz				# individual income shock
 		for ip=1:p.np 				# regional price deviation
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
+		mig.integrateVbar!(iz,iy,ip,is,age,Gz,Gyp,Gs,Gtau,m,p)
 			@fact myEV[is,iz,iy,ip,itau,ia,ih,ij] - m.EV[is,iz,iy,ip,itau,ia,ih,ij,age] => roughly(0.0,atol=0.00001)
 		end
 		end
@@ -541,33 +541,7 @@ facts("checking some properties of the solution") do
 
 		end
 
-		# for is in 1:p.ns
-		# 	for iy in 1:p.ny
-		# 		for ip in 1:p.np 
-		# 			for iz in 1:p.nz
-		# 				for ia in 1:p.na
-		# 					for ih in 1:p.nh
-		# 						for itau in 1:p.ntau
-		# 							for ij in 1:p.nJ
-		# 								for age in 1:(p.nt-1)
 
-		# 									if any(m.v[:,is,iz,iy,ip,itau,ia,ih,ij,age][:] .> p.myNA)
-		# 										tt = m.rho[:,is,iz,iy,ip,itau,ia,ih,ij,age][:]
-
-		# 										@fact sum(tt) => roughly(1.0,atol=1e-9)
-		# 										@fact minimum(tt) >= 0.0 => true
-		# 										@fact maximum(tt) <= 1.0 => true
-		# 									end
-
-		# 								end
-		# 							end
-		# 						end
-		# 					end
-		# 				end
-		# 			end
-		# 		end
-		# 	end
-		# end
 	end
 
 	context("check whether cons positive at feasible states") do
