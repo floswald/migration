@@ -123,6 +123,48 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	agrid  = m.grids["assets"]
 
+	# # state dependent stochastic states 
+	# for iz=1:p.nz
+	# 	for iy=1:p.ny
+	# 		for ip=1:p.np
+	# 			for is=1:p.ns
+	# 				# compute expected future values given stochastic state
+	# 				# (iz,iy,ip,is)
+	# 				integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,Gtau,m,p)
+
+	# 				for itau=1:p.ntau
+	# 					tau = m.grids["tau"][itau]
+	# 					for ij=1:p.nJ
+	# 						z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
+	# 						price = m.gridsXD["p"][ip,ij]
+	# 						for ih=0:1
+	# 							first = ih + (1-ih)*m.aone	# first admissible asset index
+	# 							for ia=first:p.na
+	# 								a = agrid[ia]
+	# 								canbuy = a + z > p.chi * price
+	# 								jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+
+	# 								# =================
+	# 								# loop over choices
+	# 								# =================
+	# 								expv = Float64[]
+	# 								fill!(feasible_k,false)
+									
+	# 								for ik=1:p.nJ
+	# 									for ihh=0:1
+
+	# 									end
+	# 								end
+	# 							end
+	# 						end
+	# 					end
+	# 				end
+	# 			end
+	# 		end
+	# 	end
+	# end
+
+
 	for ij=1:p.nJ				# current location
 		for ih=0:1
 			first = ih + (1-ih)*m.aone	# first admissible asset index
@@ -384,7 +426,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					end # individual z
 				end	# individual tau
 				# integrate vbar to get EV 
-				@profile integrateVbar!(ia,ih+1,ij,age,Gz,Gyp,Gs,Gtau,m,p)
+				integrateVbar!(ia,ih+1,ij,age,Gz,Gyp,Gs,Gtau,m,p)
 				# m.EVMove[jidx] = vbartmp[2]
 			end	# assets
 		end	# housing
@@ -394,7 +436,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar!(ia::Int,ih::Int,ij::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},Gtau::Array{Float64,1},m::Model,p::Param)
+function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},Gtau::Array{Float64,1},m::Model,p::Param)
 
 	# offsets
 	o_tau = 0
@@ -411,12 +453,11 @@ function integrateVbar!(ia::Int,ih::Int,ij::Int,age::Int,Gz::Array{Float64,3},Gy
 		
 	@inbounds begin
 
-	# loop over conditioning states
-	for itau = 1:p.ntau 		 # current tau
-	for ip   = 1:p.np 			 # current p
-	for iy   = 1:p.ny 			 # current y
-	for iz   = 1:p.nz			 # current z 		
-	for is   = 1:p.ns 			 # current HHsize
+	# looping over deterministic states
+	for ia = 1:p.na
+	for ih = 1:p.nh
+	for ij = 1:p.nJ
+	for itau = 1:p.ntau
 
 		# set value
 		tmp = 0.0
@@ -430,40 +471,37 @@ function integrateVbar!(ia::Int,ih::Int,ij::Int,age::Int,Gz::Array{Float64,3},Gy
 		for itau1 = 1:p.ntau 		# future tau
 			o_tau = (idx1 + (itau1-1)) * p.np
 			f_tau = Gtau[itau1]
-		for ip1   = 1:p.np 			
-			o_p   = (o_tau + (ip1-1)) * p.ny
-		for iy1   = 1:p.ny 				# future y
-			o_y   = (o_p + (iy1-1)) * p.nz
-			f_py  = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
-		for iz1   = 1:p.nz			# future z 		
-			o_z   = (o_y + (iz1-1)) * p.ns
-			f_z   = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
-		for is1   = 1:p.ns 				# future HHsize
+			for ip1 = 1:p.np 			
+				o_p = (o_tau + (ip1-1)) * p.ny
+				for iy1  = 1:p.ny 				# future y
+					o_y  = (o_p + (iy1-1)) * p.nz
+					f_py = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
+					for iz1 = 1:p.nz			# future z 		
+						o_z = (o_y + (iz1-1)) * p.ns
+						f_z = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
+						for is1   = 1:p.ns 				# future HHsize
 
-			# compute future index 
-     	    # idx1 = idx9(is1,iz1,iy1,ip1,itau1,ia,ih,ij,age,p)
+							# compute future index 
+				     	    # idx1 = idx9(is1,iz1,iy1,ip1,itau1,ia,ih,ij,age,p)
 
-     	    # construct sum
-			# @inbounds tmp += m.vbar[idx1] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ] * Gs[is + p.ns * (is1-1)] * Gtau[itau1]
-			tmp += m.vbar[o_z + is1] * Gs[is + p.ns * (is1-1)] * f_z
+				     	    # construct sum
+							# @inbounds tmp += m.vbar[idx1] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ] * Gs[is + p.ns * (is1-1)] * Gtau[itau1]
+							tmp += m.vbar[o_z + is1] * Gs[is + p.ns * (is1-1)] * f_z
 
-			# mover's future value: mover specific transitions of z
-			# tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
-
+							# mover's future value: mover specific transitions of z
+							# tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
+						end
+					end
+				end
+			end
 		end
-		end			
-		end			
-		end			
-		end		
 
-		# assign to current index
 		m.EV[idx0] = tmp
-
-	end
 	end			
 	end			
 	end			
 	end		
+
 
 	end #inbounds
 	return nothing
