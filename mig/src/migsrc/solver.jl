@@ -410,10 +410,26 @@ end
 # dimvec  = (nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
 function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
 
-	 r = ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	 # r = ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	 r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 	return r
 end
 
+# function idx10_a(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param)
+
+# 	r = zeros(Int,p.na)
+
+# 	r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
+# 	r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau )))))
+
+# 	before = ik + p.nJ * ((is-1) + p.ns * ((iz-1) + p.nz * ((iy-1) + p.ny * ((ip-1) + p.np * ((itau-1) + p.ntau )))))
+# 	after  = (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))
+
+# 	for ia in 1:p.na
+# 		r[ia] = before * ((ia-1) + p.na * after)
+# 	end
+# 	return r
+# end
 # dimvec2 = (ns, nz, ny, np, ntau, na, nh,nJ, nt-1 )
 # dimvec2 = (na, nh, nJ, ntau, ns, np, ny,nz, nt-1 )
 function idx9(is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)

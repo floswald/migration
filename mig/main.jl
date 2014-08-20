@@ -17,12 +17,11 @@ include("src/mig.jl")
 
 p = mig.Param(2,1)
 @time m = mig.Model(p)	# 1.5 secs
-@time mig.solve!(m,p)	# 29 secs with itunes running, 23 without
+@time mig.solve!(m,p)	
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,29))
 mig.vplot(m,p)
-# @profile mig.solve!(m,p)	# 29 secs with itunes running, 23 without
 @time s = mig.simulate(m,p);	
 		
 
@@ -56,7 +55,7 @@ mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],[
 include("test/test_param.jl")
 include("test/test_model.jl")
 include("test/test_solver.jl")
-# include("test/test_Tensors.jl")
+include("test/test_solution.jl")
 include("test/test_sim.jl")    # disabled
 	
 

@@ -2,7 +2,7 @@
 
 module test_param
 
-using FactCheck, using
+using FactCheck, mig
 
 
 

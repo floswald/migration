@@ -101,6 +101,8 @@ function simulate(m::Model,p::Param)
 	zgrid = m.gridsXD["z"]
 	ypidx = Gyp_indices(p)  # array with cols iy,ip,idx
 
+	regnames = m.regnames[:Division]
+
 	aone = m.aone
 
 	# drawing the shocks 
@@ -142,6 +144,7 @@ function simulate(m::Model,p::Param)
 	Dincome = zeros(p.nsim*(T))	# income value
 	Dp      = zeros(p.nsim*(T))	# house price value
 	Dj      = zeros(Int,p.nsim*(T))	# location index
+	Dregname = ASCIIString[]# location index
 	Dh      = zeros(Int,p.nsim*(T))	# housing state
 	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
 	Diyp    = zeros(Int,p.nsim*(T))	# region yp joint index
@@ -216,6 +219,7 @@ function simulate(m::Model,p::Param)
 			canbuy = a + yy > p.chi * m.gridsXD["p"][ip,ij]
 
 			Dj[age + T*(i-1)]      = ij
+			push!(Dregname,regnames[ij])
 			Dt[age + T*(i-1)]      = age
 			Dtau[age + T*(i-1)]    = itau
 			Di[age + T*(i-1)]      = i
@@ -239,6 +243,8 @@ function simulate(m::Model,p::Param)
 				for iia in 1:p.na
 					avec[iia] = m.rho[idx10(ik,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
 				end
+
+				# idx10_a(ik,is,iz,iy,ip,itau,ih+1,ij,age,p) # get all a's at that index
 
 				# there is an approximation issue here:
 				# sometimes the approximated vector of probabilities does not sum to 1
@@ -380,11 +386,6 @@ function simulate(m::Model,p::Param)
 						# fvec[iia]  = m.vfeas[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
 					end
 					val = linearapprox(agrid_rent,avec_rent,a,p)[1]
-					if i == 19748 && age == 1
-						println(avec_rent)
-						println(val)
-						println("on grid = $(m.vh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,m.aone,ih+1,ij,age,p)])")
-					end
 					# find consumption and savings
 					for iia in aone:p.na
 						avec_rent[iia-aone+1]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
@@ -444,9 +445,9 @@ function simulate(m::Model,p::Param)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
-	df = join(df,m.regnames,on=:j)
-	sort!(df,cols=[1,2]	)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
+	# df = join(df,m.regnames,on=:j)
+	# sort!(df,cols=[1,2]	)
 
 	return df
 end
