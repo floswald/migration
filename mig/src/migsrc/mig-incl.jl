@@ -55,6 +55,7 @@ function runSim()
     mig.solve!(m,p)
 	s   = simulate(m,p)
 	show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
+	return s
 end
 
 		

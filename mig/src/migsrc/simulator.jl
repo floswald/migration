@@ -37,6 +37,48 @@ end
 
 
 
+function forceBounds(x::Float64,lb::Float64,ub::Float64)
+	if x < lb
+		x = lb
+	elseif x > ub
+		x = ub
+	end
+ 	return x
+end
+
+# # get one draw for y and p given Ly and Lp
+# function draw_yp(m::Model,Ly::Float64,Lp::Float64,j::Int)
+
+
+# 	ycoef = array(m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
+# 	pcoef = array(m.VAR_coefs[j,[:p_Intercept, :p_Lp, :p_Ly]])
+
+# 	x = vcat(1.0,Lp,Ly)
+
+# 	shock = rand(m.VAR_shock[j]) 	# [shock_y, shock_p]
+# 	yy = ycoef * x + shock[1]
+# 	pp = pcoef * x + shock[2]
+
+# 	# force inside of bounds
+# 	y = forceBounds(yy[1],m.VAR_coefs[j,:lb_y],m.VAR_coefs[j,:ub_y])
+# 	p = forceBounds(pp[1],m.VAR_coefs[j,:lb_p],m.VAR_coefs[j,:ub_p])
+# 	(y,p)
+# end
+
+function draw_z(m::Model,Lz::Float64,j::Int)
+
+	zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
+	z = forceBounds(zz,m.Inc_shocks[j,3],m.Inc_shocks[j,4])
+	return z
+end
+
+function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
+
+	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logCensusMedinc] * log(y) + z )
+end
+
+
+
 
 
 
@@ -151,7 +193,7 @@ function simulate(m::Model,p::Param)
 	Dip     = zeros(Int,p.nsim*(T))	# region p index
 	Diy     = zeros(Int,p.nsim*(T))	# region y index
 	DS      = zeros(p.nsim*(T))	# savings values
-	Diz     = zeros(Int,p.nsim*(T))	# z index
+	Dz      = zeros(p.nsim*(T))	# z value
 	DM      = zeros(Int,p.nsim*(T))	# move
 	DMt     = zeros(Int,p.nsim*(T))	# move
 	Dkids   = zeros(Int,p.nsim*(T))	# kids yes/no
@@ -163,9 +205,17 @@ function simulate(m::Model,p::Param)
 	ktmp_test = zeros(Float64,p.nJ)
 	ktmp2 = zeros(p.nJ)
 
-	avec = zeros(p.na)
-	avec_rent = zeros(length(agrid_rent))
-	avec2_rent = zeros(length(agrid_rent))
+	azmat_v = zeros(p.na,p.nz)
+	azmat_s = zeros(p.na,p.nz)
+	azmat_c = zeros(p.na,p.nz)
+
+	na_rent = length(agrid_rent)
+
+	azmat_v_rent = zeros(na_rent,p.nz)
+	azmat_s_rent = zeros(length(agrid_rent),p.nz)
+	azmat_c_rent = zeros(length(agrid_rent),p.nz)
+
+
 	avec2= zeros(p.na)
 	fvec = falses(p.na)
 	fvec2= falses(p.na)
@@ -177,6 +227,12 @@ function simulate(m::Model,p::Param)
 
 	ss = 0.0
 	yy = 0.0
+
+	zsupps = Dict{Int,Array{Float64,1}}()
+	for j in 1:p.nJ
+		zsupps[j] = m.gridsXD["zsupp"][:,j]
+	end
+	idx = 0
 
 
 
@@ -193,7 +249,8 @@ function simulate(m::Model,p::Param)
 		iy   = ypidx[iyp,1]
 		ip   = ypidx[iyp,2]
 		# iz   = rand(G0z)
-		iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
+		# iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
+		z   = rand(Normal(0,0.1))
 		# ia   = rand(G0a) + m.aone - 1
 		# a   =  rand()
 		a   =  0.0
@@ -213,7 +270,8 @@ function simulate(m::Model,p::Param)
 			# record beginning of period state
 			# --------------------------------
 
-			yy = zgrid[ iz,iy,age,ij ]
+			# yy = zgrid[ iz,iy,age,ij ]
+			yy = getIncome(m,ygrid[iy,ij],z,age,ij)
 
 			# flag for downpayment constraint
 			canbuy = a + yy > p.chi * m.gridsXD["p"][ip,ij]
@@ -228,7 +286,7 @@ function simulate(m::Model,p::Param)
 			Dy[age + T*(i-1)]      = ygrid[iy,ij]	
 			Dp[age + T*(i-1)]      = pgrid[ip,ij]
 			Dincome[age + T*(i-1)] = yy
-			Diz[age + T*(i-1)]     = iz
+			Dz[age + T*(i-1)]      = z
 			Diyp[age + T*(i-1)]    = iyp
 			Dip[age + T*(i-1)]     = ip
 			Diy[age + T*(i-1)]     = iy
@@ -236,38 +294,30 @@ function simulate(m::Model,p::Param)
 			Dcanbuy[age + T*(i-1)] = canbuy
 
 
-			# get value for each location
-			for ik in 1:p.nJ
+			# get probability of moving to each location
 
-				# interpolate rho function in asset dim
-				for iia in 1:p.na
-					avec[iia] = m.rho[idx10(ik,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-				end
+			# slow
+			# for ik in 1:p.nJ
 
-				# idx10_a(ik,is,iz,iy,ip,itau,ih+1,ij,age,p) # get all a's at that index
+			# 	# interpolate rho function in asset and z dim
+			# 	for iia in 1:p.na
+			# 		for iz in 1:p.nz
+			# 			azmat_v[iia + p.na*(iz-1)] = m.rho[idx10(ik,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)] 	# TODO can to faster indexing here
+			# 		end
+			# 	end
+			# 	ktmp[ik] = bilinearapprox(a,z,agrid,zsupps[ik],azmat_v)
+			# end
 
-				# there is an approximation issue here:
-				# sometimes the approximated vector of probabilities does not sum to 1
-				# this happens because rho is poorly approximated
-				# I know that the true rho (on the grid) does sum to 1
-				# workaround: if I find a vector whose sum deviates significantly from one
-				# i just rescale it, assuming that the relative weights are in line with rho
-			
-				# evaluate at "a"
-				# debug code
-				# -----------
-				# at grid point closest to a
-				# imya = find(abs(m.grids["assets"] .- a) .== minabs(m.grids["assets"] .- a))[1]
-				# mya = m.grids["assets"][imya]
-				# ktmp[ik] = m.rho[idx10(ik,is,iy,ip,iz,imya,ih+1,itau,ij,age,p)]
+			# fast
+			fill_ktmp!(ktmp,azmat_v,a,z,is,iy,ip,itau,ih+1,ij,age,p,agrid,zsupps,m.rho)
 
-				# approximate rho at "a" off grid
+			# check
+			# if (sumabs(ktmp .- ktmp2) > eps())
+			# 	println("ktmp=$ktmp")
+			# 	println("ktmp2=$ktmp2")
+			# 	error()
+			# end
 
-				# setindex!(fx["rho"],idx)	# set discrete choice ind on rho
-				# ktmp[ik] = getValue(point,fx["rho"])
-
-				ktmp[ik] = linearapprox(agrid,avec,a,1,p.na)[1]
-			end
 
 			# check quality of approximation off grid
 			# ---------------------------
@@ -280,10 +330,9 @@ function simulate(m::Model,p::Param)
 			# 	println("----------------------------------------------------------------")
 			# end------------
 
-			# normalizing vector of moving probs
-			if abs(sum(ktmp) - 1.0) > 0.001
-				ktmp = ktmp ./ sum(ktmp)
-			end
+			# normalizing vector of moving probs: because of approximation error
+			# sometimes this is not *exactly* summing to 1
+			ktmp = ktmp ./ sum(ktmp)
 			
 			# get cumulative prob
 			cumsum!(ktmp2,ktmp,1)
@@ -291,117 +340,79 @@ function simulate(m::Model,p::Param)
 			moveto = searchsortedfirst(ktmp2,rand())
 			move = ij != moveto
 
-			# debugging
-			# if moveto < 1 || moveto > p.nJ
-			# 	println("ik=$moveto,iy=$iy,ip=$ip,iz=$iz,ih=$ih,ihh=$ihh,itau=$itau,ij=$ij,age=$age,id=$i,move=$move")
-			# 	println("id = $i")
-			# 	println("a = $a")
-			# 	println("mya = $mya")
-			# 	println("ij= $ij")
-			# 	println("itau= $itau")
-			# 	println(ktmp)
-			# 	println(ktmp2)
-			# 	println(m.rho[:,is,iy,ip,iz,imya,ih+1,itau,ij,age][:])
-			# 	println(size(m.rho[:,is,iy,ip,iz,:,ih+1,itau,ij,age]))
-			# 	println(reshape(m.rho[:,is,iy,ip,iz,:,ih+1,itau,ij,age],p.nJ,p.na))
-			# 	for iage in 1:age
-			# 		println(Da[iage + T*(i-1)])
-			# 	end
-			# end
+			if moveto>p.nJ || moveto < 1
+				println(ktmp2)
+				error("probelm in moveto = $moveto")
+			end
 
 			if move
 
 				ihh = 0
-				for iia in 1:p.na
-					avec[iia] = m.vh[idx11(1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+				fill_azmats!(azmat_v,azmat_c,azmat_s,ihh+1,moveto,is,iy,ip,itau,ih+1,ij,age,p,m)
 
-					# note: i have an additional feasibility flag stored in vfeas.
-					# this basically forces an approximation to return myNA if any of the two
-					# interpolating points are myNA (and not just their average!)
-					# this was necessary for some approximations.
-					# turned off now
-					# fvec[iia] = m.vfeas[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-				end
+				vcs = bilinearapprox(a,z,agrid,zsupps[ij],azmat_v,azmat_c,azmat_s)
 
-				# setindex!(fx["vh"],idx)
-				# val = getValue(point,fx["vh"])
-				# ss  = getValue(point,fx["sh"])
-				# cons = getValue(point,fx["ch"])
+				val               = vcs[1]
+				Dc[age + T*(i-1)] = vcs[2]
+				ss                = vcs[3]
 
-				# val = linearapprox(agrid,avec,a,fvec,p)[1]
-				val = linearapprox(agrid,avec,a,p)[1]
-				# find consumption and savings
-				for iia in 1:p.na
-					avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-					avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-				end
-
-				# setindex!(ss_fx,idx)
-				# ss = getValue([a,y,p,z],ss_fx)
-				# no way to exclude infeasible values though!
-
-				# ss                   = linearapprox(agrid,avec,a,fvec,p)[1] 
-				# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
-				ss                   = linearapprox(agrid,avec,a,p)[1] 
-				Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
-			
 			else # stay
 
 				# you are current owner or you can buy
 				if (ih==1 || (ih==0 && canbuy))
 
 					# find housing choice
-					for iia in 1:p.na
-						avec[iia]  = m.vh[idx11(1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-						avec2[iia] = m.vh[idx11(2,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-						# fvec[iia]  = m.vfeas[idx11(1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-						# fvec2[iia] = m.vfeas[idx11(2,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-					end
-					# if either of a[low] and a[high] are NA, approximation must return NA
-					# v1tmp = linearapprox(agrid,avec,a,fvec,p)[1]
-					# v2tmp = linearapprox(agrid,avec2,a,fvec2,p)[1]
-					v1tmp = linearapprox(agrid,avec,a,p)[1]
-					v2tmp = linearapprox(agrid,avec2,a,p)[1]
-					ihh = v1tmp > v2tmp ? 0 : 1
-					val = v1tmp > v2tmp ? v1tmp : v2tmp
-					# find consumption and savings
-					for iia in 1:p.na
-						avec[iia]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-						avec2[iia] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-					end
+					# use azmat_c here for v2
+					# for iia in 1:p.na
+					# 	for iz in 1:p.nz
+					# 		azmat_v[iia + p.na*(iz-1)] = m.vh[idx11(1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+					# 		azmat_c[iia + p.na*(iz-1)] = m.vh[idx11(2,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+					# 	end
+					# end
+					fill_azmats_h!(azmat_v,azmat_c,moveto,is,iy,ip,itau,ih+1,ij,age,p,m)
+					v1v2 = bilinearapprox(a,z,agrid,zsupps[ij],azmat_v,azmat_c)
 
-					# fvecs = (fvec,fvec2)
+					ihh = v1v2[1] > v1v2[2] ? 0 : 1
+					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
 
-					# ss                   = linearapprox(agrid,avec,a,fvecs[ihh+1],p)[1] 	
-					# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvecs[ihh+1],p)[1]
-					ss                   = linearapprox(agrid,avec,a,p)[1] 	
-					Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,p)[1]
+					# find corresponding consumption and savings
+					# for iia in 1:p.na
+					# 	for iz in 1:p.nz
+					# 		azmat_c[iia + p.na*(iz-1)] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+					# 		azmat_s[iia + p.na*(iz-1)] = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
+					# 	end
+					# end
+					fill_azmats!(azmat_c,azmat_s,ihh+1,moveto,is,iy,ip,itau,ih+1,ij,age,p,m.ch,m.sh)
+					cs                = bilinearapprox(a,z,agrid,zsupps[ij],azmat_c,azmat_s)
+					Dc[age + T*(i-1)] = cs[1]
+					ss                = cs[2]
 					
 
 				# current renter who cannot buy
 				else
 					ihh = 0
-					for iia in aone:p.na
-						avec_rent[iia-aone+1]  = m.vh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-						# fvec[iia]  = m.vfeas[idx11(ihh+1,moveto,is,iz,iy,ip,iia,ih+1,itau,ij,age,p)]
-					end
-					val = linearapprox(agrid_rent,avec_rent,a,p)[1]
-					# find consumption and savings
-					for iia in aone:p.na
-						avec_rent[iia-aone+1]  = m.sh[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-						avec2_rent[iia-aone+1] = m.ch[idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)]
-					end
+					# for iia in aone:p.na
+					# 	for iz in 1:p.nz
+					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
+					# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+					# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+					# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+					# 	end
+					# end
+					fill_azmats_rent!(azmat_v_rent,azmat_c_rent,azmat_s_rent,ihh+1,moveto,is,iy,ip,itau,ih+1,ij,age,p,m)
+					vcs = bilinearapprox(a,z,agrid_rent,zsupps[ij],azmat_v_rent,azmat_c_rent,azmat_s_rent)
+					val               = vcs[1]
+					Dc[age + T*(i-1)] = vcs[2]
+					ss                = vcs[3]
 
-					# ss                   = linearapprox(agrid,avec, a,fvec,p)[1] 	
-					# Dc[age + T*(i-1)]    = linearapprox(agrid,avec2,a,fvec,p)[1]
-					ss                   = linearapprox(agrid_rent,avec_rent, a,p)[1] 	
-					Dc[age + T*(i-1)]    = linearapprox(agrid_rent,avec2_rent,a,p)[1]
-				
 				end
 			end
 
 			# record current choices
 			# ----------------------
+
+			# make sure savings is inside grid
+			ss = forceBounds(ss,agrid[1],agrid[end])
 
 			DS[age + T*(i-1)]    = ss
 			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,m.gridsXD["p"][ip,moveto],move,moveto,p)
@@ -423,14 +434,15 @@ function simulate(m::Model,p::Param)
 			ih = ihh
 
 			# draw new values for z,y and p
-
 			iyp = searchsortedfirst( cumGyp[iy + p.np * (ip-1),:,moveto][:], rand())
-			iz  = searchsortedfirst( cumGz[iz,:,moveto][:], rand() )
 			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
 
 			# if move
 			if move
 				itau = rand(G0tau)
+				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
+			else
+				z   = draw_z(m,z,ij)
 			end
 
 			iy   = ypidx[iyp,1]
@@ -445,7 +457,7 @@ function simulate(m::Model,p::Param)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,iz=Diz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
 	# df = join(df,m.regnames,on=:j)
 	# sort!(df,cols=[1,2]	)
 
@@ -454,14 +466,123 @@ end
 
 
 
+ # r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 
 
+function fill_ktmp!{T<:Real}(kvec::Vector{T},azmat_v::Matrix{T},a::Float64,z::Float64,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,agrid::Vector{T},zsupps::Dict,val::Array)
 
+	# get parts of index that do not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
+	for ik in 1:p.nJ
+		for iia in 1:p.na
+			offset_a = iia-1 + p.na*offset_h_age_j
+			for iz in 1:p.nz
+				offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
+
+				idx = ik + p.nJ * (is-1 + p.ns * offset_z)
+				# println("idx = $idx")
+				# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+				azmat_v[iia + p.na*(iz-1)] = val[idx] 	
+			end
+		end
+		kvec[ik] = bilinearapprox(a,z,agrid,zsupps[ik],azmat_v)
+		# println("kvec[$ik] = $(kvec[ik])")
+	end
+end
+
+function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},azmats::Matrix{T},ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+
+	# get parts of index that do not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in 1:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iz in 1:p.nz
+			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
+
+			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+
+			azmatv[iia + p.na*(iz-1)] = m.vh[idx]
+			azmatc[iia + p.na*(iz-1)] = m.ch[idx]
+			azmats[iia + p.na*(iz-1)] = m.sh[idx]
+			# println("idx = $idx")
+			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+		end
+	end
+	return nothing
+end
 	
-	
-	
 
+
+function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,v1::Array,v2::Array)
+
+	# get parts of index that do not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in 1:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iz in 1:p.nz
+			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
+
+			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+
+			azmatv[iia + p.na*(iz-1)] = v1[idx]
+			azmatc[iia + p.na*(iz-1)] = v2[idx]
+			# println("idx = $idx")
+			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+		end
+	end
+	return nothing
+end
+
+# method for 2 value funcitons only: housing choice
+function fill_azmats_h!{T<:Real}(azmatv1::Matrix{T},azmatv2::Matrix{T},ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+
+	# get parts of index that do not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in 1:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iz in 1:p.nz
+			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
+
+			idx1 = 1 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+			idx2 = 2 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+
+			azmatv1[iia + p.na*(iz-1)] = m.vh[idx1]
+			azmatv2[iia + p.na*(iz-1)] = m.vh[idx2]
+			# println("idx = $idx")
+			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+		end
+	end
+	return nothing
+end
+	
+function fill_azmats_rent!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},azmats::Matrix{T},ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+
+	na_rent = size(azmatv,1)
+	aone = m.aone
+
+	# get parts of index that do not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in m.aone:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iz in 1:p.nz
+			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
+
+			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+
+			azmatv[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+			azmatc[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+			azmats[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+			# println("idx = $idx")
+			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+		end
+	end
+	return nothing
+end
 
 
 

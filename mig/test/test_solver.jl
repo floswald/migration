@@ -339,6 +339,44 @@ facts("testing bilinear approx") do
 
 end
 
+facts("testing bilinear approx for mulitple values") do
+	
+	xgrid = linspace(-1.5,3,10)
+	ygrid = linspace(1.5,3.8,12)
+
+	zmat = [ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+	zmat2= [ (i-0.2)*(j+0.1)*0.4 for i in xgrid, j in ygrid ]
+	zmat3= [ (i-0.1)*(j+0.3)*8.2 for i in xgrid, j in ygrid ]
+
+	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)) => 1
+	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat)) => 2
+	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat,zmat)) => 3
+
+	z = mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat2,zmat3)
+
+	@fact zmat[1,1] => z[1]
+	@fact zmat2[1,1] => z[2]
+	@fact zmat3[1,1] => z[3]
+
+	z = mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat,zmat2,zmat3)
+
+	@fact zmat[3,6] => z[1]
+	@fact zmat2[3,6] => z[2]
+	@fact zmat3[3,6] => z[3]
+
+	x = xgrid[5]+rand()
+	y = ygrid[5]+rand()*0.1
+	z = (x-0.1)*(y+0.1)*3.4
+	z2= (x-0.2)*(y+0.1)*0.4
+	z3= (x-0.1)*(y+0.3)*8.2
+
+	zout = mig.bilinearapprox(x,y,xgrid,ygrid,zmat,zmat2,zmat3)
+
+	@fact z => roughly(zout[1],atol=1e-5)
+	@fact z2=> roughly(zout[2],atol=1e-5)
+	@fact z3=> roughly(zout[3],atol=1e-5)
+
+end
 
 
 

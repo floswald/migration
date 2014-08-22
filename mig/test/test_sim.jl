@@ -5,143 +5,171 @@ module test_sim
 using FactCheck
 using mig
 
-facts("test fx space indexers") do
 
-	p = Param(2)
-
-	context("getting the discrete index") do
-
-		v   = rand(p.nh,p.nJ,p.ns,p.nh,p.ntau,p.nJ,p.nt-1)
-		rho = rand(p.nJ,p.ns,p.nh,p.ntau,p.nJ,p.nt-1)
-
-		for ix in 1:10
-
-			ihh  = rand(1:p.nh)
-			ik   = rand(1:p.nJ)
-			is   = rand(1:p.ns)
-			ih   = rand(1:p.nh)
-			itau = rand(1:p.ntau)
-			ij   = rand(1:p.nJ)
-			iage   = rand(1:p.nt-1)
-
-			@fact v[ihh,ik,is,ih,itau,ij,iage] => v[mig.fx_idx(ihh,ik,is,ih,itau,ij,iage,p)]
-			@fact rho[ik,is,ih,itau,ij,iage] => rho[mig.fx_idx_rho(ik,is,ih,itau,ij,iage,p)]
-		end
-	end
-
-	context("getting continuous dimension values") do
-
-		m = Model(p)
-		mig.setrand!(m)
-
-		myv11 = zeros(p.na,p.ny,p.np,p.nz)
-		myv10 = zeros(p.na,p.ny,p.np,p.nz)
-		
-		# get a random discrete state
-		ihh  = rand(1:p.nh)
-		ik   = rand(1:p.nJ)
-		is   = rand(1:p.ns)
-		ih   = rand(1:p.nh)
-		itau = rand(1:p.ntau)
-		ij   = rand(1:p.nJ)
-		iage   = rand(1:p.nt-1)
-
-		vout11 = reshape(mig.get_cont_vals(ihh,ik,is,ih,itau,ij,iage,m.vh,p),size(myv11))
-		vout10 = reshape(mig.get_cont_vals(    ik,is,ih,itau,ij,iage,m.rho,p),size(myv10))
-
-		for ix = 1:40
-
-			iz = rand(1:p.nz)
-			ip = rand(1:p.np)
-			iy = rand(1:p.ny)
-			ia = rand(1:p.na)
-
-									# dimvecH  = (nh, nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
-			myv11[ia,iy,ip,iz] = m.vh[mig.idx11(ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage,p)]
-			myv10[ia,iy,ip,iz] = m.rho[mig.idx10(ik,is,iz,iy,ip,ia,ih,itau,ij,iage,p)]
-
-			@fact myv11[ia,iy,ip,iz] => vout11[ia,iy,ip,iz]
-			@fact myv10[ia,iy,ip,iz] => vout10[ia,iy,ip,iz]
-
-		end
-		
-	end
-
-end
-
-facts("testing setupFSpaceXD") do
+facts("testing fill_azmats!, fill_ktmp!, and H-choice versions") do
 
 	p = Param(2)
 	m = Model(p)
-	mig.setincreasing!(m)
 	mig.setrand!(m)
 
-	# test on a random state
+	agrid = m.grids["assets"]
+	zsupps = Dict{Int,Array{Float64,1}}()
+	for j in 1:p.nJ
+		zsupps[j] = m.gridsXD["zsupp"][:,j]
+	end
+	azmat_v = zeros(p.na,p.nz)
+	azmat_c = zeros(p.na,p.nz)
+	azmat_s = zeros(p.na,p.nz)
 
 	ihh  = rand(1:p.nh)
 	ik   = rand(1:p.nJ)
 	is   = rand(1:p.ns)
 	ih   = rand(1:p.nh)
+	iy   = rand(1:p.ny)
+	ip   = rand(1:p.np)
 	itau = rand(1:p.ntau)
-	iage   = rand(1:p.nt-1)
+	ij   = rand(1:p.nJ)
+	it   = rand(1:(p.nt-1))
 
-	t0 = time()
-	fx = mig.setupFSpaceXD(m,p);
-	println("setupFSpaceXDtiming: $(time()-t0)")
+	context("testing fill_azmats!") do
 
-	# checking bounds: they vary with ij
-	for jj in 1:p.nJ
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[2].lower => m.gridsXD["y"][1,jj]
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[3].lower => m.gridsXD["p"][1,jj]
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[4].lower => m.gridsXD["zsupp"][1,jj]
+		mig.fill_azmats!(azmat_v,azmat_c,azmat_s,ihh,ik,is,iy,ip,itau,ih,ij,it,p,m)
 
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[2].upper => m.gridsXD["y"][end,jj]
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[3].upper => m.gridsXD["p"][end,jj]
-		@fact fx["rho"][mig.fx_idx_rho(ik,is,ih,itau,jj,iage,p)].basis[4].upper => m.gridsXD["zsupp"][end,jj]
+		for iia in 1:p.na
+			for iz in 1:p.nz
+				idx = mig.idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)
+				@fact azmat_v[iia,iz] => m.vh[idx]
+				@fact azmat_c[iia,iz] => m.ch[idx]
+				@fact azmat_s[iia,iz] => m.sh[idx]
+			end
+		end
 	end
 
+	context("testing fill_ktmp!") do
 
-	for it in 1:10
 
-		ij   = rand(1:p.nJ)
-		ia = rand(1:p.na)
-		iy = rand(1:p.ny)
-		ip = rand(1:p.np)
-		iz = rand(1:p.nz)
+		for itest in 1:50
 
-		a = m.grids["assets"][ia]
-		y = m.gridsXD["y"][iy,ij]
-		pr = m.gridsXD["p"][ip,ij]
-		z = m.gridsXD["zsupp"][iz,ij]
-	
-		# get some points on rho
-		rhoidx = mig.fx_idx_rho(ik,is,ih,itau,ij,iage,p)
 
-		@fact mig.getValue([a,y,pr,z],fx["rho"][rhoidx]) => roughly(m.rho[ik,is,iz,iy,ip,ia,ih,itau,ij,iage],atol=1e-6)
+			is   = rand(1:p.ns)
+			ih   = rand(1:p.nh)
+			iy   = rand(1:p.ny)
+			ip   = rand(1:p.np)
+			itau = rand(1:p.ntau)
+			ij   = rand(1:p.nJ)
+			it   = rand(1:(p.nt-1))
 
-		# get some on vh
-		vidx = mig.fx_idx(ihh,ik,is,ih,itau,ij,iage,p)
-		@fact mig.getValue([a,y,pr,z],fx["vh"][vidx]) => roughly(m.vh[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage],atol=1e-6)
-		println("approx v = $(mig.getValue([a,y,pr,z],fx["vh"][vidx]))")
-		println("true v   = $(m.vh[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage])")
+			# get a random point
+			a = rand() * (agrid[end] - agrid[1]) + agrid[1]
+			z = rand() * (zsupps[ij][end] - zsupps[ij][1]) + zsupps[ij][1]
 
-		# get some on sh
-		@fact mig.getValue([a,y,pr,z],fx["sh"][vidx]) => roughly(m.sh[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage],atol=1e-6)
-		println("approx s = $(mig.getValue([a,y,pr,z],fx["sh"][vidx]))")
-		println("true s   = $(m.sh[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage])")
+			ktmp = zeros(p.nJ)
+			ktmp2 = zeros(p.nJ)
 
-		# get some on ch
-		@fact mig.getValue([a,y,pr,z],fx["ch"][vidx]) => roughly(m.ch[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage],atol=1e-6)
-		println("approx c = $(mig.getValue([a,y,pr,z],fx["ch"][vidx]))")
-		println("true c   = $(m.ch[ihh,ik,is,iz,iy,ip,ia,ih,itau,ij,iage])")
+			for ik in 1:p.nJ
+
+				# interpolate rho function in asset and z dim
+				for iia in 1:p.na
+					for iz in 1:p.nz
+						azmat_v[iia + p.na*(iz-1)] = m.rho[mig.idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)] 	# TODO can to faster indexing here
+					end
+				end
+				ktmp[ik] = mig.bilinearapprox(a,z,agrid,zsupps[ik],azmat_v)
+			end
+
+			# fast
+			fill!(azmat_v,0.0)
+
+			mig.fill_ktmp!(ktmp2,azmat_v,a,z,is,iy,ip,itau,ih,ij,it,p,agrid,zsupps,m.rho)
+
+			# check
+			@fact sumabs(ktmp .- ktmp2) => roughly(0.0,atol=1e-12)
+
+		end
+
+
 
 
 	end
 
+	context("testing fill_azmats! for ousing choice") do
+		
+		mig.fill_azmats_h!(azmat_v,azmat_c,ik,is,iy,ip,itau,ih,ij,it,p,m)
+
+		for iia in 1:p.na
+			for iz in 1:p.nz
+				@fact azmat_v[iia + p.na*(iz-1)] => m.vh[mig.idx11(1,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)]
+				@fact azmat_c[iia + p.na*(iz-1)] => m.vh[mig.idx11(2,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)]
+			end
+		end
 
 
+	end
+
+	context("testing fill_azmats! for 2 values") do
+		
+		mig.fill_azmats!(azmat_v,azmat_c,ihh,ik,is,iy,ip,itau,ih,ij,it,p,m.vh,m.ch)
+
+		for iia in 1:p.na
+			for iz in 1:p.nz
+				@fact azmat_v[iia + p.na*(iz-1)] => m.vh[mig.idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)]
+				@fact azmat_c[iia + p.na*(iz-1)] => m.ch[mig.idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)]
+			end
+		end
+
+
+	end
 
 end
+
+
+facts("testing fill_azmats_rent") do
+
+	p = Param(2)
+	m = Model(p)
+	mig.setrand!(m)
+
+	agrid = m.grids["assets"]
+	agrid_rent = m.grids["assets"][m.aone:end]
+	zsupps = Dict{Int,Array{Float64,1}}()
+	for j in 1:p.nJ
+		zsupps[j] = m.gridsXD["zsupp"][:,j]
+	end
+
+	na_rent = length(m.grids["assets_rent"])
+	aone = m.aone
+
+	azmat_v_rent = zeros(na_rent,p.nz)
+	azmat_s_rent = zeros(length(agrid_rent),p.nz)
+	azmat_c_rent = zeros(length(agrid_rent),p.nz)
+
+	for itest = 1:50
+
+		ihh  = rand(1:p.nh)
+		ik   = rand(1:p.nJ)
+		is   = rand(1:p.ns)
+		ih   = rand(1:p.nh)
+		iy   = rand(1:p.ny)
+		ip   = rand(1:p.np)
+		itau = rand(1:p.ntau)
+		ij   = rand(1:p.nJ)
+		it   = rand(1:(p.nt-1))
+
+		mig.fill_azmats_rent!(azmat_v_rent,azmat_c_rent,azmat_s_rent,ihh,ik,is,iy,ip,itau,ih,ij,it,p,m)
+
+		for iia in aone:p.na
+			for iz in 1:p.nz
+				idx = mig.idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)
+				@fact azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] => m.vh[idx]
+				@fact azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] => m.ch[idx]
+				@fact azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] => m.sh[idx]
+			end
+		end
+	end
+
+end
+
+
 
 end	#module
 

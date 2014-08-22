@@ -38,6 +38,9 @@ type Model
 	dimnames::DataFrame
 	regnames::DataFrame
 	distance::Array{Any,2}
+	Inc_coefs::DataFrame
+	Inc_ageprofile::Array{Float64,2}
+	Inc_shocks::Array{Float64,2}
 
 	# spline approximation settings
 	nknots :: Dict{ASCIIString,Integer}
@@ -120,6 +123,10 @@ type Model
 		# individual income process parameters
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
 
+		# manually override AR1 coefs
+		inc_coefs[:,:Lresid] = 0.96
+		inc_coefs[:,:sigma_resid] = 0.118
+
 		# kids transition matrix
 		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
 
@@ -133,6 +140,23 @@ type Model
 		# fill kappa with correct values
 		for j in 1:p.nJ
 			p.kappa[j] = popweights[j,:r2p]
+		end
+
+		ageprof = zeros(p.nt-1,p.nJ)
+		for it in 1:p.nt-1
+			for ij in 1:p.nJ
+				ageprof[it,ij] = inc_coefs[ij,:Intercept] + p.ages[it] * inc_coefs[ij,:age] + p.ages[it]^2 * inc_coefs[ij,:age2] + p.ages[it]^3 * inc_coefs[ij,:age3]
+			end
+		end
+
+		# [rho,sigma,lb,ub]
+		inc_shocks = zeros(p.nJ,4)
+		for j in 1:p.nJ
+			inc_shocks[j,1] = inc_coefs[j,:Lresid]  
+			inc_shocks[j,2] = inc_coefs[j,:sigma_resid]
+			ybar = log(VAR_coef[j,:mean_y])
+			inc_shocks[j,3] = log(inc_coefs[j,:q20]) - ybar
+			inc_shocks[j,4] = log(inc_coefs[j,:q95]) - ybar
 		end
 
 		# XD grids
@@ -182,11 +206,12 @@ type Model
 		x = x .- x[ indmin(abs(x)) ] 
 		# println("assets = $x")
 		grids["assets"]  = x
+		aone  = findfirst(grids["assets"].>=0)
+		grids["assets_rent"] = x[aone:end]
 		grids["housing"] = linspace(0.0,1.0,p.nh)
 		grids["W"]       = zeros(p.na)
 		grids["tau"]     = linspace(0.0,p.tau,p.ntau)
 
-		aone  = findfirst(grids["assets"].>=0)
 
 		grids["Gtau"] = [(1.0-p.taudist), p.taudist]
 
@@ -258,7 +283,7 @@ type Model
 		knots["assets"] = [linspace(grids["assets"][1],grids["assets"][end-1]-1,p.na - degs["assets"] ) , grids["assets"][end]]
 
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,nknots,degs,knots)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,inc_coefs,ageprof,inc_shocks,nknots,degs,knots)
 
 	end
 

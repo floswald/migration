@@ -415,12 +415,12 @@ function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int
 	return r
 end
 
-# function idx10_a(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param)
+# function idx10_azk(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param)
 
 # 	r = zeros(Int,p.na)
 
 # 	r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
-# 	r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau )))))
+# 	r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 
 # 	before = ik + p.nJ * ((is-1) + p.ns * ((iz-1) + p.nz * ((iy-1) + p.ny * ((ip-1) + p.np * ((itau-1) + p.ntau )))))
 # 	after  = (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))
@@ -750,7 +750,135 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 end
 
 
+# same for 2 functions in zmat and zmat2 defined on same space
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T})
 
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x <= xgrid[1]
+		ix = 1
+	elseif x >= xgrid[n]
+		ix = n-1
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y <= ygrid[1]
+		iy = 1
+	elseif y >= ygrid[m]
+		iy = m-1
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices of zmat 1
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z2xminymin = zmat2[ix + n*(iy-1)]
+	z2xminymax = zmat2[ix + n*iy ]
+	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
+	z2xmaxymax = zmat2[ix+1 + n*iy]
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
+	(z,z2)
+end
+
+
+# same for 3 
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T},zmat3::Matrix{T})
+
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x <= xgrid[1]
+		ix = 1
+	elseif x >= xgrid[n]
+		ix = n-1
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y <= ygrid[1]
+		iy = 1
+	elseif y >= ygrid[m]
+		iy = m-1
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices of zmat 1
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z2xminymin = zmat2[ix + n*(iy-1)]
+	z2xminymax = zmat2[ix + n*iy ]
+	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
+	z2xmaxymax = zmat2[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z3xminymin = zmat3[ix + n*(iy-1)]
+	z3xminymax = zmat3[ix + n*iy ]
+	z3xmaxymin = zmat3[ix+1 + n*(iy-1)]
+	z3xmaxymax = zmat3[ix+1 + n*iy]
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
+	z3 = (1.0-t)*(1.0-u)*z3xminymin + t*(1.0-u)*z3xmaxymin + (1.0-t)*u*z3xminymax + t*u*z3xmaxymax
+	(z,z2,z3)
+end
 
 
 
