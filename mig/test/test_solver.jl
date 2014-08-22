@@ -321,6 +321,24 @@ facts("testing vsavings!()") do
 end
 
 
+facts("testing bilinear approx") do
+	
+	xgrid = linspace(-1.5,3,10)
+	ygrid = linspace(1.5,3.8,12)
+
+	zmat = [ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+
+	@fact zmat[1,1] => mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)
+	@fact zmat[3,6] => mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat)
+	@fact zmat[10,12] => mig.bilinearapprox(xgrid[10],ygrid[12],xgrid,ygrid,zmat)
+
+	x = xgrid[5]+rand()
+	y = ygrid[5]+rand()*0.1
+	z = (x-0.1)*(y+0.1)*3.4
+	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+
+end
+
 
 
 
@@ -508,6 +526,9 @@ facts("test integration of vbar: getting EV") do
 		# end test locationp
 	end
 end
+
+
+
 
 
 

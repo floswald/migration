@@ -696,6 +696,80 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 	return (r,jinf)
 end
 
+
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T})
+
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x <= xgrid[1]
+		ix = 1
+	elseif x >= xgrid[n]
+		ix = n-1
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y <= ygrid[1]
+		iy = 1
+	elseif y >= ygrid[m]
+		iy = m-1
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasible::BitArray{1},p::Param)
 	n = length(y)
 	lo = 1
