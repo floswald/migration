@@ -15,8 +15,8 @@ include("src/mig.jl")
 # run simulation
 @time x = mig.runSim()
 
-p = mig.Param(2,1)
-@time m = mig.Model(p)	# 1.5 secs
+p = Param(2,1)
+@time m = Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
@@ -46,9 +46,6 @@ p2["gamma"] = 3.1
 
 x = mig.objfunc(p2,moms,array(moms[:moment]))
 mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
-
-# session 2
-@time mig.mywrap()
 
 
 # testing

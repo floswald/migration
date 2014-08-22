@@ -4,6 +4,7 @@ println("Started julia")
 
 include("iridis_launcher.jl")
 
+# bind_iridis_procs(8)
 bind_iridis_procs()
 
 require("nodes.jl")

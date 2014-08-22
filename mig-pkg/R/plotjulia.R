@@ -140,6 +140,10 @@ Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	ey <- y ~ Lp + Ly
 	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=dy[Division==x]))
 	names(mods) = divs
+	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+
+
 
 	dy[,yhat := 0]
 	dy[,phat := 0]
@@ -247,7 +251,7 @@ Export.IncomeProcess <- function(dat){
 	names(rhos) = divs
 
 	# why are those rhos so low?????
-	# use 0.97 as in french 2005 for now. shit.
+	# use 0.97 as in french 2005 for now.
 
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks

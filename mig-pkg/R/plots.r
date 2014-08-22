@@ -948,11 +948,14 @@ PlotSippTransitionMatrix <- function(ttable,path="~/Dropbox/mobility/output/data
 #'
 PlotSippMigrationRates <- function(){
 
-	 load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+	data(Sipp_age)
 
 	 m=merged[age>29&age<61&college==TRUE,list(moved.S2S = weighted.mean(S2S,HHweight,na.rm=T),moved.D2D = weighted.mean(D2D,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
-	 p1 <- ggplot(m,aes(age,y=moved.S2S,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
-	 p2 <- ggplot(m,aes(age,y=moved.D2D,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red"))
+	 m[,type := "Renter"]
+	 m[h==TRUE,type := "Owner"]
+
+	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) 
+	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved")
 	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
 	 ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
 
@@ -968,46 +971,5 @@ PlotSippMigrationRates <- function(){
 
 
 
-#' SIPP probit of staying vs moving
-#'
-#' descriptive evidence
-#' @examples
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
-#' pr <- SippProbitMove(d=des,"~/Dropbox/mobility/output/data/sipp")
-#' 
-#' ## goodness of fit
-#' 
-#' dat <- copy(des$variables[S2S<2 & complete.cases(des$variables)])
-#' dat[,probmove := predict(pr$S2S,type="response")]
-#' dat[,pred.move := runif(n=nrow(dat))<probmove]
-#' print(dat[,list(actual.moves=sum(S2S),predicted=sum(pred.move))])
-#' 
-#' dat <- copy(des$variables[D2D<2 & complete.cases(des$variables)])
-#' dat[,probmove := predict(pr$D2D,type="response")]
-#' dat[,pred.move := runif(n=nrow(dat))<probmove]
-#' print(dat[,list(actual.moves=sum(D2D),predicted=sum(pred.move))])
-#'
-#' ## plot
-#' ## predict model
-#' prd <- data.frame(age=rep(30:60,2),age2=rep((30:60)^2,2),own=rep(c(0,1),each=31), HHincome=40,home.equity=rep(c(0,61),each=31),duration=3,dkids=0,college=TRUE)
-#' prd <- cbind(prd,as.data.frame(predict(pr,newdata=prd,type="response")))
-#' pl=ggplot(prd,aes(x=age)) + geom_line(aes(y=response,color=factor(own))) + geom_ribbon(aes(ymin=response-SE,ymax=response+SE,color=factor(own)),alpha=0.3)
-#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-#' m=merged[age>29&age<61&college==TRUE,list(proportion.moved = weighted.mean(S2S,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
-#' p <- ggplot(m,aes(age,y=proportion.moved,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
-#' ggsave(plot=p,file="~/Dropbox/mobility/output/data/sipp/raw-movers.pdf",width=13,height=9,scale=0.6)
-SippProbitMove <- function(d,path=NULL){
-
-	stopifnot("survey.design" %in% class(d) )
-
-	m <- svyglm(S2S ~ age + age2 + dkids + own + HHincome + duration + college, family=binomial(link="probit"),design=subset(d,S2S<2 & complete.cases(d$variables)))
-	mD <- svyglm(D2D ~ age + age2 + dkids + own + HHincome + home.equity + duration + college, family=binomial(link="probit"),design=subset(d,D2D<2 & complete.cases(d$variables)))
-
-	if (!is.null(path)){
-		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
-		texreg(list(mD),file=file.path(path,"D2D-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
-	}
-	return(list(S2S=m,D2D=mD))
-}
 
 

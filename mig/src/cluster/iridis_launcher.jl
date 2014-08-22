@@ -1,4 +1,7 @@
 function bind_iridis_procs()
+# function bind_iridis_procs(ppn)
+
+    # add only ppn processes per node
 
     home = ENV["HOME"]
 
@@ -25,12 +28,18 @@ function bind_iridis_procs()
     # add processes on master itself
     master = ENV["HOSTNAME"]
 
+    # wrker = 0
+    # while wrker < ppn
+    #     addprocs(1)
+    #     wrker += 1
+    # end
     if procs[master] > 1
         addprocs(procs[master]-1)
         println("added $(procs[master]-1) processes on master itself")
     end
 
     # get a machine file for other hosts
+
     machines = ASCIIString[]
     for i in 1:length(node_file)
         if node_file[i] != master
@@ -44,9 +53,20 @@ function bind_iridis_procs()
 
     # add to julia home
     println("adding machines to JULIA_HOME: $JULIA_HOME")
-
     for m in machines
         addprocs([m], dir= JULIA_HOME)
     end
+
+    # for (k,v) in procs
+    #     wrker = 0
+    #     if k!=master
+    #         while wrker < ppn
+    #             addprocs(k, dir= JULIA_HOME)
+    #             # println("addprocs($k)")
+    #             wrker += 1
+    #         end
+    #     end
+    # end
+
     println("done")
 end

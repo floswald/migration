@@ -5,18 +5,18 @@
 #' Sipp Summary Stats
 #'
 #'	 load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
-Sipp.SumStats <- function(d){
+# Sipp.SumStats <- function(d){
 
-	s <- d[D2D<2,list(Children=weighted.mean(numkids,HHweight,na.rm=T),Income=weighted.mean(HHincome,HHweight,na.rm=T),Age=weighted.mean(age,HHweight,na.rm=T),Wealth=weighted.mean(wealth,HHweight,na.rm=T),Equity=weighted.mean(home.equity,HHweight,na.rm=T),College=weighted.mean(college,HHweight,na.rm=T),Own=weighted.mean(own,HHweight,na.rm=T)),by=D2D]
+# 	s <- d[D2D<2,list(Children=weighted.mean(numkids,HHweight,na.rm=T),Income=weighted.mean(HHincome,HHweight,na.rm=T),Age=weighted.mean(age,HHweight,na.rm=T),Wealth=weighted.mean(wealth,HHweight,na.rm=T),Equity=weighted.mean(home.equity,HHweight,na.rm=T),College=weighted.mean(college,HHweight,na.rm=T),Own=weighted.mean(own,HHweight,na.rm=T)),by=D2D]
 
-	m <- t(s)
-	m <- m[-1,]
-	colnames(m) <- c("Stay","Move")
+# 	m <- t(s)
+# 	m <- m[-1,]
+# 	colnames(m) <- c("Stay","Move")
 
-	print(xtable(m,digits=2),file="~/Dropbox/mobility/output/data/sipp/stats.tex")
-	return(m)
+# 	print(xtable(m,digits=2),file="~/Dropbox/mobility/output/data/sipp/stats.tex")
+# 	return(m)
 
-}
+# }
 
 var.sd <- function(name,x,y=c()) {
   # x = x - mean(x,na.rm=T)
@@ -513,6 +513,97 @@ Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/dat
 	return(list(plots=surf,copula=fit))
 }
 
+
+Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+	data(Sipp_aggby_NULL,envir=environment())
+
+	ta <- list()
+
+	# annual moving rate
+	# ==================
+
+	S2S_percent <- merged[year!=2000&year!=1995,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*1200,D2D=weighted.mean(D2D,HHweight,na.rm=T)*1200),by=list(year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2))]
+	ta$S2S_percent <- merged[year!=2000&year!=1995,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*1200,D2D=weighted.mean(D2D,HHweight,na.rm=T)*1200),by=list(own,year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2)),by=own][order(own)]
+	ta$S2S_percent <- as.matrix(ta$S2S_percent[,list(S2S,D2D)])
+	ta$S2S_percent <- rbind(as.matrix(S2S_percent),ta$S2S_percent)
+	colnames(ta$S2S_percent) <- c("Cross State","Cross Division")
+	rownames(ta$S2S_percent) <- c("Overall","Renter","Owner")
+
+	# number of moves per mover
+	# =========================
+	
+	mvs = merged[D2D==TRUE,list(upid=unique(upid))]
+	setkey(mvs,upid)
+	setkey(merged,upid,timeid)
+
+	d = merged[mvs]
+	sm = d[,list(nmoves=sum(D2D,na.rm=T),own=own[1]),by=upid]
+	ta$nmv <- as.matrix(sm[,table(own,nmoves)])
+	rownames(ta$nmv) <- c("Renter","Owner")
+
+	# fraction of moves that go back home
+	merged[,toHome := state.born == to]
+	ta$home <- merged[S2S==TRUE,t(as.matrix(round(prop.table(table(toHome))*100,2)))]
+	colnames(ta$home) <- c("Other State","State of Birth")
+
+
+	# print tables
+	print(xtable(ta$S2S_percent),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"move_rates.tex"))
+	print(xtable(ta$nmv),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"num_moves.tex"))
+	print(xtable(ta$home),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"mv_home.tex"))
+
+}
+
+#' SIPP probit of staying vs moving
+#'
+#' descriptive evidence
+#' @examples
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age_svy.RData")
+#' pr <- SippProbitMove(d=des,"~/Dropbox/mobility/output/data/sipp")
+#' 
+#' ## goodness of fit
+#' 
+#' dat <- copy(des$variables[S2S<2 & complete.cases(des$variables)])
+#' dat[,probmove := predict(pr$S2S,type="response")]
+#' dat[,pred.move := runif(n=nrow(dat))<probmove]
+#' print(dat[,list(actual.moves=sum(S2S),predicted=sum(pred.move))])
+#' 
+#' dat <- copy(des$variables[D2D<2 & complete.cases(des$variables)])
+#' dat[,probmove := predict(pr$D2D,type="response")]
+#' dat[,pred.move := runif(n=nrow(dat))<probmove]
+#' print(dat[,list(actual.moves=sum(D2D),predicted=sum(pred.move))])
+#'
+#' ## plot
+#' ## predict model
+#' prd <- data.frame(age=rep(30:60,2),age2=rep((30:60)^2,2),own=rep(c(0,1),each=31), HHincome=40,home.equity=rep(c(0,61),each=31),duration=3,dkids=0,college=TRUE)
+#' prd <- cbind(prd,as.data.frame(predict(pr,newdata=prd,type="response")))
+#' pl=ggplot(prd,aes(x=age)) + geom_line(aes(y=response,color=factor(own))) + geom_ribbon(aes(ymin=response-SE,ymax=response+SE,color=factor(own)),alpha=0.3)
+#' load("~/Dropbox/mobility/SIPP/Sipp_aggby_age.RData")
+#' m=merged[age>29&age<61&college==TRUE,list(proportion.moved = weighted.mean(S2S,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
+#' p <- ggplot(m,aes(age,y=proportion.moved,color=h)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red"))
+#' ggsave(plot=p,file="~/Dropbox/mobility/output/data/sipp/raw-movers.pdf",width=13,height=9,scale=0.6)
+SippProbitMove <- function(d,path="~/Dropbox/mobility/output/data/sipp"){
+
+	stopifnot("survey.design" %in% class(d) )
+
+	mD <- svyglm(D2D ~ age + age2 + kids + own + HHincome + wealth + college,x=TRUE, family=binomial(link="probit"),design=subset(d,D2D<2))
+	me <- erer:::maBina(mD,digits=4)
+
+	texreg(list(me),file=file.path(path,"D2D-probit.tex"),table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE,stars=c(0.1,0.05,0.01),custom.model.names="Marginal Effects", custom.coef.names=c("Intercept","Age","Age Squared","Children in HH","Homeowner","Household income","Total wealth","College"),digits = 4)
+
+	# predict for different covariates
+
+	prd <- data.frame(age=rep(30:60,4),age2=rep((30:60)^2,4),own=rep(rep(c(0,1),each=31),2),kids=rep(c(TRUE,FALSE),each=62), HHincome=40,college=TRUE,wealth=50)
+	prd <- cbind(prd,as.data.frame(predict(mD,newdata=prd,type="response")))
+	pl=ggplot(prd,aes(x=age)) + geom_line(aes(y=response,color=factor(own))) + geom_ribbon(aes(ymin=response-SE,ymax=response+SE,color=factor(own)),alpha=0.3) + facet_grid(~kids)
+	
+	if (!is.null(path)){
+		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+		texreg(list(mD),file=file.path(path,"D2D-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+	}
+	return(list(S2S=m,D2D=mD))
+}
 
 
 #' Summary Statistics from Sipp
