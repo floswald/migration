@@ -25,8 +25,8 @@ irid_slices:
   desc:   slices of mig
   nnodes:   3
   ppnodes:   9
-  hours: 00
-  mins: 59
+  hours: 01
+  mins: 30
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
