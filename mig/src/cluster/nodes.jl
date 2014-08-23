@@ -33,7 +33,7 @@ end
 # setup params to estimate
 # define bounds
 pb = Dict{ASCIIString,Array{Float64,1}}()
-pb["gamma"]  = [1.1,6]
+pb["gamma"]  = [1.1,3]
 # pb["lambda"] = [0.0,2]
 pb["xi1"]    = [0.0,5.0]
 pb["xi2"]    = [0.0,5]

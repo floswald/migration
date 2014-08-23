@@ -97,11 +97,11 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 10000
+			nsim  = 40000
 
 		end		
 
-		beta    = 0.93
+		beta    = 0.96
 		gamma   = 1.4	
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma

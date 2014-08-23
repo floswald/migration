@@ -337,6 +337,11 @@ facts("testing bilinear approx") do
 	z = (x-0.1)*(y+0.1)*3.4
 	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
+
+	# out of bounds
+	@fact zmat[1,1] => mig.bilinearapprox(-2.0,0.0,xgrid,ygrid,zmat)
+	@fact zmat[10,12] => mig.bilinearapprox(100.1,5.5,xgrid,ygrid,zmat)
+
 end
 
 facts("testing bilinear approx for mulitple values") do

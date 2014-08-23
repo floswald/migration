@@ -93,48 +93,6 @@ function simulate(m::Model,p::Param)
 	# set random seed
 	srand(p.rseed)
 
-	# compute approximating coefficients from
-	# *) m.vh
-	# *) m.rho
-	# *) m.sh
-	# *) m.ch
-	# at each discrete index (age,is,ij,ij,tau,ih,ihh)
-	# 
-	# continuous variables are (a,z,y,p). for those compute a constant basis function
-	# on nx evaluation points each. get inverse of those and store in ibm dict
-	#
-	# then for each i in prod(age,is,ij,ij,tau,ih,ihh), there is a different section of the function you want to approximate and therefore a different approximation coefficient vector
-	# for any function f you want to approx:
-	# coeff_mat_f = zeros(n_cont_coefs,n_discrete_states)
-	# for i in discrete_states
-	# 	  ftemp = get_cont_vals(f,i)
-	#     coeff_mat_f[:,i] = getTensorCoef(ibm,ftemp)
-	# end
-	#
-	# setup FXpaceXD objects:
-	# fx_sh
-	# fx_ch
-	# fx_vh
-	# fx_rho
-
-	# TODO this function is much too slow.
-	# this basically puts the continuous approximation of (y,p,z,a) to death. for now at least.
-	# way out: also approximate age dimension
-	# fx = setupFSpaceXD(m::Model)
-
-	# collect in FX = FSpaceXD_collection([fx_sh,fx_ch,fx_vh,fx_rho])
-	# in simulation
-	# =============
-	#
-	# you enter the period on state idx in {age,is,ij,ij,tau,ih,ihh}
-	# for each cont fuction f_j there is an FspaceXD object
-	# this contains the coeff_mat_f_j and the 4 univariate spline objects
-	
-	# 2 methods
-	# 1. setindex(fx::FSpaceXD,idx::Int) set the current index
-	# 2. getValue(point, fx::FSpaceXD). computes each individual basis_function[i] at point[i], using the corresponding coefficient vector coeff_mat_f[:,idx]
-	# and then puts it into evalTensor4 to obtain the function value.
-
 	# grids
 	agrid = m.grids["assets"]
 	agrid_rent = m.grids["assets"][m.aone:end]
@@ -155,51 +113,43 @@ function simulate(m::Model,p::Param)
 	# all of those should be non-uniform probably
 	G0tau = Categorical(m.grids["Gtau"])	# type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
-	G0yp   = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
-	# G0p   = Categorical([1/p.np for i=1:p.np])
-	# G0P   = Categorical([1/p.nP for i=1:p.nP])
-	x     = [1/i^2 for i=1:length(m.aone:p.na)]
-	x     = x / sum(x)
-	G0a   = Categorical(x)
+	G0yp  = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
 	G0j   = Categorical(array(m.regnames[:prop]))	# TODO popdist
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 
 	# prepare cumsum of probability matrices
-	# cumrho = cumsum(m.rho,1)	# get cumulative prob of moving along dim k
-	# cumGP  = cumsum(m.grids2D["GP"],2)	# transition matrices cumulate over dim 2
-	# cumGp  = cumsum(m.gridsXD["Gy"],2)
-	# cumGy  = cumsum(m.gridsXD["Gp"],2)
 	cumGz  = cumsum(m.gridsXD["Gz"],2)
-	cumGyp  = cumsum(m.gridsXD["Gyp"],2)
-	# cumGzM = cumsum(m.gridsXD["GzM"],2)
+	cumGyp = cumsum(m.gridsXD["Gyp"],2)
 	cumGs  = cumsum(m.gridsXD["Gs"],2)
 
 	# storage
-	Dt      = zeros(Int,p.nsim*(T))	# age
-	Di      = zeros(Int,p.nsim*(T))	# identity
-	Dv      = zeros(p.nsim*(T))	# value
-	Dc      = zeros(p.nsim*(T))	# consu
-	Dcash   = zeros(p.nsim*(T))	# cash after rent
-	Drent   = zeros(p.nsim*(T))	# rent
-	Da      = zeros(p.nsim*(T))	# asset value
-	Dy      = zeros(p.nsim*(T))	# region y value
-	Dincome = zeros(p.nsim*(T))	# income value
-	Dp      = zeros(p.nsim*(T))	# house price value
-	Dj      = zeros(Int,p.nsim*(T))	# location index
-	Dregname = ASCIIString[]# location index
-	Dh      = zeros(Int,p.nsim*(T))	# housing state
-	Dhh     = zeros(Int,p.nsim*(T))	# housing choice
-	Diyp    = zeros(Int,p.nsim*(T))	# region yp joint index
-	Dip     = zeros(Int,p.nsim*(T))	# region p index
-	Diy     = zeros(Int,p.nsim*(T))	# region y index
-	DS      = zeros(p.nsim*(T))	# savings values
-	Dz      = zeros(p.nsim*(T))	# z value
-	DM      = zeros(Int,p.nsim*(T))	# move
-	DMt     = zeros(Int,p.nsim*(T))	# move
-	Dkids   = zeros(Int,p.nsim*(T))	# kids yes/no
-	Ddist   = zeros(p.nsim*(T))
-	Dtau    = zeros(Int,p.nsim*(T))
-	Dcanbuy   = zeros(Int,p.nsim*(T))
+	Dt       = zeros(Int,p.nsim*(T))	 # age
+	Di       = zeros(Int,p.nsim*(T))	 # identity
+	Dv       = zeros(p.nsim*(T))	     # value
+	Dc       = zeros(p.nsim*(T))	     # consu
+	Dcash    = zeros(p.nsim*(T))	     # cash after rent
+	Drent    = zeros(p.nsim*(T))	     # rent
+	Da       = zeros(p.nsim*(T))	     # asset value
+	Dy       = zeros(p.nsim*(T))	     # region y value
+	Dincome  = zeros(p.nsim*(T))	     # income value
+	Dp       = zeros(p.nsim*(T))	     # house price value
+	Dj       = zeros(Int,p.nsim*(T))	 # location index
+	Dregname = ASCIIString[]             # location name
+	Dh       = zeros(Int,p.nsim*(T))	 # housing state
+	Dhh      = zeros(Int,p.nsim*(T))	 # housing choice
+	Diyp     = zeros(Int,p.nsim*(T))	 # region yp joint index
+	Dip      = zeros(Int,p.nsim*(T))	 # region p index
+	Diy      = zeros(Int,p.nsim*(T))	 # region y index
+	DS       = zeros(p.nsim*(T))	     # savings values
+	Dz       = zeros(p.nsim*(T))	     # z value
+	DM       = zeros(Int,p.nsim*(T))	 # move
+	DMt      = zeros(Int,p.nsim*(T))	 # move
+	Dkids    = zeros(Int,p.nsim*(T))	 # kids yes/no
+	Ddist    = zeros(p.nsim*(T))
+	Dtau     = zeros(Int,p.nsim*(T))
+	Dcanbuy  = zeros(Int,p.nsim*(T))
+
+	# temporary objects
 
 	ktmp = zeros(Float64,p.nJ)
 	ktmp_test = zeros(Float64,p.nJ)
@@ -214,14 +164,6 @@ function simulate(m::Model,p::Param)
 	azmat_v_rent = zeros(na_rent,p.nz)
 	azmat_s_rent = zeros(length(agrid_rent),p.nz)
 	azmat_c_rent = zeros(length(agrid_rent),p.nz)
-
-
-	avec2= zeros(p.na)
-	fvec = falses(p.na)
-	fvec2= falses(p.na)
-	fvecs = (falses(p.na),falses(p.na))
-	asum = 0.0
-
 	v1tmp = 0.0
 	v2tmp = 0.0
 
@@ -232,11 +174,6 @@ function simulate(m::Model,p::Param)
 	for j in 1:p.nJ
 		zsupps[j] = m.gridsXD["zsupp"][:,j]
 	end
-	idx = 0
-
-
-
-
 
 	# begin simulation loop
 	# =====================
@@ -264,6 +201,12 @@ function simulate(m::Model,p::Param)
 		moveto = 0
 	
 		for age = 1:T
+
+
+			if z < minimum(zsupps[ij])
+				println("[age,id]=[$age,$i], ij=$ij, z=$z, minz = $(minimum(zsupps[ij]))")
+				error()
+			end
 
 			# point = [a,y,p,z]
 
@@ -483,10 +426,10 @@ function fill_ktmp!{T<:Real}(kvec::Vector{T},azmat_v::Matrix{T},a::Float64,z::Fl
 				idx = ik + p.nJ * (is-1 + p.ns * offset_z)
 				# println("idx = $idx")
 				# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-				azmat_v[iia + p.na*(iz-1)] = val[idx] 	
+				@inbounds azmat_v[iia + p.na*(iz-1)] = val[idx] 	
 			end
 		end
-		kvec[ik] = bilinearapprox(a,z,agrid,zsupps[ik],azmat_v)
+		kvec[ik] = bilinearapprox(a,z,agrid,zsupps[ij],azmat_v)
 		# println("kvec[$ik] = $(kvec[ik])")
 	end
 end
@@ -503,9 +446,9 @@ function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},azmats::Matri
 
 			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 
-			azmatv[iia + p.na*(iz-1)] = m.vh[idx]
-			azmatc[iia + p.na*(iz-1)] = m.ch[idx]
-			azmats[iia + p.na*(iz-1)] = m.sh[idx]
+			@inbounds azmatv[iia + p.na*(iz-1)] = m.vh[idx]
+			@inbounds azmatc[iia + p.na*(iz-1)] = m.ch[idx]
+			@inbounds azmats[iia + p.na*(iz-1)] = m.sh[idx]
 			# println("idx = $idx")
 			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
 		end
@@ -520,6 +463,7 @@ function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},ihh::Int,ik::
 	# get parts of index that do not change
 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
+	# @inbounds begin
 	for iia in 1:p.na
 		offset_a = iia-1 + p.na*offset_h_age_j
 		for iz in 1:p.nz
@@ -527,12 +471,13 @@ function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},ihh::Int,ik::
 
 			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 
-			azmatv[iia + p.na*(iz-1)] = v1[idx]
-			azmatc[iia + p.na*(iz-1)] = v2[idx]
+			@inbounds azmatv[iia + p.na*(iz-1)] = v1[idx]
+			@inbounds azmatc[iia + p.na*(iz-1)] = v2[idx]
 			# println("idx = $idx")
 			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
 		end
 	end
+	# end
 	return nothing
 end
 
@@ -550,8 +495,8 @@ function fill_azmats_h!{T<:Real}(azmatv1::Matrix{T},azmatv2::Matrix{T},ik::Int,i
 			idx1 = 1 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 			idx2 = 2 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 
-			azmatv1[iia + p.na*(iz-1)] = m.vh[idx1]
-			azmatv2[iia + p.na*(iz-1)] = m.vh[idx2]
+			@inbounds azmatv1[iia + p.na*(iz-1)] = m.vh[idx1]
+			@inbounds azmatv2[iia + p.na*(iz-1)] = m.vh[idx2]
 			# println("idx = $idx")
 			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
 		end
@@ -574,9 +519,9 @@ function fill_azmats_rent!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},azmats::
 
 			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 
-			azmatv[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-			azmatc[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-			azmats[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+			@inbounds azmatv[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+			@inbounds azmatc[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+			@inbounds azmats[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
 			# println("idx = $idx")
 			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
 		end

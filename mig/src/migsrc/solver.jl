@@ -633,38 +633,12 @@ end
 
 
 
-	# for (Eigen::SparseVector<double>::InnerIterator it0(a.at(0)); it0; ++it0) {
-	# 		int offset1    = it0.index();
-	# 		offset1       *= a.at(1).size();
-	# 		double factor1 = it0.value();
-
-	# 		for (Eigen::SparseVector<double>::InnerIterator it1(a.at(1)); it1; ++it1) {
-	# 			int offset2    = offset1 + it1.index();
-	# 			offset2       *= a.at(2).size();
-	# 			double factor2 = factor1 * it1.value();
-
-	# 			for (Eigen::SparseVector<double>::InnerIterator it2(a.at(2)); it2; ++it2) {
-	# 				int offset3    = offset2 + it2.index();
-	# 				offset3       *= a.at(3).size();
-	# 				double factor3 = factor2 * it2.value();
-
-	# 				for (Eigen::SparseVector<double>::InnerIterator it3(a.at(3)); it3; ++it3) {
-	# 					int offset4    = offset3 + it3.index();
-	# 					offset4       *= a.at(4).size();
-	# 					double factor4 = factor3 * it3.value();
-
-	# 					for (Eigen::SparseVector<double>::InnerIterator it4(a.at(4)); it4; ++it4) {
-
-	# 						sum += factor4 * it4.value() * this->d_vecCoefs( offset4 + it4.index() );
-	# 					}
-	# 				}
-	# 			}
-	# 		}
-	# }
-	# return sum;
+# 1D linear approximation
+# =======================
 
 function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::Int,hi::Int)
 	n = length(y)
+	@assert (length(x) == n)
 	r = 0.0
 
 	# determining bounds 
@@ -673,7 +647,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 		return (r,1)
 	elseif xi < x[1]
 		# get linear approx below
-		r = y[1] + (y[2] - y[1]) * (xi - x[1])  / (x[2] - x[1])
+		@inbounds r = y[1] + (y[2] - y[1]) * (xi - x[1])  / (x[2] - x[1])
 		return (r,1)
 	end
 	if xi == x[n]
@@ -681,7 +655,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 		return (r,n)
 	elseif xi > x[n]
 		# get linear approx above
-		r = y[n] + (y[n] - y[n-1]) * (xi - x[n])  / (x[n] - x[n-1])
+		@inbounds r = y[n] + (y[n] - y[n-1]) * (xi - x[n])  / (x[n] - x[n-1])
 		return (r,n)
 	end
 
@@ -692,214 +666,14 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 	else
 		jinf = lo
 	end
-	r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
+	@inbounds r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
 	return (r,jinf)
 end
 
 
-function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T})
-
-	# zmat[i,j] = f(xgrid[i],ygrid[j])
-	n = length(xgrid)
-	m = length(ygrid)
-
-	if length(zmat) != n*m
-		throw(ArgumentError("zmat must be (length(x),length(y))"))
-	end
-
-
-	# find last grid point in xgrid smaller or equal to x
-	if x <= xgrid[1]
-		ix = 1
-	elseif x >= xgrid[n]
-		ix = n-1
-	else
-		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
-	end
-
-	if y <= ygrid[1]
-		iy = 1
-	elseif y >= ygrid[m]
-		iy = m-1
-	else
-		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
-	end
-
-	# get boxes around x and y
-	xmin = xgrid[ix]
-	xmax = xgrid[ix+1]
-	ymin = ygrid[iy]
-	ymax = ygrid[iy+1]
-
-	# get value of z at 4 vertices
-	zxminymin = zmat[ix + n*(iy-1)]
-	zxminymax = zmat[ix + n*iy ]
-	zxmaxymin = zmat[ix+1 + n*(iy-1)]
-	zxmaxymax = zmat[ix+1 + n*iy]
-
-	# length of brackets
-	dx = xmax - xmin
-	dy = ymax - ymin
-
-	# relative position of x in bracket
-	t = (x - xmin)/dx
-	u = (y - ymin)/dy
-
-	# linear combination of locations
-	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
-end
-
-
-# same for 2 functions in zmat and zmat2 defined on same space
-function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T})
-
-	# zmat[i,j] = f(xgrid[i],ygrid[j])
-	n = length(xgrid)
-	m = length(ygrid)
-
-	if length(zmat) != n*m
-		throw(ArgumentError("zmat must be (length(x),length(y))"))
-	end
-
-
-	# find last grid point in xgrid smaller or equal to x
-	if x <= xgrid[1]
-		ix = 1
-	elseif x >= xgrid[n]
-		ix = n-1
-	else
-		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
-	end
-
-	if y <= ygrid[1]
-		iy = 1
-	elseif y >= ygrid[m]
-		iy = m-1
-	else
-		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
-	end
-
-	# get boxes around x and y
-	xmin = xgrid[ix]
-	xmax = xgrid[ix+1]
-	ymin = ygrid[iy]
-	ymax = ygrid[iy+1]
-
-	# get value of z at 4 vertices of zmat 1
-	zxminymin = zmat[ix + n*(iy-1)]
-	zxminymax = zmat[ix + n*iy ]
-	zxmaxymin = zmat[ix+1 + n*(iy-1)]
-	zxmaxymax = zmat[ix+1 + n*iy]
-
-	# get value of z at 4 vertices of zmat 2
-	z2xminymin = zmat2[ix + n*(iy-1)]
-	z2xminymax = zmat2[ix + n*iy ]
-	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
-	z2xmaxymax = zmat2[ix+1 + n*iy]
-
-	# length of brackets
-	dx = xmax - xmin
-	dy = ymax - ymin
-
-	# relative position of x in bracket
-	t = (x - xmin)/dx
-	u = (y - ymin)/dy
-
-	# linear combination of locations
-	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
-	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
-	(z,z2)
-end
-
-
-# same for 3 
-function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T},zmat3::Matrix{T})
-
-	# zmat[i,j] = f(xgrid[i],ygrid[j])
-	n = length(xgrid)
-	m = length(ygrid)
-
-	if length(zmat) != n*m
-		throw(ArgumentError("zmat must be (length(x),length(y))"))
-	end
-
-
-	# find last grid point in xgrid smaller or equal to x
-	if x <= xgrid[1]
-		ix = 1
-	elseif x >= xgrid[n]
-		ix = n-1
-	else
-		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
-	end
-
-	if y <= ygrid[1]
-		iy = 1
-	elseif y >= ygrid[m]
-		iy = m-1
-	else
-		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
-	end
-
-	# get boxes around x and y
-	xmin = xgrid[ix]
-	xmax = xgrid[ix+1]
-	ymin = ygrid[iy]
-	ymax = ygrid[iy+1]
-
-	# get value of z at 4 vertices of zmat 1
-	zxminymin = zmat[ix + n*(iy-1)]
-	zxminymax = zmat[ix + n*iy ]
-	zxmaxymin = zmat[ix+1 + n*(iy-1)]
-	zxmaxymax = zmat[ix+1 + n*iy]
-
-	# get value of z at 4 vertices of zmat 2
-	z2xminymin = zmat2[ix + n*(iy-1)]
-	z2xminymax = zmat2[ix + n*iy ]
-	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
-	z2xmaxymax = zmat2[ix+1 + n*iy]
-
-	# get value of z at 4 vertices of zmat 2
-	z3xminymin = zmat3[ix + n*(iy-1)]
-	z3xminymax = zmat3[ix + n*iy ]
-	z3xmaxymin = zmat3[ix+1 + n*(iy-1)]
-	z3xmaxymax = zmat3[ix+1 + n*iy]
-
-	# length of brackets
-	dx = xmax - xmin
-	dy = ymax - ymin
-
-	# relative position of x in bracket
-	t = (x - xmin)/dx
-	u = (y - ymin)/dy
-
-	# linear combination of locations
-	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
-	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
-	z3 = (1.0-t)*(1.0-u)*z3xminymin + t*(1.0-u)*z3xmaxymin + (1.0-t)*u*z3xminymax + t*u*z3xmaxymax
-	(z,z2,z3)
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasible::BitArray{1},p::Param)
 	n = length(y)
+	@assert (length(x) == n)
 	lo = 1
 	hi = n
 	r = 0.0
@@ -929,7 +703,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasib
 	end
 	# only if both points are feasible do we consider them
 	if feasible[jinf] && feasible[jinf+1]
-		r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
+	@inbounds 	r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
 	else 
 		r = p.myNA
 	end
@@ -938,6 +712,7 @@ end
 
 function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,p::Param)
 	n = length(y)
+	@assert (length(x) == n)
 	lo = 1
 	hi = n
 	r = 0.0
@@ -957,7 +732,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,p::Par
 	else
 		jinf = lo
 	end
-	r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
+	@inbounds r = (y[jinf] * (x[jinf+1] - xi) + y[jinf+1] * (xi - x[jinf]) ) / (x[jinf+1] - x[jinf])
 	return (r,jinf)
 end
 
@@ -968,6 +743,223 @@ function integrateFinal!(m::Model)
 end
 
 
+
+# 2D linear approximation
+# =======================
+
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T})
+
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x < xgrid[1]
+		ix = 1
+		warn("x=$x < $(xgrid[1]). setting x = xgrid[1]")
+		x = xgrid[1]
+	elseif x > xgrid[n]
+		ix = n-1
+		warn("x=$x > $(xgrid[n]). setting x = xgrid[n]")
+		x = xgrid[n]
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y < ygrid[1]
+		iy = 1
+		warn("y=$y < $(ygrid[1]). setting y = ygrid[1]")
+		y = ygrid[1]
+	elseif y > ygrid[m]
+		iy = m-1
+		warn("y=$y > $(ygrid[m]). setting y = ygrid[m]")
+		y = ygrid[m]
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	@inbounds begin
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+	end
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+end
+
+
+# same for 2 functions in zmat and zmat2 defined on same space
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T})
+
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x < xgrid[1]
+		ix = 1
+		warn("x=$x < xgrid[1]. setting x = xgrid[1]")
+		x = xgrid[1]
+	elseif x > xgrid[n]
+		ix = n-1
+		warn("x=$x > xgrid[n]. setting x = xgrid[n]")
+		x = xgrid[n]
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y < ygrid[1]
+		iy = 1
+		warn("y=$y < ygrid[1]. setting y = ygrid[1]")
+		y = ygrid[1]
+	elseif y > ygrid[m]
+		iy = m-1
+		warn("y=$y > ygrid[m]. setting y = ygrid[m]")
+		y = ygrid[m]
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	@inbounds begin
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices of zmat 1
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z2xminymin = zmat2[ix + n*(iy-1)]
+	z2xminymax = zmat2[ix + n*iy ]
+	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
+	z2xmaxymax = zmat2[ix+1 + n*iy]
+	end
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
+	(z,z2)
+end
+
+
+# same for 3 
+function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zmat::Matrix{T},zmat2::Matrix{T},zmat3::Matrix{T})
+
+	# zmat[i,j] = f(xgrid[i],ygrid[j])
+	n = length(xgrid)
+	m = length(ygrid)
+
+	if length(zmat) != n*m
+		throw(ArgumentError("zmat must be (length(x),length(y))"))
+	end
+
+
+	# find last grid point in xgrid smaller or equal to x
+	if x < xgrid[1]
+		ix = 1
+		warn("x=$x < xgrid[1]. setting x = xgrid[1]")
+		x = xgrid[1]
+	elseif x > xgrid[n]
+		ix = n-1
+		warn("x=$x > xgrid[n]. setting x = xgrid[n]")
+		x = xgrid[n]
+	else
+		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
+	end
+
+	if y < ygrid[1]
+		iy = 1
+		warn("y=$y < ygrid[1]. setting y = ygrid[1]")
+		y = ygrid[1]
+	elseif y > ygrid[m]
+		iy = m-1
+		warn("y=$y > ygrid[m]. setting y = ygrid[m]")
+		y = ygrid[m]
+	else
+		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
+	end
+
+	@inbounds begin
+	# get boxes around x and y
+	xmin = xgrid[ix]
+	xmax = xgrid[ix+1]
+	ymin = ygrid[iy]
+	ymax = ygrid[iy+1]
+
+	# get value of z at 4 vertices of zmat 1
+	zxminymin = zmat[ix + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
+	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxmaxymax = zmat[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z2xminymin = zmat2[ix + n*(iy-1)]
+	z2xminymax = zmat2[ix + n*iy ]
+	z2xmaxymin = zmat2[ix+1 + n*(iy-1)]
+	z2xmaxymax = zmat2[ix+1 + n*iy]
+
+	# get value of z at 4 vertices of zmat 2
+	z3xminymin = zmat3[ix + n*(iy-1)]
+	z3xminymax = zmat3[ix + n*iy ]
+	z3xmaxymin = zmat3[ix+1 + n*(iy-1)]
+	z3xmaxymax = zmat3[ix+1 + n*iy]
+
+	end
+
+	# length of brackets
+	dx = xmax - xmin
+	dy = ymax - ymin
+
+	# relative position of x in bracket
+	t = (x - xmin)/dx
+	u = (y - ymin)/dy
+
+	# linear combination of locations
+	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
+	z3 = (1.0-t)*(1.0-u)*z3xminymin + t*(1.0-u)*z3xmaxymin + (1.0-t)*u*z3xminymax + t*u*z3xmaxymax
+	(z,z2,z3)
+end
 
 
 
