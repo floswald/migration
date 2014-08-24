@@ -539,7 +539,7 @@ end
 
 
 # computing moments from simulation
-function computeMoments(df0::DataFrame,p::Param,m::Model)
+function computeMoments(df::DataFrame,p::Param,m::Model)
 
 
 	# # partition df0 in groups by id
