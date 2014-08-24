@@ -541,14 +541,15 @@ end
 # computing moments from simulation
 function computeMoments(df0::DataFrame,p::Param,m::Model)
 
-	# partition df0 in groups by id
-	insert!(df0,3,floor(integer(df0[:id]/5000)),:idgroup)
 
-	dfs = DataFrame[]
+	# # partition df0 in groups by id
+	# insert!(df0,3,floor(integer(df0[:id]/5000)),:idgroup)
 
-	df_g = groupby(df0, :idgroup)
+	# dfs = DataFrame[]
 
-	for df in df_g
+	# df_g = groupby(df0, :idgroup)
+
+	# for df in df_g
 
 		# create a dataframe to push moments on to
 		mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
@@ -692,22 +693,24 @@ function computeMoments(df0::DataFrame,p::Param,m::Model)
 
 		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
 
-		push!(dfs,rbind(mom1,mom2))
+		dfout = rbind(mom1,mom2)
 
-	end
+	# 	push!(dfs,rbind(mom1,mom2))
 
-	# compute mean
-	dfout = dfs[1]
-	for irow in 1:nrow(dfout)
-		x = 0.0
-		sdx = 0.0
-		for i in 1:length(dfs)
-			x += dfs[i][irow,:model_value]
-			sdx += dfs[i][irow,:model_sd]
-		end
-		dfout[irow,:model_value] = x / length(dfs)
-		dfout[irow,:model_sd] = sdx / length(dfs)
-	end
+	# end
+
+	# # compute mean
+	# dfout = dfs[1]
+	# for irow in 1:nrow(dfout)
+	# 	x = 0.0
+	# 	sdx = 0.0
+	# 	for i in 1:length(dfs)
+	# 		x += dfs[i][irow,:model_value]
+	# 		sdx += dfs[i][irow,:model_sd]
+	# 	end
+	# 	dfout[irow,:model_value] = x / length(dfs)
+	# 	dfout[irow,:model_sd] = sdx / length(dfs)
+	# end
 
 
 	return dfout
