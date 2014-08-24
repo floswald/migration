@@ -109,17 +109,17 @@ type Param
 		tau     = 1.0
 		taudist = 0.5
 		xi1     = 0.05
-		xi2     = 0.1
-		omega1  = 0.1
+		xi2     = 2.1
+		omega1  = 2.1
 		omega2  = 0.8
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (intercept) alpha0, (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
 		MC0    = 5
-		MC1    = 0.7
+		MC1    = 2.7
 		MC2    = 0.00
 		MC3    = 0.05
-		MC4    = 0.1
+		MC4    = 1.1
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
 		rhoP   = 0.9

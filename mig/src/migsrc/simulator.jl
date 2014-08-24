@@ -334,6 +334,9 @@ function simulate(m::Model,p::Param)
 				# current renter who cannot buy
 				else
 					ihh = 0
+					if a < 0
+						println("error: ih=$ih,canbuy=$canbuy,a=$a")
+					end
 					# for iia in aone:p.na
 					# 	for iz in 1:p.nz
 					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)

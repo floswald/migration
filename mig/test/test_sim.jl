@@ -74,7 +74,7 @@ facts("testing fill_azmats!, fill_ktmp!, and H-choice versions") do
 						azmat_v[iia + p.na*(iz-1)] = m.rho[mig.idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,it,p)] 	# TODO can to faster indexing here
 					end
 				end
-				ktmp[ik] = mig.bilinearapprox(a,z,agrid,zsupps[ik],azmat_v)
+				ktmp[ik] = mig.bilinearapprox(a,z,agrid,zsupps[ij],azmat_v)
 			end
 
 			# fast

@@ -185,6 +185,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													m.sh[hidx] = rh[2] 
 													m.ch[hidx] = rh[3]
 												else
+													m.sh[hidx] = NaN
 													m.sh[hidx] = p.myNA
 													m.ch[hidx] = 0.0
 												end
@@ -260,9 +261,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											else
 												m.vh[hidx]   = p.myNA
-												m.sh[hidx]   = p.myNA
+												m.sh[hidx]   = NaN
 												m.ch[hidx]   = 0.0
-												m.v[kidx]  = p.myNA
+												m.v[kidx]  = NaN
 												m.dh[kidx] = 0
 											end
 
@@ -823,13 +824,14 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 
 
 	# find last grid point in xgrid smaller or equal to x
+	# find last grid point in xgrid smaller or equal to x
 	if x < xgrid[1]
 		ix = 1
-		warn("x=$x < xgrid[1]. setting x = xgrid[1]")
+		warn("x=$x < $(xgrid[1]). setting x = xgrid[1]")
 		x = xgrid[1]
 	elseif x > xgrid[n]
 		ix = n-1
-		warn("x=$x > xgrid[n]. setting x = xgrid[n]")
+		warn("x=$x > $(xgrid[n]). setting x = xgrid[n]")
 		x = xgrid[n]
 	else
 		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
@@ -837,11 +839,11 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 
 	if y < ygrid[1]
 		iy = 1
-		warn("y=$y < ygrid[1]. setting y = ygrid[1]")
+		warn("y=$y < $(ygrid[1]). setting y = ygrid[1]")
 		y = ygrid[1]
 	elseif y > ygrid[m]
 		iy = m-1
-		warn("y=$y > ygrid[m]. setting y = ygrid[m]")
+		warn("y=$y > $(ygrid[m]). setting y = ygrid[m]")
 		y = ygrid[m]
 	else
 		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)
@@ -897,11 +899,11 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 	# find last grid point in xgrid smaller or equal to x
 	if x < xgrid[1]
 		ix = 1
-		warn("x=$x < xgrid[1]. setting x = xgrid[1]")
+		warn("x=$x < $(xgrid[1]). setting x = xgrid[1]")
 		x = xgrid[1]
 	elseif x > xgrid[n]
 		ix = n-1
-		warn("x=$x > xgrid[n]. setting x = xgrid[n]")
+		warn("x=$x > $(xgrid[n]). setting x = xgrid[n]")
 		x = xgrid[n]
 	else
 		ix = searchsortedlast(xgrid,x,1,n-1,Base.Forward)
@@ -909,11 +911,11 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 
 	if y < ygrid[1]
 		iy = 1
-		warn("y=$y < ygrid[1]. setting y = ygrid[1]")
+		warn("y=$y < $(ygrid[1]). setting y = ygrid[1]")
 		y = ygrid[1]
 	elseif y > ygrid[m]
 		iy = m-1
-		warn("y=$y > ygrid[m]. setting y = ygrid[m]")
+		warn("y=$y > $(ygrid[m]). setting y = ygrid[m]")
 		y = ygrid[m]
 	else
 		iy = searchsortedlast(ygrid,y,1,m-1,Base.Forward)

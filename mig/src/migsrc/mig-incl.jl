@@ -36,9 +36,14 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	    println()
 	end
 
+	status = 1
+	if isnan(fval)
+		status = -1
+	end
+
 	println("objfunc runtime = $(time()-time0)")
 	time1 = round(time()-time0)
-	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => 1, "moments" => mout]
+	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => status, "moments" => mout]
 	return ret
 end
 
