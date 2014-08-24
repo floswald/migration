@@ -158,7 +158,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 												hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
-												blim = age < p.nt-1 ? (-ihh) * (1-p.chi) * price : 0.0
+												pp = (-ihh) * (1-p.chi) * price
+												# borrowing limit for owner
+												if ih==1
+													pp = pp < a ? pp : a
+												end
+
+												blim = age < p.nt-1 ? pp : 0.0
 
 												# reset w vector
 												fill!(EV,p.myNA)
@@ -185,8 +191,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													m.sh[hidx] = rh[2] 
 													m.ch[hidx] = rh[3]
 												else
-													m.sh[hidx] = NaN
-													m.sh[hidx] = p.myNA
+													m.sh[hidx] = 0.0
 													m.ch[hidx] = 0.0
 												end
 
@@ -261,7 +266,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											else
 												m.vh[hidx]   = p.myNA
-												m.sh[hidx]   = NaN
+												m.sh[hidx]   = 0.0
 												m.ch[hidx]   = 0.0
 												m.v[kidx]  = NaN
 												m.dh[kidx] = 0

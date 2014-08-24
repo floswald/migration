@@ -335,7 +335,7 @@ function simulate(m::Model,p::Param)
 				else
 					ihh = 0
 					if a < 0
-						println("error: ih=$ih,canbuy=$canbuy,a=$a")
+						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
 					end
 					# for iia in aone:p.na
 					# 	for iz in 1:p.nz
