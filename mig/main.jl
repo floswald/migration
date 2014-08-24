@@ -26,6 +26,11 @@ mig.vplot(m,p)
 @time s = mig.simulate(m,p);	
 mig.simplot(s,5)
 # @profile s = mig.simulate(m,p);	
+
+# write sim to disk
+outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
+mig.simexport(s,6,joinpath(outdir,"simdata.csv"))
+
 		
 
 maximum(m.EV[:,:,:,:,:,:,:,:,29])
@@ -56,4 +61,4 @@ include("test/test_solution.jl")
 include("test/test_sim.jl")    
 	
 
-
+ 

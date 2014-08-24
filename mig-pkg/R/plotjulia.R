@@ -33,6 +33,52 @@ df2hdf5 <- function(ff,df,path){
 
 
 
+plot.simulation <- function(){
+
+	fi <- "~/Dropbox/mobility/output/model/data_repo/out_graphs_jl"
+	d <- read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv")
+
+	d <- as.data.table(d)
+
+	# get housing spells
+	d[,down := cumsum(c(0,diff(hh))),by=id]
+	setkey(d,id,age)
+	d[,down_plus := c(0,down[-29]),by=id]
+	d[,down_change := down != down_plus]
+	d[,spell := factor(cumsum(down_change)),by=id]
+	d[,status := "Renter"]
+	d[hh==1,status:="Owner"]
+
+	# continuous variables
+	contdat <- melt(d[,list(id,age,c,income,save,wealth,v,move,moveto)],id.vars=c("id","age"))
+	contdat[variable=="move" & value==0.0,value := NA]
+
+	# housing <- d[,list(h_choice=as.logical(hh[1]),duration=.N),by=list(id,spell)]
+	housing <- d[,list(h_choice=status[1],duration=.N),by=list(id,spell)]
+	housing[,to:=cumsum(duration)+1,by=id]
+	housing[,from:=as.integer(to-duration),by=id]
+
+	pl <- ggplot() + geom_rect(data=housing,aes(xmin=from,xmax=to,ymin=-Inf,ymax=Inf,fill=h_choice),alpha=0.8) 
+	pl <- pl + geom_line(data=subset(contdat, variable %in% c("save","c","income")),aes(x=age,y=value,linetype=variable)) + facet_wrap(~id)
+
+	# add move indicator
+	pl <- pl + geom_point(data=subset(contdat, variable == "move"),aes(x=age,y=value))
+
+	# fix legends
+	gg_color_hue <- function(n) {
+ 	hues = seq(15, 375, length=n+1)
+    hcl(h=hues, l=65, c=100)[1:n]
+    }
+	pl <- pl + scale_fill_manual(guide=guide_legend(title="Housing\nstatus"),values=gg_color_hue(2)) + ggtitle("Individual simulation histories") + theme_bw()
+
+	pdf(file.path(fi,"sim-inds.pdf"),width=8,height=5)
+	print(pl)
+	dev.off()
+
+	return(pl)
+}
+
+
 
 # export data to julia
 export.Julia <- function(print.tabs=NULL,print.plots=NULL){

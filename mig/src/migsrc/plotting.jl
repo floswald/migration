@@ -234,6 +234,18 @@ function vplot(m::Model,p::Param)
 end
 
 
+# select n individuals from simulation to export
+# data to ggplot for plotting
+function simexport(sim::DataFrame,n::Int,file::ASCIIString)
+
+	# choose n random individs
+	nr = rand(1:maximum(sim[:id]),n)
+	sim  = sim[findin(sim[:id],nr),:] 
+
+	writetable(file,sim)
+end
+
+
 
 # plot simulation histories
 

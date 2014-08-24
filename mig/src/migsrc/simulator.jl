@@ -536,151 +536,176 @@ end
 
 
 # computing moments from simulation
-function computeMoments(df::DataFrame,p::Param,m::Model)
+function computeMoments(df0::DataFrame,p::Param,m::Model)
 
-	# create a dataframe to push moments on to
-	mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
+	# partition df0 in groups by id
+	insert!(df0,3,floor(integer(df0[:id]/5000)),:idgroup)
 
-	# grouped dfs
-	g_div = groupby(df, :Division)
-	g_kids = groupby(df, :kids)
-	g_own = groupby(df, :h)
+	dfs = DataFrame[]
 
-	# linear probability model of homeownership
-	# =========================================
+	df_g = groupby(df0, :idgroup)
 
-	if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
-		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
-		coef_h = DataArray(Float64,3)
-		std_h =  DataArray(Float64,3)
-	else
-		lm_h = fit(LinearModel, h ~ age + age2 ,df)
-		cc_h  = coeftable(lm_h)
-		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
-		coef_h = @data(coef(lm_h))
-		std_h = @data(stderr(lm_h))
-	end
+	for df in df_g
 
+		# create a dataframe to push moments on to
+		mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
 
-	# own ~ Division
-	for div in g_div
-		push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])])
-	end
+		# grouped dfs
+		g_div = groupby(df, :Division)
+		g_kids = groupby(df, :kids)
+		g_own = groupby(df, :h)
 
-	# own ~ kids
-	for div in g_kids
-		kk = "$(div[1,:kids])"
-		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
-	end
-	# TODO std error
-	push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),0.0])
+		# linear probability model of homeownership
+		# =========================================
 
-
-	# linear probability model of mobility
-	# ====================================
-
-	if mean(df[:move]) == 1.0 || sum(df[:move]) == 0.0
-		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
-		coef_mv = DataArray(Float64,3)
-		std_mv =  DataArray(Float64,3)
-	else
-		lm_mv = fit(LinearModel, move ~ age + age2 ,df)
-		cc_mv = coeftable(lm_mv)
-		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
-		coef_mv = @data(coef(lm_mv))
-		std_mv = @data(stderr(lm_mv))
-	end
-
-	# move count
-	# ----------
-
-	movecount=by(df,:id,x -> sum(x[:move]))
-	moved0 = mean(movecount[:x1].==0)
-	moved1 = mean(movecount[:x1].==1)
-	moved2 = mean(movecount[:x1].==2)
-
-	# TODO std error
-	push!(mom1,["mean_move",mean(df[:move]),std(df[:move])])	# unconditional mean
-	push!(mom1,["moved0",moved0,0.0])
-	push!(mom1,["moved1",moved1,0.0])
-	push!(mom1,["moved2",moved2,0.0])
-
-
-	# move ~ own
-	# ----------
-
-	if sum(df[:own]) == 0
-		push!(mom1,["mean_move_ownTRUE",0.0,0.0])
-		push!(mom1,["mean_move_ownFALSE",1.0,0.0])
-	elseif mean(df[:own]) == 1.0
-		push!(mom1,["mean_move_ownTRUE",1.0,0.0])
-		push!(mom1,["mean_move_ownFALSE",0.0,0.0])
-	else
-		for idf in g_own
-			kk = "$(idf[1,:own])"
-			push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+		if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
+			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
+			coef_h = DataArray(Float64,3)
+			std_h =  DataArray(Float64,3)
+		else
+			lm_h = fit(LinearModel, h ~ age + age2 ,df)
+			cc_h  = coeftable(lm_h)
+			nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
+			coef_h = @data(coef(lm_h))
+			std_h = @data(stderr(lm_h))
 		end
 
+
+		# own ~ Division
+		for div in g_div
+			push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])])
+		end
+
+		# own ~ kids
+		for div in g_kids
+			kk = "$(div[1,:kids])"
+			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
+		end
+		# TODO std error
+		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),0.0])
+
+
+		# linear probability model of mobility
+		# ====================================
+
+		if mean(df[:move]) == 1.0 || sum(df[:move]) == 0.0
+			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
+			coef_mv = DataArray(Float64,3)
+			std_mv =  DataArray(Float64,3)
+		else
+			lm_mv = fit(LinearModel, move ~ age + age2 ,df)
+			cc_mv = coeftable(lm_mv)
+			nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+			coef_mv = @data(coef(lm_mv))
+			std_mv = @data(stderr(lm_mv))
+		end
+
+		# move count
+		# ----------
+
+		movecount=by(df,:id,x -> sum(x[:move]))
+		moved0 = mean(movecount[:x1].==0)
+		moved1 = mean(movecount[:x1].==1)
+		moved2 = mean(movecount[:x1].==2)
+
+		# TODO std error
+		push!(mom1,["mean_move",mean(df[:move]),std(df[:move])])	# unconditional mean
+		push!(mom1,["moved0",moved0,0.0])
+		push!(mom1,["moved1",moved1,0.0])
+		push!(mom1,["moved2",moved2,0.0])
+
+
+		# move ~ own
+		# ----------
+
+		if sum(df[:own]) == 0
+			push!(mom1,["mean_move_ownTRUE",0.0,0.0])
+			push!(mom1,["mean_move_ownFALSE",1.0,0.0])
+		elseif mean(df[:own]) == 1.0
+			push!(mom1,["mean_move_ownTRUE",1.0,0.0])
+			push!(mom1,["mean_move_ownFALSE",0.0,0.0])
+		else
+			for idf in g_own
+				kk = "$(idf[1,:own])"
+				push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+			end
+
+		end
+		# TODO std error
+		push!(mom1,["cov_move_h",cov(df[:h],df[:move]),0.0])
+
+
+		# move ~ kids
+		# ----------
+
+		for idf in g_kids
+			kk = "$(idf[1,:kids])"
+			push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+		end
+		# TODO std error
+		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),0.0])
+
+
+		# linear regression of total wealth
+		# =================================
+
+		if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
+			nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_owntrue"]  
+			coef_w = DataArray(Float64,4)
+			std_w =  DataArray(Float64,4)
+		else
+			lm_w = fit(LinearModel, wealth ~ age + age2 + own,df )
+			cc_w  = coeftable(lm_w)
+			nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
+			coef_w = @data(coef(lm_w))
+			std_w = @data(stderr(lm_w))
+		end
+
+		# wealth ~ division
+		# -----------------
+
+		for idf in g_div
+			push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])])
+		end
+
+
+
+		# collect estimates
+		# =================
+
+
+		nms = vcat(nm_mv,nm_h,nm_w)
+
+		# get rid of parens and hyphens
+		# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
+		for i in 1:length(nms)
+			ss = replace(nms[i]," - ","")
+			ss = replace(ss,")","")
+			ss = replace(ss,"(","")
+			# ss = replace(ss,"kidstrue","kidsTRUE")
+			ss = replace(ss,"owntrue","ownTRUE")
+			nms[i] = ss
+		end
+
+		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
+
+		push!(dfs,rbind(mom1,mom2))
+
 	end
-	# TODO std error
-	push!(mom1,["cov_move_h",cov(df[:h],df[:move]),0.0])
 
-
-	# move ~ kids
-	# ----------
-
-	for idf in g_kids
-		kk = "$(idf[1,:kids])"
-		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
-	end
-	# TODO std error
-	push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),0.0])
-
-
-	# linear regression of total wealth
-	# =================================
-
-	if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
-		nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_owntrue"]  
-		coef_w = DataArray(Float64,4)
-		std_w =  DataArray(Float64,4)
-	else
-		lm_w = fit(LinearModel, wealth ~ age + age2 + own,df )
-		cc_w  = coeftable(lm_w)
-		nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
-		coef_w = @data(coef(lm_w))
-		std_w = @data(stderr(lm_w))
+	# compute mean
+	dfout = dfs[1]
+	for irow in 1:nrow(dfout)
+		x = 0.0
+		sdx = 0.0
+		for i in 1:length(dfs)
+			x += dfs[i][irow,:model_value]
+			sdx += dfs[i][irow,:model_sd]
+		end
+		dfout[irow,:model_value] = x / length(dfs)
+		dfout[irow,:model_sd] = sdx / length(dfs)
 	end
 
-	# wealth ~ division
-	# -----------------
-
-	for idf in g_div
-		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])])
-	end
-
-
-
-	# collect estimates
-	# =================
-
-
-	nms = vcat(nm_mv,nm_h,nm_w)
-
-	# get rid of parens and hyphens
-	# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
-	for i in 1:length(nms)
-		ss = replace(nms[i]," - ","")
-		ss = replace(ss,")","")
-		ss = replace(ss,"(","")
-		# ss = replace(ss,"kidstrue","kidsTRUE")
-		ss = replace(ss,"owntrue","ownTRUE")
-		nms[i] = ss
-	end
-
-	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
-
-	dfout = rbind(mom1,mom2)
 
 	return dfout
 end
