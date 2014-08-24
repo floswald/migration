@@ -37,9 +37,9 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	end
 
 	status = 1
-	if isnan(fval)
-		status = -1
-	end
+	# if isnan(fval)
+	# 	status = -1
+	# end
 
 	println("objfunc runtime = $(time()-time0)")
 	time1 = round(time()-time0)
