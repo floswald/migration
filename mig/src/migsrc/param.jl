@@ -97,7 +97,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 50000
+			nsim  = 55000
 
 		end		
 
@@ -106,8 +106,8 @@ type Param
 		mgamma  = 1.0-gamma
 		imgamma = 1.0/mgamma
 		lambda  = 0.5
-		tau     = 1.0
-		taudist = 0.5
+		tau     = 5.0
+		taudist = 0.1
 		xi1     = 0.05
 		xi2     = 2.1
 		omega1  = 2.1
