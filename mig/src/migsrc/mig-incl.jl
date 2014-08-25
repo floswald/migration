@@ -22,12 +22,17 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	mom2 = join(mom,mms,on=:moment)
 	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:perc)
 
-	# get percentage difference of each moment and square that
+	# get subset of moments
 	subset = findin(mom2[:moment],whichmom)
 
+	# get percentage difference
 	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
 
-	fval = sum(abs(mom2[subset,:perc]))
+	# get mean squared distance over standard edeivation
+	mom2[subset,:msd] = (mom2[subset,:data_value] - mom2[subset,:model_value]).^2 ./ mom2[subset,:model_sd].^2
+
+	# fval = mean(abs2((mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:model_sd]))
+	fval = mean(abs(mom2[subset,:perc]))
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
