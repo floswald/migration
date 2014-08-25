@@ -24,13 +24,13 @@ irid_slices:
   name:   mig-slices  
   desc:   slices of mig
   nnodes:   3
-  ppnodes:   9
+  ppnodes:   12
   hours: 01
   mins: 30
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  run:   pbs_slices.jl 
+  run:   pbs_slices8.jl 
   exec:   /home/eisuc151/local/bin/julia
 
 
