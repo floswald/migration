@@ -586,7 +586,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
 		end
 		# TODO std error
-		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),0.0])
+		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),1.0])
 
 
 		# linear probability model of mobility
@@ -595,7 +595,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		if sum(df[:move]) == 0.0
 			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
 			coef_mv = @data(zeros(3))
-			std_mv =  @data(zeros(3))
+			std_mv =  @data(ones(3))
 		else
 			lm_mv = fit(LinearModel, move ~ age + age2 ,df)
 			cc_mv = coeftable(lm_mv)
@@ -614,20 +614,20 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 		# TODO std error
 		push!(mom1,["mean_move",mean(df[:move]),std(df[:move])])	# unconditional mean
-		push!(mom1,["moved0",moved0,0.0])
-		push!(mom1,["moved1",moved1,0.0])
-		push!(mom1,["moved2",moved2,0.0])
+		push!(mom1,["moved0",moved0,1.0])
+		push!(mom1,["moved1",moved1,1.0])
+		push!(mom1,["moved2",moved2,1.0])
 
 
 		# move ~ own
 		# ----------
 
 		if sum(df[:own]) == 0
-			push!(mom1,["mean_move_ownTRUE",0.0,0.0])
-			push!(mom1,["mean_move_ownFALSE",1.0,0.0])
+			push!(mom1,["mean_move_ownTRUE",0.0,1.0])
+			push!(mom1,["mean_move_ownFALSE",1.0,1.0])
 		elseif mean(df[:own]) == 1.0
-			push!(mom1,["mean_move_ownTRUE",1.0,0.0])
-			push!(mom1,["mean_move_ownFALSE",0.0,0.0])
+			push!(mom1,["mean_move_ownTRUE",1.0,1.0])
+			push!(mom1,["mean_move_ownFALSE",0.0,1.0])
 		else
 			for idf in g_own
 				kk = "$(idf[1,:own])"
@@ -636,7 +636,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 		end
 		# TODO std error
-		push!(mom1,["cov_move_h",cov(df[:h],df[:move]),0.0])
+		push!(mom1,["cov_move_h",cov(df[:h],df[:move]),1.0])
 
 
 		# move ~ kids
@@ -647,7 +647,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 			push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
 		end
 		# TODO std error
-		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),0.0])
+		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),1.0])
 
 
 		# linear regression of total wealth
