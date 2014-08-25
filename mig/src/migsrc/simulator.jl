@@ -539,17 +539,17 @@ end
 
 
 # computing moments from simulation
-function computeMoments(df0::DataFrame,p::Param,m::Model)
+function computeMoments(df::DataFrame,p::Param,m::Model)
 
 
 	# partition df0 in groups by id
-	insert!(df0,3,floor(integer(df0[:id]/1000)),:idgroup)
+	# insert!(df0,3,floor(integer(df0[:id]/1000)),:idgroup)
 
-	dfs = DataFrame[]
+	# dfs = DataFrame[]
 
-	df_g = groupby(df0, :idgroup)
+	# df_g = groupby(df0, :idgroup)
 
-	for df in df_g
+	# for df in df_g
 
 		# create a dataframe to push moments on to
 		mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
@@ -592,10 +592,10 @@ function computeMoments(df0::DataFrame,p::Param,m::Model)
 		# linear probability model of mobility
 		# ====================================
 
-		if mean(df[:move]) == 1.0 || sum(df[:move]) == 0.0
+		if sum(df[:move]) == 0.0
 			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
-			coef_mv = DataArray(Float64,3)
-			std_mv =  DataArray(Float64,3)
+			coef_mv = @data(zeros(3))
+			std_mv =  @data(zeros(3))
 		else
 			lm_mv = fit(LinearModel, move ~ age + age2 ,df)
 			cc_mv = coeftable(lm_mv)
@@ -693,24 +693,24 @@ function computeMoments(df0::DataFrame,p::Param,m::Model)
 
 		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
 
-		# dfout = rbind(mom1,mom2)
+		dfout = rbind(mom1,mom2)
 
-		push!(dfs,rbind(mom1,mom2))
+	# 	push!(dfs,rbind(mom1,mom2))
 
-	end
+	# end
 
-	# compute mean
-	dfout = dfs[1]
-	for irow in 1:nrow(dfout)
-		x = 0.0
-		sdx = 0.0
-		for i in 1:length(dfs)
-			x += dfs[i][irow,:model_value]
-			sdx += dfs[i][irow,:model_sd]
-		end
-		dfout[irow,:model_value] = x / length(dfs)
-		dfout[irow,:model_sd] = sdx / length(dfs)
-	end
+	# # compute mean
+	# dfout = dfs[1]
+	# for irow in 1:nrow(dfout)
+	# 	x = 0.0
+	# 	sdx = 0.0
+	# 	for i in 1:length(dfs)
+	# 		x += dfs[i][irow,:model_value]
+	# 		sdx += dfs[i][irow,:model_sd]
+	# 	end
+	# 	dfout[irow,:model_value] = x / length(dfs)
+	# 	dfout[irow,:model_sd] = sdx / length(dfs)
+	# end
 
 
 	return dfout
