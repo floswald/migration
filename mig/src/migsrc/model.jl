@@ -214,6 +214,7 @@ type Model
 
 
 		grids["Gtau"] = [(1.0-p.taudist), p.taudist]
+		grids["Gtau0"] = [(1.0-p.taudist0), p.taudist0]
 
 		
 

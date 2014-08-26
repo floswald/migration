@@ -11,13 +11,9 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	update!(p,pd)	# update with values changed by the optimizer
 	m = Model(p)
 	mig.solve!(m,p)
-	# info("end model solution after $(round(time()-time0)) seconds")
-
-	# info("simulation/computation of moments")
 	s   = simulate(m,p)
-
-	# mms can contain NA!
-	mms = computeMoments(s,p,m)	# todo: return DataFrame(moment,model_value)
+	mms = computeMoments(s,p,m)	
+	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 
 	mom2 = join(mom,mms,on=:moment)
 	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:perc)
@@ -32,8 +28,8 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	# get mean squared distance over standard edeivation
 	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:model_sd] ).^2
 
-	fval = mean(mom2[subset,:sqdist]) / 1000
-	# fval = mean(abs(mom2[subset,:perc]))
+	# fval = mean(mom2[subset,:sqdist]) / 1000
+	fval = mean(abs(mom2[subset,:perc]))
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 

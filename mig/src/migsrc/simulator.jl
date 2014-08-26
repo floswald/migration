@@ -87,11 +87,47 @@ end
 # simulator
 
 function simulate(m::Model,p::Param)
+	srand(p.rseed)
+	simulate(m,p,p.nsim)
+end
+
+function simulate_parts(m::Model,p::Param,parts::Int)
+
+	srand(p.rseed)
+	# loop over simulations
+	# and combine moments in averages
+	nsim = int(floor(p.nsim / parts))
+
+	# collecting moments
+	dfs = DataFrame[]
+
+	for is in 1:parts
+
+		s = simulate(m,p,nsim)
+		push!(dfs,computeMoments(s,p,m))
+
+	end
+
+	# compute average over moments
+	dfout = dfs[1]
+	for irow in 1:nrow(dfout)
+		x = 0.0
+		sdx = 0.0
+		for i in 1:parts
+			x += dfs[i][irow,:model_value]
+			sdx += dfs[i][irow,:model_sd]
+		end
+		dfout[irow,:model_value] = x / parts
+		dfout[irow,:model_sd] = sdx / parts
+	end
+	return dfout
+end
+
+function simulate(m::Model,p::Param,nsim::Int)
 
 	T = p.nt-1
 
 	# set random seed
-	srand(p.rseed)
 
 	# grids
 	agrid = m.grids["assets"]
@@ -111,7 +147,8 @@ function simulate(m::Model,p::Param)
 	# initial distributions
 	# TODO
 	# all of those should be non-uniform probably
-	G0tau = Categorical(m.grids["Gtau"])	# type distribution
+	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
+	G0tau = Categorical(m.grids["Gtau0"])	# initial type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
 	G0yp  = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
 	G0j   = Categorical(array(m.regnames[:prop]))	# TODO popdist
@@ -123,31 +160,31 @@ function simulate(m::Model,p::Param)
 	cumGs  = cumsum(m.gridsXD["Gs"],2)
 
 	# storage
-	Dt       = zeros(Int,p.nsim*(T))	 # age
-	Di       = zeros(Int,p.nsim*(T))	 # identity
-	Dv       = zeros(p.nsim*(T))	     # value
-	Dc       = zeros(p.nsim*(T))	     # consu
-	Dcash    = zeros(p.nsim*(T))	     # cash after rent
-	Drent    = zeros(p.nsim*(T))	     # rent
-	Da       = zeros(p.nsim*(T))	     # asset value
-	Dy       = zeros(p.nsim*(T))	     # region y value
-	Dincome  = zeros(p.nsim*(T))	     # income value
-	Dp       = zeros(p.nsim*(T))	     # house price value
-	Dj       = zeros(Int,p.nsim*(T))	 # location index
+	Dt       = zeros(Int,nsim*(T))	 # age
+	Di       = zeros(Int,nsim*(T))	 # identity
+	Dv       = zeros(nsim*(T))	     # value
+	Dc       = zeros(nsim*(T))	     # consu
+	Dcash    = zeros(nsim*(T))	     # cash after rent
+	Drent    = zeros(nsim*(T))	     # rent
+	Da       = zeros(nsim*(T))	     # asset value
+	Dy       = zeros(nsim*(T))	     # region y value
+	Dincome  = zeros(nsim*(T))	     # income value
+	Dp       = zeros(nsim*(T))	     # house price value
+	Dj       = zeros(Int,nsim*(T))	 # location index
 	Dregname = ASCIIString[]             # location name
-	Dh       = zeros(Int,p.nsim*(T))	 # housing state
-	Dhh      = zeros(Int,p.nsim*(T))	 # housing choice
-	Diyp     = zeros(Int,p.nsim*(T))	 # region yp joint index
-	Dip      = zeros(Int,p.nsim*(T))	 # region p index
-	Diy      = zeros(Int,p.nsim*(T))	 # region y index
-	DS       = zeros(p.nsim*(T))	     # savings values
-	Dz       = zeros(p.nsim*(T))	     # z value
-	DM       = zeros(Int,p.nsim*(T))	 # move
-	DMt      = zeros(Int,p.nsim*(T))	 # move
-	Dkids    = zeros(Int,p.nsim*(T))	 # kids yes/no
-	Ddist    = zeros(p.nsim*(T))
-	Dtau     = zeros(Int,p.nsim*(T))
-	Dcanbuy  = zeros(Int,p.nsim*(T))
+	Dh       = zeros(Int,nsim*(T))	 # housing state
+	Dhh      = zeros(Int,nsim*(T))	 # housing choice
+	Diyp     = zeros(Int,nsim*(T))	 # region yp joint index
+	Dip      = zeros(Int,nsim*(T))	 # region p index
+	Diy      = zeros(Int,nsim*(T))	 # region y index
+	DS       = zeros(nsim*(T))	     # savings values
+	Dz       = zeros(nsim*(T))	     # z value
+	DM       = zeros(Int,nsim*(T))	 # move
+	DMt      = zeros(Int,nsim*(T))	 # move
+	Dkids    = zeros(Int,nsim*(T))	 # kids yes/no
+	Ddist    = zeros(nsim*(T))
+	Dtau     = zeros(Int,nsim*(T))
+	Dcanbuy  = zeros(Int,nsim*(T))
 
 	# temporary objects
 
@@ -179,7 +216,7 @@ function simulate(m::Model,p::Param)
 	# =====================
 
 	# @inbounds begin
-	for i = 1:p.nsim
+	for i = 1:nsim
 
 		is   = rand(G0k)
 		iyp  = rand(G0yp)
@@ -385,7 +422,7 @@ function simulate(m::Model,p::Param)
 
 			# if move
 			if move
-				itau = rand(G0tau)
+				itau = rand(Gtau)
 				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
 			else
 				z   = draw_z(m,z,ij)
@@ -559,9 +596,10 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		g_kids = groupby(df, :kids)
 		g_own = groupby(df, :h)
 
-		# linear probability model of homeownership
-		# =========================================
+		# moments relating to homeownership
+		# =================================
 
+		# linear probability model of homeownership
 		if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
 			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
 			coef_h = DataArray(Float64,3)
@@ -576,11 +614,15 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 
 		# own ~ Division
+		# ----------
+
 		for div in g_div
 			push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])])
 		end
 
 		# own ~ kids
+		# ----------
+
 		for div in g_kids
 			kk = "$(div[1,:kids])"
 			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
@@ -589,9 +631,10 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),1.0])
 
 
-		# linear probability model of mobility
-		# ====================================
+		# moments relating to mobility
+		# ============================
 
+		# linear probability model of mobility
 		if sum(df[:move]) == 0.0
 			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
 			coef_mv = @data(zeros(3))
@@ -650,9 +693,10 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),1.0])
 
 
-		# linear regression of total wealth
-		# =================================
+		# moments relating to total wealth
+		# ================================
 
+		# linear regression of total wealth
 		if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
 			nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_owntrue"]  
 			coef_w = DataArray(Float64,4)
