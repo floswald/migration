@@ -81,10 +81,18 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	nmoves[,c("moved0","moved1","moved2") := list(moves==0,moves==1,moves>1)]
     nmoves[,moved1 := moves==1]
     nmoves[,moved2 := moves>1]
-    r$move_rate <- d[,list(moment="mean_move",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
-	r$moves0 <- nmoves[,list(moment="moved0",data_value=weighted.mean(moved0,HHweight), data_sd=sqrt(wtd.var(moved0,HHweight)))]
-	r$moves1 <- nmoves[,list(moment="moved1",data_value=weighted.mean(moved1,HHweight), data_sd=sqrt(wtd.var(moved1,HHweight)))]
-	r$moves2 <- nmoves[,list(moment="moved2",data_value=weighted.mean(moved2,HHweight), data_sd=sqrt(wtd.var(moved2,HHweight)))]
+    r$move_rate <- d[,list(move=weighted.mean(D2D,HHweight,na.rm=T),sdmove=sqrt(wtd.var(D2D,HHweight,na.rm=T))),by=age][,list(moment="mean_move",data_value=mean(move),data_sd=mean(sdmove))]
+
+    # CAUTION!
+    # moving zero times in SIPP data means not moving over 4 years. this is not what you expect and also not 
+    # what you compute in the model.
+    # you want lifetime moves.
+	# r$moves0 <- nmoves[,list(moment="moved0",data_value=weighted.mean(moved0,HHweight), data_sd=sqrt(wtd.var(moved0,HHweight)))]
+	# r$moves1 <- nmoves[,list(moment="moved1",data_value=weighted.mean(moved1,HHweight), data_sd=sqrt(wtd.var(moved1,HHweight)))]
+	# r$moves2 <- nmoves[,list(moment="moved2",data_value=weighted.mean(moved2,HHweight), data_sd=sqrt(wtd.var(moved2,HHweight)))]
+	r$moves0 <- nmoves[,list(moment="moved0",data_value=0.8, data_sd=1)]
+	r$moves1 <- nmoves[,list(moment="moved1",data_value=0.07, data_sd=1)]
+	r$moves2 <- nmoves[,list(moment="moved2",data_value=0.06, data_sd=1)]
 
 
 	# move ~ own
@@ -101,6 +109,21 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	r$mean_move_kids[,moment := paste0(moment,"_kids",kids)]
 	r$mean_move_kids[,kids:= NULL]
 	r$cov_move_kids = d[,var.sd("cov_move_kids",D2D,kids)]
+
+	# moving and distance
+	# -------------------
+
+	# for lack of a better measure, compute quartiles of distance for movers here
+	qts <- merged[D2D==TRUE,quantile(km_distance)]
+	r$q25_move_distance <- data.table(moment="q25_move_distance",data_value=qts["25%"],data_sd = 1)
+	r$q50_move_distance <- data.table(moment="q50_move_distance",data_value=qts["50%"],data_sd = 1)
+	r$q75_move_distance <- data.table(moment="q75_move_distance",data_value=qts["75%"],data_sd = 1)
+
+	# moving and negative equity
+	# --------------------------
+
+	negeq <- merged[own==TRUE & D2D==TRUE, prop.table(table(home.equity<0))]["TRUE"]
+	r$move_negeq <- data.table(moment="move_neg_equity",data_value=negeq,data_sd = 1)
 
 	# linear regression of total wealth
 	# =================================

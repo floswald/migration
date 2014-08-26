@@ -247,7 +247,7 @@ type Model
 					for itau in 1:p.ntau
 						for ih in 0:1
 							for is in 1:p.ns
-								mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
+								mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * p.ages[it] + p.MC3_2 * (p.ages[it])^2 + (is-1)*p.MC4 )
 							end
 						end
 					end

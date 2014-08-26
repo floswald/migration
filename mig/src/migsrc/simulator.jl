@@ -432,7 +432,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,km_distance2=Ddist.^2,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
 	# df = join(df,m.regnames,on=:j)
 	# sort!(df,cols=[1,2]	)
 
@@ -591,8 +591,10 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# moments relating to homeownership
 		# =================================
 
+		noown = sum(df[:h]) == 0.0
+
 		# linear probability model of homeownership
-		if mean(df[:h]) == 1.0 || sum(df[:h]) == 0.0
+		if mean(df[:h]) == 1.0 || noown
 			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
 			coef_h = DataArray(Float64,3)
 			std_h =  DataArray(Float64,3)
@@ -626,8 +628,11 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# moments relating to mobility
 		# ============================
 
+		nomove = false
+
 		# linear probability model of mobility
 		if sum(df[:move]) == 0.0
+			nomove = true
 			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
 			coef_mv = @data(zeros(3))
 			std_mv =  @data(ones(3))
@@ -657,7 +662,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# move ~ own
 		# ----------
 
-		if sum(df[:own]) == 0
+		if noown
 			push!(mom1,["mean_move_ownTRUE",0.0,1.0])
 			push!(mom1,["mean_move_ownFALSE",1.0,1.0])
 		elseif mean(df[:own]) == 1.0
@@ -683,6 +688,31 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		end
 		# TODO std error
 		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),1.0])
+
+		# move ~ distance 
+		# ---------------
+
+		if nomove
+			push!(mom1,["q25_move_distance",0.0,1.0])
+			push!(mom1,["q50_move_distance",0.0,1.0])
+			push!(mom1,["q75_move_distance",0.0,1.0])
+		else
+			qts = quantile(df[df[:move].==true,:km_distance],[0.25,0.5,0.75])
+			push!(mom1,["q25_move_distance",qts[1],1.0])
+			push!(mom1,["q50_move_distance",qts[2],1.0])
+			push!(mom1,["q75_move_distance",qts[3],1.0])
+		end
+
+		# move | negative equity
+		# ----------------------
+
+		# if noown || nomove
+		# 	push!(mom1,["move_neg_equity",0.0,1.0])
+		# else
+		# 	neq = df[(df[:move].==true) & (df[:own].==true),:equity] .< 0.0
+		# 	push!(mom1,["move_neg_equity",0.0,1.0])
+
+
 
 
 		# moments relating to total wealth

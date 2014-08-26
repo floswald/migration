@@ -117,6 +117,7 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	setkey(values,Division)
 	prop[,r2p := values[rents][,rent / value] ]
 
+
 	prop=as.data.frame(prop)
 	
 	stopifnot(sum(prop$proportion)==1)
@@ -139,6 +140,7 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	kids_trans$kids = as.integer(kids_trans$kids) -1L
 	kids_trans$kids2 = as.integer(kids_trans$kids2) -1L 
 	kids_trans$age = as.numeric(as.character(kids_trans$age))
+
 
 	rm(merged,des)
 	gc()

@@ -9,6 +9,8 @@
 #PBS -o {{logout}}
 #PBS -e {{logerr}}
 
+date
+
 # Change to working directory
 cd $PBS_O_WORKDIR
 

@@ -26,6 +26,7 @@ type Param
 	MC1    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC2    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC3    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
+	MC3_2  :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC4    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 
 	# fixed parameters
@@ -115,11 +116,12 @@ type Param
 
 		# other parameters
 		# MC    = [0.5, 0.0002, 0.3] # parameters in moving cost: (intercept) alpha0, (h) alpha1, (dist) alpha2, (age) alpha3, (hhsize) alpha4
-		MC0    = 5
-		MC1    = 2.7
-		MC2    = 0.00
+		MC0    = 0.5
+		MC1    = 0.01
+		MC2    = 0.0001
 		MC3    = 0.05
-		MC4    = 1.1
+		MC3_2  = -0.0005
+		MC4    = 0.5
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
 		rhoP   = 0.9
@@ -138,7 +140,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
 				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed,verbose)
 	end
 end
