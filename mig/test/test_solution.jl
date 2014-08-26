@@ -44,7 +44,11 @@ facts("checking some properties of the solution") do
 			# value of guy with lower moving cost must be higher
 			for i in 1:size(tau1,1)
 				for j in 1:size(tau2,2)
-					if tau1[i,j] != p.myNA && tau1[i,j] != p.myNA
+					if tau1[i,j] != p.myNA && tau2[i,j] != p.myNA
+						if tau1[i,j] <= tau2[i,j]
+							println(tau1[i,j])
+							println(tau2[i,j])
+						end
 						@fact tau1[i,j] > tau2[i,j] => true
 					end
 				end
