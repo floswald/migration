@@ -134,7 +134,6 @@ function simulate(m::Model,p::Param,nsim::Int)
 	agrid_rent = m.grids["assets"][m.aone:end]
 	ygrid = m.gridsXD["y"]
 	pgrid = m.gridsXD["p"]
-	zgrid = m.gridsXD["z"]
 	ypidx = Gyp_indices(p)  # array with cols iy,ip,idx
 
 	regnames = m.regnames[:Division]
@@ -148,7 +147,6 @@ function simulate(m::Model,p::Param,nsim::Int)
 	# TODO
 	# all of those should be non-uniform probably
 	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
-	G0tau = Categorical(m.grids["Gtau0"])	# initial type distribution
 	G0z   = Categorical([1/p.nz for i=1:p.nz])
 	G0yp  = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
 	G0j   = Categorical(array(m.regnames[:prop]))	# TODO popdist
@@ -222,14 +220,10 @@ function simulate(m::Model,p::Param,nsim::Int)
 		iyp  = rand(G0yp)
 		iy   = ypidx[iyp,1]
 		ip   = ypidx[iyp,2]
-		# iz   = rand(G0z)
-		# iz   = convert(Int,floor(median([1:p.nz])))	#everybody gets median income
-		z   = rand(Normal(0,0.1))
-		# ia   = rand(G0a) + m.aone - 1
-		# a   =  rand()
-		a   =  0.0
+		z    = rand(Normal(0,0.1))
+		a    = 0.0
 		ih   = 0
-		itau = rand(G0tau)
+		itau = rand(Gtau)
 		ij   = rand(G0j)
 
 
@@ -250,7 +244,6 @@ function simulate(m::Model,p::Param,nsim::Int)
 			# record beginning of period state
 			# --------------------------------
 
-			# yy = zgrid[ iz,iy,age,ij ]
 			yy = getIncome(m,ygrid[iy,ij],z,age,ij)
 
 			# flag for downpayment constraint
@@ -422,7 +415,6 @@ function simulate(m::Model,p::Param,nsim::Int)
 
 			# if move
 			if move
-				itau = rand(Gtau)
 				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
 			else
 				z   = draw_z(m,z,ij)

@@ -214,7 +214,6 @@ type Model
 
 
 		grids["Gtau"] = [(1.0-p.taudist), p.taudist]
-		grids["Gtau0"] = [(1.0-p.taudist0), p.taudist0]
 
 		
 
@@ -241,13 +240,15 @@ type Model
 		# moving cost function
 		# ====================
 
-		mc = zeros(p.nt-1,p.nJ,p.nJ,p.nh,p.ns)
+		mc = zeros(p.nt-1,p.nJ,p.nJ,p.ntau,p.nh,p.ns)
 		for it in 1:p.nt-1
 			for ij in 1:p.nJ
 				for ik in 1:p.nJ
-					for ih in 0:1
-						for is in 1:p.ns
-							mc[it,ij,ik,ih+1,is] = (ij!=ik) * (p.MC0 + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
+					for itau in 1:p.ntau
+						for ih in 0:1
+							for is in 1:p.ns
+								mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * it + (is-1)*p.MC4 )
+							end
 						end
 					end
 				end

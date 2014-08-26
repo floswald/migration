@@ -24,6 +24,37 @@ facts("checking some properties of the solution") do
 
 	end
 
+	context("value function of high cost type movers") do
+
+		for itest in 1:50
+
+			is   = rand(1:p.ns)
+			ia   = rand(1:p.na)
+			ih   = rand(1:p.nh)
+			iy   = rand(1:p.ny)
+			ip   = rand(1:p.np)
+			iz   = rand(1:p.nz)
+			itau = rand(1:p.ntau)
+			ij   = rand(1:p.nJ)
+			age   = rand(1:(p.nt-1))
+
+			tau1 = reshape(m.vh[1,:,is,iz,iy,ip,1,m.aone,ih,:,age],p.nJ,p.nJ)
+			tau2 = reshape(m.vh[1,:,is,iz,iy,ip,2,m.aone,ih,:,age],p.nJ,p.nJ)
+
+			# value of guy with lower moving cost must be higher
+			for i in 1:size(tau1,1)
+				for j in 1:size(tau2,2)
+					if tau1[i,j] != p.myNA && tau1[i,j] != p.myNA
+						@fact tau1[i,j] > tau2[i,j] => true
+					end
+				end
+			end
+
+
+		end
+
+	end
+
 	context("check conditional v is never decreasing in a") do
 
 		tt = mapslices(x -> diff(x),m.vh,8)

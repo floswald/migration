@@ -104,7 +104,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	Gz = m.gridsXD["Gz"]
 	Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
 	Gyp = m.gridsXD["Gyp"]
-	Gtau = m.grids["Gtau"]
 
 	vtmp = zeros(p.nJ) 
 	feasible_k = falses(p.nJ)
@@ -125,7 +124,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					# compute expected future values given stochastic state
 					# (iz,iy,ip,is)
 					if age < p.nt-1
-						integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,Gtau,m,p)
+						integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,m,p)
 					end
 
 					for itau=1:p.ntau
@@ -180,7 +179,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
 												# optimal savings choice
-												rh = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,def,EV,blim,age)
 
 												vstay[ihh+1] = rh[1]
 
@@ -236,7 +235,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											m.cash[hidx] = cash
 
 											# find moving cost
-											mc = movecost[age,ij,ik,ih+1,is]
+											mc = movecost[age,ij,ik,itau,ih+1,is]
 
 											# find relevant future value:
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
@@ -253,7 +252,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 
 											# optimal savings choice
-											r = maxvalue(cash,is,itau,p,agrid,w,ihh,mc,def,EV,blim,age)
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,def,EV,blim,age)
 
 
 											# checking for infeasible choices
@@ -323,17 +322,17 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},Gtau::Array{Float64,1},m::Model,p::Param)
+function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},m::Model,p::Param)
 
 	# offsets
-	o_tau = 0
+	# o_tau = 0
 	o_p = 0
 	o_y = 0
 	o_z = 0
 	o_s = 0
 
 	# factors
-	f_tau = 0.0
+	# f_tau = 0.0
 	f_py = 0.0
 	f_z = 0.0
 	f_s = 0.0
@@ -357,17 +356,18 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 		# compute current index
 		idx0 = idx9(is,iz,iy,ip,itau,ia,ih,ij,age,p)
 
-		idx1  = idx_tau(ia,ih,ij,age,p)
+		idx1  = idx_p(ia,ih,ij,itau,age,p)
 
 		# loop over future states
-		for itau1 = 1:p.ntau 		# future tau
-			o_tau = (idx1 + (itau1-1)) * p.np
-			f_tau = Gtau[itau1]
+		# for itau1 = 1:p.ntau 		# future tau
+		# 	o_tau = (idx1 + (itau1-1)) * p.np
+		# 	f_tau = Gtau[itau1]
 			for ip1 = 1:p.np 			
-				o_p = (o_tau + (ip1-1)) * p.ny
+				o_p = (idx1 + (ip1-1)) * p.ny
 				for iy1  = 1:p.ny 				# future y
 					o_y  = (o_p + (iy1-1)) * p.nz
-					f_py = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
+					# f_py = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
+					f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
 					for iz1 = 1:p.nz			# future z 		
 						o_z = (o_y + (iz1-1)) * p.ns
 						f_z = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
@@ -386,7 +386,7 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 					end
 				end
 			end
-		end
+		# end
 
 		m.EV[idx0] = tmp
 	end			
@@ -451,6 +451,12 @@ function idx_tau(ia::Int,ih::Int,ij::Int,age::Int,p::Param)
 	return r
 end
 
+function idx_p(ia::Int,ih::Int,ij::Int,itau::Int,age::Int,p::Param)
+
+	 r = p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)
+	return r
+end
+
 # p.na,p.nh,p.nP,p.np,p.nJ
 function idxFinal(ia::Int,ih::Int,ip::Int,ij::Int,p::Param)
 
@@ -465,7 +471,7 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(cash::Float64,is::Int,itau::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},lb::Float64,age::Int)
+function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},lb::Float64,age::Int)
 
 	# if your current cash debt is lower than 
 	# maximum borrowing, infeasible
@@ -484,7 +490,7 @@ function maxvalue(cash::Float64,is::Int,itau::Int,p::Param,a::Array{Float64,1},w
 		ub = a[end]
 
 		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
-		vsavings!(w,a,EV,s,cons,cash,ub,is,own,itau,mc,def,p)	
+		vsavings!(w,a,EV,s,cons,cash,ub,is,own,mc,def,p)	
 
 		r = findmax(w)
 
@@ -497,7 +503,7 @@ function maxvalue(cash::Float64,is::Int,itau::Int,p::Param,a::Array{Float64,1},w
 end
 
 
-function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,ub::Float64,is::Int,own::Int,itau::Int,mc::Float64,def::Bool,p::Param)
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,ub::Float64,is::Int,own::Int,mc::Float64,def::Bool,p::Param)
 	n = p.namax
 	x = 0.0
 	cons = 0.0
@@ -508,9 +514,9 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 	size2 = is == 1 ? false : true
 
 	if size2
-		consta =  own*p.xi2 - def*p.lambda - mc + (itau-1)*p.tau
+		consta =  own*p.xi2 - def*p.lambda - mc 
 	else
-		consta =  own*p.xi1 - def*p.lambda - mc + (itau-1)*p.tau
+		consta =  own*p.xi1 - def*p.lambda - mc 
 	end
 
 

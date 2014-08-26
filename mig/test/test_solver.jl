@@ -289,14 +289,13 @@ facts("testing vsavings!()") do
 	ub = a[end]
 	for is = 1:p.ns
 	for ih = 0:1
-	for itau = 1:p.ntau
 	for def in [true, false]
 
 		# compute vsavings!()
-		mig.vsavings!(w,a,EV,s,cons,cash,ub,is,ih,itau,mc,def,p)
+		mig.vsavings!(w,a,EV,s,cons,cash,ub,is,ih,mc,def,p)
 
 		# compute values at each savings grid
-		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - def*p.lambda - mc + (itau-1)*p.tau
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - def*p.lambda - mc
 
 		for i = 1:p.namax
 			# get savings vector
@@ -317,7 +316,6 @@ facts("testing vsavings!()") do
 	end
 	end
 	end
-	end
 end
 
 
@@ -326,7 +324,7 @@ facts("testing bilinear approx") do
 	xgrid = linspace(-1.5,3,10)
 	ygrid = linspace(1.5,3.8,12)
 
-	zmat = [ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+	zmat = Float64[ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
 
 	@fact zmat[1,1] => mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)
 	@fact zmat[3,6] => mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat)
@@ -349,9 +347,9 @@ facts("testing bilinear approx for mulitple values") do
 	xgrid = linspace(-1.5,3,10)
 	ygrid = linspace(1.5,3.8,12)
 
-	zmat = [ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
-	zmat2= [ (i-0.2)*(j+0.1)*0.4 for i in xgrid, j in ygrid ]
-	zmat3= [ (i-0.1)*(j+0.3)*8.2 for i in xgrid, j in ygrid ]
+	zmat = Float64[ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+	zmat2= Float64[ (i-0.2)*(j+0.1)*0.4 for i in xgrid, j in ygrid ]
+	zmat3= Float64[ (i-0.1)*(j+0.3)*8.2 for i in xgrid, j in ygrid ]
 
 	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)) => 1
 	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat)) => 2
@@ -458,21 +456,19 @@ facts("test integration of vbar: getting EV") do
 
 	context("test uniform weights return original array") do
 
-		p    = mig.Param(1)
+		p    = mig.Param(2)
 		m    = mig.Model(p)
 
 		mig.setrand!(m)
 
 		Gz = m.gridsXD["Gz"]
 		Gyp = m.gridsXD["Gyp"]
-		Gtau = m.grids["Gtau"]
 
 		# 1/number of all integration states
 		num = p.nz * p.ny * p.np 
 		fill!(m.vbar,1/num)
 		fill!(Gz,1/p.nz)
 		fill!(Gyp,1/(p.ny*p.ny))
-		fill!(Gtau,1/p.ntau	)
 
 		for itest = 1:50
 
@@ -490,7 +486,7 @@ facts("test integration of vbar: getting EV") do
 			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
 
 			# calling integrateVbar must return vbar.
-			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,Gtau,m,p)
+			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,m,p)
 
 			@fact m.vbar[mig.idx9(is,iz,iy,ip,itau,ia,ih,ij,it,p)] - m.EV[mig.idx9(is,iz,iy,ip,itau,ia,ih,ij,it,p)] => roughly(0.0,atol=0.00001)
 
@@ -499,7 +495,7 @@ facts("test integration of vbar: getting EV") do
 
 	context("test whether equal to hand integration") do
 
-		p    = mig.Param(2)
+		p    = mig.Param(1)
 		m    = mig.Model(p)
 		mig.setrand!(m)
 
@@ -510,7 +506,6 @@ facts("test integration of vbar: getting EV") do
 		Gz = m.gridsXD["Gz"]
 		Gyp = m.gridsXD["Gyp"]
 		Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
-		Gtau = m.grids["Gtau"]
 
 		for ij=1:p.nJ				# current location
 		for ih=1:p.nh
@@ -524,14 +519,12 @@ facts("test integration of vbar: getting EV") do
 		for is=1:p.ns 				# regional income deviation
 
 		# dimvec2 = (ny, np, nP, nz, na, nh, ntau,  nJ, nt-1 )
-			for itau1=1:p.ntau			# type
 			for iz1=1:p.nz				# individual income shock
 			for ip1=1:p.np 				# regional price deviation
 			for iy1=1:p.ny 				# regional income deviation
 			for is1=1:p.ns 				# regional income deviation
 
-				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau1,ia,ih,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1), ij ] * Gs[is,is1] * Gtau[itau1]
-			end
+				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau,ia,ih,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1), ij ] * Gs[is,is1] 
 			end
 			end
 			end
@@ -553,15 +546,14 @@ facts("test integration of vbar: getting EV") do
 		ia   = rand(1:p.na)
 		ih   = rand(1:p.nh)
 		ij   = rand(1:p.nJ)
+		itau   = rand(1:p.ntau)
 		# start test loop
-		for itau=1:p.ntau			# type
 		for iz=1:p.nz				# individual income shock
 		for ip=1:p.np 				# regional price deviation
 		for iy=1:p.ny 				# regional income deviation
 		for is=1:p.ns 				# regional income deviation
-		mig.integrateVbar!(iz,iy,ip,is,age,Gz,Gyp,Gs,Gtau,m,p)
+		mig.integrateVbar!(iz,iy,ip,is,age,Gz,Gyp,Gs,m,p)
 			@fact myEV[is,iz,iy,ip,itau,ia,ih,ij] - m.EV[is,iz,iy,ip,itau,ia,ih,ij,age] => roughly(0.0,atol=0.00001)
-		end
 		end
 		end
 		end

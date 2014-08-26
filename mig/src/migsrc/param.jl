@@ -15,8 +15,7 @@ type Param
 	imgamma :: Float64			# 1/(1-CRRA)
 	lambda  :: Float64          # default penalty
 	tau     :: Float64 			# value of tau for high type
-	taudist :: Float64 			# population prob of being high type when moving
-	taudist0:: Float64 			# population prob of being high type in initial period
+	taudist :: Float64 			# population prob of being high cost type
 	xi1     :: Float64          # utility of housing for HHsize 1
 	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
@@ -107,11 +106,10 @@ type Param
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
 		lambda   = 0.5
-		tau      = 0.0
-		taudist  = 0.1
-		taudist0 = 0.8
+		tau      = 100.0
+		taudist  = 0.8
 		xi1      = 0.05
-		xi2      = 2.1
+		xi2      = 0.08
 		omega1   = 2.1
 		omega2   = 0.8
 
@@ -140,7 +138,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,taudist0,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,
 				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed,verbose)
 	end
 end
