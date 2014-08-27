@@ -21,7 +21,7 @@ ucl_estim:
 
 irid_slices8:
   name:   mig-slices  
-  desc:   slices on 24 cores
+  desc:   slices on 3 nodes using 8 cores each 
   nnodes:   3
   ppnodes:   12
   hours: 01
@@ -29,12 +29,12 @@ irid_slices8:
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  run:   pbs_slices7.jl 
+  run:   pbs_slices8.jl 
   exec:   /home/eisuc151/local/bin/julia
 
 irid_slices7:
   name:   mig-slices  
-  desc:   slices on 28 cores
+  desc:   slices on 4 nodes using 7 cores each 
   nnodes:   4
   ppnodes:   12
   hours: 01
