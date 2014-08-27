@@ -707,7 +707,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# ----------------------
 
 		# if noown || nomove
-		# 	push!(mom1,["move_neg_equity",0.0,1.0])
+			push!(mom1,["move_neg_equity",0.0,1.0])
 		# else
 		# 	neq = df[(df[:move].==true) & (df[:own].==true),:equity] .< 0.0
 		# 	push!(mom1,["move_neg_equity",0.0,1.0])

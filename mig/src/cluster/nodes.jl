@@ -47,7 +47,7 @@ pb["taudist"]    = [0.01,0.99]
 
 
 # subsetting moments
-submom = setdiff(moms[:moment],["lm_w_intercept"])
+submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity"])
 
-
-mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=array(moms[:moment]))
+# setup the minimization problem
+mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom)
