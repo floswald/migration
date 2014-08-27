@@ -32,10 +32,10 @@ end
 pb = Dict{ASCIIString,Array{Float64,1}}()
 pb["gamma"]  = [1.1,3]
 # pb["lambda"] = [0.0,2]
-pb["xi1"]    = [0.0,1.0]
-pb["xi2"]    = [0.0,1]
-pb["omega1"] = [0.0,3.0]
-pb["omega2"] = [0.0,3.0]
+pb["xi1"]    = [0.0,0.005]
+pb["xi2"]    = [0.0,0.005]
+pb["omega1"] = [0.0,1]
+pb["omega2"] = [0.0,1]
 pb["MC0"]    = [0,7]
 pb["MC1"]    = [0.0,5]
 # pb["MC2"]    = [0.0,0.0005]
@@ -47,7 +47,7 @@ pb["taudist"]    = [0.01,0.99]
 
 
 # subsetting moments
-submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity"])
+submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"])
 
 # setup the minimization problem
 mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom)
