@@ -19,10 +19,9 @@ ucl_estim:
   wd: /data/uctpfos/git/migration/mig.jl/src/cluster
   run:   estimation.jl 
 
-
-irid_slices:
+irid_slices8:
   name:   mig-slices  
-  desc:   slices of mig
+  desc:   slices on 24 cores
   nnodes:   3
   ppnodes:   12
   hours: 01
@@ -30,7 +29,20 @@ irid_slices:
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
-  run:   pbs_slices8.jl 
+  run:   pbs_slices7.jl 
+  exec:   /home/eisuc151/local/bin/julia
+
+irid_slices7:
+  name:   mig-slices  
+  desc:   slices on 28 cores
+  nnodes:   4
+  ppnodes:   12
+  hours: 01
+  mins: 00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  run:   pbs_slices7.jl 
   exec:   /home/eisuc151/local/bin/julia
 
 
