@@ -26,7 +26,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
 
 	# get mean squared distance over standard edeivation
-	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:model_sd] ).^2
+	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:data_sd] ).^2
 
 	# fval = mean(mom2[subset,:sqdist]) / 1000
 	fval = mean(abs(mom2[subset,:perc]))
