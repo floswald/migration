@@ -5,7 +5,7 @@ using Reexport
 @reexport using DataFrames
 import Base.show
 
-export Param, Model
+export Param, Model, runObj, runSim
 
 
 
