@@ -68,6 +68,23 @@ function runSim()
 	return s
 end
 
+
+# single test run of objective
+function runObj()
+	# run objective
+	p2 = Dict{ASCIIString,Float64}()
+	if Sys.OS_NAME == :Darwin
+		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+	elseif Sys.OS_NAME == :Windows
+		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
+	else
+		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
+	end
+	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
+	@time x = mig.objfunc(p2,moms,array(moms[:moment]))
+	return x
+end
+
 		
 # asset grid scaling
 function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,cutoff::Float64,partition=0.5) 
