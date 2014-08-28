@@ -98,7 +98,7 @@ type Param
 			nJ    = 9
 			nt    = 30
 			ns    = 2
-			nsim  = 55000
+			nsim  = 40000
 
 		end		
 

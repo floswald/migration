@@ -367,7 +367,7 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 				for iy1  = 1:p.ny 				# future y
 					o_y  = (o_p + (iy1-1)) * p.nz
 					# f_py = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
-					f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
+					@inbounds f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
 					for iz1 = 1:p.nz			# future z 		
 						o_z = (o_y + (iz1-1)) * p.ns
 						f_z = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
@@ -377,11 +377,13 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 				     	    # idx1 = idx9(is1,iz1,iy1,ip1,itau1,ia,ih,ij,age,p)
 
 				     	    # construct sum
-							# @inbounds tmp += m.vbar[idx1] * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ] * Gs[is + p.ns * (is1-1)] * Gtau[itau1]
-							tmp += m.vbar[o_z + is1] * Gs[is + p.ns * (is1-1)] * f_z
-
+				     	    # TODO
 							# mover's future value: mover specific transitions of z
-							# tmp2 += m.vbar[idx] * GzM[iz + p.nz * (iz1 + p.nz * (ij-1)-1)] * Gp[ip + p.np * (ip1 + p.np * (ij-1)-1)] * Gy[iy + p.ny * (iy1 + p.ny * (ij-1)-1)] * GP[iP + p.nP * (iP1-1)] * Gs[is + p.ns * (is1-1)]
+				     	    # tmp0 = m.vbar[o_z + is1]
+							@inbounds tmp += m.vbar[o_z + is1] * Gs[is + p.ns * (is1-1)] * f_z
+							# tmp2 += tmp0 * Gs[is + p.ns * (is1-1)] * f_z2
+
+
 						end
 					end
 				end
