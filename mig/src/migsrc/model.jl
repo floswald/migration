@@ -195,12 +195,12 @@ type Model
 		# 1D grids
 		# =========
 
-		bounds["assets"] = (-maximum(pgrid),maximum(zgrid))
+		bounds["assets"] = (-maximum(pgrid),maximum(zgrid)*2)
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
-		x = [linspace(bounds["assets"][1],50.0,p.na-5),linspace(70.0,bounds["assets"][2],5)]
+		x = [linspace(bounds["assets"][1],50.0,p.na-6),linspace(70.0,bounds["assets"][2],6)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
 		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 

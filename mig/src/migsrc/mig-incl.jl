@@ -64,8 +64,8 @@ function runSim()
 	s   = simulate(m,p)
 	simplot(s,5)
 	x=computeMoments(s,p,m)
-	show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
-	return (s,x)
+	showall(x)
+	return s
 end
 
 		

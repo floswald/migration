@@ -17,7 +17,7 @@ end
 moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
 # want to estimate those:
-plist = ["gamma","xi1","xi2","omega2","MC0","MC1","MC3","MC3_2","MC4","Rm","taudist"]
+plist = ["gamma","xi1","xi2","omega2","MC0","MC1","MC3","MC3_2","MC4","taudist"]
 
 p2 = Dict{ASCIIString,Float64}()
 
@@ -42,7 +42,6 @@ pb["MC1"]    = [0.0,0.5]
 pb["MC3"]    = [0,0.25]
 pb["MC3_2"]    = [-0.01,0.025]
 pb["MC4"]    = [0,3]
-pb["Rm"]    = [1.03,1.2]
 pb["taudist"]    = [0.01,0.99]
 
 
