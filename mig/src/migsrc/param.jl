@@ -109,10 +109,10 @@ type Param
 		lambda   = 0.5
 		tau      = 100.0
 		taudist  = 0.8
-		xi1      = 0.001
-		xi2      = 0.002
+		xi1      = 0.061
+		xi2      = 0.025
 		omega1   = 0.000
-		omega2   = 0.000
+		omega2   = 2.000
 
 		MC0    = 3.9
 		MC1    = 0.01

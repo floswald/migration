@@ -13,8 +13,9 @@ include("src/mig.jl")
 
 	
 # run simulation
+# plot 5 guys
+# return moments
 @time s = mig.runSim();
-mig.simplot(s,5)
 
 p = mig.Param(2,1)
 @time m = mig.Model(p)	# 1.5 secs
@@ -47,12 +48,12 @@ show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
 
 # run objective
 p2 = Dict{ASCIIString,Float64}()
-p2["gamma"] = 3.1
+p2["gamma"] = 1.4
 indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
 moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
 @time x = mig.objfunc(p2,moms,array(moms[:moment]))
-mprob = MOpt.MProb(p2,pb,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
+mprob = MOpt.MProb(p2,pb	,mig.objfunc,moms,moments_subset=setdiff(moms[:moment],["moved0","moved1","moved2","move_rate","move_rate_h0","move_rate_h1","own_rate","wealth_h_0","wealth_h_1"]))
 
 
 # testing

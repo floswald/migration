@@ -35,6 +35,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 
     if Sys.OS_NAME == :Darwin
 	    showall(mom2)
+	    simplot(s,5)
 	    println()
 	end
 
@@ -61,8 +62,10 @@ function runSim()
 	m = mig.Model(p)
     mig.solve!(m,p)
 	s   = simulate(m,p)
+	simplot(s,5)
+	x=computeMoments(s,p,m)
 	show(mig.DataFrame(moment=["move","own"],value=[mean(s[:move]),mean(s[:h])]))
-	return s
+	return (s,x)
 end
 
 		
