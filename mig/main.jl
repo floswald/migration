@@ -11,10 +11,11 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 
+x= mig.runObj()
 	
 # run simulation
 # plot 5 guys
-# return moments
+# return simulation
 @time s = mig.runSim();
 
 p = mig.Param(2,1)
@@ -22,7 +23,8 @@ p = mig.Param(2,1)
 @time mig.solve!(m,p)	
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
-mig.vhplot(m,p,(1,1,1,1,1,1,1,29))
+mig.vhplot(m,p,(1,1,1,1,1,1,1,28))
+mig.vhplot(m,p,(4,1,4,3,1,1,4,10))
 mig.vplot(m,p)
 @time s = mig.simulate(m,p);	
 mig.simplot(s,5)
@@ -32,11 +34,13 @@ mig.simplot(s,5)
 
 # write sim to disk
 outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
-mig.simexport(s,6,joinpath(outdir,"simdata.csv"))
+mig.simexport(s,[22484,100,32259,32546,33533,7],joinpath(outdir,"simdata.csv"))
 
 maximum(m.EV[:,:,:,:,:,:,:,:,29])
 m.sh[1,1,1,1,1,1,:,1,1,1,1]
-m.vh[1,1,2,3,3,1,1,:,1,1,1][:]
+hcat(m.vh[1,1,1,1,1,1,1,:,1,1,28][:],m.ch[1,1,1,1,1,1,1,:,1,1,28][:],m.sh[1,1,1,1,1,1,1,:,1,1,28][:])
+hcat(m.vh[1,1,1,1,1,1,1,:,2,1,28][:],m.ch[1,1,1,1,1,1,1,:,2,1,28][:],m.sh[1,1,1,1,1,1,1,:,2,1,28][:])
+
 reshape(m.vh[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 reshape(m.v[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)
 reshape(m.rho[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)

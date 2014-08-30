@@ -1,8 +1,8 @@
 module mig
 
-using GLM, MOpt.transpose, PDMats, Distributions # BSplines #, Debug , BSplines
-using Reexport
-@reexport using DataFrames
+using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta  # BSplines #, Debug , BSplines
+# using Reexport, DataFramesMeta
+# @reexport using DataFrames
 import Base.show
 
 export Param, Model, runObj, runSim

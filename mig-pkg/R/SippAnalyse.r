@@ -19,29 +19,30 @@
 # }
 
 var.sd <- function(name,x,y=c()) {
-  # x = x - mean(x,na.rm=T)
-  # if (length(y)==0) {
-  #   y = x
-  # } else {
-  #   y = y - mean(y,na.rm=T)
-  # }
-  # sfit1 = summary(lm( x*y ~1))
+  x = x - mean(x,na.rm=T)
+  if (length(y)==0) {
+    y = x
+  } else {
+    y = y - mean(y,na.rm=T)
+  }
+  sfit1 = summary(lm( x*y ~1))
   att <- list()
   att$momemt = name
-  # att$data_value  = sfit1$coef[1,1]
-  # att$data_sd     = sfit1$coef[1,2]
-  att$data_value  = cov(x,y,use="complete.obs")
-  att$data_sd     = 0.0
+  att$data_value  = sfit1$coef[1,1]
+  att$data_sd     = sfit1$coef[1,2]
+  # att$data_value  = cov(x,y,use="complete.obs")
+  # att$data_sd     = 0.0
   return(att)
 }
 
 
-Sipp.moments <- function(d,svy,ages=c(21,51)){
+Sipp.moments <- function(d,svy,ages=c(20,50)){
 
 	r <- list()
 
 	# subset data do age range
 	d <- copy(d[age>=ages[1] & age <= ages[2]])
+	svy = subset(svy, (age <= ages[2]) & (age >= ages[1]))
 
 	# moments relating to homeownership
 	# =================================
@@ -54,12 +55,12 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	r$own_rate_reg = data.table(moment=nms,data_value=dlm$coefficients[,"Estimate"],data_sd=dlm$coefficients[,"Std. Error"])
 
 	# own ~ Division
-	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T))),by=Division][order(Division)]
+	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD))),by=Division][order(Division)]
 	r$mean_own_div[,moment := paste0(moment,"_",Division)]
 	r$mean_own_div[,Division := NULL]
 
 	# own ~ kids
-	r$mean_own_kids = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T))),by=kids][order(kids)]
+	r$mean_own_kids = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD))),by=kids][order(kids)]
 	r$mean_own_kids[,moment := paste0(moment,"_kids",kids)]
 	r$mean_own_kids[,kids:= NULL]
 	r$cov_own_kids = d[,var.sd("cov_own_kids",own,kids)]
@@ -81,7 +82,7 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	nmoves[,c("moved0","moved1","moved2") := list(moves==0,moves==1,moves>1)]
     nmoves[,moved1 := moves==1]
     nmoves[,moved2 := moves>1]
-    r$move_rate <- d[,list(move=weighted.mean(D2D,HHweight,na.rm=T),sdmove=sqrt(wtd.var(D2D,HHweight,na.rm=T))),by=age][,list(moment="mean_move",data_value=mean(move),data_sd=mean(sdmove))]
+    r$move_rate <- d[,list(move=weighted.mean(D2D,HHweight,na.rm=T),sdmove=sqrt(wtd.var(D2D,HHweight,na.rm=T) / nrow(.SD))),by=age][,list(moment="mean_move",data_value=mean(move),data_sd=mean(sdmove))]
 
     # CAUTION!
     # moving zero times in SIPP data means not moving over 4 years. this is not what you expect and also not 
@@ -98,14 +99,14 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	# move ~ own
 	# -----------
 
-	r$mean_move_h0 = d[own==0,list(moment="mean_move_ownFALSE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
-	r$mean_move_h1 = d[own==1,list(moment="mean_move_ownTRUE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T)))]
+	r$mean_move_h0 = d[own==0,list(moment="mean_move_ownFALSE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T) / length(own)))]
+	r$mean_move_h1 = d[own==1,list(moment="mean_move_ownTRUE",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T) / length(own)))]
 	r$cov_move_h = d[,var.sd("cov_move_h",D2D,own)]
 
 	# moving and kids
 	# ---------------
 
-	r$mean_move_kids = d[,list(moment="mean_move",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T))),by=kids][order(kids)]
+	r$mean_move_kids = d[,list(moment="mean_move",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T) / nrow(.SD))),by=kids][order(kids)]
 	r$mean_move_kids[,moment := paste0(moment,"_kids",kids)]
 	r$mean_move_kids[,kids:= NULL]
 	r$cov_move_kids = d[,var.sd("cov_move_kids",D2D,kids)]
@@ -114,7 +115,7 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	# -------------------
 
 	# for lack of a better measure, compute quartiles of distance for movers here
-	qts <- merged[D2D==TRUE,quantile(km_distance)]
+	qts <- d[D2D==TRUE,quantile(km_distance)]
 	r$q25_move_distance <- data.table(moment="q25_move_distance",data_value=qts["25%"],data_sd = 1)
 	r$q50_move_distance <- data.table(moment="q50_move_distance",data_value=qts["50%"],data_sd = 1)
 	r$q75_move_distance <- data.table(moment="q75_move_distance",data_value=qts["75%"],data_sd = 1)
@@ -122,22 +123,33 @@ Sipp.moments <- function(d,svy,ages=c(21,51)){
 	# moving and negative equity
 	# --------------------------
 
-	negeq <- merged[own==TRUE & D2D==TRUE, prop.table(table(home.equity<0))]["TRUE"]
+	negeq <- d[own==TRUE & D2D==TRUE, prop.table(table(home.equity<0))]["TRUE"]
 	r$move_negeq <- data.table(moment="move_neg_equity",data_value=negeq,data_sd = 1)
 
 	# linear regression of total wealth
 	# =================================
 
-	wlm = summary(svyglm(wealth ~ age + age2 + own, svy))
-	nms = paste0("lm_w_",rownames(wlm$coefficients))
-	nms = gsub("\\(|\\)","",nms)
-	r$wealth_reg = data.table(moment=nms,data_value=wlm$coefficients[,"Estimate"],data_sd=wlm$coefficients[,"Std. Error"])
+	# wlm = summary(svyglm(wealth ~ age + age2 ,svy ))
+	# nms = paste0("lm_w_",rownames(wlm$coefficients))
+	# nms = gsub("\\(|\\)","",nms)
+	# r$wealth_reg = data.table(moment=nms,data_value=wlm$coefficients[,"Estimate"],data_sd=wlm$coefficients[,"Std. Error"])
+
+	# mean wealth by age group
+	# ------------------------
+	r$w_age <- d[,list(data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T) / nrow(.SD))),by=cut_interval(age,6)][order(cut_interval)]
+	r$w_age[,moment := paste0("mean_wealth_",cut_interval)]
+	r$w_age[,cut_interval := NULL]
+	setcolorder(r$w_age,c("moment","data_value","data_sd"))
 
 	# mean wealth conditional on Division
 	# -----------------------------------
-	r$mean_wealth_div <- d[,list(moment="mean_wealth",data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T))),by=list(Division)][order(Division)] 
+	r$mean_wealth_div <- d[,list(moment="mean_wealth",data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T) / nrow(.SD))),by=list(Division)][order(Division)] 
 	r$mean_wealth_div[,moment := paste0(moment,"_",Division)]
 	r$mean_wealth_div[,c("Division") := NULL]
+
+	# wealth ~ own
+	r$mean_wealth_h0 = d[own==0,list(moment="mean_wealth_ownFALSE",data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T) / length(own)))]
+	r$mean_wealth_h1 = d[own==1,list(moment="mean_wealth_ownTRUE",data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T) / length(own)))]
 
 
 	# wlm = summary(svyglm(w2medinc ~ age + age2 + own + Division, svy))

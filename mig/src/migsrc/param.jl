@@ -96,9 +96,9 @@ type Param
 			np    = 3
 			ny    = 3
 			nJ    = 9
-			nt    = 30
+			nt    = 32
 			ns    = 2
-			nsim  = 40000
+			nsim  = 50000
 
 		end		
 
@@ -112,9 +112,9 @@ type Param
 		xi1      = 0.025
 		xi2      = 0.05
 		omega1   = 0.000
-		omega2   = 2.000
+		omega2   = 1.5
 
-		MC0    = 3.9
+		MC0    = 5
 		MC1    = 0.01
 		MC2    = 0.0
 		MC3    = 0.01
@@ -130,7 +130,7 @@ type Param
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
 		chi    = 0.2   # downpayment ratio
 		myNA   = -99.0
-		minAge = 21
+		minAge = 20
 		maxAge = minAge + nt
 		ages   = minAge:maxAge
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
@@ -167,6 +167,7 @@ function show(io::IO, p::Param)
 	xi2     = $(p.xi2)
 	omega1  = $(p.omega1)
 	omega2  = $(p.omega2)
+	MC0     = $(p.MC0)
 	MC1     = $(p.MC1)
 	MC2     = $(p.MC2)
 	MC3     = $(p.MC3)

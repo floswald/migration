@@ -267,7 +267,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.vh[hidx]   = p.myNA
 												m.sh[hidx]   = 0.0
 												m.ch[hidx]   = 0.0
-												m.v[kidx]  = NaN
+												m.v[kidx]  = p.myNA
 												m.dh[kidx] = 0
 											end
 
@@ -970,7 +970,7 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 	u = (y - ymin)/dy
 
 	# linear combination of locations
-	z = (1.0-t)*(1.0-u)*zxminymin + t*(1.0-u)*zxmaxymin + (1.0-t)*u*zxminymax + t*u*zxmaxymax
+	z  = (1.0-t)*(1.0-u)*zxminymin  + t*(1.0-u)*zxmaxymin  + (1.0-t)*u*zxminymax  + t*u*zxmaxymax
 	z2 = (1.0-t)*(1.0-u)*z2xminymin + t*(1.0-u)*z2xmaxymin + (1.0-t)*u*z2xminymax + t*u*z2xmaxymax
 	z3 = (1.0-t)*(1.0-u)*z3xminymin + t*(1.0-u)*z3xmaxymin + (1.0-t)*u*z3xminymax + t*u*z3xmaxymax
 	(z,z2,z3)

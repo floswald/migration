@@ -161,6 +161,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 	Dt       = zeros(Int,nsim*(T))	 # age
 	Di       = zeros(Int,nsim*(T))	 # identity
 	Dv       = zeros(nsim*(T))	     # value
+	Dprob    = zeros(nsim*(T))	     # value
 	Dc       = zeros(nsim*(T))	     # consu
 	Dcash    = zeros(nsim*(T))	     # cash after rent
 	Drent    = zeros(nsim*(T))	     # rent
@@ -221,7 +222,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 		iy   = ypidx[iyp,1]
 		ip   = ypidx[iyp,2]
 		z    = rand(Normal(0,0.1))
-		a    = 0.0
+		a    = forceBounds(rand(m.Init_asset),0.0,100.0)
 		ih   = 0
 		itau = rand(Gtau)
 		ij   = rand(G0j)
@@ -310,8 +311,11 @@ function simulate(m::Model,p::Param,nsim::Int)
 			# get cumulative prob
 			cumsum!(ktmp2,ktmp,1)
 			# throw a k-dice 
-			moveto = searchsortedfirst(ktmp2,rand())
+			shock = rand()
+			moveto = searchsortedfirst(ktmp2,shock)
 			move = ij != moveto
+
+			Dprob[age + T*(i-1)]      = ktmp[moveto]
 
 			if moveto>p.nJ || moveto < 1
 				println(ktmp2)
@@ -319,6 +323,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 			end
 
 			if move
+
 
 				ihh = 0
 				fill_azmats!(azmat_v,azmat_c,azmat_s,ihh+1,moveto,is,iy,ip,itau,ih+1,ij,age,p,m)
@@ -328,6 +333,28 @@ function simulate(m::Model,p::Param,nsim::Int)
 				val               = vcs[1]
 				Dc[age + T*(i-1)] = vcs[2]
 				ss                = vcs[3]
+
+				# debugging
+				# vvtmp = zeros(p.nJ)
+				# println("[id,age] = [$i,$age] moved from  ij=$ij to ik=$moveto ")
+				# println("at a value v(j,k) = $(vcs[1]) and prob = $(ktmp[moveto])")
+				# for jj in 1:p.nJ
+
+				# 	fill_azmats!(azmat_v,azmat_c,azmat_s,ihh+1,jj,is,iy,ip,itau,ih+1,ij,age,p,m)
+				# 	vcs = bilinearapprox(a,z,agrid,zsupps[ij],azmat_v,azmat_c,azmat_s)
+				# 	vvtmp[jj] = vcs[1]
+				# end
+				# logsum = log( sum( exp(vvtmp) )) 
+				# for jj in 1:p.nJ
+
+				# 	if jj!=moveto
+				# 		println("     k=$jj: v(j,k) = $(round(vvtmp[jj],5)), prob = $(round(ktmp[jj],5)), logsum = $logsum, v-logsum=$(vvtmp[jj]-logsum), exp(v-logsum)=$(exp(vvtmp[jj]-logsum))")
+				# 	else
+				# 		println(" *** k=$jj: v(j,k) = $(round(vvtmp[jj],5)), prob = $(round(ktmp[jj],5)), logsum = $logsum, v-logsum=$(vvtmp[jj]-logsum), exp(v-logsum)=$(exp(vvtmp[jj]-logsum))")
+				# 	end
+				# end
+
+
 
 			else # stay
 
@@ -432,7 +459,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 	# collect all data into a dataframe
 	w = (Dp .* Dh) .+ Da
 
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
+	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,ip=Dip,iy=Diy,p=Dp,y=Dy,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy)
 	# df = join(df,m.regnames,on=:j)
 	# sort!(df,cols=[1,2]	)
 
@@ -583,10 +610,14 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# create a dataframe to push moments on to
 		mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
 
+		ngroups = 6
+
 		# grouped dfs
 		g_div = groupby(df, :Division)
 		g_kids = groupby(df, :kids)
 		g_own = groupby(df, :h)
+		df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))))  # cut age into 6 bins
+		g_abin = groupby(df,:agebin)
 
 		# moments relating to homeownership
 		# =================================
@@ -611,7 +642,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# ----------
 
 		for div in g_div
-			push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])])
+			push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])/sqrt(size(div,1))])
 		end
 
 		# own ~ kids
@@ -619,7 +650,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 		for div in g_kids
 			kk = "$(div[1,:kids])"
-			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])])
+			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])/sqrt(size(div,1))])
 		end
 		# TODO std error
 		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),1.0])
@@ -671,7 +702,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		else
 			for idf in g_own
 				kk = "$(idf[1,:own])"
-				push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+				push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])/sqrt(size(idf,1))])
 			end
 
 		end
@@ -684,7 +715,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 		for idf in g_kids
 			kk = "$(idf[1,:kids])"
-			push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])])
+			push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])/sqrt(size(idf,1))])
 		end
 		# TODO std error
 		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),1.0])
@@ -719,32 +750,52 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		# ================================
 
 		# linear regression of total wealth
-		if sum(df[:own]) == 1.0 || sum(df[:own]) == 0.0
-			nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2","lm_w_owntrue"]  
-			coef_w = DataArray(Float64,4)
-			std_w =  DataArray(Float64,4)
-		else
-			lm_w = fit(LinearModel, wealth ~ age + age2 + own,df )
-			cc_w  = coeftable(lm_w)
-			nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
-			coef_w = @data(coef(lm_w))
-			std_w = @data(stderr(lm_w))
+		# if sum(df[:own]) == 1.0 || noown
+		# 	nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2"]  
+		# 	coef_w = DataArray(Float64,3)
+		# 	std_w =  DataArray(Float64,3)
+		# else
+		# 	lm_w = fit(LinearModel, wealth ~ age + age2,df )
+		# 	cc_w  = coeftable(lm_w)
+		# 	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
+		# 	coef_w = @data(coef(lm_w))
+		# 	std_w = @data(stderr(lm_w))
+		# end
+
+		# wealth ~ age
+		# ------------
+		for idf in g_abin
+			push!(mom1,["mean_wealth_$(idf[1,:agebin])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
 		end
 
 		# wealth ~ division
 		# -----------------
 
 		for idf in g_div
-			push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])])
+			push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
 		end
 
+		# wealth ~ own
+		# ------------
+
+		if noown
+
+			push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
+			push!(mom1,["mean_wealth_ownFALSE",mean(df[:wealth]),std(df[:wealth]) / sqrt(size(df,1))])
+		else
+			for idf in g_own
+				kk = "$(idf[1,:own])"
+				push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(idf[:wealth]),std(idf[:wealth]) / sqrt(size(idf,1))])
+			end
+		end
 
 
 		# collect estimates
 		# =================
 
 
-		nms = vcat(nm_mv,nm_h,nm_w)
+		# nms = vcat(nm_mv,nm_h,nm_w)
+		nms = vcat(nm_mv,nm_h)
 
 		# get rid of parens and hyphens
 		# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
@@ -757,7 +808,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 			nms[i] = ss
 		end
 
-		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h,coef_w], model_sd = [std_mv,std_h,std_w])
+		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h], model_sd = [std_mv,std_h])
 
 		dfout = rbind(mom1,mom2)
 
@@ -782,6 +833,12 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	return dfout
 end
 
+
+
+# select inds from sim dataframe
+function getID(df::DataFrame,id::Array{Int,1})
+	df[findin(df[:id],id),:] 
+end
 
 
 

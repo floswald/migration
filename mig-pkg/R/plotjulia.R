@@ -93,6 +93,9 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 		cat(sprintf("printing tables to %s",print.plots))
 	}
 
+	# subset age
+	sub = merged[,age>=20 & age <= 50]
+
 	# regional processes for p and y
 	reg <- Export.VAR(merged)
 
@@ -111,23 +114,21 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	prop[,proportion:= N / .SD[,sum(N)]]
 
 	# add rent 2 price ratio
-	rents = merged[own==FALSE,list(rent=mean(mortg.rent)),by=Division]
-	values = merged[own==TRUE,list(value=mean(hvalue)),by=Division]
+	rents = merged[sub & own==FALSE,list(rent=mean(mortg.rent)),by=Division]
+	values = merged[sub & own==TRUE,list(value=mean(hvalue)),by=Division]
 	setkey(rents,Division)
 	setkey(values,Division)
 	prop[,r2p := values[rents][,rent / value] ]
-
-
 	prop=as.data.frame(prop)
-	
 	stopifnot(sum(prop$proportion)==1)
 
 	# distance matrix
 	data(Division_distMat,package="EconData")
-	df=data.frame(Division_distMat)
+	dist=data.frame(Division_distMat)
 
 	# data moments
-	m <- as.data.frame(Sipp.moments(merged,des))
+	moms = Sipp.moments(merged,des)
+	m <- as.data.frame(moms)
 
 	# transition matrices for kids by age
 	merged[,kids2 := c(kids[-1],NA),by=upid]	# next period kids
@@ -141,13 +142,24 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	kids_trans$kids2 = as.integer(kids_trans$kids2) -1L 
 	kids_trans$age = as.numeric(as.character(kids_trans$age))
 
+	# initial wealth distribution
+	wealth0 = merged[age==20 & wealth>0 & wealth < 100,wealth]
+	fit.b = MASS:::fitdistr(wealth0,"lognormal")
+
+	# a dataframe for scalar parameters
+	par_df = data.frame(param = names(fit.b$estimate), value=fit.b$estimate)
+
+
+
+
 
 	rm(merged,des)
 	gc()
 
 	# write to disk
     # save(mcoppars,file=file.path(path,"mcopula.rda"))	
-	save(df,file=file.path(path,"distance.rda"))
+	save(par_df,file=file.path(path,"par_df.rda"))
+	save(dist,file=file.path(path,"distance.rda"))
 	save(m,file=file.path(path,"moments.rda"))
 	save(kids_trans,file=file.path(path,"kidstrans.rda"))
 	save(prop,file=file.path(path,"prop.rda"))

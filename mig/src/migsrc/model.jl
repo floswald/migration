@@ -41,6 +41,7 @@ type Model
 	Inc_coefs::DataFrame
 	Inc_ageprofile::Array{Float64,2}
 	Inc_shocks::Array{Float64,2}
+	Init_asset::LogNormal
 
 	# spline approximation settings
 	nknots :: Dict{ASCIIString,Integer}
@@ -96,8 +97,12 @@ type Model
 		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
 		# rhoy = h52df(joinpath(indir,"mig_db_in.h5"),"rhoy/")	# function makes a dataframe from all cols in rhoy
 
+		# scalar params
+		par_df = DataFrame(read_rda(joinpath(indir,"par_df.rda"))["par_df"])
+		init_asset = LogNormal(par_df[par_df[:param].=="meanlog",:value][1],par_df[par_df[:param].=="sdlog",:value][1])
+
 		# distance matrix
-		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["df"])
+		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["dist"])
 		dist = array(distdf)
 
 		# population weights
@@ -285,7 +290,7 @@ type Model
 		knots["assets"] = [linspace(grids["assets"][1],grids["assets"][end-1]-1,p.na - degs["assets"] ) , grids["assets"][end]]
 
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,inc_coefs,ageprof,inc_shocks,nknots,degs,knots)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,inc_coefs,ageprof,inc_shocks,init_asset,nknots,degs,knots)
 
 	end
 

@@ -28,8 +28,8 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	# get mean squared distance over standard edeivation
 	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:data_sd] ).^2
 
-	# fval = mean(mom2[subset,:sqdist]) / 1000
-	fval = mean(abs(mom2[subset,:perc]))
+	fval = mean(mom2[subset,:sqdist]) / 1000
+	# fval = mean(abs(mom2[subset,:perc]))
 
     mout = transpose(mom2[[:moment,:model_value]],1)
 
