@@ -50,11 +50,11 @@ irid_estim:
   name:   mig-slices  
   desc:   SMM of mig
   nnodes:   3
-  ppnodes:   9
+  ppnodes:   12
   hours: 00
   mins: 45
-  logout:   migslices.log
-  logerr:   migslices.err
+  logout:   estim.log
+  logerr:   estim.err
   template: PBS.qsub
-  run:   pbs_estim.jl 
+  run:   examples/pbs_estim8.jl 
   exec:   /home/eisuc151/local/bin/julia
