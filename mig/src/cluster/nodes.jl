@@ -1,6 +1,6 @@
 
 
-if length(DL_LOAD_PATH==0)
+if length(DL_LOAD_PATH)==0
 	push!(DL_LOAD_PATH, "~/local/lib")
 end
 
