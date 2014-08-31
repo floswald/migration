@@ -56,5 +56,5 @@ irid_estim:
   logout:   estim.log
   logerr:   estim.err
   template: PBS.qsub
-  run:   examples/pbs_estim8.jl 
+  run:   pbs_estim8.jl 
   exec:   /home/eisuc151/local/bin/julia
