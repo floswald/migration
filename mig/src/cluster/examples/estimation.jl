@@ -6,12 +6,11 @@
 require("nodes.jl")
 
 opts =[
-	"N"=>2,
+	"N"=>nprocs(),
 	"print_level"=> 3,
-	"savefile" => joinpath(pwd(),"..","workdir","MA.h5"),	
-	"source_on_nodes" => joinpath("src","nodes.jl"),	
-	"mode"=>"mpi",
-	"maxiter"=> 3,
+	"filename" => joinpath(pwd(),"MA.h5"),	
+	"save_frequency"=> 10,
+	"maxiter"=> 30,
 	"maxtemp"=>100,
 	"min_shock_sd"=>0.1,
 	"max_shock_sd"=>1,
@@ -27,14 +26,7 @@ MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 
 # save results
-MOpt.save(MA,MA["savefile"])
+MOpt.save(MA,MA["filename"])
 
-# make a timestamp
-x=replace(readchomp(`date`)," ","")[1:end-3]
-x=replace(x,":","") * ".h5"
-
-# save on dropbox
-run(`dropbox_uploader upload $(MA["savefile"]) mobility/output/model/data_repo/out_data_jl/$x`)
-
-
-
+println("quitting cluster")
+quit()
