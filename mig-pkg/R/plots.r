@@ -51,49 +51,6 @@ multiplot <- function(..., plotlist=NULL, cols=1, layout=NULL) {
 
 
 
-#' Diagnostic Plot for Income Prediction
-#'
-#' plots incomes as predicted by \code{\link{predict.income}}
-#' @param n number of randomly drawn individuals
-#' @param l output of income prediction
-#' @family diagplots
-#' @return a ggplot
-#' @examples
-#' load("~/Dropbox/mobility/output/model/BBL/predIncome.RData")
-#' p <- plot.predict.income(n=4,l)
-plot.predict.income <- function(n,l){
-
-	# choose n random guys from 
-	i <- l[,sample(unique(upid),size=n)]
-
-	# choose 5 random states
-	#s <- l[,sample(unique(state),size=5)]
-	#s <- paste0("logHHincome.",s)
-
-	setkey(l,upid)
-	d <- data.frame()
-	inum <- 0
-	for (id in i){
-
-		inum <- inum+1
-		d <- rbind(d,l[.(id)][,list(id,age,logHHincome,logHHincome.AK,logHHincome.AR,logHHincome.CA,logHHincome.MI,logHHincome.PA)])
-
-	}
-  
-  # TODO 
-  # in facet label add the value of the intercept
-  x <- l[i]
-  int = x[,round(unique(intercept),2),by=upid]
-  
-
-	m <- melt(d,id.vars=c("inum","age"))
-	names(m) <- c("id","age","income.type","value")
-	p <- ggplot(m,aes(age,exp(value)*1000,color=income.type)) + geom_line() + ggtitle('predicted monthly HHincome') + facet_wrap(~id,scales="free")
-	
-	return(p)
-}
-
-
 
 #' Plot median incomes
 #'
@@ -880,36 +837,6 @@ plotMortgageRentSipp <- function(sipp,path="~/Dropbox/mobility/output/data/sipp/
 
 
 
-
-#' plot logit prediction results
-#'
-plotLogitPredictions <- function(path="~/Dropbox/mobility/output/model/BBL"){
-
-	d = read.csv("~/Dropbox/mobility/output/model/BBL/logit_pred_props.csv")
-	d[d$dat.mv==0,]$dat.mv <- 0.01
-
-	# percent deviation
-
-	d$value <- abs(d$mod.stay - d$dat.stay )
-
-	d$move <- d$dat.mv / d$mod.mv
-	names(d)[1] <- "region"
-	d$region <- stringr::str_trim(as.character(d$region))
-
-	p <- list()
-
-	p$stay <- choroplethr::choroplethr(d,lod="state",scaleName="Difference",title="Abs. difference, observed vs predicted proportion of stayers.",gradient=TRUE)
-
-	d$value <- abs(d$mod.mv - d$dat.mv) 
-	p$move <- choroplethr::choroplethr(d,lod="state",scaleName="Difference",title="Abs. difference, observed vs predicted proportion moving to k.",gradient=TRUE)
-
-	pdf(file=file.path(path,"logit-stay.pdf"),width=8,height=6)
-	print(p$stay)
-	dev.off()
-	pdf(file=file.path(path,"logit-move.pdf"),width=8,height=6)
-	print(p$move)
-	dev.off()
-}
 
 
 #' Plot Sipp Transition matrix

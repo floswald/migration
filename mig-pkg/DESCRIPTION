@@ -18,11 +18,8 @@ Depends:
     Hmisc,
     xts,
     survey,
-    nlme,
-    quantreg,
     data.table,
     reshape2,
-    MARSS,
     xtable,
     devtools,
     ggplot2,
@@ -31,15 +28,7 @@ Depends:
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
-    'analyze_solution.r'
     'migration-package.r'
     'plots.r'
-    'ufun.r'
-    'factorModels.r'
-    'logit.r'
     'CPS.r'
-    'BBL.r'
-    'housing_saving.r'
-    'income.r'
-    'prices.r'
     'plotjulia.R'

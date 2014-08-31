@@ -344,6 +344,85 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 
 
 
+#' get home values and adjust by inflation
+#'
+#' @family IncomePrediction
+getHomeValues <- function(freq="yearly"){
+
+	data(HomeValues,package="EconData")
+	data(CPIHOSSL,package="EconData")	# monthly xts data on inflation
+
+	if(freq=="yearly"){
+		cpi.h <- xts::to.yearly(CPIHOSSL)[,1]
+
+		# set 1996 as base year
+		coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996'])
+		names(cpi.h) <- "cpiH"
+
+		cpi <- data.table(year=year(index(cpi.h)),cpiH=coredata(cpi.h),key="year")
+		setnames(cpi,c("year","cpiH"))
+
+		# divide by 1000$
+		HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,year(qtr))]
+		setkey(HV,year)
+
+		# adjust by inflation 
+		HV <- cpi[HV]
+		HV[,HValue96 := Home.Value / cpiH ]
+		HV[,c("cpiH","Home.Value") := NULL]
+
+		# aggregate states: c("ME.VT","ND.SD.WY")
+		HV.ME.VT <- HV[State %in% c("ME","VT"),list(HValue96 = mean(HValue96)),by=list(year)]
+		HV.ME.VT[, State := "ME.VT"]
+		HV.ND.SD.WY <- HV[State %in% c("ND","SD","WY"),list(HValue96 = mean(HValue96)),by=list(year)]
+		HV.ND.SD.WY[, State := "ND.SD.WY"]
+
+		# delete from table ...
+		HV <- HV[!State %in% c("ME","VT","ND","SD","WY")]
+
+		# ... and add new states
+		HV <- rbind(HV,HV.ME.VT,HV.ND.SD.WY,use.names=TRUE)
+
+	} else if (freq=="quarterly"){
+
+		cpi.h <- xts::to.quarterly(CPIHOSSL)[,1]
+
+		# set 1996 as base year
+		coredata(cpi.h) <- coredata(cpi.h) / as.numeric(cpi.h['1996-01-01'])
+		names(cpi.h) <- "cpiH"
+
+		cpi <- data.table(qtr=index(cpi.h),cpiH=coredata(cpi.h),key="qtr")
+		setnames(cpi,c("qtr","cpiH"))
+
+		# divide by 1000$
+		HV <- HomeValues[,list(Home.Value=mean(Home.Value)/1000),by=list(State,qtr)]
+		setkey(HV,qtr)
+
+		# adjust by inflation 
+		HV <- cpi[HV]
+		HV[,HValue96 := Home.Value / cpiH ]
+		HV[,c("cpiH","Home.Value") := NULL]
+
+		# aggregate states: c("ME.VT","ND.SD.WY")
+		HV.ME.VT <- HV[State %in% c("ME","VT"),list(HValue96 = mean(HValue96)),by=qtr]
+		HV.ME.VT[, State := "ME.VT"]
+		HV.ND.SD.WY <- HV[State %in% c("ND","SD","WY"),list(HValue96 = mean(HValue96)),by=list(qtr)]
+		HV.ND.SD.WY[, State := "ND.SD.WY"]
+
+		# delete from table ...
+		HV <- HV[!State %in% c("ME","VT","ND","SD","WY")]
+
+		# ... and add new states
+		HV <- rbind(HV,HV.ME.VT,HV.ND.SD.WY,use.names=TRUE)
+
+
+	}
+
+	return(HV)
+}
+
+
+
 
 #' Clean Sipp Data
 #'

@@ -590,13 +590,13 @@ plotModelSlices <- function(who="mac",path="~/Dropbox/mobility/output/model/data
 	moms = read.csv(file.path(path,"out_data_jl","migslice2.csv"))
 
 
-	p1 = ggplot(vals,aes(x=p_val,y=f_val)) + geom_line() + facet_wrap(~p_name,scales="free") + ggtitle('Value of Ojbective Function vs Parameters')
+	p1 = ggplot(vals,aes(x=p_val,y=f_val)) + geom_line() + facet_wrap(~p_name,scales="free") + ggtitle('Value of Objective Function vs Parameters') + theme_bw() + scale_y_continuous("Mean Squared Distance") + scale_x_continuous("Parameter value")
 	ggsave(plot=p1,filename=file.path(outpath,"out_graphs_jl","objfun.pdf"),width=297,height=210,units="mm")
 
 	m = list()
 	for (pp in unique(moms$p_name)){
 		tstring = paste0("Moments_vs_",pp)
-		m[[pp]] = ggplot(subset(moms,p_name == pp),aes(x=p_val,y=m_val)) + geom_line() + facet_wrap(~m_name,scales="free") + ggtitle(tstring) + scale_x_continuous(name=pp) + scale_y_continuous(name="value of Moment")
+		m[[pp]] = ggplot(subset(moms,p_name == pp),aes(x=p_val,y=m_val)) + geom_line() + facet_wrap(~m_name,scales="free") + ggtitle(tstring) + scale_x_continuous(name=pp) + scale_y_continuous(name="value of Moment") + theme_bw()
 		ggsave(plot=m[[pp]], filename=file.path(outpath,"out_graphs_jl",paste0(tstring,".pdf")),width=297,height=210,units="mm")
 
 	}
