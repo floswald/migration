@@ -612,7 +612,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "HHincome",
 								   "yr_bought",
 								   "mortg.rent",
-								   "empstat"
+								   "empstat",
 								   "hvalue",
 								   "RE.equity.other",
 								   "HHweight"))
