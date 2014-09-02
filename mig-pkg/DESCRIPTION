@@ -9,8 +9,6 @@ Description: implements a BBL estimator
 License: GPL-3
 Imports:
     stringr,
-    texreg,
-    RSQLite,
     grid,
     splines
 Depends:
@@ -18,6 +16,8 @@ Depends:
     Hmisc,
     xts,
     survey,
+    texreg,
+    RSQLite,
     data.table,
     reshape2,
     xtable,

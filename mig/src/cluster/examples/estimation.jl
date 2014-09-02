@@ -12,7 +12,7 @@ opts =[
 	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster","MA.h5"),	
 	"save_frequency"=> 10,
 	"user"=> ENV["USER"],
-	"date"=> readall(`date`)
+	"date"=> readall(`date`),
 	"maxiter"=> 50,
 	"maxtemp"=>100,
 	"min_shock_sd"=>0.1,
@@ -35,3 +35,5 @@ println("done after $(round((time()-t0)/60)) minutes")
 
 println("quitting cluster")
 quit()
+
+
