@@ -94,7 +94,7 @@ ExtractorSippDB <- function(dbfile,ck,which.core,which.tm,which.wgt,tk,subset=''
 #' @param dropbox path to folder where to save this
 #' @param which names of datasets to extract. Names are: "1996", "2001", "2004", "2008", "Mig_2008"
 #' @return NULL saves subset data.tables into dropbox
-Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropbox="C:/Users/florian_o/Dropbox/mobility/SIPP"){
+Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropbox="C:/Users/florian_o/Dropbox/mobility/data/SIPP"){
 
 	# extract 1993
 	# ============
