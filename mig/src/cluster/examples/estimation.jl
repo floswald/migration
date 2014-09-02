@@ -2,15 +2,18 @@
 
 
 # run estimation
+t0 = time()
 
 require("nodes.jl")
 
 opts =[
 	"N"=>nprocs()-1,
 	"printlevel"=> 3,
-	"filename" => joinpath(pwd(),"MA.h5"),	
-	"save_frequency"=> 5,
-	"maxiter"=> 20,
+	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster","MA.h5"),	
+	"save_frequency"=> 10,
+	"user"=> ENV["USER"],
+	"date"=> readall(`date`)
+	"maxiter"=> 50,
 	"maxtemp"=>100,
 	"min_shock_sd"=>0.1,
 	"max_shock_sd"=>2,
@@ -27,6 +30,8 @@ runMOpt!(MA)
 
 # save results
 MOpt.save(MA,MA["filename"])
+
+println("done after $(round((time()-t0)/60)) minutes")
 
 println("quitting cluster")
 quit()
