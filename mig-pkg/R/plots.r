@@ -881,8 +881,8 @@ PlotSippMigrationRates <- function(){
 	 m[,type := "Renter"]
 	 m[h==TRUE,type := "Owner"]
 
-	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) 
-	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_point(size=2.5) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved")
+	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
+	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24))
 	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
 	 ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
 

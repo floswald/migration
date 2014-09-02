@@ -606,4 +606,45 @@ plotModelSlices <- function(who="mac",path="~/Dropbox/mobility/output/model/data
 }
 
 
+# look at estimation output
+getEstimData <- function(who="mac"){
+	if (who=="iridis"){
+		cmd <- paste0("scp iridis:~/git/migration/mig/src/cluster/MA.h5"," ~/git/migration/mig/src/cluster/MA.h5")
+		system(cmd)
+	} else if (who=="sherlock"){
+		cmd <- paste0("scp sherlock:~/git/migration/mig/src/cluster/MA.h5"," ~/git/migration/mig/src/cluster/MA.h5")
+		system(cmd)
+	} 
+	chains = h5read("/Users/florianoswald/git/migration/mig/src/cluster/MA.h5","chain")
+	opts   = data.frame(h5read("/Users/florianoswald/git/migration/mig/src/cluster/MA.h5","algo/opts"))
+	
+	params = as.data.table(data.frame(chains[[1]]$parameters))
+	for (i in 2:length(chains)) {
+		params = rbind(params,as.data.table(data.frame(chains[[i]]$parameters)))
+	}
+	setcolorder(params,c("chain_id","iter",grep("iter|chain_id",names(params),invert=T,value=T)))
+
+	moments = as.data.table(data.frame(chains[[1]]$moments))
+	for (i in 2:length(chains)) {
+		moments = rbind(moments,as.data.table(data.frame(chains[[i]]$moments)))
+	}
+	setcolorder(moments,c("chain_id","iter",grep("iter|chain_id",names(moments),invert=T,value=T)))
+
+	infos = as.data.table(data.frame(chains[[1]]$infos))
+	for (i in 2:length(chains)) {
+		infos = rbind(infos,as.data.table(data.frame(chains[[i]]$infos)))
+	}
+	setcolorder(infos,c("chain_id","iter",grep("iter|chain_id",names(infos),invert=T,value=T)))
+
+	algo = list()
+	algo$opts = opts
+	algo$pars = params
+	algo$moms = moments
+	algo$infos= infos
+
+	save(algo,file="~/git/migration/mig/src/cluster/MA.rda")
+	return(algo)
+}
+
+
 

@@ -143,6 +143,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "rfid",			# family id
 	                "efrefper",		# person num of fam reference person
 	                "rfnkids",		# number of kids in family (of HH ref person!)
+	                "rmesr", 		# Employment status recode for month 
 	                "whfnwgt",		# final HH weight
 	                "epppnum",		# person number
 	                "eeducate",		# highest educ degree
@@ -204,6 +205,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "rfid",          # family id
 	                "efrefper",      # person num of fam reference person
 	                "rfnkids",       # number of kids in family (of HH ref person!)
+	                "rmesr", 		# Employment status recode for month 
 	                "whfnwgt",       # final HH weight
 	                "epppnum",       # person number
 	                "eeducate",      # highest educ degree
@@ -247,6 +249,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "eppintvw",        # person interview outcome
 	                "tmetro",          # metropolitan area/residual
 	                "etenure",         # housing tenure
+	                "rmesr", 		# Employment status recode for month 
 	                "thtotinc",        # tot hh income
 	                "rfid",            # family id
 	                "efrefper",        # person num of fam reference person
@@ -292,6 +295,7 @@ Extract.wrap <- function(verbose=TRUE,which=paste0(c(1996,2001,2004,2008)),dropb
 	                "tmetro",       # metropolitan area/residual
 	                "etenure",      # housing tenure
 	                "thtotinc",     # tot hh income
+	                "rmesr", 		# Employment status recode for month 
 	                "rfid",         # family id
 	                "efrefper",     # person num of fam reference person
 	                "rfnkids",      # number of kids in family (of HH ref person!)
@@ -566,6 +570,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "tmovrflg",
 								   "etenure",
 								   "rfnkids", 
+				                   "ehhnumpp",		
 								   "esex", 
 								   "tage",
 								   "eeducate",  
@@ -582,6 +587,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "thtotinc",
 								   "ehbuyyr",
 								   "thomeamt",
+	              				   "rmesr", 	
 								   "tpropval",
 								   "thhore",
 								   "whfnwgt"),
@@ -589,6 +595,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "mover",   
 								   "tenure",
 								   "numkids",
+								   "numpersons",
 								   "sex",
 								   "age",
 								   "educ", 
@@ -605,6 +612,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 								   "HHincome",
 								   "yr_bought",
 								   "mortg.rent",
+								   "empstat"
 								   "hvalue",
 								   "RE.equity.other",
 								   "HHweight"))
@@ -851,7 +859,9 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged[,kids2 := c(kids[-1],NA),by=upid]	# next period kids
 
 
-
+	# create empstat
+	merged[,employed := FALSE]
+	merged[empstat==1|empstat==2|empstat==4, employed := TRUE ] # .With a job entire month, worked all weeks, absent 1 week not due layoff, absent 1+ weeks, with job at least 1 week no layoff no jobsearch
 
 
 
@@ -878,6 +888,8 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   metro=tmetro[1]	,
 						   kids=kids[1],
 						   numkids=numkids[1],
+						   numpersons=numpersons[1],
+						   employed=empployed[1],
 						   HHweight=mean(HHweight,na.rm=T),
 						   CensusMedinc=CensusMedinc[1],
 						   MyMedinc=MyMedinc[1],

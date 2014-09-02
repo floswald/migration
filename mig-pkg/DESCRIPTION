@@ -24,7 +24,8 @@ Depends:
     devtools,
     ggplot2,
     testthat,
-    plyr
+    plyr,
+    MASS
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
