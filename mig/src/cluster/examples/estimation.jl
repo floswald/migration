@@ -6,8 +6,8 @@
 require("nodes.jl")
 
 opts =[
-	"N"=>nprocs(),
-	"print_level"=> 3,
+	"N"=>nprocs()-1,
+	"printlevel"=> 3,
 	"filename" => joinpath(pwd(),"MA.h5"),	
 	"save_frequency"=> 10,
 	"maxiter"=> 30,
