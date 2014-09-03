@@ -3,7 +3,8 @@
 # miscellaneous includes
 
 # objective function to work with mopt
-function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
+function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},vargs...)
+
 
 	# info("start model solution")
 	time0 = time()
@@ -44,7 +45,11 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1})
 	# 	status = -1
 	# end
 
-	println("objfunc runtime = $(time()-time0)")
+	if length(vargs) > 0
+		if get(vargs[1],"printlevel",0) > 0
+			println("objfunc runtime = $(time()-time0)")
+		end
+	end
 	time1 = round(time()-time0)
 	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => status, "moments" => mout]
 	return ret

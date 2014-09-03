@@ -28,11 +28,23 @@ plist = ["gamma","xi1","xi2","omega2","MC0","MC1","MC3","MC3_2","MC4","taudist"]
 
 p2 = Dict{ASCIIString,Float64}()
 
-# get from initial p
-p0 = mig.Param(2)
-for p in plist
-	p2[p] = getfield(p0,symbol(p))
-end
+# get starting value from initial p
+# p0 = mig.Param(2)
+# for p in plist
+# 	p2[p] = getfield(p0,symbol(p))
+# end
+
+# or assign different starting values:
+p2["gamma"]   = 2.0
+p2["xi1"]     = 1.0
+p2["xi2"]     = 1.0
+p2["omega2"]  = 0.0
+p2["MC0"]     = 0.0
+p2["MC1"]     = 4.0
+p2["MC3"]     = -0.2
+p2["MC3"]     = 0.0
+p2["taudist"] = 0.25
+
 
 # setup params to estimate
 # define bounds
@@ -51,9 +63,12 @@ pb["MC3_2"]    = [-0.01,0.025]
 pb["MC4"]    = [-3,3]
 pb["taudist"]    = [0.01,0.99]
 
+# options for objective function
+objfunc_opts = ["printlevel" => 1]
+
 
 # subsetting moments
 submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"])
 
 # setup the minimization problem
-mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom)
+mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom,objfunc_opts=objfunc_opts)
