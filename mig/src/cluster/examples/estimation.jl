@@ -20,10 +20,10 @@ opts =[
 	"past_iterations"=>30,
 	"min_accept_tol"=>1000,
 	"max_accept_tol"=>1000,
-	"min_disttol"=>0.1,	# if other chain is within 10% of my value, i consider jumping
-	"max_disttol"=>0.1,
-	"min_jump_prob"=>0.5,
-	"max_jump_prob"=>0.5] 
+	"min_disttol"=>0.05,	# if other chain is within 10% of my value, i consider jumping
+	"max_disttol"=>0.05,
+	"min_jump_prob"=>0.1,
+	"max_jump_prob"=>0.1] 
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)

@@ -81,7 +81,7 @@ function bind_iridis_procs(ppn::Int)
     master = ENV["HOSTNAME"]
 
     wrker = 0
-    while wrker < ppn
+    while wrker < ppn-1   
         addprocs(1)
         wrker += 1
     end
