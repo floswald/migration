@@ -5,14 +5,14 @@ Version: 1.0
 Date: 2013-08-19
 Author: Florian Oswald
 Maintainer: <florian.oswald@gmail.com>
-Description: implements a BBL estimator
+Description: Datawork for migration model
 License: GPL-3
 Imports:
-    stringr,
     grid,
     splines
 Depends:
     zoo,
+    stringr,
     Hmisc,
     xts,
     survey,
@@ -25,7 +25,9 @@ Depends:
     ggplot2,
     testthat,
     plyr,
-    MASS
+    MASS,
+    rhdf5,
+    psidR
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'
@@ -33,3 +35,4 @@ Collate:
     'plots.r'
     'CPS.r'
     'plotjulia.R'
+    'PsidPrices.r'

@@ -486,7 +486,11 @@ Sipp.wage_residual_copulas <- function(){
 	return(list(stayers=fits,movers=m_fit))
 }
 
-Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+Sipp.movers_empstat <- function()
+
+
+Sipp.movers_wage_residual_copula_and_empstat <- function(path="~/Dropbox/mobility/output/data/sipp"){
 
 	library(copula)
 
@@ -497,6 +501,7 @@ Sipp.movers_wage_residual_copula <- function(path="~/Dropbox/mobility/output/dat
 	setkey(mv,upid)
 	setkey(merged,upid,timeid)
 	mvs <- merged[mv]
+
 
 	mvs <- copy(mvs[HHincome > 0])
 
@@ -582,11 +587,30 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	ta$home <- merged[S2S==TRUE,t(as.matrix(round(prop.table(table(toHome))*100,2)))]
 	colnames(ta$home) <- c("Other State","State of Birth")
 
+	# get empstat before after
+	d[,employed_minus := d[list(upid,timeid-1)][["employed"]]]
+	d[,employed_plus  := d[list(upid,timeid+1)][["employed"]]]
+	emptab <- d[D2D==TRUE,as.matrix(table(employed,employed_plus))]
+	p_emptab <- round(emptab / sum(emptab),2)
+	rownames(p_emptab) <- c("unemployed $t$","employed $t$")
+	colnames(p_emptab) <- c("unemployed $t+1$","employed $t+1$")
+
+	# get nowage before after
+	d[,nowage := FALSE]
+	d[HHincome<=0, nowage := TRUE]
+	d[,nowage_plus := d[list(upid,timeid+1)][["nowage"]] ]
+	wagetab <- d[D2D==TRUE,as.matrix(table(nowage,nowage_plus))]
+	p_wagetab <- round(wagetab / sum(wagetab),2)
+	rownames(p_wagetab) <- c("$w_{t} > 0$","$w_{t} < 0$")
+	colnames(p_wagetab) <- c("$w_{t+1} > 0$","$w_{t+1} < 0$")
 
 	# print tables
 	print(xtable(ta$S2S_percent),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"move_rates.tex"))
 	print(xtable(ta$nmv),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"num_moves.tex"))
 	print(xtable(ta$home),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"mv_home.tex"))
+
+	print(xtable(p_emptab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"emptab.tex"))
+	print(xtable(p_wagetab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"wagetab.tex"))
 
 }
 

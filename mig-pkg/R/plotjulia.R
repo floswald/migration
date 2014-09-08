@@ -180,76 +180,298 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 # ytable: div, ylow, yhigh, beta0, betay, betap
 # ptable: div, plow, phigh, beta0, betay, betap
 # sigmas: array(J,2,2)
-# 
 
-Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
-	py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
-	m = melt(py,id.vars=c("year","Division"))
 
-	pl = ggplot(m,aes(x=year,y=value,color = variable)) + geom_line()+geom_point() + facet_wrap(~Division) 
-	# make lagged vars
+
+getCPI <- function(freq="yearly",base="2011"){
+
+	base = as.character(base)
+
+	data(CPIAUCSL,package="EconData",envir=environment())
+	cpi <- CPIAUCSL   
+	if (freq=="yearly"){
+		cpi <- to.yearly(cpi)
+		cpi <- cpi$cpi.Open
+		names(cpi) <- "cpi"
+		coredata(cpi) <- coredata(cpi)/as.numeric(cpi[base])	# base year 2012
+		str <- paste0("cpi <- data.table(year=year(index(cpi)),cpi",base,"=as.numeric(cpi),key=\"year\")")
+		eval(parse(text=str))
+		return(cpi)
+
+	} else {
+		cpi <- to.quarterly(cpi)
+		cpi <- cpi$cpi.Open
+		names(cpi) <- "cpi"
+		coredata(cpi) <- coredata(cpi)/as.numeric(cpi[as.yearqtr(base)])	
+		str <- paste0("cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi",base,"=as.numeric(cpi),key=\"qtr\")")
+		eval(parse(text=str))
+		return(cpi)
+	}
+}
+
+combine_sipp_psid <- function(){
+
+	data(Sipp_age,envir=environment())
+
+	# get 1995 sipp median income (in 2012 dollars)
+	sipp =  merged[,list(y = .SD[HHincome>0,Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)],p=.SD[hvalue>0,Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T)]),by=list(year,Division)]
+	sipp95 = sipp[year==1995,list(Division,y,p)]
+	setkey(sipp95,Division)
+
+	#get psid data
+	psid <- CleanPSID()
+	pp <- psid$pp[,list(year,Division,y,p)]
+	setkey(pp,Division,year)
+
+	# sipp and psid don't agree on 1995 median estimtes. adjust by force.
+	diffs = sipp95[,list(Division,dy=y-pp[year==1995,y],dp=p-pp[year==1995,p])]
+	pp[,newy := 0]
+	pp[,newp := 0]
+	for (d in pp[,unique(Division)]) {
+		for (yr in 1968:1997) {
+			pp[Division==d & year==yr,newy := y + diffs[Division==d,dy]]
+			pp[Division==d & year==yr,newp := p + diffs[Division==d,dp]]
+		}
+	}
+	pp[sipp95]
+
+	pp <- rbind(sipp,pp[year<1995,list(year,Division,y=newy,p=newp)])
+
+	return(pp)
+}
+
+combine_sipp_y_census_regions <- function(){
+
+	data(Sipp_age,envir=environment())
+
+	# get 1995 sipp median income (in 2012 dollars)
+	pp =  merged[HHincome>0,list(y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
+	sipp95 = pp[year==1995,list(Division,y)]
+	setkey(sipp95,Division)
+
+	# get census region level data and scale back all divisions accordingly
+	# there is no census division level data available!
+	# TODO
+	# use sipp for as long as possible
+	# SIPP itself goes back to only 1984
+
+	# get census region median income
+	data(US_medinc_reg,package="EconData",envir=environment())
+	setkey(reg_current,year)
+
+	# adjust by cpi
+	cpi <- getCPI("yearly",base=2011)
+	reg_current <- cpi[reg_current]
+	reg_current[,y:= medinc / (1000 * cpi2011)]
+	reg_current[,index95 := y / .SD[year==1995,y],by=region]
+	regs <- reg_current[year<1995,list(year,region,index95)]
+
+	# get mapping division -> regions
+	data(US_states,package="EconData",envir=environment())
+	US_states = US_states[,list(Division=abbreviate(Division,minlength=3),Region)]
+	US_states = US_states[,list(Region=Region[1]),by=Division]
+	setkey(US_states,Division)
+
+	sipp95 <- US_states[sipp95]
+	setkey(sipp95,Division)
+	sipp95[,year := 1995]
+
+	sipp2 = copy(sipp95)
+
+
+	for (yr in 1975:1994){
+		for (d in 1:nrow(sipp2)){
+			sipp95 <- rbind(sipp95,sipp2[d,list(Division,Region,y = y*regs[year==yr&region==Region,index95],year=yr)],use.names=TRUE)
+		}
+	}
+	# income now goes until 1975
+
+	# add to that consumer price index before 1975
+	sipp75 = copy(sipp95[year==1975,list(Division,year,y)])
+	setkey(sipp75,Division)
+	sipp2 = copy(sipp75)
+	cpi = getCPI("yearly",base="1975")
+	for (yr in 1967:1974){
+		sipp75 <- rbind(sipp75,sipp2[,list(Division,year=yr,y=y*cpi[year==yr,cpi1975])])
+	}
+
+
+
+	pp <- rbind(pp,sipp95[year<1995,list(year,Division,y)],sipp75[year<1975,list(year,Division,y)],use.names=TRUE)
+	return(pp)
+}
+
+
+# takes first useable SIPP measure of 
+# median house price and extends it backwards
+# using fhfa division level indices (until 1975)
+# and then the housing inflation index until 1966
+CombineHousePrices <- function(){
+	data(Sipp_age,envir=environment())
+
+	pp = merged[hvalue>0,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
+
+	# work out house prices before 1995
+	# ---------------------------------
+
+	sipp95 = pp[year==1995,list(Division,p)]
+	setkey(sipp95,Division)
+
+	data(FHFA_Div,package="EconData",envir=environment())
+	fhfa <- FHFA_Div$yr
+	setnames(fhfa,"yr","year")
+
+	fhfa[,Division := as.character(Division)]
+	fhfa[Division=="DV_ENC",Division := "ENC"]
+	fhfa[Division=="DV_ESC",Division := "ESC"]
+	fhfa[Division=="DV_MA",Division := "MdA"]
+	fhfa[Division=="DV_MT",Division := "Mnt"]
+	fhfa[Division=="DV_NE",Division := "NwE"]
+	fhfa[Division=="DV_PAC",Division := "Pcf"]
+	fhfa[Division=="DV_PAC",Division := "Pcf"]
+	fhfa[Division=="DV_SA",Division := "StA"]
+	fhfa[Division=="DV_WNC",Division := "WNC"]
+	fhfa[Division=="DV_WSC",Division := "WSC"]
+
+	# fhfa goes back until 1975; from there on use housing CPI to scale back.
+	cpi = getCPI("yearly","2011")
+	fhfa = cpi[fhfa]
+	fhfa[,index2011 := index_nsa / cpi2011]	# index in real 2011 terms
+	fhfa[,index1995 := index2011 / .SD[year==1995,index2011],by=Division]  # real terms relative to year 1995
+
+	fhfa[,c("cpi2011","index_nsa","index2011"):=NULL]
+
+	# extend fhfa index back to 1967
+	# using mean house price estimate from psid
+	p = CleanPSID()
+	x = p$psid[hvalue>0 & faminc>0,list(p=weighted.mean(rhvalue,famweight),y=weighted.mean(rincome,famweight)),by=list(year)]
+	psid75 = x[,list(year,y75 = y/.SD[year==1975,y],p75=p/.SD[year==1975,p])]
+	psid75 = psid75[year<1975]
+	for (yr in 1968:1974){
+		fhfa <- rbind(fhfa,fhfa[year==1975,list(year=yr,Division,index1995=index1995*psid75[year==yr,p75])])
+	}
+
+	setkey(fhfa,Division,year)
+
+
+	data(CPIHOSSL,package="EconData",envir=environment())
+	cpi <- to.yearly(CPIHOSSL['1966/1975'])
+	cpi <- cpi[,1]
+	names(cpi) <- "cpi"
+	coredata(cpi) <- coredata(cpi)/as.numeric(cpi['1975'])	# base year 1975
+	# cpi <- cpi$cpi.Open
+	names(cpi) <- "cpi"
+	cpi <- data.table(year=year(index(cpi)),cpi75=as.numeric(cpi),key="year")
+
+	fhfa75 = fhfa[year==1975]
+
+	fhfa2 = copy(fhfa75)
+
+	for (yr in 1967:1974){
+		fhfa75 <- rbind(fhfa75,fhfa2[,list(Division,year=yr,index_nsa=index_nsa*cpi[year==yr,cpi75])])
+	}
+	setkey(fhfa75,Division,year)
+	fhfa<-rbind(fhfa,fhfa75[year!=1975])
+	fhfa[,index1995 := index_nsa / .SD[year==1995,index_nsa],by=Division]
+	fhfa <- fhfa[year<1995]
+	setkey(fhfa,Division,year)
+
+	# extend fhfa index back to 1967
+	# using mean house price estimate from psid
+	p = CleanPSID()
+	x = p$psid[hvalue>0 & faminc>0,list(p=weighted.mean(rhvalue,famweight),y=weighted.mean(rincome,famweight)),by=list(year)]
+	psid75 = x[,list(y75 = y/.SD[year==1975,y],p75=p/.SD[year==1975,p])]
+
+	# # will use to grow backwards first SIPP datapoint in 1996
+	# # check this
+	# ggplot(fhfa,aes(x=year,y=index1995)) + geom_line() + facet_wrap(~Division)
+
+
+	s=sipp95[fhfa]
+	s=s[complete.cases(s)]
+
+	ggplot(s,aes(year,p*index1995)) + geom_line() + facet_wrap(~Division)
+
+
+	py = rbind(pp,s[,list(year,Division,p=p*index1995)],use.names=TRUE)
+
+	return(py)
+} 
+
+
+
+# want a model p_pacific = f(P,Y)
+
+
+
+
+Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
+	# py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
+	py = combine_sipp_psid()
+
+	# aggregates as means over regions
+	agg <- py[,list(Y=mean(y),P=mean(p)),by=year][order(year)]
+	setkey(agg,year)
+
 	setkey(py,year,Division)
-	py[,Lp := py[list(year-1,Division)][["p"]] ]
-	py
-	py[,Ly := py[list(year-1,Division)][["y"]] ]
-	dy = py[complete.cases(py)]
-	divs = py[,unique(Division)]
+	agg[,LY := agg[list(year-1)][["Y"]]]
+	agg[,LP := agg[list(year-1)][["P"]]]
 
-	# SUR
-	ep <- p ~ Lp + Ly
-	ey <- y ~ Lp + Ly
-	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=dy[Division==x]))
+	ageqp = P ~ LP + LY
+	ageqy = Y ~ LP + LY
+
+	aggmod = systemfit:::systemfit(list(P=ageqp,Y=ageqy),data=agg)
+
+	# export coefficients as table
+	aggcoefs <- as.data.frame(t(sapply(aggmod,coef)))
+	aggcoefs$Division = rownames(aggcoefs)
+	aggcoefs <- aggcoefs[order(aggcoefs$Division), ]
+	setkey(py,Division)
+	coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
+	coefs <- coefs[, !names(coefs) %in% "Division_1"]
+
+	# merge aggregate into regional data
+	pyagg = py[agg]
+
+	# plot region and agg overlaid
+	my = melt(pyagg[,list(year,Division,y,Y)],c("year","Division"))
+	pl = list()
+	pl$y <- ggplot(my,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate Income")
+	mp = melt(pyagg[,list(year,Division,p,P)],c("year","Division"))
+	pl = list()
+	pl$p <- ggplot(mp,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate house price")
+
+	# estimate regional models: what is relationship y ~ P + Y
+	ep <- p ~ P + Y
+	ey <- y ~ P + Y
+	divs = py[,unique(Division)]
+	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
 	names(mods) = divs
+
+	# pritn models
 	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
 	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
 
+	# predict 
+	pyagg[,yhat := 0]
+	pyagg[,phat := 0]
 
-
-	dy[,yhat := 0]
-	dy[,phat := 0]
 
 	for (d in divs){
-		dy[Division==d,c("yhat","phat") := predict(mods[[d]])]
+		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
 		# dy[Division==d,phat := predict(pmods[[d]])]
 	}
 
 	# visualize fit
 
-	mdy = melt(dy,c("year","Division"))
-	mdy[,type := "data"]
-	mdy[variable %in% c("phat","yhat"), type := "prediction"]
-	mdy[,var := "p"]
-	mdy[variable %in% c("y","yhat"), var := "y"]
 
-	pred <- ggplot(subset(mdy,variable %in% c("p","y","phat","yhat")),aes(x=year,y=value,linetype=type,color=var)) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","y"="blue"))
+	mdy = melt(pyagg[,list(year,Division,y,Y,yhat)],c("year","Division"))
 
-	# visualize simulation
+	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("y"="red","Y"="blue","yhat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
 
-	sim0 <- copy(dy[year==1996,list(year,Division,y,p)])
-	sim <- copy(dy[year==1996,list(year,Division,y,p)])
+	mdp = melt(pyagg[,list(year,Division,p,P,phat)],c("year","Division"))
 
-	for (yr in 1997:2030) {
-		sim0[,year := yr]
-		sim <- rbind(sim,sim0)
-		for (d in divs){
-			sig = mods[[d]]$residCov
-			eps = mvtnorm:::rmvnorm(n=1,mean=c(0,0),sigma=sig)
-			# sy = summary(ymods[[d]])
-			# epsy = rnorm(mean=0,sd=sy$sigma,n=1)
-			# sp = summary(pmods[[d]])
-			# epsp = rnorm(mean=0,sd=sp$sigma,n=1)
-			cy = coef(mods[[d]])[1:3]
-			cp = coef(mods[[d]])[4:6]
-			sim[year==yr & Division==d, y := cy %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[1] ]
-			sim[year==yr & Division==d, p := cp %*% sim[year==yr-1 & Division==d,c(1,p,y)] + eps[2]]
-
-			if (sim[year==yr & Division==d, p<30] ){
-				sim[year==yr & Division==d, p := 30]
-			}
-		}
-	}
-	msim <- melt(sim,id.vars=c("year","Division"))
-	simp <- ggplot(msim,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + geom_line(size=1) + facet_wrap(~Division) + theme_bw() + ggtitle("VAR Simulation Path") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","y"="blue"))
+	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","P"="blue","phat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
 
 	# export coefficients as table
 	coefs <- as.data.frame(t(sapply(mods,coef)))
@@ -258,6 +480,8 @@ Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	setkey(py,Division)
 	coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
 	coefs <- coefs[, !names(coefs) %in% "Division_1"]
+
+	# TODO export actual data series.
 
 
 
@@ -273,6 +497,11 @@ Export.VAR <- function(merged,plotpath="~/Dropbox/mobility/output/data/sipp"){
 	return(list(mods=mods,coefs=coefs,sigmas=sigmas,simp=simp,predp=pred))
 
 }
+
+
+
+
+
 
 
 # for individual spec procs
@@ -645,6 +874,40 @@ getEstimData <- function(who="mac"){
 	save(algo,file="~/git/migration/mig/src/cluster/MA.rda")
 	return(algo)
 }
+
+# time series plot for each param with overlaid mean estimate and dots indicating a jump
+# histogram of each param
+# 
+plotEstimData <- function(d){
+	pl = list()
+
+	# parameter data
+	m = melt(d$pars,id.vars=c("chain_id","iter"))
+	N = as.numeric(subset(d$opts,keys=="maxiter")$vals)
+	m = subset(m,iter<N)
+	setkey(m,chain_id,iter)
+	means = m[,list(mean=mean(value)),by=variable]
+
+	pl$paths = ggplot(m,aes(x=iter,y=value,color=factor(chain_id))) + geom_line() + facet_wrap(~variable,scales="free_y") + geom_hline(data=means,aes(yintercept=mean))
+	pl$hists = ggplot(subset(m,iter<30),aes(x=iter,y=value,color=chain_id)) + geom_line() + facet_wrap(~variable,scales="free_y")
+
+	# chain data
+	ch = melt(d$infos,id.vars=c("chain_id","iter"))
+	ch = subset(ch,iter<N)
+	setkey(ch,chain_id,iter)
+	ch[, jumpval := NA]
+	ch[exchanged_with!= 0, jumpval := .SD[,evals ]]
+	pl$jumps = ggplot(subset(d$infos,iter<30),aes(iter,y=evals,color=factor(chain_id))) + geom_line() + geom_point(aes(x=iter,y=jumpval))
+
+	return(pl)
+}
+
+
+
+
+
+
+
 
 
 

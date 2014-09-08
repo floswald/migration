@@ -720,8 +720,9 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	setkey(merged,FIPS)
 
 	# merge with FIPS codes
-	data(US_states,package="EconData")
+	data(US_states,package="EconData",envir=environment())
 	US_states[,Division := abbreviate(Division,minlength=3)]
+	US_states[,PSID := NULL]
 	# add aggregated states to FIPS register
 	x         <- data.table(FIPS=c(61,62),STATE=c(NA,NA),state=c("ME.VT","ND.SD.WY"),Reg_ID=c(1,2),Region=c("Northeast","Midwest"),Div_ID=c(1,4),Division=c("NwE","WNC"))
 	US_states <- rbind(US_states,x)
@@ -777,6 +778,8 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# Inflation
 	# =========
 
+	cat("adjusting prices by http://research.stlouisfed.org/fred2/series/CPIAUCSL base year 2012\n")
+
 	# adjust prices by inflation
 
 	# HHincome is monthly. make annual and then average by age
@@ -787,15 +790,27 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged[HHincome>0,MyMedinc := Hmisc::wtd.quantile(HHincome,HHweight,na.rm=T,probs=0.5),by=list(year,Division)]
 
 	setkey(merged,qtr)
-	data(cpi)
-	cpi <- window(cpi$qtr.base2010,start=c(1995,4))
-	cpi <- cpi/cpi[1]	# base year 1996
-	cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi96=coredata(cpi),key="qtr")
+	# data(cpi,envir=environment())
+	# cpi <- as.xts(window(cpi$qtr.base2010,start=c(1995,4)))
+	data(CPIAUCSL,package="EconData",envir=environment())
+	cpi <- CPIAUCSL['1995-10/2011-12']   # take 1996 onwards
+	cpi <- to.quarterly(cpi)
+	cpi <- cpi$cpi.Open
+	names(cpi) <- "cpi"
+	coredata(cpi) <- coredata(cpi)/as.numeric(cpi[as.yearqtr("2011 Q1")])	# base year 2012
+	# cpi <- cpi$cpi.Open
+	cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi12=as.numeric(cpi),key="qtr")
+
+	# data(cpi)
+	# cpi <- window(cpi$qtr.base2010,start=c(1995,4))
+	# cpi <- cpi/cpi[1]	# base year 1996
+	# cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi96=coredata(cpi),key="qtr")
+
 
 	merged <- cpi[ merged ]
          
 	# adjust by inflation and divide by 1000$
-	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","RE.equity.other","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,nonh_wealth,hvalue,RE.equity.other,CensusMedinc,MyMedinc)],function(x) x / (cpi96 * 1000)) ]
+	merged[,c("HHincome","wealth","home.equity","thhmortg","mortg.rent","saving","nonh_wealth","hvalue","RE.equity.other","CensusMedinc","MyMedinc") := lapply(.SD[,list(HHincome,wealth,home.equity,thhmortg,mortg.rent,saving,nonh_wealth,hvalue,RE.equity.other,CensusMedinc,MyMedinc)],function(x) x / (cpi12 * 1000)) ]
 
 
 
@@ -807,12 +822,12 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 	# lincoln house value data
 
-	hv <- getHomeValues(freq="quarterly")
-	HV = hv[,list(state=State,qtr,HValue96)]
-	setkey(HV,state,qtr)
-	setkey(merged,state,qtr)
+	# hv <- getHomeValues(freq="quarterly")
+	# HV = hv[,list(state=State,qtr,HValue96)]
+	# setkey(HV,state,qtr)
+	# setkey(merged,state,qtr)
 
-	merged <- HV[merged]
+	# merged <- HV[merged]
 	
 	merged[,age2 := age^2 ]
 
@@ -879,7 +894,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 		# aggregate by agg.by
 		# construct the call as a string
-		mcall <- paste0("merged <- merged[,list(state=state[1],HValue96=mean(HValue96,na.rm=T),
+		mcall <- paste0("merged <- merged[,list(state=state[1],HValue96=0,
 						   state.born=state.born[1],
 						   Region=Region[1],
 						   Division=Division[1],
@@ -889,7 +904,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   kids=kids[1],
 						   numkids=numkids[1],
 						   numpersons=numpersons[1],
-						   employed=empployed[1],
+						   employed=employed[1],
 						   HHweight=mean(HHweight,na.rm=T),
 						   CensusMedinc=CensusMedinc[1],
 						   MyMedinc=MyMedinc[1],
@@ -980,9 +995,10 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 
 	} else {
 		# use the state level index for price to incoem ratios
+		warning("HValue96 is not defined anymore")
 
-		merged[HHincome>0,p2y := HValue96 / (HHincome) ] 
-		merged[wealth!= 0,p2w := HValue96 / wealth] 
+		# merged[HHincome>0,p2y := HValue96 / (HHincome) ] 
+		# merged[wealth!= 0,p2w := HValue96 / wealth] 
 	}
 
 	# add savings to income
