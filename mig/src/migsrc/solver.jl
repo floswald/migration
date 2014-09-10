@@ -130,8 +130,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					for itau=1:p.ntau
 						tau = m.grids["tau"][itau]
 						for ij=1:p.nJ
-							z = m.gridsXD["z"][iz,iy,age,ij] 	# z is dollar income
-							price = m.gridsXD["p"][ip,ij]
+							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
+							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
+							price = m.gridsXD["p"][iy,ip,ij]
 							for ih=0:1
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
@@ -159,7 +160,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 												pp = (-ihh) * (1-p.chi) * price
 												# borrowing limit for owner
-												if ih==1
+												if ih*ihh==1
 													pp = pp < a ? pp : a
 												end
 
@@ -271,8 +272,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-											if cash < 0 && ih==0
+											if cash < 0 && ih==0 && ip<p.np
 												println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
+												println("aggregate: P=$ip,Y=$iy")
 												println("cash at ihh=$ihh is $cash")
 												println("maxvalue = $(r[1])")
 												println("maxindex = $(r[2])")
@@ -322,7 +324,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64,3},Gs::Array{Float64,2},m::Model,p::Param)
+function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64},Gs::Array{Float64,2},m::Model,p::Param)
 
 	# offsets
 	# o_tau = 0
@@ -367,7 +369,7 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 				for iy1  = 1:p.ny 				# future y
 					o_y  = (o_p + (iy1-1)) * p.nz
 					# f_py = f_tau * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
-					@inbounds f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * ((ip1-1) + p.np * (ij-1)))) ]
+					@inbounds f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * (ip1-1))) ]
 					for iz1 = 1:p.nz			# future z 		
 						o_z = (o_y + (iz1-1)) * p.ns
 						f_z = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
@@ -408,7 +410,7 @@ end
 # linear index functions
 # ======================
 
-# dimvecH  = (nh, nJ, ns, nz, ny, np, na, nh, ntau,  nJ, nt-1 )
+# dimvecH  = (nh, nJ, ns, nz, ny, np, ntau,  nJ, nt-1 )
 function idx11(ihh::Int,ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
 
 	 r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
@@ -806,8 +808,8 @@ function bilinearapprox{T<:Real}(x::T,y::T,xgrid::Vector{T},ygrid::Vector{T},zma
 
 	# get value of z at 4 vertices
 	zxminymin = zmat[ix + n*(iy-1)]
-	zxminymax = zmat[ix + n*iy ]
 	zxmaxymin = zmat[ix+1 + n*(iy-1)]
+	zxminymax = zmat[ix + n*iy ]
 	zxmaxymax = zmat[ix+1 + n*iy]
 	end
 

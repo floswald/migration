@@ -37,16 +37,21 @@ type Model
 	# dimnames::Array{ASCIIString}
 	dimnames::DataFrame
 	regnames::DataFrame
+	agedist ::DataFrame
 	distance::Array{Any,2}
 	Inc_coefs::DataFrame
 	Inc_ageprofile::Array{Float64,2}
 	Inc_shocks::Array{Float64,2}
 	Init_asset::LogNormal
 
-	# spline approximation settings
-	nknots :: Dict{ASCIIString,Integer}
-	degs   :: Dict{ASCIIString,Integer}
-	knots  :: Dict{ASCIIString,Vector}
+	Regmods_YP::Dict{Int,Matrix{Float64}}   # regional VAR models. row 1 is Y, row 2 is P
+
+	# cohort settings
+	# ---------------
+	coh_yrs ::Dict{Int,Range{Int}}
+	coh_idx ::Dict{Int,Range{Int}}
+	coh_breaks ::Array{Int}
+
 
 	# constructor
 	function Model(p::Param;dropbox=false)
@@ -109,18 +114,37 @@ type Model
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
-		# VAR(1) regional house price and income
-		VAR_coef = DataFrame(read_rda(joinpath(indir,"region-coefs.rda"))["rcoefs"])
-		VAR_sig  = DataFrame(read_rda(joinpath(indir,"region-sig.rda"))["sig"])
+		# age distribution
+		agedist = DataFrame(read_rda(joinpath(indir,"agedist.rda"))["agedist"])
 
-		# sigs as array
-		sigs=Float64[]
-        for e in eachrow(VAR_sig)
-     	  for i in 1:4
-     		  push!(sigs,e[i])
-     	  end
-        end
-        sigs = reshape(sigs,2,2,p.nJ)
+		# Aggregate and Regional price and income dynamic
+		# ===============================================
+
+		# regional house price and income
+		# what is relationship y_j ~ P + Y
+		VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
+		Regmods_YP = Dict{Int,Matrix{Float64}}()
+		for j in 1:p.nJ
+			Regmods_YP[j] = reshape(array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P,:p_Intercept,:p_Y,:p_P]]),2,3)
+		end
+
+		# aggregate house price and income
+		# VAR P ~ LY + LP
+		# VAR Y ~ LY + LP
+		VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
+		sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
+
+		# fill into a matrix
+		# Var(Y),cov(Y,P),cov(P,Y),Var(P)
+		YPsigma = zeros(2,2)
+		YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
+		YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
+		YPsigma[2,1] = @where(sigma_agg,:row.=="P")[:Y][1]
+		YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
+
+
+		# P,Y data series. input for simulation
+		PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
 
 		# population weights
 		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
@@ -129,6 +153,7 @@ type Model
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
 
 		# manually override AR1 coefs
+		# using numbers from french(2005)
 		inc_coefs[:,:Lresid] = 0.96
 		inc_coefs[:,:sigma_resid] = 0.118
 
@@ -145,6 +170,7 @@ type Model
 		# fill kappa with correct values
 		for j in 1:p.nJ
 			p.kappa[j] = popweights[j,:r2p]
+			p.kappa[j] = 0.02
 		end
 
 		ageprof = zeros(p.nt-1,p.nJ)
@@ -159,7 +185,7 @@ type Model
 		for j in 1:p.nJ
 			inc_shocks[j,1] = inc_coefs[j,:Lresid]  
 			inc_shocks[j,2] = inc_coefs[j,:sigma_resid]
-			ybar = log(VAR_coef[j,:mean_y])
+			ybar = log(VAR_reg[j,:mean_y])
 			inc_shocks[j,3] = log(inc_coefs[j,:q20]) - ybar
 			inc_shocks[j,4] = log(inc_coefs[j,:q95]) - ybar
 		end
@@ -167,28 +193,37 @@ type Model
 		# XD grids
 		# =========
 
+		Ygrid = linspace(@where(VAR_agg,:param.=="min_Y")[:value][1],@where(VAR_agg,:param.=="max_Y")[:value][1],p.np)
+		Pgrid = linspace(@where(VAR_agg,:param.=="min_P")[:value][1],@where(VAR_agg,:param.=="max_P")[:value][1],p.ny)
+
 		# p and y grids
 		# -------------
 
-		pgrid = zeros(p.np,p.nJ)
-		ygrid = zeros(p.ny,p.nJ)
+		ygrid = zeros(p.ny,p.np,p.nJ)
+		pgrid = zeros(p.ny,p.np,p.nJ)
 		for j in 1:p.nJ
-			ygrid[:,j] = linspace(VAR_coef[j,:lb_y][1],VAR_coef[j,:ub_y][1],p.ny)
-			pgrid[:,j] = linspace(VAR_coef[j,:lb_p][1],VAR_coef[j,:ub_p][1],p.np)
+			for iP in 1:p.np
+				for iY in 1:p.ny
+					ygrid[iY,iP,j] = @with(VAR_reg[j,:], :y_Intercept + :y_P * Pgrid[iP] + :y_Y * Ygrid[iY])[1]
+					pgrid[iY,iP,j] = @with(VAR_reg[j,:], :p_Intercept + :p_P * Pgrid[iP] + :p_Y * Ygrid[iY])[1]
+				end
+			end
 		end
 
-		# grid for individual income (based on ygrid)
+		# grid for individual income (based on ygrid(Y,P))
 		# -------------------------------------------
 
-		# TODO rouwenhorst => array (nJ,nz) supports and array (nJ,nz,nz) transitions
-		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_coef[:,:mean_y],p)
+		# get supports for shocks and trans mats by region
+		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y],p)
 
-		zgrid = zeros(p.nz,p.ny,p.nt-1,p.nJ)
+		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
 		for j in 1:p.nJ
 			for iy in 1:p.ny
-				for it in 1:p.nt-1
-					for iz in 1:p.nz
-						zgrid[iz,iy,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+				for ip in 1:p.np
+					for it in 1:p.nt-1
+						for iz in 1:p.nz
+							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+						end
 					end
 				end
 			end
@@ -205,7 +240,7 @@ type Model
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
-		x = [linspace(bounds["assets"][1],50.0,p.na-6),linspace(70.0,bounds["assets"][2],6)]
+		x = [linspace(bounds["assets"][1],50.0,p.na-5),linspace(100.0,bounds["assets"][2],5)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
 		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 
@@ -219,25 +254,26 @@ type Model
 
 
 		grids["Gtau"] = [(1.0-p.taudist), p.taudist]
+		grids["P"] = Pgrid
+		grids["Y"] = Ygrid
 
 		
 
-		# regional transition matrices
-		# ============================
+		# Aggregate Transition Matrix GYP
+		# ===============================
 
-		# the transition matrix for the price VAR is
-		# defined on the tensor product pgrid[j, ] * ygrid[j, ] for all j
-		# it's of dim nJ,ny,np,ny,np
+		# the transition matrix for the VAR (Y,P) is
+		# defined on the tensor product Pgrid * Ygrid
+		# it's of dim (ny*np,ny*np)
 		# each cell has the density of the event 
 		# Pr(y(t+1) = y_i, p(t+1) = p_k | y(t),p(t) )
 		# where the density if given by a joint normal with 
 		#
-		# mean: ( ymod(y(t),p(t),j), pmod(y(t),p(t),j) )
-		# Cov : sigs[:,:,j]
-		#aaaa
-		# here ymod(y,p,j) and pmod(y,p,j) are the linear predictors
+		# mean: ( ymod(y(t),p(t),j), pmod(y(t),p(t)) )
+		# Cov : sig
+		# here ymod(y,p) and pmod(y,p) are the linear predictors
 		# of the VAR models for y and p
-		Gyp = get_yp_transition(VAR_coef,p,sigs,pgrid,ygrid)
+		Gyp = get_yp_transition(VAR_agg,p,YPsigma,Pgrid,Ygrid)
 
 
 
@@ -267,39 +303,19 @@ type Model
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
 
 
-		# spline settings
+		# cohort settings
 		# ===============
 
-		degs   = Dict{ASCIIString,Int}()
-		nknots = Dict{ASCIIString,Int}()
-		knots  = Dict{ASCIIString,Vector}()
+		c_idx, c_yrs, c_breaks = cohortIdx(p)
 
-		degs["assets"] = 3
-		degs["y"] = 1
-		degs["p"] = 1
-		degs["z"] = 1
-		degs["age"] = 2
-
-		nknots["assets"] = p.na - degs["assets"] + 1
-		nknots["p"] = p.np - degs["p"] + 1
-		nknots["y"] = p.ny - degs["y"] + 1
-		nknots["z"] = p.nz - degs["z"] + 1
-		nknots["age"] = (p.nt-1) - degs["age"] + 1
-
-		# making sure all knot spans are active
-		knots["assets"] = [linspace(grids["assets"][1],grids["assets"][end-1]-1,p.na - degs["assets"] ) , grids["assets"][end]]
-
-
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,dist,inc_coefs,ageprof,inc_shocks,init_asset,nknots,degs,knots)
-
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,c_yrs,c_idx,c_breaks)
 	end
-
-
-
 end
 
 
 # functions for testing
+# =====================
+
 function setrand!(m::Model)
 	m.v = reshape(rand(length(m.v)),size(m.v))
 	m.vh = reshape(rand(length(m.vh)),size(m.vh))
@@ -322,6 +338,35 @@ function setincreasing!(m::Model)
 	return nothing
 end
 
+
+# cohort setup
+# =============
+
+function cohortIdx(p::Param)
+	years = 1968:2011
+
+	# which indices in "years" are relevant for
+	# which cohort at which age
+
+	cdict = Dict{Int,Range{Int}}()
+	idict = Dict{Int,Range{Int}}()
+	for yr in 1:length(years)
+		yr_born = years[yr]
+		cdict[yr] = yr_born:(min(yr_born + p.nt-2,2011))
+		idict[yr] = yr:(findin(years,min(yr_born + p.nt-2,2011))[1])
+	end
+
+	nc = length(cdict)
+	ppc = iround(p.nsim / nc)
+	pp = ppc
+	breaks = Int[]
+	push!(breaks,ppc)
+	for i in 2:nc
+		pp += ppc
+		push!(breaks,pp)
+	end
+	return (idict,cdict,breaks)
+end
 
 # function logAssets(p::Param,x)
 
@@ -404,26 +449,26 @@ function rouwenh(rho::Float64,mu_eps,sigma_eps,n)
 end
 
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
-	Gyp = zeros(p.ny*p.np, p.ny*p.np, p.nJ)
-	for j in 1:p.nJ
-		for ip in 1:p.np
-			for iy in 1:p.ny
+	Gyp = zeros(p.ny*p.np, p.ny*p.np)
+	ycoef = array( @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
+	pcoef = array( @where(df,(:param.=="P_Intercept") | (:param.== "P_LY")| (:param.== "P_LP"))[:value]) 
+	for ip in 1:p.np
+		for iy in 1:p.ny
 
-				# setup MvNormal on that state
-				C = PDMat(sigs[:,:,j])
-				mvn = MvNormal([ygrid[iy,j],pgrid[ip,j]],C)
-				ycoef = array(df[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
-				pcoef = array(df[j,[:p_Intercept, :p_Lp, :p_Ly]])
+			# setup MvNormal on that state
+			C = PDMat(sigs)
+			mvn = MvNormal([ygrid[iy],pgrid[ip]],C)
 
-				for ip1 in 1:p.np
-					for iy1 in 1:p.ny
-						# get points to evaluate at
-						xdata = vcat(1.0,pgrid[ip1,j],ygrid[iy1,j])
-						new_y  = ycoef * xdata
-						new_p  = pcoef * xdata
-						Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1),j] = pdf(mvn,[new_y,new_p])
-						# Gyp[iy,ip,iy1,ip1,j] = pdf(mvn,[new_y,new_p])
-					end
+			for ip1 in 1:p.np
+				for iy1 in 1:p.ny
+					# get points to evaluate at
+					xdata = hcat(1.0,ygrid[iy1],pgrid[ip1])
+					new_y  = xdata * ycoef 
+					new_p  = xdata * pcoef 
+					# println("iy=$iy,ip=$ip,iy1=$iy1,ip1=$ip1")
+					# println("y=$(ygrid[iy]),p=$(pgrid[ip])")
+					# println("new_y = $(round(new_y,2)), new_p = $(round(new_p,2))")
+					Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1)] = pdf(mvn,[new_y,new_p])
 				end
 			end
 		end

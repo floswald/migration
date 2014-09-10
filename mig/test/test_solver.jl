@@ -17,7 +17,7 @@ facts("test linear index functions") do
 
 	context("testing 11 dim index") do
 
-		for itest in 1:50
+		for itest in 1:10
 
 			# choose a random state
 			ihh  = rand(1:p.nh)
@@ -38,7 +38,7 @@ facts("test linear index functions") do
 
 	context("testing 10 dim index") do
 
-		for itest in 1:50
+		for itest in 1:10
 
 			# choose a random state
 			ik   = rand(1:p.nJ)
@@ -83,7 +83,7 @@ facts("test linear index functions") do
 
 	context("testing 9 dim index") do
 
-		for itest in 1:50
+		for itest in 1:10
 
 			# choose a random state
 			is   = rand(1:p.ns)
@@ -102,7 +102,7 @@ facts("test linear index functions") do
 
 	context("testing final index function") do
 
-		for itest in 1:50
+		for itest in 1:10
 
 			# choose a random state
 			ik   = rand(1:p.nJ)
@@ -324,17 +324,35 @@ facts("testing bilinear approx") do
 	xgrid = linspace(-1.5,3,10)
 	ygrid = linspace(1.5,3.8,12)
 
-	zmat = Float64[ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+	myfun(i1,i2) = ((i1-0.1)+(i2*5.1))*3.4
+
+	zmat = Float64[ myfun(i,j) for i in xgrid, j in ygrid ]
 
 	@fact zmat[1,1] => mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)
 	@fact zmat[3,6] => mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat)
-	@fact zmat[10,12] => mig.bilinearapprox(xgrid[10],ygrid[12],xgrid,ygrid,zmat)
+	@fact zmat[10,12] =>  mig.bilinearapprox(xgrid[10],ygrid[12],xgrid,ygrid,zmat) 
 
 	x = xgrid[5]+rand()
 	y = ygrid[5]+rand()*0.1
-	z = (x-0.1)*(y+0.1)*3.4
+	z = myfun(x,y)
 	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
+	x = xgrid[end]-0.01
+	y = ygrid[end]-0.02
+	z = myfun(x,y)
+	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+
+	for i in 1:100
+		x = rand() * (3+1.5) - 1.5
+		y = rand() * (3.8-1.5) + 1.5
+		z = myfun(x,y)
+		@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+	end
+
+	x = xgrid[]+rand()
+	y = ygrid[5]+rand()*0.1
+	z = myfun(x,y)
+	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
 	# out of bounds
 	@fact zmat[1,1] => mig.bilinearapprox(-2.0,0.0,xgrid,ygrid,zmat)
@@ -524,7 +542,7 @@ facts("test integration of vbar: getting EV") do
 			for iy1=1:p.ny 				# regional income deviation
 			for is1=1:p.ns 				# regional income deviation
 
-				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau,ia,ih,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1), ij ] * Gs[is,is1] 
+				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau,ia,ih,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1) ] * Gs[is,is1] 
 			end
 			end
 			end
