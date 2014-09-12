@@ -45,12 +45,14 @@ type Model
 	Init_asset::LogNormal
 
 	Regmods_YP::Dict{Int,Matrix{Float64}}   # regional VAR models. row 1 is Y, row 2 is P
+	PYdata::DataFrame
 
 	# cohort settings
 	# ---------------
-	coh_yrs ::Dict{Int,Range{Int}}
-	coh_idx ::Dict{Int,Range{Int}}
-	coh_breaks ::Array{Int}
+	coh_yrs    :: Dict{Int,Range{Int}}
+	coh_idx    :: Dict{Int,Range{Int}}
+	coh_breaks :: Array{Int}
+	coh_n      :: Dict{Int,Int}
 
 
 	# constructor
@@ -125,7 +127,7 @@ type Model
 		VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
 		Regmods_YP = Dict{Int,Matrix{Float64}}()
 		for j in 1:p.nJ
-			Regmods_YP[j] = reshape(array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P,:p_Intercept,:p_Y,:p_P]]),2,3)
+			Regmods_YP[j] = vcat(mig.array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),mig.array(VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 		end
 
 		# aggregate house price and income
@@ -306,9 +308,9 @@ type Model
 		# cohort settings
 		# ===============
 
-		c_idx, c_yrs, c_breaks = cohortIdx(p)
+		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,c_yrs,c_idx,c_breaks)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,c_yrs,c_idx,c_breaks,c_n)
 	end
 end
 
@@ -339,33 +341,37 @@ function setincreasing!(m::Model)
 end
 
 
+
 # cohort setup
 # =============
 
 function cohortIdx(p::Param)
-	years = 1968:2011
+	years = 1968:2012
 
 	# which indices in "years" are relevant for
 	# which cohort at which age
 
 	cdict = Dict{Int,Range{Int}}()
 	idict = Dict{Int,Range{Int}}()
+	ndict = Dict{Int,Int}()
 	for yr in 1:length(years)
 		yr_born = years[yr]
-		cdict[yr] = yr_born:(min(yr_born + p.nt-2,2011))
-		idict[yr] = yr:(findin(years,min(yr_born + p.nt-2,2011))[1])
+		cdict[yr] = yr_born:(min(yr_born + p.nt-2,2012))
+		idict[yr] = yr:(findin(years,min(yr_born + p.nt-2,2012))[1])
 	end
 
 	nc = length(cdict)
-	ppc = iround(p.nsim / nc)
+	ppc = iround(p.nsim / (nc-1))
 	pp = ppc
 	breaks = Int[]
 	push!(breaks,ppc)
+	ndict[1]=ppc
 	for i in 2:nc
 		pp += ppc
 		push!(breaks,pp)
+		ndict[i] = ppc
 	end
-	return (idict,cdict,breaks)
+	return (cdict,idict,breaks,ndict)
 end
 
 # function logAssets(p::Param,x)

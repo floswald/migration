@@ -46,6 +46,13 @@ function forceBounds(x::Float64,lb::Float64,ub::Float64)
  	return x
 end
 
+function forceBounds(x::Vector{Float64},lb::Float64,ub::Float64)
+	for i in 1:length(x)
+		x[i] = forceBounds(x[i],lb,ub)
+	end
+	return x
+end
+
 # # get one draw for y and p given Ly and Lp
 # function draw_yp(m::Model,Ly::Float64,Lp::Float64,j::Int)
 
@@ -80,7 +87,7 @@ end
 
 function getRegional(m::Model,Y::Float64,P::Float64,j::Int)
 
-	m.Regmods[j] * vcat(Y,P)
+	m.Regmods_YP[j] * vcat(1,Y,P)
 
 end
 
@@ -91,114 +98,67 @@ end
 
 # simulator
 
+# function simulate(m::Model,p::Param)
+# 	srand(p.rseed)
+# 	simulate(m,p,p.nsim)
+# end
+
+# function simulate_parts(m::Model,p::Param,parts::Int)
+
+# 	srand(p.rseed)
+# 	# loop over simulations
+# 	# and combine moments in averages
+# 	nsim = int(floor(p.nsim / parts))
+
+# 	# collecting moments
+# 	dfs = DataFrame[]
+
+# 	for is in 1:parts
+
+# 		s = simulate(m,p,nsim)
+# 		push!(dfs,computeMoments(s,p,m))
+
+# 	end
+
+# 	# compute average over moments
+# 	dfout = dfs[1]
+# 	for irow in 1:nrow(dfout)
+# 		x = 0.0
+# 		sdx = 0.0
+# 		for i in 1:parts
+# 			x += dfs[i][irow,:model_value]
+# 			sdx += dfs[i][irow,:model_sd]
+# 		end
+# 		dfout[irow,:model_value] = x / parts
+# 		dfout[irow,:model_sd] = sdx / parts
+# 	end
+# 	return dfout
+# end
+
 function simulate(m::Model,p::Param)
-	srand(p.rseed)
-	simulate(m,p,p.nsim)
-end
-
-function simulate_parts(m::Model,p::Param,parts::Int)
-
-	srand(p.rseed)
-	# loop over simulations
-	# and combine moments in averages
-	nsim = int(floor(p.nsim / parts))
-
-	# collecting moments
-	dfs = DataFrame[]
-
-	for is in 1:parts
-
-		s = simulate(m,p,nsim)
-		push!(dfs,computeMoments(s,p,m))
-
-	end
-
-	# compute average over moments
-	dfout = dfs[1]
-	for irow in 1:nrow(dfout)
-		x = 0.0
-		sdx = 0.0
-		for i in 1:parts
-			x += dfs[i][irow,:model_value]
-			sdx += dfs[i][irow,:model_sd]
-		end
-		dfout[irow,:model_value] = x / parts
-		dfout[irow,:model_sd] = sdx / parts
-	end
-	return dfout
-end
-
-function simulate(m::Model,p::Param,nsim::Int)
 
 	T = p.nt-1
+	nsim = m.coh_breaks[end]
 
 	# set random seed
 
-	# grids
-	agrid = m.grids["assets"]
+	# get grids
+	agrid      = m.grids["assets"]
 	agrid_rent = m.grids["assets"][m.aone:end]
+	na_rent    = length(agrid_rent)
+	ygrid      = m.grids["Y"]
+	pgrid      = m.grids["P"]
 
 	regnames = m.regnames[:Division]
-
 	aone = m.aone
 
-	# drawing the shocks 
-	# ==================
-
-	# initial distributions
-	# TODO
-	# all of those should be non-uniform probably
-	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
-	G0z   = Categorical([1/p.nz for i=1:p.nz])
-	G0yp  = Categorical([1/(p.ny*p.np) for i=1:(p.ny*p.np)])
-	G0j   = Categorical(array(m.regnames[:prop]))	# TODO popdist
-	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
-
-	# prepare cumsum of probability matrices
-	cumGz  = cumsum(m.gridsXD["Gz"],2)
-	cumGs  = cumsum(m.gridsXD["Gs"],2)
-
-	# storage
-	Dt       = zeros(Int,nsim*(T))	 # age
-	Di       = zeros(Int,nsim*(T))	 # identity
-	Dv       = zeros(nsim*(T))	     # value
-	Dprob    = zeros(nsim*(T))	     # value
-	Dc       = zeros(nsim*(T))	     # consu
-	Dcash    = zeros(nsim*(T))	     # cash after rent
-	Drent    = zeros(nsim*(T))	     # rent
-	Da       = zeros(nsim*(T))	     # asset value
-	Dy       = zeros(nsim*(T))	     # region y value
-	Dp       = zeros(nsim*(T))	     # house price value
-	DY       = zeros(nsim*(T))	     # aggregate
-	DP       = zeros(nsim*(T))	     # aggregate
-	Dincome  = zeros(nsim*(T))	     # income value
-	Dj       = zeros(Int,nsim*(T))	 # location index
-	Dregname = ASCIIString[]             # location name
-	Dh       = zeros(Int,nsim*(T))	 # housing state
-	Dhh      = zeros(Int,nsim*(T))	 # housing choice
-	DS       = zeros(nsim*(T))	     # savings values
-	Dz       = zeros(nsim*(T))	     # z value
-	DM       = zeros(Int,nsim*(T))	 # move
-	DMt      = zeros(Int,nsim*(T))	 # move
-	Dkids    = zeros(Int,nsim*(T))	 # kids yes/no
-	Ddist    = zeros(nsim*(T))
-	Dtau     = zeros(Int,nsim*(T))
-	Dcanbuy  = zeros(Int,nsim*(T))
-	Dcohort  = zeros(Int,nsim*(T))
-
 	# temporary objects
-
-	ktmp = zeros(Float64,p.nJ)
-	ktmp_test = zeros(Float64,p.nJ)
+	ktmp  = zeros(Float64,p.nJ)
 	ktmp2 = zeros(p.nJ)
-
-	na_rent = length(agrid_rent)
-
 	v1tmp = 0.0
 	v2tmp = 0.0
-
-	ss = 0.0
-	yy = 0.0
+	ss    = 0.0
+	yy    = 0.0
 
 	# z shock supports for each region
 	zsupps = Dict{Int,Array{Float64,1}}()
@@ -206,6 +166,7 @@ function simulate(m::Model,p::Param,nsim::Int)
 		zsupps[j] = m.gridsXD["zsupp"][:,j]
 	end
 
+	
 	# linear interpolator objects
 	# ===========================
 
@@ -217,12 +178,6 @@ function simulate(m::Model,p::Param,nsim::Int)
 	push!(gs,ygrid)
 	push!(gs,pgrid)
 
-	gs_rent = Array{Float64,1}[]
-	push!(gs_rent,agrid_rent)
-	push!(gs_rent,zsupps[1])
-	push!(gs_rent,ygrid)
-	push!(gs_rent,pgrid)
-
 	# value arrays 
 	# ------------
 	rho_arr = Array{Float64}[]
@@ -230,211 +185,619 @@ function simulate(m::Model,p::Param,nsim::Int)
 		push!(rho_arr,zeros(p.na,p.nz,p.ny,p.np))
 	end
 	vcs_arr = Array{Float64}[]
-	push!(vcs_arr,zeros(p.na,p.nz,p.ny,p.np),zeros(p.na,p.nz,p.ny,p.np),zeros(p.na,p.nz,p.ny,p.np))
-	vcs_rent_arr = Array{Float64}[]
-	push!(vcs_rent_arr,zeros(na_rent,p.nz,p.ny,p.np),zeros(na_rent,p.nz,p.ny,p.np),zeros(na_rent,p.nz,p.ny,p.np))
-	vh_arr = Array{Float64}[]
-	push!(vh_arr,zeros(p.na,p.nz,p.ny,p.np),zeros(p.na,p.nz,p.ny,p.np))
-	cs_arr = Array{Float64}[]
-	push!(cs_arr,zeros(p.na,p.nz,p.ny,p.np),zeros(p.na,p.nz,p.ny,p.np))
+	for vcs in 1:3  # value, cons and savings
+		for j in 1:p.nJ  # at each loc choice
+			for ihh in 1:p.nh 	# at each housing choice
+				push!(vcs_arr,zeros(p.na,p.nz,p.ny,p.np))
+			end
+		end
+	end
 
 	# construct the interpolators
 	# ---------------------------
-	l_vcs      = lininterp(vsc_arr,gs)
-	l_vcs_rent = lininterp(vsc_rent_arr,gs_rent)
-	l_vh       = lininterp(vh_arr,gs)
-	l_cs       = lininterp(cs_arr,gs)
-	l_rho      = lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,lininterp}()
+	L["l_vcs"] = lininterp(vcs_arr,gs)
+	L["l_rho"] = lininterp(rho_arr,gs)
+
+	# prepare initial distributions to draw from
+	cumGz = cumsum(m.gridsXD["Gz"],2)
+	cumGs = cumsum(m.gridsXD["Gs"],2)
+	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
+	G0j   = Categorical(array(m.regnames[:prop]))	
+	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
+	G0z   = Normal(0,0.1)
+
+	# individual specific variables
+	a      = 0.0
+	z      = 0.0
+	yy     = 0.0   # individual income
+	cons   = 0.0
+	azYP   = zeros(4)
+	canbuy = false
+	ihh    = 0
+	move   = false
+	moveto = 0
+	val    = 0.0
+	ss     = 0.0
+	prob   = 0.0
+
+	# group specific variables
+	is = 0
+	ih = 0
+	ij = 0
+
+	# dataframe to save all data
+	all_data = DataFrame(i=0,
+		          age      = 0,
+		          age2     = 0,
+		          is       = 0,
+		          ih       = 0,
+		          itau     = 0,
+		          ij       = 0,
+		          z        = 0.0,
+		          a        = 0.0,
+		          c        = 0.0,
+		          income   = 0.0,
+		          Y        = 0.0,
+		          P        = 0.0,
+		          y        = 0.0,
+		          p        = 0.0,
+		          wealth   = 0.0,
+		          move     = false,
+		          moveto   = 0,
+		          cohort   = 0,
+		          year     = 0,
+		          Division = "",
+		          canbuy   = false,
+		          v        = 0.0,
+		          prob     = 0.0)
 
 
 	# begin simulation loop
 	# =====================
 
-	for i=1:nsim
-		# find cohort index of i
-		# assign i to a certain cohort.
-		cohort   = yearidx = assignCohort(i,m)
-		T_cohort = length(m.coh_idx[cohort])
-		is       = rand(G0k)
-		z        = rand(Normal(0,0.1))
-		a        = forceBounds(rand(m.Init_asset),0.0,100.0)
-		ih       = 0
-		itau     = rand(Gtau)
-		ij       = rand(G0j)
+	for coh in 1:length(m.coh_idx)
 
-		# tmp vars
-		move = false	# move indidicator
-		moveto = 0
+		# index of first year coincides with coh index
+		yearidx = coh
+		P = m.PYdata[yearidx,:P]
+		Y = m.PYdata[yearidx,:Y]
 
-		# aggregate state in year 1
-		P = PYdata[yearidx]
-		Y = PYdata[yearidx]
+		# number of inds in cohort
+		n_coh = m.coh_n[coh]
 
-		for age=1:T_cohort	# later cohorts can be cut off earlier
+		# list of individuals in this cohort
+		inds = coh > 1 ? ((m.coh_breaks[coh-1][end]+1):m.coh_breaks[coh]) : 1:m.coh_breaks[coh]
+		@assert length(inds)==n_coh
 
-			# current continuous state is
-			azYP = [a,z,Y,P]
+		# dataframe to push all cohort data onto
+		coh_data = DataFrame(i=0,
+			          age      = 0,
+			          age2     = 0,
+			          is       = 0,
+			          ih       = 0,
+			          itau     = 0,
+			          ij       = 0,
+			          z        = 0.0,
+			          a        = 0.0,
+			          c        = 0.0,
+			          income   = 0.0,
+			          Y        = 0.0,
+			          P        = 0.0,
+			          y        = 0.0,
+			          p        = 0.0,
+			          wealth   = 0.0,
+			          move     = false,
+			          moveto   = 0,
+			          cohort   = coh,
+			          year     = 0,
+			          Division = "",
+			          canbuy   = false,
+			          v        = 0.0,
+			          prob     = 0.0)
+
+		# current state dataframe for all cohort members
+		# ----------------------------------------------
+		# drawing initial conditions here.
+		g = DataFrame(i=inds,
+			          age=ones(Int,n_coh),
+			          age2=ones(Int,n_coh),
+			          is=rand(G0k,n_coh),
+			          ih=zeros(Int,n_coh),
+			          itau=rand(Gtau,n_coh),
+			          ij=rand(G0j,n_coh),
+			          z=rand(G0z,n_coh),
+			          a=forceBounds(rand(m.Init_asset,n_coh),0.0,100.0),
+			          c=zeros(n_coh),
+			          income=zeros(n_coh),
+			          Y=repeat([Y],inner=[1],outer=[n_coh]),
+			          P=repeat([P],inner=[1],outer=[n_coh]),
+			          y=zeros(n_coh),
+			          p=zeros(n_coh),
+			          wealth=zeros(n_coh),
+			          move=falses(n_coh),
+			          moveto=zeros(Int,n_coh),
+			          cohort=repeat([coh],inner=[1],outer=[n_coh]),
+			          year=repeat([m.coh_yrs[coh][1]],inner=[1],outer=[n_coh]),
+			          Division=repeat([""],inner=[1],outer=[n_coh]),
+			          canbuy=falses(n_coh),
+			          v=zeros(n_coh),
+			          prob=zeros(n_coh))
+
+		for age in 1:length(m.coh_idx[coh])
+
+			# update year and age on grouping data
+			g[:age]  = repeat([age],inner=[1],outer=[n_coh])
+			g[:age2] = repeat([age^2],inner=[1],outer=[n_coh])
+			g[:year] = repeat([m.coh_yrs[coh][age]],inner=[1],outer=[n_coh])
+
+			# group inds according to current discrete states
+			gg = groupby(g,[:is,:itau,:ih,:ij])
+
+			for ig in gg
+
+				# get group-specific discrete vars
+				is   = ig[1,:is] 	# {1,2}
+				ih   = ig[1,:ih] 	# {0,1}
+				itau = ig[1,:itau]	# {1,2}
+				ij   = ig[1,:ij]    # {1,...,9}
+
+				# get regional price and income
+				yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
+
+				# setup the interpolators on this function space
+				# ----------------------------------------------
+				fill_interp_arrays!(L,is,ih+1,itau,ij,age,p,m)
+				setGrid!(L["l_rho"],2,zsupps[ij])
+				setGrid!(L["l_vcs"],2,zsupps[ij])
+
+				# reset caches
+				resetCache!(L["l_rho"])
+				resetCache!(L["l_vcs"])
+
+				# simulate each individual in group ig
+				for irow in eachrow(ig)
+
+					a = irow[:a]
+					z = irow[:z]
+					Y = irow[:Y]
+					P = irow[:P]
+					azYP = [a,z,Y,P]
+
+					yy = getIncome(m,yp[1],z,age,ij)
+
+					# flag for downpayment constraint
+					canbuy = a + yy > p.chi * yp[2]
 
 
-			if z < minimum(zsupps[ij])
-				println("[age,id]=[$age,$i], ij=$ij, z=$z, minz = $(minimum(zsupps[ij]))")
-				error()
-			end
-
-			# point = [a,Y,P,z]
-
-			# record beginning of period state
-			# --------------------------------
-
-			yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-
-			yy = getIncome(m,yp[1],z,age,ij)
-
-			# flag for downpayment constraint
-			canbuy = a + yy > p.chi * yp[2]
-
-			Dj[age + T*(i-1)]      = ij
-			Dt[age + T*(i-1)]      = age
-			Dtau[age + T*(i-1)]    = itau
-			Di[age + T*(i-1)]      = i
-			Dh[age + T*(i-1)]      = ih
-			Da[age + T*(i-1)]      = a
-			DY[age + T*(i-1)]      = Y
-			DP[age + T*(i-1)]      = P
-			Dy[age + T*(i-1)]      = yp[1]
-			Dp[age + T*(i-1)]      = yp[2]
-			Dincome[age + T*(i-1)] = yy
-			Dz[age + T*(i-1)]      = z
-			Dkids[age + T*(i-1)]   = is-1
-			Dcanbuy[age + T*(i-1)] = canbuy
-			Dcohort[age + T*(i-1)] = cohort
-			Dyear[age + T*(i-1)]   = yearidx
-			push!(Dregname,regnames[ij])
-
-
-			# change linear interpolators z grid to current region ij grid
-			setGrid(l_rho,2,zsupps[ij])
-			setGrid(l_vh,2,zsupps[ij])
-			setGrid(l_vcs,2,zsupps[ij])
-			setGrid(l_vcs_rent,2,zsupps[ij])
-	
-			# 4D interpolation: (a,z,Y,P)
-			ktmp = get_rho_ktmp(l_rho,azYP,is,itau,ih+1,ij,age,m)
-			# normalizing vector of moving probs: because of approximation error
-			# sometimes this is not *exactly* summing to 1
-			ktmp = ktmp ./ sum(ktmp)
+					# get moving choice given current state
+					# =====================================
 			
-			# get cumulative prob
-			cumsum!(ktmp2,ktmp,1)
-			# throw a k-dice 
-			shock = rand()
-			moveto = searchsortedfirst(ktmp2,shock)
-			move = ij != moveto
+					# 4D interpolation on (a,z,Y,P)
+					ktmp = get_rho_ktmp(L["l_rho"],azYP)
+					# normalizing vector of moving probs: because of approximation error
+					# sometimes this is not *exactly* summing to 1
+					ktmp = ktmp ./ sum(ktmp)
+					
+					# get cumulative prob
+					cumsum!(ktmp2,ktmp,1)
+					# throw a k-sided dice 
+					shock  = rand()
+					moveto = searchsortedfirst(ktmp2,shock)
+					move   = ij != moveto
+					prob      = ktmp[moveto]
 
-			Dprob[age + T*(i-1)]      = ktmp[moveto]
-
-			if moveto>p.nJ || moveto < 1
-				println(ktmp2)
-				error("probelm in moveto = $moveto")
-			end
-
-			if move
-				ihh = 0
-				vcs = get_vcs(l_vcs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-				val               = vcs[1]
-				Dc[age + T*(i-1)] = vcs[2]
-				ss                = vcs[3]
-
-			else # stay
-
-				# you are current owner or you can buy
-				if (ih==1 || (ih==0 && canbuy))
-
-					# get housing choice
-					v1v2 = get_v1v2(l_vh,azYP,moveto,is,iy,ip,itau,ih+1,ij,age,p,m)
-
-					ihh = v1v2[1] > v1v2[2] ? 0 : 1
-					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
-
-					# find corresponding consumption and savings
-					cs = get_cs(l_cs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-					Dc[age + T*(i-1)] = cs[1]
-					ss                = cs[2]
-
-				# current renter who cannot buy
-				else
-					ihh = 0
-					if a < 0
-						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+					if moveto>p.nJ || moveto < 1
+						println(ktmp2)
+						error("problem in moveto = $moveto")
 					end
-					# for iia in aone:p.na
-					# 	for iz in 1:p.nz
-					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
-					# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-					# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-					# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
-					# 	end
-					# end
-					vcs = get_vcs_rent(l_vcs_rent,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-					val               = vcs[1]
-					Dc[age + T*(i-1)] = vcs[2]
-					ss                = vcs[3]
 
+					# get value, consumption and savings given moving choice
+					# ======================================================
+
+					if move
+
+						ihh = 0
+						vcs = get_vcs(L["l_vcs"],azYP,1,moveto,p)
+						irow[:v]    = vcs[1]
+						irow[:cons] = vcs[2]
+						ss          = vcs[3]
+
+					else # stay
+
+						# you are current owner or you can buy
+						if (ih==1 || (ih==0 && canbuy))
+
+							# get housing choice
+							v1v2 = get_v1v2(l_vh,azYP,moveto,p)
+
+							ihh = v1v2[1] > v1v2[2] ? 0 : 1
+							irow[:v] = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+
+							# find corresponding consumption and savings
+							cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto)
+							irow[:cons]       = cs[1]
+							ss                = cs[2]
+
+						# current renter who cannot buy
+						else
+							ihh = 0
+							if a < 0
+								println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+							end
+							# for iia in aone:p.na
+							# 	for iz in 1:p.nz
+							# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
+							# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+							# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+							# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+							# 	end
+							# end
+							vcs = get_vcs(L["l_vcs"],azYP,ihh+1,moveto)
+							irow[:v]              = vcs[1]
+							irow[:cons]  = vcs[2]
+							ss                = vcs[3]
+
+						end
+					end
+
+					# make sure savings is inside grid
+					# (although interpolator forces that anyway)
+					ss = forceBounds(ss,agrid[1],agrid[end])
+
+
+					# record current state and choices and append to cohort data
+					# ==========================================================
+
+					irow[:a]        = a
+					irow[:z]        = z
+					irow[:Y]        = m.PYdata[yearidx,:Y]
+					irow[:P]        = m.PYdata[yearidx,:P]
+					irow[:s]        = ss
+					irow[:ij]       = ij
+					irow[:ih]       = ih
+					irow[:ihh]      = ihh
+					irow[:is]       = is
+					irow[:y]        = yp[1]
+					irow[:p]        = yp[2]
+					irow[:income]   = yy
+					irow[:canbuy]   = canbuy
+					irow[:move]     = move
+					irow[:moveto]   = moveto
+					irow[:prob]     = prob
+					irow[:Division] = m.regnames[ij,:Division]
+					irow[:wealth]   = (yp[2] * ih) + a
+
+					push!(coh_data,array(irow))
+
+
+					# transition to new state
+					# =======================
+
+					a  = ss
+					ij = moveto
+					ih = ihh
+					yearidx+=1
+
+					# draw new values for child shock
+					is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
+
+					# if move
+					if move
+						z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
+					else
+						z   = draw_z(m,z,ij)
+					end
+
+					# put back into row grouping df
+					irow[:a] = a
+					irow[:z] = z 
+					irow[:Y] = m.PYdata[yearidx,:Y] 
+					irow[:P] = m.PYdata[yearidx,:P] 
+					irow[:ij] = ij
+					irow[:ih] = ihh
+					irow[:is] = is
+
+				end	# individual
+			end # group
+		end # age
+		append!(all_data,coh_data)
+
+	end # end cohort
+
+end
+	
+
+	# 	for age in 1:T_cohort
+	# 		# group cohort into discrete state groups
+	# 		# g = partition(ij,is,ih,itau) -> assigns a group id to each member of the cohort
+	# 		# there are 72 possible combinations
+	# 		#
+	# 		# then loop over groups
+	# 		for g in groups
+
+	# 			# do once: fill each of the interpolation arrays with all values for (a,z,Y,P) on the disc-state for g
+	# 			#
+	# 			setupInterpValues!(l_vcs,...)
+
+	# 			for i in g
+	# 			# for each group member, evaluate the functions
+	# 			# rbind the results somehow
+	# 			# probably easiest to just push! onto each vector
+
+	# 			# simulate as before
+
+
+	# 		for i in 1:nc
+
+
+	# 		end
+	# 	end
+	# end
+
+
+# 	for i=1:nsim
+# 		# find cohort index of i
+# 		# assign i to a certain cohort.
+# 		cohort   = yearidx = assignCohort(i,m)
+# 		T_cohort = length(m.coh_idx[cohort])
+# 		is       = rand(G0k)
+# 		z        = rand(Normal(0,0.1))
+# 		a        = forceBounds(rand(m.Init_asset),0.0,100.0)
+# 		ih       = 0
+# 		itau     = rand(Gtau)
+# 		ij       = rand(G0j)
+
+# 		# tmp vars
+# 		move = false	# move indidicator
+# 		moveto = 0
+
+# 		# aggregate state in year 1
+
+# 		# set linear interpolator zgrid to current region
+# 		setGrid!(l_rho,2,zsupps[ij])
+# 		setGrid!(l_vh,2,zsupps[ij])
+# 		setGrid!(l_vcs,2,zsupps[ij])
+# 		setGrid!(l_vcs_rent,2,zsupps[ij])
+
+# 		# reset Cache on interpolators
+# 		resetCache!(l_rho)
+# 		resetCache!(l_vh)
+# 		resetCache!(l_vcs)
+# 		resetCache!(l_vcs_rent)
+
+# 		for age=1:T_cohort	# later cohorts can be cut off earlier
+
+# 			# current continuous state is
+# 			azYP = [a,z,Y,P]
+
+# 			if z < minimum(zsupps[ij])
+# 				println("[age,id]=[$age,$i], ij=$ij, z=$z, minz = $(minimum(zsupps[ij]))")
+# 				error()
+# 			end
+
+# 			# point = [a,Y,P,z]
+
+# 			# record beginning of period state
+# 			# --------------------------------
+
+# 			yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
+# 			yy = getIncome(m,yp[1],z,age,ij)
+
+# 			# flag for downpayment constraint
+# 			canbuy = a + yy > p.chi * yp[2]
+
+# 			Dj[age + T*(i-1)]      = ij
+# 			Dt[age + T*(i-1)]      = age
+# 			Dtau[age + T*(i-1)]    = itau
+# 			Di[age + T*(i-1)]      = i
+# 			Dh[age + T*(i-1)]      = ih
+# 			Da[age + T*(i-1)]      = a
+# 			DY[age + T*(i-1)]      = Y
+# 			DP[age + T*(i-1)]      = P
+# 			Dy[age + T*(i-1)]      = yp[1]
+# 			Dp[age + T*(i-1)]      = yp[2]
+# 			Dincome[age + T*(i-1)] = yy
+# 			Dz[age + T*(i-1)]      = z
+# 			Dkids[age + T*(i-1)]   = is-1
+# 			Dcanbuy[age + T*(i-1)] = canbuy
+# 			Dcohort[age + T*(i-1)] = cohort
+# 			# println("cohort=$cohort")
+# 			# println("id=$i, age =$age")
+# 			# println("length(cohort)=$(length(m.coh_yrs[cohort]))")
+# 			# println("yearidx=$yearidx")
+# 			Dyear[age + T*(i-1)]   = m.coh_yrs[cohort][age]
+# 			push!(Dregname,regnames[ij])
+
+# 			# if you have not moved last period,
+# 			# your zsupp grid is the same, so you can keep the cache
+# 			# variable "move" is still set from last period
+# 			if move
+# 				resetCache!(l_rho)
+# 				resetCache!(l_vh)
+# 				resetCache!(l_vcs)
+# 				resetCache!(l_vcs_rent)
+
+# 				# and change linear interpolators z grid to current region ij grid
+# 				setGrid!(l_rho,2,zsupps[ij])
+# 				setGrid!(l_vh,2,zsupps[ij])
+# 				setGrid!(l_vcs,2,zsupps[ij])
+# 				setGrid!(l_vcs_rent,2,zsupps[ij])
+# 			end
+
+# 			# get moving choice given current state
+# 			# =====================================
+	
+# 			# 4D interpolation on (a,z,Y,P)
+# 			ktmp = get_rho_ktmp(l_rho,azYP,is,itau,ih+1,ij,age,p,m)
+# 			# normalizing vector of moving probs: because of approximation error
+# 			# sometimes this is not *exactly* summing to 1
+# 			ktmp = ktmp ./ sum(ktmp)
+			
+# 			# get cumulative prob
+# 			cumsum!(ktmp2,ktmp,1)
+# 			# throw a k-sided dice 
+# 			shock = rand()
+# 			moveto = searchsortedfirst(ktmp2,shock)
+# 			move = ij != moveto
+
+# 			Dprob[age + T*(i-1)]      = ktmp[moveto]
+
+# 			if moveto>p.nJ || moveto < 1
+# 				println(ktmp2)
+# 				error("probelm in moveto = $moveto")
+# 			end
+
+
+# 			# get value, consumption and savings given moving choice
+# 			# ======================================================
+
+# 			if move
+
+# 				ihh = 0
+# 				vcs = get_vcs(l_vcs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
+# 				val               = vcs[1]
+# 				Dc[age + T*(i-1)] = vcs[2]
+# 				ss                = vcs[3]
+
+# 			else # stay
+
+# 				# you are current owner or you can buy
+# 				if (ih==1 || (ih==0 && canbuy))
+
+# 					# get housing choice
+# 					v1v2 = get_v1v2(l_vh,azYP,moveto,is,itau,ih+1,ij,age,p,m)
+
+# 					ihh = v1v2[1] > v1v2[2] ? 0 : 1
+# 					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+
+# 					# find corresponding consumption and savings
+# 					cs = get_cs(l_cs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
+# 					Dc[age + T*(i-1)] = cs[1]
+# 					ss                = cs[2]
+
+# 				# current renter who cannot buy
+# 				else
+# 					ihh = 0
+# 					if a < 0
+# 						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+# 					end
+# 					# for iia in aone:p.na
+# 					# 	for iz in 1:p.nz
+# 					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
+# 					# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+# 					# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+# 					# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+# 					# 	end
+# 					# end
+# 					vcs = get_vcs_rent(l_vcs_rent,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
+# 					val               = vcs[1]
+# 					Dc[age + T*(i-1)] = vcs[2]
+# 					ss                = vcs[3]
+
+# 				end
+# 			end
+
+# 			# record current choices
+# 			# ======================
+
+# 			# make sure savings is inside grid
+# 			ss = forceBounds(ss,agrid[1],agrid[end])
+
+# 			DS[age + T*(i-1)]    = ss
+# 			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,yp[2],move,moveto,p)
+# 			Drent[age + T*(i-1)] = pifun(ih,ihh,yp[2],move,moveto,p)
+
+# 			Dv[age + T*(i-1)]      = val
+# 			Ddist[age + T*(i-1)]   = m.distance[ij,moveto]
+			
+# 			DM[age + T*(i-1)]  = move
+# 			DMt[age + T*(i-1)] = moveto
+# 			Dhh[age + T*(i-1)] = ihh	
+
+
+# 			# transition to new state
+# 			# =======================
+
+# 			a  = ss
+# 			ij = moveto
+# 			ih = ihh
+# 			yearidx+=1
+# 			P = m.PYdata[yearidx,:P]
+# 			Y = m.PYdata[yearidx,:Y]
+
+# 			# draw new values child shock
+# 			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
+
+# 			# if move
+# 			if move
+# 				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
+# 			else
+# 				z   = draw_z(m,z,ij)
+# 			end
+
+# 			# iy   = ypidx[iyp,1]
+# 			# ip   = ypidx[iyp,2]
+# 		end 	# age
+
+# 	end 	# ind
+
+# 	# collect all data into a dataframe
+# 	w = (Dp .* Dh) .+ Da
+
+# 	# df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
+# 	# df = join(df,m.regnames,on=:j)
+# 	# sort!(df,cols=[1,2]	)
+
+# 	# return df
+# end
+
+
+# fills arrays with corresponding values at 
+# discrete state (is,ih,itau,ij,age)
+# fills l_vcs with all possible combinations of (ihh,ik)
+function fill_interp_arrays!(L::Dict{ASCIIString,lininterp},is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
+
+	# L contains:
+	# 1. l_vcs
+	# 2. l_rho  
+
+	# get part of index that does not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in 1:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iP in 1:p.np
+			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
+			for iY in 1:p.ny 
+				offset_Y = iY-1 + p.ny * offset_P
+				for iz in 1:p.nz
+					offset_z = iz-1 + p.nz * offset_Y
+
+					arr_idx = iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))
+
+					for ik in 1:p.nJ
+						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
+						@inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rhoidx] 	
+
+						for ihh in 1:p.nh
+
+							vh_idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+							# index to get i in {(v,c,s) x (1,2,3,...,9) x (1,2)}
+							l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
+							@inbounds L["l_vcs"].vals[1+l_idx][arr_idx] = m.vh[vh_idx] 	
+							@inbounds L["l_vcs"].vals[2+l_idx][arr_idx] = m.ch[vh_idx] 	
+							@inbounds L["l_vcs"].vals[3+l_idx][arr_idx] = m.sh[vh_idx] 	
+
+
+						end
+					end
 				end
 			end
-
-			# record current choices
-			# ======================
-
-			# make sure savings is inside grid
-			ss = forceBounds(ss,agrid[1],agrid[end])
-
-			DS[age + T*(i-1)]    = ss
-			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,yp[2],move,moveto,p)
-			Drent[age + T*(i-1)] = pifun(ih,ihh,yp[2],move,moveto,p)
-
-			Dv[age + T*(i-1)]      = val
-			Ddist[age + T*(i-1)]   = m.distance[ij,moveto]
-			
-			DM[age + T*(i-1)]  = move
-			DMt[age + T*(i-1)] = moveto
-			Dhh[age + T*(i-1)] = ihh	
+		end
+	end
 
 
-			# transition to new state
-			# =======================
-
-			a  = ss
-			ij = moveto
-			ih = ihh
-			yearidx+=1
-			P = PYdata[yearidx]
-			Y = PYdata[yearidx]
-
-			# draw new values child shock
-			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
-
-			# if move
-			if move
-				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
-			else
-				z   = draw_z(m,z,ij)
-			end
-
-			# iy   = ypidx[iyp,1]
-			# ip   = ypidx[iyp,2]
-		end 	# age
-
-	end 	# ind
-
-	# collect all data into a dataframe
-	w = (Dp .* Dh) .+ Da
-
-	df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
-	# df = join(df,m.regnames,on=:j)
-	# sort!(df,cols=[1,2]	)
-
-	return df
 end
 
 
@@ -442,157 +805,156 @@ end
  # r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 
 
-function get_rho_ktmp{T<:Real}(l::lininterp,azYP::Array{T},is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-	# fill array azYP (na,nz,nY,nP) at states (is,itau,ih,ij,age)
-
-	# get parts of index that do not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+function get_rho_ktmp(l::lininterp,azYP::Vector{Float64})
+	out = zeros(p.nJ)
 
 	for ik in 1:p.nJ
-		for iia in 1:p.na
-			offset_a = iia-1 + p.na*offset_h_age_j
-			for iP in 1:p.np
-				offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-				for iY in 1:p.ny 
-					offset_Y = iY-1 + p.ny * offset_P
-					for iz in 1:p.nz
-						offset_z = iz-1 + p.nz * offset_Y
-
-						idx = ik + p.nJ * (is-1 + p.ns * offset_z)
-						# println("idx = $idx")
-						# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-						# directly access the lininterp internal value array!
-						@inbounds l.vals[ik][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.rho[idx] 	
-					end
-				end
-			end
-		end
+		out[ik] = getValue(l,azYP,ik)
 	end
-	l.hitnow = false  # force refilling of vertices in eval4D, even if we are in same cache bracket
-	# the cache should stay constant here throughout: (a,z,Y,P) don't change at all!
-	getValue(l,azYP)
+	out
 end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_vcs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+function get_vcs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
-	# get parts of index that does not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+	out = zeros(3)
+	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	for iia in 1:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iP in 1:p.np
-			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
-				offset_Y = iY-1 + p.ny * offset_P
-				for iz in 1:p.nz
-					offset_z = iz-1 + p.nz * offset_Y
-
-					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-					# println("idx = $idx")
-					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-					# directly access the lininterp internal value array!
-					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
-					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-					@inbounds l.vals[3][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
-				end
-			end
-		end
-	end
-	getValue(l,azYP)
+	out[1] = getValue(l,azYP,1+l_idx)
+	out[2] = getValue(l,azYP,2+l_idx)
+	out[3] = getValue(l,azYP,3+l_idx)
+	return out
 end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_vcs_rent(l::lininterp,azYP::Array{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+function get_v1v2(l::lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 
-	na_rent = l.d[1]
-	aone = m.aone
+	out = zeros(2)
+	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
+	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
 
-	# get parts of index that does not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+	out[1] = getValue(l,azYP,1+l_idx1)
+	out[2] = getValue(l,azYP,1+l_idx2)
+	return out
+end
 
-	for iia in aone:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iP in 1:p.np
-			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
-				offset_Y = iY-1 + p.ny * offset_P
-				for iz in 1:p.nz
-					offset_z = iz-1 + p.nz * offset_Y
+#' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
+#' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
+function get_cs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
-					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-					# println("idx = $idx")
-					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-					# directly access the lininterp internal value array!
-					@inbounds l.vals[1][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
-					@inbounds l.vals[2][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-					@inbounds l.vals[3][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
-				end
-			end
-		end
-	end
-	getValue(l,azYP)
+	out = zeros(2)
+	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
+
+	out[1] = getValue(l,azYP,2+l_idx)	# 2 is index for cons
+	out[2] = getValue(l,azYP,3+l_idx)	# 3 is index for save
+	return out
 end
 
 
-#' ..py:function:: get_cs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
-#' gets cs (consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_cs(l::lininterp,azYP::Array{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
 
-	# get parts of index that does not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
-	for iia in 1:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iP in 1:p.np
-			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
-				offset_Y = iY-1 + p.ny * offset_P
-				for iz in 1:p.nz
-					offset_z = iz-1 + p.nz * offset_Y
 
-					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-					# println("idx = $idx")
-					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-					# directly access the lininterp internal value array!
-					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
-					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-				end
-			end
-		end
-	end
-	eval4D(l,azYP)
-end
+# #' ..py:function:: get_vcs_rent(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
+# #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
+# function get_vcs_rent(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
 
-function get_v1v2(l::lininterp,azYP::Array{Float64},ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+# 	na_rent = l.d[1]
+# 	if na_rent==p.na
+# 		throw(ArgumentError("dim 1 of interpolation values is equal to p.na? renters case here."))
+# 	end
+# 	aone = m.aone
 
-	# get parts of index that does not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+# 	# get parts of index that does not change
+# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
-	for iia in 1:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iP in 1:p.np
-			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
-				offset_Y = iY-1 + p.ny * offset_P
-				for iz in 1:p.nz
-					offset_z = iz-1 + p.nz * offset_Y
+# 	for iia in aone:p.na
+# 		offset_a = iia-1 + p.na*offset_h_age_j
+# 		for iP in 1:p.np
+# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
+# 			for iY in 1:p.ny 
+# 				offset_Y = iY-1 + p.ny * offset_P
+# 				for iz in 1:p.nz
+# 					offset_z = iz-1 + p.nz * offset_Y
 
-					idx = ik + p.nJ * (is-1 + p.ns * offset_z)
-					# println("idx = $idx")
-					# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-					# directly access the lininterp internal value array!
-					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
-					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-				end
-			end
-		end
-	end
-	eval4D(l,azYP)
-end
+# 					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+# 					# println("idx = $idx")
+# 					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+# 					# directly access the lininterp internal value array!
+# 					# TODO this lookup takes far too much time. 
+# 					# find a way to cache (Y,P) outside of this function and only
+# 					# loop over Y and P if the bracket changes. that will happen
+# 					# only 3 times!
+# 					@inbounds l.vals[1][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
+# 					@inbounds l.vals[2][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
+# 					@inbounds l.vals[3][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
+# 				end
+# 			end
+# 		end
+# 	end
+# 	getValue(l,azYP)
+# end
+
+
+# #' ..py:function:: get_cs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
+# #' gets cs (consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
+# function get_cs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+
+# 	# get parts of index that does not change
+# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+# 	for iia in 1:p.na
+# 		offset_a = iia-1 + p.na*offset_h_age_j
+# 		for iP in 1:p.np
+# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
+# 			for iY in 1:p.ny 
+# 				offset_Y = iY-1 + p.ny * offset_P
+# 				for iz in 1:p.nz
+# 					offset_z = iz-1 + p.nz * offset_Y
+
+# 					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+# 					# println("idx = $idx")
+# 					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+# 					# directly access the lininterp internal value array!
+# 					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
+# 					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
+# 				end
+# 			end
+# 		end
+# 	end
+# 	getValue(l,azYP)
+# end
+
+# function get_v1v2(l::lininterp,azYP::Vector{Float64},ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
+
+# 	# get parts of index that does not change
+# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+# 	for iia in 1:p.na
+# 		offset_a = iia-1 + p.na*offset_h_age_j
+# 		for iP in 1:p.np
+# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
+# 			for iY in 1:p.ny 
+# 				offset_Y = iY-1 + p.ny * offset_P
+# 				for iz in 1:p.nz
+# 					offset_z = iz-1 + p.nz * offset_Y
+
+# 					# TODO 
+# 					# be smarter about Y and P
+# 					idx1 = 1 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+# 					idx2 = 2 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+# 					# println("idx = $idx")
+# 					# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
+# 					# directly access the lininterp internal value array!
+# 					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx1] 	
+# 					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx2] 	
+# 				end
+# 			end
+# 		end
+# 	end
+# 	getValue(l,azYP)
+# end
 
 
 
@@ -672,7 +1034,7 @@ end
 
 
 function assignCohort(i::Int,m::Model)
-	searchsortedlast(i,m.coh_breaks)
+	searchsortedfirst(m.coh_breaks,i)
 end
 
 

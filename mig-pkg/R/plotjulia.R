@@ -81,7 +81,7 @@ plot.simulation <- function(){
 
 
 # export data to julia
-export.Julia <- function(print.tabs=NULL,print.plots=NULL){
+Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
 	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
@@ -94,10 +94,14 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	}
 
 	# subset age
-	sub = merged[,age>=20 & age <= 50]
+	sub = merged[,age>=20 & age <= 53]
+
+	# compute age distribution
+	hi=merged[sub,hist(age,prob=TRUE,breaks=20:53)]
+	agedist = data.frame(age=20:52,density=hi$density)
 
 	# regional processes for p and y
-	reg <- Export.VAR(merged)
+	reg <- Export.VAR()
 
 	# individual income processes by region
 	ind <- Export.IncomeProcess(merged)
@@ -149,32 +153,219 @@ export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	# a dataframe for scalar parameters
 	par_df = data.frame(param = names(fit.b$estimate), value=fit.b$estimate)
 
-
-
-
-
 	rm(merged,des)
 	gc()
+
 
 	# write to disk
     # save(mcoppars,file=file.path(path,"mcopula.rda"))	
 	save(par_df,file=file.path(path,"par_df.rda"))
+	save(agedist,file=file.path(path,"agedist.rda"))
 	save(dist,file=file.path(path,"distance.rda"))
 	save(m,file=file.path(path,"moments.rda"))
 	save(kids_trans,file=file.path(path,"kidstrans.rda"))
 	save(prop,file=file.path(path,"prop.rda"))
 
-	rcoefs <- reg$coefs
-	sig    <- reg$sigmas
-	z      <- ind$ztab
-	rcoefs <- rcoefs[order(rcoefs$Division), ]
-	sig    <- sig   [order(sig   $Division), ]
-	z      <- z     [order(z     $Division), ]
-	save(rcoefs,file=file.path(path,"region-coefs.rda"))
-	save(sig,file=file.path(path,"region-sig.rda"))
+	VAR_agg   <- as.data.frame(reg$Agg_coefs)
+	VAR_reg   <- reg$Agg2Region_coefs
+	z         <- ind$ztab
+	PYdata    <- reg$PYdata
+	sigma_agg <- reg$agg_sigma
+	sigma_agg$row <- rownames(sigma_agg)
+	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
+	z         <- z[order(z$Division), ]
+	save(sigma_agg,file=file.path(path,"sigma_agg.rda"))
+	save(VAR_agg,file=file.path(path,"VAR_agg.rda"))
+	save(PYdata,file=file.path(path,"PYdata.rda"))
+	save(VAR_reg,file=file.path(path,"VAR_reg.rda"))
 	save(z,file=file.path(path,"ztable.rda"))
+
+	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg))
+
 }
 
+
+Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
+	# py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
+
+	data(sipp_psid,envir=environment())
+	# py = combine_sipp_psid()
+	setkey(py,year,Division)
+
+	# aggregates as means over regions
+	agg <- py[,list(Y=mean(y,na.rm=T),P=mean(p,na.rm=T)),by=year][order(year)]
+	setkey(agg,year)
+	agg[,LY := agg[list(year-1)][["Y"]]]
+	agg[,LP := agg[list(year-1)][["P"]]]
+
+	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
+
+	# print model
+	texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+
+	# export coefficients as table
+	aggcoefs <- as.data.frame(coef(aggmod))
+	aggcoefs$param <- names(coef(aggmod))
+	names(aggcoefs)[1] <- "value"
+	aggcoefs$param <- gsub("\\(|\\)","",aggcoefs$param)
+
+	# add bounds on P and Y
+	aggcoefs <- rbind(aggcoefs,agg[,list(value=min(Y),param="min_Y")],agg[,list(value=max(Y),param="max_Y")],agg[,list(value=min(P),param="min_P")],agg[,list(value=max(P),param="max_P")])
+
+	# covariance matrix 
+	sigma <- data.frame(aggmod$residCov)
+
+	# setkey(py,Division)
+	# coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
+	# coefs <- coefs[, !names(coefs) %in% "Division_1"]
+
+	# merge aggregate into regional data
+	pyagg = py[agg]
+
+	# plot region and agg overlaid
+	# ----------------------------
+
+	my = melt(pyagg[,list(year,Division,y,Y)],c("year","Division"))
+	pl = list()
+	pl$y <- ggplot(my,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate Income")
+	mp = melt(pyagg[,list(year,Division,p,P)],c("year","Division"))
+
+	pl$p <- ggplot(mp,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate house price")
+
+	# estimate regional models: what is relationship y ~ P + Y
+	ep <- p ~ Y + P
+	ey <- y ~ Y + P
+	divs = py[,unique(Division)]
+	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
+	names(mods) = divs
+
+	# pritn models
+	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+
+	# predict 
+	pyagg[,yhat := 0]
+	pyagg[,phat := 0]
+
+
+	for (d in divs){
+		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
+	}
+
+	# visualize fit
+
+
+	mdy = melt(pyagg[,list(year,Division,y,yhat)],c("year","Division"))
+
+	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") 
+
+	mdp = melt(pyagg[,list(year,Division,p,phat)],c("year","Division"))
+
+	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") 
+	# plot with aggregate as well
+	# mdp = melt(pyagg[,list(year,Division,p,P,phat)],c("year","Division"))
+	# pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","P"="blue","phat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
+
+	# export coefficients as table
+	coefs <- as.data.frame(t(sapply(mods,coef)))
+	coefs <- coefs[order(rownames(coefs)), ]
+	coefs <- cbind(coefs,py[,list(mean_y = mean(y)),by=Division])
+	# TODO export actual data series for simulation!
+	PYseries = as.data.frame(agg[,list(year,Y,P)])
+
+
+
+
+	n <- names(coefs)
+	n <- gsub("\\(|\\)","",n)
+	names(coefs) <- n
+
+	# covariance matrices as an array
+	# sigmas <- as.data.frame(t(sapply(mods,function(x) as.numeric(x$residCov))))
+	# sigmas$Division = rownames(sigmas)
+	# names(sigmas)[1:4] <- c("var_y","cov_yp","cov_py","var_p")
+
+	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries))
+
+}
+
+
+
+
+
+
+
+# for individual spec procs
+# div, beta0,beta_medinc,beta_age,beta_age2,beta_age3,sigma
+
+
+
+#' Produce estimates of individual income process
+#' by census division. 
+#'
+#' exports coefficients to julia
+Export.IncomeProcess <- function(dat){
+
+	
+	cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
+	cd <- cd[complete.cases(cd)]
+
+	# get models of individual income
+	setkey(cd,upid,Division)
+	divs = cd[,unique(Division)]
+	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
+	names(lmods) = divs
+
+	# add residuals indiv data
+	cd [ ,resid := 0]
+	for (d in divs){
+		cd[Division==d,resid := resid(lmods[[d]])]
+	}
+
+	# get lagged resids
+	setkey(cd,upid,timeid)
+	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
+
+	# get autocorrelation coefficient of residuals
+	# TODO
+	# this is not what you want!
+	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
+	names(rhos) = divs
+
+	# why are those rhos so low?????
+	# use 0.97 as in french 2005 for now.
+
+	# add the 0.2 and 0.95 percentiles of income in each region 
+	# to scale the shocks
+	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.2,0.95),na.rm=T)) 
+	names(bounds)[-1] <- c("q20","q95")
+
+
+	# make a table with those
+	ztab <- as.data.frame(t(sapply(lmods,coef)))
+	ztab$Division <- rownames(ztab)
+	ztab$sigma <- unlist(lapply(lmods,function(x) summary(x)$sigma))
+	ztab <- merge(ztab,bounds,by="Division")
+	rtab <- as.data.frame(unlist(lapply(rhos,coef)))
+	rtab$Division <- gsub(".Lresid","",rownames(rtab))
+	names(rtab)[1] <- "Lresid"
+	rtab$sigma_resid <- unlist(lapply(rhos,function(x) summary(x)$sigma))
+	rtab <- rtab[order(rtab$Division),]
+	rownames(rtab) <- NULL
+
+	ztab <- merge(ztab,rtab,by="Division")
+
+	# fix names
+	nz <- names(ztab)
+	nz <- gsub("\\(|\\)|I\\(|\\^","",nz)
+	names(ztab) <- nz
+	nr <- names(rtab)
+	nr <- gsub("\\(|\\)|I\\(|\\^","",nr)
+	names(rtab) <- nr
+
+
+	return(list(incmods=lmods,rhomods=rhos,ztab=ztab))
+}
 
 # TODO exporting for region level processes
 # ytable: div, ylow, yhigh, beta0, betay, betap
@@ -203,7 +394,7 @@ getCPI <- function(freq="yearly",base="2011"){
 		cpi <- cpi$cpi.Open
 		names(cpi) <- "cpi"
 		coredata(cpi) <- coredata(cpi)/as.numeric(cpi[as.yearqtr(base)])	
-		str <- paste0("cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi",base,"=as.numeric(cpi),key=\"qtr\")")
+		str <- paste0("cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi",gsub(" Q\\d","",base),"=as.numeric(cpi),key=\"qtr\")")
 		eval(parse(text=str))
 		return(cpi)
 	}
@@ -215,6 +406,7 @@ combine_sipp_psid <- function(){
 
 	# get 1995 sipp median income (in 2012 dollars)
 	sipp =  merged[,list(y = .SD[HHincome>0,Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)],p=.SD[hvalue>0,Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T)]),by=list(year,Division)]
+
 	sipp95 = sipp[year==1995,list(Division,y,p)]
 	setkey(sipp95,Division)
 
@@ -235,9 +427,10 @@ combine_sipp_psid <- function(){
 	}
 	pp[sipp95]
 
-	pp <- rbind(sipp,pp[year<1995,list(year,Division,y=newy,p=newp)])
+	py <- rbind(sipp,pp[year<1995,list(year,Division,y=newy,p=newp)])
+	save(py,file="~/git/migration/mig-pkg/data/sipp_psid.rda")
 
-	return(pp)
+	return(py)
 }
 
 combine_sipp_y_census_regions <- function(){
@@ -405,402 +598,6 @@ CombineHousePrices <- function(){
 
 
 
-Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
-	# py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
-	py = combine_sipp_psid()
-
-	# aggregates as means over regions
-	agg <- py[,list(Y=mean(y),P=mean(p)),by=year][order(year)]
-	setkey(agg,year)
-
-	setkey(py,year,Division)
-	agg[,LY := agg[list(year-1)][["Y"]]]
-	agg[,LP := agg[list(year-1)][["P"]]]
-
-	ageqp = P ~ LP + LY
-	ageqy = Y ~ LP + LY
-
-	aggmod = systemfit:::systemfit(list(P=ageqp,Y=ageqy),data=agg)
-
-	# export coefficients as table
-	aggcoefs <- as.data.frame(t(sapply(aggmod,coef)))
-	aggcoefs$Division = rownames(aggcoefs)
-	aggcoefs <- aggcoefs[order(aggcoefs$Division), ]
-	setkey(py,Division)
-	coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
-	coefs <- coefs[, !names(coefs) %in% "Division_1"]
-
-	# merge aggregate into regional data
-	pyagg = py[agg]
-
-	# plot region and agg overlaid
-	my = melt(pyagg[,list(year,Division,y,Y)],c("year","Division"))
-	pl = list()
-	pl$y <- ggplot(my,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate Income")
-	mp = melt(pyagg[,list(year,Division,p,P)],c("year","Division"))
-	pl = list()
-	pl$p <- ggplot(mp,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate house price")
-
-	# estimate regional models: what is relationship y ~ P + Y
-	ep <- p ~ P + Y
-	ey <- y ~ P + Y
-	divs = py[,unique(Division)]
-	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
-	names(mods) = divs
-
-	# pritn models
-	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-
-	# predict 
-	pyagg[,yhat := 0]
-	pyagg[,phat := 0]
-
-
-	for (d in divs){
-		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
-		# dy[Division==d,phat := predict(pmods[[d]])]
-	}
-
-	# visualize fit
-
-
-	mdy = melt(pyagg[,list(year,Division,y,Y,yhat)],c("year","Division"))
-
-	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("y"="red","Y"="blue","yhat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
-
-	mdp = melt(pyagg[,list(year,Division,p,P,phat)],c("year","Division"))
-
-	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","P"="blue","phat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
-
-	# export coefficients as table
-	coefs <- as.data.frame(t(sapply(mods,coef)))
-	coefs$Division = rownames(coefs)
-	coefs <- coefs[order(coefs$Division), ]
-	setkey(py,Division)
-	coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
-	coefs <- coefs[, !names(coefs) %in% "Division_1"]
-
-	# TODO export actual data series.
-
-
-
-	n <- names(coefs)
-	n <- gsub("\\(|\\)","",n)
-	names(coefs) <- n
-
-	# covariance matrices as an array
-	sigmas <- as.data.frame(t(sapply(mods,function(x) as.numeric(x$residCov))))
-	sigmas$Division = rownames(sigmas)
-	names(sigmas)[1:4] <- c("var_y","cov_yp","cov_py","var_p")
-
-	return(list(mods=mods,coefs=coefs,sigmas=sigmas,simp=simp,predp=pred))
-
-}
-
-
-
-
-
-
-
-# for individual spec procs
-# div, beta0,beta_medinc,beta_age,beta_age2,beta_age3,sigma
-
-
-
-#' Produce estimates of individual income process
-#' by census division. 
-#'
-#' exports coefficients to julia
-Export.IncomeProcess <- function(dat){
-
-	
-	cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
-	cd <- cd[complete.cases(cd)]
-
-	# get models of individual income
-	setkey(cd,upid,Division)
-	divs = cd[,unique(Division)]
-	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
-	names(lmods) = divs
-
-	# add residuals indiv data
-	cd [ ,resid := 0]
-	for (d in divs){
-		cd[Division==d,resid := resid(lmods[[d]])]
-	}
-
-	# get lagged resids
-	setkey(cd,upid,timeid)
-	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
-
-	# get autocorrelation coefficient of residuals
-	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
-	names(rhos) = divs
-
-	# why are those rhos so low?????
-	# use 0.97 as in french 2005 for now.
-
-	# add the 0.2 and 0.95 percentiles of income in each region 
-	# to scale the shocks
-	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.2,0.95),na.rm=T)) 
-	names(bounds)[-1] <- c("q20","q95")
-
-
-	# make a table with those
-	ztab <- as.data.frame(t(sapply(lmods,coef)))
-	ztab$Division <- rownames(ztab)
-	ztab$sigma <- unlist(lapply(lmods,function(x) summary(x)$sigma))
-	ztab <- merge(ztab,bounds,by="Division")
-	rtab <- as.data.frame(unlist(lapply(rhos,coef)))
-	rtab$Division <- gsub(".Lresid","",rownames(rtab))
-	names(rtab)[1] <- "Lresid"
-	rtab$sigma_resid <- unlist(lapply(rhos,function(x) summary(x)$sigma))
-	rtab <- rtab[order(rtab$Division),]
-	rownames(rtab) <- NULL
-
-	ztab <- merge(ztab,rtab,by="Division")
-
-	# fix names
-	nz <- names(ztab)
-	nz <- gsub("\\(|\\)|I\\(|\\^","",nz)
-	names(ztab) <- nz
-	nr <- names(rtab)
-	nr <- gsub("\\(|\\)|I\\(|\\^","",nr)
-	names(rtab) <- nr
-
-
-	return(list(incmods=lmods,rhomods=rhos,ztab=ztab))
-}
-
-
-
-#' Income Rank by Region and Age
-#'
-Rank.HHincome <- function(dat,geo="Division",n=3,plot=FALSE,path="~/Dropbox/mobility/output/model/data_repo/in_data_jl"){
-
-	if (geo=="Division") {
-		dat[,state := Division]
-	} else if (geo=="Div2") {
-		dat[,state := Div2]
-	} else if (geo=="state"){
-
-	}
-
-	# rda file names
-	zname <- paste0("zsupp_n",n,".rda")
-	rhoname <- paste0("rho_n",n,".rda")
-	rhoMovename <- paste0("rhoMove_n",n,".rda")
-	transname <- paste0("trans_n",n,".rda")
-	transMovename <- paste0("transMove_n",n,".rda")
-
-	# censor income data at 5 and 95 percentile
-	kv <- c("HHincome","upid","age","year","state","HHweight","D2D","CensusMedinc")
-	dat <- dat[HHincome>0,kv,with=FALSE]
-	q <- dat[,quantile(HHincome,probs=c(0.05,0.95))]	# trim data
-	dat <- dat[HHincome>q[1] & HHincome < q[2]]
-
-	# take out macro time-region effect
-	# dat[,state.med := Hmisc::wtd.quantile(HHincome,weights=HHweight,probs=0.5,na.rm=T),by=list(year,state)]
-
-	# TODO take census income estimates
-
-	# compute measure of deviation
-	# dat[,ytilde := HHincome - state.med]
-	# dat[,ytilde := 100*(HHincome - state.med)/state.med, by=list(year,state)]
-	dat[,ytilde := 100*HHincome/CensusMedinc, by=list(year,state)]
-
-	# throw inds with fewer than 2 ages
-	dat <- dat[age>20 & age<65]
-	dat[,ncell := .N ,by=list(age,state)]
-	dat <- dat[ncell>=n]
-
-	dat[,dage := diff(age), by=list(upid)]
-	dat <- dat[dage>0]
-
-	# bin delimiters
-	# prange: midpoints of intervals
-	lb=0;ub=1;pad=0.1;
-    prange = seq( lb+(ub-lb)*pad,  lb+(ub-lb)*(1-pad) ,l=n)
-    # prange2 cutoffs of intervals
-    prange2 = rep(0,n+1)
-    for (i in 1:(length(prange)-1)){
-    	prange2[i+1] = mean(c(prange[i],prange[i+1]))
-    }
-    prange2[n+1] = 1
-
-
-	# compute ranks of ytilde by age and state
-	# this constructs BINs of incomes ie 
-	dat[,yrank := cut(ytilde,breaks=Hmisc::wtd.quantile(ytilde,weights=HHweight,probs=prange2),labels=FALSE,include.lowest=TRUE,right=TRUE),by=list(age,state)]
-	# dat[D,yrank := cut(ytilde,breaks=Hmisc::wtd.quantile(ytilde,weights=HHweight,probs=prange),labels=FALSE,include.lowest=TRUE,right=TRUE),by=list(age,state)]
-
-
-	# cd[,resid:= residuals(lm(HHincome ~ age + I(age^2)+ LHHincome))]
-
-
-	# # estimate this linear model:
-	# cd = dat[complete.cases(dat)]
-	# setkey(cd,upid,timeid)
-	# lmod = cd[,lm(log(HHincome) ~ Division:log(CensusMedinc) + age + age2)]
-	# # get residuals of this regression
-	# cd[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + age + age2))]
-
-	# # investigate residuals for unit root
-	# cd[,Lresid := cd[list(upid,timeid-1)][["resid"]] ]
-	# lres = cd[,lm(resid ~ Lresid)]
-	# cd[,adf.test(resid)]	# reject unit root!
-
-	# # solution 1) use a copula with param coef(lres)["Lresid"]
-
-	# # normalize to [0,1]
-	# cd[,nresid := linear.map(resid,1)]
-	# # trim hi and lo
-	# cd[nresid==0]
-	# cd[nresid==0,nresid := 0.0001]
-	# cd[nresid==1]
-	# cd[nresid==1,nresid:=0.99999]
-	# cd[,Lnresid := cd[list(upid,timeid-1)][["nresid"]] ]
-	# ccd = cd[,list(nresid,Lnresid)]
-	# # fit a beta distribution
-	# fit.b = fitdistr(cd[,nresid],"beta",start=list(shape1=2,shape2=2))
-	# x.b=rbeta(1e5,fit.b$estimate[[1]],fit.b$estimate[[2]])
-	# plot(density(cd[,nresid]))
-	# lines(density(x.b),col="red")
-	# # ggplot(cd,aes(x=resid)) + geom_density() + facet_wrap(~Division)
-	# G = getNormCop(Qn=seq(0.1,0.9,le=4),n=4,cond=TRUE,rho=coef(lres)["Lresid"])
-
-	# # solution 2) use rouwenhorst discretization by division
-	# # =======================================================
-
-	# lmod = cd[,lm(log(HHincome) ~ Division:log(CensusMedinc) + Division:age + Division:I(age^2) + Division:I(age^3))]
-	# newd = data.frame(expand.grid(age = 20:50,Division=factor(cd[,unique(Division)])))
-	# x = merge(newd,cd[,median(CensusMedinc),by=Division],by="Division")
-	# names(x)[3] = "CensusMedinc"
-	# x = cbind(x,predict(lmod,x))
-	# names(x)[3] = "Medinc"
-	# x = merge(x,cd[,median(CensusMedinc)*0.95,by=Division],by="Division")
-	# names(x)[5] = "CensusMedinc"
-	# x = cbind(x,predict(lmod,x))
-	# names(x)[5] = "MedincLow"
-	# x = merge(x,cd[,median(CensusMedinc)*1.05,by=Division],by="Division")
-	# names(x)[ncol(x)] = "CensusMedinc"
-	# x = cbind(x,predict(lmod,x))
-	# names(x)[c(4,6,8)] = c("ymed","ylow","yhigh")
-
-	# ggplot(x,aes(x=age,y=ymed,color=Division)) + geom_line() + geom_ribbon(aes(ymin=ylow,ymax=yhigh),alpha=0.2)
-
-
-
-
-
-	# x$regime = "baseline"
-	# x = cbind(x,predict(lmod,newd))
-
-	# lmod = lapply(cd[,unique(Division)],function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + age2,cd[Division==x]))
-	# names(lmod) = cd[,unique(Division)]
-
-	# rhos = lapply(lmod, function(x) dynlm(resid(x) ~ L(resid(x))))
-	# names(rhos) = cd[,unique(Division)]
-
-	# rou = lapply(rhos, function(x) rouwenhorst(mu=coef(x)["(Intercept)"],rho=coef(x)["Lresid"],n=n,sigma=summary(x)$sigma))
-
-
-
-
-
-	# compute lagged rank
-	setkey(dat,upid,age)
-	dat[,timeid := 1:.N ,by=upid]
-
-	setkey(dat,upid,timeid)
-	dat[,Lyrank := dat[list(upid,timeid-1)][["yrank"]] ]
-	dat[,yrank_plus := dat[list(upid,timeid+1)][["yrank"]] ]
-	dat[,LHHincome := dat[list(upid,timeid-1)][["HHincome"]] ]
-
-
-	# get the empricial transition matrices
-	setkey(dat,state)
-	sts = dat[,unique(state)]
-	longtrans = dat[,prop.table(table(yrank,yrank_plus),margin=1),by=state]
-	longtrans = cbind(longtrans,expand.grid(from=1:n,to=1:n))
-	names(longtrans) <- c("Division","prob","from","to")
-
-	# for movers: we're interested in y(t,k) vs y(t-1,j)
-	# i.e need to condition period after D2D==TRUE
-	mvid = dat[D2D==TRUE,list(upid=unique(upid))]
-	setkey(mvid,upid)
-	setkey(dat,upid,timeid)
-	movers <- dat[mvid]
-	setkey(movers,upid,timeid)
-	longtransMove <- movers[movers[D2D==TRUE,list(upid,timeid=timeid+1)],prop.table(table(Lyrank,yrank),margin=1),by=state]
-	longtransMove = dat[D2D==TRUE,prop.table(table(yrank,yrank_plus),margin=1),by=state]
-	longtransMove = cbind(longtransMove,expand.grid(from=1:n,to=1:n))
-	names(longtransMove) <- c("Division","prob","from","to")
-
-	trmats <- lapply(sts, function(x) dat[state==x,prop.table(table(yrank,yrank_plus),margin=1)])
-	setkey(movers,upid,timeid,state)
-	trmatsMove <- lapply(sts, function(x) movers[movers[D2D==TRUE,list(upid,timeid=timeid+1,x)]][,prop.table(table(Lyrank,yrank),margin=1)])
-	names(trmats) <- sts
-	names(trmatsMove) <- sts
-
-	stopifnot( all( unlist(lapply(trmats,function(x) rowSums(x) == rep(1,n)))))
-	stopifnot( all( unlist(lapply(trmatsMove,function(x) rowSums(x) == rep(1,n)))))
-
-	# get breaks for model:
-	# center of bins of percentage deviations from state median income
-	z <- ddply(dat,.(state,age), function(x) Hmisc::wtd.quantile(x$ytilde,weights=x$HHweight,probs=prange))
-	# bins of actual income
-	zy <- ddply(dat,.(state,age), function(x) Hmisc::wtd.quantile(x$HHincome,weights=x$HHweight,probs=prange))
-
-	# compute average over individiual correlation coefficients by region
-	rho <- dat[,list(rho=cor(yrank,Lyrank,use="pairwise")),by=state]
-
-	# same for movers
-	rhoMove <- dat[D2D==TRUE,list(rho=cor(yrank,yrank_plus,use="pairwise")),by=state]
-
-
-	longtrans <- as.data.frame(longtrans)
-	longtransMove <- as.data.frame(longtransMove)
-
-	# write to dataframe
-	save(z,file=file.path(path,zname))
-	save(rho,file=file.path(path,rhoname))
-	save(rhoMove,file=file.path(path,rhoMovename))
-	save(longtrans,file=file.path(path,transname))
-	save(longtransMove,file=file.path(path,transMovename))
-
-
-
-
-	# make some plots
-	m = melt(z,id.vars=c("state","age"))
-	my= melt(zy,id.vars=c("state","age"))
-	names(m) <- c("state","age","quantile","value")
-	names(my) <- c("state","age","quantile","value")
-	pl = ggplot(m,aes(x=age,y=value,color=quantile)) + geom_line(size=1) + facet_wrap(~state) + theme_bw() + scale_y_continuous(name="percent of region median income") + ggtitle("Income Quantiles by Age")
-	ply = ggplot(my,aes(x=age,y=value,color=quantile)) + geom_line(size=1) + facet_wrap(~state) + theme_bw() + scale_y_continuous(name="income in 1000 $")
-
-	plmacro <- ggplot(dat[,mean(CensusMedinc),by=list(year,state)],aes(x=year,y=V1,color=state)) + geom_line() + ggtitle("macro effects")
-
-	pltrans <- ggplot(longtrans,aes(x=from,y=to,z=prob,fill=prob)) + geom_tile() + facet_wrap(~Division) + ggtitle("Stayer' Income Rank Transition Matrix")
-	pltransMove <- ggplot(longtransMove,aes(x=from,y=to,z=prob,fill=prob)) + geom_tile() + facet_wrap(~Division) + ggtitle("Movers' Income Rank Transition Matrix")
-
-	if (plot){
-
-		dr <- paste0("~/Dropbox/mobility/output/data/sipp/zpoints_",n)
-		ggsave(plot=pl,filename=file.path(dr,"z-quantiles-pct.pdf"),width=23,height=15,units="cm")
-		ggsave(plot=ply,filename=file.path(dr,"z-quantiles.pdf"),width=23,height=15,units="cm")
-		ggsave(plot=plmacro,filename=file.path(dr,"z-macro.pdf"),width=23,height=15,units="cm")
-		ggsave(plot=pltrans,filename=file.path(dr,"z-trans.pdf"),width=23,height=15,units="cm")
-		ggsave(plot=pltransMove,filename=file.path(dr,"z-trans-move.pdf"),width=23,height=15,units="cm")
-
-	}
-
-	r <- list(d=dat,z=z,rho=rho,rhoMove=rhoMove,pl=pl,ply=ply,pltrans=pltrans,pltransMove=pltransMove,trmats=trmats,trmatsMove=trmatsMove,longtrans=longtrans,longtransMove=longtransMove)
-	return(r)
-}
 
 
 

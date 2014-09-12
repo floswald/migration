@@ -23,12 +23,14 @@ p = mig.Param(2,1)
 @time mig.solve!(m,p)	
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
+mig.vhplot(m,p,(1,1,4,3,3,2,1,1))
+mig.vhplot(m,p,(1,1,4,3,3,2,1,28))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,28))
 mig.vhplot(m,p,(4,1,4,3,1,1,4,10))
 mig.vplot(m,p)
 @time s = mig.simulate(m,p);	
 mig.simplot(s,5)
-# @profile s = mig.simulate(m,p);	
+@profile s = mig.simulate(m,p);	
 
 # mms2 = mig.simulate_parts(m,p,5)
 

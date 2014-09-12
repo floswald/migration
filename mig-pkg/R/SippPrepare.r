@@ -793,11 +793,11 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# data(cpi,envir=environment())
 	# cpi <- as.xts(window(cpi$qtr.base2010,start=c(1995,4)))
 	data(CPIAUCSL,package="EconData",envir=environment())
-	cpi <- CPIAUCSL['1995-10/2011-12']   # take 1996 onwards
+	cpi <- CPIAUCSL['1995-10/2012-12']   # take 1996 onwards
 	cpi <- to.quarterly(cpi)
 	cpi <- cpi$cpi.Open
 	names(cpi) <- "cpi"
-	coredata(cpi) <- coredata(cpi)/as.numeric(cpi[as.yearqtr("2011 Q1")])	# base year 2012
+	coredata(cpi) <- coredata(cpi)/as.numeric(cpi[as.yearqtr("2012 Q1")])	# base year 2012
 	# cpi <- cpi$cpi.Open
 	cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi12=as.numeric(cpi),key="qtr")
 
@@ -1066,9 +1066,11 @@ merge.idx <- function(core,topic,breaks=c(3,6,9,12),topic.names=NULL){
 	for (i in 1:length(core)) {
 
 		# i is in which interval of breaks?
-		xi <- apply(outer(i,breaks,">"),1,sum) + 1
+		# which is the last available topic for core number i?
+		xi <- min(apply(outer(i,breaks,">"),1,sum) + 1,length(breaks))
 
-		mergexx[[i]] <- core[[i]][ topic[[ topic.names[xi] ]] ]
+		# mergexx[[i]] <- core[[i]][ topic[[ topic.names[xi] ]] ]
+		mergexx[[i]] <- topic[[ topic.names[xi] ]][ core[[i]] ]
 
 	}
 	return(mergexx)
