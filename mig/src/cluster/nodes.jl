@@ -29,10 +29,10 @@ plist = ["gamma","xi1","xi2","omega2","MC0","MC1","MC3","MC3_2","MC4","taudist"]
 p2 = Dict{ASCIIString,Float64}()
 
 # get starting value from initial p
-# p0 = mig.Param(2)
-# for p in plist
-# 	p2[p] = getfield(p0,symbol(p))
-# end
+p0 = mig.Param(2)
+for p in plist
+	p2[p] = getfield(p0,symbol(p))
+end
 
 # or assign different starting values:
 # p2["gamma"]   = 2.0
