@@ -36,7 +36,7 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},vargs...
 
     if Sys.OS_NAME == :Darwin
 	    showall(mom2)
-	    simplot(s,5)
+	    simplot(s[!isna(s[:cohort]),:],5)
 	    println()
 	end
 
@@ -67,6 +67,7 @@ function runSim()
 	m = mig.Model(p)
     mig.solve!(m,p)
 	s   = simulate(m,p)
+	s = s[!mig.isna(s[:cohort]),:]
 	simplot(s,5)
 	x=computeMoments(s,p,m)
 	showall(x)

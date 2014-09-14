@@ -170,7 +170,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-												cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ik,p)
+												cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ij,p)
 												m.cash[hidx] = cash
 
 												# find moving cost
@@ -232,7 +232,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											fill!(EV,p.myNA)	
 											fill!(w,p.myNA)
 
-											cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ik,p)
+											cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ij,p)
 											m.cash[hidx] = cash
 
 											# find moving cost
@@ -567,7 +567,7 @@ function ufun(c::Float64,ev::Float64,p::Param)
 end
 
 # housing payment function
-function pifun(ih::Int,ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
+function pifun(ih::Int,ihh::Int,price::Float64,move::Bool,ij::Int,p::Param)
 	r = 0.0
 
 	if (move * ihh) == 1
@@ -578,11 +578,11 @@ function pifun(ih::Int,ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
 		# if you came into period as a renter:
 		# choose whether to buy. if choose to move,
 		# can only rent
-		r = (1-ihh)*p.kappa[ik]*price + (!move) * ihh * price
+		r = (1-ihh)*p.kappa[ij]*price + (!move) * ihh * price
 	else 
 		# if you sell (don't move and sell: !move * (1-ihh))
 		# or if you move (then you are forced to sell)
-		r = -( (!move)*(1-ihh) + (move) )*(1-p.phi-p.kappa[ik])*price 
+		r = -( (!move)*(1-ihh) + (move) )*(1-p.phi-p.kappa[ij])*price 
 	end
 end
 
@@ -604,8 +604,8 @@ end
 # cashfunction
 # computes cash on hand given a value of the
 # state vector and a value of the discrete choices
-function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price::Float64,move::Bool,ik::Int,p::Param)
-	a + y - pifun(ih,ihh,price,move,ik,p)
+function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price::Float64,move::Bool,ij::Int,p::Param)
+	a + y - pifun(ih,ihh,price,move,ij,p)
 end
 
 

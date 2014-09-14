@@ -46,6 +46,10 @@ type Model
 
 	Regmods_YP::Dict{Int,Matrix{Float64}}   # regional VAR models. row 1 is Y, row 2 is P
 	PYdata::DataFrame
+	pred_ydf::DataFrame
+	pred_pdf::DataFrame
+	pred_y::Matrix
+	pred_p::Matrix
 
 	# cohort settings
 	# ---------------
@@ -145,8 +149,13 @@ type Model
 		YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
 
 
-		# P,Y data series. input for simulation
+		# P,Y data series.
 		PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
+		pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y.rda"))["pred_y"])
+		pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p.rda"))["pred_p"])
+
+		pred_y = array(pred_ydf[:,2:end])
+		pred_p = array(pred_pdf[:,2:end])
 
 		# population weights
 		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
@@ -310,7 +319,7 @@ type Model
 
 		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,c_yrs,c_idx,c_breaks,c_n)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n)
 	end
 end
 

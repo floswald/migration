@@ -137,10 +137,9 @@ end
 
 function simulate(m::Model,p::Param)
 
-	T = p.nt-1
-	nsim = m.coh_breaks[end]
-
-	# set random seed
+	T     = p.nt-1
+	nsim  = m.coh_breaks[end]	# total number of individuals
+	N_coh = length(m.coh_breaks)  # number of cohorts
 
 	# get grids
 	agrid      = m.grids["assets"]
@@ -148,17 +147,13 @@ function simulate(m::Model,p::Param)
 	na_rent    = length(agrid_rent)
 	ygrid      = m.grids["Y"]
 	pgrid      = m.grids["P"]
-
-	regnames = m.regnames[:Division]
-	aone = m.aone
+	regnames   = m.regnames[:Division]
 
 	# temporary objects
 	ktmp  = zeros(Float64,p.nJ)
 	ktmp2 = zeros(p.nJ)
 	v1tmp = 0.0
 	v2tmp = 0.0
-	ss    = 0.0
-	yy    = 0.0
 
 	# z shock supports for each region
 	zsupps = Dict{Int,Array{Float64,1}}()
@@ -208,549 +203,276 @@ function simulate(m::Model,p::Param)
 	G0z   = Normal(0,0.1)
 
 	# individual specific variables
+	id     = 0
 	a      = 0.0
 	z      = 0.0
 	yy     = 0.0   # individual income
 	cons   = 0.0
-	azYP   = zeros(4)
 	canbuy = false
 	ihh    = 0
+	ih     = 0
 	move   = false
 	moveto = 0
 	val    = 0.0
+	cons   = 0.0
 	ss     = 0.0
 	prob   = 0.0
+	Y      = 0.0
+	P      = 0.0
 
-	# group specific variables
-	is = 0
-	ih = 0
-	ij = 0
+	# Storage Arrays: all of size nsim*T
+	Dv       = zeros(nsim*T)
+	Dcons    = zeros(nsim*T)
+	Dsave    = zeros(nsim*T)
+	Dincome  = zeros(nsim*T)
+	Dprob    = zeros(nsim*T)
+	Dwealth  = zeros(nsim*T)
+	Ddist    = zeros(nsim*T)
+	Dcash    = zeros(nsim*T)
+	Drent    = zeros(nsim*T)
+	Da       = zeros(nsim*T)
+	Dz       = zeros(nsim*T)
+	Dy       = zeros(nsim*T)
+	Dp       = zeros(nsim*T)
+	DY       = zeros(nsim*T)
+	DP       = zeros(nsim*T)
+	DM       = falses(nsim*T)
+	Dcanbuy  = falses(nsim*T)
+	Di       = repeat([1:nsim],inner=[T],outer=[1])
+	Dage     = repeat([1:T],inner=[1],outer=[nsim])
+	Drealage = repeat([p.ages[1:T]],inner=[1],outer=[nsim])
+	Dyear    = DataArray(Int,nsim*T)
+	Dcohort  = DataArray(Int,nsim*T) # allocates as NA
+	Dhh      = zeros(Int,nsim*T)
+	Dh       = zeros(Int,nsim*T)
+	Dj       = zeros(Int,nsim*T)
+	DMt      = zeros(Int,nsim*T)
+	Dis      = zeros(Int,nsim*T)
+	Dtau     = zeros(Int,nsim*T)
+	Dregname = ASCIIString["" for i = 1:(nsim*T)]
 
-	# dataframe to save all data
-	all_data = DataFrame(i=0,
-		          age      = 0,
-		          age2     = 0,
-		          is       = 0,
-		          ih       = 0,
-		          itau     = 0,
-		          ij       = 0,
-		          z        = 0.0,
-		          a        = 0.0,
-		          c        = 0.0,
-		          income   = 0.0,
-		          Y        = 0.0,
-		          P        = 0.0,
-		          y        = 0.0,
-		          p        = 0.0,
-		          wealth   = 0.0,
-		          move     = false,
-		          moveto   = 0,
-		          cohort   = 0,
-		          year     = 0,
-		          Division = "",
-		          canbuy   = false,
-		          v        = 0.0,
-		          prob     = 0.0)
-
-
-	# begin simulation loop
-	# =====================
-
-	for coh in 1:length(m.coh_idx)
-
-		# index of first year coincides with coh index
+	# fill in aggregate prices faced by each cohort
+	# also draw invariant type tau here
+	for i in 1:nsim
+		coh = mig.assignCohort(i,m)
 		yearidx = coh
-		P = m.PYdata[yearidx,:P]
-		Y = m.PYdata[yearidx,:Y]
+		tau = rand(Gtau)
+		for it in 1:length(m.coh_yrs[coh])
+			Dtau[it + T*(i-1)] = tau
+			Dcohort[it + T*(i-1)] = coh
+			DY[it + T*(i-1)] = m.PYdata[yearidx,:Y]
+			DP[it + T*(i-1)] = m.PYdata[yearidx,:P]
+			yearidx += 1
+		end
+	end
 
-		# number of inds in cohort
-		n_coh = m.coh_n[coh]
+	# wherever isna(Dcohort), now simulation took place, so throw those rows away in the end	.
 
-		# list of individuals in this cohort
-		inds = coh > 1 ? ((m.coh_breaks[coh-1][end]+1):m.coh_breaks[coh]) : 1:m.coh_breaks[coh]
-		@assert length(inds)==n_coh
-
-		# dataframe to push all cohort data onto
-		coh_data = DataFrame(i=0,
-			          age      = 0,
-			          age2     = 0,
-			          is       = 0,
-			          ih       = 0,
-			          itau     = 0,
-			          ij       = 0,
-			          z        = 0.0,
-			          a        = 0.0,
-			          c        = 0.0,
-			          income   = 0.0,
-			          Y        = 0.0,
-			          P        = 0.0,
-			          y        = 0.0,
-			          p        = 0.0,
-			          wealth   = 0.0,
-			          move     = false,
-			          moveto   = 0,
-			          cohort   = coh,
-			          year     = 0,
-			          Division = "",
-			          canbuy   = false,
-			          v        = 0.0,
-			          prob     = 0.0)
-
-		# current state dataframe for all cohort members
-		# ----------------------------------------------
-		# drawing initial conditions here.
-		g = DataFrame(i=inds,
-			          age=ones(Int,n_coh),
-			          age2=ones(Int,n_coh),
-			          is=rand(G0k,n_coh),
-			          ih=zeros(Int,n_coh),
-			          itau=rand(Gtau,n_coh),
-			          ij=rand(G0j,n_coh),
-			          z=rand(G0z,n_coh),
-			          a=forceBounds(rand(m.Init_asset,n_coh),0.0,100.0),
-			          c=zeros(n_coh),
-			          income=zeros(n_coh),
-			          Y=repeat([Y],inner=[1],outer=[n_coh]),
-			          P=repeat([P],inner=[1],outer=[n_coh]),
-			          y=zeros(n_coh),
-			          p=zeros(n_coh),
-			          wealth=zeros(n_coh),
-			          move=falses(n_coh),
-			          moveto=zeros(Int,n_coh),
-			          cohort=repeat([coh],inner=[1],outer=[n_coh]),
-			          year=repeat([m.coh_yrs[coh][1]],inner=[1],outer=[n_coh]),
-			          Division=repeat([""],inner=[1],outer=[n_coh]),
-			          canbuy=falses(n_coh),
-			          v=zeros(n_coh),
-			          prob=zeros(n_coh))
-
-		for age in 1:length(m.coh_idx[coh])
-
-			# update year and age on grouping data
-			g[:age]  = repeat([age],inner=[1],outer=[n_coh])
-			g[:age2] = repeat([age^2],inner=[1],outer=[n_coh])
-			g[:year] = repeat([m.coh_yrs[coh][age]],inner=[1],outer=[n_coh])
-
-			# group inds according to current discrete states
-			gg = groupby(g,[:is,:itau,:ih,:ij])
-
-			for ig in gg
-
-				# get group-specific discrete vars
-				is   = ig[1,:is] 	# {1,2}
-				ih   = ig[1,:ih] 	# {0,1}
-				itau = ig[1,:itau]	# {1,2}
-				ij   = ig[1,:ij]    # {1,...,9}
-
-				# get regional price and income
-				yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-
-				# setup the interpolators on this function space
-				# ----------------------------------------------
-				fill_interp_arrays!(L,is,ih+1,itau,ij,age,p,m)
-				setGrid!(L["l_rho"],2,zsupps[ij])
-				setGrid!(L["l_vcs"],2,zsupps[ij])
-
-				# reset caches
-				resetCache!(L["l_rho"])
-				resetCache!(L["l_vcs"])
-
-				# simulate each individual in group ig
-				for irow in eachrow(ig)
-
-					a = irow[:a]
-					z = irow[:z]
-					Y = irow[:Y]
-					P = irow[:P]
-					azYP = [a,z,Y,P]
-
-					yy = getIncome(m,yp[1],z,age,ij)
-
-					# flag for downpayment constraint
-					canbuy = a + yy > p.chi * yp[2]
+	g_count = 0
 
 
-					# get moving choice given current state
-					# =====================================
-			
-					# 4D interpolation on (a,z,Y,P)
-					ktmp = get_rho_ktmp(L["l_rho"],azYP)
-					# normalizing vector of moving probs: because of approximation error
-					# sometimes this is not *exactly* summing to 1
-					ktmp = ktmp ./ sum(ktmp)
-					
-					# get cumulative prob
-					cumsum!(ktmp2,ktmp,1)
-					# throw a k-sided dice 
-					shock  = rand()
-					moveto = searchsortedfirst(ktmp2,shock)
-					move   = ij != moveto
-					prob      = ktmp[moveto]
+	# populate age=1 with initial conditions
+	# those are independent of cohort, so just draw for each 
+	# age = 1 individual
+	idxvec = Dage .== 1
+	Dis[idxvec]  = rand(G0k,nsim)
+	Dj[idxvec]   = rand(G0j,nsim)
+	Dz[idxvec]   = rand(G0z,nsim)
+	Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
-					if moveto>p.nJ || moveto < 1
-						println(ktmp2)
-						error("problem in moveto = $moveto")
-					end
+	for age = 1:T
 
-					# get value, consumption and savings given moving choice
-					# ======================================================
+		# who is around at this age?
+		maxcohort = N_coh - (age-1)   # all cohorts > maxcohort don't have to be simulated at that age
 
-					if move
+		# individuals to simulate at this age
+		inds   = 1:m.coh_breaks[maxcohort]
+		idxvec = (Dage.==age) & (Di .<= inds[end])
 
-						ihh = 0
-						vcs = get_vcs(L["l_vcs"],azYP,1,moveto,p)
-						irow[:v]    = vcs[1]
-						irow[:cons] = vcs[2]
-						ss          = vcs[3]
+		# dataframe with discrete states for each id
+		g = DataFrame(id = inds,j = Dj[idxvec], is = Dis[idxvec], h=Dh[idxvec], tau=Dtau[idxvec])
+		# groups with identical discrete state
+		gg = groupby(g,[:j,:is,:h,:tau])
 
-					else # stay
+		for ig in gg
 
-						# you are current owner or you can buy
-						if (ih==1 || (ih==0 && canbuy))
+			g_count += 1
 
-							# get housing choice
-							v1v2 = get_v1v2(l_vh,azYP,moveto,p)
+			# get group-specific discrete vars
+			is   = ig[1,:is] 	# {1,2}
+			ih   = ig[1,:h] 	# {0,1}
+			itau = ig[1,:tau]	# {1,2}
+			ij   = ig[1,:j]    # {1,...,9}
 
-							ihh = v1v2[1] > v1v2[2] ? 0 : 1
-							irow[:v] = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+			# setup the interpolators on this function space
+			# ----------------------------------------------
+			fill_interp_arrays!(L,is,ih+1,itau,ij,age,p,m)
+			setGrid!(L["l_rho"],2,zsupps[ij])
+			setGrid!(L["l_vcs"],2,zsupps[ij])
 
-							# find corresponding consumption and savings
-							cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto)
-							irow[:cons]       = cs[1]
-							ss                = cs[2]
+			# reset caches
+			resetCache!(L["l_rho"])
+			resetCache!(L["l_vcs"])
 
-						# current renter who cannot buy
-						else
-							ihh = 0
-							if a < 0
-								println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
-							end
-							# for iia in aone:p.na
-							# 	for iz in 1:p.nz
-							# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
-							# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-							# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-							# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
-							# 	end
-							# end
-							vcs = get_vcs(L["l_vcs"],azYP,ihh+1,moveto)
-							irow[:v]              = vcs[1]
-							irow[:cons]  = vcs[2]
-							ss                = vcs[3]
+			# list of group individuals	
+			ginds = ig[:id]
 
-						end
-					end
+			# loop over individuals
+			# notice that inds here are from several distinct cohorts. 
+			# that's fine, because the cohort effect (aggregate prices) is predetermined.
+			for i in ginds
+				# this individuals index in arrays at current age
+				i_idx = age + T*(i-1)
+				@assert i == Di[i_idx]
+				@assert age == Dage[i_idx]
+				# this individuals index in arrays at next age
+				i_idx_next = age+1 + T*(i-1)
 
-					# make sure savings is inside grid
-					# (although interpolator forces that anyway)
-					ss = forceBounds(ss,agrid[1],agrid[end])
+				coh = Dcohort[i_idx]
 
+				# get current state
+				Y = DY[i_idx]
+				P = DP[i_idx]
+				a = Da[i_idx]
+				z = Dz[i_idx]
 
-					# record current state and choices and append to cohort data
-					# ==========================================================
+				price = m.pred_p[m.coh_idx[coh][age],ij]
+				y     = m.pred_y[m.coh_idx[coh][age],ij]
 
-					irow[:a]        = a
-					irow[:z]        = z
-					irow[:Y]        = m.PYdata[yearidx,:Y]
-					irow[:P]        = m.PYdata[yearidx,:P]
-					irow[:s]        = ss
-					irow[:ij]       = ij
-					irow[:ih]       = ih
-					irow[:ihh]      = ihh
-					irow[:is]       = is
-					irow[:y]        = yp[1]
-					irow[:p]        = yp[2]
-					irow[:income]   = yy
-					irow[:canbuy]   = canbuy
-					irow[:move]     = move
-					irow[:moveto]   = moveto
-					irow[:prob]     = prob
-					irow[:Division] = m.regnames[ij,:Division]
-					irow[:wealth]   = (yp[2] * ih) + a
+				# get regional price and income for that individual
+				# TODO precompute yp for all cohorts and regions
+				# yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
+				Dy[i_idx] = price
+				Dp[i_idx] = y
+				Dyear[i_idx] = m.coh_yrs[coh][age]
 
-					push!(coh_data,array(irow))
+				# get individual specific state
+				azYP = [a,z,Y,P]
+				yy = getIncome(m,y,z,age,ij)
 
+				# flag for downpayment constraint
+				canbuy = a + yy > p.chi * price
 
-					# transition to new state
-					# =======================
+				# get moving choice given current state
+				# =====================================
+		
+				# 4D interpolation on (a,z,Y,P)
+				ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
+				# normalizing vector of moving probs: because of approximation error
+				# sometimes this is not *exactly* summing to 1
+				ktmp = ktmp ./ sum(ktmp)
+				
+				# get cumulative prob
+				cumsum!(ktmp2,ktmp,1)
+				# throw a k-sided dice 
+				shock  = rand()
+				moveto = searchsortedfirst(ktmp2,shock)
+				move   = ij != moveto
+				prob   = ktmp[moveto]
 
-					a  = ss
-					ij = moveto
-					ih = ihh
-					yearidx+=1
+				if moveto>p.nJ || moveto < 1
+					println(ktmp2)
+					error("problem in moveto = $moveto")
+				end
 
-					# draw new values for child shock
-					is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
+				# get value, consumption and savings given moving choice
+				# ======================================================
 
-					# if move
-					if move
-						z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
+				if move
+					ihh = 0
+					vcs = get_vcs(L["l_vcs"],azYP,1,moveto,p)
+					val  = vcs[1]
+					cons = vcs[2]
+					ss   = vcs[3]
+
+				else # stay
+
+					# you are current owner or you can buy
+					if (ih==1 || (ih==0 && canbuy))
+
+						# get housing choice
+						v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
+
+						ihh = v1v2[1] > v1v2[2] ? 0 : 1
+						val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+
+						# find corresponding consumption and savings
+						cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
+						cons       = cs[1]
+						ss         = cs[2]
+
+					# current renter who cannot buy
 					else
-						z   = draw_z(m,z,ij)
+						ihh = 0
+						if a < 0
+							println("error: id=$id,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+						end
+						# for iia in aone:p.na
+						# 	for iz in 1:p.nz
+						# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
+						# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+						# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+						# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+						# 	end
+						# end
+						vcs = get_vcs(L["l_vcs"],azYP,ihh+1,moveto,p)
+						val  = vcs[1]
+						cons = vcs[2]
+						ss   = vcs[3]
+
 					end
+				end
 
-					# put back into row grouping df
-					irow[:a] = a
-					irow[:z] = z 
-					irow[:Y] = m.PYdata[yearidx,:Y] 
-					irow[:P] = m.PYdata[yearidx,:P] 
-					irow[:ij] = ij
-					irow[:ih] = ihh
-					irow[:is] = is
+				# make sure savings is inside grid
+				# (although interpolator forces that anyway)
+				ss = forceBounds(ss,agrid[1],agrid[end])
 
-				end	# individual
-			end # group
-		end # age
-		append!(all_data,coh_data)
+				# storing choices and values
+				Dv[i_idx]       = val
+				Dcons[i_idx]    = cons
+				Dsave[i_idx]    = ss
+				Dincome[i_idx]  = yy
+				Dhh[i_idx]      = ihh
+				Dprob[i_idx]    = prob
+				DM[i_idx]       = move
+				DMt[i_idx]      = moveto
+				Dregname[i_idx] = regnames[ij]
+				Dcanbuy[i_idx]  = canbuy
+				Dwealth[i_idx]  = (price * ih) + a
+				Ddist[i_idx]    = m.distance[ij,moveto]
+				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price,move,ij,p)
+				Drent[i_idx]    = pifun(ih,ihh,price,move,ij,p)
 
-	end # end cohort
 
+				# storing transition
+				if age < T
+					Dh[i_idx_next] = ihh
+					Da[i_idx_next] = ss
+					Dj[i_idx_next] = moveto
+					Dz[i_idx_next] = draw_z(m,z,moveto) # TODO drawign this from the right distribution depending on whether move or not!
+					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], rand() )
+				end
+			end # individual
+
+			if mod(g_count,400) == 0
+				println("this is group $g_count")
+				println("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
+				println("interpolator l_vcs:")
+				println(L["l_vcs"])
+				println("interpolator l_rho:")
+				println(L["l_rho"])
+			end
+		end # groups
+	end  # age
+
+	# pack into a dataframe
+	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,year=Dyear,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=Dsave,cons=Dcons,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
+
+	return df
 end
-	
-
-	# 	for age in 1:T_cohort
-	# 		# group cohort into discrete state groups
-	# 		# g = partition(ij,is,ih,itau) -> assigns a group id to each member of the cohort
-	# 		# there are 72 possible combinations
-	# 		#
-	# 		# then loop over groups
-	# 		for g in groups
-
-	# 			# do once: fill each of the interpolation arrays with all values for (a,z,Y,P) on the disc-state for g
-	# 			#
-	# 			setupInterpValues!(l_vcs,...)
-
-	# 			for i in g
-	# 			# for each group member, evaluate the functions
-	# 			# rbind the results somehow
-	# 			# probably easiest to just push! onto each vector
-
-	# 			# simulate as before
 
 
-	# 		for i in 1:nc
-
-
-	# 		end
-	# 	end
-	# end
-
-
-# 	for i=1:nsim
-# 		# find cohort index of i
-# 		# assign i to a certain cohort.
-# 		cohort   = yearidx = assignCohort(i,m)
-# 		T_cohort = length(m.coh_idx[cohort])
-# 		is       = rand(G0k)
-# 		z        = rand(Normal(0,0.1))
-# 		a        = forceBounds(rand(m.Init_asset),0.0,100.0)
-# 		ih       = 0
-# 		itau     = rand(Gtau)
-# 		ij       = rand(G0j)
-
-# 		# tmp vars
-# 		move = false	# move indidicator
-# 		moveto = 0
-
-# 		# aggregate state in year 1
-
-# 		# set linear interpolator zgrid to current region
-# 		setGrid!(l_rho,2,zsupps[ij])
-# 		setGrid!(l_vh,2,zsupps[ij])
-# 		setGrid!(l_vcs,2,zsupps[ij])
-# 		setGrid!(l_vcs_rent,2,zsupps[ij])
-
-# 		# reset Cache on interpolators
-# 		resetCache!(l_rho)
-# 		resetCache!(l_vh)
-# 		resetCache!(l_vcs)
-# 		resetCache!(l_vcs_rent)
-
-# 		for age=1:T_cohort	# later cohorts can be cut off earlier
-
-# 			# current continuous state is
-# 			azYP = [a,z,Y,P]
-
-# 			if z < minimum(zsupps[ij])
-# 				println("[age,id]=[$age,$i], ij=$ij, z=$z, minz = $(minimum(zsupps[ij]))")
-# 				error()
-# 			end
-
-# 			# point = [a,Y,P,z]
-
-# 			# record beginning of period state
-# 			# --------------------------------
-
-# 			yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-# 			yy = getIncome(m,yp[1],z,age,ij)
-
-# 			# flag for downpayment constraint
-# 			canbuy = a + yy > p.chi * yp[2]
-
-# 			Dj[age + T*(i-1)]      = ij
-# 			Dt[age + T*(i-1)]      = age
-# 			Dtau[age + T*(i-1)]    = itau
-# 			Di[age + T*(i-1)]      = i
-# 			Dh[age + T*(i-1)]      = ih
-# 			Da[age + T*(i-1)]      = a
-# 			DY[age + T*(i-1)]      = Y
-# 			DP[age + T*(i-1)]      = P
-# 			Dy[age + T*(i-1)]      = yp[1]
-# 			Dp[age + T*(i-1)]      = yp[2]
-# 			Dincome[age + T*(i-1)] = yy
-# 			Dz[age + T*(i-1)]      = z
-# 			Dkids[age + T*(i-1)]   = is-1
-# 			Dcanbuy[age + T*(i-1)] = canbuy
-# 			Dcohort[age + T*(i-1)] = cohort
-# 			# println("cohort=$cohort")
-# 			# println("id=$i, age =$age")
-# 			# println("length(cohort)=$(length(m.coh_yrs[cohort]))")
-# 			# println("yearidx=$yearidx")
-# 			Dyear[age + T*(i-1)]   = m.coh_yrs[cohort][age]
-# 			push!(Dregname,regnames[ij])
-
-# 			# if you have not moved last period,
-# 			# your zsupp grid is the same, so you can keep the cache
-# 			# variable "move" is still set from last period
-# 			if move
-# 				resetCache!(l_rho)
-# 				resetCache!(l_vh)
-# 				resetCache!(l_vcs)
-# 				resetCache!(l_vcs_rent)
-
-# 				# and change linear interpolators z grid to current region ij grid
-# 				setGrid!(l_rho,2,zsupps[ij])
-# 				setGrid!(l_vh,2,zsupps[ij])
-# 				setGrid!(l_vcs,2,zsupps[ij])
-# 				setGrid!(l_vcs_rent,2,zsupps[ij])
-# 			end
-
-# 			# get moving choice given current state
-# 			# =====================================
-	
-# 			# 4D interpolation on (a,z,Y,P)
-# 			ktmp = get_rho_ktmp(l_rho,azYP,is,itau,ih+1,ij,age,p,m)
-# 			# normalizing vector of moving probs: because of approximation error
-# 			# sometimes this is not *exactly* summing to 1
-# 			ktmp = ktmp ./ sum(ktmp)
-			
-# 			# get cumulative prob
-# 			cumsum!(ktmp2,ktmp,1)
-# 			# throw a k-sided dice 
-# 			shock = rand()
-# 			moveto = searchsortedfirst(ktmp2,shock)
-# 			move = ij != moveto
-
-# 			Dprob[age + T*(i-1)]      = ktmp[moveto]
-
-# 			if moveto>p.nJ || moveto < 1
-# 				println(ktmp2)
-# 				error("probelm in moveto = $moveto")
-# 			end
-
-
-# 			# get value, consumption and savings given moving choice
-# 			# ======================================================
-
-# 			if move
-
-# 				ihh = 0
-# 				vcs = get_vcs(l_vcs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-# 				val               = vcs[1]
-# 				Dc[age + T*(i-1)] = vcs[2]
-# 				ss                = vcs[3]
-
-# 			else # stay
-
-# 				# you are current owner or you can buy
-# 				if (ih==1 || (ih==0 && canbuy))
-
-# 					# get housing choice
-# 					v1v2 = get_v1v2(l_vh,azYP,moveto,is,itau,ih+1,ij,age,p,m)
-
-# 					ihh = v1v2[1] > v1v2[2] ? 0 : 1
-# 					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
-
-# 					# find corresponding consumption and savings
-# 					cs = get_cs(l_cs,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-# 					Dc[age + T*(i-1)] = cs[1]
-# 					ss                = cs[2]
-
-# 				# current renter who cannot buy
-# 				else
-# 					ihh = 0
-# 					if a < 0
-# 						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
-# 					end
-# 					# for iia in aone:p.na
-# 					# 	for iz in 1:p.nz
-# 					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
-# 					# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-# 					# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-# 					# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
-# 					# 	end
-# 					# end
-# 					vcs = get_vcs_rent(l_vcs_rent,azYP,ihh+1,moveto,is,itau,ih+1,ij,age,p,m)
-# 					val               = vcs[1]
-# 					Dc[age + T*(i-1)] = vcs[2]
-# 					ss                = vcs[3]
-
-# 				end
-# 			end
-
-# 			# record current choices
-# 			# ======================
-
-# 			# make sure savings is inside grid
-# 			ss = forceBounds(ss,agrid[1],agrid[end])
-
-# 			DS[age + T*(i-1)]    = ss
-# 			Dcash[age + T*(i-1)] = cashFunction(a,yy,ih,ihh,yp[2],move,moveto,p)
-# 			Drent[age + T*(i-1)] = pifun(ih,ihh,yp[2],move,moveto,p)
-
-# 			Dv[age + T*(i-1)]      = val
-# 			Ddist[age + T*(i-1)]   = m.distance[ij,moveto]
-			
-# 			DM[age + T*(i-1)]  = move
-# 			DMt[age + T*(i-1)] = moveto
-# 			Dhh[age + T*(i-1)] = ihh	
-
-
-# 			# transition to new state
-# 			# =======================
-
-# 			a  = ss
-# 			ij = moveto
-# 			ih = ihh
-# 			yearidx+=1
-# 			P = m.PYdata[yearidx,:P]
-# 			Y = m.PYdata[yearidx,:Y]
-
-# 			# draw new values child shock
-# 			is  = searchsortedfirst( cumGs[is,:,age][:], rand() )
-
-# 			# if move
-# 			if move
-# 				z   = draw_z(m,z,ij) 	# TODO draw from copula,not from here!
-# 			else
-# 				z   = draw_z(m,z,ij)
-# 			end
-
-# 			# iy   = ypidx[iyp,1]
-# 			# ip   = ypidx[iyp,2]
-# 		end 	# age
-
-# 	end 	# ind
-
-# 	# collect all data into a dataframe
-# 	w = (Dp .* Dh) .+ Da
-
-# 	# df = DataFrame(id=Di,age=Dt,age2=Dt.^2,kids=PooledDataArray(convert(Array{Bool,1},Dkids)),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=DS,c=Dc,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=w,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
-# 	# df = join(df,m.regnames,on=:j)
-# 	# sort!(df,cols=[1,2]	)
-
-# 	# return df
-# end
 
 
 # fills arrays with corresponding values at 
@@ -778,7 +500,7 @@ function fill_interp_arrays!(L::Dict{ASCIIString,lininterp},is::Int,ih::Int,itau
 
 					for ik in 1:p.nJ
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
-						@inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rhoidx] 	
+						@inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
 
 						for ihh in 1:p.nh
 
@@ -805,13 +527,11 @@ end
  # r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 
 
-function get_rho_ktmp(l::lininterp,azYP::Vector{Float64})
+function get_rho_ktmp(l::lininterp,azYP::Vector{Float64},p::Param)
 	out = zeros(p.nJ)
 
-	for ik in 1:p.nJ
-		out[ik] = getValue(l,azYP,ik)
-	end
-	out
+	getValue!(out,l,azYP,[1:p.nJ])
+	return out
 end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
@@ -821,9 +541,9 @@ function get_vcs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 	out = zeros(3)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	out[1] = getValue(l,azYP,1+l_idx)
-	out[2] = getValue(l,azYP,2+l_idx)
-	out[3] = getValue(l,azYP,3+l_idx)
+	getValue!(out,l,azYP,[1+l_idx,2+l_idx,3+l_idx])
+	# out[2] = getValue(l,azYP,2+l_idx)
+	# out[3] = getValue(l,azYP,3+l_idx)
 	return out
 end
 
@@ -835,8 +555,7 @@ function get_v1v2(l::lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
 	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
 
-	out[1] = getValue(l,azYP,1+l_idx1)
-	out[2] = getValue(l,azYP,1+l_idx2)
+	getValue!(out,l,azYP,[1+l_idx1,1+l_idx2])
 	return out
 end
 
@@ -847,189 +566,9 @@ function get_cs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 	out = zeros(2)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	out[1] = getValue(l,azYP,2+l_idx)	# 2 is index for cons
-	out[2] = getValue(l,azYP,3+l_idx)	# 3 is index for save
+	getValue!(out,l,azYP,[2+l_idx,3+l_idx])	# 2 is index for cons, 3 is index for save
 	return out
 end
-
-
-
-
-
-# #' ..py:function:: get_vcs_rent(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
-# #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-# function get_vcs_rent(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-# 	na_rent = l.d[1]
-# 	if na_rent==p.na
-# 		throw(ArgumentError("dim 1 of interpolation values is equal to p.na? renters case here."))
-# 	end
-# 	aone = m.aone
-
-# 	# get parts of index that does not change
-# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-# 	for iia in aone:p.na
-# 		offset_a = iia-1 + p.na*offset_h_age_j
-# 		for iP in 1:p.np
-# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-# 			for iY in 1:p.ny 
-# 				offset_Y = iY-1 + p.ny * offset_P
-# 				for iz in 1:p.nz
-# 					offset_z = iz-1 + p.nz * offset_Y
-
-# 					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-# 					# println("idx = $idx")
-# 					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-# 					# directly access the lininterp internal value array!
-# 					# TODO this lookup takes far too much time. 
-# 					# find a way to cache (Y,P) outside of this function and only
-# 					# loop over Y and P if the bracket changes. that will happen
-# 					# only 3 times!
-# 					@inbounds l.vals[1][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx] 	
-# 					@inbounds l.vals[2][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-# 					@inbounds l.vals[3][iia-aone+1 + na_rent*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
-# 				end
-# 			end
-# 		end
-# 	end
-# 	getValue(l,azYP)
-# end
-
-
-# #' ..py:function:: get_cs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
-# #' gets cs (consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-# function get_cs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-# 	# get parts of index that does not change
-# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-# 	for iia in 1:p.na
-# 		offset_a = iia-1 + p.na*offset_h_age_j
-# 		for iP in 1:p.np
-# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-# 			for iY in 1:p.ny 
-# 				offset_Y = iY-1 + p.ny * offset_P
-# 				for iz in 1:p.nz
-# 					offset_z = iz-1 + p.nz * offset_Y
-
-# 					idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-# 					# println("idx = $idx")
-# 					# println("idx11 = $(idx11(ihh,ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-# 					# directly access the lininterp internal value array!
-# 					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.ch[idx] 	
-# 					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.sh[idx] 	
-# 				end
-# 			end
-# 		end
-# 	end
-# 	getValue(l,azYP)
-# end
-
-# function get_v1v2(l::lininterp,azYP::Vector{Float64},ik::Int,is::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-# 	# get parts of index that does not change
-# 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-# 	for iia in 1:p.na
-# 		offset_a = iia-1 + p.na*offset_h_age_j
-# 		for iP in 1:p.np
-# 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-# 			for iY in 1:p.ny 
-# 				offset_Y = iY-1 + p.ny * offset_P
-# 				for iz in 1:p.nz
-# 					offset_z = iz-1 + p.nz * offset_Y
-
-# 					# TODO 
-# 					# be smarter about Y and P
-# 					idx1 = 1 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-# 					idx2 = 2 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-# 					# println("idx = $idx")
-# 					# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-# 					# directly access the lininterp internal value array!
-# 					@inbounds l.vals[1][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx1] 	
-# 					@inbounds l.vals[2][iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))] = m.vh[idx2] 	
-# 				end
-# 			end
-# 		end
-# 	end
-# 	getValue(l,azYP)
-# end
-
-
-
-function fill_azmats!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,v1::Array,v2::Array)
-
-	# get parts of index that do not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-	# @inbounds begin
-	for iia in 1:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iz in 1:p.nz
-			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
-
-			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-
-			@inbounds azmatv[iia + p.na*(iz-1)] = v1[idx]
-			@inbounds azmatc[iia + p.na*(iz-1)] = v2[idx]
-			# println("idx = $idx")
-			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-		end
-	end
-	# end
-	return nothing
-end
-
-# method for 2 value funcitons only: housing choice
-function fill_azmats_h!{T<:Real}(azmatv1::Matrix{T},azmatv2::Matrix{T},ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-	# get parts of index that do not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-	for iia in 1:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iz in 1:p.nz
-			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
-
-			idx1 = 1 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-			idx2 = 2 + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-
-			@inbounds azmatv1[iia + p.na*(iz-1)] = m.vh[idx1]
-			@inbounds azmatv2[iia + p.na*(iz-1)] = m.vh[idx2]
-			# println("idx = $idx")
-			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-		end
-	end
-	return nothing
-end
-	
-function fill_azmats_rent!{T<:Real}(azmatv::Matrix{T},azmatc::Matrix{T},azmats::Matrix{T},ihh::Int,ik::Int,is::Int,iy::Int,ip::Int,itau::Int,ih::Int,ij::Int,age::Int,p::Param,m::Model)
-
-	na_rent = size(azmatv,1)
-	aone = m.aone
-
-	# get parts of index that do not change
-	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
-
-	for iia in m.aone:p.na
-		offset_a = iia-1 + p.na*offset_h_age_j
-		for iz in 1:p.nz
-			offset_z = iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * offset_a)))
-
-			idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
-
-			@inbounds azmatv[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-			@inbounds azmatc[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-			@inbounds azmats[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
-			# println("idx = $idx")
-			# println("idx10 = $(idx10(ik,is,iz,iy,ip,itau,iia,ih,ij,age,p))")
-		end
-	end
-	return nothing
-end
-
-
 
 
 
@@ -1039,227 +578,234 @@ end
 
 
 
-
-
-
-
 # computing moments from simulation
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
+	# keep only relevant years
+	# and drop NAs
+	df = @where(df,(:year.>1997) & (!isna(:cohort)))
 
-	# partition df0 in groups by id
-	# insert!(df0,3,floor(integer(df0[:id]/1000)),:idgroup)
 
-	# dfs = DataFrame[]
+	# transformations, adding columns
+	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 6 bins, and add age squared
+	ngroups = 6
+	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, )  # cut age into 6 bins, and add age squared
 
-	# df_g = groupby(df0, :idgroup)
+	df = join(df,m.agedist,on=:realage)
+	fullw = WeightVec(array(df[:density]))
 
-	# for df in df_g
 
-		# create a dataframe to push moments on to
-		mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
+	# create a dataframe to push moments on to
+	mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
 
-		ngroups = 6
 
-		# grouped dfs
-		g_div = groupby(df, :Division)
-		g_kids = groupby(df, :kids)
-		g_own = groupby(df, :h)
-		df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))))  # cut age into 6 bins
-		g_abin = groupby(df,:agebin)
+	# grouped dfs
+	g_div = groupby(df, :Division)
+	g_kids = groupby(df, :kids)
+	g_own = groupby(df, :h)
+	g_abin = groupby(df,:agebin)
 
-		# moments relating to homeownership
-		# =================================
+	# moments relating to homeownership
+	# =================================
 
-		noown = sum(df[:h]) == 0.0
+	noown = sum(df[:h]) == 0.0
 
-		# linear probability model of homeownership
-		if mean(df[:h]) == 1.0 || noown
-			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
-			coef_h = DataArray(Float64,3)
-			std_h =  DataArray(Float64,3)
-		else
-			lm_h = fit(LinearModel, h ~ age + age2 ,df)
-			cc_h  = coeftable(lm_h)
-			nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
-			coef_h = @data(coef(lm_h))
-			std_h = @data(stderr(lm_h))
+	# linear probability model of homeownership
+	if mean(df[:h]) == 1.0 || noown
+		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
+		coef_h = DataArray(Float64,3)
+		std_h =  DataArray(Float64,3)
+	else
+		lm_h = fit(LinearModel, h ~ age + age2 ,df)
+		cc_h  = coeftable(lm_h)
+		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
+		coef_h = @data(coef(lm_h))
+		std_h = @data(stderr(lm_h))
+	end
+
+
+	# own ~ Division
+	# ----------
+
+	for div in g_div
+		w = WeightVec(array(div[:density]))
+		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w),std(convert(Array{Float64},div[:h]),w)/sqrt(size(div,1))])
+	end
+
+	# own ~ kids
+	# ----------
+
+	for div in g_kids
+		kk = "$(div[1,:kids])"
+		w = WeightVec(array(div[:density]))
+		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w),std(convert(Array{Float64},div[:h]),w)/sqrt(size(div,1))])
+	end
+	# TODO std error
+	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:kids]),fullw)
+	push!(mom1,["cov_own_kids",covar[1,2],1.0])
+
+
+	# moments relating to mobility
+	# ============================
+
+	nomove = false
+
+	# linear probability model of mobility
+	if sum(df[:move]) == 0.0
+		nomove = true
+		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
+		coef_mv = @data(zeros(3))
+		std_mv =  @data(ones(3))
+	else
+		lm_mv = fit(LinearModel, move ~ age + age2 ,df)
+		cc_mv = coeftable(lm_mv)
+		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+		coef_mv = @data(coef(lm_mv))
+		std_mv = @data(stderr(lm_mv))
+	end
+
+	# move count
+	# ----------
+
+	movecount=by(df,:id,x -> sum(x[:move]))
+	moved0 = mean(movecount[:x1].==0)
+	moved1 = mean(movecount[:x1].==1)
+	moved2 = mean(movecount[:x1].==2)
+
+	# TODO std error
+	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw),std(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean
+	push!(mom1,["moved0",moved0,1.0])
+	push!(mom1,["moved1",moved1,1.0])
+	push!(mom1,["moved2",moved2,1.0])
+
+
+	# move ~ own
+	# ----------
+
+	if noown
+		push!(mom1,["mean_move_ownTRUE",0.0,1.0])
+		push!(mom1,["mean_move_ownFALSE",1.0,1.0])
+	elseif mean(df[:own]) == 1.0
+		push!(mom1,["mean_move_ownTRUE",1.0,1.0])
+		push!(mom1,["mean_move_ownFALSE",0.0,1.0])
+	else
+		for idf in g_own
+			kk = "$(idf[1,:own])"
+			w = WeightVec(array(idf[:density]))
+			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w),std(convert(Array{Float64},idf[:move]),w)/sqrt(size(idf,1))])
 		end
 
+	end
+	# TODO std error
+	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:move]),fullw)
+	push!(mom1,["cov_move_h",covar[1,2],1.0])
 
-		# own ~ Division
-		# ----------
 
-		for div in g_div
-			push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h]),std(div[:h])/sqrt(size(div,1))])
+	# move ~ kids
+	# ----------
+
+	for idf in g_kids
+		kk = "$(idf[1,:kids])"
+		w = WeightVec(array(idf[:density]))
+		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w),std(convert(Array{Float64},idf[:move]),w)/sqrt(size(idf,1))])
+	end
+	# TODO std error
+	covar = cov(hcat(convert(Array{Float64},df[:move]),df[:kids]),fullw)
+	push!(mom1,["cov_move_kids",covar[1,2],1.0])
+
+	# move ~ distance 
+	# ---------------
+
+	if nomove
+		push!(mom1,["q25_move_distance",0.0,1.0])
+		push!(mom1,["q50_move_distance",0.0,1.0])
+		push!(mom1,["q75_move_distance",0.0,1.0])
+	else
+		qts = quantile(df[df[:move].==true,:km_distance],[0.25,0.5,0.75])
+		push!(mom1,["q25_move_distance",qts[1],1.0])
+		push!(mom1,["q50_move_distance",qts[2],1.0])
+		push!(mom1,["q75_move_distance",qts[3],1.0])
+	end
+
+	# move | negative equity
+	# ----------------------
+
+	# if noown || nomove
+		push!(mom1,["move_neg_equity",0.0,1.0])
+	# else
+	# 	neq = df[(df[:move].==true) & (df[:own].==true),:equity] .< 0.0
+	# 	push!(mom1,["move_neg_equity",0.0,1.0])
+
+
+
+
+	# moments relating to total wealth
+	# ================================
+
+	# linear regression of total wealth
+	# if sum(df[:own]) == 1.0 || noown
+	# 	nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2"]  
+	# 	coef_w = DataArray(Float64,3)
+	# 	std_w =  DataArray(Float64,3)
+	# else
+	# 	lm_w = fit(LinearModel, wealth ~ age + age2,df )
+	# 	cc_w  = coeftable(lm_w)
+	# 	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
+	# 	coef_w = @data(coef(lm_w))
+	# 	std_w = @data(stderr(lm_w))
+	# end
+
+	# wealth ~ age
+	# ------------
+	for idf in g_abin
+		push!(mom1,["mean_wealth_$(idf[1,:agebin])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
+	end
+
+	# wealth ~ division
+	# -----------------
+
+	for idf in g_div
+		w = WeightVec(array(idf[:density]))
+		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(array(idf[:wealth]),w),std(array(idf[:wealth]),w)/sqrt(size(idf,1))])
+	end
+
+	# wealth ~ own
+	# ------------
+
+	if noown
+
+		push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
+		push!(mom1,["mean_wealth_ownFALSE",mean(array(df[:wealth]),fullw),std(array(df[:wealth]),fullw) / sqrt(size(df,1))])
+	else
+		for idf in g_own
+			w = WeightVec(array(idf[:density]))
+			kk = "$(idf[1,:own])"
+			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(array(idf[:wealth]),w),std(array(idf[:wealth]),w) / sqrt(size(idf,1))])
 		end
-
-		# own ~ kids
-		# ----------
-
-		for div in g_kids
-			kk = "$(div[1,:kids])"
-			push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h]),std(div[:h])/sqrt(size(div,1))])
-		end
-		# TODO std error
-		push!(mom1,["cov_own_kids",cov(df[:h],df[:kids]),1.0])
+	end
 
 
-		# moments relating to mobility
-		# ============================
-
-		nomove = false
-
-		# linear probability model of mobility
-		if sum(df[:move]) == 0.0
-			nomove = true
-			nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
-			coef_mv = @data(zeros(3))
-			std_mv =  @data(ones(3))
-		else
-			lm_mv = fit(LinearModel, move ~ age + age2 ,df)
-			cc_mv = coeftable(lm_mv)
-			nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
-			coef_mv = @data(coef(lm_mv))
-			std_mv = @data(stderr(lm_mv))
-		end
-
-		# move count
-		# ----------
-
-		movecount=by(df,:id,x -> sum(x[:move]))
-		moved0 = mean(movecount[:x1].==0)
-		moved1 = mean(movecount[:x1].==1)
-		moved2 = mean(movecount[:x1].==2)
-
-		# TODO std error
-		push!(mom1,["mean_move",mean(df[:move]),std(df[:move])])	# unconditional mean
-		push!(mom1,["moved0",moved0,1.0])
-		push!(mom1,["moved1",moved1,1.0])
-		push!(mom1,["moved2",moved2,1.0])
+	# collect estimates
+	# =================
 
 
-		# move ~ own
-		# ----------
+	# nms = vcat(nm_mv,nm_h,nm_w)
+	nms = vcat(nm_mv,nm_h)
 
-		if noown
-			push!(mom1,["mean_move_ownTRUE",0.0,1.0])
-			push!(mom1,["mean_move_ownFALSE",1.0,1.0])
-		elseif mean(df[:own]) == 1.0
-			push!(mom1,["mean_move_ownTRUE",1.0,1.0])
-			push!(mom1,["mean_move_ownFALSE",0.0,1.0])
-		else
-			for idf in g_own
-				kk = "$(idf[1,:own])"
-				push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move]),std(idf[:move])/sqrt(size(idf,1))])
-			end
+	# get rid of parens and hyphens
+	# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
+	for i in 1:length(nms)
+		ss = replace(nms[i]," - ","")
+		ss = replace(ss,")","")
+		ss = replace(ss,"(","")
+		# ss = replace(ss,"kidstrue","kidsTRUE")
+		ss = replace(ss,"owntrue","ownTRUE")
+		nms[i] = ss
+	end
 
-		end
-		# TODO std error
-		push!(mom1,["cov_move_h",cov(df[:h],df[:move]),1.0])
+	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h], model_sd = [std_mv,std_h])
 
-
-		# move ~ kids
-		# ----------
-
-		for idf in g_kids
-			kk = "$(idf[1,:kids])"
-			push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move]),std(idf[:move])/sqrt(size(idf,1))])
-		end
-		# TODO std error
-		push!(mom1,["cov_move_kids",cov(df[:move],df[:kids]),1.0])
-
-		# move ~ distance 
-		# ---------------
-
-		if nomove
-			push!(mom1,["q25_move_distance",0.0,1.0])
-			push!(mom1,["q50_move_distance",0.0,1.0])
-			push!(mom1,["q75_move_distance",0.0,1.0])
-		else
-			qts = quantile(df[df[:move].==true,:km_distance],[0.25,0.5,0.75])
-			push!(mom1,["q25_move_distance",qts[1],1.0])
-			push!(mom1,["q50_move_distance",qts[2],1.0])
-			push!(mom1,["q75_move_distance",qts[3],1.0])
-		end
-
-		# move | negative equity
-		# ----------------------
-
-		# if noown || nomove
-			push!(mom1,["move_neg_equity",0.0,1.0])
-		# else
-		# 	neq = df[(df[:move].==true) & (df[:own].==true),:equity] .< 0.0
-		# 	push!(mom1,["move_neg_equity",0.0,1.0])
-
-
-
-
-		# moments relating to total wealth
-		# ================================
-
-		# linear regression of total wealth
-		# if sum(df[:own]) == 1.0 || noown
-		# 	nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2"]  
-		# 	coef_w = DataArray(Float64,3)
-		# 	std_w =  DataArray(Float64,3)
-		# else
-		# 	lm_w = fit(LinearModel, wealth ~ age + age2,df )
-		# 	cc_w  = coeftable(lm_w)
-		# 	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
-		# 	coef_w = @data(coef(lm_w))
-		# 	std_w = @data(stderr(lm_w))
-		# end
-
-		# wealth ~ age
-		# ------------
-		for idf in g_abin
-			push!(mom1,["mean_wealth_$(idf[1,:agebin])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
-		end
-
-		# wealth ~ division
-		# -----------------
-
-		for idf in g_div
-			push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
-		end
-
-		# wealth ~ own
-		# ------------
-
-		if noown
-
-			push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
-			push!(mom1,["mean_wealth_ownFALSE",mean(df[:wealth]),std(df[:wealth]) / sqrt(size(df,1))])
-		else
-			for idf in g_own
-				kk = "$(idf[1,:own])"
-				push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(idf[:wealth]),std(idf[:wealth]) / sqrt(size(idf,1))])
-			end
-		end
-
-
-		# collect estimates
-		# =================
-
-
-		# nms = vcat(nm_mv,nm_h,nm_w)
-		nms = vcat(nm_mv,nm_h)
-
-		# get rid of parens and hyphens
-		# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
-		for i in 1:length(nms)
-			ss = replace(nms[i]," - ","")
-			ss = replace(ss,")","")
-			ss = replace(ss,"(","")
-			# ss = replace(ss,"kidstrue","kidsTRUE")
-			ss = replace(ss,"owntrue","ownTRUE")
-			nms[i] = ss
-		end
-
-		mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h], model_sd = [std_mv,std_h])
-
-		dfout = rbind(mom1,mom2)
+	dfout = rbind(mom1,mom2)
 
 	# 	push!(dfs,rbind(mom1,mom2))
 

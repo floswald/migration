@@ -276,7 +276,7 @@ function simplot(sim::DataFrame,n::Int)
 	subplot(4,4,2)
 	ylim((0.0,maximum(sim[:income])+5))
 	for sdf in gdf
-		plot(sdf[:age],sdf[:c])
+		plot(sdf[:age],sdf[:cons])
 	end
 	title("cons")
 
@@ -351,10 +351,16 @@ function simplot(sim::DataFrame,n::Int)
 	end
 	title("hchoice")
 
+	subplot(4,4,14)
+	for sdf in gdf
+		plot(sdf[:age],sdf[:cohort])
+	end
+	title("Cohort")
+
 	plts = Any[]
 	ids = Int[]
 	idcount = 1
-	subplot(4,4,14)
+	subplot(4,4,15)
 	ylim((0.5,n + 0.5))
 	for sdf in gdf
 		plt, = plot(sdf[:age],ones(length(sdf[:age])).*idcount)
@@ -391,7 +397,7 @@ function simplot(sim::DataFrame,id::Array{Int,1})
 	subplot(4,4,2)
 	ylim((0.0,maximum(sim[:income])+5))
 	for sdf in gdf
-		plot(sdf[:age],sdf[:c])
+		plot(sdf[:age],sdf[:cons])
 	end
 	title("cons")
 

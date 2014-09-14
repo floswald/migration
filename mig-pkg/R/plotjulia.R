@@ -98,7 +98,7 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 
 	# compute age distribution
 	hi=merged[sub,hist(age,prob=TRUE,breaks=20:53)]
-	agedist = data.frame(age=20:52,density=hi$density)
+	agedist = data.frame(realage=20:52,density=hi$density)
 
 	# regional processes for p and y
 	reg <- Export.VAR()
@@ -170,6 +170,8 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	VAR_reg   <- reg$Agg2Region_coefs
 	z         <- ind$ztab
 	PYdata    <- reg$PYdata
+	pred_y   <- reg$pred_y
+	pred_p   <- reg$pred_p
 	sigma_agg <- reg$agg_sigma
 	sigma_agg$row <- rownames(sigma_agg)
 	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
@@ -177,6 +179,8 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	save(sigma_agg,file=file.path(path,"sigma_agg.rda"))
 	save(VAR_agg,file=file.path(path,"VAR_agg.rda"))
 	save(PYdata,file=file.path(path,"PYdata.rda"))
+	save(pred_y,file=file.path(path,"pred_y.rda"))
+	save(pred_p,file=file.path(path,"pred_p.rda"))
 	save(VAR_reg,file=file.path(path,"VAR_reg.rda"))
 	save(z,file=file.path(path,"ztable.rda"))
 
@@ -252,6 +256,9 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
 	}
 
+	pred_y_out = dcast(year ~ Division, value.var="yhat",data=pyagg )
+	pred_p_out = dcast(year ~ Division, value.var="phat",data=pyagg )
+
 	# visualize fit
 
 
@@ -270,11 +277,7 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	coefs <- as.data.frame(t(sapply(mods,coef)))
 	coefs <- coefs[order(rownames(coefs)), ]
 	coefs <- cbind(coefs,py[,list(mean_y = mean(y)),by=Division])
-	# TODO export actual data series for simulation!
 	PYseries = as.data.frame(agg[,list(year,Y,P)])
-
-
-
 
 	n <- names(coefs)
 	n <- gsub("\\(|\\)","",n)
@@ -285,7 +288,7 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# sigmas$Division = rownames(sigmas)
 	# names(sigmas)[1:4] <- c("var_y","cov_yp","cov_py","var_p")
 
-	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries))
+	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out))
 
 }
 
