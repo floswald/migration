@@ -35,16 +35,16 @@ p2 = Dict{ASCIIString,Float64}()
 # end
 
 # or assign different starting values:
-p2["gamma"]   = 2.0
-p2["xi1"]     = 1.0
-p2["xi2"]     = 1.0
-p2["omega2"]  = 0.0
-p2["MC0"]     = 0.0
-p2["MC1"]     = 4.0
-p2["MC3"]     = -0.2
-p2["MC3_2"]     = 0.0
-p2["MC4"]     = 0.0
-p2["taudist"] = 0.25
+# p2["gamma"]   = 2.0
+# p2["xi1"]     = 1.0
+# p2["xi2"]     = 1.0
+# p2["omega2"]  = 0.0
+# p2["MC0"]     = 0.0
+# p2["MC1"]     = 4.0
+# p2["MC3"]     = -0.2
+# p2["MC3_2"]     = 0.0
+# p2["MC4"]     = 0.0
+# p2["taudist"] = 0.25
 
 
 # setup params to estimate
@@ -52,12 +52,12 @@ p2["taudist"] = 0.25
 pb = Dict{ASCIIString,Array{Float64,1}}()
 pb["gamma"]  = [1.1,3]
 # pb["lambda"] = [0.0,2]
-pb["xi1"]    = [0.0,1]
-pb["xi2"]    = [0.0,1]
+pb["xi1"]    = [0.0,0.1]
+pb["xi2"]    = [0.0,0.1]
 # pb["omega1"] = [0.0,3]
 pb["omega2"] = [0.0,3]
 pb["MC0"]    = [0,8]
-pb["MC1"]    = [0.0,5]
+pb["MC1"]    = [0.0,0.5]
 # pb["MC2"]    = [0.0,0.0005]
 pb["MC3"]    = [-0.25,0.25]
 pb["MC3_2"]    = [-0.01,0.025]

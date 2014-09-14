@@ -85,57 +85,16 @@ function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
 end
 
 
-function getRegional(m::Model,Y::Float64,P::Float64,j::Int)
+# function getRegional(m::Model,Y::Float64,P::Float64,j::Int)
 
-	m.Regmods_YP[j] * vcat(1,Y,P)
+# 	m.Regmods_YP[j] * vcat(1,Y,P)
 
-end
-
-
-
-
-
-
-# simulator
-
-# function simulate(m::Model,p::Param)
-# 	srand(p.rseed)
-# 	simulate(m,p,p.nsim)
 # end
 
-# function simulate_parts(m::Model,p::Param,parts::Int)
-
-# 	srand(p.rseed)
-# 	# loop over simulations
-# 	# and combine moments in averages
-# 	nsim = int(floor(p.nsim / parts))
-
-# 	# collecting moments
-# 	dfs = DataFrame[]
-
-# 	for is in 1:parts
-
-# 		s = simulate(m,p,nsim)
-# 		push!(dfs,computeMoments(s,p,m))
-
-# 	end
-
-# 	# compute average over moments
-# 	dfout = dfs[1]
-# 	for irow in 1:nrow(dfout)
-# 		x = 0.0
-# 		sdx = 0.0
-# 		for i in 1:parts
-# 			x += dfs[i][irow,:model_value]
-# 			sdx += dfs[i][irow,:model_sd]
-# 		end
-# 		dfout[irow,:model_value] = x / parts
-# 		dfout[irow,:model_sd] = sdx / parts
-# 	end
-# 	return dfout
-# end
 
 function simulate(m::Model,p::Param)
+
+	srand(12345)
 
 	T     = p.nt-1
 	nsim  = m.coh_breaks[end]	# total number of individuals
@@ -342,8 +301,8 @@ function simulate(m::Model,p::Param)
 				# get regional price and income for that individual
 				# TODO precompute yp for all cohorts and regions
 				# yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-				Dy[i_idx] = price
-				Dp[i_idx] = y
+				Dy[i_idx] = y
+				Dp[i_idx] = price
 				Dyear[i_idx] = m.coh_yrs[coh][age]
 
 				# get individual specific state
@@ -454,13 +413,15 @@ function simulate(m::Model,p::Param)
 				end
 			end # individual
 
-			if mod(g_count,400) == 0
-				println("this is group $g_count")
-				println("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
-				println("interpolator l_vcs:")
-				println(L["l_vcs"])
-				println("interpolator l_rho:")
-				println(L["l_rho"])
+			if p.verbose>0
+				if mod(g_count,400) == 0
+					println("this is group $g_count")
+					println("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
+					println("interpolator l_vcs:")
+					println(L["l_vcs"])
+					println("interpolator l_rho:")
+					println(L["l_rho"])
+				end
 			end
 		end # groups
 	end  # age

@@ -109,17 +109,17 @@ type Param
 		lambda   = 0.5
 		tau      = 100.0
 		taudist  = 0.8
-		xi1      = 0.025
-		xi2      = 0.05
+		xi1      = 0.071
+		xi2      = 0.072
 		omega1   = 0.000
 		omega2   = 1.5
 
-		MC0    = 5
-		MC1    = 0.01
+		MC0    = 4.7
+		MC1    = 0.08
 		MC2    = 0.0
 		MC3    = 0.01
 		MC3_2  = -0.0005
-		MC4    = 0.1
+		MC4    = 0.5
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
