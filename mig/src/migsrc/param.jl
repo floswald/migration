@@ -35,8 +35,6 @@ type Param
 	beta   :: Float64			# discount factor
 	kappa  :: Array{Float64,1} # rent to price ratio in each region
 	phi    :: Float64		  # fixed cost of selling
-	rhoP   :: Float64          # AR1 coef for the national process
-	# rhoY  :: Float64          # AR1 coef for the national process
 
 	R      :: Float64 	# gross interest rate savings: 1+r
 	Rm     :: Float64 	# gross interest rate mortgage: 1+rm
@@ -56,15 +54,13 @@ type Param
 	nh    :: Int 	# number of housing states
 	nt    :: Int 	# number of periods
 	ntau  :: Int 	# number of types
-	nJ    :: Int 	# number of origin locations
-	            # nk = nj - 1 is the number of destination locations
+	nJ    :: Int 	# number of locations
 	np    :: Int # number of price levels in each location
 	ny    :: Int # number of income levels by location
 	ns    :: Int # number of HHsizes
 
 	# used in simulations
 	nsim::Int # number of individuals in each location
-	rseed::Int # seed for the random number generators
 
 	verbose :: Int
 
@@ -124,7 +120,6 @@ type Param
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
-		rhoP   = 0.9
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
@@ -136,12 +131,11 @@ type Param
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 		sscale = 0.8 	# with kids your consumption goes down 20%
 
-		rseed = 1052014
 
 		# create object
 
 			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
-				       kappa,phi,rhoP,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,rseed,verbose)
+				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 
