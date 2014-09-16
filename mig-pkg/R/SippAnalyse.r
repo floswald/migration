@@ -173,6 +173,22 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 
 }
 
+Sipp.own_after_move <- function(){
+
+	data(Sipp_aggby_NULL,envir=environment())
+	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+	setkey(mv,upid)
+	mvs <- merged[mv]
+	setkey(mvs,upid,timeid)
+
+	mvs[,own_lead := mvs[list(upid,timeid+1)][["own"]] ]
+
+
+
+}
+
+
+
 
 Sipp.own_in_j_rent_in_k <- function(){
 	data(Sipp_aggby_NULL,envir=environment())

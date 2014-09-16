@@ -21,14 +21,26 @@ x= mig.runObj()
 p = mig.Param(2,1)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	
+@time s = mig.simulate(m,p);	
+x=mig.computeMoments(s,p,m)
+@profile s = mig.simulate(m,p);	
+
+
+
+s = s[!mig.isna(s[:cohort]),:]
+
+
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
+mig.vhplot(m,p,(7,1,2,3,3,1,8,1))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
 mig.vhplot(m,p,(1,1,4,3,3,2,1,1))
 mig.vhplot(m,p,(1,1,4,3,3,2,1,28))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,28))
 mig.vhplot(m,p,(4,1,4,3,1,1,4,10))
 mig.vplot(m,p)
-@time s = mig.simulate(m,p);	
+
+
+mig.simplot(s[s[:cohort].<=14,:],5)
 mig.simplot(s,5)
 @profile s = mig.simulate(m,p);	
 
@@ -68,3 +80,4 @@ include("test/test_model.jl")
 include("test/test_solver.jl")
 include("test/test_solution.jl")
 include("test/test_sim.jl")    
+include("test/test_accelerator.jl")    

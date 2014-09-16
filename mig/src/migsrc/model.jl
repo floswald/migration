@@ -6,6 +6,7 @@ type Model
 
 	# values and policies conditional on moving to k
 	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
+	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
 	v     :: Array{Float64,10}
 	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	vfeas :: Array{Bool,1}	# feasibility map

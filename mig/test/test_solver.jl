@@ -135,102 +135,53 @@ facts("testing payments function") do
 	
 	p = mig.Param(1)
 
-	context("payments when move==false") do
+		move = true
+		ih   = 0
+		ihh  = 0
+		pr_j  = rand()
+		pr_k  = rand()
+		j    = rand(1:p.nJ)
+	
+		@fact -p.kappa[j] * pr_k - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => roughly(0.0,atol=0.0000001)
 
 		move = false
+		@fact -p.kappa[j] * pr_k - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => roughly(0.0,atol=0.0000001)
 
-		ih   = 0
-		ihh  = 0
-		pr   = rand()
-		j    = rand(1:p.nJ)
-
-		z = p.kappa[j] * pr
-	
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)
-
-		ih   = 0
-		ihh  = 1
-		pr   = rand()
-		j    = rand(1:p.nJ)
-
-		z = pr
-
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)	
-
-		ih   = 1
-		ihh  = 0
-		pr   = rand()
-		j    = rand(1:p.nJ)
-
-		z = -pr*(1-p.phi-p.kappa[j])
-
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)
-
-		ih   = 1
-		ihh  = 1
-		pr   = rand()
-		j    = rand(1:p.nJ)
-
-		z = 0.0
-
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)
-
-	end
-
-
-	context("payments when move==true") do
-
+		# rent - buy
 		move = true
-
-		ih   = 0
-		ihh  = 0
-		pr   = rand()
-		j    = rand(1:p.nJ)
-
-		z = p.kappa[j] * pr
-
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)
-
 		ih   = 0
 		ihh  = 1
-		pr   = rand()
+		pr_j  = rand()
+		pr_k  = rand()
 		j    = rand(1:p.nJ)
 
-		@fact_throws mig.pifun(ih,ihh,pr,move,j,p)
+		@fact -pr_k - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p)=> roughly(0.0,atol=0.0000001)	
+		move = false
+		@fact -pr_k - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p)=> roughly(0.0,atol=0.0000001)	
 
+		# own - sell
+		move = true
 		ih   = 1
 		ihh  = 0
-		pr   = rand()
+		pr_j  = rand()
+		pr_k  = rand()
 		j    = rand(1:p.nJ)
 
-		z = -pr*(1-p.phi-p.kappa[j])
+		@fact (pr_j*(1-p.phi) - pr_k*p.kappa[j]) - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => roughly(0.0,atol=0.0000001)
+		move = false
+		@fact ((1-p.phi) - p.kappa[j])*pr_k - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => roughly(0.0,atol=0.0000001)
 
-		@fact z - mig.pifun(ih,ihh,pr,move,j,p) => roughly(0.0,atol=0.0000001)
-
-		ih   = 1
+		# own - buy
+		move = true
 		ihh  = 1
-		pr   = rand()
-		j    = rand(1:p.nJ)
+		@fact (pr_j*(1-p.phi) - pr_k) - mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => roughly(0.0,atol=0.0000001)
 
-		@fact_throws mig.pifun(ih,ihh,pr,move,j,p)
-
-	end
-end
-
-
-
-
-facts("testing grossSaving function") do
-
-	p = mig.Param(1)
-	x = rand()
-
-	@fact mig.grossSaving(x,p) => x*p.R
-
-	x = -x
-	@fact mig.grossSaving(x,p) => x*p.Rm
+		# own - stay
+		move = false
+		@fact mig.pifun(ih,ihh,pr_j,pr_k,move,j,p) => 0.0
 
 end
+
 
 
 facts("testing cashFunction") do
@@ -238,25 +189,21 @@ facts("testing cashFunction") do
 	p = mig.Param(1)
 	j = rand(1:p.nJ)
 
+	pr_j = rand()*10
 	for ik in 1:p.nJ
 		for is in 1:p.ns
 			for ih in 0:1
 				for move in [true,false]
 					if move
-						ihh = 0
+						pr_k = rand()*10
+					else
+						pr_k = pr_j
+					end
+					for ihh in 0:1
 						a = rand()
 						y = rand()
-						pr = rand()*10
-						z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
-						@fact abs(mig.cashFunction(a,y,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
-					else
-						for ihh in 0:1
-							a = rand()
-							y = rand()
-							pr = rand()*10
-							z = a + y - mig.pifun(ih,ihh,pr,move,ik,p)
-							@fact abs(mig.cashFunction(a,y,ih,ihh,pr,move,ik,p)) - abs(z) => roughly(0.0)
-						end
+						z = a + y + mig.pifun(ih,ihh,pr_j,pr_k,move,ik,p)
+						@fact mig.cashFunction(a,y,ih,ihh,pr_j,pr_k,move,ik,p) => roughly( z )
 					end
 				end
 			end
@@ -273,6 +220,8 @@ facts("testing vsavings!()") do
 	p = Param(1)
 	m = Model(p)
 
+	acc = mig.Accelerator(1)
+
     w = zeros(p.namax)
     cons = zeros(p.namax)
     a = m.grids["assets"]
@@ -286,16 +235,14 @@ facts("testing vsavings!()") do
     mc = rand()
     lb = 0
     s = linspace(lb,cash-0.01,p.namax)
-	ub = a[end]
 	for is = 1:p.ns
 	for ih = 0:1
-	for def in [true, false]
 
 		# compute vsavings!()
-		mig.vsavings!(w,a,EV,s,cons,cash,ub,is,ih,mc,def,p)
+		mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc)
 
 		# compute values at each savings grid
-		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - def*p.lambda - mc
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc
 
 		for i = 1:p.namax
 			# get savings vector
@@ -313,7 +260,6 @@ facts("testing vsavings!()") do
 			@fact w_t => roughly(w[i],atol=0.00001)
 		end
 
-	end
 	end
 	end
 end

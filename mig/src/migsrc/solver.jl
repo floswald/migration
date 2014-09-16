@@ -116,8 +116,27 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	agrid  = m.grids["assets"]
 
+	# setup interpolation accelerator
+	acc = Accelerator(0)
+
+	 # r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
+
+	# index offsets
+	offset_z   = 0
+	offset_y   = 0
+	offset_p   = 0
+	offset_s   = 0
+	offset_tau = 0
+	offset_j   = 0
+	offset_h   = 0
+	offset_a   = 0
+	offset_k   = 0
+	offset_hh  = 0
+
+
 	# state dependent stochastic states 
 	for iz=1:p.nz
+		
 		for iy=1:p.ny
 			for ip=1:p.np
 				for is=1:p.ns
@@ -132,12 +151,15 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 						for ij=1:p.nJ
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
-							price = m.gridsXD["p"][iy,ip,ij]
+
+							# TODO 
+							# need a price_j to denote current price in j
+							price_j = m.gridsXD["p"][iy,ip,ij]
 							for ih=0:1
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
 									a = agrid[ia]
-									canbuy = a + z > p.chi * price
+
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
 									# =================
@@ -145,20 +167,28 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# =================
 									expv = Float64[]
 									fill!(feasible_k,false)
-									
+										
+									# TODO
+									# allow housing choice also when moving?!
+									# means a lot more computation.
+
 									for ik=1:p.nJ
+
+										price_k = m.gridsXD["p"][iy,ip,ik]
+										canbuy = a + z > p.chi * price_k
+
 										kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
-										# you stay and you have a housing choice
-										if ij==ik && (ih==1 || (ih==0 && canbuy))
-											def = false
+										# you have a housing choice
+										if ih==1 || (ih==0 && canbuy)
+
 											fill!(vstay,p.myNA)
 
 											for ihh in 0:1
 
 												hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
-												pp = (-ihh) * (1-p.chi) * price
+												pp = (-ihh) * (1-p.chi) * price_k
 												# borrowing limit for owner
 												if ih*ihh==1
 													pp = pp < a ? pp : a
@@ -170,17 +200,20 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-												cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ij,p)
+												cash = cashFunction(a,z,ih,ihh,price_j,price_k,ij!=ik,ik,p)
 												m.cash[hidx] = cash
 
 												# find moving cost
-												mc = 0.0
+												mc = movecost[age,ij,ik,itau,ih+1,is]
 
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
+												# # assign to interpolator
+												# setVals
+
 												# optimal savings choice
-												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,def,EV,blim,age)
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc)
 
 												vstay[ihh+1] = rh[1]
 
@@ -216,12 +249,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-										else # you move or you're a renter who cannot buy
+										else # you're a renter who cannot buy
 											# compute vmove(k,j,h)
-											# TODO
-											# moving with a < 0 means default = true
-											def = (ih*(ia<m.aone) == true)
-
 											ihh = 0
 
 											hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
@@ -232,7 +261,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											fill!(EV,p.myNA)	
 											fill!(w,p.myNA)
 
-											cash = cashFunction(a,z,ih,ihh,price,ij!=ik,ij,p)
+											cash = cashFunction(a,z,ih,ihh,price_j,price_k,ij!=ik,ij,p)
 											m.cash[hidx] = cash
 
 											# find moving cost
@@ -253,7 +282,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 
 											# optimal savings choice
-											r = maxvalue(cash,is,p,agrid,w,ihh,mc,def,EV,blim,age)
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc)
 
 
 											# checking for infeasible choices
@@ -475,7 +504,7 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,def::Bool,EV::Array{Float64,1},lb::Float64,age::Int)
+function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator)
 
 	# if your current cash debt is lower than 
 	# maximum borrowing, infeasible
@@ -486,15 +515,15 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 
 		x = 0.0
 		# grid for next period assets
-		s = linspace(lb,cash-0.01,p.namax)
+		s = linspace(lb,cash-0.01,p.namax)	# this implies you can save a lot if you have a lot of cash
+		# however in the interpolation you don't allow s > a[end]
 		cons = zeros(p.namax)
 		# fix upper bound of search grid
 		# ub = minimum([cash-0.0001,a[end]])
 		# ub = cash-0.0001 < a[end] ? cash-0.0001 : a[end]
-		ub = a[end]
 
 		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
-		vsavings!(w,a,EV,s,cons,cash,ub,is,own,mc,def,p)	
+		vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc)	
 
 		r = findmax(w)
 
@@ -507,20 +536,20 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 end
 
 
-function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,ub::Float64,is::Int,own::Int,mc::Float64,def::Bool,p::Param)
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator)
 	n = p.namax
 	x = 0.0
 	cons = 0.0
-	jinf = 1
-	jsup = searchsortedfirst(a,ub)
+	# jinf = 1
+	# jsup = p.na
 	
 	# check which hh size
 	size2 = is == 1 ? false : true
 
 	if size2
-		consta =  own*p.xi2 - def*p.lambda - mc 
+		consta =  own*p.xi2 - mc 
 	else
-		consta =  own*p.xi1 - def*p.lambda - mc 
+		consta =  own*p.xi1 - mc 
 	end
 
 
@@ -528,8 +557,13 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 	# consumption is cash - x, where x is s/(1+interest)
 	# and interest depends on whether borrow or save
 
+	# very careful here!
+	# innermost loop punishes a lot!
+
+	setAccel!(acc,1)
+
 	 for i=1:n
-		lin = linearapprox(a,EV,s[i],jinf,jsup)
+		lin = linearapprox(a,EV,s[i],p.na,acc)
 		# println("s=$(s[i]), i=$i")
 		# println("lin = $lin")
 		if s[i] < 0
@@ -548,11 +582,11 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 		if cons < 0
 			w[i] = p.myNA				
 		else
-			w[i] = ufun(cons,lin[1],p)
+			w[i] = ufun(cons,lin,p)
 			# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
 			w[i] += consta
 		end
-		jinf = lin[2]
+		# jinf = lin[2]
 
 		# println("jsup = $jsup")
 		# println("jinf = $jinf")
@@ -567,34 +601,22 @@ function ufun(c::Float64,ev::Float64,p::Param)
 end
 
 # housing payment function
-function pifun(ih::Int,ihh::Int,price::Float64,move::Bool,ij::Int,p::Param)
+function pifun(ih::Int,ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,p::Param)
 	r = 0.0
-
-	if (move * ihh) == 1
-		error("you cannot move and be an owner")
-	end
 
 	if ih==0
 		# if you came into period as a renter:
-		# choose whether to buy. if choose to move,
-		# can only rent
-		r = (1-ihh)*p.kappa[ij]*price + (!move) * ihh * price
-	else 
-		# if you sell (don't move and sell: !move * (1-ihh))
-		# or if you move (then you are forced to sell)
-		r = -( (!move)*(1-ihh) + (move) )*(1-p.phi-p.kappa[ij])*price 
-	end
-end
-
-
-function grossSaving(x::Float64,p::Param)
-	if x>0
-		return x * p.R
+		# choose whether to buy.  	
+		r = -(1-ihh)*p.kappa[ik]*price_k - ihh * price_k
+	elseif move
+		#  must take two different prices into account
+		r = (1-p.phi)*price_j - ((1-ihh)*p.kappa[ik] + ihh)*price_k
 	else
-		return x * p.Rm
+		# you only pay anyting if you sell and rent
+		r = (1-ihh)*(1-p.phi-p.kappa[ik])*price_k 
 	end
+	return r
 end
-
 
 function income(muy::Float64,shock::Float64)
 	y = muy+shock
@@ -604,8 +626,8 @@ end
 # cashfunction
 # computes cash on hand given a value of the
 # state vector and a value of the discrete choices
-function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price::Float64,move::Bool,ij::Int,p::Param)
-	a + y - pifun(ih,ihh,price,move,ij,p)
+function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,p::Param)
+	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p)
 end
 
 
@@ -649,11 +671,10 @@ end
 
 
 
-# 1D linear approximation
-# =======================
+
 
 function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::Int,hi::Int)
-	n = length(y)
+	n = length(y)	# get rid
 	@assert (length(x) == n)
 	r = 0.0
 
@@ -677,7 +698,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,lo::In
 
 	# if have to find interval
 	if hi - lo > 1
-		jinf = searchsortedlast(x,xi,lo,hi,Base.Forward)
+		jinf = searchsortedlast(x,xi,lo,hi,Base.Forward)	# get rid
 	# if not, lo is jinf
 	else
 		jinf = lo

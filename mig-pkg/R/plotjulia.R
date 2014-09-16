@@ -184,7 +184,7 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	save(VAR_reg,file=file.path(path,"VAR_reg.rda"))
 	save(z,file=file.path(path,"ztable.rda"))
 
-	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg))
+	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg,pred_y=pred_y,pred_p=pred_p))
 
 }
 

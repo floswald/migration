@@ -836,7 +836,10 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# create moving indicator:
 	# ========================
 
-	# whenever "from" != "to", you moved.
+	# Define 
+	# from: current period region
+	# to  : next period region
+	# whenever from != to, you move AT THE END OF THE CURRENT PERIOD
 	setkey(merged,upid,timeid)
 	merged[,c("from","to") := list(c(state[-length(state)],NA), c(state[-1],NA)), by=upid]
 	merged[,c("fromD","toD") := list(c(Division[-length(Division)],NA), c(Division[-1],NA)), by=upid]

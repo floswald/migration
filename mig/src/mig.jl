@@ -8,6 +8,7 @@ export Param, Model, runObj, runSim
 
 
 
+include("migsrc/accelerator.jl")
 include("migsrc/param.jl")
 include("migsrc/model.jl")
 include("migsrc/mig-incl.jl")

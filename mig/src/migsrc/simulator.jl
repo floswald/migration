@@ -263,6 +263,7 @@ function simulate(m::Model,p::Param)
 			itau = ig[1,:tau]	# {1,2}
 			ij   = ig[1,:j]    # {1,...,9}
 
+
 			# setup the interpolators on this function space
 			# ----------------------------------------------
 			fill_interp_arrays!(L,is,ih+1,itau,ij,age,p,m)
@@ -294,23 +295,9 @@ function simulate(m::Model,p::Param)
 				P = DP[i_idx]
 				a = Da[i_idx]
 				z = Dz[i_idx]
-
-				price = m.pred_p[m.coh_idx[coh][age],ij]
-				y     = m.pred_y[m.coh_idx[coh][age],ij]
-
-				# get regional price and income for that individual
-				# TODO precompute yp for all cohorts and regions
-				# yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-				Dy[i_idx] = y
-				Dp[i_idx] = price
-				Dyear[i_idx] = m.coh_yrs[coh][age]
-
-				# get individual specific state
 				azYP = [a,z,Y,P]
-				yy = getIncome(m,y,z,age,ij)
+				price_j = m.pred_p[m.coh_idx[coh][age],ij]
 
-				# flag for downpayment constraint
-				canbuy = a + yy > p.chi * price
 
 				# get moving choice given current state
 				# =====================================
@@ -334,52 +321,63 @@ function simulate(m::Model,p::Param)
 					error("problem in moveto = $moveto")
 				end
 
+
+				# from here on you are assumed to be in 
+				# new region "moveto"
+				# =====================================
+
+				price = m.pred_p[m.coh_idx[coh][age],moveto]
+				y     = m.pred_y[m.coh_idx[coh][age],moveto]
+
+				# get regional price and income for that individual
+				# TODO precompute yp for all cohorts and regions
+				# yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
+				Dy[i_idx] = y
+				Dp[i_idx] = price
+				Dyear[i_idx] = m.coh_yrs[coh][age]
+
+				# get individual specific state
+				yy = getIncome(m,y,z,age,moveto)
+
+				# flag for downpayment constraint
+				canbuy = a + yy > p.chi * price
+
 				# get value, consumption and savings given moving choice
 				# ======================================================
 
-				if move
+				# you are current owner or you can buy
+				if (ih==1 || (ih==0 && canbuy))
+
+					# get housing choice
+					v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
+
+					ihh = v1v2[1] > v1v2[2] ? 0 : 1
+					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+
+					# find corresponding consumption and savings
+					cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
+					cons       = cs[1]
+					ss         = cs[2]
+
+				# else you are current renter who cannot buy
+				else
 					ihh = 0
-					vcs = get_vcs(L["l_vcs"],azYP,1,moveto,p)
+					if a < 0
+						println("error: id=$id,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+					end
+					# for iia in aone:p.na
+					# 	for iz in 1:p.nz
+					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
+					# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
+					# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
+					# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
+					# 	end
+					# end
+					vcs = get_vcs(L["l_vcs"],azYP,ihh+1,moveto,p)
 					val  = vcs[1]
 					cons = vcs[2]
 					ss   = vcs[3]
 
-				else # stay
-
-					# you are current owner or you can buy
-					if (ih==1 || (ih==0 && canbuy))
-
-						# get housing choice
-						v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
-
-						ihh = v1v2[1] > v1v2[2] ? 0 : 1
-						val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
-
-						# find corresponding consumption and savings
-						cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
-						cons       = cs[1]
-						ss         = cs[2]
-
-					# current renter who cannot buy
-					else
-						ihh = 0
-						if a < 0
-							println("error: id=$id,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
-						end
-						# for iia in aone:p.na
-						# 	for iz in 1:p.nz
-						# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
-						# 		azmat_v_rent[iia-aone+1 + na_rent*(iz-1)] = m.vh[idx]
-						# 		azmat_c_rent[iia-aone+1 + na_rent*(iz-1)] = m.ch[idx]
-						# 		azmat_s_rent[iia-aone+1 + na_rent*(iz-1)] = m.sh[idx]
-						# 	end
-						# end
-						vcs = get_vcs(L["l_vcs"],azYP,ihh+1,moveto,p)
-						val  = vcs[1]
-						cons = vcs[2]
-						ss   = vcs[3]
-
-					end
 				end
 
 				# make sure savings is inside grid
@@ -399,8 +397,8 @@ function simulate(m::Model,p::Param)
 				Dcanbuy[i_idx]  = canbuy
 				Dwealth[i_idx]  = (price * ih) + a
 				Ddist[i_idx]    = m.distance[ij,moveto]
-				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price,move,ij,p)
-				Drent[i_idx]    = pifun(ih,ihh,price,move,ij,p)
+				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price,move,ij,p)
+				Drent[i_idx]    = pifun(ih,ihh,price_j,price,move,ij,p)
 
 
 				# storing transition

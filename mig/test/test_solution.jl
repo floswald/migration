@@ -19,7 +19,7 @@ facts("checking some properties of the solution") do
 		mval = p.omega1 + p.omega2 * log(maximum(m.grids["assets"]) + maximum(m.gridsXD["p"]) )
 		
 		@fact minimum(m.EVfinal) => p.myNA
-		@fact maximum(m.EVfinal) => mval
+		@fact maximum(m.EVfinal) => roughly(mval)
 		@fact all(m.EVfinal[1:(m.aone-1),:,:,:] .== p.myNA) => true
 
 	end
@@ -36,24 +36,15 @@ facts("checking some properties of the solution") do
 			iz   = rand(1:p.nz)
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
+			ik   = rand(1:p.nJ)
 			age   = rand(1:(p.nt-1))
 
-			tau1 = reshape(m.vh[1,:,is,iz,iy,ip,1,m.aone,ih,:,age],p.nJ,p.nJ)
-			tau2 = reshape(m.vh[1,:,is,iz,iy,ip,2,m.aone,ih,:,age],p.nJ,p.nJ)
+			tau1 = m.vh[1,ik,is,iz,iy,ip,1,m.aone,ih,ij,age]
+			tau2 = m.vh[1,ik,is,iz,iy,ip,2,m.aone,ih,ij,age]
 
-			# value of guy with lower moving cost must be higher
-			for i in 1:size(tau1,1)
-				for j in 1:size(tau2,2)
-					if tau1[i,j] != p.myNA && tau2[i,j] != p.myNA
-						if tau1[i,j] <= tau2[i,j]
-							println(tau1[i,j])
-							println(tau2[i,j])
-						end
-						@fact tau1[i,j] > tau2[i,j] => true
-					end
-				end
+			if ij != ik
+				@fact tau1 > tau2 => true
 			end
-
 
 		end
 
