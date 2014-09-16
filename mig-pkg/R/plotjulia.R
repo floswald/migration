@@ -2,24 +2,37 @@
 
 # plot julia data
 
-plot.experiments <- function(){
+plot.simReports <- function(){
+	d <- data.table(read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim_year.csv"))
+	setkey(d,year)
+	data(Sipp_age,envir=environment())
+	d0=merged[age>19&age<51,list(data_mig=weighted.mean(D2D,HHweight,na.rm=T),data_own=weighted.mean(own,HHweight,na.rm=T)),by=year]
+	setkey(d0,year)
+	d<- d[d0]
+	setnames(d,c("x1","D2D"),c("model","data"))
+	m <- melt(d,"year")
 
-	# load data
-	d1 = read.csv("~/Dropbox/mobility/output/model/Julia2R/MC1.csv")
-	d2 = read.csv("~/Dropbox/mobility/output/model/Julia2R/MC2.csv")
-	d3 = read.csv("~/Dropbox/mobility/output/model/Julia2R/MC3.csv")
+	pl <- list()
+	
+	# migration rates over time
 
-	p <- list()
+	pl$mig <- ggplot(subset(m,variable %in% c("model_mig","data_mig")),aes(x=year,y=value,color=variable)) + geom_point() + geom_smooth(method="lm",size=1) + theme_bw() + scale_y_continuous("annual moving rate") + ggtitle("Cross Division mobility in SIPP and model")
+	ggsave(pl$mig,file="~/Dropbox/mobility/output/model/fit/mig_year.pdf")
 
-	p[[1]] <- ggplot(d1,aes(x=moveto,y=prob,color=factor(MC))) + geom_line(size=1) + facet_wrap(~own) + ggtitle('Changes in owner cost') + theme_bw() + scale_x_discrete()
-	p[[2]] <- ggplot(d2,aes(x=moveto,y=prob,color=factor(MC))) + geom_line(size=1) + facet_wrap(~own) + ggtitle('Changes in distance cost') + theme_bw() + scale_x_discrete()
+	# ownership rates over time
+	pl$own <- ggplot(subset(m,variable %in% c("data_own","model_own")),aes(x=year,y=value,linetype=variable)) + geom_line() + theme_bw() + scale_y_continuous("Home Ownership rate") + ggtitle("Ownership rates in SIPP and model")
+	ggsave(pl$own,file="~/Dropbox/mobility/output/model/fit/own_year.pdf")
 
-	ggsave(plot=p[[1]],file="~/Dropbox/mobility/output/model/full/expMC/alpha1.pdf",width=13,height=9,scale=0.6)
+	# ownership by region over time
+	d_reg <- data.table(read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim_year_reg.csv"))
+	d1=merged[age>19&age<51,list(data_own=weighted.mean(own,HHweight,na.rm=T)),by=list(year,Division)]
+	setkey(d_reg,year,Division)
+	setkey(d1,year,Division)
+	d1 = d1[d_reg]
+	m1 = melt(d1,c("year","Division"))
+	pl$own_reg <- ggplot(m1,aes(year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Home Ownership rates by Division") + theme_bw()
+	ggsave(pl$own_reg,file="~/Dropbox/mobility/output/model/fit/own_year_reg.pdf")
 
-	pdf("~/Dropbox/mobility/output/model/full/expMC/alpha2.pdf",width=12,height=9)
-	print(p[[2]])
-	dev.off()
-	return(p)
 }
 
 
@@ -43,39 +56,56 @@ plot.simulation <- function(){
 	# get housing spells
 	d[,down := cumsum(c(0,diff(hh))),by=id]
 	setkey(d,id,age)
-	d[,down_plus := c(0,down[-29]),by=id]
+	d[,down_plus := c(0,down[-30]),by=id]
 	d[,down_change := down != down_plus]
 	d[,spell := factor(cumsum(down_change)),by=id]
 	d[,status := "Renter"]
 	d[hh==1,status:="Owner"]
+	d[,age:= age+19]
+	d[,newid := paste0("id:",id,",cohort:",unique(year)[cohort],",",Division)]
 
 	# continuous variables
-	contdat <- melt(d[,list(id,age,c,income,save,wealth,v,move,moveto)],id.vars=c("id","age"))
+	contdat <- melt(d[,list(newid,age,cons,price=p,income,assets=a,wealth,v,move,moveto)],id.vars=c("newid","age"))
 	contdat[variable=="move" & value==0.0,value := NA]
+	contdat[,value := as.numeric(value)]
 
 	# housing <- d[,list(h_choice=as.logical(hh[1]),duration=.N),by=list(id,spell)]
-	housing <- d[,list(h_choice=status[1],duration=.N),by=list(id,spell)]
-	housing[,to:=cumsum(duration)+1,by=id]
-	housing[,from:=as.integer(to-duration),by=id]
+	housing <- d[,list(h_status=status[1],duration=.N),by=list(newid,spell)]
+	housing[,to:=as.integer(cumsum(duration)+1),by=newid]
+	housing[,from:=as.integer(to-duration),by=newid]
+	housing[, to := to + 19]
+	housing[, from := from + 19]
 
-	pl <- ggplot() + geom_rect(data=housing,aes(xmin=from,xmax=to,ymin=-Inf,ymax=Inf,fill=h_choice),alpha=0.8) 
-	pl <- pl + geom_line(data=subset(contdat, variable %in% c("save","c","income")),aes(x=age,y=value,linetype=variable)) + facet_wrap(~id)
+	# tmp = housing[,table(id) >1 ] 
+	# tmp = names(tmp[tmp])
+	# housing <- housing[id %in% tmp]
 
+	pl <- ggplot() + geom_rect(data=housing,aes(xmin=from,xmax=to,ymin=-Inf,ymax=Inf,fill=h_status),alpha=0.8) 
+	pl1 <- pl + geom_line(data=subset(contdat, variable %in% c("assets","cons","income")),aes(x=age,y=value,linetype=variable)) + facet_wrap(~newid)
 	# add move indicator
-	pl <- pl + geom_point(data=subset(contdat, variable == "move"),aes(x=age,y=value))
+	pl1 <- pl1 + geom_point(data=subset(contdat, variable == "move"),aes(x=age,y=value)) + theme_bw()
+
+	pl2 <- pl + geom_line(data=subset(contdat, variable %in% c("assets","price","income")),aes(x=age,y=value,linetype=variable)) + facet_wrap(~newid)
+	# add move indicator
+	pl2 <- pl2 + geom_point(data=subset(contdat, variable == "move"),aes(x=age,y=value)) + theme_bw()
+
 
 	# fix legends
 	gg_color_hue <- function(n) {
  	hues = seq(15, 375, length=n+1)
     hcl(h=hues, l=65, c=100)[1:n]
     }
-	pl <- pl + scale_fill_manual(guide=guide_legend(title="Housing\nstatus"),values=gg_color_hue(2)) + ggtitle("Individual simulation histories") + theme_bw()
+	pl1 <- pl1 + scale_fill_manual(guide=guide_legend(title="Housing\nstatus"),values=gg_color_hue(2)) + ggtitle("Individual simulation histories") + theme_bw()
+	pl2 <- pl2 + scale_fill_manual(guide=guide_legend(title="Housing\nstatus"),values=gg_color_hue(2)) + ggtitle("Individual simulation histories") + theme_bw()
 
 	pdf(file.path(fi,"sim-inds.pdf"),width=8,height=5)
-	print(pl)
+	print(pl1)
+	dev.off()
+	pdf(file.path(fi,"sim-inds-price.pdf"),width=8,height=5)
+	print(pl2)
 	dev.off()
 
-	return(pl)
+	return(list(pl1,pl2))
 }
 
 

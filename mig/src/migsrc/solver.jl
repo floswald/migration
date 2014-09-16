@@ -41,37 +41,61 @@ function solveFinal!(m::Model,p::Param)
 	agrid = m.grids["assets"]
 	hgrid = m.grids["housing"]
 	# loop over all states
+	cash = 0.0
 	for ih = 1:p.nh
 	for ij = 1:p.nJ
 	for ip = 1:p.np 
+	for iy = 1:p.ny 
 
-	for ia = m.aone:p.na
+	for ia = 1:p.na
 
-		if ia == m.aone
-			tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
-			tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
-
-			m.EVfinal[ia,ih,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
-	
-		elseif ia > m.aone
-
-			m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+		if agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] ) > 0
+			m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) ) + p.omega3 * (ih-1) * (m.gridsXD["p"][iy,ip,ij] )
+		else
+			m.EVfinal[ia,ih,ip,iy,ij] = p.myNA
 		end
+
 	end
+	end
+	end
+	end
+	end
+
+
+		# if ia == m.aone
+		# 	tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + p.omega3 * hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+		# 	tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + p.omega3 * hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+
+		# 	m.EVfinal[ia,ih,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
+	
+		# elseif ia > m.aone
+
+		# 	m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+		# end
+	
+	# for ia = m.aone:p.na
+
+	# 	if ia == m.aone
+	# 		tmp1 = p.omega1 + p.omega2 * log(agrid[ia+1] + p.omega3 * hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+	# 		tmp2 = p.omega1 + p.omega2 * log(agrid[ia+2] + p.omega3 * hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+
+	# 		m.EVfinal[ia,ih,ip,ij] = tmp1 + (tmp2-tmp1) * (agrid[ia] - agrid[ia+1]) / agrid[ia+2] - agrid[ia+1]
+	
+	# 	elseif ia > m.aone
+
+	# 		m.EVfinal[ia,ih,ip,ij] = p.omega1 + p.omega2 * log(agrid[ia] + hgrid[ih] * (m.gridsXD["p"][ip,ij] ) )
+	# 	end
+	# end
 
 	# linear approximation below 0 or p.NA?
 	# truth is that this section of assets can never be chosen anyway
 	# y1 = m.EVfinal[m.aone,ih,ip,ij]
 	# y2 = m.EVfinal[m.aone+1,ih,ip,ij]
-	for ia = 1:(m.aone-1)
-		# m.EVfinal[ia,ih,ip,ij] = y1 + (y2 - y1) * (agrid[ia] - agrid[m.aone]) / (agrid[m.aone+1] - agrid[m.aone])
-		m.EVfinal[ia,ih,ip,ij] = p.myNA
-	end
+	# for ia = 1:(m.aone-1)
+	# 	# m.EVfinal[ia,ih,ip,ij] = y1 + (y2 - y1) * (agrid[ia] - agrid[m.aone]) / (agrid[m.aone+1] - agrid[m.aone])
+	# 	m.EVfinal[ia,ih,ip,ij] = p.myNA
+	# end
 		
-	end
-	end
-	end
-
 	# integrate
 	# m.EVfinal = E_tensors.T_Final(m.grids2D["GP"],m.gridsXD["p"],m.EVfinal)
 
@@ -119,24 +143,26 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# setup interpolation accelerator
 	acc = Accelerator(0)
 
+	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
+	# r = ihh + p.nh *(ik-1 + p.nJ*(ia-1 + p.na*(ih-1 + p.nh*(ij-1 + p.nJ*(itau-1 + p.ntau *(is-1 + p.ns*(ip-1 + p.np *(iy-1 + p.ny*(iz-1+p.nz*(age-1))))))))))
+
 	 # r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
 
 	# index offsets
-	offset_z   = 0
-	offset_y   = 0
-	offset_p   = 0
-	offset_s   = 0
-	offset_tau = 0
-	offset_j   = 0
-	offset_h   = 0
-	offset_a   = 0
-	offset_k   = 0
-	offset_hh  = 0
+	# offset_z   = 0
+	# offset_y   = 0
+	# offset_p   = 0
+	# offset_s   = 0
+	# offset_tau = 0
+	# offset_j   = 0
+	# offset_h   = 0
+	# offset_a   = 0
+	# offset_k   = 0
+	# offset_hh  = 0
 
 
 	# state dependent stochastic states 
 	for iz=1:p.nz
-		
 		for iy=1:p.ny
 			for ip=1:p.np
 				for is=1:p.ns
@@ -145,15 +171,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 					if age < p.nt-1
 						integrateVbar!(iz,iy,ip,is,age+1,Gz,Gyp,Gs,m,p)
 					end
-
 					for itau=1:p.ntau
 						tau = m.grids["tau"][itau]
 						for ij=1:p.nJ
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
 
-							# TODO 
-							# need a price_j to denote current price in j
 							price_j = m.gridsXD["p"][iy,ip,ij]
 							for ih=0:1
 								first = ih + (1-ih)*m.aone	# first admissible asset index
@@ -162,22 +185,26 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
+									# notice the ih-1+1 here!
+									offset_1 = is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih + p.nh * (ij-1 + p.nJ * (age-1))))))))
+									@assert jidx == offset_1 + 1
+
 									# =================
 									# loop over choices
 									# =================
 									expv = Float64[]
 									fill!(feasible_k,false)
 										
-									# TODO
-									# allow housing choice also when moving?!
-									# means a lot more computation.
-
 									for ik=1:p.nJ
+
+										offset_k = ik-1 + p.nJ * offset_1
 
 										price_k = m.gridsXD["p"][iy,ip,ik]
 										canbuy = a + z > p.chi * price_k
 
-										kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+										# kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+										# @assert offset_k+1 == kidx
+										kidx = offset_k + 1
 
 										# you have a housing choice
 										if ih==1 || (ih==0 && canbuy)
@@ -186,7 +213,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											for ihh in 0:1
 
-												hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+												hidx = ihh+1 + p.nh * offset_k
+												# @assert hidx == idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+
+												# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
 												pp = (-ihh) * (1-p.chi) * price_k
 												# borrowing limit for owner
@@ -253,7 +283,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# compute vmove(k,j,h)
 											ihh = 0
 
-											hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+											# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+											# @assert hidx == ihh+1 + p.nh * offset_k
+											hidx = ihh+1 + p.nh * offset_k
 
 											blim = 0.0
 
@@ -333,12 +365,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# compute rho: probability of moving to k given j
 									for ik in 1:p.nJ
 										if feasible_k[ik]
-											# TODO this has numerical underflow problems
+											# this has numerical underflow problems
 											# need to make sure that vtmp[ik] - logsum is in a numerically stable range
 											# of the exp function!
-											@inbounds m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
+
+											# @assert idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p) == ik + p.nJ * offset_1
+											@inbounds m.rho[ik + p.nJ * offset_1] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
 										else
-											m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)] = 0.0
+											m.rho[ik + p.nJ * offset_1] = 0.0
 										end
 									end
 								end 	#assets
@@ -353,7 +387,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 end
 
-function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,3},Gyp::Array{Float64},Gs::Array{Float64,2},m::Model,p::Param)
+function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float64,2},Gyp::Array{Float64},Gs::Array{Float64,2},m::Model,p::Param)
 
 	# offsets
 	# o_tau = 0
@@ -370,10 +404,32 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 		
 	# @inbounds begin
 
-# dimvec2 = (na, nh, nJ, ntau, ns, np, ny,nz, nt-1 )
-# TODO reorder indices in arrays
-# then will have to do somehting like that builds this index
-# r = ia + p.na * (ih + p.nh * (ij + p.nJ * (itau + p.ntau * (is + p.ns * (ip + p.np * (iy + p.ny * (iz + p.nz * (age-1)-1)-1)-1)-1)-1)-1)-1)
+	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
+	# r = ia-1 + p.na*(ih-1 + p.nh*(ij-1 + p.nJ*(itau-1 + p.ntau *(is-1 + p.ns*(ip-1 + p.np *(iy-1 + p.ny*(iz-1+p.nz*(age-1))))))))
+
+	# tmp = 0.0
+
+	# # build up future index for innermost to outermost
+	# for iz1 = 1:p.nz
+	# 	o_z = iz1-1 + p.nz*(age-1)
+	# 	f_z = Gz[iz + p.nz * (iz1-1)]
+	# 	for iy1 = 1:p.ny
+	# 		o_y = iy1-1 + p.ny*o_z
+	# 		for ip1 = 1:p.np
+	# 			o_p = ip1-1 + p.np*o_y
+	# 			@inbounds f_py = f_z * Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * (ip1-1))) ]
+	# 			for is1 = 1:p.ns
+	# 				o_s = is1-1 + p.ns*o_p
+	# 				@inbounds f_s = f_py * Gs[is + p.ns * (is1-1)]
+	# 				tmp = 0.0
+	# 				m.EV[idx0] = tmp
+
+	# 			end
+	# 		end
+	# 	end
+	# end
+
+
 
 	# looping over states which do not influence integration
 	for ia = 1:p.na
@@ -401,7 +457,7 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 					@inbounds f_py = Gyp[iy + p.ny * ((ip-1) + p.np * ((iy1-1) + p.ny * (ip1-1))) ]
 					for iz1 = 1:p.nz			# future z 		
 						o_z = (o_y + (iz1-1)) * p.ns
-						f_z = f_py * Gz[iz + p.nz * (iz1 + p.nz * (ij-1)-1)]
+						f_z = f_py * Gz[iz + p.nz * (iz1-1)]
 						for is1   = 1:p.ns 				# future HHsize
 
 							# compute future index 
@@ -491,9 +547,9 @@ function idx_p(ia::Int,ih::Int,ij::Int,itau::Int,age::Int,p::Param)
 end
 
 # p.na,p.nh,p.nP,p.np,p.nJ
-function idxFinal(ia::Int,ih::Int,ip::Int,ij::Int,p::Param)
+function idxFinal(ia::Int,ih::Int,ip::Int,iy::Int,ij::Int,p::Param)
 
-	r = ia + p.na * (ih-1 + p.nh* (ip-1 + p.np* (ij-1)))
+	r = ia + p.na * (ih-1 + p.nh* (ip-1 + p.np* (iy-1 + p.ny* (ij-1))))
     return r
 end
 
@@ -651,19 +707,23 @@ end
 function EVfunChooser!(ev::Array{Float64,1},is::Int,iz::Int,ihh::Int, itau::Int, ip::Int,iy::Int, ij::Int, ik::Int,age::Int,m::Model,p::Param)
 	if age==p.nt-1
 		for ia in 1:p.na
-			ev[ia] = m.EVfinal[ia,ihh,ip,ik]
+			ev[ia] = m.EVfinal[idxFinal(ia,ihh,ip,iy,ik,p)]
 		end
 	else 
-		if ik==ij
+
+		offset_after = ihh-1 + p.nh * (ik-1 + p.nJ * (age))	# need age+1-1 here!
+		# if ik==ij
+		# 	 for ia in 1:p.na
+		# 		ev[ia] = m.EV[idx9(is,iz,iy,ip,itau,ia,ihh,ik,age+1,p)]
+		# 	end
+		# else
 			 for ia in 1:p.na
-				ev[ia] = m.EV[idx9(is,iz,iy,ip,itau,ia,ihh,ik,age+1,p)]
-			end
-		else
-			 for ia in 1:p.na
-				ev[ia] = m.EV[idx9(is,iz,iy,ip,itau,ia,ihh,ik,age+1,p)]
+			 	idx = is + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na*offset_after)))))
+			 	# @assert idx == idx9(is,iz,iy,ip,itau,ia,ihh,ik,age+1,p)
+				ev[ia] = m.EV[idx]
 				# ev[ia] = m.EVMove[idx10(is,iy,ip,iP,iz,ia,ihh,itau,ik,age+1,p)]
 			end
-		end
+		# end
 	end
 
 	return nothing

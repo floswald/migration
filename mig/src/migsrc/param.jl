@@ -20,6 +20,7 @@ type Param
 	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
+	omega3  :: Float64			# final period utility parameters
 
 	# moving cost parameters
 	MC0    :: Float64 # parameters in moving cost: alpha0, intercept
@@ -108,7 +109,8 @@ type Param
 		xi1      = 0.071
 		xi2      = 0.072
 		omega1   = 0.000
-		omega2   = 1.5
+		omega2   = 1.0
+		omega3   = 0.05
 
 		MC0    = 4.7
 		MC1    = 0.08
@@ -134,7 +136,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
+			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
 				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end

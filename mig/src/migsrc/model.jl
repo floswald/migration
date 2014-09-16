@@ -22,8 +22,8 @@ type Model
 	vbar :: Array{Float64,9}
 
 	# expected final period value
-	# dimensions: a,h,j,pj
-	EVfinal :: Array{Float64,4}
+	# dimensions: a,h,j,pj,py
+	EVfinal :: Array{Float64,5}
 
 	# index of the first asset element > 0
 	aone :: Int
@@ -76,7 +76,7 @@ type Model
 		cash= fill(0.0,dimvecH)
 		rho = fill(0.0,dimvec)
 
-		EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.nJ))
+		EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.ny,p.nJ))
 		# EVfinal = fill(0.0,(p.na,p.nh,p.np,p.nJ))
 
 		dh = fill(0,dimvec)
@@ -429,12 +429,15 @@ end
 
 function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 
-	P = zeros(p.nz,p.nz,p.nJ)
+	# 3D version for rho varying by region
+	# P = zeros(p.nz,p.nz,p.nJ)
+	P = zeros(p.nz,p.nz)
 	z = zeros(p.nz,p.nJ)
 
 	for j in 1:p.nJ
 		xz,xp = rouwenh(df[j,:Lresid][1],0.0,df[j,:sigma_resid][1],p.nz)
-		P[:,:,j] = xp
+		# P[:,:,j] = xp
+		P = xp
 		# scale z into bounds
 		ybar = log(ygrid[j])
 		zlow = log(df[j,:q20]) - ybar

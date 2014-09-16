@@ -548,7 +548,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 6 bins, and add age squared
 	ngroups = 6
-	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, )  # cut age into 6 bins, and add age squared
+	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 6 bins, and add age squared
 
 	df = join(df,m.agedist,on=:realage)
 	fullw = WeightVec(array(df[:density]))
@@ -581,6 +581,13 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		coef_h = @data(coef(lm_h))
 		std_h = @data(stderr(lm_h))
 	end
+	
+	xx = @> begin
+		   df 
+		   @where(:age.==30) 
+		   @select(moment="mean_sell_50",model_value=mean(:sell),model_sd=std(:sell)/sqrt(size(df,1)))
+		end
+	append!(mom1,xx)
 
 
 	# own ~ Division

@@ -53,6 +53,7 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	nms = paste0("lm_h_",rownames(dlm$coefficients))
 	nms = gsub("\\(|\\)","",nms)
 	r$own_rate_reg = data.table(moment=nms,data_value=dlm$coefficients[,"Estimate"],data_sd=dlm$coefficients[,"Std. Error"])
+	r$mean_sell_50 = d[age==50,list(moment="mean_sell_50",data_value=weighted.mean(sell,HHweight,na.rm=T),data_sd=sqrt(wtd.var(sell,HHweight,na.rm=T) / nrow(.SD)))]
 
 	# own ~ Division
 	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD))),by=Division][order(Division)]
