@@ -1,6 +1,6 @@
 module mig
 
-using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD
+using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Lazy
 import Base.show
 
 export Param, Model, runObj, runSim
