@@ -60,7 +60,7 @@ pb["omega3"] = [0.0,0.1]
 pb["MC1"]    = [0.0,0.5]
 # pb["MC2"]    = [0.0,0.0005]
 pb["MC3"]    = [0,0.2]
-pb["MC3_2"]    = [0.0,0.0003]
+pb["MC3_2"]    = [0.0,0.003]
 pb["MC4"]    = [0,1]
 pb["taudist"]    = [0.01,0.99]
 
@@ -69,7 +69,14 @@ objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
 
 
 # subsetting moments
-submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"])
+dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+for iw in moms[:moment]
+	if contains(iw,"wealth") 
+		push!(dont_use,iw)
+	end
+end
+
+submom = setdiff(moms[:moment],dont_use)
 
 # setup the minimization problem
 mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom,objfunc_opts=objfunc_opts)
