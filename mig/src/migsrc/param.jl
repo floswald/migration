@@ -13,7 +13,6 @@ type Param
 	gamma   :: Float64			# CRRA
 	mgamma  :: Float64			# (1-CRRA)
 	imgamma :: Float64			# 1/(1-CRRA)
-	lambda  :: Float64          # default penalty
 	tau     :: Float64 			# value of tau for high type
 	taudist :: Float64 			# population prob of being high cost type
 	xi1     :: Float64          # utility of housing for HHsize 1
@@ -103,21 +102,20 @@ type Param
 		gamma    = 1.4	
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
-		lambda   = 0.5
-		tau      = 100.0
-		taudist  = 0.8
-		xi1      = 0.061
-		xi2      = 0.065
+		tau      = 100
+		taudist  = 0.7
+		xi1      = 0.032
+		xi2      = 0.07
 		omega1   = 0.000
 		omega2   = 1.0
-		omega3   = 0.05
+		omega3   = 0.03
 
-		MC0    = 5.01  	 	# intercept
-		MC1    = 0.2 		# owner
+		MC0    = 0.0  	 	# intercept of mover type. non-mover has that + tau
+		MC1    = 0.24 		# owner
 		MC2    = 0.0 		# distance
-		MC3    = 0.03       # kids
-		MC3_2  = -0.0005
-		MC4    = 0.5 		# age
+		MC3    = 0.125     # age 
+		MC3_2  = 0.001 		# age2
+		MC4    = 0.5 		# kids
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
@@ -136,7 +134,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,lambda,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
+			return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
 				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
@@ -156,7 +154,6 @@ function show(io::IO, p::Param)
 	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
 	print(io,"free params:
 	gamma   = $(p.gamma)		      
-	lambda  = $(p.lambda)
 	tau     = $(p.tau)
 	taudist = $(p.taudist)
 	xi1     = $(p.xi1)
@@ -167,6 +164,7 @@ function show(io::IO, p::Param)
 	MC1     = $(p.MC1)
 	MC2     = $(p.MC2)
 	MC3     = $(p.MC3)
+	MC3_2     = $(p.MC3_2)
 	MC4     = $(p.MC4)")
 end
 

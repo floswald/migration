@@ -428,6 +428,7 @@ function simulate(m::Model,p::Param)
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
 	df = DataFrame(id=Di,age=Dage,realage=Drealage,year=Dyear,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=Dsave,cons=Dcons,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
 
+	df = join(df,m.agedist,on=:realage)
 	return df
 end
 
@@ -550,7 +551,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	ngroups = 6
 	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 6 bins, and add age squared
 
-	df = join(df,m.agedist,on=:realage)
+	# df = join(df,m.agedist,on=:realage)
 	fullw = WeightVec(array(df[:density]))
 
 
@@ -584,7 +585,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	
 	xx = @> begin
 		   df 
-		   @where(:age.==30) 
+		   @where(:age.==31) 
 		   @select(moment="mean_sell_50",model_value=mean(:sell),model_sd=std(:sell)/sqrt(size(df,1)))
 		end
 	append!(mom1,xx)
@@ -636,14 +637,20 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	movecount=by(df,:id,x -> sum(x[:move]))
 	moved0 = mean(movecount[:x1].==0)
 	moved1 = mean(movecount[:x1].==1)
-	moved2 = mean(movecount[:x1].==2)
+	moved2plus = mean(movecount[:x1].>=2)
 
 	# TODO std error
 	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw),std(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean
 	push!(mom1,["moved0",moved0,1.0])
 	push!(mom1,["moved1",moved1,1.0])
-	push!(mom1,["moved2",moved2,1.0])
+	push!(mom1,["moved2plus",moved2plus,1.0])
 
+	xx = @> begin
+		   df 
+		   @where(:age.==31) 
+		   @select(moment="mean_move_50",model_value=mean(:move),model_sd=std(:move)/sqrt(size(df,1)))
+		end
+	append!(mom1,xx)
 
 	# move ~ own
 	# ----------

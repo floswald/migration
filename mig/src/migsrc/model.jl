@@ -293,6 +293,9 @@ type Model
 		# moving cost function
 		# ====================
 
+		# scale age into [0,3]
+		age0_3 = 3.* (p.ages .-  p.ages[1])/(p.ages[end]-p.ages[1]) 
+
 		mc = zeros(p.nt-1,p.nJ,p.nJ,p.ntau,p.nh,p.ns)
 		for it in 1:p.nt-1
 			for ij in 1:p.nJ
@@ -300,7 +303,11 @@ type Model
 					for itau in 1:p.ntau
 						for ih in 0:1
 							for is in 1:p.ns
-								mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * p.ages[it] + p.MC3_2 * (p.ages[it])^2 + (is-1)*p.MC4 )
+								if p.ages[it] < 45
+									mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * p.ages[it] + p.MC3_2 * (p.ages[it])^2 + (is-1)*p.MC4 )
+								else
+									mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * 45 + p.MC3_2 * 45^2 + (is-1)*p.MC4 )
+								end
 							end
 						end
 					end

@@ -1,14 +1,16 @@
 
 
+# Monte Carlo node file
+
+autoload=false
+
 if ENV["USER"] == "florian_o"
 	push!(DL_LOAD_PATH, "/home/florian_o/local/lib")
 elseif ENV["USER"] == "eisuc151"
 	push!(DL_LOAD_PATH, "/home/eisuc151/local/lib")
 end
 
-
 using mig, MOpt
-
 
 # get moments from dropbox:
 if Sys.OS_NAME == :Darwin
@@ -21,23 +23,31 @@ else
 	indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 	outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
 end
-moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
-# want to estimate those:
-plist = ["gamma","xi1","xi2","omega3","MC0","MC1","MC3","MC3_2","MC4","taudist"]
+if autoload
+	# load model-generated data
+	moms = readtable(joinpath(indir,"MCtrue.csv"))
+else
+	# make model-generated data
+	p = mig.Param(2)
+	m = mig.Model(p)
+    mig.solve!(m,p)
+	s   = simulate(m,p)
+	x=computeMoments(s,p,m)
 
-p2 = Dict{ASCIIString,Float64}()
+	mom = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
+	moms = join(mom,x,on=:moment)
+	names!(moms,[:moment,:model_value,:model_sd,:data_value,:data_sd,:sq,:perc])
 
-# get starting value from initial p
-p0 = mig.Param(2)
-for p in plist
-	p2[p] = getfield(p0,symbol(p))
+	delete!(moms,[:model_value,:model_sd,:sq,:perc])
+	writetable(moms,joinpath(indir,"MCtrue.csv"))
 end
 
-# or assign different starting values:
-# p2["gamma"]   = 2.0
-# p2["xi1"]     = 1.0
-# p2["xi2"]     = 1.0
+# start values for p
+p = mig.Param(2)
+# p2["gamma"]   = 1.35
+p2["xi1"]     = 0.02
+# p2["xi2"]     = 0.07
 # p2["omega2"]  = 0.0
 # p2["MC0"]     = 0.0
 # p2["MC1"]     = 4.0
@@ -47,22 +57,8 @@ end
 # p2["taudist"] = 0.25
 
 
-# setup params to estimate
-# define bounds
 pb = Dict{ASCIIString,Array{Float64,1}}()
-pb["gamma"]  = [1.1,3]
-# pb["lambda"] = [0.0,2]
 pb["xi1"]    = [0.0,0.1]
-pb["xi2"]    = [0.0,0.1]
-# pb["omega1"] = [0.0,3]
-pb["omega3"] = [0.0,0.1]
-pb["MC0"]    = [4,10]
-pb["MC1"]    = [0.0,0.5]
-# pb["MC2"]    = [0.0,0.0005]
-pb["MC3"]    = [0,0.25]
-pb["MC3_2"]    = [-0.01,0.025]
-pb["MC4"]    = [0,4]
-pb["taudist"]    = [0.01,0.99]
 
 # options for objective function
 objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
@@ -73,3 +69,6 @@ submom = setdiff(moms[:moment],["lm_w_intercept","move_neg_equity","q25_move_dis
 
 # setup the minimization problem
 mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom,objfunc_opts=objfunc_opts)
+end
+
+

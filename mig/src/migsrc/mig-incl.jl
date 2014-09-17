@@ -3,7 +3,7 @@
 # miscellaneous includes
 
 # objective function to work with mopt
-function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},vargs...)
+function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},opts...)
 
 
 	# info("start model solution")
@@ -35,8 +35,14 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},vargs...
     mout = transpose(mom2[[:moment,:model_value]],1)
 
     if Sys.OS_NAME == :Darwin
-	    showall(mom2)
-	    simplot(s[!isna(s[:cohort]),:],5)
+	    showall(mom2[:,[:moment,:data_value,:model_value,:sqdist]])
+	    println(p)
+	    if get(opts[1],"printmoms",false) 
+    		writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
+	    end
+	    if get(opts[1],"plotsim",false) 
+	   		simplot(s[!isna(s[:cohort]),:],5)
+	   	end
 	    println()
 	end
 
@@ -45,10 +51,8 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},vargs...
 	# 	status = -1
 	# end
 
-	if length(vargs) > 0
-		if get(vargs[1],"printlevel",0) > 0
-			println("objfunc runtime = $(time()-time0)")
-		end
+	if get(opts[1],"printlevel",0) > 0
+		println("objfunc runtime = $(time()-time0)")
 	end
 	time1 = round(time()-time0)
 	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => status, "moments" => mout]
@@ -87,7 +91,8 @@ function runObj()
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 	end
 	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
-	@time x = mig.objfunc(p2,moms,array(moms[:moment]))
+	objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
+	@time x = mig.objfunc(p2,moms,array(moms[:moment]),objfunc_opts)
 	return x
 end
 
