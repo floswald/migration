@@ -109,8 +109,9 @@ facts("test linear index functions") do
 			ia   = rand(1:p.na)
 			ih   = rand(1:p.nh)
 			ip   = rand(1:p.np)
+			iy   = rand(1:p.ny)
 
-			@fact m.EVfinal[ia,ih,ip,ik] == m.EVfinal[mig.idxFinal(ia,ih,ip,ik,p)] => true
+			@fact m.EVfinal[ia,ih,ip,iy,ik] == m.EVfinal[mig.idxFinal(ia,ih,ip,iy,ik,p)] => true
 		end
 	end
 
@@ -373,7 +374,7 @@ facts("testing EVfunChooser") do
 			itau = rand(1:p.ntau)
 			ij   = rand(1:p.nJ)
 
-			EV = m.EVfinal[:,ih,ip,ik]
+			EV = m.EVfinal[:,ih,ip,iy,ik]
 
 			mig.EVfunChooser!(ev,is,iz,ih,itau,ip,iy,ij,ik,ti,m,p)
 
@@ -432,7 +433,7 @@ facts("test integration of vbar: getting EV") do
 		num = p.nz * p.ny * p.np 
 		fill!(m.vbar,1/num)
 		fill!(Gz,1/p.nz)
-		fill!(Gyp,1/(p.ny*p.ny))
+		fill!(Gyp,1/(p.ny*p.np))
 
 		for itest = 1:50
 
@@ -488,7 +489,7 @@ facts("test integration of vbar: getting EV") do
 			for iy1=1:p.ny 				# regional income deviation
 			for is1=1:p.ns 				# regional income deviation
 
-				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau,ia,ih,ij,age,p)] * Gz[iz,iz1,ij] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1) ] * Gs[is,is1] 
+				myEV[is,iz,iy,ip,itau,ia,ih,ij] += m.vbar[mig.idx9(is1,iz1,iy1,ip1,itau,ia,ih,ij,age,p)] * Gz[iz,iz1] * Gyp[iy + p.ny * (ip-1) , iy1 + p.ny * (ip1-1) ] * Gs[is,is1] 
 			end
 			end
 			end

@@ -106,18 +106,18 @@ type Param
 		lambda   = 0.5
 		tau      = 100.0
 		taudist  = 0.8
-		xi1      = 0.071
-		xi2      = 0.072
+		xi1      = 0.061
+		xi2      = 0.065
 		omega1   = 0.000
 		omega2   = 1.0
 		omega3   = 0.05
 
-		MC0    = 4.7
-		MC1    = 0.08
-		MC2    = 0.0
-		MC3    = 0.01
+		MC0    = 5.01  	 	# intercept
+		MC1    = 0.2 		# owner
+		MC2    = 0.0 		# distance
+		MC3    = 0.03       # kids
 		MC3_2  = -0.0005
-		MC4    = 0.5
+		MC4    = 0.5 		# age
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
