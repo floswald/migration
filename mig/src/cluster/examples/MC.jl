@@ -10,7 +10,7 @@ require("MCnodes.jl")
 
 
 opts =[
-	"N"=>nprocs()-1,
+	"N"=>max(1,nprocs()-1),
 	"printlevel"=> 3,
 	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster/examples","MC.h5"),	
 	"save_frequency"=> 10,

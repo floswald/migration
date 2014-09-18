@@ -20,7 +20,7 @@ end
 # CAUTION
 # this function only works in the very specific ciurcumstance where it's called.
 # assumption: x is known to be larger than at least y[1]!
-function searchsorted1step(y::Vector,x,j::Int,n)
+function searchsorted1step(y::Vector{Float64},x::Float64,j::Int,n::Int)
 	# find lowest upper bound
 	while x >= y[j] && j < n
 		# println("x >= y[j]: $(x >= y[j])")

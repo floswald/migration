@@ -142,3 +142,45 @@ mylog(x::Float64) = ccall((:log, "libm"), Float64, (Float64,), x)
 myexp(x::Float64) = ccall((:exp, "libm"), Float64, (Float64,), x)
 mylog2(x::Float64) = ccall(:log, Cdouble, (Cdouble,), x)
 myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)
+
+
+function setPaths()
+# get moments from dropbox:
+	if Sys.OS_NAME == :Darwin
+		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+		outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
+	elseif Sys.OS_NAME == :Windows
+		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
+		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
+	else
+		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
+		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
+	end
+	return (indir,outdir)
+end
+
+
+function setupMC(autoload::Bool)
+	indir, outdir = setPaths()
+
+	if autoload
+		# load model-generated data
+		moms = readtable(joinpath(indir,"MCtrue.csv"))
+	else
+		# make model-generated data
+		p = Param(2)
+		m = Model(p)
+	    solve!(m,p)
+		s   = simulate(m,p)
+		x=computeMoments(s,p,m)
+
+		mom = DataFrame(read_rda(joinpath(indir,"moments.rda"))["m"])
+		moms = join(mom,x,on=:moment)
+		delete!(moms,[:data_value,:data_sd])
+		names!(moms,[:moment,:data_value,:data_sd])
+
+		writetable(joinpath(indir,"MCtrue.csv"),moms)
+	end
+	return moms
+end
+

@@ -3,7 +3,7 @@ module mig
 using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Lazy
 import Base.show
 
-export Param, Model, runObj, runSim
+export Param, Model, runObj, runSim, simulate, solve!
 
 
 

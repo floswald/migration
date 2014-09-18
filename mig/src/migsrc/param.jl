@@ -110,12 +110,12 @@ type Param
 		omega2   = 1.0
 		omega3   = 0.03
 
-		MC0    = 0.0  	 	# intercept of mover type. non-mover has that + tau
-		MC1    = 0.24 		# owner
+		MC0    = 0.7  	 	# intercept of mover type. non-mover has that + tau
+		MC1    = 0.005 		# owner
 		MC2    = 0.0 		# distance
-		MC3    = 0.125     # age 
-		MC3_2  = 0.001 		# age2
-		MC4    = 0.5 		# kids
+		MC3    = 0.09      # age 
+		MC3_2  = 0.0015 		# age2
+		MC4    = 0.31 		# kids
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
