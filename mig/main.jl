@@ -18,7 +18,7 @@ x=mig.runObj(false)
 @time s = mig.runSim();
 
 p = mig.Param(2,1)
-@time m = mig.Model(p)	# 1.5 secs
+@time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
 @time mig.solve!(m,p)	
 @time s = mig.simulate(m,p);	
 x=mig.computeMoments(s,p,m)
@@ -54,6 +54,7 @@ mig.simexport(s,[1,7338,6960,13056,11303,7],joinpath(outdir,"simdata.csv"))
 maximum(m.EV[:,:,:,:,:,:,:,:,29])
 m.sh[1,1,1,1,1,1,:,1,1,1,1]
 hcat(m.vh[1,1,1,1,1,1,1,:,1,1,28][:],m.ch[1,1,1,1,1,1,1,:,1,1,28][:],m.sh[1,1,1,1,1,1,1,:,1,1,28][:])
+hcat(m.vh[1,1,1,1,1,1,1,:,1,1,1][:],m.ch[1,1,1,1,1,1,1,:,1,1,1][:],m.sh[1,1,1,1,1,1,1,:,1,1,1][:])
 hcat(m.vh[1,1,1,1,1,1,1,:,2,1,28][:],m.ch[1,1,1,1,1,1,1,:,2,1,28][:],m.sh[1,1,1,1,1,1,1,:,2,1,28][:])
 
 reshape(m.vh[:,1,1,1,1,m.aone,1,1,:,1],p.nJ,p.nJ)

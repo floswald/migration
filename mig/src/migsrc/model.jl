@@ -60,9 +60,14 @@ type Model
 	coh_breaks :: Array{Int}
 	coh_n      :: Dict{Int,Int}
 
+	# policy settings 
+	# ---------------
+	policy :: ASCIIString
+	sinai::DataFrame
+
 
 	# constructor
-	function Model(p::Param;dropbox=false)
+	function Model(p::Param;policy="null")
 
 		# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh, nJ, nt-1 )
 		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
@@ -95,16 +100,12 @@ type Model
 		# if on my machine
 		if Sys.OS_NAME == :Darwin
 			indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+		# if on IFS windows
 		elseif Sys.OS_NAME == :Windows
 			indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
+		# if on UNIX hpc systems
 		else
-			if dropbox
-				indir = joinpath(ENV["HOME"],"data_repo/mig")
-				run(`dropbox_uploader download mobility/output/model/data_repo/in_data_jl/ $indir`)
-				indir = joinpath(indir,"in_data_jl")
-			else
-				indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
-			end
+			indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 		end
 
 		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
@@ -203,6 +204,7 @@ type Model
 			inc_shocks[j,4] = log(inc_coefs[j,:q95]) - ybar
 		end
 
+
 		# XD grids
 		# =========
 
@@ -244,6 +246,37 @@ type Model
 		# convert to levels
 		zgrid = exp(zgrid)
 
+		# poterba & sinai average tax savings from mortgage subsidy
+		# 2004 SCF data. adjust by value of cpi2012 in 2004: 0.818304 * 1000
+		sinai = DataFrame(age=[34,50],inc_40K_minus=[208/(0.818304*1000),216/(0.818304*1000)],inc_40_75K=[592/(0.818304*1000),719/(0.818304*1000)],inc_75_125K=[1817/(0.818304*1000),1483/(0.818304*1000)],inc_125_250K=[3603/(0.818304*1000),3599/(0.818304*1000)],inc250K_plus=[7077/(0.818304*1000),5833/(0.818304*1000)])
+		poterba_sinai = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
+		for j in 1:p.nJ
+			for iy in 1:p.ny
+				for ip in 1:p.np
+					for it in 1:p.nt-1
+						if p.ages[it] < 34
+							row = 1
+						else
+							row = 2
+						end
+						for iz in 1:p.nz
+							if zgrid[iz,iy,ip,it,j] < 40.0
+								col = 2
+							elseif zgrid[iz,iy,ip,it,j] < 75.0
+								col = 3
+							elseif zgrid[iz,iy,ip,it,j] < 125.0
+								col = 4
+							elseif zgrid[iz,iy,ip,it,j] < 250.0
+								col = 5
+							else 
+								col = 6
+							end
+							poterba_sinai[iz,iy,ip,it,j] = sinai[row,col]
+						end
+					end
+				end
+			end
+		end
 
 		# 1D grids
 		# =========
@@ -317,7 +350,7 @@ type Model
 		end
 
 
-		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat]
+		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
@@ -328,7 +361,7 @@ type Model
 
 		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,policy,sinai)
 	end
 end
 

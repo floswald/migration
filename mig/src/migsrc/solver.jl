@@ -143,6 +143,18 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# setup interpolation accelerator
 	acc = Accelerator(0)
 
+	# policy
+	# ------
+
+	Poterba = m.gridsXD["Poterba"]
+	mortgageSub = false
+	if m.policy == "mortgageSubsidy"
+		mortgageSub = true
+	end
+	MortgageSubsidy =0.0
+	subsidize = 0.0
+
+
 	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
 	# r = ihh + p.nh *(ik-1 + p.nJ*(ia-1 + p.na*(ih-1 + p.nh*(ij-1 + p.nJ*(itau-1 + p.ntau *(is-1 + p.ns*(ip-1 + p.np *(iy-1 + p.ny*(iz-1+p.nz*(age-1))))))))))
 
@@ -177,8 +189,23 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
 
+							MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
+
 							price_j = m.gridsXD["p"][iy,ip,ij]
 							for ih=0:1
+
+								# mortgage subsidy
+								# if your current status is owner, you
+								# have to pay an extra amount of income tax
+								# which was exempt in the baseline.
+								if mortgageSub && ih==1
+									subsidize = (-1) * MortgageSubsidy
+								else
+									subsidize = 0.0
+								end
+
+								z += subsidize
+
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
 									a = agrid[ia]
@@ -685,25 +712,8 @@ end
 function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,p::Param)
 	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p)
 end
-function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,subsidy::Float64,p::Param)
-	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p) + subsidy
-end
 
 
-# agridChooser
-# chooses the appropriate asset grid
-function agridChooser( own::Int ,m::Model)
-	if (own==1)
-		return m.grids["asset_own"]
-	else
-		return m.grids["asset_rent"]
-	end
-end
-
-
-
-
-# TODO slow
 # EV selector
 # given current state and discrete choice, which portion of
 # EV is relevant for current choice?
