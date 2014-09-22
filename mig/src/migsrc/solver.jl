@@ -160,8 +160,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# offset_k   = 0
 	# offset_hh  = 0
 
-	infeas = 0
-
 
 	# state dependent stochastic states 
 	for iz=1:p.nz
@@ -261,7 +259,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												end
 
 												if cash < 0 && ihh==0 && ih==0
-													infeas += 1
 													# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),pj=$price_j,pk=$price_k,s=$is,k=$ik")
 													# println("cash at ihh=$ihh is $cash")
 													# println("maxvalue = $(r[1])")
@@ -337,7 +334,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 											if cash < 0 && ih==0 && ip<p.np
-												infeas += 1
 												# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
 												# println("aggregate: P=$ip,Y=$iy")
 												# println("cash at ihh=$ihh is $cash")
@@ -387,7 +383,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 			end 	#p
 		end 	#y
 	end 	#z
-	println("infeasible states in solution: $infeas")
 	return nothing
 
 end
