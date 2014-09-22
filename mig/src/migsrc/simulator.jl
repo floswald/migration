@@ -428,7 +428,15 @@ function simulate(m::Model,p::Param)
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
 	df = DataFrame(id=Di,age=Dage,realage=Drealage,year=Dyear,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=Dsave,cons=Dcons,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
 
+	# some transformations before exit
+	# --------------------------------
+
 	df = join(df,m.agedist,on=:realage)
+	df = @> begin
+		df
+		@transform(p2y = :p ./ :y, p2w = :p ./ :wealth)
+	end
+
 	return df
 end
 

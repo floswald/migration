@@ -54,6 +54,7 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	nms = gsub("\\(|\\)","",nms)
 	r$own_rate_reg = data.table(moment=nms,data_value=dlm$coefficients[,"Estimate"],data_sd=dlm$coefficients[,"Std. Error"])
 	r$mean_sell_50 = d[age==50,list(moment="mean_sell_50",data_value=weighted.mean(sell,HHweight,na.rm=T),data_sd=sqrt(wtd.var(sell,HHweight,na.rm=T) / nrow(.SD)))]
+	r$mean_move_50 = d[age==50,list(moment="mean_move_50",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T) / nrow(.SD)))]
 
 	# own ~ Division
 	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD))),by=Division][order(Division)]
@@ -92,9 +93,10 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	# r$moves0 <- nmoves[,list(moment="moved0",data_value=weighted.mean(moved0,HHweight), data_sd=sqrt(wtd.var(moved0,HHweight)))]
 	# r$moves1 <- nmoves[,list(moment="moved1",data_value=weighted.mean(moved1,HHweight), data_sd=sqrt(wtd.var(moved1,HHweight)))]
 	# r$moves2 <- nmoves[,list(moment="moved2",data_value=weighted.mean(moved2,HHweight), data_sd=sqrt(wtd.var(moved2,HHweight)))]
-	r$moves0 <- nmoves[,list(moment="moved0",data_value=0.8, data_sd=1)]
-	r$moves1 <- nmoves[,list(moment="moved1",data_value=0.07, data_sd=1)]
-	r$moves2 <- nmoves[,list(moment="moved2",data_value=0.06, data_sd=1)]
+	# those numbers from kennan and walker page 39
+	r$moves0 <- nmoves[,list(moment="moved0",data_value=0.83, data_sd=1)]
+	r$moves1 <- nmoves[,list(moment="moved1",data_value=0.071, data_sd=1)]
+	r$moves2 <- nmoves[,list(moment="moved2plus",data_value=0.09, data_sd=1)]
 
 
 	# move ~ own
@@ -173,21 +175,6 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	return(rbindlist(r))
 
 }
-
-Sipp.own_after_move <- function(){
-
-	data(Sipp_aggby_NULL,envir=environment())
-	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
-	setkey(mv,upid)
-	mvs <- merged[mv]
-	setkey(mvs,upid,timeid)
-
-	mvs[,own_lead := mvs[list(upid,timeid+1)][["own"]] ]
-
-
-
-}
-
 
 
 
@@ -570,6 +557,14 @@ Sipp.movers_wage_residual_copula_and_empstat <- function(path="~/Dropbox/mobilit
 	return(list(plots=surf,copula=fit))
 }
 
+ownership_rates_macro_data <- function(){
+	data(Sipp_age,envir=environment())
+	d <- merged[age>19 & age<51,list(own=mean(own,na.rm=T),p =.SD[own==TRUE,weighted.mean(hvalue,na.rm=T)], y = mean(CensusMedinc,na.rm=T)),by=list(year,Division)]
+	d[,p2y := p / y]
+	
+
+}
+
 
 Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 
@@ -607,27 +602,38 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	# get empstat before after
 	d[,employed_minus := d[list(upid,timeid-1)][["employed"]]]
 	d[,employed_plus  := d[list(upid,timeid+1)][["employed"]]]
-	emptab <- d[D2D==TRUE,as.matrix(table(employed,employed_plus))]
-	p_emptab <- round(emptab / sum(emptab),2)
-	rownames(p_emptab) <- c("unemployed $t$","employed $t$")
-	colnames(p_emptab) <- c("unemployed $t+1$","employed $t+1$")
+	ta$emptab <- d[D2D==TRUE,as.matrix(table(employed,employed_plus))]
+	ta$p_emptab <- round(ta$emptab / sum(ta$emptab),2)
+	rownames(ta$p_emptab) <- c("unemployed $t$","employed $t$")
+	colnames(ta$p_emptab) <- c("unemployed $t+1$","employed $t+1$")
 
 	# get nowage before after
 	d[,nowage := FALSE]
 	d[HHincome<=0, nowage := TRUE]
 	d[,nowage_plus := d[list(upid,timeid+1)][["nowage"]] ]
-	wagetab <- d[D2D==TRUE,as.matrix(table(nowage,nowage_plus))]
-	p_wagetab <- round(wagetab / sum(wagetab),2)
-	rownames(p_wagetab) <- c("$w_{t} > 0$","$w_{t} < 0$")
-	colnames(p_wagetab) <- c("$w_{t+1} > 0$","$w_{t+1} < 0$")
+	ta$wagetab <- d[D2D==TRUE,as.matrix(table(nowage,nowage_plus))]
+	ta$p_wagetab <- round(ta$wagetab / sum(ta$wagetab),2)
+	rownames(ta$p_wagetab) <- c("$w_{t} > 0$","$w_{t} < 0$")
+	colnames(ta$p_wagetab) <- c("$w_{t+1} > 0$","$w_{t+1} < 0$")
+
+	# get ownership before after
+	d[,own_plus := d[list(upid,timeid+1)][["own"]]]
+	ta$owntab <- d[D2D==TRUE & age>19 & age<51, round(prop.table(table(own,own_plus),margin=2),2)]
+	rownames(ta$owntab) <- c("Rent today","Own today")
+	colnames(ta$owntab) <- c("Rent tomorrow","Own tomorrow")
+
 
 	# print tables
 	print(xtable(ta$S2S_percent),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"move_rates.tex"))
 	print(xtable(ta$nmv),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"num_moves.tex"))
 	print(xtable(ta$home),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"mv_home.tex"))
 
-	print(xtable(p_emptab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"emptab.tex"))
-	print(xtable(p_wagetab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"wagetab.tex"))
+	print(xtable(ta$p_emptab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"emptab.tex"))
+	print(xtable(ta$p_wagetab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"wagetab.tex"))
+
+	print(xtable(ta$owntab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"owntab.tex"))
+
+	return(ta)
 
 }
 

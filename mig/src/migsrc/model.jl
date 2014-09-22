@@ -36,6 +36,7 @@ type Model
 	dimvecH ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # dimvec conditional on H choice
 	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
 	# dimnames::Array{ASCIIString}
+	proportion::DataFrame
 	dimnames::DataFrame
 	regnames::DataFrame
 	agedist ::DataFrame
@@ -182,7 +183,7 @@ type Model
 		# fill kappa with correct values
 		for j in 1:p.nJ
 			p.kappa[j] = popweights[j,:r2p]
-			p.kappa[j] = 0.02
+			# p.kappa[j] = 0.02 	# override
 		end
 
 		ageprof = zeros(p.nt-1,p.nJ)
@@ -327,7 +328,7 @@ type Model
 
 		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n)
+		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n)
 	end
 end
 

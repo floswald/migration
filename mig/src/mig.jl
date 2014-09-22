@@ -1,7 +1,7 @@
 module mig
 
 using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Lazy
-import Base.show
+import Base.show, Base.convert
 
 export Param, Model, runObj, runSim, simulate, solve!
 
@@ -16,6 +16,7 @@ include("migsrc/E_tensors.jl")
 include("migsrc/solver.jl")
 include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
+include("migsrc/reporting.jl")
 
 if Sys.OS_NAME == :Darwin
 	include("migsrc/plotting.jl")

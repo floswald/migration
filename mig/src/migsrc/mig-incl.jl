@@ -67,11 +67,11 @@ end
 
 
 function runSim()
-	p = mig.Param(2)
-	m = mig.Model(p)
-    mig.solve!(m,p)
+	p = Param(2)
+	m = Model(p)
+    solve!(m,p)
 	s   = simulate(m,p)
-	s = s[!mig.isna(s[:cohort]),:]
+	s = s[!isna(s[:cohort]),:]
 	simplot(s,5)
 	x=computeMoments(s,p,m)
 	showall(x)
@@ -80,7 +80,7 @@ end
 
 
 # single test run of objective
-function runObj()
+function runObj(printmoms::Bool)
 	# run objective
 	p2 = Dict{ASCIIString,Float64}()
 	if Sys.OS_NAME == :Darwin
@@ -91,7 +91,7 @@ function runObj()
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 	end
 	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
-	objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
+	objfunc_opts = ["printlevel" => 1,"printmoms"=>printmoms]
 	@time x = mig.objfunc(p2,moms,array(moms[:moment]),objfunc_opts)
 	return x
 end
@@ -137,6 +137,10 @@ end
 
 
 # converts
+function convert(::Type{DataFrame},cc::CoefTable)
+	DataFrame(Variable=cc.rownms,Estimate=cc.mat[:,1],StdError=cc.mat[:,2],tval=cc.mat[:,3],pval=cc.mat[:,4])
+end
+
 # convert(::Type{Array{Int64,1}}, PooledDataArray{Int64,Uint32,1})
 mylog(x::Float64) = ccall((:log, "libm"), Float64, (Float64,), x)
 myexp(x::Float64) = ccall((:exp, "libm"), Float64, (Float64,), x)
@@ -184,3 +188,4 @@ function setupMC(autoload::Bool)
 	return moms
 end
 
+	

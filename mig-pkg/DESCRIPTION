@@ -27,7 +27,8 @@ Depends:
     plyr,
     MASS,
     rhdf5,
-    psidR
+    psidR,
+    erer
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

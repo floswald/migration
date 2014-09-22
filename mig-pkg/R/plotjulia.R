@@ -36,6 +36,104 @@ plot.simReports <- function(){
 }
 
 
+analyze.sim <- function(newdata=FALSE){
+	fitpath <- "~/Dropbox/mobility/output/model/fit"
+	if (newdata){
+		s = fread("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim.csv")
+		save(s,file="~/git/migration/mig-pkg/data/simdata.rda")
+	} else {
+		load("~/git/migration/mig-pkg/data/simdata.rda")
+	}
+
+	# throw away incomplete cohorts
+	s = s[year>1997]
+
+	setkey(s,id,age)
+	s[,move := as.logical(move)]
+	s[,own := factor(own)]
+	s[,p2income := p/income]
+	s[,Division_plus := s[list(id,age+1)][["Division"]]]
+	s[,h_plus := s[list(id,age+1)][["h"]]]
+	s[,p_plus := s[list(id,age+1)][["p"]]]
+	s[,y_plus := s[list(id,age+1)][["y"]]]
+	s[,z_plus := s[list(id,age+1)][["z"]]]
+	s[,income_plus := s[list(id,age+1)][["income"]]]
+	s[,wealth_plus := s[list(id,age+1)][["wealth"]]]
+	s[,c("dwealth","da","dincome","dp","dy","dz") := list(diff(wealth),diff(a),diff(income),diff(p),diff(y),diff(z)),by=id]
+
+	# determinants of moving in the model
+	# ===================================
+
+	mvs = s[move==TRUE,list(id=unique(id))]
+	setkey(mvs,id)
+	mv = s[mvs]
+	setkey(mv,id,age)
+
+	# characteristics of mover transition
+	tabs <- list()
+	tabs$move_hh <-	mv[move==TRUE,round(prop.table(table(h,h_plus),margin=2),2)]
+	colnames(tabs$move_hh) <- c("Rent tomorrow","Owner tomorrow")
+	rownames(tabs$move_hh) <- c("Rent today","Owner today")
+	print(xtable(tabs$move_hh),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(fitpath,"movers_h.tex"))
+	tabs$move_a <- dcast(s[,median(da,na.rm=T),by=list(move,own)],own ~ move)
+	tabs$move_a <- as.matrix(tabs$move_a[,2:3])
+	colnames(tabs$move_a) <- c("Stay","Move")
+	rownames(tabs$move_a) <- c("Renter","Owner")
+	print(xtable(tabs$move_a),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(fitpath,"movers_assets.tex"))
+
+	# analyze all
+	# -----------
+	setkey(s,id,age)
+	
+	# age-weighted regression for moves
+	svy <- svydesign(data=s,weights=~density,id =~1)
+	svyl <- list()
+
+	svyl$move        <- svyglm(move ~ Division + p2y,family=quasibinomial("probit"),x=TRUE,design=svy)
+	svyl$move_age    <- svyglm(move ~ p2y + age+income,family=quasibinomial("probit"),x=TRUE,design=svy)
+	svyl$move_age2   <- svyglm(move ~ p2y + age + income + Division,family=quasibinomial("probit"),x=TRUE,design=svy)
+	svyl$move_age_OR <- svyglm(move ~ p2y*own + age+income + Division,family=quasibinomial("probit"),x=TRUE,design=svy)
+
+	svyl$ME <- maBina(svyl$move)
+	svyl$ME_age <- maBina(svyl$move_age)
+	svyl$ME_age2 <- maBina(svyl$move_age2)
+	svyl$ME_age_OR <- maBina(svyl$move_age_OR)
+
+	# interact owners/renters 
+
+	texreg(svyl[c("ME_age","ME_age2","ME_age_OR")],digits=4,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/mobility/output/model/fit/move_in_sim.tex",custom.model.names=c("Pr(move)","Pr(move|Division)","Pr(move|Division,Own)"),omit.coef="Division")
+
+
+	# determinants of owning
+	# ======================
+
+	svyl$own   <- svyglm(h ~ p2y + Division + p2w  + income + realage,x=TRUE,design=svy)
+
+	data(Sipp_age,envir=environment())
+	setnames(merged,c("p2y","HHincome","age"),c("p2y_ind","income","realage"))
+	merged[,p2y := hvalue / CensusMedinc]
+	svyl$own_sipp <- merged[year>1997 & realage>19 & realage<51,lm(own ~ p2y + Division + p2w + income +realage)]
+
+	texreg(svyl[c("own","own_sipp")],digits=3,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/mobility/output/model/fit/p2y_data_model.tex",custom.model.names=c("Model","Data"),omit.coef="Division")
+
+	return(tabs)
+
+
+
+}
+
+
+mom.table <- function(){
+	d <- data.table(read.csv("~/Dropbox/mobility/output/model/fit/moms.csv"))
+	d[,moment := as.character(moment)]
+	neword = c(10,11:15,1,2,7,8,9,46,47,48,16:27,4,5,6,3,42,28:41,43,44)
+	dd = d[neword,list(moment,data=data_value,model=model_value)]
+	digmat = matrix(c(rep(4,11),rep(2,15),rep(4,4),rep(2,17)),nrow=47,ncol=4)
+	print(xtable(dd,digits=digmat),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/mobility/output/model/fit/moms.tex")
+
+}
+
+
 df2hdf5 <- function(ff,df,path){
 	nm = names(df)
 	for (i in nm){
@@ -146,13 +244,15 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	# pop proportion in each state
 	prop = merged[,list(N = length(upid)),by=Division]
 	prop[,proportion:= N / .SD[,sum(N)]]
+	setkey(prop,Division)
 
 	# add rent 2 price ratio
-	rents = merged[sub & own==FALSE,list(rent=mean(mortg.rent)),by=Division]
-	values = merged[sub & own==TRUE,list(value=mean(hvalue)),by=Division]
-	setkey(rents,Division)
-	setkey(values,Division)
-	prop[,r2p := values[rents][,rent / value] ]
+	r2p = merged[age>19&age<51, list(p = .SD[hvalue>0,median(hvalue,na.rm=T)], y = .SD[HHincome>0,median(HHincome,na.rm=T)],rent=.SD[own==FALSE,median(mortg.rent,na.rm=T)]),by=list(year,Division)]
+	r2p[ , r2p := rent / p]
+	r2p = r2p[year>1997,list(r2p=mean(r2p)),by=Division]
+	setkey(r2p,Division)
+	prop <- prop[r2p]
+
 	prop=as.data.frame(prop)
 	stopifnot(sum(prop$proportion)==1)
 

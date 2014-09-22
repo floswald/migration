@@ -160,6 +160,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# offset_k   = 0
 	# offset_hh  = 0
 
+	infeas = 0
+
 
 	# state dependent stochastic states 
 	for iz=1:p.nz
@@ -219,8 +221,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
 												pp = (-ihh) * (1-p.chi) * price_k
-												# borrowing limit for owner
-												if ih*ihh==1
+												# borrowing limit for owner who stays can be lower than current margin call
+												if ih*ihh==1 && ik==ij
 													pp = pp < a ? pp : a
 												end
 
@@ -259,9 +261,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												end
 
 												if cash < 0 && ihh==0 && ih==0
-													println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
-													println("cash at ihh=$ihh is $cash")
-													println("maxvalue = $(r[1])")
+													infeas += 1
+													# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),pj=$price_j,pk=$price_k,s=$is,k=$ik")
+													# println("cash at ihh=$ihh is $cash")
+													# println("maxvalue = $(r[1])")
 												end
 											end
 
@@ -334,11 +337,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 											if cash < 0 && ih==0 && ip<p.np
-												println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
-												println("aggregate: P=$ip,Y=$iy")
-												println("cash at ihh=$ihh is $cash")
-												println("maxvalue = $(r[1])")
-												println("maxindex = $(r[2])")
+												infeas += 1
+												# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
+												# println("aggregate: P=$ip,Y=$iy")
+												# println("cash at ihh=$ihh is $cash")
+												# println("maxvalue = $(r[1])")
+												# println("maxindex = $(r[2])")
 											end
 
 										end # end if stay and houseing choice
@@ -383,6 +387,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 			end 	#p
 		end 	#y
 	end 	#z
+	println("infeasible states in solution: $infeas")
 	return nothing
 
 end
@@ -684,6 +689,9 @@ end
 # state vector and a value of the discrete choices
 function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,p::Param)
 	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p)
+end
+function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,subsidy::Float64,p::Param)
+	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p) + subsidy
 end
 
 

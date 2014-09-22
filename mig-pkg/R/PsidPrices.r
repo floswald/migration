@@ -16,6 +16,7 @@ makePSID <- function(path="~/datasets/psid2",geo="Division"){
 	# set up psidR
 
 	# TODO: use ONLY PSID state indicator, don't switch in 1985 when FIPS becomes available!
+	# TODO: put together full PSID to get lifetime moving rates: how many people move never, 1 time, ...
 
 	# state codes are not FIPS up to 1984: http://psidonline.isr.umich.edu/data/Documentation/PSIDStateCodes.pdf
 	# afterwards FIPS.

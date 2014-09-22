@@ -148,25 +148,24 @@ today
 
 \family typewriter
 \size large
-INCOMPLETE
+INCOMPLETE JOB MARKET PAPER DRAFT
 \end_layout
 
 \begin_layout Abstract
 In this paper I propose a lifecycle model of internal migration in the US
  which explicitly takes the decision to buy or rent a home into account.
- The aim of the paper is to deliver estimates of the elasticity of the mobility
- rate with respect to several tax instruments related to housing, such as
- the mortgage interest deduction or the capital gains tax exemption for
- the sale of primary residence housing.
+ The aim of the paper is to deliver estimates of the elasticity of the interregi
+onal mobility rate with respect to several tax instruments related to housing,
+ such as the mortgage interest deduction or the capital gains tax exemption
+ for the sale of primary residence housing.
  Homeowners have greater costs of relocation, resulting in a lower propensity
  to move relative to renters.
- The model features time varying price and income processes in each region,
- as well as declining mobility rates over the lifecycle, both salient features
- of the data.
- Simulations of the model show that a x% reduction of the mortgage interest
- rate deduction yields a y% increase in labor market mobility.
- Reducing the deduction all the way to zero implies z.
- 
+ The model features aggregate uncertainty in house prices and labor productivity
+, which impacts regions differentially.
+ The model fits ownership and mobility patterns over the lifecycle well.
+ Using the estimated model to make counterfactual experiments, I find a
+ large impact of policies targeted at housing on the regional migration
+ rate.
 \end_layout
 
 \begin_layout Abstract
@@ -196,12 +195,12 @@ Homeownership and mobility are negatively correlated.
  more salient both in popular and academic press.
  Migration and ownership decisions have a strong lifecycle component, in
  the sense that individuals move more while young and buy houses as they
- get older (which means they get wealthier and have children).
+ get older.
  I propose a lifecycle model of migration between US census divisions where
  individuals decide to become owners and where frictions in the housing
- market and high moving costs imply that they are less likely to move in
- response to local income or house price shocks, over and above a generally
- declining propensity to move over their lifespan.
+ market and high moving costs imply that they are less likely to move than
+ comparable renters, over and above a generally declining propensity to
+ move over their lifespan.
 \end_layout
 
 \begin_layout Standard
@@ -263,18 +262,16 @@ key "guiso2009moral"
 \begin_layout Standard
 The observed time series of house prices and median incomes in the nine
  census divisions are hard to generate from within a model over the period
- of observation (1996--2012).
- For this reason, the model simulation takes them as the real data as input,
+ of observation (1998--2012).
+ For this reason, the model simulation takes the observed series as input,
  in a bid to recreate the incentives faced by individuals in the data as
  closely as possible.
  At the heart of much of the migration literature, as well as in this model,
  lies a tension between expected incomes and house prices in a potential
- destination location, such that high income regions attract more people,
- which subsequently drives up house prices because of inelastic housing
- supply, so that ultimately moving becomes less attractive.
+ destination location.
  It is important to accurately represent the house price and income processes
- found in the data inside the model in order to get the relative desireability
- of regions right.
+ from the data inside the model in order to replicate the relative desireability
+ of each region.
 \end_layout
 
 \begin_layout Standard
@@ -287,14 +284,13 @@ In the model there is a simple mechanism that endogenously selects individuals
  on the path their individual income shocks have taken, it will in general
  take several years of assets accumulation before this constraint is satisfied.
  Not all individuals will buy a house once the constraint is satisfied,
- however, since this decision interacts with a preference for the current
+ however, since this decision interacts with an unobserved moving cost type,
+ where a high cost is supposed to capture a strong preference for the current
  location.
  Buying has implications for future mobility, as we remarked previously,
- it has the potential to expose the owner to substantial financial risk
- in case of a price drop, therefore people with a higher preference for
- the location will be more likely to end up buying.
- The utility they gain from being in a given location compensates them for
- potential losses, should the need to move arise in the future.
+ therefore people with a higher moving cost will be more likely to end up
+ buying.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -302,11 +298,9 @@ I estimate the preference parameters of the model using simulated method
  of moments inside a parallel MCMC algorithm.
  I then use the estimated model to simulate the effect of gradually decreasing
  the mortgage interest rate deduction.
- I find that mobility rates strongly respond to this change, with an elasticity
- of z%.
- Furthermore, I find that housing is an important part of explaining mobility
- over the lifecycle.
- Owners have significantly higher mobility costs than similar renters.
+ I find that mobility rates strongly respond to this change, however, this
+ is still work in progress so I cannot give an elasticity estimate at this
+ point.
 \end_layout
 
 \begin_layout Paragraph
@@ -373,7 +367,7 @@ key "Roback:1982uq"
 \end_inset
 
 .
- In an authoritative handbook chapter 
+ In an authoritative handbook chapter, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Moretti:2011fk"
@@ -529,62 +523,45 @@ key "nenov2012regional"
 \end_inset
 
 .
- At difference to those papers, here I spend a lot of effort in trying to
+ At difference to those papers which focus on the equilibrium properties
+ of housing and unemployment, here I spend a lot of effort in trying to
  model the budget constraint and instutional environment of a consumer as
  accurately as possible.
  In particular, age seems to be of first order importance in both housing
  and migration decisions in the data, which brings with it the need to consider
  a finite time horizon, implying that any mortgage taken out must be paid
  back at some point -- which is not implied by the previous set of papers.
+ Furthermore, and as mentioned previously, it seems that the dynamics of
+ house prices over the recent couple of decades are hard to reconcile with
+ those models, which is particularly worrying if the exercise is to deliver
+ estimates of structural parameters, as is the aim here.
 \end_layout
 
 \begin_layout Standard
-Regarding the previously mentioned negative Homeowner mobility and negative
- equity lock in effect 
+The contribution of this paper is to provide a link between models of housing
+ demand over the lifecycle, as for example 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Ferreira201034"
+key "Attanasio20121"
 
 \end_inset
 
-, 
+, with the literature on dynamic migration following 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "schulhofer2011negative"
-
-\end_inset
-
-, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "demyanyk2013moving"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-there is mismatch by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "shimer2007mismatch"
-
-\end_inset
-
-, and here saying that this played a small role in recent increase in unemployme
-ntL 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "song2012measuring"
+key "kennan2003effect"
 
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-Contribution of this paper.
+ I find that housing is an important feature of the individual migration
+ decision.
+ The likelihood of any given move depends not only on whether or not the
+ individual owns their house, but also on the price and income levels in
+ all potential destination regions, and the current level of mortgage debt.
+ To my knowledge this is the first empirical lifecycle model which takes
+ the observed house price as given and models actual geographic location.
+ 
 \end_layout
 
 \begin_layout Section
@@ -983,7 +960,27 @@ The aggregation of states into this particular grouping is only one of many
 \end_layout
 
 \begin_layout Standard
-From the SIPP data, a couple of interesting facts emerge.
+I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a large
+ database with 128.515 individuals that I can follow over time and space.
+ I observe a total of 4.194 interstate moves.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Just for comparison, the estimation sample in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+ is drawn from the geo-coded version of NLSY79 and contains 124 interstate
+ moves.
+\end_layout
+
+\end_inset
+
+ From this dataset, a couple of interesting facts emerge.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1050,56 +1047,6 @@ reference "tab:CPS-reason-move"
  single option have their problems, however, it also seems clear that housing
  issues are on individuals minds when making migration decisions.
  This is one motivation for writing this paper.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/mv5_2013.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:CPS-reason-move"
-
-\end_inset
-
-CPS data on main motivation of moving, conditional on a cross division move
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1222,7 +1169,7 @@ name "tab:Annual-moving-rate"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1321,7 +1268,7 @@ nt to draw convincing conclusions from it.
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1364,6 +1311,56 @@ name "tab:D2D-probit"
 \end_layout
 
 \begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/CPS/mv5_2013.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:CPS-reason-move"
+
+\end_inset
+
+CPS data on main motivation of moving, conditional on a cross division move
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -1482,14 +1479,26 @@ key "kennan2003effect"
 
 \end_inset
 
- in the sense that individuals do not search for jobs before they move.
- The model posits that, once arrived in a new location, the individual acquires
- information about the quality of their job and location match by drawing
- from the initial distributions of both.
+ in the sense that individuals do not know the exact wage they will earn
+ in the new location.
+ The wage is composed of a deterministic, and thus predictable, part and
+ a component that is random.
+ The assumption is that over and above an expectation about some prevailing
+ average level of wages the mover can expect in any given region, the actual
+ job obtained after a move is an experience good and that it is impossible
+ to be certain about the exact match quality ex ante.
+ This setup gives rise to income risk associated with moving.
 \end_layout
 
 \begin_layout Subsection
 Individual Labor Income
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Individual-Labor-Income"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1639,7 +1648,13 @@ When moving from region
 \begin_inset Formula $j$
 \end_inset
 
-, the individual's next period income will be composed of the corresponding
+, I assume that the timing is such that current period income is earned
+ in the origin location 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ The individual's next period income is then composed of the corresponding
  mean income at that date, 
 \family roman
 \series medium
@@ -1928,12 +1943,19 @@ assets
 \begin_inset Formula $a_{j}$
 \end_inset
 
- and assume a terminal condition 
-\begin_inset Formula $a_{J}\geq0$
+ and assume as a terminal condition that net wealth be non-negative by the
+ last period of life in the model, i.e.
+ 
+\begin_inset Formula $a_{J}+p_{dJ}h_{J}\geq0$
 \end_inset
 
 , which translates into an implicit borrowing limit for owners.
- They will not borrow more than what can be repaid with certainty.
+ This implies that owners will choose a savings path contingent on the current
+ price, their debt level, and their current age 
+\begin_inset Formula $j$
+\end_inset
+
+ such that they can satisfy this constraint in the final period.
  Furthermore, this setup does not require the owner to fulfil the downpayment
  (or margin) constraint in every period, but only in the period of purchase.
  This implies that when prices fall, owners do not have to adjust the size
@@ -2287,6 +2309,119 @@ Household size
 \end_layout
 
 \begin_layout Subsection
+Timing
+\end_layout
+
+\begin_layout Standard
+Timing within the period is assumed to proceed in two sub-periods: in the
+ first part, stochastic states are realized and observed by the agent, and
+ labor income is earned; in the second part the agent makes optimal decisions
+ regarding consumption, housing and location.
+ The chronological order within a period is thus as follows:
+\end_layout
+
+\begin_layout Enumerate
+observe 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ iid location taste shock 
+\end_layout
+
+\begin_layout Enumerate
+earn labor income in current region 
+\begin_inset Formula $d$
+\end_inset
+
+, as a function of 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+given the state, compute optimal behaviour in all 
+\begin_inset Formula $D$
+\end_inset
+
+ regions, i.e.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+choose optimal consumption 
+\begin_inset Formula $c_{h}^{*}$
+\end_inset
+
+ conditional on housing choice 
+\begin_inset Formula $h\in\{0,1\}$
+\end_inset
+
+ in all regions 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose optimal housing 
+\begin_inset Formula $h_{d}^{*}(c_{h}^{*})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose optimal location, based on the value of optimal housing in each location
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+There is in fact no timing issue in point 3., as the optimization problem
+ is simultaneous.
+ However, the quasi-cronological order is helpful to expose the interdependence
+ of one choice on another.
+\end_layout
+
+\begin_layout Subsection
 Recursive Formulation
 \end_layout
 
@@ -2339,8 +2474,8 @@ To spare on notation I will drop the subscript
 \begin_inset Formula $it$
 \end_inset
 
- from here on, with the convention that next period variables are labelled
- with a prime.
+ for the remainder of this subsection, with the convention that next period
+ variables are labelled with a prime.
 \begin_inset Foot
 status collapsed
 
@@ -2520,15 +2655,8 @@ reference "eq:v"
 \end_inset
 
 ).
- Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:v"
-
-\end_inset
-
- shows the maximization problem faced by the consumer conditional on choosing
- region 
+ This expression shows the maximization problem faced by the consumer conditiona
+l on choosing region 
 \begin_inset Formula $k$
 \end_inset
 
@@ -2561,13 +2689,63 @@ reference "eq:vbar"
 \begin_inset Formula 
 \begin{eqnarray}
 V_{j}\left(x\right) & = & \max_{k\in D}\left\{ v_{j}(x,k)+\varepsilon_{ik}\right\} \label{eq:V}\\
-v_{j}(x,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,d,k)+\beta\mathbb{E}_{z',s',\mathbf{P}'}\left[\overline{v}_{j+1}(x',k)|z,s,\mathbf{P}\right]\label{eq:v}\\
-\overline{v}_{j}(x,d) & = & E_{\varepsilon}V_{j}(x,d)\nonumber \\
- & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{j}(x,d,k)\right)\right)\label{eq:vbar}
+v_{j}(x,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,d,k)+\beta\mathbb{E}_{z',s',\mathbf{P}'}\left[\overline{v}_{j+1}(x')|z,s,\mathbf{P}\right]\label{eq:v}\\
+x' & = & \left(a',z',s',\mathbf{P}',h,k,j+1\right)\nonumber \\
+\overline{v}_{j}(x) & = & E_{\varepsilon}V_{j}(x)\nonumber \\
+ & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{j}(x,k)\right)\right)\label{eq:vbar}
 \end{eqnarray}
 
 \end_inset
 
+A convient by-product of the Type 1 EV assumption is that there is a closed
+ form expression for the conditional choice probability of making a move
+ from 
+\begin_inset Formula $d$
+\end_inset
+
+ to 
+\begin_inset Formula $k$
+\end_inset
+
+ when the state is 
+\begin_inset Formula $x$
+\end_inset
+
+, deonted 
+\begin_inset Formula $\rho(x,d,k)$
+\end_inset
+
+.
+ This is used in the model simulation:
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray}
+\rho(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
+ & = & \frac{\exp\left(v(x,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,z)\right)}\nonumber \\
+ & = & \frac{\exp\left(v(x,k)\right)}{\exp\left(\overline{v}(x)\right)/\exp(\overline{\gamma})}\nonumber \\
+ & = & \exp\left(\overline{\gamma}+v(x,k)-\overline{v}(x)\right)\label{eq:prob-of-moving-1}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The final period models a terminal value that depends on net wealth in a
  straightforward way, as shown in equation 
 \begin_inset CommandInset ref
@@ -2613,10 +2791,18 @@ name "sub:Budget-stayers"
 \end_layout
 
 \begin_layout Standard
-In case an individual decides not to move locations, they are eligible for
- a housing tenure choice.
- This means that renters may choose to become owners, and owners may choose
- to remain owners or sell the house and rent.
+Starting with the case for stayers, the relevant state variables in the
+ budget constraint refer only to the current region 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ In particular, given 
+\begin_inset Formula $(p_{dt},\overline{y}_{dt})$
+\end_inset
+
+, renters may choose to become owners, and owners may choose to remain owners
+ or sell the house and rent.
 \end_layout
 
 \begin_layout Paragraph
@@ -2626,7 +2812,7 @@ Renters.
 \begin_layout Standard
 The period budget constraint for renters (i.e.
  individuals who enter the period with 
-\begin_inset Formula $h_{t-1}=0$
+\begin_inset Formula $h_{it-1}=0$
 \end_inset
 
 ) depends on their housing choice, as shown in equation 
@@ -2643,7 +2829,7 @@ reference "eq:budget-renter-stay"
 
 , i.e.
  
-\begin_inset Formula $h_{t}=1$
+\begin_inset Formula $h_{it}=1$
 \end_inset
 
 , they need to pay the date 
@@ -2660,6 +2846,25 @@ reference "eq:budget-renter-stay"
 
 , otherwise they need to pay the current local rent, 
 \begin_inset Formula $\kappa_{d}p_{dt}$
+\end_inset
+
+.
+ Labor income is defined in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-labor-income"
+
+\end_inset
+
+ and depends on the regional mean income level 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ as introduced in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Individual-Labor-Income"
+
 \end_inset
 
 .
@@ -2689,15 +2894,27 @@ reference "eq:budget-interest"
  defines the interest rate function, which simply states that there is a
  different interest applicable to savings as opposed to borrowing, both
  of which are taken as exogenous parameters in the model.
- 
+ The terminal condition constraint is in expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:terminal-condition"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-(1-h_{t})\kappa_{d}p_{dt}-h_{t}p_{dt}\right)\label{eq:budget-renter-stay}\\
-a_{t+1} & \geq & -(1-\chi)p_{dt}h_{t}\label{eq:budget-rent-downpay}\\
-r(a_{t}) & = & \begin{cases}
-r & \text{if }a_{t}\geq0\\
-r^{m} & \text{if }a_{t}<0
-\end{cases},r^{m}>r\label{eq:budget-interest}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\label{eq:budget-renter-stay}\\
+\ln y_{idt} & = & \overline{y}_{dt}+f(j,d)+z_{idt}\label{eq:budget-labor-income}\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\label{eq:budget-rent-downpay}\\
+r(a_{it}) & = & \begin{cases}
+r & \text{if }a_{it}\geq0\\
+r^{m} & \text{if }a_{it}<0
+\end{cases},r^{m}>r\label{eq:budget-interest}\\
+a_{iJ}+p_{J}h_{iJ-1} & \geq & 0\label{eq:terminal-condition}
 \end{eqnarray}
 
 \end_inset
@@ -2711,7 +2928,7 @@ Owners.
 
 \begin_layout Standard
 For individuals entering the period as owners 
-\begin_inset Formula $\left(h_{t-1}=1\right)$
+\begin_inset Formula $\left(h_{it-1}=1\right)$
 \end_inset
 
 , the budget constraint is similar except for two differences which relate
@@ -2723,14 +2940,14 @@ For individuals entering the period as owners
 \end_inset
 
 , arises naturally from the terminal condition 
-\begin_inset Formula $a_{J}>0$
+\begin_inset Formula $a_{iJ}+p_{J}h_{iJ-1}>0$
 \end_inset
 
 , as mentioned above.
  Therefore the budget of the owner is only affected by the house price in
  case they decide to sell the house, i.e.
  if 
-\begin_inset Formula $h_{t}=0$
+\begin_inset Formula $h_{it}=0$
 \end_inset
 
 .
@@ -2743,7 +2960,7 @@ For individuals entering the period as owners
 \begin_inset Formula $d$
 \end_inset
 
-, which is a fraction 
+, which is as already mentioned a fraction 
 \begin_inset Formula $\kappa_{d}$
 \end_inset
 
@@ -2788,13 +3005,26 @@ reference "eq:budget-interest"
 
 \end_inset
 
- applies.
+, labor income equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-labor-income"
+
+\end_inset
+
+ and terminal condition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:terminal-condition"
+
+\end_inset
+
+ apply.
  
 \begin_inset Formula 
 \begin{eqnarray}
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}+(1-h_{t})(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own}\\
-a_{t+1} & \geq & \min\left\{ a_{t},-(1-\chi)p_{dt}\right\} \label{eq:budget-own-borrow}\\
-\nonumber 
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-h_{it})(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own}\\
+a_{it+1} & \geq & \min\left\{ a_{it},-(1-\chi)p_{dt}\right\} \label{eq:budget-own-borrow}
 \end{eqnarray}
 
 \end_inset
@@ -2818,34 +3048,34 @@ name "sub:Budget-movers"
 
 \end_layout
 
-\begin_layout Standard
-The case for movers is simpler, as there is in fact no housing choice.
- Renters are not allowed to buy in the period they move, and owners must
- sell.
- 
-\end_layout
-
 \begin_layout Paragraph
 Renters.
 \end_layout
 
 \begin_layout Standard
-This is identical to the case for stayers but without the parts of the budget
- relating to house purchase.
- We define the budget constraint in this case as in equation 
+For moving renters the budget constraint is close to identical, with the
+ exception that 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:budget-rent-move"
+reference "eq:budget-renter-stay"
 
 \end_inset
 
-.
- Notice that next period assets for movers are non--negative.
+ needs to be slightly altered to reflect that labor income is obtained in
+ the current period in region 
+\begin_inset Formula $d$
+\end_inset
+
+ before the move to 
+\begin_inset Formula $k$
+\end_inset
+
+ is undertaken.
+ 
 \begin_inset Formula 
-\begin{eqnarray}
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\kappa_{d}p_{dt}\right)\label{eq:budget-rent-move}\\
-a_{t+1} & \geq & 0\nonumber 
-\end{eqnarray}
+\begin{equation}
+a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{k}p_{kt}-h_{it}p_{kt}\right)\label{eq:budget-rent-move}
+\end{equation}
 
 \end_inset
 
@@ -2857,42 +3087,83 @@ Owners.
 \end_layout
 
 \begin_layout Standard
-Owners become renters by selling, thus their corresponding budget constraint
- when moving locations is given in equation 
+The budget constraint for moving owners depends on the house price in both
+ current and destination regions 
+\begin_inset Formula $d$
+\end_inset
+
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+ since the house in the current region must be sold by assumption.
+ The expression 
+\begin_inset Formula $(1-\phi)p_{dt}$
+\end_inset
+
+ in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:budget-own-move"
+reference "eq:budget-own-1"
 
+\end_inset
+
+ relates to proceeds from sale of the house in region 
+\begin_inset Formula $d$
+\end_inset
+
+, whereas the square brackets describe expenditures in region 
+\begin_inset Formula $k$
 \end_inset
 
 .
- If it is the case that the proceeds from sale of the house are insufficient
- to make up for the contracted debt 
-\begin_inset Formula $ $
-\end_inset
-
-
-\begin_inset Formula $a_{t}(1+r(a_{t}))$
-\end_inset
-
-, i.e.
- in the case there is negative home equity, the indicator in equation 
+ Notice also that the borrowing constraint 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:default"
+reference "eq:budget-own-borrow-1"
 
 \end_inset
 
- is activated and the utility penalty 
-\begin_inset Formula $\lambda$
+ now is a function of the value of the new house in 
+\begin_inset Formula $k$
 \end_inset
 
- is incurred in the current period.
+.
+ It is important to note that this formulation precludes moving with negative
+ equity if labor income is not enough to cover it.
+ This is exacerbated in cases where the mover wants to buy immediately,
+ since in that case the downpayment needs to be made as well, i.e.
+ if 
+\begin_inset Formula $y_{idt}<a_{it}+(1-\phi)p_{dt}-\chi h_{it}p_{kt}$
+\end_inset
+
+ then the budget set is empty and the move is infeasible.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In my sample I observe 29 owners who move with negative equity (amounting
+ to 3.4% of moving owners).
+ 78% of those do buy in the new location, the rest rent.
+ I do not observe whether or not an owner defaults on the mortgage, which
+ may be the action taken by this group of movers.
+ Accounting for this subset of the population would require to 1) assume
+ that they actually defaulted and 2) it substantially increase the computational
+ burden.
+ For those reasons the model cannot account for this subset of the mover
+ population at the moment.
+\end_layout
+
+\end_inset
+
  
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}+(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own-move}\\
-a_{t+1} & \geq & 0\nonumber 
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\left[(1-h_{it})\kappa_{k}+h_{it}\right]p_{kt}\right)\label{eq:budget-own-1}\\
+a_{it+1} & \geq & -(1-\chi)p_{kt}h_{it}\label{eq:budget-own-borrow-1}
 \end{eqnarray}
 
 \end_inset
@@ -2900,116 +3171,6 @@ a_{t+1} & \geq & 0\nonumber
 
 \end_layout
 
-\begin_layout Subsection
-Timing
-\end_layout
-
-\begin_layout Enumerate
-observe 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
- and
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
-\end_inset
-
-,
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- iid location taste shock 
-\end_layout
-
-\begin_layout Enumerate
-choose whether to move at end of period
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-if yes 
-\begin_inset Formula $(j\neq k)$
-\end_inset
-
-, 
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-sell house: 
-\begin_inset Formula $h_{it}=0$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume and incur moving cost 
-\begin_inset Formula $\Delta(k,x)$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-if no 
-\begin_inset Formula $(j=k)$
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $h_{it}\in\{0,1\}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume
-\end_layout
-
-\end_deeper
-\end_deeper
 \begin_layout Section
 Estimation
 \end_layout
@@ -3017,14 +3178,15 @@ Estimation
 \begin_layout Standard
 In this section I explain how the model is calibrated and estimated to fit
  some features of the data.
- There is a set preset model parameters, the values of which I either take
- from other papers in the literature or I estimate them outside of the structura
-l model and treat them as inputs.
+ There is a set of preset model parameters, the values of which I either
+ take from other papers in the literature or I estimate them outside of
+ the structural model and treat them as inputs.
  They are listed in table x.
- The remain set of parameters are estimated using the simulated method of
- moments (SMM) approach, whereby given a set of parameters, the model is
- used to compute decision rules of agents, which in turn are used to simulate
- artificial data that should be close in some sense to the real data.
+ The remaining set of parameters are estimated using the simulated method
+ of moments (SMM) approach, whereby given a set of parameters, the model
+ is used to compute decision rules of agents, which in turn are used to
+ simulate artificial data that should be close in some sense to the real
+ data.
  The set of parameters to be estimated by SMM is 
 \begin_inset Formula $\theta=\left\{ \alpha_{0,\tau},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega,\pi_{\tau},\xi(0),\xi(1)\right\} $
 \end_inset
@@ -3191,14 +3353,28 @@ p_{dt}
 
 \begin_layout Standard
 The performance of this model in terms of delivered predictions from the
- aggregate state can be gauged visually in figures and .
+ aggregate state can be gauged visually in figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Mapping-P-p"
+
+\end_inset
+
+and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mapping-Y-y"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3236,6 +3412,13 @@ y
  and the model prediction 
 \emph on
 yhat.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mapping-Y-y"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3287,13 +3470,20 @@ Using the observed aggregate time series
 \end_inset
 
 .
- The figures plots the actual regional median income 
+ The figures plots the actual regional median house value 
 \emph on
 p
 \emph default
  and the model prediction 
 \emph on
 phat.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Mapping-P-p"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3439,7 +3629,6 @@ reference "eq:income-process"
  cross-sectional distribution of both margins.
  Unsurprisingly, both margins are close to normal, which indicates a well-specif
 ied regression model.
- The margins can be seen in figure s x and y.
  The next step involves fitting the copula 
 \begin_inset Formula $C$
 \end_inset
@@ -3625,14 +3814,22 @@ https://github.com/floswald/MOpt.jl
 
 \end_inset
 
+ Slices through the SMM objective function at the initial value of the parameter
+ vector are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:SMM-objective-function"
 
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -3648,7 +3845,14 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-SMM objective function
+SMM objective function slices
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:SMM-objective-function"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3665,236 +3869,674 @@ SMM objective function
 
 \end_layout
 
-\begin_layout Section
-Data
+\begin_layout Subsection
+Initial Conditions
 \end_layout
 
 \begin_layout Standard
-I am using a series of publicly available datasets in this study.
- For aggregate internatl migration statistics, I present a series of estimates
- from the March supplement of the CPS, pooled over 2003--2013.
- Those statistics are given in tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:CPS-reasons-for-moving"
+The SIPP estimation sample runs from 1998 through 2012.
+ The data moments the model is supposed to replicate are weighted averages
+ over this period, where the weights are the SIPP sampling weights.
+ When reconstructing an artificial sample from the model simulation, care
+ must be taken to replicate the shocks experienced by each cohort in the
+ data leading up to the point where they are observed.
+ 
+\end_layout
+
+\begin_layout Standard
+The data is subset to the ages allowed for in the model, i.e.
+ 20--50.
+ I compute data moments, for example the average homeownership rate in region
+ 
+\begin_inset Formula $d$
+\end_inset
+
+, or the average total wealth of age group 40--45 in 
+\begin_inset Formula $d$
+\end_inset
+
+, as averages over the entire sample period:
+\begin_inset Formula 
+\begin{eqnarray*}
+\text{mean\_own\_data}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt}}\sum_{i\in d,t}^{N_{dt}}\omega_{it}\mathbf{1}\left[h_{it}=1\right]\right)\\
+\text{mean\_wealth\_data\_40\_45}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt,j\in[40,45]}}\sum_{i\in d,t,j\in[40,45]}^{N_{dt,j\in[40,45]}}\omega_{it}w_{ijt}\right)
+\end{eqnarray*}
 
 \end_inset
 
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:CPS-reasons-for-moving2"
+where 
+\begin_inset Formula $N_{dt}$
+\end_inset
 
+ is the number of people in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
 \end_inset
 
 , and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Conditional-on-moving"
+\begin_inset Formula $\omega_{it}$
+\end_inset
 
+ is a person's crossectional weight, and 
+\begin_inset Formula $i\in d,t$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
 \end_inset
 
 .
- It is striking from this data that 35% of responses can be categorized
- as a move that was motivated by reasons related to housing.
+ Similarly, 
+\begin_inset Formula $i\in d,t,j\in[40,45]$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ and age 
+\begin_inset Formula $j$
+\end_inset
+
+ in [40,45].
 \end_layout
 
 \begin_layout Standard
-The main analysis in the paper uses the Survey of Income and Program Participati
-on (SIPP).
- The main drawback of publicly available data is that only few moves are
- observed.
- For an illustration, see the transition matrix from the PSID dataset in
- figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:State-to-State-PSID"
-
+This means that for the second data moment, for example, 40 year-olds from
+ 1998 contributed as well as 40 year-olds from the 2012 cohort.
+ Needless to say, those cohorts faced a different sequence of house price
+ shocks leading up the point of observation.
+ For individuals 
+\begin_inset Quotes eld
 \end_inset
 
-.
- I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a large
- database with 128.515 individuals that I can follow over time and space.
- I observe a total of 4.194 interstate moves.
+born
+\begin_inset Quotes erd
+\end_inset
+
+ before the first data period, i.e.
+ 1998, I use the PSID to compute a long running series for the median national
+ house value, starting in 1968, which is the first year of available data.
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-Just for comparison, the estimation sample in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
- is drawn from the geo-coded version of NLSY79 and contains 124 interstate
- moves.
+There are only few options for such long-running house price indices.
+ The FHFA index, for example, starts only in 1975.
 \end_layout
 
 \end_inset
 
-
+ Simulating individuals from the 1968 cohort for a full lifetime of J=30
+ years until the reach age 50 brings them into the year 1998, where they
+ form the group of 50 year-olds in that particular year.
+ This sort of staggered simulation is carried out until the final cohort
+ is born in 2012 at age 20.
+ No simulation needs to take place for any individual alive at years after
+ 2012.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/mv1_2013.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS reasons for moving
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:CPS-reasons-for-moving"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/mv2_2013-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS reasons for moving 2
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:CPS-reasons-for-moving2"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/mv4_2013-edit2.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS Conditional on moving across state lines what was the main reason?
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Conditional-on-moving"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+The initial distribution of assets is drawn from the empirical distribution
+ of assets in the SIPP data.
+ 
 \end_layout
 
 \begin_layout Section
 Results
 \end_layout
 
+\begin_layout Subsection
+Parameter Estimates
+\end_layout
+
+\begin_layout Itemize
+table with preset parameters
+\end_layout
+
+\begin_layout Itemize
+table with estimated parameters
+\end_layout
+
 \begin_layout Standard
-tbc
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Parameter estimates
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Parameter-estimates"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Fit
+\end_layout
+
+\begin_layout Standard
+The model fit is shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+.
+ I target only a subset of the moments in this table - basically don't target
+ all wealth moments.
+ TODO make separate table for targeted and non moments.
+ 
+\end_layout
+
+\begin_layout Standard
+Starting from the top of the table, the fit to average moving rates is overall
+ reasonable.
+ The average moving rates conditional on having children or on being an
+ owner are in line with the shares observed in the data, as are the covariances
+ of moving with owning and moving with children.
+ Next in line are coefficients from a linear regression model (prefixed
+ 
+\begin_inset Quotes eld
+\end_inset
+
+lm
+\begin_inset Quotes erd
+\end_inset
+
+), relating cross division moves to a quadratic age term.
+ The fit on the age coefficients is good.
+\end_layout
+
+\begin_layout Standard
+The moments 
+\begin_inset Quotes eld
+\end_inset
+
+moved0
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+moved1
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+moved2
+\begin_inset Quotes erd
+\end_inset
+
+ relate to the fraction of the population that moved zero, one or two and
+ more times respectively.
+ The model overpredicts the proportion who never move at the current preliminary
+ parameter vector.
+\end_layout
+
+\begin_layout Standard
+Next in line are the average homeownership rates by Census Division.
+ The model is having a hard time fitting the different homeownership purely
+ based on the observed aggregate price to income ratios and two preference
+ parameters 
+\begin_inset Formula $\xi$
+\end_inset
+
+.
+ There is a good reason for this.
+ While in the model a higher price to income ratio means that fewer people
+ can afford to buy a house, thus ownership decreases, in the data we see
+ the reverse relationship from 1998 to 2012.
+ This is investigated in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Determinants-of-ownership"
+
+\end_inset
+
+, where I regress the housing status indicator variable of individual 
+\begin_inset Formula $i$
+\end_inset
+
+ on region dummies, age and income, but most importantly the price to income
+ ratio in both datasets from simulation and SIPP.
+ As is clear from the left panel of the table, which shows the model data,
+ the price to income ratio operates through a very simple channel: the higher
+ the ratio, the lower the probability of owning, by the purely mechanical
+ effect of the downpayment constraint.
+ Contrast this with the coefficient of the price to income ratio in the
+ right column, which is positive.
+ This means that, for the period considered, a higher price to income ratio
+ means higher ownership.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+To make this comparison I use the region level median income to compute
+ the price to income ratio, equivalently to what I do in the simulation
+ data.
+\end_layout
+
+\end_inset
+
+ For example, decreasing lending standards and large scale securitization
+ over the concerned period could have the extended credit to ever more buyers
+ for ever higher prices during this period.
+ In summary, replicating this phenomenon is out of reach for this model,
+ which is the main reason that those moments are off target.
+ For a graphical illustration of this, consider figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fit-ownership-division"
+
+\end_inset
+
+, in particular the path observed in region Pacific (Pcf).
+ As prices rise towards the peak in 2007, the model ownership rate goes
+ down, whereas the data ownership rate stays constant and even increases
+ before decreasing in 2007.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+model and data moments
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit-model-and-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/p2y_data_model.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Linear probability model of the determinants of ownership in data and model.
+ Note in particular the coefficients on variable 
+\begin_inset Quotes eld
+\end_inset
+
+p2y
+\begin_inset Quotes erd
+\end_inset
+
+ which stands for the price to income ratio.
+ The marginal effectis negative in the model, indicating that higher prices
+ make it harder for individuals to buy, whereas it is positive in the data,
+ indicating that for example relaxed lending conditions during the sample
+ period could have enabled ever more people to buy despite rising prices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Determinants-of-ownership"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/own_year_reg.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Observed and model generated ownership rates by Census Division.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:fit-ownership-division"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Determinants of mobility
+\end_layout
+
+\begin_layout Itemize
+the price to income ratio in a given region serves as an index of desirability
+ for renters.
+ If the ratio becomes too high, living costs are too high and a move is
+ more likely to be beneficial.
+ In other words, it takes a preference shock 
+\begin_inset Formula $\varepsilon'$
+\end_inset
+
+ of relatively smaller size to induce a move.
+\end_layout
+
+\begin_layout Itemize
+few owners move, as is evident from table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+.
+ The ones that do move, however, leave the region during a high price phase:
+ owners move away as soon as the house price exceeds a certain threshold.
+ They basically cash in on the capital gains and relocate somewhere else.s
+\end_layout
+
+\begin_layout Itemize
+table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Marginal-effects-sim-moves"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section I want to illustrate the determinants of individual moving
+ behaviour in the model simulation under the paramter set shown in table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Parameter-estimates"
+
+\end_inset
+
+.
+ I consider the probit regression 
+\begin_inset Formula 
+\[
+\text{move}_{idt}=\beta_{0}+\beta_{1}\frac{p_{dt}}{\overline{y}_{dt}}+\beta_{3}\text{age}_{it}+\beta_{4}y_{idt}+u_{it}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\text{move}_{idt}$
+\end_inset
+
+ is an indicator equal to unity if 
+\begin_inset Formula $i$
+\end_inset
+
+ moves away from region 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+, the fraction 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\frac{p_{dt}}{\overline{y}_{dt}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the price to income ratio in region 
+\begin_inset Formula $d$
+\end_inset
+
+, and where 
+\begin_inset Formula $\text{age}_{it},y_{it}$
+\end_inset
+
+ denote the invidiual's age and income
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/move_in_sim.tex}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Probit model of the determinants of cross division moves in the model.
+ Marginal effects.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Marginal-effects-sim-moves"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Experiments
+\end_layout
+
+\begin_layout Itemize
+reducing the mortgage interest rate deduction: taking data on average tax
+ savings from the deduction from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Poterba:2008fk"
+
+\end_inset
+
+, simulate the effect of eliminating this subsidy.
+ 
+\end_layout
+
+\begin_layout Itemize
+elasticity of mobility with respect to a moving voucher: how many more movers
+ can we get by subsidizing moving with x$?
 \end_layout
 
 \begin_layout Section
@@ -3915,17 +4557,7 @@ computational details
 \uwave off
 \noun off
 \color none
-\begin_inset Formula 
-\begin{eqnarray}
-\rho(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
- & = & \frac{\exp\left(v(x,d,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,d,z)\right)}\nonumber \\
- & = & \frac{\exp\left(v(x,d,k)\right)}{\exp\left(\overline{v}(x,d)\right)/\exp(\overline{\gamma})}\nonumber \\
- & = & \exp\left(\overline{\gamma}+v(x,d,k)-\overline{v}(x,d)\right)\label{eq:prob-of-moving}
-\end{eqnarray}
-
-\end_inset
-
-
+to be added
 \end_layout
 
 \begin_layout Section

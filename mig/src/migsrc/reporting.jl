@@ -13,9 +13,16 @@ function solReport()
 	# report
 end
 
+function simCsv(s::DataFrame)
+	s2 = s[!mig.isna(s[:cohort]),:]
+	writetable("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv")
+end
+
+
+
 
 # some simulation characteristics
-function simReport()
+function writeSimReport()
 	s = mig.runSim()
 
 	# save some data
@@ -26,5 +33,46 @@ function simReport()
 	writetable("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/sim_year_reg.csv",sim_year_reg)
 
 end
+
+# illustrate implied housing tenure model:
+# price to income ratio is very strong determinant in model!
+function simRegs(s::DataFrame)
+
+	s2 = s[!mig.isna(s[:cohort]),:]
+	s96 = @where(s2,:year .> 1994)
+	pool!(s96[:Division])
+
+	lm1 = lm(hh ~ p2y + p2w + realage + Division,s96)
+	glm1 = lm(hh ~ p2y + p2w + realage + Division,s96,Binomial(),ProbitLink())
+
+	d = Dict()
+	d["lm"] = lm1
+	d["glm"] = glm1
+	return d
+end
+
+function simMovers(s::DataFrame)
+
+	s = s[!mig.isna(s[:cohort]),:]
+	mvid = @> begin 
+		s
+		@where(:move.==true)
+		@select(:id)
+	end
+	mvid = unique(mvid)
+
+	# mover's data
+	mv = s[findin(s[:id],mvid[:id]),:]
+
+end
+
+
+
+
+
+
+
+
+
 
 

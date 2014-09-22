@@ -10,9 +10,8 @@ cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
-
-x= mig.runObj()
-	
+x=mig.runObj(false)
+					
 # run simulation
 # plot 5 guys
 # return simulation
@@ -27,7 +26,8 @@ x=mig.computeMoments(s,p,m)
 
 
 
-s = s[!mig.isna(s[:cohort]),:]
+s2 = s[!mig.isna(s[:cohort]),:]
+s96 = @where(s2,:year .> 1994)
 
 
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
@@ -48,7 +48,8 @@ mig.simplot(s,5)
 
 # write sim to disk
 outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
-mig.simexport(s,[22484,100,32259,32546,33533,7],joinpath(outdir,"simdata.csv"))
+mig.simexport(s,[1,7338,6960,13056,11303,7],joinpath(outdir,"simdata.csv"))
+
 
 maximum(m.EV[:,:,:,:,:,:,:,:,29])
 m.sh[1,1,1,1,1,1,:,1,1,1,1]

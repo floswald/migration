@@ -27,7 +27,7 @@ for p in plist
 end
 
 # set off initial value
-p2["xi1"]     = 0.01
+p2["xi1"]     = 0.00
 
 pb = Dict{ASCIIString,Array{Float64,1}}()
 pb["xi1"]    = [0.0,0.1]
@@ -57,6 +57,5 @@ submom = setdiff(moms[:moment],dont_use)
 
 # setup the minimization problem
 mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom,objfunc_opts=objfunc_opts)
-end
 
 
