@@ -104,8 +104,8 @@ type Param
 		imgamma  = 1.0/mgamma
 		tau      = 100
 		taudist  = 0.7
-		xi1      = 0.032
-		xi2      = 0.07
+		xi1      = 0.0125
+		xi2      = 0.055
 		omega1   = 0.000
 		omega2   = 1.0
 		omega3   = 0.03
@@ -114,7 +114,7 @@ type Param
 		MC1    = 0.005 		# owner
 		MC2    = 0.0 		# distance
 		MC3    = 0.09      # age 
-		MC3_2  = 0.0015 		# age2
+		MC3_2  = 0.00148 		# age2
 		MC4    = 0.31 		# kids
 
 
