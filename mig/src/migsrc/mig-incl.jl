@@ -92,7 +92,18 @@ function runObj(printmoms::Bool)
 	end
 	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 	objfunc_opts = ["printlevel" => 1,"printmoms"=>printmoms]
-	@time x = mig.objfunc(p2,moms,array(moms[:moment]),objfunc_opts)
+	# subsetting moments
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+	for iw in moms[:moment]
+		if contains(iw,"wealth") 
+			push!(dont_use,iw)
+		end
+	end
+	submom = setdiff(moms[:moment],dont_use)
+
+ 	objfunc_opts = ["printlevel" => 1,"printmoms"=>printmoms]
+	@time x = mig.objfunc(p2,moms,submom,objfunc_opts)
+
 	return x
 end
 

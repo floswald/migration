@@ -160,7 +160,16 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# offset_k   = 0
 	# offset_hh  = 0
 
-	infeas = 0
+	# policy
+	# ------
+
+	Poterba = m.gridsXD["Poterba"]
+	mortgageSub = false
+	if m.policy == "mortgageSubsidy"
+		mortgageSub = true
+	end
+	MortgageSubsidy =0.0
+	subsidize = 0.0
 
 
 	# state dependent stochastic states 
@@ -178,9 +187,23 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 						for ij=1:p.nJ
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
+                            MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 
 							price_j = m.gridsXD["p"][iy,ip,ij]
 							for ih=0:1
+
+								# mortgage subsidy
+								# if your current status is owner, you
+								# have to pay an extra amount of income tax
+								# which was exempt in the baseline.
+								if mortgageSub && ih==1
+									subsidize = (-1) * MortgageSubsidy
+								else
+									subsidize = 0.0
+								end
+
+								z += subsidize
+
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
 									a = agrid[ia]
@@ -261,7 +284,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												end
 
 												if cash < 0 && ihh==0 && ih==0
-													infeas += 1
 													# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),pj=$price_j,pk=$price_k,s=$is,k=$ik")
 													# println("cash at ihh=$ihh is $cash")
 													# println("maxvalue = $(r[1])")
@@ -337,7 +359,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 											if cash < 0 && ih==0 && ip<p.np
-												infeas += 1
 												# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
 												# println("aggregate: P=$ip,Y=$iy")
 												# println("cash at ihh=$ihh is $cash")
@@ -387,7 +408,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 			end 	#p
 		end 	#y
 	end 	#z
-	println("infeasible states in solution: $infeas")
 	return nothing
 
 end
@@ -689,9 +709,6 @@ end
 # state vector and a value of the discrete choices
 function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,p::Param)
 	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p)
-end
-function cashFunction(a::Float64, y::Float64, ih::Int, ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik::Int,subsidy::Float64,p::Param)
-	a + y + pifun(ih,ihh,price_j,price_k,move,ik,p) + subsidy
 end
 
 
