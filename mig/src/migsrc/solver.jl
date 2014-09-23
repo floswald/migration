@@ -172,6 +172,17 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# offset_k   = 0
 	# offset_hh  = 0
 
+	# policy
+	# ------
+
+	Poterba = m.gridsXD["Poterba"]
+	mortgageSub = false
+	if m.policy == "mortgageSubsidy"
+		mortgageSub = true
+	end
+	MortgageSubsidy =0.0
+	subsidize = 0.0
+
 
 	# state dependent stochastic states 
 	for iz=1:p.nz
@@ -188,6 +199,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 						for ij=1:p.nJ
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
+                            MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 
 							MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 

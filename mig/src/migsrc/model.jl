@@ -67,7 +67,7 @@ type Model
 
 
 	# constructor
-	function Model(p::Param;policy="null")
+    function Model(p::Param;policy="null")
 
 		# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh, nJ, nt-1 )
 		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
@@ -349,8 +349,7 @@ type Model
 			end
 		end
 
-
-		gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]
+        gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
@@ -360,8 +359,8 @@ type Model
 		# ===============
 
 		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
+        return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,policy,sinai)
 
-		return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,policy,sinai)
 	end
 end
 
