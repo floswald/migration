@@ -39,7 +39,7 @@ function exp_Mortgage()
 
 
 
-	v0 = m.vh[1,1,1,2,2,2,1,m0.aone,1,1,1] # value of a renter with 0 assets at age 1, in region 1, not buying, no kids, 
+	# v0 = m.vh[1,1,1,2,2,2,1,m0.aone,1,1,1] # value of a renter with 0 assets at age 1, in region 1, not buying, no kids, 
 
 	# model under policy
 	# ===================
@@ -59,22 +59,18 @@ function exp_Mortgage()
 		@by(:realage,ownership=mean(:h),mobility=mean(:move))
 	end
 
-	mig.plot(baseline_age[:realage],baseline_age[:ownership])
-	mig.plot(noSubsidy_age[:realage],noSubsidy_age[:ownership])
+	# mig.plot(baseline_age[:realage],baseline_age[:ownership])
+	# mig.plot(noSubsidy_age[:realage],noSubsidy_age[:ownership])
 
-	mig.figure(2)
-	mig.plot(baseline_age[:realage],baseline_age[:mobility])
-	mig.plot(noSubsidy_age[:realage],noSubsidy_age[:mobility])
-
-
-	v1 = m.vh[1,1,1,2,2,2,1,m0.aone,1,1,1] # value of a renter with 0 assets at age 1, in region 1, not buying, no kids, 
+	# mig.figure(2)
+	# mig.plot(baseline_age[:realage],baseline_age[:mobility])
+	# mig.plot(noSubsidy_age[:realage],noSubsidy_age[:mobility])
 
 
+	# v1 = m.vh[1,1,1,2,2,2,1,m0.aone,1,1,1] # value of a renter with 0 assets at age 1, in region 1, not buying, no kids, 
+	out = ["base_age" => baseline_age, "base_y" => baseline_y, "noSubsidy_age"=>noSubsidy_age, "noSubsidy_y"=>noSubsidy_y]
 
-
-
-
-
+	(baseline_age, baseline_y, noSubsidy_age, noSubsidy_y)
 
 end
 
