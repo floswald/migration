@@ -104,8 +104,8 @@ type Param
 		imgamma  = 1.0/mgamma
 		tau      = 100
 		taudist  = 0.7
-		xi1      = 0.0125
-		xi2      = 0.055
+		xi1      = 0.008
+		xi2      = 0.045
 		omega1   = 0.000
 		omega2   = 1.0
 		omega3   = 0.03
@@ -119,7 +119,7 @@ type Param
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
-		phi    = 0.06		  # fixed cost of selling
+		phi    = 0.00		  # fixed cost of selling
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm

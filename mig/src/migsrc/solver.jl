@@ -201,22 +201,22 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
                             MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 
-							MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
-
 							price_j = m.gridsXD["p"][iy,ip,ij]
+
 							for ih=0:1
 
 								# mortgage subsidy
 								# if your current status is owner, you
 								# have to pay an extra amount of income tax
 								# which was exempt in the baseline.
-								if mortgageSub && ih==1
-									subsidize = (-1) * MortgageSubsidy
+								# if mortgageSub && ihh==1  && ij == 6 
+								if mortgageSub && ih==1 
+									subsidize = MortgageSubsidy
 								else
 									subsidize = 0.0
 								end
 
-								z += subsidize
+								z = z - subsidize
 
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
@@ -268,6 +268,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# reset w vector
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
+
 
 												cash = cashFunction(a,z,ih,ihh,price_j,price_k,ij!=ik,ik,p)
 												m.cash[hidx] = cash

@@ -239,6 +239,16 @@ function simulate(m::Model,p::Param)
 	Dz[idxvec]   = rand(G0z,nsim)
 	Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
+	# policy
+	# ======
+
+	mortgageSub = false
+	if m.policy == "mortgageSubsidy"
+		mortgageSub = true
+	end
+	MortgageSubsidy =0.0
+	subsidize = 0.0
+
 	for age = 1:T
 
 		# who is around at this age?
@@ -289,14 +299,22 @@ function simulate(m::Model,p::Param)
 				i_idx_next = age+1 + T*(i-1)
 
 				coh = Dcohort[i_idx]
+				Dyear[i_idx] = m.coh_yrs[coh][age]
 
-				# get current state
-				Y = DY[i_idx]
-				P = DP[i_idx]
-				a = Da[i_idx]
-				z = Dz[i_idx]
-				azYP = [a,z,Y,P]
-				price_j = m.pred_p[m.coh_idx[coh][age],ij]
+				# get current state determined from aggregates
+				Y         = DY[i_idx]
+				P         = DP[i_idx]
+				a         = Da[i_idx]
+				z         = Dz[i_idx]
+				azYP      = [a,z,Y,P]
+				price_j   = m.pred_p[m.coh_idx[coh][age],ij]
+				y         = m.pred_y[m.coh_idx[coh][age],ij]
+				Dy[i_idx] = y
+				Dp[i_idx] = price_j
+
+				# get individual specific income at current state
+				yy = getIncome(m,y,z,age,ij) 
+
 
 
 				# get moving choice given current state
@@ -321,26 +339,24 @@ function simulate(m::Model,p::Param)
 					error("problem in moveto = $moveto")
 				end
 
+				# house price in new region "moveto"
+				# ==================================
 
-				# from here on you are assumed to be in 
-				# new region "moveto"
-				# =====================================
+				price_k = m.pred_p[m.coh_idx[coh][age],moveto]
 
-				price = m.pred_p[m.coh_idx[coh][age],moveto]
-				y     = m.pred_y[m.coh_idx[coh][age],moveto]
+				# apply policy for owners in policy regions
+				if mortgageSub && ih==1
+				# if mortgageSub && ih==1 && ij==6
+					subsidize = findSubsidy(yy,age,p,m)
+				else 
+					subsidize = 0.0
+				end
 
-				# get regional price and income for that individual
-				# TODO precompute yp for all cohorts and regions
-				# yp = getRegional(m,Y,P,ij) # yp[1] = y, yp[2] = p
-				Dy[i_idx] = y
-				Dp[i_idx] = price
-				Dyear[i_idx] = m.coh_yrs[coh][age]
+				yy -= subsidize
 
-				# get individual specific state
-				yy = getIncome(m,y,z,age,moveto)
 
 				# flag for downpayment constraint
-				canbuy = a + yy > p.chi * price
+				canbuy = a + yy > p.chi * price_k
 
 				# get value, consumption and savings given moving choice
 				# ======================================================
@@ -395,10 +411,10 @@ function simulate(m::Model,p::Param)
 				DMt[i_idx]      = moveto
 				Dregname[i_idx] = regnames[ij]
 				Dcanbuy[i_idx]  = canbuy
-				Dwealth[i_idx]  = (price * ih) + a
+				Dwealth[i_idx]  = (price_k * ih) + a
 				Ddist[i_idx]    = m.distance[ij,moveto]
-				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price,move,ij,p)
-				Drent[i_idx]    = pifun(ih,ihh,price_j,price,move,ij,p)
+				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price_k,move,ij,p)
+				Drent[i_idx]    = pifun(ih,ihh,price_j,price_k,move,ij,p)
 
 
 				# storing transition
@@ -438,6 +454,36 @@ function simulate(m::Model,p::Param)
 	end
 
 	return df
+end
+
+
+# mortgage policy 
+# subsidy finder
+function findSubsidy(y::Float64,age::Int,p::Param,m::Model)
+	ret = 0.0
+	row = 0
+	col = 0
+
+	if p.ages[age] < 34
+		row = 1
+	else
+		row = 2
+	end
+
+	if y < 40.0
+		col = 3
+	elseif y < 75.0
+		col = 4
+	elseif y < 125.0
+		col = 5
+	elseif y < 250.0
+		col = 6
+	else
+		col = 7
+	end
+
+	ret = m.sinai[row,col]
+	return ret
 end
 
 

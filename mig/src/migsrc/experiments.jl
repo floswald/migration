@@ -28,14 +28,15 @@ function exp_Mortgage()
 	baseline_y = @> begin
 		sim0
 		@where((:year.>1997) & (!isna(:cohort)) )
-		@transform(ybin = cut(:income,6))
-		@by(:ybin,ownership=mean(:h),mobility=mean(:move))
+		@transform(ybin = cut(:income,5))
+		@by(:ybin,ownership=mean(:h),mobility=mean(:move),N=size(:h,1))
 	end
 	baseline_age = @> begin
 		sim0
 		@where((:year.>1997) & (!isna(:cohort)) )
-		@by(:realage,ownership=mean(:h),mobility=mean(:move))
+		@by(:realage,ownership=mean(:h),mobility=mean(:move),income=mean(:income))
 	end
+	ss0=@> sim0 @where((:year.>1997) & (!isna(:cohort)) & (:move))
 
 
 
@@ -50,14 +51,27 @@ function exp_Mortgage()
 	noSubsidy_y = @> begin
 		sim1
 		@where((:year.>1997) & (!isna(:cohort)) )
-		@transform(ybin = cut(:income,6))
+		@transform(ybin = cut(:income,5))
 		@by(:ybin,ownership=mean(:h),mobility=mean(:move))
 	end	
 	noSubsidy_age = @> begin
 		sim1
 		@where((:year.>1997) & (!isna(:cohort)) )
-		@by(:realage,ownership=mean(:h),mobility=mean(:move))
+		@by(:realage,ownership=mean(:h),mobility=mean(:move),income=mean(:income))
 	end
+	ss1=@> sim1 @where((:year.>1997) & (!isna(:cohort)) & (:move))
+
+	map0 = proportionmap(ss0[:moveto])
+	map1 = proportionmap(ss1[:moveto])
+	for i in 1:p0.nJ 
+		println("change in move to region $i = $(round(100*(map1[i] - map0[i])/map0[i],2))")
+	end
+
+
+	mv = join(baseline_j[[:j,:mobility]],noSubsidy_j[[:j,:mobility]],on=:j)
+	@transform(mv,change=100*(:mobility_1 - :mobility)./:mobility)
+
+
 
 	# mig.plot(baseline_age[:realage],baseline_age[:ownership])
 	# mig.plot(noSubsidy_age[:realage],noSubsidy_age[:ownership])
