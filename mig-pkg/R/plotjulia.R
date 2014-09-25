@@ -36,6 +36,10 @@ plot.simReports <- function(){
 }
 
 
+# 1. why do owners move less? -> because of MC1.
+# 2. is this model able to fit 2005-2011 ownership choices? -> no. need a time varying downpayment contraint or other features that make buying at always higher prices possible. not clear that this is the focus of this paper
+# 3. what is the focus of this paper? -> model decreasing cross division migration and ownership over the lifecycle.
+
 analyze.sim <- function(newdata=FALSE){
 	fitpath <- "~/Dropbox/mobility/output/model/fit"
 	if (newdata){
@@ -46,11 +50,16 @@ analyze.sim <- function(newdata=FALSE){
 	}
 
 	# throw away incomplete cohorts
-	s = s[year>1997]
+	s = s[year>1997 & !(is.na(cohort))]
+
+# 	> s[,own := as.logical(own)]
+# > df = s[,list(move=mean(move,na.rm=T),p2y=mean(p2y,na.rm=T),own=mean(own,na.rm=T)),by=list(year,Division)]
+# > mdf = melt(df,c("year","Division"))
+# > ggplot(mdf, aes(year,y=value,color=Division)) + geom_line() + facet_grid(variable~., scales="free_y")
 
 	setkey(s,id,age)
 	s[,move := as.logical(move)]
-	s[,own := factor(own)]
+	s[,own := as.logical(own)]
 	s[,p2income := p/income]
 	s[,Division_plus := s[list(id,age+1)][["Division"]]]
 	s[,h_plus := s[list(id,age+1)][["h"]]]
@@ -300,8 +309,8 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	VAR_reg   <- reg$Agg2Region_coefs
 	z         <- ind$ztab
 	PYdata    <- reg$PYdata
-	pred_y   <- reg$pred_y
-	pred_p   <- reg$pred_p
+	pred_y    <- reg$pred_y
+	pred_p    <- reg$pred_p
 	sigma_agg <- reg$agg_sigma
 	sigma_agg$row <- rownames(sigma_agg)
 	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
@@ -322,7 +331,8 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
 
-	data(sipp_psid,envir=environment())
+	# data(sipp_psid,envir=environment())
+	data(BEA_fhfa,envir=environment())
 	# py = combine_sipp_psid()
 	setkey(py,year,Division)
 
@@ -440,8 +450,15 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 Export.IncomeProcess <- function(dat){
 
 	
-	cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
+	# cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
+	cd <- dat[HHincome>0,list(upid,timeid,year,MyMedinc,HHincome,age,Division)]
 	cd <- cd[complete.cases(cd)]
+	setkey(cd,year,Division)
+
+	x = get_BEA_persincome()
+	setkey(x,year,Division)
+	cd = x[cd]
+	setnames(cd,"y","CensusMedinc")
 
 	# get models of individual income
 	setkey(cd,upid,Division)
@@ -724,7 +741,138 @@ CombineHousePrices <- function(){
 	return(py)
 } 
 
+combine_BEA_fhfa <-function(){
+	BEA= get_BEA_persincome()
+	fhfa = getFHFA_realPrices()
 
+	setkey(BEA,year,Division)
+	setkey(fhfa,year,Division)
+
+	py <- BEA[fhfa]
+	py = py[,list(year,Division,y,p)]
+	py = py[complete.cases(py)]
+
+	save(py,file="~/git/migration/mig-pkg/data/BEA_fhfa.rda")
+}
+
+get_BEA_persincome <- function(){
+
+	data(PersonalIncome,package="EconData",envir=environment())
+	data(Population,package="EconData",envir=environment())
+
+	setkey(pers_income_current,state,year)
+	setkey(population,state,year)
+	population[pers_income_current]
+	pers_income_current[population]
+	py = pers_income_current[population]
+	py[,pcy := income / population]
+
+
+	# real per capita income
+	cpi = getCPI(base="2012",freq="yearly")
+	setkey(py,year)
+	py = py[cpi]
+	py[,rpcy := pcy / cpi2012]
+	py
+	py = py[complete.cases(py)]
+
+	# merge divisoin
+	data(US_states,package="EconData",envir=environment())
+	US_states = US_states[,list(state,Division)]
+	setkey(US_states,state)
+
+	setkey(py,state)
+	py = US_states[py]
+	py[,Division := abbreviate(Division,minlength=3)]
+	py[,wgt := population / .SD[,sum(population)],by=list(Division,year)]
+	py[,state := NULL]
+
+	py = py[,list(y = weighted.mean(rpcy,wgt)),by=list(Division,year)]
+	return(py)
+
+}
+
+
+getFHFA_realPrices <- function(){
+
+	# regional house prices
+
+	data(FHFA_Div,package="EconData",envir=environment())
+	fhfa <- FHFA_Div$yr
+	setnames(fhfa,"yr","year")
+
+	fhfa[,Division := as.character(Division)]
+	fhfa[Division=="DV_ENC",Division := "ENC"]
+	fhfa[Division=="DV_ESC",Division := "ESC"]
+	fhfa[Division=="DV_MA",Division := "MdA"]
+	fhfa[Division=="DV_MT",Division := "Mnt"]
+	fhfa[Division=="DV_NE",Division := "NwE"]
+	fhfa[Division=="DV_PAC",Division := "Pcf"]
+	fhfa[Division=="DV_PAC",Division := "Pcf"]
+	fhfa[Division=="DV_SA",Division := "StA"]
+	fhfa[Division=="DV_WNC",Division := "WNC"]
+	fhfa[Division=="DV_WSC",Division := "WSC"]
+
+
+
+	fhfa[,index2012 := index_nsa / .SD[year==2012,index_nsa],by=Division]
+
+	setkey(fhfa,Division,year)
+	
+	# get 2012 mean house value in sipp
+	data(Sipp_age,envir=environment())
+	v2012 = merged[hvalue>0 & year==2012,list(hvalue=weighted.mean(hvalue,na.rm=T)),by=Division]
+
+
+	v2012 <- rbind(v2012,data.table(Division="USA",hvalue=merged[hvalue>0 & year==2012,weighted.mean(hvalue,na.rm=T)]))
+	setkey(v2012,Division)
+
+	# get nominal house value in all years
+	fhfa = v2012[fhfa]
+	fhfa[,price := hvalue * index2012]
+
+	# get real house value
+	data(CPIHOSSL,package="EconData",envir=environment())
+	cpi = to.yearly(CPIHOSSL)
+	cpi <- cpi[,1]
+	names(cpi) <- "cpi"
+	coredata(cpi) = coredata(cpi) / as.numeric(cpi['2012'])
+	cpi <- data.table(year=year(index(cpi)),cpi12=as.numeric(cpi),key="year")
+	setkey(fhfa,year)
+	fhfa = cpi[fhfa]
+
+	# p is real house price in 2012 terms
+	fhfa[,p := price ]
+	fhfa[,p := price / cpi12]
+
+	# extend to 1967 with cpi
+	# -----------------------
+
+	data(CPIHOSSL,package="EconData",envir=environment())
+	cpi2 <- to.yearly(CPIHOSSL['1966/1975'])
+	cpi2 <- cpi2[,1]
+	names(cpi2) <- "cpi"
+	coredata(cpi2) <- coredata(cpi2)/as.numeric(cpi2['1975'])	# base year 1975
+	names(cpi2) <- "cpi"
+	cpi2 <- data.table(year=year(index(cpi2)),cpi75=as.numeric(cpi2),key="year")
+
+	fhfa75 = fhfa[year==1975]
+
+	fhfa2 = copy(fhfa75)
+
+	for (yr in 1967:1974){
+		fhfa75 <- rbind(fhfa75,fhfa2[,list(year=yr,cpi12,Division,hvalue,index_nsa,index2012,price,p)])
+	}
+	for (yr in 1967:1974){
+		fhfa75[year==yr,p:= p * cpi2[year==yr,cpi75]]
+	}
+	fhfa<-rbind(fhfa,fhfa75[year!=1975])
+	# ggplot(fhfa,aes(year,y=p,color=Division)) + geom_line()
+	return(fhfa)
+
+
+
+}
 
 # want a model p_pacific = f(P,Y)
 

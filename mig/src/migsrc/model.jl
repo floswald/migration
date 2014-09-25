@@ -396,7 +396,7 @@ end
 # =============
 
 function cohortIdx(p::Param)
-	years = 1968:2012
+	years = 1967:2012
 
 	# which indices in "years" are relevant for
 	# which cohort at which age

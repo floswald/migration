@@ -11,6 +11,8 @@ function solReport()
 	mig.solve!(m,p)
 
 	# report
+
+	# look at rho at different aggregate states
 end
 
 function simCsv(s::DataFrame)

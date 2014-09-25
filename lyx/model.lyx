@@ -3360,7 +3360,7 @@ reference "fig:Mapping-P-p"
 
 \end_inset
 
-and 
+ and 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:mapping-Y-y"
@@ -3368,6 +3368,89 @@ reference "fig:mapping-Y-y"
 \end_inset
 
 .
+ The model parameters are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Aggregate-to-Regional-VAR"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR1.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR2.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Aggregate to Regional price mappings.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Aggregate-to-Regional-VAR"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3439,7 +3522,7 @@ name "fig:mapping-Y-y"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
