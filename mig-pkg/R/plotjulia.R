@@ -336,11 +336,21 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# py = combine_sipp_psid()
 	setkey(py,year,Division)
 
-	# aggregates as means over regions
-	agg <- py[,list(Y=mean(y,na.rm=T),P=mean(p,na.rm=T)),by=year][order(year)]
+	# aggregates house price is mean over regions
+	# agg <- py[,list(P=mean(p,na.rm=T),Y=mean(y,na.rm=T)),by=year]
+	# setkey(agg,year)
+
+	# taking gdp instead of mean over regions:
+	agg <- py[,list(P=mean(p,na.rm=T)),by=year]
 	setkey(agg,year)
+	gdp = getFRED_gdp()
+	agg = gdp[agg]
+	setnames(agg,"gdp","Y")
 	agg[,LY := agg[list(year-1)][["Y"]]]
 	agg[,LP := agg[list(year-1)][["P"]]]
+
+	# aggregate income is GDP per capita
+
 
 	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
 
@@ -487,8 +497,8 @@ Export.IncomeProcess <- function(dat){
 
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks
-	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.2,0.95),na.rm=T)) 
-	names(bounds)[-1] <- c("q20","q95")
+	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+	names(bounds)[-1] <- c("q05","q95")
 
 
 	# make a table with those
@@ -524,7 +534,7 @@ Export.IncomeProcess <- function(dat){
 
 
 
-getCPI <- function(freq="yearly",base="2011"){
+getCPI <- function(freq="yearly",base="2012"){
 
 	base = as.character(base)
 
@@ -752,6 +762,8 @@ combine_BEA_fhfa <-function(){
 	py = py[,list(year,Division,y,p)]
 	py = py[complete.cases(py)]
 
+
+
 	save(py,file="~/git/migration/mig-pkg/data/BEA_fhfa.rda")
 }
 
@@ -789,6 +801,26 @@ get_BEA_persincome <- function(){
 
 	py = py[,list(y = weighted.mean(rpcy,wgt)),by=list(Division,year)]
 	return(py)
+
+}
+
+getFRED_gdp <- function(){
+
+	gdp = quantmod:::getSymbols("A939RX0Q048SBEA",src="FRED",auto.assign=FALSE)
+	gdp = xts:::to.yearly(gdp)
+	gdp = gdp[,1]
+	names(gdp) <- "gdp"
+	gdp = data.table(year=year(index(gdp)),gdp = as.numeric(gdp)/1000,key="year")	# is in 2009 dollars
+
+	cpi09 = getCPI(base="2009") 
+	cpi12 = getCPI(base="2012") 
+	cpi=cpi09[cpi12]
+	cpi[,cpi0912 := cpi2009/cpi2012]
+	gdp = gdp[cpi]
+	gdp[,c("cpi2009","cpi2012") := NULL]
+	gdp[,gdp := gdp / cpi0912]
+	gdp[,cpi0912 := NULL]
+	return(gdp)
 
 }
 

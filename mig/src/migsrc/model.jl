@@ -200,7 +200,7 @@ type Model
 			inc_shocks[j,1] = inc_coefs[j,:Lresid]  
 			inc_shocks[j,2] = inc_coefs[j,:sigma_resid]
 			ybar = log(VAR_reg[j,:mean_y])
-			inc_shocks[j,3] = log(inc_coefs[j,:q20]) - ybar
+			inc_shocks[j,3] = log(inc_coefs[j,:q05]) - ybar
 			inc_shocks[j,4] = log(inc_coefs[j,:q95]) - ybar
 		end
 
@@ -337,11 +337,12 @@ type Model
 					for itau in 1:p.ntau
 						for ih in 0:1
 							for is in 1:p.ns
-								if p.ages[it] < 45
-									mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * p.ages[it] + p.MC3_2 * (p.ages[it])^2 + (is-1)*p.MC4 )
-								else
-									mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * ((p.MC0+grids["tau"][itau]) + p.MC1*ih + p.MC2 * dist[ij,ik] + p.MC3 * 45 + p.MC3_2 * 45^2 + (is-1)*p.MC4 )
-								end
+								# if p.ages[it] < 40
+									# mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * (grids["tau"][itau] + p.MC0*p.ages[it] + p.MC1*(p.ages[it])^2 + p.MC2*ih*p.ages[it] + p.MC3 * dist[ij,ik] + (is-1)*p.MC4 )
+									mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * (grids["tau"][itau] + p.MC0 + p.MC1*p.ages[it] + p.MC2*(p.ages[it])^2 + p.MC3*ih + (is-1)*p.MC4 )
+								# else
+								# 	mc[it,ij,ik,itau,ih+1,is] = (ij!=ik) * (grids["tau"][itau] + p.MC0 + p.MC1*40 + p.MC2*(40)^2 + p.MC3*ih + (is-1)*p.MC4 )
+								# end
 							end
 						end
 					end
@@ -480,7 +481,7 @@ function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 		P = xp
 		# scale z into bounds
 		ybar = log(ygrid[j])
-		zlow = log(df[j,:q20]) - ybar
+		zlow = log(df[j,:q05]) - ybar
 		zhigh = log(df[j,:q95]) - ybar
 		z[:,j] = linspace(zlow,zhigh,p.nz)
 	end

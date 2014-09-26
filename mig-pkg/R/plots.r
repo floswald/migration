@@ -877,12 +877,25 @@ PlotSippMigrationRates <- function(){
 
 	data(Sipp_age)
 
-	 m=merged[age>29&age<61&college==TRUE,list(moved.S2S = weighted.mean(S2S,HHweight,na.rm=T),moved.D2D = weighted.mean(D2D,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
+	own = merged[age>20&age<51,list(own=mean(own)*100),by=age][order(age)]
+	p0 = ggplot(own,aes(age,y=own)) + geom_ribbon(aes(ymin=0,ymax=own),alpha=0.3,color="red",fill="red") + theme_bw() + scale_y_continuous(name="% own")
+
+	 m=merged[age>20&age<51,list(moved.S2S = weighted.mean(S2S,HHweight,na.rm=T),moved.D2D = weighted.mean(D2D,HHweight,na.rm=T)),by=list(age,h=factor(own))][order(age)]
 	 m[,type := "Renter"]
 	 m[h==TRUE,type := "Owner"]
 
 	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
-	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24))
+	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24)) + theme(legend.position="top")
+
+	 # add density of owners on top
+	 pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf")
+	 # pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9)
+	grid.newpage()
+	pushViewport(viewport(layout = grid.layout(4, 4))) # a 5 by 5 grid
+	print(p2, vp=vplayout(1:3,1:4)) # the main x/y plot will instead spread across most of the grid
+	print(p0, vp=vplayout(4,1:4)) # the first density plot will occupy the top of the grid
+	dev.off()
+
 	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
 	 ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
 

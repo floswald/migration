@@ -159,10 +159,10 @@ function simulate(m::Model,p::Param)
 	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
 	G0j   = Categorical(array(m.regnames[:prop]))	
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
+	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 	G0z   = Normal(0,0.1)
 
 	# individual specific variables
-	id     = 0
 	a      = 0.0
 	z      = 0.0
 	yy     = 0.0   # individual income
@@ -237,7 +237,8 @@ function simulate(m::Model,p::Param)
 	Dis[idxvec]  = rand(G0k,nsim)
 	Dj[idxvec]   = rand(G0j,nsim)
 	Dz[idxvec]   = rand(G0z,nsim)
-	Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
+	Dh[idxvec]   = rand(G0h,nsim) .- 1
+	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
 	# policy
 	# ======
@@ -379,7 +380,7 @@ function simulate(m::Model,p::Param)
 				else
 					ihh = 0
 					if a < 0
-						println("error: id=$id,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
+						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
 					end
 					# for iia in aone:p.na
 					# 	for iz in 1:p.nz
@@ -597,7 +598,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# keep only relevant years
 	# and drop NAs
-	df = @where(df,(:year.>1997) & (!isna(:cohort)))
+	df = @where(df,(:year.>1996) & (!isna(:cohort)))
 
 
 	# transformations, adding columns

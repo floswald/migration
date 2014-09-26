@@ -17,7 +17,7 @@ end
 
 function simCsv(s::DataFrame)
 	s2 = s[!mig.isna(s[:cohort]),:]
-	writetable("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv")
+	writetable("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv",s)
 end
 
 
@@ -41,7 +41,7 @@ end
 function simRegs(s::DataFrame)
 
 	s2 = s[!mig.isna(s[:cohort]),:]
-	s96 = @where(s2,:year .> 1994)
+	s96 = @where(s2,:year .> 1996)
 	pool!(s96[:Division])
 
 	lm1 = lm(hh ~ p2y + p2w + realage + Division,s96)

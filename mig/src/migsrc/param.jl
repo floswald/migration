@@ -104,17 +104,18 @@ type Param
 		imgamma  = 1.0/mgamma
 		tau      = 100
 		taudist  = 0.7
-		xi1      = 0.008
+		xi1      = 0.010
 		xi2      = 0.045
 		omega1   = 0.000
 		omega2   = 1.0
-		omega3   = 0.03
+		omega3   = 0.02
 
-		MC0    = 0.7  	 	# intercept of mover type. non-mover has that + tau
-		MC1    = 0.005 		# owner
-		MC2    = 0.0 		# distance
-		MC3    = 0.09      # age 
-		MC3_2  = 0.00148 		# age2
+		MC0    = 3.15  	 	# intercept
+		MC1    = 0.018  	 	# age
+		MC2    = 0.001 		# age2
+		MC3    = 0.21 		# owmer
+		# MC3    = 0.00      # dist
+		MC3_2  = 0.00 		# 
 		MC4    = 0.31 		# kids
 
 
@@ -123,7 +124,7 @@ type Param
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
-		chi    = 0.2   # downpayment ratio
+		chi    = 0.1   # downpayment ratio
 		myNA   = -99.0
 		minAge = 20
 		maxAge = minAge + nt
