@@ -75,7 +75,8 @@ end
 function draw_z(m::Model,Lz::Float64,j::Int)
 
 	zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
-	z = forceBounds(zz,m.Inc_shocks[j,3],m.Inc_shocks[j,4])
+	# z = forceBounds(zz,m.Inc_shocks[j,3],m.Inc_shocks[j,4])
+	z = forceBounds(zz,-0.72,0.72)
 	return z
 end
 

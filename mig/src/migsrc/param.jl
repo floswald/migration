@@ -108,7 +108,7 @@ type Param
 		xi2      = 0.045
 		omega1   = 0.000
 		omega2   = 1.0
-		omega3   = 0.02
+		omega3   = 0.08
 
 		MC0    = 3.15  	 	# intercept
 		MC1    = 0.018  	 	# age

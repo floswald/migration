@@ -483,7 +483,8 @@ function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 		ybar = log(ygrid[j])
 		zlow = log(df[j,:qlow]) - ybar
 		zhigh = log(df[j,:qhigh]) - ybar
-		z[:,j] = linspace(zlow,zhigh,p.nz)
+		# z[:,j] = linspace(zlow,zhigh,p.nz)
+		z[:,j] = xz
 	end
 	return (z,P)
 end
