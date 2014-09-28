@@ -104,19 +104,19 @@ type Param
 		imgamma  = 1.0/mgamma
 		tau      = 100
 		taudist  = 0.7
-		xi1      = 0.010
-		xi2      = 0.045
-		omega1   = 0.000
+		xi1      = 0.016
+		xi2      = 0.039
+		omega1   = 1.300
 		omega2   = 1.0
-		omega3   = 0.08
+		omega3   = 4.8
 
-		MC0    = 3.15  	 	# intercept
-		MC1    = 0.018  	 	# age
-		MC2    = 0.001 		# age2
-		MC3    = 0.21 		# owmer
+		MC0    = 3.05  	 	# intercept
+		MC1    = 0.017  	 	# age
+		MC2    = 0.0013 		# age2
+		MC3    = 0.26 		# owmer
 		# MC3    = 0.00      # dist
 		MC3_2  = 0.00 		# 
-		MC4    = 0.31 		# kids
+		MC4    = 0.36 		# kids
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
@@ -161,6 +161,7 @@ function show(io::IO, p::Param)
 	xi2     = $(p.xi2)
 	omega1  = $(p.omega1)
 	omega2  = $(p.omega2)
+	omega3  = $(p.omega3)
 	MC0     = $(p.MC0)
 	MC1     = $(p.MC1)
 	MC2     = $(p.MC2)

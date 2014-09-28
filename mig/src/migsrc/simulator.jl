@@ -75,8 +75,8 @@ end
 function draw_z(m::Model,Lz::Float64,j::Int)
 
 	zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
-	# z = forceBounds(zz,m.Inc_shocks[j,3],m.Inc_shocks[j,4])
-	z = forceBounds(zz,-0.72,0.72)
+	# z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.Inc_shocks[j,4])
+	z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.gridsXD["zsupp"][4,1])
 	return z
 end
 
@@ -380,7 +380,7 @@ function simulate(m::Model,p::Param)
 				# else you are current renter who cannot buy
 				else
 					ihh = 0
-					if a < 0
+					if a < -0.1
 						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
 					end
 					# for iia in aone:p.na
@@ -425,6 +425,7 @@ function simulate(m::Model,p::Param)
 					Da[i_idx_next] = ss
 					Dj[i_idx_next] = moveto
 					Dz[i_idx_next] = draw_z(m,z,moveto) # TODO drawign this from the right distribution depending on whether move or not!
+					# Dz[i_idx_next] = 0.0 # TODO drawign this from the right distribution depending on whether move or not!
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], rand() )
 				end
 			end # individual
@@ -604,8 +605,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 6 bins, and add age squared
-	ngroups = 6
-	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 6 bins, and add age squared
+	ngroups = 3
+	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
 	fullw = WeightVec(array(df[:density]))
@@ -646,6 +647,11 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		end
 	append!(mom1,xx)
 
+	# unconditional mean of owning
+	# ----------------------------
+
+	push!(mom1,["mean_own",mean(convert(Array{Float64},df[:h]),fullw),std(convert(Array{Float64},df[:h]),fullw)])
+	covar = mean(convert(Array{Float64},df[:h]),fullw)
 
 	# own ~ Division
 	# ----------

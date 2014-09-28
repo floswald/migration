@@ -56,6 +56,9 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	r$mean_sell_50 = d[age==50,list(moment="mean_sell_50",data_value=weighted.mean(sell,HHweight,na.rm=T),data_sd=sqrt(wtd.var(sell,HHweight,na.rm=T) / nrow(.SD)))]
 	r$mean_move_50 = d[age==50,list(moment="mean_move_50",data_value=weighted.mean(D2D,HHweight,na.rm=T),data_sd=sqrt(wtd.var(D2D,HHweight,na.rm=T) / nrow(.SD)))]
 
+	# own ~ 
+	r$mean_own = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD)))]
+
 	# own ~ Division
 	r$mean_own_div = d[,list(moment="mean_own",data_value=weighted.mean(own,HHweight,na.rm=T),data_sd=sqrt(wtd.var(own,HHweight,na.rm=T) / nrow(.SD))),by=Division][order(Division)]
 	r$mean_own_div[,moment := paste0(moment,"_",Division)]

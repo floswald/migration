@@ -10,7 +10,7 @@ cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
-x=mig.runObj(false)
+x=mig.runObj(true)
 					
 # run simulation
 # plot 5 guys
@@ -18,8 +18,8 @@ x=mig.runObj(false)
 @time s = mig.runSim();
 
 p = mig.Param(2,1)
-@time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
 @time m = mig.Model(p)	# 1.5 secs
+@time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
 @time mig.solve!(m,p)	
 @time s = mig.simulate(m,p);	
 x=mig.computeMoments(s,p,m)
@@ -29,13 +29,39 @@ x=mig.computeMoments(s,p,m)
 
 s2 = s[!mig.isna(s[:cohort]),:]
 mig.simplot(s2[s2[:cohort].<=14,:],5)
-s96 = @where(s2,:year .> 1994)
+s96 = @where(s2,:year .> 1996)
+
+# gadfly plotting
+# ---------------
+oc = @by(s2,[:realage,:cohort],o=mean(:own),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0)))
+oc96 = @by(s96,[:realage,:cohort],o=mean(:own),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0)))
+plot(oc,x="realage",y="o",color="cohort",Geom.line)
+plot(oc96,x="realage",y="o",color="cohort",Geom.line)
 
 
 mig.vhplot(m,p,(7,1,2,3,3,1,7,1))
-mig.vhplot(m,p,(8,1,2,3,3,1,8,1))
 mig.vhplot(m,p,(7,1,2,3,3,1,8,1))
+
 mig.vhplot(m,p,(1,1,1,1,1,1,1,1))
+mig.vhplot(m,p,(1,1,1,3,3,1,1,1))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,1))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,30))
+mig.vhplot(m,p,(1,1,2,1,1,1,1,30))
+
+hcat(m.vh[1,1,1,4,3,3,1,:,1,1,30][:],m.ch[1,1,1,4,3,3,1,:,1,1,30][:],m.sh[1,1,1,4,3,3,1,:,1,1,30][:])
+
+mig.vhplot(m,p,(1,1,4,3,3,1,1,30))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,29))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,28))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,27))
+
+mig.vhplot(m,p,(1,1,4,3,3,1,1,28))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,27))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,26))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,25))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,24))
+mig.vhplot(m,p,(1,1,4,3,3,1,1,22))
+
 mig.vhplot(m,p,(1,1,4,3,3,2,1,1))
 mig.vhplot(m,p,(1,1,4,3,3,2,1,28))
 mig.vhplot(m,p,(1,1,1,1,1,1,1,28))

@@ -458,6 +458,45 @@ facts("test integration of vbar: getting EV") do
 		end
 	end
 
+	context("test constant array returns original array") do
+
+		p    = mig.Param(2)
+		m    = mig.Model(p)
+
+		mig.setones!(m)
+
+		Gz = m.gridsXD["Gz"]
+		Gyp = m.gridsXD["Gyp"]
+
+		# # 1/number of all integration states
+		# num = p.nz * p.ny * p.np 
+		# fill!(m.vbar,1/num)
+		# fill!(Gz,1/p.nz)
+		# fill!(Gyp,1/(p.ny*p.np))
+
+		for itest = 1:50
+
+			# choose a random state
+			ia   = rand(1:p.na)
+			is   = rand(1:p.ns)
+			ih   = rand(1:p.nh)
+			iy   = rand(1:p.ny)
+			ip   = rand(1:p.np)
+			iz   = rand(1:p.nz)
+			itau = rand(1:p.ntau)
+			ij   = rand(1:p.nJ)
+			it   = rand(1:(p.nt-2))
+
+			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
+
+			# calling integrateVbar must return vbar.
+			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,m,p)
+
+			@fact m.EV[mig.idx9(is,iz,iy,ip,itau,ia,ih,ij,it,p)] => roughly(1.0,atol=0.00001)
+
+		end
+	end
+
 	context("test whether equal to hand integration") do
 
 		p    = mig.Param(1)
