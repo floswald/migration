@@ -281,7 +281,7 @@ type Model
 		# 1D grids
 		# =========
 
-		bounds["assets"] = (-maximum(pgrid),maximum(zgrid)*2)
+		bounds["assets"] = (-maximum(pgrid)*(1-p.chi),0.9*maximum(pgrid))
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
@@ -328,7 +328,6 @@ type Model
 		# ====================
 
 		# scale age into [0,3]
-		age0_3 = 3.* (p.ages .-  p.ages[1])/(p.ages[end]-p.ages[1]) 
 
 		mc = zeros(p.nt-1,p.nJ,p.nJ,p.ntau,p.nh,p.ns)
 		for it in 1:p.nt-1
@@ -377,6 +376,17 @@ function setrand!(m::Model)
 	m.vbar = reshape(rand(length(m.vbar)),size(m.vbar))
 	m.rho  = reshape(rand(length(m.rho)),size(m.rho))
 	m.EVfinal = reshape(rand(length(m.EVfinal)),size(m.EVfinal))
+	return nothing
+end
+
+function setones!(m::Model)
+	m.v = reshape(ones(length(m.v)),size(m.v))
+	m.vh = reshape(ones(length(m.vh)),size(m.vh))
+	m.sh = reshape(ones(length(m.vh)),size(m.vh))
+	m.ch = reshape(ones(length(m.vh)),size(m.vh))
+	m.vbar = reshape(ones(length(m.vbar)),size(m.vbar))
+	m.rho  = reshape(ones(length(m.rho)),size(m.rho))
+	m.EVfinal = reshape(ones(length(m.EVfinal)),size(m.EVfinal))
 	return nothing
 end
 
@@ -483,7 +493,8 @@ function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 		ybar = log(ygrid[j])
 		zlow = log(df[j,:qlow]) - ybar
 		zhigh = log(df[j,:qhigh]) - ybar
-		z[:,j] = linspace(zlow,zhigh,p.nz)
+		# z[:,j] = linspace(zlow,zhigh,p.nz)
+		z[:,j] = xz
 	end
 	return (z,P)
 end

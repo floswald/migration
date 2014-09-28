@@ -12,6 +12,10 @@
 # my model is in real terms, i.e. there is no tax.
 # therefore a tax saving is an increase in disposable income.
 
+# take money away from owners
+# register as tax receipts
+# redistribute to everybody lump sum
+# measure welfare difference
 
 function exp_Mortgage()
 

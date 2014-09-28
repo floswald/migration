@@ -50,7 +50,12 @@ function solveFinal!(m::Model,p::Param)
 	for ia = 1:p.na
 
 		if agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] ) > 0
-			m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) ) + p.omega3 * (ih-1) * (m.gridsXD["p"][iy,ip,ij] )
+			# m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) ) + p.omega3 * (ih-1) * (m.gridsXD["p"][iy,ip,ij] )
+			# m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = 0.1 * p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) ) + p.omega3 * (ih-1) 
+			m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) ) + (ih-1) *log( (m.gridsXD["p"][iy,ip,ij] )) 
+
+			# m.EVfinal[idxFinal(ia,ih,ip,iy,ij,p)] = p.omega1 * p.imgamma * myexp2(p.mgamma * mylog2(agrid[ia] + p.omega3 * (ih-1) * (m.gridsXD["p"][iy,ip,ij] )) )
+			
 		else
 			m.EVfinal[ia,ih,ip,iy,ij] = p.myNA
 		end

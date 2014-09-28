@@ -37,6 +37,9 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},opts...)
     if Sys.OS_NAME == :Darwin
 	    showall(mom2[:,[:moment,:data_value,:model_value,:sqdist]])
 	    println(p)
+		s2 = @where(s,(:year.>1996) & (!isna(:cohort)))
+		showall(@by(s2,[:realage],own=mean(:own),move=mean(:move),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0))))
+		showall(hcat(@by(@where(s2,:own.==true),:realage,move_owner=mean(:move)),@by(@where(s2,:own.==false),:realage,move_renter=mean(:move))))
 	    if get(opts[1],"printmoms",false) 
     		writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
 	    end
@@ -74,7 +77,7 @@ function runSim()
 	s = s[!isna(s[:cohort]),:]
 	s2 = @where(s,:year.>1996)
 	showall(@by(s2,[:own,:realage],m=mean(:move)))
-	showall(@by(s2,[:realage],m=mean(:own)))
+	showall(@by(s2,[:realage],own=mean(:own),buy=mean((:ih.==0)&(:ihh.==1)),sell=mean((:ih.==1)&(:ihh.==0))))
 	own=@by(s2,[:realage],m=mean(:own))
 	mig.plot(own[:realage],own[:m])
 	figure()
