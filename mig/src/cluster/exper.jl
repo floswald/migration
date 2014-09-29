@@ -12,9 +12,9 @@ using mig
 
 indir, outdir = mig.setPaths()
 
-e = mig.exp_Mortgage()
+e = mig.exp_Mortgage(true)
 
-writetable(joinpath(outdir,"experiment_plot.csv"),e["plotting"])
+writetable(joinpath(outdir,"expMort_plot.csv"),e["plotting"])
 using HDF5, JLD
-save(joinpath(outdir,"experiment_data.JLD"),e)
+save(joinpath(outdir,"expMort_data.JLD"),e)
 

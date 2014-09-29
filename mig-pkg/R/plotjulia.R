@@ -131,6 +131,25 @@ analyze.sim <- function(newdata=FALSE){
 
 }
 
+plot.MortgExper <- function(){
+	d <- data.table(read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/expMort_plot.csv"))
+	d[,type := "Renter"]
+	d[own=="true",type := "Owner"]
+	mv = subset(d,realage<41,select=c(type,realage,move,policy))
+
+	pl <- list()
+	pl$move = ggplot(mv[policy!="burning_money"],aes(x=realage,y=move,color=policy)) + facet_grid(~type) + geom_line(size=0.8) + theme_bw() + scale_x_continuous("age") + scale_y_continuous("proportion moved") + ggtitle("Removing Mortgage Interest Rate Deduction: Mobility")
+
+	inc <- melt(d[,list(age=realage,type,income,assets,policy)],id.vars=c("type","age","policy"))
+
+	pl$income = ggplot(inc[policy!="burning_money"],aes(x=age,y=value,color=policy,linetype=variable)) + facet_grid(~type) + geom_line(size=0.8) + theme_bw() + scale_x_continuous("age") + scale_y_continuous("proportion moved") + ggtitle("Removing Mortgage Interest Rate Deduction: Income and Assets")
+
+	ggsave(pl$move,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/moving.pdf",width=8,height=6)
+	ggsave(pl$income,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/inc-assets.pdf",width=8,height=6)
+
+	return(pl)
+}
+
 
 mom.table <- function(){
 	d <- data.table(read.csv("~/Dropbox/mobility/output/model/fit/moms.csv"))

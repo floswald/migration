@@ -22,7 +22,7 @@ function findctax(v0::Float64,opts::Dict)
 	if get(opts,"verbose",0) > 0 
 		ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,show_trace=true,method=:brent)
 	else
-		ctax = optimize((x)->welfare(x,v0,opts),[0.5,1.5],method=:brent)
+		ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,method=:brent)
 	end
 	return ctax
 end
@@ -62,7 +62,7 @@ end
 # * baseline model (with mortgage subsidy)
 # * various policies that differ in the redistribution applied
 # * for each policy the compensation consumption tax/subsidy that would make individuals indifferent between both schemes
-function exp_Mortgage()
+function exp_Mortgage(ctax=false)
 
 	# pol_type = 1: redestribute tax receipts as a lump sum to 
 	# every age 20 individual. redestributes from old and rich to poor and young
@@ -73,11 +73,14 @@ function exp_Mortgage()
 	# baseline model:
 	# ===============
 
+	println("computing baseline")
+
 	p0   = Param(2)
 	m0   = Model(p0)
 	solve!(m0,p0)
 	sim0 = simulate(m0,p0)
 
+	println("done.")
 	# get baseline expected lifetime utility at age 1
 	# age = 20 
 	# j = 1
@@ -129,14 +132,19 @@ function exp_Mortgage()
 	sim0 = 0
 	gc()
 
+	println("starting experiments")
 
 	# model under no redistribution at all: burning money
 	# ---------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy_oldyoung","lumpsum" => [0.0]]
+	opts = ["policy" => "mortgageSubsidy_oldyoung","lumpsum" => [0.0],"verbose"=>1]
 
 	# utility equalizing consumption scaling:
-	ctax0 = findctax(v0,opts)
+	if ctax
+		ctax0 = findctax(v0,opts)
+	else
+		ctax0 = 0
+	end
 
 	# run simulation
 	p0   = Param(2,opts)
@@ -156,10 +164,14 @@ function exp_Mortgage()
 	# model under redistribution policy 1: lump sum to all 20 year olds
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy_oldyoung","lumpsum" => lumpSum1]
+	opts = ["policy" => "mortgageSubsidy_oldyoung","lumpsum" => lumpSum1,"verbose"=>1]
 
 	# utility equalizing consumption scaling:
-	ctax1 = findctax(v0,opts)
+	if ctax
+		ctax1 = findctax(v0,opts)
+	else
+		ctax1 = 0
+	end
 
 	# run simulation
 	p1   = Param(2,opts)
@@ -180,10 +192,14 @@ function exp_Mortgage()
 	# model under redistribution policy 2: lump sum from owners of age group
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy_in_age","lumpsum" => lumpSum2]
+	opts = ["policy" => "mortgageSubsidy_in_age","lumpsum" => lumpSum2,"verbose"=>1]
 
 	# utility equalizing consumption scaling:
-	ctax2 = findctax(v0,opts)
+	if ctax
+		ctax2 = findctax(v0,opts)
+	else
+		ctax2 = 0
+	end
 
 	# some output form this policy:
 	p2 = Param(2,opts)
@@ -200,7 +216,7 @@ function exp_Mortgage()
 
 
 	# return
-	out = ["Receipts" => Tot_tax, "lumpSum_20yrs" => lumpSum1, "Receipts_age"=>Tot_tax_age, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2, "pol2_out"=> pol2_out, "plotting" => move_own_age]
+	out = ["Receipts" => Tot_tax, "lumpSum_20yrs" => lumpSum1, "Receipts_age"=>Tot_tax_age, "ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2, "pol2_out"=> pol2_out, "plotting" => move_own_age]
 
 	return out
 
