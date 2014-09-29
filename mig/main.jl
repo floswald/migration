@@ -17,7 +17,7 @@ x=mig.runObj(true)
 # return simulation
 @time s = mig.runSim();
 
-p = mig.Param(2,1)
+p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
 @time mig.solve!(m,p)	

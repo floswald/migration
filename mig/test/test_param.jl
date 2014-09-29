@@ -16,9 +16,6 @@ facts("test updating of param vector") do
 	@fact p.beta => di["beta"]
 	@fact p.omega2 => di["omega2"]
 
-	di = ["beta" => 1.4, "omega3" => 34.2]
-	@fact_throws mig.update!(p,di)
-
 
 end
 

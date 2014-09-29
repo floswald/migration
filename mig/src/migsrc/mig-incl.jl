@@ -166,9 +166,9 @@ end
 
 
 # converts
-function convert(::Type{DataFrame},cc::CoefTable)
-	DataFrame(Variable=cc.rownms,Estimate=cc.mat[:,1],StdError=cc.mat[:,2],tval=cc.mat[:,3],pval=cc.mat[:,4])
-end
+# function convert(::Type{DataFrame},cc::CoefTable)
+# 	DataFrame(Variable=cc.rownms,Estimate=cc.mat[:,1],StdError=cc.mat[:,2],tval=cc.mat[:,3],pval=cc.mat[:,4])
+# end
 
 # convert(::Type{Array{Int64,1}}, PooledDataArray{Int64,Uint32,1})
 mylog(x::Float64) = ccall((:log, "libm"), Float64, (Float64,), x)

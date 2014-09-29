@@ -265,6 +265,58 @@ facts("testing vsavings!()") do
 	end
 end
 
+facts("testing vsavings!() if ctax is on") do
+	
+	# assumptions
+	# ===========
+	p = Param(1)
+	setfield!(p,:ctax,0.9)
+	m = Model(p)
+
+	acc = mig.Accelerator(1)
+
+    w = zeros(p.namax)
+    cons = zeros(p.namax)
+    a = m.grids["assets"]
+
+    w_t = 0.0
+    cons_t = 0.0
+
+    fac = 2.25
+    EV = a.*fac  	# just take a straight line with slope fac
+    cash = rand()
+    mc = rand()
+    lb = 0
+    s = linspace(lb,cash-0.01,p.namax)
+	for is = 1:p.ns
+	for ih = 0:1
+
+		# compute vsavings!()
+		mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,true)
+
+		# compute values at each savings grid
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc
+
+		for i = 1:p.namax
+			# get savings vector
+			x = s[i] / p.R
+
+			# get cons at that choice
+			cc = (is==1)*(cash-x) + (is==2)*(cash-x)*p.sscale
+			if cc < 0
+				w_t = p.myNA
+			else
+				cc *= p.ctax
+				w_t = mig.ufun(cc,s[i]*fac,p)
+				w_t += consta
+			end
+			@fact cc => cons[i]
+			@fact w_t => roughly(w[i],atol=0.00001)
+		end
+
+	end
+	end
+end
 
 facts("testing bilinear approx") do
 	

@@ -210,6 +210,7 @@ function simulate(m::Model,p::Param)
 	Dis      = zeros(Int,nsim*T)
 	Dtau     = zeros(Int,nsim*T)
 	Dregname = ASCIIString["" for i = 1:(nsim*T)]
+	Dsubsidy = zeros(nsim*T)
 
 	# fill in aggregate prices faced by each cohort
 	# also draw invariant type tau here
@@ -244,12 +245,18 @@ function simulate(m::Model,p::Param)
 	# policy
 	# ======
 
-	mortgageSub = false
-	if m.policy == "mortgageSubsidy"
-		mortgageSub = true
+	mortgageSub  = false
+	mortgageSub1 = false
+	mortgageSub2 = false
+	if p.policy == "mortgageSubsidy_oldyoung" 
+		mortgageSub  = true
+		mortgageSub1 = true  
+		@assert length(p.mort_LumpSum) == 1
+	elseif p.policy == "mortgageSubsidy_in_age"
+		mortgageSub  = true
+		mortgageSub2 = true  
+		@assert length(p.mort_LumpSum) == p.nt-1
 	end
-	MortgageSubsidy =0.0
-	subsidize = 0.0
 
 	for age = 1:T
 
@@ -315,6 +322,7 @@ function simulate(m::Model,p::Param)
 				Dp[i_idx] = price_j
 
 				# get individual specific income at current state
+				# this is baseline income, i.e. before any policy induced adjustments
 				yy = getIncome(m,y,z,age,ij) 
 
 
@@ -346,15 +354,34 @@ function simulate(m::Model,p::Param)
 
 				price_k = m.pred_p[m.coh_idx[coh][age],moveto]
 
-				# apply policy for owners in policy regions
-				if mortgageSub && ih==1
-				# if mortgageSub && ih==1 && ij==6
-					subsidize = findSubsidy(yy,age,p,m)
-				else 
-					subsidize = 0.0
+
+				# policy adjustments to baseline net income
+				# =========================================
+
+				if mortgageSub
+					# policy is on: 
+					# 1) substract subsidy from owners
+					if ih == 1
+						subsidize = findSubsidy(yy,age,p,m)
+						yy -= subsidize
+					end
+
+					# 2) redistribute according to policy
+					
+					# 2) a) all money to 20 year olds:
+					if mortgageSub1 && age == 1
+						yy += p.mort_LumpSum[1]
+					# 2) b) give money collected from owners to everybody
+					elseif mortgageSub2
+						yy += p.mort_LumpSum[age]
+					end
+				else
+					# mortgage subsidy policy is off: record amount paid to owners
+					if ih == 1
+						Dsubsidy[i_idx] = findSubsidy(yy,age,p,m)
+					end
 				end
 
-				yy -= subsidize
 
 
 				# flag for downpayment constraint
@@ -445,7 +472,7 @@ function simulate(m::Model,p::Param)
 
 	# pack into a dataframe
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,year=Dyear,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,a=Da,save=Dsave,cons=Dcons,cash=Dcash,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,income=Dincome,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
@@ -474,15 +501,15 @@ function findSubsidy(y::Float64,age::Int,p::Param,m::Model)
 	end
 
 	if y < 40.0
-		col = 3
+		col = 2
 	elseif y < 75.0
-		col = 4
+		col = 3
 	elseif y < 125.0
-		col = 5
+		col = 4
 	elseif y < 250.0
-		col = 6
+		col = 5
 	else
-		col = 7
+		col = 6
 	end
 
 	ret = m.sinai[row,col]

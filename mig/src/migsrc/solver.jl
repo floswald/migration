@@ -152,41 +152,21 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# ------
 
 	Poterba = m.gridsXD["Poterba"]
-	mortgageSub = false
-	if m.policy == "mortgageSubsidy"
-		mortgageSub = true
+	mortgageSub  = false
+	mortgageSub1 = false
+	mortgageSub2 = false
+	if p.policy == "mortgageSubsidy_oldyoung" 
+		mortgageSub  = true
+		mortgageSub1 = true  
+		@assert length(p.mort_LumpSum) == 1
+	elseif p.policy == "mortgageSubsidy_in_age"
+		mortgageSub  = true
+		mortgageSub2 = true  
+		@assert length(p.mort_LumpSum) == p.nt-1
 	end
 	MortgageSubsidy =0.0
 	subsidize = 0.0
 
-
-	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
-	# r = ihh + p.nh *(ik-1 + p.nJ*(ia-1 + p.na*(ih-1 + p.nh*(ij-1 + p.nJ*(itau-1 + p.ntau *(is-1 + p.ns*(ip-1 + p.np *(iy-1 + p.ny*(iz-1+p.nz*(age-1))))))))))
-
-	 # r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
-
-	# index offsets
-	# offset_z   = 0
-	# offset_y   = 0
-	# offset_p   = 0
-	# offset_s   = 0
-	# offset_tau = 0
-	# offset_j   = 0
-	# offset_h   = 0
-	# offset_a   = 0
-	# offset_k   = 0
-	# offset_hh  = 0
-
-	# policy
-	# ------
-
-	Poterba = m.gridsXD["Poterba"]
-	mortgageSub = false
-	if m.policy == "mortgageSubsidy"
-		mortgageSub = true
-	end
-	MortgageSubsidy =0.0
-	subsidize = 0.0
 
 
 	# state dependent stochastic states 
@@ -204,24 +184,32 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 						for ij=1:p.nJ
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
-                            MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 
 							price_j = m.gridsXD["p"][iy,ip,ij]
 
 							for ih=0:1
 
-								# mortgage subsidy
-								# if your current status is owner, you
-								# have to pay an extra amount of income tax
-								# which was exempt in the baseline.
-								# if mortgageSub && ihh==1  && ij == 6 
-								if mortgageSub && ih==1 
-									subsidize = MortgageSubsidy
-								else
-									subsidize = 0.0
+								# if mortgage subsidy policy is on: 
+								if mortgageSub
+	                            	MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
+
+									# 1) take away subsidy from owners
+									if ih == 1
+										z -= MortgageSubsidy
+									end
+
+									# 2) redestribute according to policy
+									if mortgageSub1
+										# redestribute tax receipts generated in baseline as lump sum period 1 payment
+										if age == 1
+											z += p.mort_LumpSum[1]
+										end
+									elseif mortgageSub2
+										# give each age group the tax generated in that same age group
+										z += p.mort_LumpSum[age]
+									end
 								end
 
-								z = z - subsidize
 
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
@@ -624,7 +612,11 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		# ub = cash-0.0001 < a[end] ? cash-0.0001 : a[end]
 
 		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
-		vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc)	
+		if p.ctax == 1.0
+			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc)	
+		else
+			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc,true)	
+		end
 
 		r = findmax(w)
 
@@ -686,6 +678,72 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 			w[i] = ufun(cons,lin,p)
 			# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
 			w[i] += consta
+		end
+		# jinf = lin[2]
+
+		# println("jsup = $jsup")
+		# println("jinf = $jinf")
+		cons_arr[i] = cons
+	end
+
+	return 
+end
+
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator,ctax_adjust::Bool)
+	n = p.namax
+	x = 0.0
+	cons = 0.0
+	# jinf = 1
+	# jsup = p.na
+	
+	# check which hh size
+	size2 = is == 1 ? false : true
+
+	if size2
+		consta =  own*p.xi2 - mc 
+	else
+		consta =  own*p.xi1 - mc 
+	end
+
+
+	# compute consumption at each potential savings choice
+	# consumption is cash - x, where x is s/(1+interest)
+	# and interest depends on whether borrow or save
+
+	# very careful here!
+	# innermost loop punishes a lot!
+
+	setAccel!(acc,1)
+
+	 for i=1:n
+		lin = linearapprox(a,EV,s[i],p.na,acc)
+		# println("s=$(s[i]), i=$i")
+		# println("lin = $lin")
+		if s[i] < 0
+			x = s[i] / p.Rm
+		else
+			x = s[i] / p.R
+		end
+
+		# w[i] = ufun(cash-x,is,own,itau,mc,def,p) + p.beta * lin[1]
+		# note: cons^(1-gamma) = exp( (1-gamma)*log(cons) )
+		if size2
+			cons = (cash-x)*p.sscale
+		else
+			cons = cash-x
+		end
+		if cons < 0
+			w[i] = p.myNA				
+		else
+			if ctax_adjust
+			# adjust consumption with scale factor tau. tau = 1 in baseline
+				cons *= p.ctax
+				w[i] = ufun(cons,lin,p)
+				# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
+				w[i] += consta
+			else
+				error("you are running the ctax-method of vsavings without doing the adjustment")
+			end
 		end
 		# jinf = lin[2]
 
