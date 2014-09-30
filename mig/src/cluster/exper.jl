@@ -14,7 +14,7 @@ indir, outdir = mig.setPaths()
 
 e = mig.exp_Mortgage(true)
 
-writetable(joinpath(outdir,"expMort_plot.csv"),e["plotting"])
+mig.writetable(joinpath(outdir,"expMort_plot.csv"),e["plotting"])
 using HDF5, JLD
 save(joinpath(outdir,"expMort_data.JLD"),e)
 

@@ -150,6 +150,15 @@ plot.MortgExper <- function(){
 	return(pl)
 }
 
+MorgExper.table <- function(){
+	d <- data.table(read.csv("~/Dropbox/mobility/output/model/experiments/MortgageSubsidy/receipts.csv"))
+	d2 <- d[,list(age=realage,per_owner_subsidy=per_owner_subsidy*1000,owner_npv_at_age=npv_at_age*1000,pc_lumpsum=pc_lumpsum*1000)]
+
+	print(xtable(d2,align=c("ll|rr|r")),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file="~/Dropbox/mobility/output/model/experiments/MortgageSubsidy/receipts.tex")
+
+
+}
+
 
 mom.table <- function(){
 	d <- data.table(read.csv("~/Dropbox/mobility/output/model/fit/moms.csv"))

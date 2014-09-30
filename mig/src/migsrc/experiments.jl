@@ -13,7 +13,7 @@ function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:ctax,ctax)
 	m = Model(p)
 	solve!(m,p)
-	m.vh[1,1,1,3,2,2,2,m.aone,1,1,1] - v0
+	(m.vh[1,1,1,3,2,2,2,m.aone,1,1,1] - v0)^2
 end
 
 # find consumption scale ctax such that
@@ -216,7 +216,7 @@ function exp_Mortgage(ctax=false)
 
 
 	# return
-	out = ["Receipts" => Tot_tax, "lumpSum_20yrs" => lumpSum1, "Receipts_age"=>Tot_tax_age, "ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2, "pol2_out"=> pol2_out, "plotting" => move_own_age]
+	out = ["Receipts" => Tot_tax, "base_out" => base_out, "lumpSum_20yrs" => lumpSum1, "Receipts_age"=>Tot_tax_age, "ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2, "pol2_out"=> pol2_out, "plotting" => move_own_age]
 
 	return out
 
