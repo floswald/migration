@@ -12,6 +12,11 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	d[nxtres %in% 4:8       ,nxtres.2 := 300L]	# work 
 	d[nxtres %in% 15:19     ,nxtres.2 := 400L]	# other
 
+	# division moves
+	d[,currdiv:= as.character(gediv)]
+    d[,prevdiv := as.character(mig_div)]
+    d[,D2D := currdiv != prevdiv]
+
 	d[, nxtresf := factor(nxtres, labels=c("NIU","change marstat","estab. own household","other fam reason","new job/job transfer","look for job","closer to work","retired","other job reason","want to own","better house","better neighborhood","cheaper housing","foreclosure","other housing","attend/leave college","climate change","health","natural disaster","other"))]
 
 	levels(d$migsame) <- c("NIU","yes (nonmover)","no, different house in US","no, different foreign")
@@ -36,8 +41,8 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	d[, S2S.move := mig_mtr3 %in% c("Different state, same division","Different division, same region","Different region")]
 	d[, S2S.move := factor(S2S.move,labels=c("No","Yes"))]
 	# create a dummy for cross Division move
-	d[, D2D.move := mig_mtr3 %in% c("Different division, same region","Different region")]
-	d[, D2D.move := factor(D2D.move,labels=c("No","Yes"))]
+	# d[, D2D.move := mig_mtr3 %in% c("Different division, same region","Different region")]
+	d[, D2D.move := factor(D2D,labels=c("No","Yes"))]
 
 	# encode race
 	d[,race := prdtrace]

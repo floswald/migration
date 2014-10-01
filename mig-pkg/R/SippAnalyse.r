@@ -89,7 +89,7 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
     nmoves[,moved2 := moves>1]
     r$move_rate <- d[,list(move=weighted.mean(D2D,HHweight,na.rm=T),sdmove=sqrt(wtd.var(D2D,HHweight,na.rm=T) / nrow(.SD))),by=age][,list(moment="mean_move",data_value=mean(move),data_sd=mean(sdmove))]
 
-    # CAUTION!
+    # CAUTIONN!
     # moving zero times in SIPP data means not moving over 4 years. this is not what you expect and also not 
     # what you compute in the model.
     # you want lifetime moves.
@@ -571,22 +571,32 @@ ownership_rates_macro_data <- function(){
 
 Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 
-	data(Sipp_aggby_NULL,envir=environment())
 
 	ta <- list()
 
 	# annual moving rate
 	# ==================
 
-	S2S_percent <- merged[year!=2000&year!=1995,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*1200,D2D=weighted.mean(D2D,HHweight,na.rm=T)*1200),by=list(year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2))]
-	ta$S2S_percent <- merged[year!=2000&year!=1995,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*1200,D2D=weighted.mean(D2D,HHweight,na.rm=T)*1200),by=list(own,year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2)),by=own][order(own)]
+	data(Sipp_age,envir=environment())
+
+	S2S_percent <- merged[age>=20 & age<=50,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*100,D2D=weighted.mean(D2D,HHweight,na.rm=T)*100),by=list(age)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2))]
+	ta$S2S_percent <- merged[age>=20 & age<=50,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*100,D2D=weighted.mean(D2D,HHweight,na.rm=T)*100),by=list(own,year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2)),by=own][order(own)]
 	ta$S2S_percent <- as.matrix(ta$S2S_percent[,list(S2S,D2D)])
 	ta$S2S_percent <- rbind(as.matrix(S2S_percent),ta$S2S_percent)
 	colnames(ta$S2S_percent) <- c("Cross State","Cross Division")
 	rownames(ta$S2S_percent) <- c("Overall","Renter","Owner")
 
+
+	# average ownership rate and p2y by division
+	# ==================================
+
+	ta$own_p2y <- merged[age>=20 & age<=50,list(own=weighted.mean(own,HHweight,na.rm=T),p2y=median(p2y,na.rm=T)),by=Division]
+
+
+
 	# number of moves per mover
 	# =========================
+
 	
 	mvs = merged[D2D==TRUE,list(upid=unique(upid))]
 	setkey(mvs,upid)
@@ -602,6 +612,10 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	ta$home <- merged[S2S==TRUE,t(as.matrix(round(prop.table(table(toHome))*100,2)))]
 	colnames(ta$home) <- c("Other State","State of Birth")
 
+	rm(merged)
+	gc()
+	# monthly data
+	data(Sipp_aggby_NULL,envir=environment())
 	# get empstat before after
 	d[,employed_minus := d[list(upid,timeid-1)][["employed"]]]
 	d[,employed_plus  := d[list(upid,timeid+1)][["employed"]]]
@@ -627,6 +641,7 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 
 
 	# print tables
+	print(xtable(ta$own_p2y),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"own_p2y.tex"))
 	print(xtable(ta$S2S_percent),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"move_rates.tex"))
 	print(xtable(ta$nmv),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"num_moves.tex"))
 	print(xtable(ta$home),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"mv_home.tex"))
@@ -671,6 +686,8 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 SippProbitMove <- function(d,path="~/Dropbox/mobility/output/data/sipp"){
 
 	stopifnot("survey.design" %in% class(d) )
+	d$variables[,HHincome := HHincome /100]  # income in 100,000 dollars
+	d$variables[,wealth := wealth /100]  # same for wealth
 
 	mD <- svyglm(D2D ~ age + age2 + kids + own + HHincome + wealth + college,x=TRUE, family=binomial(link="probit"),design=subset(d,D2D<2))
 	me <- erer:::maBina(mD,digits=4)
@@ -683,10 +700,10 @@ SippProbitMove <- function(d,path="~/Dropbox/mobility/output/data/sipp"){
 	prd <- cbind(prd,as.data.frame(predict(mD,newdata=prd,type="response")))
 	pl=ggplot(prd,aes(x=age)) + geom_line(aes(y=response,color=factor(own))) + geom_ribbon(aes(ymin=response-SE,ymax=response+SE,color=factor(own)),alpha=0.3) + facet_grid(~kids)
 	
-	if (!is.null(path)){
-		texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
-		texreg(list(mD),file=file.path(path,"D2D-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
-	}
+	# if (!is.null(path)){
+	# 	texreg(list(m),file=file.path(path,"S2S-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+	# 	texreg(list(mD),file=file.path(path,"D2D-probit.tex"),digits=3,table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE)
+	# }
 	return(list(S2S=m,D2D=mD))
 }
 
