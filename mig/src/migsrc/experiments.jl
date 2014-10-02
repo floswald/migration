@@ -249,10 +249,8 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = simulate(m,p)
 
 	if which=="p"
-		# shock price
 		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
-
-		ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+		# shock price
 		# stacking all in ss gives you a dataset
 		# where everything is normal until the year shockYear, 
 		# at which point a shock occurs in region shockRegion
@@ -260,16 +258,32 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		# you then compare that dataset to sim0, where this does not happen.
 
 	elseif which=="y"
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 		# shock income
 	end
 
-	return (sim0,ss)
+	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+
+	# stack dataframes
+	df1 = ss[1]
+	for i in 2:length(ss)
+		df1 = hcat(df1,ss[i])
+		ss[i] = 0
+	end
+
+	sim0 = sim0[!isna(sim0[:cohort]),:]
+	df1  = df1[!isna(df1[:cohort]),:]
+
+	df2 = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df0,:j .== j),:year,policy=mean(:move)))
+	println(df2)
+
+	return (sim0,df1,df2)
 
 end
 
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
-	println("applying price shock at age $shockAge")
+	println("applying $(opts["policy")) at age $shockAge")
 
 	opts["shockAge"] = shockAge
 

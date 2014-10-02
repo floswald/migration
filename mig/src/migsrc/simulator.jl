@@ -258,6 +258,15 @@ function simulate(m::Model,p::Param)
 		@assert length(p.mort_LumpSum) == p.nt-1
 	end
 
+	# todo:
+	# figure out a way to know which cohort gets when the shock
+	# and record the changed prices.
+	if (p.policy == "shockp") && (age >= p.shockAge) 
+		pshock = true
+	else
+		pshock = false
+	end
+
 	for age = 1:T
 
 		# who is around at this age?

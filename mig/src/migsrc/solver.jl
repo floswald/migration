@@ -195,7 +195,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
 
-							if pshock && (shockReg == ij)
+							if pshock && (p.shockReg == ij)
 								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
 							else
 								price_j = m.gridsXD["p"][iy,ip,ij]
