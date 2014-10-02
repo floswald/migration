@@ -248,62 +248,11 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	solve!(m,p)
 	sim0 = simulate(m,p)
 
-	mm = Dict{Int,Model}()
-	ss = Dict{Int,DataFrame}()
-
 	if which=="p"
 		# shock price
-		@parallel for shockAge in 1:p.nt-1
-			println("applying price shock at age $shockAge")
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 
-			opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>shockAge, "shockVal"=> 0.7]
-
-			pp = Param(2,opts)
-			mm[shockAge] = Model(pp)
-			solve!(mm[shockAge],pp)
-
-			# replace vh,rho,ch and sh before shockAge with values in baseline model m
-
-			if shockAge > 1
-				for rt in 1:shockAge-1
-				for ij=1:p.nJ			
-				for ih=1:p.nh
-				for ia=1:p.na
-				for itau=1:p.ntau			
-				for iz=1:p.nz				
-				for ip=1:p.np 				
-				for iy=1:p.ny 				
-				for is=1:p.ns 				
-				for ik=1:p.nJ			
-					mm[shockAge].rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
-					for ihh in 1:p.nh
-						mm[shockAge].vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
-						mm[shockAge].ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
-						mm[shockAge].sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
-					end
-				end
-				end
-				end
-				end
-				end
-				end
-				end
-				end
-				end
-				end
-			end
-
-			# simulate all individuals
-			# but keep only the cohort that is age = shockAge in shockYear
-			ss[shockAge] = simulate(mm[shockAge],pp)
-			keep = p.nt - shockAge + shockYear - 1997 # relative to 1997, first year with all ages present
-			# throw away NA cohorts
-			ss[shockAge] = ss[shockAge][!isna(ss[shockAge][:cohort]),:]
-			# keep only cohort that gets the shock at age shockAge in shockYear.
-			ss[shockAge] = @where(ss[shockAge],:cohort .== keep)
-			gc()
-		end
-
+		ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 		# stacking all in ss gives you a dataset
 		# where everything is normal until the year shockYear, 
 		# at which point a shock occurs in region shockRegion
@@ -318,5 +267,56 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 
 end
 
+function computeShockAge(m::Model,opts::Dict,shockAge::Int)
+
+	println("applying price shock at age $shockAge")
+
+	opts["shockAge"] = shockAge
+
+	p = Param(2,opts)
+	mm = Model(p)
+	solve!(mm,p)
+
+	# replace vh,rho,ch and sh before shockAge with values in baseline model m
+
+	if shockAge > 1
+		for rt in 1:shockAge-1
+		for ij=1:p.nJ			
+		for ih=1:p.nh
+		for ia=1:p.na
+		for itau=1:p.ntau			
+		for iz=1:p.nz				
+		for ip=1:p.np 				
+		for iy=1:p.ny 				
+		for is=1:p.ns 				
+		for ik=1:p.nJ			
+			mm.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+			for ihh in 1:p.nh
+				mm.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+				mm.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+				mm.sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+			end
+		end
+		end
+		end
+		end
+		end
+		end
+		end
+		end
+		end
+		end
+	end
+
+	# simulate all individuals
+	# but keep only the cohort that is age = shockAge in shockYear
+	ss = simulate(mm,p)
+	keep = p.nt - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+	# throw away NA cohorts
+	ss = ss[!isna(ss[:cohort]),:]
+	# keep only cohort that gets the shock at age shockAge in shockYear.
+	ss = @where(ss,:cohort .== keep)
+	return ss
+end
 
 
