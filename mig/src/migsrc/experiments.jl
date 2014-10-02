@@ -283,7 +283,7 @@ end
 
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
-	println("applying $(opts["policy")) at age $shockAge")
+	println("applying $(opts["policy"]) at age $shockAge")
 
 	opts["shockAge"] = shockAge
 
