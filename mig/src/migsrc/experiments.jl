@@ -1,10 +1,10 @@
 
 
-
-
-# exper1
-# changing the mortgage interest rate deduction
-# ----------------------------------------------
+# list of experiments:
+# 1) changing the mortgage interest rate deduction
+# 2) fannie mae and freddie max guarantee: mortgage interest rate is too low.
+# 3) imperfect rental markets: rent is too high
+# 4) moving voucher: moving is too costly
 
 
 # age 1 utility difference between 2 policies
@@ -221,4 +221,102 @@ function exp_Mortgage(ctax=false)
 	return out
 
 end
+
+
+
+
+
+# shocking a given region shockReg in a given year shockYear
+# 
+# this requires to compute the solution for all cohorts alive in shockYear
+# this in turn requires the solution to be computed T times.
+# The particular difference for each solution is that the mapping p_j = g(Y,P,j) changes
+# at the date at which the cohort hit shockYear. This means that suddenly in shockYear agents realize their mapping is no longer valid and they adjust to the new reality. 
+# the shock never reverts back, i.e. if the region is hit, it is depressed forever.
+# the value and policy functions for t<1997 must be replaced by the ones
+# from the standard solution, since otherwise agents will expect the shock
+# then simulate as usual and pick up the behaviour in j around 1997
+# and compare to behaviour in the non-shocked version.
+function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
+
+	if shockYear<1997
+		throw(ArgumentError("must choose years after 1996. only then full cohorts available"))
+	end
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+
+	mm = Dict{Int,Model}()
+	ss = Dict{Int,DataFrame}()
+
+	if which=="p"
+		# shock price
+		@parallel for shockAge in 1:p.nt-1
+			println("applying price shock at age $shockAge")
+
+			opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>shockAge, "shockVal"=> 0.7]
+
+			pp = Param(2,opts)
+			mm[shockAge] = Model(pp)
+			solve!(mm[shockAge],pp)
+
+			# replace vh,rho,ch and sh before shockAge with values in baseline model m
+
+			if shockAge > 1
+				for rt in 1:shockAge-1
+				for ij=1:p.nJ			
+				for ih=1:p.nh
+				for ia=1:p.na
+				for itau=1:p.ntau			
+				for iz=1:p.nz				
+				for ip=1:p.np 				
+				for iy=1:p.ny 				
+				for is=1:p.ns 				
+				for ik=1:p.nJ			
+					mm[shockAge].rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
+					for ihh in 1:p.nh
+						mm[shockAge].vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
+						mm[shockAge].ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
+						mm[shockAge].sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)] = m.sh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,pp)]
+					end
+				end
+				end
+				end
+				end
+				end
+				end
+				end
+				end
+				end
+				end
+			end
+
+			# simulate all individuals
+			# but keep only the cohort that is age = shockAge in shockYear
+			ss[shockAge] = simulate(mm[shockAge],pp)
+			keep = p.nt - shockAge + shockYear - 1997 # relative to 1997, first year with all ages present
+			# throw away NA cohorts
+			ss[shockAge] = ss[shockAge][!isna(ss[shockAge][:cohort]),:]
+			# keep only cohort that gets the shock at age shockAge in shockYear.
+			ss[shockAge] = @where(ss[shockAge],:cohort .== keep)
+			gc()
+		end
+
+		# stacking all in ss gives you a dataset
+		# where everything is normal until the year shockYear, 
+		# at which point a shock occurs in region shockRegion
+
+		# you then compare that dataset to sim0, where this does not happen.
+
+	elseif which=="y"
+		# shock income
+	end
+
+	return (sim0,ss)
+
+end
+
+
 

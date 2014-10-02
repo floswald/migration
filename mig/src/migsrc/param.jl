@@ -49,9 +49,12 @@ type Param
 	# policy parameters
 	# =================
 
-	policy :: ASCIIString    # name of policy
+	policy       :: ASCIIString    # name of policy
 	mort_LumpSum :: Vector{Float64}  # redestributing amounts
-	ctax   :: Float64    # proportional consumption scale. used to find equalizing utility
+	ctax         :: Float64    # proportional consumption scale. used to find equalizing utility
+	shockReg     :: Int
+	shockAge     :: Int
+	shockVal     :: Float64
 
 	# numerical setup
 	# points in each dimension
@@ -140,22 +143,29 @@ type Param
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 		sscale = 0.8 	# with kids your consumption goes down 20%
 
-		# policy setup
+		# policy and shock setup
 		if length(opts) > 0 
-			pname = get(opts,"policy","NULL")
-			lumpsum = get(opts,"lumpsum",[0.0])
-			verbose = get(opts,"verbose",0)
+			pname    = get(opts,"policy","NULL")
+			lumpsum  = get(opts,"lumpsum",[0.0])
+			verbose  = get(opts,"verbose",0)
+			shockReg = get(opts,"shockRegion",0)
+			shockAge = get(opts,"shockYear",0)
+			shockVal = get(opts,"shockVal",0.0)
+
 		else
-			pname = "NULL"
-			lumpsum = [0.0]
-			verbose = 0
+			pname    = "NULL"
+			lumpsum  = [0.0]
+			verbose  = 0
+			shockReg = 0
+			shockAge = 0
+			shockVal = 0.0
 		end
 		ctax = 1.0 
 
 		# create object
 
 			return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
-				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 

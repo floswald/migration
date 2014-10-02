@@ -1457,7 +1457,7 @@ CPS 2013 data on main motivation of moving, conditional on a cross Division
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1495,7 +1495,7 @@ Determinants of cross census division moves in SIPP data.
  effects relative to the unconditional baseline mobility rate of 0.0132.
  The interpretation of this column is for example that the effect of being
  a homeowner is equivalent to reducing the baseline probability of migration
- by 50%.
+ by 51%.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:D2D-probit"
@@ -2870,9 +2870,9 @@ x' & = & \left(a',z',s',\mathbf{P}',h,k,t+1\right)\nonumber \\
 
 \end_inset
 
-A convient by-product of the Type 1 EV assumption is that there is a closed
- form expression for the conditional choice probability of making a move
- from 
+Another convient by-product of the Type 1 EV assumption is that there is
+ a closed form expression for the conditional choice probability of making
+ a move from 
 \begin_inset Formula $d$
 \end_inset
 
@@ -3081,7 +3081,7 @@ reference "eq:terminal-condition"
 \begin_inset Formula 
 \begin{eqnarray}
 a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\label{eq:budget-renter-stay}\\
-\ln y_{idt} & = & \eta_{d}\overline{y}_{dt}+f(t)+z_{it}\label{eq:budget-labor-income}\\
+\ln y_{idt} & = & \eta_{d}\ln(\overline{y}_{dt})+f(t)+z_{it}\label{eq:budget-labor-income}\\
 a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\label{eq:budget-rent-downpay}\\
 r(a_{it}) & = & \begin{cases}
 r & \text{if }a_{it}\geq0\\

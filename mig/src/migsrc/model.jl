@@ -227,16 +227,21 @@ type Model
 		# grid for individual income (based on ygrid(Y,P))
 		# -------------------------------------------
 
-		# get supports for shocks and trans mats by region
+		# get supports for shocks and trans mat
 		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y],p)
 
+		# zgrid holds ln(y) for all states of Y,P,age and region
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
 		for j in 1:p.nJ
 			for iy in 1:p.ny
 				for ip in 1:p.np
 					for it in 1:p.nt-1
 						for iz in 1:p.nz
-							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+							if p.policy=="shocky" && ((it >= p.shockAge) && (j==p.shockReg))
+								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]*p.shockVal) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+							else
+								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+							end
 						end
 					end
 				end
