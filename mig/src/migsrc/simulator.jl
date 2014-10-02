@@ -261,11 +261,11 @@ function simulate(m::Model,p::Param)
 	# todo:
 	# figure out a way to know which cohort gets when the shock
 	# and record the changed prices.
-	if (p.policy == "shockp") && (age >= p.shockAge) 
-		pshock = true
-	else
-		pshock = false
-	end
+	# if (p.policy == "shockp") && (age >= p.shockAge) 
+	# 	pshock = true
+	# else
+	# 	pshock = false
+	# end
 
 	for age = 1:T
 
