@@ -148,7 +148,7 @@ today
 
 \family typewriter
 \size large
-INCOMPLETE JOB MARKET PAPER DRAFT
+JOB MARKET PAPER DRAFT
 \end_layout
 
 \begin_layout Abstract
@@ -1677,25 +1677,43 @@ name "sub:Individual-Labor-Income"
 \begin_layout Standard
 I model labor income as the product of a region specific price of human
  capital 
-\begin_inset Formula $w_{dt}=\eta_{d}\overline{y}_{dt}$
+\begin_inset Formula $w_{dt}$
 \end_inset
 
- with individual specific human capital that depends on a deterministic
- age effect 
+ with individual specific human capital 
+\begin_inset Formula $q(i,t)$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+y_{idt} & = & w_{dt}q(i,t)\\
+w_{dt} & = & \left(\overline{y}_{dt}\right)^{\eta_{d}}\\
+q(i,t) & = & \exp(f(t)+z_{it})
+\end{eqnarray*}
+
+\end_inset
+
+where 
 \begin_inset Formula $f(t)$
 \end_inset
 
- and an individual specific persistent idiosyncratic shock 
+ is a deterministic age effect and 
 \begin_inset Formula $z_{it}$
 \end_inset
 
-.
- 
+ stands for an individual specific persistent idiosyncratic shock.
+ The coefficient 
 \begin_inset Formula $\eta_{d}$
 \end_inset
 
- allows for differential transmision of aggregate shocks into individual
- income by region.
+ allows for differential transmission of regional shocks into individual
+ income by region 
+\begin_inset Formula $d$
+\end_inset
+
+.
  Thus, the logarithm of labor income of individual 
 \begin_inset Formula $i$
 \end_inset
@@ -1706,10 +1724,6 @@ I model labor income as the product of a region specific price of human
 
  residing in region 
 \begin_inset Formula $d$
-\end_inset
-
-, 
-\begin_inset Formula $\ln y_{idt}$
 \end_inset
 
 , is defined as in equation 
@@ -1723,7 +1737,7 @@ reference "eq:income-process"
  
 \begin_inset Formula 
 \begin{eqnarray}
-\ln y_{idt} & = & \eta_{d}\overline{y}_{dt}+f(t)+z_{it}\nonumber \\
+\ln y_{idt} & = & \eta_{d}\ln\overline{y}_{dt}+f(t)+z_{it}\nonumber \\
 z_{it} & = & \rho z_{it-1}+e_{it-1}\nonumber \\
 e & \sim & N(0,\sigma^{2})\label{eq:income-process}
 \end{eqnarray}
@@ -1734,8 +1748,14 @@ e & \sim & N(0,\sigma^{2})\label{eq:income-process}
 \end_layout
 
 \begin_layout Standard
-Underlying this structure is an assumption about non--equalizing factor
- prices across regions.
+The price of human capital 
+\begin_inset Formula $w_{dt}$
+\end_inset
+
+ differs by region to reflect different industry compositions by region,
+ which are taken as given.
+ Underlying this is an assumption about non--equalizing factor prices across
+ regions.
  It is plausible to think that within a single country, wages should tend
  to converge to a common level, particularly in the presence of large migratory
  flows from one region to the next.
@@ -1785,18 +1805,14 @@ When moving from region
 \noun off
 \color none
 
-\begin_inset Formula $\overline{y}_{kt+t}$
+\begin_inset Formula $\overline{y}_{kt+1}$
 \end_inset
 
 , and the deterministic age 
 \begin_inset Formula $t+1$
 \end_inset
 
- effect in region 
-\begin_inset Formula $k$
-\end_inset
-
-, 
+ effect, 
 \begin_inset Formula $f(t+1)$
 \end_inset
 
@@ -1810,10 +1826,50 @@ When moving from region
 \end_inset
 
  is drawn from the conditional distribution 
-\begin_inset Formula $z_{ik}|z_{id},\,\forall k\neq d$
+\begin_inset Formula $G_{k\neq d}\equiv z_{ik}|z_{id},\,\forall k\neq d$
 \end_inset
 
 .
+ This conditional distribution is assumed to be known to all agents, and
+ it is allowed to differ from the conditional distribution of 
+\begin_inset Formula $z$
+\end_inset
+
+ for non-movers, i.e.
+ 
+\begin_inset Formula $G_{k=d}\neq G_{k\neq d},\,\forall k\neq d$
+\end_inset
+
+.
+ This setup allows for some uncertainty related to the quality of the match
+ with a job in the new region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The shape of 
+\begin_inset Formula $G_{k\neq d}$
+\end_inset
+
+ determines the probability with which a mover with current value 
+\begin_inset Formula $z$
+\end_inset
+
+ can expect to draw a new value 
+\begin_inset Formula $z'$
+\end_inset
+
+ after moving to 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The data will be informative about whether there is mean reversion or high
+ persistence in 
+\begin_inset Formula $z'|z$
+\end_inset
+
+ for movers.
 \end_layout
 
 \begin_layout Subsection
