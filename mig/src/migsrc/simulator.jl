@@ -258,15 +258,13 @@ function simulate(m::Model,p::Param)
 		@assert length(p.mort_LumpSum) == p.nt-1
 	end
 
+	pshock = false
+	yshock = false
 	if p.policy == "shockp" 
 		pshock = true
-	else
-		pshock = false
 	end
 	if p.policy == "shocky" 
 		yshock = true
-	else
-		yshock = false
 	end
 
 	for age = 1:T

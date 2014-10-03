@@ -367,14 +367,14 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	# compute summaries
 	# =================
 
-	df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
-	df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
-	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(df1,:j .== j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
-	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
-	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
-	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move_j=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(df1,:j .!= j),:year,policy_move=mean(:moveto.==j),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
-	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
-	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
+	# df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
+	# df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
+	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(sim1,:j .== j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
+	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
+	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
+	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move_j=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(sim1,:j .!= j),:year,policy_move=mean(:moveto.==j),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
+	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
+	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
 
 	indir, outdir = mig.setPaths()
 
@@ -385,7 +385,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_own.csv"),df_toj_own)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
-	out = ["Baseline" => sim0, "Policy" => df1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
+	out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
 	return out
 
