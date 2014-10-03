@@ -171,13 +171,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# shocks
 	#-------
 
+	pshock = false
 	if (p.policy == "shockp") && (age >= p.shockAge) 
 		pshock = true
-	else
-		pshock = false
 	end
 
-	println("pshock is $pshock")
 
 
 
