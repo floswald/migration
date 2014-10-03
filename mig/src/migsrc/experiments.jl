@@ -334,7 +334,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = simulate(m,p)
 
 	if which=="p"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 		# shock price
 		# stacking all in ss gives you a dataset
 		# where everything is normal until the year shockYear, 
@@ -343,7 +343,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		# you then compare that dataset to sim0, where this does not happen.
 
 	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 		# shock income
 	end
 
