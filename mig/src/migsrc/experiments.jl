@@ -25,6 +25,8 @@ function runExperiment(which)
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
 		e = mig.exp_changeMC("doubleMC")
+	else
+		throw(ArgumentError("no valid experiment chosen"))
 	end
 
 	save(joinpath(outdir,"exp_$which.JLD"),e)
@@ -49,7 +51,7 @@ function exp_changeMC(which)
 	opts = ["policy" => which]
 
 	println("finding ctax.")
-	ctax = findctax(w0,opts)
+	ctax = findctax(w0[1][1],opts)
 	println("done.")
 
 	# summarize data
