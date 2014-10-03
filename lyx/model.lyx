@@ -152,20 +152,24 @@ JOB MARKET PAPER DRAFT
 \end_layout
 
 \begin_layout Abstract
-In this paper I propose a lifecycle model of internal migration in the US
- which explicitly takes the decision to buy or rent a home into account.
- The aim of the paper is to deliver estimates of the elasticity of the interregi
-onal mobility rate with respect to several tax instruments related to housing,
- such as the mortgage interest deduction or the capital gains tax exemption
- for the sale of primary residence housing.
+In this paper I propose a structural lifecycle model of consumption, savings
+ and regional migration in the US which explicitly takes the decision to
+ buy or rent a home into account.
+ Given that labor income and house price risk are of first order importance
+ for welfare, and given that both have a location specific element, the
+ paper asks the question to which extent regional migration serves as a
+ self insurance mechanism against regional economic shocks.
  Homeowners have greater costs of relocation, resulting in a lower propensity
- to move relative to renters.
- The model features aggregate uncertainty in house prices and labor productivity
-, which impacts regions differentially.
- The model fits ownership and mobility patterns over the lifecycle well.
- Using the estimated model to make counterfactual experiments, I find a
- large impact of policies targeted at housing on the regional migration
- rate.
+ to move relative to renters, which has implications for how they can respond
+ to such shocks.
+ After fitting the model to match some important features of the data, I
+ perform a series of counterfactual policy experiments.
+ Policies which try to affect the rent/buy decision, like the abolition
+ of the mortgage interest rate tax deduction, only marginally affect aggregate
+ mobility.
+ Policies which target the moving cost directly (government voucher for
+ movers) are more effective.
+ I find that the response to regional shocks is large.
 \end_layout
 
 \begin_layout Abstract
@@ -236,9 +240,9 @@ key "glaeser2011rethinking"
 \end_inset
 
 ).
- What is less well understood how those policies interact with mobility
- as an insurance device against regional shocks, an anlysis of which is
- the contribution made by this paper.
+ What is less well understood is how those policies interact with regional
+ mobility when regional shocks occur, an anlysis of which is the contribution
+ made by this paper.
 \end_layout
 
 \begin_layout Standard
@@ -319,8 +323,8 @@ I estimate the preference parameters of the model using a simulated method
 The results indicate that abolishing the mortgage interest rate deduction
  has a large impact on the mobility rate of young owners, if the tax receipts
  are redistributed as a lump sum payment at the beginning of life, but that
- any other (politically more feasible) redistribution mechanim results in
- negligible changes in overall mobility rates.
+ any other (politically more feasible) redistribution mechanism results
+ in negligible changes in overall mobility rates.
  Work in progress (from which there are no results in this draft yet) is
  focused on the effects of changing the variability the aggregate price
  and income series on mobility, the implications of the government addressing
@@ -389,7 +393,8 @@ key "kennan2003effect"
 
 \begin_layout Standard
 A different and well--established literature on migration and local labor
- markets is based on the spatial equilibrium concept going back to 
+ markets is based on the static spatial equilibrium concept going back to
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Roback:1982uq"
@@ -1546,19 +1551,15 @@ and
 individual
 \emph default
  interchangeably in what follows.
- Individuals are assumed to live in one of 
-\begin_inset Formula $D$
+ Individuals are assumed to live in census Division (or 
+\emph on
+region
+\emph default
+) 
+\begin_inset Formula $d\in D$
 \end_inset
 
- census divisions (
-\emph on
-regions
-\emph default
-)
-\emph on
- 
-\emph default
-and for a total of 
+ for a total of 
 \begin_inset Formula $T$
 \end_inset
 
@@ -1567,9 +1568,13 @@ and for a total of
 \begin_inset Formula $t$
 \end_inset
 
-, individuals have to decide whether to move to a different region, whether
- to own or rent, and how much of their labor income to save.
- They derive utility from consumption 
+, individual 
+\begin_inset Formula $i$
+\end_inset
+
+ has to decide whether to move to a different region, whether to own or
+ rent, and how much of his labor income to save.
+ Individuals derive utility from consumption 
 \begin_inset Formula $c$
 \end_inset
 
@@ -1636,12 +1641,12 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
- enters the individual wage equation a level shifter.
+ enters the individual wage equation as a level shifter.
  At the individual level uncertainty enters the model through an idiosyncratic
  component of income risk, through a markovian process that models changes
- of household size over the lifecycle, and finally a location--specific
- preference shock, which is assumed identically and independently distributed
- across agents, regions and time.
+ of household size over the lifecycle, and a location--specific preference
+ shock, which is assumed identically and independently distributed across
+ agents, regions and time.
 \end_layout
 
 \begin_layout Standard
@@ -1657,9 +1662,12 @@ key "kennan2003effect"
  The new wage is composed of a deterministic, and thus predictable, part
  and a component that is random.
  Over and above an expectation about some prevailing average level of wages
- the mover can expect in any given region, the actual job obtained after
- a move is an experience good and that it is impossible to be certain about
- the exact match quality ex ante.
+ the mover can expect in any given region at time 
+\begin_inset Formula $t$
+\end_inset
+
+, the actual job obtained after a move is an experience good and it is impossibl
+e to be certain about the exact match quality ex ante.
  This setup gives rise to income risk associated with moving.
 \end_layout
 
@@ -1846,7 +1854,7 @@ When moving from region
 \begin_inset Formula $k$
 \end_inset
 
-.
+, as mentioned above.
  The shape of 
 \begin_inset Formula $G_{k\neq d}$
 \end_inset
@@ -1885,7 +1893,7 @@ Aggregate factors
 \end_layout
 
 \begin_layout Standard
-I assume the aggreate variables 
+I assume the aggregate variables 
 \begin_inset Formula $Y$
 \end_inset
 
@@ -1902,11 +1910,11 @@ I assume the aggreate variables
 \begin_inset Formula $\mathbf{P}_{t}$
 \end_inset
 
- containing aggregate house price 
+ containing both factors 
 \begin_inset Formula $P_{t}$
 \end_inset
 
- and income 
+ and 
 \begin_inset Formula $Y_{t}$
 \end_inset
 
