@@ -291,6 +291,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	for i in 2:length(ss)
 		df1 = vcat(df1,ss[i])
 		ss[i] = 0
+		gc()
 	end
 
 	sim0 = sim0[!isna(sim0[:cohort]),:]
@@ -349,6 +350,8 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	# simulate all individuals
 	# but keep only the cohort that is age = shockAge in shockYear
 	ss = simulate(mm,p)
+	mm = 0
+	gc()
 	keep = p.nt - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# throw away NA cohorts
 	ss = ss[!isna(ss[:cohort]),:]
