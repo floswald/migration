@@ -376,12 +376,12 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 
 	indir, outdir = mig.setPaths()
 
-	writetable(joinpath(outdir,"exp_$which","from$j.csv"),df_fromj)
-	writetable(joinpath(outdir,"exp_$which","from$j_own.csv"),df_fromj_own)
-	writetable(joinpath(outdir,"exp_$which","from$j_rent.csv"),df_fromj_rent)
-	writetable(joinpath(outdir,"exp_$which","to$j.csv"),df_toj)
-	writetable(joinpath(outdir,"exp_$which","to$j_own.csv"),df_toj_own)
-	writetable(joinpath(outdir,"exp_$which","to$j_rent.csv"),df_toj_rent)
+	writetable(joinpath(outdir,"exp_$which","from$(j).csv"),df_fromj)
+	writetable(joinpath(outdir,"exp_$which","from$(j)_own.csv"),df_fromj_own)
+	writetable(joinpath(outdir,"exp_$which","from$(j)_rent.csv"),df_fromj_rent)
+	writetable(joinpath(outdir,"exp_$which","to$(j).csv"),df_toj)
+	writetable(joinpath(outdir,"exp_$which","to$(j)_own.csv"),df_toj_own)
+	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
 	out = ["Baseline" => sim0, "Policy" => df1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
