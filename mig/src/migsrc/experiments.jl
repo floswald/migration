@@ -67,6 +67,12 @@ function exp_changeMC(which)
 	agg_mv = hcat(@by(sim0,:own,move_baseline=mean(:move)),@by(sim1,:own,move_policy=mean(:move)))
 	agg_own_age = hcat(@by(sim0,[:own,:realage],move_baseline=mean(:move)),@by(sim1,[:own,:realage],move_policy=mean(:move)))
 
+	indir, outdir = mig.setPaths()
+
+	writetable(joinpath(outdir,"exp_$which","mv.csv"),agg_mv)
+	writetable(joinpath(outdir,"exp_$which","own.csv"),agg_own)
+	writetable(joinpath(outdir,"exp_$which","own_mv.csv"),agg_own_age)
+
 	out = ["move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax]
 	return out
 end
@@ -367,6 +373,15 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,normal=mean(:moveto.==j)),@by(@where(df1,:j .!= j),:year,policy=mean(:moveto.==j)))
 	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
 	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
+
+	indir, outdir = mig.setPaths()
+
+	writetable(joinpath(outdir,"exp_$which","from$j.csv"),df_fromj)
+	writetable(joinpath(outdir,"exp_$which","from$j_own.csv"),df_fromj_own)
+	writetable(joinpath(outdir,"exp_$which","from$j_rent.csv"),df_fromj_rent)
+	writetable(joinpath(outdir,"exp_$which","to$j.csv"),df_toj)
+	writetable(joinpath(outdir,"exp_$which","to$j_own.csv"),df_toj_own)
+	writetable(joinpath(outdir,"exp_$which","to$j_rent.csv"),df_toj_rent)
 
 	out = ["Baseline" => sim0, "Policy" => df1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
