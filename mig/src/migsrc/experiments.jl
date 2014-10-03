@@ -29,6 +29,9 @@ function runExperiment(which)
 
 end
 
+
+
+
 # age 1 utility difference between 2 policies
 function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	p = Param(2,opts)
@@ -297,10 +300,17 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 	df1  = df1[!isna(df1[:cohort]),:]
 
-	df2 = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df1,:j .== j),:year,policy=mean(:move)))
-	println(df2)
+	# compute summaries
+	# =================
 
-	out = ["Baseline" => sim0, "Policy" => df1, "summary"=>df2]
+	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df1,:j .== j),:year,policy=mean(:move)))
+	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
+	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
+	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,normal=mean(:moveto.==j)),@by(@where(df1,:j .!= j),:year,policy=mean(:moveto.==j)))
+	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
+	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
+
+	out = ["Baseline" => sim0, "Policy" => df1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
 	return out
 
