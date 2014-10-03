@@ -7,9 +7,10 @@ function runExperiment(which)
 	elseif ENV["USER"] == "eisuc151"
 		push!(DL_LOAD_PATH, "/home/eisuc151/local/lib")
 	end
-	
-	home = ENV["HOME"]
-	require(joinpath(home,"git/migration/mig/src/cluster/loadmig.jl"))
+
+	# unneccesary?
+	# home = ENV["HOME"]
+	# require(joinpath(home,"git/migration/mig/src/cluster/loadmig.jl"))
 
 	indir, outdir = mig.setPaths()
 

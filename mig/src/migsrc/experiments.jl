@@ -277,7 +277,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	df2 = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df1,:j .== j),:year,policy=mean(:move)))
 	println(df2)
 
-	out = ["Baseline" => sim0, "Policy" => df1, => "summary"=>df2]
+	out = ["Baseline" => sim0, "Policy" => df1, "summary"=>df2]
 
 	return out
 
