@@ -267,14 +267,14 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	# stack dataframes
 	df1 = ss[1]
 	for i in 2:length(ss)
-		df1 = hcat(df1,ss[i])
+		df1 = vcat(df1,ss[i])
 		ss[i] = 0
 	end
 
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 	df1  = df1[!isna(df1[:cohort]),:]
 
-	df2 = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df0,:j .== j),:year,policy=mean(:move)))
+	df2 = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df1,:j .== j),:year,policy=mean(:move)))
 	println(df2)
 
 	return (sim0,df1,df2)
