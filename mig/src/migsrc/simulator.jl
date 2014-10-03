@@ -242,8 +242,8 @@ function simulate(m::Model,p::Param)
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
-	# policy
-	# ======
+	# policies
+	# ========
 
 	mortgageSub  = false
 	mortgageSub1 = false
@@ -258,14 +258,16 @@ function simulate(m::Model,p::Param)
 		@assert length(p.mort_LumpSum) == p.nt-1
 	end
 
-	# todo:
-	# figure out a way to know which cohort gets when the shock
-	# and record the changed prices.
-	# if (p.policy == "shockp") && (age >= p.shockAge) 
-	# 	pshock = true
-	# else
-	# 	pshock = false
-	# end
+	if p.policy == "shockp" 
+		pshock = true
+	else
+		pshock = false
+	end
+	if p.policy == "shocky" 
+		yshock = true
+	else
+		yshock = false
+	end
 
 	for age = 1:T
 
@@ -327,6 +329,18 @@ function simulate(m::Model,p::Param)
 				azYP      = [a,z,Y,P]
 				price_j   = m.pred_p[m.coh_idx[coh][age],ij]
 				y         = m.pred_y[m.coh_idx[coh][age],ij]
+
+				# apply price policy adjustment here
+				if pshock && ((age >= p.shockAge) && (ij == p.shockReg))
+					price_j *= p.shockVal
+				end
+
+				# apply price policy adjustment here
+				if yshock && ((age >= p.shockAge) && (ij == p.shockReg))
+					y *= p.shockVal
+				end
+
+				# record regional prices
 				Dy[i_idx] = y
 				Dp[i_idx] = price_j
 
@@ -362,6 +376,10 @@ function simulate(m::Model,p::Param)
 				# ==================================
 
 				price_k = m.pred_p[m.coh_idx[coh][age],moveto]
+				# apply price policy adjustment here
+				if pshock && ((age >= p.shockAge) && (moveto == p.shockReg))
+					price_k *= p.shockVal
+				end
 
 
 				# policy adjustments to baseline net income
