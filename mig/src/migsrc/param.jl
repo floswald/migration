@@ -149,16 +149,16 @@ type Param
 			lumpsum  = get(opts,"lumpsum",[0.0])
 			verbose  = get(opts,"verbose",0)
 			shockReg = get(opts,"shockRegion",0)
-			shockAge = get(opts,"shockYear",0)
-			shockVal = get(opts,"shockVal",0.0)
+			shockAge = get(opts,"shockAge",100)
+			shockVal = get(opts,"shockVal",1.0)	# multiplicative factor
 
 		else
 			pname    = "NULL"
 			lumpsum  = [0.0]
 			verbose  = 0
 			shockReg = 0
-			shockAge = 0
-			shockVal = 0.0
+			shockAge = 100
+			shockVal = 1.0
 		end
 		ctax = 1.0 
 

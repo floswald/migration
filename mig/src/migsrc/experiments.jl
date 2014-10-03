@@ -63,7 +63,7 @@ function exp_changeMC(which)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 	sim1 = sim1[!isna(sim1[:cohort]),:]
 
-	agg_own = hcat(@with(sim0,own_baseline=mean(:own)),@with(sim1,own_policy=mean(:own)))
+	agg_own = hcat(@select(sim0,own_baseline=mean(:own)),@select(sim1,own_policy=mean(:own)))
 	agg_mv = hcat(@by(sim0,:own,move_baseline=mean(:move)),@by(sim1,:own,move_policy=mean(:move)))
 	agg_own_age = hcat(@by(sim0,[:own,:realage],move_baseline=mean(:move)),@by(sim1,[:own,:realage],move_policy=mean(:move)))
 
@@ -108,11 +108,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function findctax(v0::Float64,opts::Dict)
-	if get(opts,"verbose",0) > 0 
-		ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,show_trace=true,method=:brent)
-	else
-		ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,method=:brent)
-	end
+	ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,show_trace=true,method=:brent)
 	return ctax
 end
 
@@ -367,10 +363,10 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	# compute summaries
 	# =================
 
-	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,normal=mean(:move)),@by(@where(df1,:j .== j),:year,policy=mean(:move)))
+	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(df1,:j .== j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
 	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
 	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
-	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,normal=mean(:moveto.==j)),@by(@where(df1,:j .!= j),:year,policy=mean(:moveto.==j)))
+	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move_j=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(df1,:j .!= j),:year,policy_move=mean(:moveto.==j),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
 	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
 	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(df1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
 
@@ -398,6 +394,8 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	p = Param(2,opts)
 	mm = Model(p)
 	solve!(mm,p)
+
+	@assert p.shockAge == shockAge
 
 	# replace vh,rho,ch and sh before shockAge with values in baseline model m
 

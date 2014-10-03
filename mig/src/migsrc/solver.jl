@@ -177,6 +177,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		pshock = false
 	end
 
+	println("pshock is $pshock")
+
 
 
 	# state dependent stochastic states 

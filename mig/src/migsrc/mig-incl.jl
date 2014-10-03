@@ -77,7 +77,7 @@ function runSim()
 	s = s[!isna(s[:cohort]),:]
 	s2 = @where(s,:year.>1996)
 	showall(@by(s2,[:own,:realage],m=mean(:move)))
-	showall(@by(s2,[:realage],own=mean(:own),buy=mean((:ih.==0)&(:ihh.==1)),sell=mean((:ih.==1)&(:ihh.==0))))
+	showall(@by(s2,[:realage],own=mean(:own),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0))))
 	own=@by(s2,[:realage],m=mean(:own))
 	mig.plot(own[:realage],own[:m])
 	figure()
