@@ -357,12 +357,18 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		gc()
 	end
 
+	sim1  =  df1[!isna(df1[:cohort]),:]
+	maxc = maximum(sim1[:cohort])
 	sim0 = sim0[!isna(sim0[:cohort]),:]
-	df1  = df1[!isna(df1[:cohort]),:]
+	# throw away all cohorts born after 1997 to get an equally aging sample
+	sim0 = @where(sim0,:cohort .<= maxc)
+
 
 	# compute summaries
 	# =================
 
+	df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
+	df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
 	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(df1,:j .== j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
 	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
 	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(df1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
@@ -387,11 +393,11 @@ end
 
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
-	println("applying $(opts["policy"]) at age $shockAge")
 
 	opts["shockAge"] = shockAge
 
 	p = Param(2,opts)
+	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVal=$(p.shockVal)")
 	mm = Model(p)
 	solve!(mm,p)
 

@@ -164,8 +164,7 @@ type Param
 
 		# create object
 
-			return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,
-				       kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 
