@@ -21,6 +21,10 @@ function runExperiment(which)
 		e = mig.exp_shockRegion(5,"p")
 	elseif which=="shocky"
 		e = mig.exp_shockRegion(5,"y")
+	elseif which=="halfMC"
+		e = mig.exp_changeMC("halfMC")
+	elseif which=="doubleMC"
+		e = mig.exp_changeMC("doubleMC")
 	end
 
 	save(joinpath(outdir,"exp_$which.JLD"),e)
@@ -29,7 +33,57 @@ function runExperiment(which)
 
 end
 
+function exp_changeMC(which)
 
+	println("computing baseline")
+
+	p0   = Param(2)
+	m0   = Model(p0)
+	solve!(m0,p0)
+	sim0 = simulate(m0,p0)
+	w0 = getDiscountedValue(sim0,p0,m0)
+
+	println("done.")
+
+	# find welfare
+	opts = ["policy" => which]
+
+	println("finding ctax.")
+	ctax = findctax(w0,opts)
+	println("done.")
+
+	# summarize data
+	p1 = Param(2,opts)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	sim1 = simulate(m1,p1)
+
+	sim0 = sim0[!isna(sim0[:cohort]),:]
+	sim1 = sim1[!isna(sim1[:cohort]),:]
+
+	agg_own = hcat(@with(sim0,own_baseline=mean(:own)),@with(sim1,own_policy=mean(:own)))
+	agg_mv = hcat(@by(sim0,:own,move_baseline=mean(:move)),@by(sim1,:own,move_policy=mean(:move)))
+	agg_own_age = hcat(@by(sim0,[:own,:realage],move_baseline=mean(:move)),@by(sim1,[:own,:realage],move_policy=mean(:move)))
+
+	out = ["move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax]
+	return out
+end
+
+
+
+function getDiscountedValue(df::DataFrame,p::Param,m::Model)
+
+	w = @> begin
+		df
+		@select(id=:id,age=:age,v=:v,cohort = :cohort)
+		@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+		@where(!isna(:cohort))
+		@transform(vbeta = :v .* :beta)
+		@by(:id, meanv = mean(:vbeta))
+		@select(meanv = mean(:meanv))
+	end
+	return w
+end
 
 
 # age 1 utility difference between 2 policies
@@ -38,7 +92,9 @@ function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:ctax,ctax)
 	m = Model(p)
 	solve!(m,p)
-	(m.vh[1,1,1,3,2,2,2,m.aone,1,1,1] - v0)^2
+	s = simulate(m,p)
+	w = getDiscountedValue(s,p,m)
+	(w[1][1] - v0)^2
 end
 
 # find consumption scale ctax such that

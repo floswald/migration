@@ -353,6 +353,12 @@ type Model
 			end
 		end
 
+		if p.policy == "halfMC"
+			mc = mc .* 0.5
+		elseif p.policy == "doubleMC"
+			mc = mc .* 2.0
+		end
+
         gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
