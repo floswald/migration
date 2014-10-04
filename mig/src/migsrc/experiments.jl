@@ -335,17 +335,9 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 
 	if which=="p"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
-		# shock price
-		# stacking all in ss gives you a dataset
-		# where everything is normal until the year shockYear, 
-		# at which point a shock occurs in region shockRegion
-
-		# you then compare that dataset to sim0, where this does not happen.
-
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
-		# shock income
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
 	end
 
 	# compute behaviour of all cohorts that experience the shock in 1997
