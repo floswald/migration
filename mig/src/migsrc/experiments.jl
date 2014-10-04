@@ -332,6 +332,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	m = Model(p)
 	solve!(m,p)
 	sim0 = simulate(m,p)
+	sim0 = sim0[!isna(sim0[:cohort]),:]
 
 	if which=="p"
 		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
@@ -347,6 +348,8 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		# shock income
 	end
 
+	# compute behaviour of all cohorts that experience the shock in 1997
+	# combines optimal policy functions from befor and after shock
 	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 
 	# stack dataframes
@@ -356,12 +359,28 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		ss[i] = 0
 		gc()
 	end
+	df1 =  df1[!isna(df1[:cohort]),:]
+	maxc = maximum(df11[:cohort])
 
-	sim1  =  df1[!isna(df1[:cohort]),:]
-	maxc = maximum(sim1[:cohort])
-	sim0 = sim0[!isna(sim0[:cohort]),:]
+	# compute behaviour of all born into post shock world
+	opts["shockAge"] = 0
+	p1 = Param(2,opts)
+	mm = Model(p1)
+	solve!(mm,p1)
+	sim2 = simulate(mm,p1)
+	sim2 = sim1[!isna(sim2[:cohort]),:]
+	mm = 0
+	gc()
+	# keep only guys born after shockYear
+	sim2 = @where(sim2,:cohort.>maxc)
+
+	# stack
+	sim1 = vcat(df1,sim2)
+	df1 = 0
+	gc()
+
 	# throw away all cohorts born after 1997 to get an equally aging sample
-	sim0 = @where(sim0,:cohort .<= maxc)
+	# sim0 = @where(sim0,:cohort .<= maxc)
 
 
 	# compute summaries

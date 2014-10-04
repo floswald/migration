@@ -37,3 +37,4 @@ Collate:
     'CPS.r'
     'plotjulia.R'
     'PsidPrices.r'
+    'plotExperiments.r'
