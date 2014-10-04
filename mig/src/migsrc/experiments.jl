@@ -335,7 +335,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 
 	if which=="p"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
 		# shock price
 		# stacking all in ss gives you a dataset
 		# where everything is normal until the year shockYear, 
@@ -344,7 +344,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		# you then compare that dataset to sim0, where this does not happen.
 
 	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 1.0]
 		# shock income
 	end
 
@@ -370,7 +370,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	mm = Model(p1)
 	solve!(mm,p1)
 	sim2 = simulate(mm,p1)
-	sim2 = sim1[!isna(sim2[:cohort]),:]
+	sim2 = sim2[!isna(sim2[:cohort]),:]
 	mm = 0
 	gc()
 	# keep only guys born after shockYear
