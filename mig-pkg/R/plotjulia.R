@@ -9,15 +9,14 @@ plot.simReports <- function(){
 	d0=merged[age>19&age<51,list(data_mig=weighted.mean(D2D,HHweight,na.rm=T),data_own=weighted.mean(own,HHweight,na.rm=T)),by=year]
 	setkey(d0,year)
 	d<- d[d0]
-	setnames(d,c("x1","D2D"),c("model","data"))
 	m <- melt(d,"year")
 
 	pl <- list()
 	
 	# migration rates over time
 
-	pl$mig <- ggplot(subset(m,variable %in% c("model_mig","data_mig")),aes(x=year,y=value,color=variable)) + geom_point() + geom_smooth(method="lm",size=1) + theme_bw() + scale_y_continuous("annual moving rate") + ggtitle("Cross Division mobility in SIPP and model")
-	ggsave(pl$mig,file="~/Dropbox/mobility/output/model/fit/mig_year.pdf")
+	pl$mig <- ggplot(subset(m,variable %in% c("model_mig","data_mig")),aes(x=year,y=value,color=variable)) + geom_point()  + theme_bw() + scale_y_continuous("annual moving rate") + ggtitle("Cross Division mobility in SIPP and model")
+	ggsave(pl$mig,file="~/Dropbox/mobility/output/model/fit/mig_year2.pdf")
 
 	# ownership rates over time
 	pl$own <- ggplot(subset(m,variable %in% c("data_own","model_own")),aes(x=year,y=value,linetype=variable)) + geom_line() + theme_bw() + scale_y_continuous("Home Ownership rate") + ggtitle("Ownership rates in SIPP and model")

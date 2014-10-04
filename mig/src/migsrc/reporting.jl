@@ -17,7 +17,7 @@ end
 
 function simCsv(s::DataFrame)
 	s2 = s[!mig.isna(s[:cohort]),:]
-	writetable("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv",s)
+	writetable("/Users/florianoswald/git/migration/data/simdata.csv",s)
 end
 
 

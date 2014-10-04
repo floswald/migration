@@ -360,9 +360,11 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 		gc()
 	end
 	df1 =  df1[!isna(df1[:cohort]),:]
-	maxc = maximum(df11[:cohort])
+	maxc = maximum(df1[:cohort])
 
 	# compute behaviour of all born into post shock world
+	println("computing behaviour for post shock cohorts")
+
 	opts["shockAge"] = 0
 	p1 = Param(2,opts)
 	mm = Model(p1)
