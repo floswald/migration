@@ -73,6 +73,7 @@ function exp_changeMC(which)
 	writetable(joinpath(outdir,"exp_$which","own.csv"),agg_own)
 	writetable(joinpath(outdir,"exp_$which","own_mv.csv"),agg_own_age)
 
+
 	out = ["move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax]
 	return out
 end
@@ -382,12 +383,12 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 
 	# df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
 	# df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
-	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(sim1,:j .== j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
-	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==1)),:year,policy=mean(:move)))
-	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==0)),:year,policy=mean(:move)))
-	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move_j=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y)),@by(@where(sim1,:j .!= j),:year,policy_move=mean(:moveto.==j),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y)))
-	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==1)),:year,policy=mean(:moveto.==j)))
-	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==0)),:year,policy=mean(:moveto.==j)))
+	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income)),@by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income)))
+	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move)))
+	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move)))
+	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income)),@by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income)))
+	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==1)),:year,shock=mean(:moveto.==j)))
+	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==0)),:year,shock=mean(:moveto.==j)))
 
 	indir, outdir = mig.setPaths()
 
