@@ -76,6 +76,7 @@ facts("test param with policy") do
 	@fact p.shockAge => 10
 	@fact p.shockVal => 3.3
 	@fact p.shockReg => 6
+	@fact all(m.gridsXD["z"][:,1,1,21,6][:] .- m0.gridsXD["z"][:,1,1,21,6][:] .== 0.0) => true
 end
 
 end

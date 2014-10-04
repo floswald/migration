@@ -155,21 +155,24 @@ JOB MARKET PAPER DRAFT
 In this paper I propose a structural lifecycle model of consumption, savings
  and regional migration in the US which explicitly takes the decision to
  buy or rent a home into account.
- Given that labor income and house price risk are of first order importance
- for welfare, and given that both have a location specific element, the
- paper asks the question to which extent regional migration serves as a
- self insurance mechanism against regional economic shocks.
+ Labor income and house price risk are of first order importance for welfare,
+ and both have a location specific element.
+ The paper asks the question to which extent regional migration serves as
+ a self insurance mechanism against regional economic shocks, and how such
+ self insurance interacts with government policy.
  Homeowners have greater costs of relocation, resulting in a lower propensity
  to move relative to renters, which has implications for how they can respond
  to such shocks.
  After fitting the model to match some important features of the data, I
  perform a series of counterfactual policy experiments.
  Policies which try to affect the rent/buy decision, like the abolition
- of the mortgage interest rate tax deduction, only marginally affect aggregate
- mobility.
+ of the mortgage interest rate tax deduction, affect mobility patterns depending
+ on the particular redistribution scheme applied.
  Policies which target the moving cost directly (government voucher for
- movers) are more effective.
- I find that the response to regional shocks is large.
+ movers) have a large impact.
+ I find that regional house price and income shocks strongly affect the
+ rate of immigration into the affected area, with a substantial but smaller
+ effect on emigration from the region.
 \end_layout
 
 \begin_layout Abstract
@@ -273,7 +276,7 @@ see American Community Survey 2013, table DP04.
  more reluctant to move.
  It is conceivable that there is an interaction between a preference for
  a given location which influences the decision to make the investment.
- The model incorporates all of the aforementioned factors influencing owner's
+ My model incorporates all of the aforementioned factors influencing owner's
  moving decisions and it allows for this potential interaction in preferences.
 \end_layout
 
@@ -325,11 +328,24 @@ The results indicate that abolishing the mortgage interest rate deduction
  are redistributed as a lump sum payment at the beginning of life, but that
  any other (politically more feasible) redistribution mechanism results
  in negligible changes in overall mobility rates.
- Work in progress (from which there are no results in this draft yet) is
- focused on the effects of changing the variability the aggregate price
- and income series on mobility, the implications of the government addressing
- inefficient rental markets (resulting in lower rents), and the costs and
- benefits of a government program that subsidizes cross regional moves.
+ Policies which target the moving cost directly (government voucher for
+ movers) have a large impact.
+ I find that regional house price and income shocks strongly affect the
+ rate of immigration into the affected area, with a substantial but smaller
+ effect on emigration from the region.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+more here on why those policies
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -3535,7 +3551,7 @@ name "sub:Aggregate-to-regional"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\mathbf{p}_{dt} & = & a_{d}\mathbf{P}_{t}+\eta_{dt}\nonumber \\
+\mathbf{p}_{dt} & = & \mathbf{a}_{d}\mathbf{P}_{t}+\eta_{dt}\nonumber \\
 \eta_{dt} & \sim & N\left(\begin{bmatrix}0\\
 0
 \end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}\\
@@ -4399,7 +4415,7 @@ reference "tab:fit-model-nontarget"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4501,23 +4517,777 @@ name "tab:fit-model-nontarget"
 
 \end_layout
 
-\begin_layout Subsection
-policy function study/impulse response study
-\end_layout
-
-\begin_layout Standard
-tbd
-\end_layout
-
 \begin_layout Section
 Experiments
 \end_layout
 
 \begin_layout Standard
 In this section I perform a series of counterfactual model simulations.
- For now this includes only the mortgage interest rate deduction policy.
- Showing the effects of different levels of aggregate uncertainty on mobility
- and finding the welfare effects of a moving subsidy are in the making.
+ Firstly, I investigate the effects of a large regional shock to either
+ house prices of region level labor income in terms affecting migratory
+ flows into and out of the affected region.
+ Then I move on to the effects of a policy that affects the moving cost
+ in the entire economy.
+ Finally, I simulate the effects of abolishing the mortgage interest rate
+ deduction under several redistribution schemes.
+\end_layout
+
+\begin_layout Subsection
+The effects of a shock to the regional house price level
+\end_layout
+
+\begin_layout Standard
+In this experiment I reduce the level of the house price in the New England
+ division in 1997 by 30% (New England has index 
+\begin_inset Formula $d=5$
+\end_inset
+
+).
+ The experiment is conducted under the assumption that agents did not foresee
+ the shock and therefore are surprised in 1997 to find that the mapping
+ form aggregate factors 
+\begin_inset Formula $\left(Y,P\right)$
+\end_inset
+
+ into 
+\begin_inset Formula $ $
+\end_inset
+
+
+\begin_inset Formula $\left(\bar{y}_{5},p_{5}\right)$
+\end_inset
+
+ as defined in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+ does not apply anymore, since they observe 
+\begin_inset Formula $0.7\times p_{5,1997}$
+\end_inset
+
+ instead of 
+\begin_inset Formula $p_{5,1997}=\mathbf{a}_{5}\mathbf{P}_{1997}$
+\end_inset
+
+.
+ The shock is assumed permanent thereafter, i.e.
+ the series does not revert back.
+ This surprise assumption is necessary to observe a causal effect of the
+ price change, since otherwise the response of agents would be partially
+ anticipating the shock.
+ They immeditately adjust to the new mapping and behave optimally to the
+ new sequence of prices in New England, i.e.
+ 
+\begin_inset Formula $\left\{ \hat{p}_{5,t}\right\} _{t=1998}^{2012}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+I investigate the changes in inflow and outflow of migrants into and out
+ of the region due to the artificial price shock in 1997.
+ The regional outmigration rate increases from 1.6% to 2.2%, a change of 43%
+ (see table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:exper_p"
+
+\end_inset
+
+).
+ As illustrated in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:outflows-p"
+
+\end_inset
+
+, the overwhelming proportion of emigrants is made up of current renters.
+ This may seem counterintuitive at first sight, but is easy to explain.
+ In the model, the biggest incentive over the lifecycle is to own a house,
+ since this delivers a per period bonus over renting and because it delivers
+ a final period bequest value that depends on the value of the house.
+ The arrival of the new regime in 1997 implies that the hypothetical New
+ England division will remain at 70% of its previously foreseen price level,
+ making it a particularly bad location for anyone hoping to make capital
+ gains on their housing investment by the end of life, as agents in this
+ model do.
+ The reason for not seeing owners move away is that because of the sudden
+ drop in house price, selling the house is not possible for most of them
+ since the proceeds would not cover the mortgage debt, and default is not
+ allowed.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Observing that there was no mass migration of owners from areas such as
+ California after 2008 suggests either that default costs are very high
+ and people do not default or that there is no inmediate connection between
+ default and long-distance moves.
+\end_layout
+
+\end_inset
+
+ The fact that lower prices imply lower rents is a benefit for the region
+ that is overshaowed by those same considerations.
+\end_layout
+
+\begin_layout Standard
+Inflows into the region experience a 50% drop (see again table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:exper_p"
+
+\end_inset
+
+) after the price shock.
+ For the same reasons as in the case of outflows, the region looses a lot
+ of appeal for migrants.
+ The bottom panel in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:inflows-p"
+
+\end_inset
+
+ depicts the price to income ratio in the region under both scenarios.
+ While an increase in prices attracts significant amounts of immigrants
+ in normal times, after experiencing the shock immigrant flows all but collapse.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/p_agg.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Migratory flows after applying a price shock to New England.
+ Inward flows are the proportion of movers from all other regions into New
+ England.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:exper_p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_out.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Migratory outflows as a result of shocking the regional house price of New
+ England in 1997.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:outflows-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_in.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Migratory inflows as a result of shocking the regional house price of New
+ England in 1997.
+ The bottom label depicts the price to income ratio in the Region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inflows-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The effects of a shock to the regional labor income level
+\end_layout
+
+\begin_layout Standard
+This experiment is analogous in spirit to the previous one.
+ It is worth keeping in mind, however, that the regional factor 
+\begin_inset Formula $\overline{y}_{d,t}$
+\end_inset
+
+ enters with a factor loading into the log earnings equation, whereas the
+ price effects enter directly into the budget constraints.
+ 
+\end_layout
+
+\begin_layout Standard
+Starting again with a look at effects at aggregate regional level, we see
+ in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:exper_y"
+
+\end_inset
+
+ that the effects run in the same direction as with the price shock, but
+ for the case of emigrants with a smaller magnitude.
+ The income shock increases outmigration by 22%, whereas immigration is
+ reduced by roughly 50% as in the previous experiment.
+ As can be seen in the accompanying figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:outflows-y"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:inflows-y"
+
+\end_inset
+
+, the effect of the local income shock follows the same time series pattern
+ as the price shock, however, it less pronounced for the case of immigrants.
+ Part of the loss in appeal of the region due to reduced income is offset
+ by the still good prospects for house prices.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/y_agg.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Shocking the regional income level 
+\begin_inset Formula $\overline{y}_{d}$
+\end_inset
+
+ in New England by -30%.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:exper_y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_out.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Changes to migratory outflows as a result of shocking the regional income
+ of New England in 1997.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:outflows-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_in.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Changes in migratory inflows as a result of shocking the regional income
+ level 
+\begin_inset Formula $\overline{y}_{d}$
+\end_inset
+
+ of New England in 1997.
+ The bottom label depicts the price to income ratio in the Region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inflows-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Changing the Moving Cost
+\end_layout
+
+\begin_layout Standard
+In this set of experiments I assume there is a government policy that can
+ affect the moving cost as implied by equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:moving-cost"
+
+\end_inset
+
+.
+ In particular, I assume the government can affect a factor 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ that multiplies equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:moving-cost"
+
+\end_inset
+
+ to produce a proportionally different moving cost.
+ In the first experiment, moving costs are reduced to half their level,
+ i.e.
+ 
+\begin_inset Formula $\lambda_{1}=0.5$
+\end_inset
+
+, and in the second experiment they are doubled such that 
+\begin_inset Formula $\lambda_{2}=2$
+\end_inset
+
+.
+ As a metric of welfare I compute the implicit consumption tax 
+\begin_inset Formula $\xi$
+\end_inset
+
+ which would make agents indifferent in terms of expected lifetime utility
+ between the baseline and policy regimes.
+ I label the baseline and regimes 1 and 2 as 
+\begin_inset Formula $\lambda_{0}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda_{i},i=1,2$
+\end_inset
+
+ respectively and denote the expected lifetime utility from regime 
+\begin_inset Formula $i$
+\end_inset
+
+ and consumption tax 
+\begin_inset Formula $\xi$
+\end_inset
+
+ by 
+\begin_inset Formula $U_{i}(\xi)$
+\end_inset
+
+.
+ The equalizing tax 
+\begin_inset Formula $\xi^{*}$
+\end_inset
+
+ then solves
+\begin_inset Formula 
+\begin{eqnarray*}
+U_{0}-U_{i}(\xi^{*}) & = & 0\\
+U_{0} & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(c_{it})\\
+U_{i}(\xi) & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(\xi c_{it})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of simulated individuals and 
+\begin_inset Formula $u(c)$
+\end_inset
+
+ stands, with some abuse of notation, for the stream of utility from equation
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:utility"
+
+\end_inset
+
+ as implied by optimal behaviour.
+ Accordingly, a value 
+\begin_inset Formula $\xi^{*}>1$
+\end_inset
+
+ implies that agents would be indifferent between any proposed policy change
+ if consumption were scaled up in every period, i.e.
+ they would demand a subsidy.
+ In the opposite case of 
+\begin_inset Formula $\xi^{*}<1$
+\end_inset
+
+ they would be happy to give up a fixed proportion of period consumption
+ if they were given the opportunity to participate in the policy.
+ 
+\end_layout
+
+\begin_layout Standard
+The results in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:halfMC"
+
+\end_inset
+
+ refer to policy 
+\begin_inset Formula $\lambda_{1}=0.5$
+\end_inset
+
+, i.e.
+ halfing the moving cost.
+ Renters average mobility jumps to 16% of the population changing locations
+ per period, owners increase from 1% to 3% of movers.
+ Accordingly the ownership rate drops to 42%.
+ The policy is very valuable in terms of welfare, with 
+\begin_inset Formula $\xi=0.88$
+\end_inset
+
+ implying that agents in the baseline would be ready to give up 12% of period
+ consumption if they were allowed to switch to 
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We see the opposite kind of effects if we perform the policy in the other
+ direction, i.e.
+ we increase the moving cost in policy 
+\begin_inset Formula $\lambda_{2}=2$
+\end_inset
+
+.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:doubleMC"
+
+\end_inset
+
+ shows the results of this experiment, and we see that mobility of both
+ renters and owners is reduced by a factor of 10.
+ The homeownership rate increases, since some individuals who were on the
+ margin of buying in the baseline and did not because they anticipated the
+ possibility of a move are now tipped over the balance and buy, because
+ moving got very costly.
+ The implied welfare equalizing consumption subsidy is 12% of period consumption.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_MC/halfMC.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Welfare implications of halfing the moving cost.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:halfMC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_MC/doubleMC.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Welfare implications of doubling the moving cost.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:doubleMC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4537,14 +5307,21 @@ key "Poterba:2008fk"
 
 , which lists estimated tax savings for owners implied by the mortgage interest
  rate tax deduction for several income and age brackets.
- Table x shows my version of their table.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:sinai-data"
+
+\end_inset
+
+ shows my version of their table.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4580,6 +5357,13 @@ key "Poterba:2008fk"
 \end_inset
 
  adjusted to 2012 dollars.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:sinai-data"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4601,7 +5385,7 @@ key "Poterba:2008fk"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4634,6 +5418,13 @@ subsidy paid per owner, net present value if owning at age
  age group from baseline owners to policy renters.
  2012 US dollars.
  
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:subsidy-receipts"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
