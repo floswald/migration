@@ -17,10 +17,14 @@ function runExperiment(which)
 
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
-	elseif which=="shockp"
+	elseif which=="p"
 		e = mig.exp_shockRegion(5,"p")
-	elseif which=="shocky"
+	elseif which=="p3"
+		e = mig.exp_shockRegion(5,"p3")
+	elseif which=="y"
 		e = mig.exp_shockRegion(5,"y")
+	elseif which=="y3"
+		e = mig.exp_shockRegion(5,"y3")
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -43,7 +47,7 @@ function exp_changeMC(which)
 	m0   = Model(p0)
 	solve!(m0,p0)
 	sim0 = simulate(m0,p0)
-	w0 = getDiscountedValue(sim0,p0,m0)
+	w0 = getDiscountedValue(sim0,:v,p0,m0)
 
 	println("done.")
 
@@ -80,11 +84,11 @@ end
 
 
 
-function getDiscountedValue(df::DataFrame,p::Param,m::Model)
+function getDiscountedValue(df::DataFrame,var::Symbol,p::Param,m::Model)
 
 	w = @> begin
 		df
-		@select(id=:id,age=:age,v=:v,cohort = :cohort)
+		@select(id=:id,age=:age,v=var,cohort = :cohort)
 		@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
 		@where(!isna(:cohort))
 		@transform(vbeta = :v .* :beta)
@@ -102,7 +106,7 @@ function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	m = Model(p)
 	solve!(m,p)
 	s = simulate(m,p)
-	w = getDiscountedValue(s,p,m)
+	w = getDiscountedValue(s,:v,p,m)
 	(w[1][1] - v0)^2
 end
 
@@ -118,6 +122,8 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 	# subset to estimation sample: 1997 - 2012
 	sim_sample = @where(df,(:year.>1997) )
 	fullw = WeightVec(array(sim_sample[:density]))
+
+
 
 	own_move = @> begin
 		sim_sample
@@ -310,6 +316,22 @@ end
 
 
 
+function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
+
+	# shocks p at shockAge for ever after
+	if which=="p"
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
+	elseif which=="p3"
+		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="y"
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="y3"
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	end
+	return opts
+
+end
 
 
 # shocking a given region shockReg in a given year shockYear
@@ -335,11 +357,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	sim0 = simulate(m,p)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 
-	if which=="p"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
-	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> 0.7]
-	end
+	opts = selectPolicy(which,j,shockYear,p)
 
 	# compute behaviour of all cohorts that experience the shock in 1997
 	# combines optimal policy functions from befor and after shock
@@ -411,7 +429,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	opts["shockAge"] = shockAge
 
 	p = Param(2,opts)
-	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVal=$(p.shockVal)")
+	println("applying $(opts["policy"]) to cohort $(p.shockAge) with shockVals=$(p.shockVal)")
 	mm = Model(p)
 	solve!(mm,p)
 

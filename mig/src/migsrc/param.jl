@@ -54,7 +54,7 @@ type Param
 	ctax         :: Float64    # proportional consumption scale. used to find equalizing utility
 	shockReg     :: Int
 	shockAge     :: Int
-	shockVal     :: Float64
+	shockVal     :: Vector{Float64}
 
 	# numerical setup
 	# points in each dimension
@@ -150,7 +150,7 @@ type Param
 			verbose  = get(opts,"verbose",0)
 			shockReg = get(opts,"shockRegion",0)
 			shockAge = get(opts,"shockAge",100)
-			shockVal = get(opts,"shockVal",1.0)	# multiplicative factor
+			shockVal = get(opts,"shockVal",ones(nt-1))	# multiplicative factor
 
 		else
 			pname    = "NULL"
@@ -158,7 +158,7 @@ type Param
 			verbose  = 0
 			shockReg = 0
 			shockAge = 100
-			shockVal = 1.0
+			shockVal = ones(nt-1)
 		end
 		ctax = 1.0 
 

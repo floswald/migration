@@ -26,7 +26,6 @@ x=mig.computeMoments(s,p,m)
 @profile s = mig.simulate(m,p);	
 
 
-
 s2 = s[!mig.isna(s[:cohort]),:]
 mig.simplot(s2[s2[:cohort].<=14,:],5)
 s96 = @where(s2,:year .> 1996)

@@ -176,9 +176,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		pshock = true
 	end
 
-
-
-
 	# state dependent stochastic states 
 	for iz=1:p.nz
 		for iy=1:p.ny
@@ -196,7 +193,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
 
 							if pshock && (p.shockReg == ij)
-								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
+								# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
+								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal[age-p.shockAge+1]
 							else
 								price_j = m.gridsXD["p"][iy,ip,ij]
 							end
