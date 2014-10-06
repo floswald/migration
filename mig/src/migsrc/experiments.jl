@@ -382,7 +382,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=2005)
 	# compute behaviour of all born into post shock world
 	println("computing behaviour for post shock cohorts")
 
-	opts["shockAge"] = 0
+	opts["shockAge"] = 1
 	p1 = Param(2,opts)
 	mm = Model(p1)
 	solve!(mm,p1)
