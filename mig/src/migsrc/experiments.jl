@@ -410,18 +410,31 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=2005)
 
 	dd1 = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
 	dd2 = @by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
-	println(unique(dd1[:year]))
-	println(unique(dd2[:year]))
-
 	df_fromj = join(dd1,dd2,on=:year)
 
-	# df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
-	# df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
-	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move)))
-	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move)))
-	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income)),@by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income)))
-	df_toj_own  = hcat(@by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==1)),:year,shock=mean(:moveto.==j)))
-	df_toj_rent = hcat(@by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j)),@by(@where(sim1,(:j.!=j)&(:h.==0)),:year,shock=mean(:moveto.==j)))
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move))
+	dd2 = @by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move))
+	df_fromj_own  = join(dd1,dd2,on=:year)
+
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move))
+	dd2 = @by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move))
+	df_fromj_rent  = join(dd1,dd2,on=:year)
+
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move))
+	dd2 = @by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move))
+	df_fromj_rent  = join(dd1,dd2,on=:year)
+
+	dd1 = @by(@where(sim0,:j.!=j),:year,baseline_move=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
+	dd2 = @by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
+	df_toj = join(dd1,dd2,on=:year)
+
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)),:year,shock=mean(:moveto.==j))
+	df_toj_own  = join(dd1,dd2,on=:year)
+
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)),:year,shock=mean(:moveto.==j))
+	df_toj_rent  = join(dd1,dd2,on=:year)
 
 	indir, outdir = mig.setPaths()
 
@@ -444,7 +457,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	opts["shockAge"] = shockAge
 
 	p = Param(2,opts)
-	println("applying $(opts["policy"]) to cohort $(p.shockAge) with shockVals=$(p.shockVal)")
+	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal)")
 	mm = Model(p)
 	solve!(mm,p)
 
@@ -486,7 +499,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	ss = simulate(mm,p)
 	mm = 0
 	gc()
-	keep = p.nt-1 - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+	keep = p.nt - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# throw away NA cohorts
 	ss = ss[!isna(ss[:cohort]),:]
 	# keep only cohort that gets the shock at age shockAge in shockYear.
