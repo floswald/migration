@@ -7,7 +7,7 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which,region=2)
+function runExperiment(which,region=2,year=1997)
 
 	# unneccesary?
 	# home = ENV["HOME"]
@@ -18,13 +18,13 @@ function runExperiment(which,region=2)
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
 	elseif which=="p"
-		e = mig.exp_shockRegion(region,"p")
+		e = mig.exp_shockRegion(region,"p",year)
 	elseif which=="p3"
-		e = mig.exp_shockRegion(region,"p3")
+		e = mig.exp_shockRegion(region,"p3",year)
 	elseif which=="y"
-		e = mig.exp_shockRegion(region,"y")
+		e = mig.exp_shockRegion(region,"y",year)
 	elseif which=="y3"
-		e = mig.exp_shockRegion(region,"y3")
+		e = mig.exp_shockRegion(region,"y3",year)
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -345,7 +345,7 @@ end
 # from the standard solution, since otherwise agents will expect the shock
 # then simulate as usual and pick up the behaviour in j around 1997
 # and compare to behaviour in the non-shocked version.
-function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
+function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 
 	if shockYear<1997
 		throw(ArgumentError("must choose years after 1996. only then full cohorts available"))
@@ -376,7 +376,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	# compute behaviour of all born into post shock world
 	println("computing behaviour for post shock cohorts")
 
-	opts["shockAge"] = 0
+	opts["shockAge"] = 1
 	p1 = Param(2,opts)
 	mm = Model(p1)
 	solve!(mm,p1)
@@ -417,7 +417,8 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_own.csv"),df_toj_own)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
-	out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
+	# out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
+	out = ["fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
 	return out
 
