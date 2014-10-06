@@ -884,14 +884,14 @@ PlotSippMigrationRates <- function(){
 	 m[,type := "Renter"]
 	 m[h==TRUE,type := "Owner"]
 
-	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
-	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24)) + theme(legend.position="top")
+	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type,linetype=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
+	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type,linetype=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24)) + theme(legend.position="top",legend.key.width=unit(1.0, "cm"))
 
 	 # add density of owners on top
 	vplayout <- function(x, y){
 		viewport(layout.pos.row = x, layout.pos.col = y)
 	}
-	 pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf")
+	pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf")
 	 # pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9)
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(4, 4))) # a 5 by 5 grid

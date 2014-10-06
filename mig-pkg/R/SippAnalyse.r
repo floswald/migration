@@ -689,10 +689,10 @@ SippProbitMove <- function(d,path="~/Dropbox/mobility/output/data/sipp"){
 	d$variables[,HHincome := HHincome /100]  # income in 100,000 dollars
 	d$variables[,wealth := wealth /100]  # same for wealth
 
-	mD <- svyglm(D2D ~ age + age2 + kids + own + HHincome + wealth + college,x=TRUE, family=binomial(link="probit"),design=subset(d,D2D<2))
+	mD <- svyglm(D2D ~ age + age2 + kids + own + HHincome + wealth + college + p2y,x=TRUE, family=binomial(link="probit"),design=subset(d,D2D<2 & p2y<1000))
 	me <- erer:::maBina(mD,digits=4)
 
-	texreg(list(me),file=file.path(path,"D2D-probit.tex"),table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE,stars=c(0.1,0.05,0.01),custom.model.names="Marginal Effects", custom.coef.names=c("Intercept","Age","Age Squared","Children in HH","Homeowner","Household income","Total wealth","College"),digits = 4)
+	texreg(list(me),file=file.path(path,"D2D-probit.tex"),table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE,stars=c(0.1,0.05,0.01),custom.model.names="Marginal Effects", custom.coef.names=c("Intercept","Age","Age Squared","Children in HH","Homeowner","Household income","Total wealth","College","Price/Income"),digits = 4)
 
 	# predict for different covariates
 

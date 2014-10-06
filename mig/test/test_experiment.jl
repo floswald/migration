@@ -13,7 +13,7 @@ facts("testing selectPolicy") do
 	p = Param(2)
 	
 	j = 8
-	yr = 1999
+	yr = 2005 
 	po = mig.selectPolicy("p",j,yr,p)
 	@fact po["policy"] => "shockp"
 	@fact po["shockRegion"] => j
