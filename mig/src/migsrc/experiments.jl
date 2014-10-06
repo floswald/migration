@@ -33,7 +33,7 @@ function runExperiment(which)
 		throw(ArgumentError("no valid experiment chosen"))
 	end
 
-	save(joinpath(outdir,"exp_$which.JLD"),e)
+	# save(joinpath(outdir,"exp_$which.JLD"),e)
 	println("done.")
 	return e
 
@@ -382,32 +382,41 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear=2005)
 	# compute behaviour of all born into post shock world
 	println("computing behaviour for post shock cohorts")
 
-	opts["shockAge"] = 1
-	p1 = Param(2,opts)
-	mm = Model(p1)
-	solve!(mm,p1)
-	sim2 = simulate(mm,p1)
-	sim2 = sim2[!isna(sim2[:cohort]),:]
-	mm = 0
-	gc()
-	# keep only guys born after shockYear
-	sim2 = @where(sim2,:cohort.>maxc)
+	if which=="p3" || which == "y3"
+		# assume shock goes away immediately
+		sim2 = @where(sim0,:cohort.>maxc)
+	else
+		# assume shock stays forever
+		opts["shockAge"] = 1
+		p1 = Param(2,opts)
+		mm = Model(p1)
+		solve!(mm,p1)
+		sim2 = simulate(mm,p1)
+		sim2 = sim2[!isna(sim2[:cohort]),:]
+		mm = 0
+		gc()
+		# keep only guys born after shockYear
+		sim2 = @where(sim2,:cohort.>maxc)
+	end
+
 
 	# stack
 	sim1 = vcat(df1,sim2)
 	df1 = 0
 	gc()
 
-	# throw away all cohorts born after 1997 to get an equally aging sample
-	# sim0 = @where(sim0,:cohort .<= maxc)
-
-
 	# compute summaries
 	# =================
 
+	dd1 = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
+	dd2 = @by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
+	println(unique(dd1[:year]))
+	println(unique(dd2[:year]))
+
+	df_fromj = join(dd1,dd2,on=:year)
+
 	# df0_fromj = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y))
 	# df1_fromj = @by(@where(sim1,:j.==j),:year,policy_move=mean(:move),policy_own=mean(:own),policy_p=mean(:p),policy_y=mean(:y))
-	df_fromj = hcat(@by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income)),@by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income)))
 	df_fromj_own  = hcat(@by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move)))
 	df_fromj_rent = hcat(@by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move)),@by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move)))
 	df_toj   = hcat(@by(@where(sim0,:j.!=j),:year,baseline_move=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income)),@by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income)))
