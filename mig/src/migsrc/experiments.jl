@@ -7,7 +7,7 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which)
+function runExperiment(which,region=2)
 
 	# unneccesary?
 	# home = ENV["HOME"]
@@ -18,13 +18,13 @@ function runExperiment(which)
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
 	elseif which=="p"
-		e = mig.exp_shockRegion(5,"p")
+		e = mig.exp_shockRegion(region,"p")
 	elseif which=="p3"
-		e = mig.exp_shockRegion(5,"p3")
+		e = mig.exp_shockRegion(region,"p3")
 	elseif which=="y"
-		e = mig.exp_shockRegion(5,"y")
+		e = mig.exp_shockRegion(region,"y")
 	elseif which=="y3"
-		e = mig.exp_shockRegion(5,"y3")
+		e = mig.exp_shockRegion(region,"y3")
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
