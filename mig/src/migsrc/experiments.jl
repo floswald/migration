@@ -39,6 +39,12 @@ function runExperiment(which)
 
 end
 
+function loadExper(file::ASCIIString)
+	x = load(file)
+	return x
+end
+
+
 function exp_changeMC(which)
 
 	println("computing baseline")
@@ -345,7 +351,7 @@ end
 # from the standard solution, since otherwise agents will expect the shock
 # then simulate as usual and pick up the behaviour in j around 1997
 # and compare to behaviour in the non-shocked version.
-function exp_shockRegion(j::Int,which::ASCIIString,shockYear=1997)
+function exp_shockRegion(j::Int,which::ASCIIString,shockYear=2005)
 
 	if shockYear<1997
 		throw(ArgumentError("must choose years after 1996. only then full cohorts available"))
@@ -471,7 +477,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	ss = simulate(mm,p)
 	mm = 0
 	gc()
-	keep = p.nt - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+	keep = p.nt-1 - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# throw away NA cohorts
 	ss = ss[!isna(ss[:cohort]),:]
 	# keep only cohort that gets the shock at age shockAge in shockYear.
