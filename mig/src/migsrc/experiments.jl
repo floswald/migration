@@ -399,8 +399,8 @@ end
 # and compare to behaviour in the non-shocked version.
 function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 
-	if shockYear<1997
-		throw(ArgumentError("must choose years after 1996. only then full cohorts available"))
+	if shockYear<1998
+		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
 	end
 
 	p = Param(2)
@@ -561,13 +561,13 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	if shockAge==0
 		opts["shockAge"] = shockAge + 1
 		p = Param(2,opts)
-		keep = (p.nt-1) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		keep = (p.nt) - shockAge + opts["shockYear"] - 1998 # relative to 1998, first year with all ages present
 		@assert p.shockAge == shockAge + 1
 	else
 		opts["shockAge"] = shockAge
 		p = Param(2,opts)
 		@assert p.shockAge == shockAge
-		keep = (p.nt-1) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		keep = (p.nt) - shockAge + opts["shockYear"] - 1998 # relative to 1998, first year with all ages present
 	end
 
 	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4]), keeping cohort $keep")
