@@ -60,6 +60,13 @@ type Model
 	coh_breaks :: Array{Int}
 	coh_n      :: Dict{Int,Int}
 
+	# random generator setup
+	# ----------------------
+	zshock  :: Vector{Float64}
+	sshock  :: Vector{Float64}
+	mshock  :: Vector{Float64}
+	zshock0     :: Vector{Float64}
+
 	# policy settings 
 	# ---------------
 	sinai::DataFrame
@@ -365,11 +372,26 @@ type Model
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
 
 
+
+
 		# cohort settings
 		# ===============
 
 		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
-        return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,sinai)
+
+		# random generator setup
+		# ======================
+		srand(12345)
+		N = c_breaks[end]
+		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*p.nt-1)
+		sshock = rand(N*p.nt-1)
+		mshock = rand(N*p.nt-1)
+		zshock0    = rand(Normal(0,0.1),N)
+
+
+
+
+        return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai)
 
 	end
 end

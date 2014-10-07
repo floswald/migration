@@ -72,9 +72,10 @@ end
 # 	(y,p)
 # end
 
-function draw_z(m::Model,Lz::Float64,j::Int)
+function draw_z(m::Model,Lz::Float64,idx::Int)
 
-	zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
+	zz = m.Inc_shocks[1,1] * Lz + m.zshock[idx]	
+	# zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
 	# z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.Inc_shocks[j,4])
 	z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.gridsXD["zsupp"][4,1])
 	return z
@@ -95,7 +96,6 @@ end
 
 function simulate(m::Model,p::Param)
 
-	srand(12345)
 
 	T     = p.nt-1
 	nsim  = m.coh_breaks[end]	# total number of individuals
@@ -154,6 +154,8 @@ function simulate(m::Model,p::Param)
 	L["l_vcs"] = lininterp(vcs_arr,gs)
 	L["l_rho"] = lininterp(rho_arr,gs)
 
+	srand(54321)
+
 	# prepare initial distributions to draw from
 	cumGz = cumsum(m.gridsXD["Gz"],2)
 	cumGs = cumsum(m.gridsXD["Gs"],2)
@@ -161,7 +163,6 @@ function simulate(m::Model,p::Param)
 	G0j   = Categorical(array(m.regnames[:prop]))	
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
-	G0z   = Normal(0,0.1)
 
 	# individual specific variables
 	a      = 0.0
@@ -238,7 +239,7 @@ function simulate(m::Model,p::Param)
 	idxvec = Dage .== 1
 	Dis[idxvec]  = rand(G0k,nsim)
 	Dj[idxvec]   = rand(G0j,nsim)
-	Dz[idxvec]   = rand(G0z,nsim)
+	Dz[idxvec]   = m.zshock0
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
@@ -360,8 +361,7 @@ function simulate(m::Model,p::Param)
 				# get cumulative prob
 				cumsum!(ktmp2,ktmp,1)
 				# throw a k-sided dice 
-				shock  = rand()
-				moveto = searchsortedfirst(ktmp2,shock)
+				moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
 				move   = ij != moveto
 				prob   = ktmp[moveto]
 
@@ -476,9 +476,9 @@ function simulate(m::Model,p::Param)
 					Dh[i_idx_next] = ihh
 					Da[i_idx_next] = ss
 					Dj[i_idx_next] = moveto
-					Dz[i_idx_next] = draw_z(m,z,moveto) # TODO drawign this from the right distribution depending on whether move or not!
+					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
 					# Dz[i_idx_next] = 0.0 # TODO drawign this from the right distribution depending on whether move or not!
-					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], rand() )
+					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
 			end # individual
 

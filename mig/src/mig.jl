@@ -20,6 +20,7 @@ include("migsrc/reporting.jl")
 
 if Sys.OS_NAME == :Darwin
 	include("migsrc/plotting.jl")
+	# using Gadfly
 end
 
 end

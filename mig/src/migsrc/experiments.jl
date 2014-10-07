@@ -43,20 +43,44 @@ function runExperiment(which,region=2,year=1997)
 end
 
 
-function plotShockRegion()
+function plotShockRegions()
 	# load all experiments
+	pth = "/Users/florianoswald/git/migration/data/shockReg/"
+	fi = readdir(pth)
 
+	out = Dict()
 
+	for i in fi
+		x = load(joinpath(pth,i))
+		df = x["dfs"]
+		# writetable(joinpath(pth,"toj_own_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_buy"])
+		# writetable(joinpath(pth,"fromj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj"])
+		# writetable(joinpath(pth,"fromj_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_rent"])
+		# writetable(joinpath(pth,"fromj_own_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_own"])
+		# writetable(joinpath(pth,"toj_own_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_rent"])
+		# writetable(joinpath(pth,"toj_rent_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_rent"])
+		# writetable(joinpath(pth,"toj_rent_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_buy"])
+		# writetable(joinpath(pth,"toj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj"])
 
-
-	x = load()
-
-	melt(x["dfs"]["toj_own_buy"],:year)
-	which = x["which"]
-	using Gadfly
-	for (k,v) in x["dfs"]
-		writetable("/Users/florianoswald/git/migration/data/exp_$(which)/$(k).csv",v)
+		# make plots
+		exp_typ = contains(x["which"],"3") ? "permanent" : "3-year"
+		dd = Dict()
+		m = melt(df["fromj_own"],:year)
+		dd["fromj_own"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock in $(x["shockYear"])"))
+		m = melt(df["fromj_rent"],:year)
+		dd["fromj_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock in $(x["shockYear"])"))
+		m = melt(df["toj_own_buy"],:year)
+		dd["toj_own_buy"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock in $(x["shockYear"])"))
+		m = melt(df["toj_own_rent"],:year)
+		dd["toj_own_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock in $(x["shockYear"])"))
+		m = melt(df["toj_rent_rent"],:year)
+		dd["toj_rent_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock in $(x["shockYear"])"))
+		m = melt(df["toj_rent_buy"],:year)
+		dd["toj_rent_buy"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock in $(x["shockYear"])"))
+		out["$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = dd
 	end
+	return out
+
 end
 
 
@@ -382,7 +406,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 
 	# compute behaviour of all cohorts that experience the shock in 1997
 	# combines optimal policy functions from befor and after shock
-	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+	ss = pmap(x -> computeShockAge(m,opts,x),0:p.nt-1)		
 
 	# stack dataframes
 	df1 = ss[1]
@@ -491,10 +515,10 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 end
 
 
-function adjustVShocks!(mm::Model,m::Model,p::Param,shockAge::Int)
+function adjustVShocks!(mm::Model,m::Model,p::Param)
 
-	if shockAge > 1
-		for rt in 1:shockAge-1
+	if p.shockAge > 1
+		for rt in 1:p.shockAge-1
 		for ij=1:p.nJ			
 		for ih=1:p.nh
 		for ia=1:p.na
@@ -527,26 +551,30 @@ end
 
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
+	if shockAge==0
+		opts["shockAge"] = shockAge + 1
+		p = Param(2,opts)
+		keep = (p.nt-1) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		@assert p.shockAge == shockAge + 1
+	else
+		opts["shockAge"] = shockAge
+		p = Param(2,opts)
+		@assert p.shockAge == shockAge
+		keep = (p.nt-1) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+	end
 
-	opts["shockAge"] = shockAge
-
-	p = Param(2,opts)
 	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4])")
 	mm = Model(p)
 	solve!(mm,p)
 
-	@assert p.shockAge == shockAge
-
 	# replace vh,rho,ch and sh before shockAge with values in baseline model m
-	adjustVShocks!(mm,m,p,shockAge)
-
+	adjustVShocks!(mm,m,p)
 
 	# simulate all individuals
 	# but keep only the cohort that is age = shockAge in shockYear
 	ss = simulate(mm,p)
 	mm = 0
 	gc()
-	keep = p.nt - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# throw away NA cohorts
 	ss = ss[!isna(ss[:cohort]),:]
 	# keep only cohort that gets the shock at age shockAge in shockYear.
