@@ -3,5 +3,9 @@
 
 using mig
 
-e = runExperiment(ARGS[1],ARGS[2],ARGS[3])
+which = string(ARGS[1])
+region = int(ARGS[1])
+year = int(ARGS[1])
+
+e = runExperiment(which,region,year)
 
