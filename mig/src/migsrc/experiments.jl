@@ -33,7 +33,7 @@ function runExperiment(which,region=2,year=1997)
 		throw(ArgumentError("no valid experiment chosen"))
 	end
 
-	save(joinpath(outdir,"exp_$which.JLD"),e)
+	save(joinpath(outdir,"exp_$which.JLD"),e["out"])
 	println("done.")
 	return e
 
@@ -43,6 +43,7 @@ end
 function loadExper(file::ASCIIString)
 	x = load(file)
 	which = x["which"]
+	using Gadfly
 	for (k,v) in x["dfs"]
 		writetable("/Users/florianoswald/git/migration/data/exp_$(which)/$(k).csv",v)
 	end
