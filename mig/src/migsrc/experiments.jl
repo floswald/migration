@@ -40,13 +40,12 @@ function runExperiment(which,region=2,year=1997)
 end
 
 
-function plotExperiment(file::ASCIIString)
-	x = load(file)
-end
-
 function loadExper(file::ASCIIString)
 	x = load(file)
-	return x
+	which = x["which"]
+	for (k,v) in x["dfs"]
+		writetable("/Users/florianoswald/git/migration/data/exp_$(which)/$(k).csv",v)
+	end
 end
 
 
@@ -413,7 +412,7 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	# =================
 
 	dd1 = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
-	dd2 = @by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
+	dd2 = @by(@where(sim1,:j.==j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
 	df_fromj = join(dd1,dd2,on=:year)
 
 	dd1 = @by(@where(sim0,(:j.==j)&(:h.==1)),:year,baseline=mean(:move))
@@ -452,6 +451,15 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)&(:hh.==1)),:year,shock=mean(:moveto.==j))
 	df_toj_rent_buy  = join(dd1,dd2,on=:year)
 
+	dfs = ["fromj" => df_fromj, 
+	       "fromj_own" => df_fromj_own,
+	       "fromj_rent" => df_fromj_rent,
+	       "toj" => df_toj, 
+	       "toj_own_rent" => df_toj_own_rent,
+	       "toj_own_buy" => df_toj_own_buy,
+	       "toj_rent_rent" => df_toj_rent_rent,
+	       "toj_rent_buy" => df_toj_rent_buy]
+
 	indir, outdir = mig.setPaths()
 
 	writetable(joinpath(outdir,"exp_$which","from$(j).csv"),df_fromj)
@@ -462,16 +470,10 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
 	# out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
-	out = ["j" => j, 
+	out = ["which" => which,
+		   "j" => j, 
 	       "shockYear" => shockYear, 
-	       "fromj" => df_fromj, 
-	       "fromj_own" => df_fromj_own,
-	       "fromj_rent" => df_fromj_rent,
-	       "toj" => df_toj, 
-	       "toj_own_rent" => df_toj_own_rent,
-	       "toj_own_buy" => df_toj_own_buy,
-	       "toj_rent_rent" => df_toj_rent_rent,
-	       "toj_rent_buy" => df_toj_rent_buy]
+	       "dfs" => dfs]
 
 	return (out,sim0,sim1)
 
