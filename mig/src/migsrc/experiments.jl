@@ -19,16 +19,16 @@ function runExperiment(which,region=2,year=1997)
 		e = mig.exp_Mortgage(true)
 	elseif which=="p"
 		e = mig.exp_shockRegion(region,"p",year)
-		save(joinpath(outdir,"exp_$which.JLD"),e[1])
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="p3"
 		e = mig.exp_shockRegion(region,"p3",year)
-		save(joinpath(outdir,"exp_$which.JLD"),e[1])
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="y"
 		e = mig.exp_shockRegion(region,"y",year)
-		save(joinpath(outdir,"exp_$which.JLD"),e[1])
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="y3"
 		e = mig.exp_shockRegion(region,"y3",year)
-		save(joinpath(outdir,"exp_$which.JLD"),e[1])
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -43,8 +43,15 @@ function runExperiment(which,region=2,year=1997)
 end
 
 
-function loadExper(file::ASCIIString)
-	x = load(file)
+function plotShockRegion()
+	# load all experiments
+
+
+
+
+	x = load()
+
+	melt(x["dfs"]["toj_own_buy"],:year)
 	which = x["which"]
 	using Gadfly
 	for (k,v) in x["dfs"]
@@ -438,12 +445,12 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	# owners who move to j and rent
 	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,baseline=mean(:moveto.==j))
 	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,shock=mean(:moveto.==j))
-	df_toj_own_buy  = join(dd1,dd2,on=:year)
+	df_toj_own_rent = join(dd1,dd2,on=:year)
 
-	# owners who move to j and rent
+	# owners who move to j and buy 
 	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,baseline=mean(:moveto.==j))
 	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,shock=mean(:moveto.==j))
-	df_toj_own_rent  = join(dd1,dd2,on=:year)
+	df_toj_own_buy  = join(dd1,dd2,on=:year)
 
 	# renters who move to j and rent
 	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)&(:hh.==0)),:year,baseline=mean(:moveto.==j))

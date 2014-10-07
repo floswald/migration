@@ -13,6 +13,7 @@ Imports:
 Depends:
     zoo,
     grid,
+    quantmod,
     stringr,
     Hmisc,
     xts,
