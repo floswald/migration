@@ -44,6 +44,10 @@ end
 
 
 function plotShockRegions()
+
+	# download experiments
+	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
+
 	# load all experiments
 	pth = "/Users/florianoswald/git/migration/data/shockReg/"
 	fi = readdir(pth)
@@ -64,20 +68,23 @@ function plotShockRegions()
 
 		# make plots
 		exp_typ = contains(x["which"],"3") ? "permanent" : "3-year"
+		exp_var = contains(x["which"],"y") ? "y" : "p"
 		dd = Dict()
-		m = melt(df["fromj_own"],:year)
-		dd["fromj_own"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock in $(x["shockYear"])"))
-		m = melt(df["fromj_rent"],:year)
-		dd["fromj_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock in $(x["shockYear"])"))
-		m = melt(df["toj_own_buy"],:year)
-		dd["toj_own_buy"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock in $(x["shockYear"])"))
-		m = melt(df["toj_own_rent"],:year)
-		dd["toj_own_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock in $(x["shockYear"])"))
-		m = melt(df["toj_rent_rent"],:year)
-		dd["toj_rent_rent"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock in $(x["shockYear"])"))
-		m = melt(df["toj_rent_buy"],:year)
-		dd["toj_rent_buy"] = plot(@where(m,:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock in $(x["shockYear"])"))
-		out["$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = dd
+		data = Dict()
+		data["fromj_own"] = melt(df["fromj_own"],:year)
+		dd["fromj_own"] = plot(@where(data["fromj_own"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		data["fromj_rent"] = melt(df["fromj_rent"],:year)
+		dd["fromj_rent"] = plot(@where(data["fromj_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		data["toj_own_buy"] = melt(df["toj_own_buy"],:year)
+		dd["toj_own_buy"] = plot(@where(data["toj_own_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		data["toj_own_rent"] = melt(df["toj_own_rent"],:year)
+		dd["toj_own_rent"] = plot(@where(data["toj_own_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		data["toj_rent_rent"] = melt(df["toj_rent_rent"],:year)
+		dd["toj_rent_rent"] = plot(@where(data["toj_rent_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		data["toj_rent_buy"] = melt(df["toj_rent_buy"],:year)
+		dd["toj_rent_buy"] = plot(@where(data["toj_rent_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		out["plots_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = dd
+		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
 	end
 	return out
 
@@ -563,7 +570,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt-1) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	end
 
-	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4])")
+	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4]), keeping cohort $keep")
 	mm = Model(p)
 	solve!(mm,p)
 
