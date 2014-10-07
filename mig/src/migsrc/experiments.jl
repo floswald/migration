@@ -19,12 +19,16 @@ function runExperiment(which,region=2,year=1997)
 		e = mig.exp_Mortgage(true)
 	elseif which=="p"
 		e = mig.exp_shockRegion(region,"p",year)
+		save(joinpath(outdir,"exp_$which.JLD"),e[1])
 	elseif which=="p3"
 		e = mig.exp_shockRegion(region,"p3",year)
+		save(joinpath(outdir,"exp_$which.JLD"),e[1])
 	elseif which=="y"
 		e = mig.exp_shockRegion(region,"y",year)
+		save(joinpath(outdir,"exp_$which.JLD"),e[1])
 	elseif which=="y3"
 		e = mig.exp_shockRegion(region,"y3",year)
+		save(joinpath(outdir,"exp_$which.JLD"),e[1])
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -33,7 +37,6 @@ function runExperiment(which,region=2,year=1997)
 		throw(ArgumentError("no valid experiment chosen"))
 	end
 
-	save(joinpath(outdir,"exp_$which.JLD"),e["out"])
 	println("done.")
 	return e
 
