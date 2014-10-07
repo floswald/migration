@@ -416,15 +416,15 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	dd2 = @by(@where(sim1,:j .== j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
 	df_fromj = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.==j)&(:h.==1)),:year,normal=mean(:move))
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==1)),:year,baseline=mean(:move))
 	dd2 = @by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move))
 	df_fromj_own  = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move))
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,baseline=mean(:move))
 	dd2 = @by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move))
 	df_fromj_rent  = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,normal=mean(:move))
+	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,baseline=mean(:move))
 	dd2 = @by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move))
 	df_fromj_rent  = join(dd1,dd2,on=:year)
 
@@ -432,13 +432,25 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	dd2 = @by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
 	df_toj = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)),:year,normal=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)),:year,shock=mean(:moveto.==j))
-	df_toj_own  = join(dd1,dd2,on=:year)
+	# owners who move to j and rent
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,baseline=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,shock=mean(:moveto.==j))
+	df_toj_own_buy  = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)),:year,normal=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)),:year,shock=mean(:moveto.==j))
-	df_toj_rent  = join(dd1,dd2,on=:year)
+	# owners who move to j and rent
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,baseline=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,shock=mean(:moveto.==j))
+	df_toj_own_rent  = join(dd1,dd2,on=:year)
+
+	# renters who move to j and rent
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)&(:hh.==0)),:year,baseline=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)&(:hh.==0)),:year,shock=mean(:moveto.==j))
+	df_toj_rent_rent  = join(dd1,dd2,on=:year)
+
+	# renters who move to j and buy
+	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)&(:hh.==1)),:year,baseline=mean(:moveto.==j))
+	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)&(:hh.==1)),:year,shock=mean(:moveto.==j))
+	df_toj_rent_buy  = join(dd1,dd2,on=:year)
 
 	indir, outdir = mig.setPaths()
 
@@ -450,9 +462,18 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
 	# out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
-	out = ["j" => j, "shockYear" => shockYear, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
+	out = ["j" => j, 
+	       "shockYear" => shockYear, 
+	       "fromj" => df_fromj, 
+	       "fromj_own" => df_fromj_own,
+	       "fromj_rent" => df_fromj_rent,
+	       "toj" => df_toj, 
+	       "toj_own_rent" => df_toj_own_rent,
+	       "toj_own_buy" => df_toj_own_buy,
+	       "toj_rent_rent" => df_toj_rent_rent,
+	       "toj_rent_buy" => df_toj_rent_buy]
 
-	return out
+	return (out,sim0,sim1)
 
 end
 
