@@ -12,6 +12,7 @@ Imports:
     splines
 Depends:
     zoo,
+    grid,
     stringr,
     Hmisc,
     xts,

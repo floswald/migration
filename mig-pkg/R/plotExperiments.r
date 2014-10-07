@@ -32,20 +32,22 @@ MorgExper.table <- function(){
 }
 
 
-plot.shockyp <- function(which){
+# TODO
+# got to distinguish by region
+
+plot.shockyp <- function(which,j){
 
 	l=list()
 
 	str = paste0("~/git/migration/data/exp_",which)
 	outp = "~/Dropbox/mobility/output/model/experiments/exp_yp"
 
-
-	if (which=="y"){
-		expr_out = expression(paste("Outflows after shocking ",y[5], " with -30% in 1997"))
-		expr_in  = expression(paste("Inflows after shocking ",y[5], " with -30% in 1997"))
+	if (which=="y" | which=="y3"){
+		expr_out = expression(paste("Outflows after shocking ",y[j], " with -30% in 1997"))
+		expr_in  = expression(paste("Inflows after shocking ",y[j], " with -30% in 1997"))
 	}else{
-		expr_out = expression(paste("Outflows after shocking ",p[5], " with -30% in 1997"))
-		expr_in  = expression(paste("Inflows after shocking ",p[5], " with -30% in 1997"))
+		expr_out = expression(paste("Outflows after shocking ",p[j], " with -30% in 1997"))
+		expr_in  = expression(paste("Inflows after shocking ",p[j], " with -30% in 1997"))
 	}
 
 	l$from5 = data.table(read.csv(file.path(str,"from5.csv")))
@@ -59,15 +61,15 @@ plot.shockyp <- function(which){
 
 	# add p2y in each case
 	l$from5[,p2y := baseline_p / baseline_y]
-	l$from5[,p2y_policy := policy_p / policy_y]
+	l$from5[,p2y_shock:= shock_p / shock_y]
 
 	# plot outmig
-	l$outflow = ggplot(subset(l$from5_own,year>1996),aes(year,y=value,color=variable)) + geom_line() + facet_wrap(~type) + ggtitle(expr_out) + theme_bw() + scale_y_continuous(expression(paste("proportion within ",d[5])))
+	l$outflow = ggplot(subset(l$from5_own,year>1996),aes(year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type) + ggtitle(expr_out) + theme_bw() + scale_y_continuous(expression(paste("proportion within ",d[5])))
 
 	# make table
-	agg = copy(l$from5[year>1996,list(Migration="Outward",base=mean(baseline_move),shock=mean(policy_move))])
+	agg = copy(l$from5[year>1996,list(Migration="Outward",base=mean(baseline_move),shock=mean(shock_move))])
 	l$to5 = data.table(read.csv(file.path(str,"to5.csv")))
-	agg = rbind(agg,l$to5[year>1996,list(Migration="Inward",base=mean(baseline_move),shock=mean(policy_move))])
+	agg = rbind(agg,l$to5[year>1996,list(Migration="Inward",base=mean(baseline_move),shock=mean(shock_move))])
 	l$agg = copy(agg[,percent_change := 100*(shock-base)/base])
 
 	print(xtable(l$agg,digits=4),file=file.path(outp,paste0(which,"_agg.tex")),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,include.rownames=FALSE)
@@ -81,9 +83,9 @@ plot.shockyp <- function(which){
 	to5_own[,year_1 := NULL]
 	l$to5_own = melt(to5_own,c("year","type"))
 	l$to5_own = rbind(l$to5_own,l$from5[,list(year,type="p2y",variable="normal",value=p2y)])
-	l$to5_own = rbind(l$to5_own,l$from5[,list(year,type="p2y",variable="policy",value=p2y_policy)])
+	l$to5_own = rbind(l$to5_own,l$from5[,list(year,type="p2y",variable="shock",value=p2y_shock)])
 	l$to5_own[,type := factor(type,levels=c("Inflow Owners","Inflow Renters","p2y"))]
-	l$inflow = ggplot(subset(l$to5_own,year>1996),aes(year,y=value,color=variable)) + geom_line() + facet_grid(type~.,scales="free_y")+ggtitle(	expr_in ) + theme_bw()+ scale_y_continuous(expression(paste("proportion outside ",d[5])))
+	l$inflow = ggplot(subset(l$to5_own,year>1996),aes(year,y=value,linetype=variable)) + geom_line() + facet_grid(type~.,scales="free_y")+ggtitle(	expr_in ) + theme_bw()+ scale_y_continuous(expression(paste("proportion outside ",d[5])))
 
 	ggsave(l$outflow,file=file.path(outp,paste0(which,"_out.pdf")))
 	ggsave(l$inflow,file=file.path(outp,paste0(which,"_in.pdf")))

@@ -192,6 +192,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							# z = m.gridsXD["z"][iz,iy,ip,age,ij] 	# z is dollar income
 							z = m.gridsXD["z"][iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))] 	# z is dollar income
 
+							# for owner-mover case: get current region price
 							if pshock && (p.shockReg == ij)
 								# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
 								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal[age-p.shockAge+1]
@@ -243,7 +244,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										offset_k = ik-1 + p.nJ * offset_1
 
-										price_k = m.gridsXD["p"][iy,ip,ik]
+										if pshock && (p.shockReg == ik)
+											# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
+											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal[age-p.shockAge+1]
+										else
+											price_k = m.gridsXD["p"][iy,ip,ik]
+										end
+
 										canbuy = a + z > p.chi * price_k
 
 										# kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
@@ -778,13 +785,17 @@ function pifun(ih::Int,ihh::Int,price_j::Float64,price_k::Float64,move::Bool,ik:
 	if ih==0
 		# if you came into period as a renter:
 		# choose whether to buy.  	
+		# in this case not necessarily price_k == price_j (you could be moving)
 		r = -(1-ihh)*p.kappa[ik]*price_k - ihh * price_k
-	elseif move
-		#  must take two different prices into account
-		r = (1-p.phi)*price_j - ((1-ihh)*p.kappa[ik] + ihh)*price_k
 	else
-		# you only pay anyting if you sell and rent
-		r = (1-ihh)*(1-p.phi-p.kappa[ik])*price_k 
+		if move
+			#  must take two different prices into account
+			r = (1-p.phi)*price_j - ((1-ihh)*p.kappa[ik] + ihh)*price_k
+		else
+			# you only pay anyting if you sell and rent
+			# in this case price_k == price_j
+			r = (1-ihh)*(1-p.phi-p.kappa[ik])*price_k 
+		end
 	end
 	return r
 end

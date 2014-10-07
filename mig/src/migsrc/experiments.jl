@@ -33,10 +33,15 @@ function runExperiment(which,region=2,year=1997)
 		throw(ArgumentError("no valid experiment chosen"))
 	end
 
-	# save(joinpath(outdir,"exp_$which.JLD"),e)
+	save(joinpath(outdir,"exp_$which.JLD"),e)
 	println("done.")
 	return e
 
+end
+
+
+function plotExperiment(file::ASCIIString)
+	x = load(file)
 end
 
 function loadExper(file::ASCIIString)
@@ -445,25 +450,14 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
 
 	# out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
-	out = ["fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
+	out = ["j" => j, "shockYear" => shockYear, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 
 	return out
 
 end
 
-function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
-
-	opts["shockAge"] = shockAge
-
-	p = Param(2,opts)
-	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal)")
-	mm = Model(p)
-	solve!(mm,p)
-
-	@assert p.shockAge == shockAge
-
-	# replace vh,rho,ch and sh before shockAge with values in baseline model m
+function adjustVShocks!(mm::Model,m::Model,p::Param,shockAge::Int)
 
 	if shockAge > 1
 		for rt in 1:shockAge-1
@@ -493,6 +487,25 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		end
 		end
 	end
+	return nothing
+
+end
+
+function computeShockAge(m::Model,opts::Dict,shockAge::Int)
+
+
+	opts["shockAge"] = shockAge
+
+	p = Param(2,opts)
+	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal)")
+	mm = Model(p)
+	solve!(mm,p)
+
+	@assert p.shockAge == shockAge
+
+	# replace vh,rho,ch and sh before shockAge with values in baseline model m
+	adjustVShocks!(mm,m,p,shockAge)
+
 
 	# simulate all individuals
 	# but keep only the cohort that is age = shockAge in shockYear

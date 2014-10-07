@@ -128,6 +128,86 @@ facts("test param with policy") do
 	@fact all(m.gridsXD["z"][:,1,1,21,6][:] .- m0.gridsXD["z"][:,1,1,21,6][:] .== 0.0) => true
 end
 
+
+facts("checking solution under price shock") do
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+
+	shockAge = 10
+
+	opts = ["policy" => "shockp","shockYear"=>1997, "shockAge" => shockAge, "shockRegion" => 6, "shockVal" => [0.7 for i=1:p.nt-1]]
+
+	p2 = Param(2,opts)
+	m2 = Model(p2)
+	solve!(m2,p2)
+
+	mig.adjustVShocks!(m2,m,p,shockAge)
+
+	# renter's cash after shock must increase with lower price
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .- m.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .>= 0.0) => true
+	# before shock or in another region, cash must be the same
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,1][:] .== m.cash[1,6,:,:,:,:,:,:,1,6,1][:]) => true
+	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,6,:][:] .== m.cash[1,5,:,:,:,:,:,:,1,6,:][:]) => true
+	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,5,:][:] .== m.cash[1,5,:,:,:,:,:,:,1,5,:][:]) => true
+
+	# values must be different in shocked region after shock hits
+	@fact all(m2.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:] .!= m.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]) => true
+	t1 = m2.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]
+	t2 = m.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]
+	@fact all(t1[t1 .!= -99.0] .!= t2[t2 .!= -99.0] ) => true
+
+	@fact all(m2.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) => true
+end
+
+facts("checking solution under income shock") do
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+
+	shockAge = 10
+
+	opts = ["policy" => "shocky","shockYear"=>1997, "shockAge" => shockAge, "shockRegion" => 6, "shockVal" => [0.7 for i=1:p.nt-1]]
+
+	p2 = Param(2,opts)
+	m2 = Model(p2)
+	solve!(m2,p2)
+
+	mig.adjustVShocks!(m2,m,p,shockAge)
+
+	# everybody's cash must decrease with lower income
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .<= m.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:]) => true
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,2,6,shockAge+1][:] .<= m.cash[1,6,:,:,:,:,:,:,2,6,shockAge+1][:] ) => true
+	@fact all(m2.cash[2,6,:,:,:,:,:,:,2,6,shockAge+1][:] .<= m.cash[2,6,:,:,:,:,:,:,2,6,shockAge+1][:] ) => true
+	# if you move, you earn income in origin location,i.e. 6, which is subject to shock: less cash!
+	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,6,shockAge+1][:] .<= m.cash[1,5,:,:,:,:,:,:,1,6,shockAge+1][:]) => true
+
+	@fact all(m2.cash[2,6,:,:,:,:,:,:,1,6,shockAge-1][:] .== m.cash[2,6,:,:,:,:,:,:,1,6,shockAge-1][:]) => true
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,2,6,shockAge-1][:] .== m.cash[1,6,:,:,:,:,:,:,2,6,shockAge-1][:] ) => true
+	@fact all(m2.cash[2,6,:,:,:,:,:,:,2,6,shockAge-1][:] .== m.cash[2,6,:,:,:,:,:,:,2,6,shockAge-1][:] ) => true
+	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,5,shockAge-1][:] .== m.cash[1,5,:,:,:,:,:,:,1,5,shockAge-1][:]) => true
+	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,6,shockAge-1][:] .== m.cash[1,5,:,:,:,:,:,:,1,6,shockAge-1][:]) => true
+
+	# values must be different
+	@fact all(m2.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:] .!= m.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]) => true
+	@fact all(m2.vh[1,6,:,:,:,:,:,m.aone+1,2,6,shockAge+1][:] .!= m.vh[1,6,:,:,:,:,:,m.aone+1,2,6,shockAge+1][:] ) => true
+	@fact all(m2.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge+1][:] .!= m.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge+1][:] ) => true
+	# if you move, you earn income in origin location,i.e. 6, which is subject to shock: less cash!
+	t1 = m2.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]
+	t2 = m.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge+1][:]
+	@fact all(t1[t1 .!= -99.0] .!= t2[t2 .!= -99.0] ) => true
+
+	@fact all(m2.vh[2,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[2,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) => true
+	@fact all(m2.vh[1,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] .== m.vh[1,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] ) => true
+	@fact all(m2.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] .== m.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] ) => true
+	@fact all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:]) => true
+	@fact all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) => true
+end
+
+
+
 end
 
 # facts("welfare function behaves correctly at identical policy") do
