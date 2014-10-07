@@ -143,7 +143,7 @@ facts("checking solution under price shock") do
 	m2 = Model(p2)
 	solve!(m2,p2)
 
-	mig.adjustVShocks!(m2,m,p,shockAge)
+	mig.adjustVShocks!(m2,m,p2)
 
 	# renter's cash after shock must increase with lower price
 	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .- m.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .>= 0.0) => true
@@ -175,7 +175,7 @@ facts("checking solution under income shock") do
 	m2 = Model(p2)
 	solve!(m2,p2)
 
-	mig.adjustVShocks!(m2,m,p,shockAge)
+	mig.adjustVShocks!(m2,m,p2)
 
 	# everybody's cash must decrease with lower income
 	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .<= m.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:]) => true
@@ -204,6 +204,26 @@ facts("checking solution under income shock") do
 	@fact all(m2.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] .== m.vh[2,6,:,:,:,:,:,m.aone+1,2,6,shockAge-1][:] ) => true
 	@fact all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:]) => true
 	@fact all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) => true
+end
+
+
+facts("z shock sequences are identical in baseline and shocked versions") do
+	
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+	sim0 = sim0[!mig.isna(sim0[:cohort]),:]
+
+	opts = mig.selectPolicy("p",5,2006,p)
+
+	s10 = mig.computeShockAge(m,opts,10);
+	coh = unique(s10[:cohort])
+
+	@fact coh[1] => p.nt-1 - 10 + 2006 - 1997
+
+	@fact all(sim0[sim0[:cohort].==coh,:z] .== s10[:z]) => true
+
 end
 
 
