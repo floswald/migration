@@ -1176,6 +1176,8 @@ ty.
  to experience an increase in household income of $1m in order to make up
  for the implied loss in the probability of moving across divisions from
  being an owner.
+ The house price to income ratio does not play a significant role in this
+ specification.
 \end_layout
 
 \begin_layout Standard
@@ -4537,14 +4539,14 @@ The effects of a shock to the regional house price level
 \end_layout
 
 \begin_layout Standard
-In this experiment I reduce the level of the house price in the New England
- division in 1997 by 30% (New England has index 
-\begin_inset Formula $d=5$
+In this experiment I reduce the level of the house price in the Pacific
+ division in 2007 by 30% (Pacific has region index 
+\begin_inset Formula $d=6$
 \end_inset
 
 ).
  The experiment is conducted under the assumption that agents did not foresee
- the shock and therefore are surprised in 1997 to find that the mapping
+ the shock and therefore are surprised in 2007 to find that the mapping
  form aggregate factors 
 \begin_inset Formula $\left(Y,P\right)$
 \end_inset
@@ -4554,7 +4556,7 @@ In this experiment I reduce the level of the house price in the New England
 \end_inset
 
 
-\begin_inset Formula $\left(\bar{y}_{5},p_{5}\right)$
+\begin_inset Formula $\left(\bar{y}_{6},p_{6}\right)$
 \end_inset
 
  as defined in equation 
@@ -4565,155 +4567,85 @@ reference "eq:VAR-reg-determ"
 \end_inset
 
  does not apply anymore, since they observe 
-\begin_inset Formula $0.7\times p_{5,1997}$
+\begin_inset Formula $0.7\times p_{6,2007}$
 \end_inset
 
  instead of 
-\begin_inset Formula $p_{5,1997}=\mathbf{a}_{5}\mathbf{P}_{1997}$
+\begin_inset Formula $p_{6,2007}=\mathbf{a}_{6}\mathbf{P}_{2007}$
 \end_inset
 
-.
- The shock is assumed permanent thereafter, i.e.
- the series does not revert back.
- This surprise assumption is necessary to observe a causal effect of the
- price change, since otherwise the response of agents would be partially
- anticipating the shock.
- They immeditately adjust to the new mapping and behave optimally to the
- new sequence of prices in New England, i.e.
- 
-\begin_inset Formula $\left\{ \hat{p}_{5,t}\right\} _{t=1998}^{2012}$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-I investigate the changes in inflow and outflow of migrants into and out
- of the region due to the artificial price shock in 1997.
- The regional outmigration rate increases from 1.6% to 2.2%, a change of 43%
- (see table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:exper_p"
-
-\end_inset
-
-).
- As illustrated in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:outflows-p"
-
-\end_inset
-
-, the overwhelming proportion of emigrants is made up of current renters.
- This may seem counterintuitive at first sight, but is easy to explain.
- In the model, the biggest incentive over the lifecycle is to own a house,
- since this delivers a per period bonus over renting and because it delivers
- a final period bequest value that depends on the value of the house.
- The arrival of the new regime in 1997 implies that the hypothetical New
- England division will remain at 70% of its previously foreseen price level,
- making it a particularly bad location for anyone hoping to make capital
- gains on their housing investment by the end of life, as agents in this
- model do.
- The reason for not seeing owners move away is that because of the sudden
- drop in house price, selling the house is not possible for most of them
- since the proceeds would not cover the mortgage debt, and default is not
- allowed.
+, as predicted by the model.
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-Observing that there was no mass migration of owners from areas such as
- California after 2008 suggests either that default costs are very high
- and people do not default or that there is no inmediate connection between
- default and long-distance moves.
+The surprise assumption is necessary to observe a causal effect of the price
+ change, since otherwise the response of agents would be partially anticipating
+ the shock.
+ They immeditately adjust to the new mapping and behave optimally to the
+ new sequence of prices in Pacific, i.e.
+ 
+\begin_inset Formula $\left\{ \hat{p}_{6,t}\right\} _{t=2007}^{2012}$
+\end_inset
+
+.
 \end_layout
 
 \end_inset
 
- The fact that lower prices imply lower rents is a benefit for the region
- that is overshaowed by those same considerations.
+ There are two scenarios, one where the shock is assumed permanent thereafter,
+ and a second one where the shock reverts back to trend over three years,
+ with the shock sequence applied given by 
+\begin_inset Formula $\{0.7,0.8,0.9\}$
+\end_inset
+
+.
+ The experiment highlights the very different incentives to renters and
+ owners to move or not to or from any given region.
+ 
 \end_layout
 
 \begin_layout Standard
-Inflows into the region experience a 50% drop (see again table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:exper_p"
-
-\end_inset
-
-) after the price shock.
- For the same reasons as in the case of outflows, the region looses a lot
- of appeal for migrants.
- The bottom panel in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:inflows-p"
-
-\end_inset
-
- depicts the price to income ratio in the region under both scenarios.
- While an increase in prices attracts significant amounts of immigrants
- in normal times, after experiencing the shock immigrant flows all but collapse.
+Starting with the case for current owners, I will focus here on the effect
+ of owners who move into and subsequently decide to buy in Pacific.
+ Their decision to move and buy is driven mainly by the long-term prospects
+ for the housing investment.
+ This is driven in part by the final period value function, which depends
+ on the value of the house in the last period, and in part by the capital
+ gains realized in case the house is sold.
+ Therefore we would expect short-term and permanent shocks to have differential
+ impacts on the respective decisions to move into Pacific and not.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/p_agg.tex}
-\end_layout
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:own-buy-p-perm"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Migratory flows after applying a price shock to New England.
- Inward flows are the proportion of movers from all other regions into New
- England.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:exper_p"
+ shows the case for the permanent price shock.
+ We see that under the baseline the immigration rate of owners, who decide
+ to buy, tracks the baseline house price curve as shown in the panel for
+ Pacific in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Mapping-P-p"
 
 \end_inset
 
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
+.
+ Owner/buyers here have a strong investment motive, where the value of owning
+ in Pacific is strictly increasing in the house price.
+ Comparing this to the shock scenario where the price is permanently reduced
+ by 30%, the immigration rate drops dramatically: the price having dropped
+ makes housing in Pacific appear as a much less worthwhile investment, and
+ the rate at which owners who want to buy are moving into Pacific collapses.
+ Notice that agents here have rational expectations about the fact that
+ prices are not going to recover, as this is embedded in the expected future
+ values they compute, now taking into account the lower future prices.
 \end_layout
 
 \begin_layout Standard
@@ -4726,8 +4658,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_out.pdf
-	scale 80
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_6_permanent_2007_toj_own_buy.pdf
 
 \end_inset
 
@@ -4738,11 +4669,83 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Migratory outflows as a result of shocking the regional house price of New
- England in 1997.
+Change in migration rates into Pacific of owners who are looking to buy,
+ when applying a permanent shock to prices.
+ This compares the immigration rates of buying owners under the baseline
+ (i.e.
+ real data) scenario with a scenario where the baseline price is reduced
+ to 30% of it's level starting in year 2007.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:outflows-p"
+name "fig:own-buy-p-perm"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Contrasting this to the 3-year reverting price shock reveals a different
+ picture.
+ In this instance, the immigration rate of owners who buy in Pacific jumps
+ to very high level relative to the baseline before reverting back in 2009--2010
+, when the shock fades out.
+ The interpretation of this is straightforward and has to do with above
+ mentioned investment motives of owners: relative to the baseline, where
+ prices in 2007 are close to their peak, a 30% reduction in the price level
+ makes buying in Pacific a very sound investment for agents in the model.
+ They expect prices to return to the levels implied by the current state
+ of the aggregate factors 
+\begin_inset Formula $\mathbf{P}_{2007}$
+\end_inset
+
+, which -- given the degree of persistence observed in that process -- means
+ they expect high prices into the foreseeable future.
+ According to the assumed expectations model, this is an investment with
+ high expected return.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p3_6_3-year_2007_toj_own_buy.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Change in migration rates into Pacific of owners who are looking to buy,
+ when applying a 3--year reverting shock to prices.
+ We observe a very large increase in immigration when the shock hits in
+ 2007, quickly fading out after 2009 when the price series reverts back
+ to the baseline.
+ Moving in 2007 to Pacific to buy at 30% reduced prices is a high return
+ investment.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:own-buy-p3"
 
 \end_inset
 
@@ -4764,6 +4767,41 @@ name "fig:outflows-p"
 \end_layout
 
 \begin_layout Standard
+The response of renters who want to continue renting in Pacific tells a
+ largely similar tale, albeit driven by different motivating factors.
+ Renters in the model are renters only because they cannot afford the downpaymen
+t.
+ In other words, all agents in the model agree that owning a house is preferrabl
+e to renting it.
+ This in turn implies that if a household rents in a given location, they
+ are likely to rent in another location, because their level of wealth has
+ not changed.
+ Of course this is conditional on the relative price difference between
+ any two regions.
+ Summing up, renters who want to continue renting are expected to care about
+ the rent they have to pay in any given destination region.
+ We would expect the immigration rate of renters to be negatively correlated
+ to the level of prices (which affects rents).
+\end_layout
+
+\begin_layout Standard
+Looking at figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:exp-p-rent-perm-to6"
+
+\end_inset
+
+, where I plot the response of moving renters to the permanent price shock
+ in Pacific, we can see that after the shock arrives, the immigration rate
+ more than doubles and stays at a permanently higher level relative to the
+ baseline.
+ This is driven by the higher levels of consumption and saving renters can
+ afford in Pacific under the lower price scenario, which translate into
+ higher levels of utility.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -4773,8 +4811,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_in.pdf
-	scale 80
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_6_permanent_2007_toj_rent_rent.pdf
 
 \end_inset
 
@@ -4785,12 +4822,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Migratory inflows as a result of shocking the regional house price of New
- England in 1997.
- The bottom label depicts the price to income ratio in the Region.
+Response in immigration rates for renters choosing to rent in the destination
+ region Pacific as a result of a permanent reduction of prices of 30% from
+ 2007 onwards.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:inflows-p"
+name "fig:exp-p-rent-perm-to6"
 
 \end_inset
 
@@ -4799,6 +4836,66 @@ name "fig:inflows-p"
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The corresponding case for the temporary shock to prices is again similar
+ for renters and owners.
+ The sudden drop in prices in 2007 makes Pacific a more desireable location
+ to rent relative to other regions, and relative to the baseline, where
+ the immigration of renters actually decreases as prices to towards their
+ 2008 peak.
+ At difference to the case with a permanent shock, it is quite clear that
+ the change in behaviour lasts only as long as the reduction in rent: as
+ soon as the shock fades out in 2010, the immigration rate in baseline and
+ shock scenario are the same.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p3_6_3-year_2007_toj_rent_rent.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Response in immigration rates for renters choosing to rent in the destination
+ region Pacific as a result of a temporary shock to house price in 2007
+ which reverts back to the baseline over the course of 3 years.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:p-3yr-rent-rent"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -4817,97 +4914,44 @@ This experiment is analogous in spirit to the previous one.
 \begin_inset Formula $\overline{y}_{d,t}$
 \end_inset
 
- enters with a factor loading into the log earnings equation, whereas the
- price effects enter directly into the budget constraints.
- 
+ enters with a factor loading into the log earnings equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:income-process"
+
+\end_inset
+
+, whereas the price effects enter directly into the budget constraints.
+ Other than applying the 30% shock to the regional income level 
+\begin_inset Formula $\overline{y}_{6,t}$
+\end_inset
+
+ instead of to prices, the experiment is set up identically with what regards
+ assumptions about behaviour and expectations.
+ In order to faciliate a comparison across experiments, I will discuss the
+ results in the same order as in the price shock case.
 \end_layout
 
 \begin_layout Standard
-Starting again with a look at effects at aggregate regional level, we see
- in table 
+Starting therefore with the immigration rate of owners into the Pacific
+ region, in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:exper_y"
+reference "fig:own-buy-y-perm"
 
 \end_inset
 
- that the effects run in the same direction as with the price shock, but
- for the case of emigrants with a smaller magnitude.
- The income shock increases outmigration by 22%, whereas immigration is
- reduced by roughly 50% as in the previous experiment.
- As can be seen in the accompanying figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:outflows-y"
-
+ we can see that moving becomes less attractive for owners after the reduction
+ of the income level.
+ The channel through which this operates is clear, since a lower level of
+ income at all ages and realizations of the idiosyncratic shock 
+\begin_inset Formula $z_{it}$
 \end_inset
 
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:inflows-y"
-
-\end_inset
-
-, the effect of the local income shock follows the same time series pattern
- as the price shock, however, it less pronounced for the case of immigrants.
- Part of the loss in appeal of the region due to reduced income is offset
- by the still good prospects for house prices.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/y_agg.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Shocking the regional income level 
-\begin_inset Formula $\overline{y}_{d}$
-\end_inset
-
- in New England by -30%.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:exper_y"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+ implies lower levels of consumption over the lifecycle, leading to lower
+ utility and therefore lower attraction to Pacific.
+ The fact that the shock is permanent means that the immigration rate does
+ not revert back after 2010.
 \end_layout
 
 \begin_layout Standard
@@ -4920,8 +4964,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_out.pdf
-	scale 80
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_6_permanent_2007_toj_own_buy.pdf
 
 \end_inset
 
@@ -4932,11 +4975,11 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Changes to migratory outflows as a result of shocking the regional income
- of New England in 1997.
+Migration rates for owners moving to Pacific in baseline in permanent regional
+ income shock scenarios.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:outflows-y"
+name "fig:own-buy-y-perm"
 
 \end_inset
 
@@ -4948,9 +4991,32 @@ name "fig:outflows-y"
 
 \end_layout
 
+\begin_layout Plain Layout
+
+\end_layout
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The effects are different for owners and renters alike in the case of a
+ temporary shock to the regional income level.
+ Focusing on owners first, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:y3-own-buy"
+
+\end_inset
+
+ illustrates the immigration rate drops temorarily in 2007 and 2008, but
+ thereafter quickly recovers to the baseline level.
+ In comparison to the response temporary price drop, notice first that the
+ effect goes in the opposite direction, and secondly that it is less pronounced.
+ The no long-term effects from temporarily reduced income are smaller than
+ the ones associated with the house price drop.
+ This is due to very large capital gains on housing.
 \end_layout
 
 \begin_layout Standard
@@ -4963,8 +5029,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_in.pdf
-	scale 80
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y3_6_3-year_2007_toj_own_buy.pdf
 
 \end_inset
 
@@ -4975,16 +5040,11 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Changes in migratory inflows as a result of shocking the regional income
- level 
-\begin_inset Formula $\overline{y}_{d}$
-\end_inset
-
- of New England in 1997.
- The bottom label depicts the price to income ratio in the Region.
+Changes in immigration to Pacific of owners as a result of a 3 year temporary
+ shock to the regional mean income level.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:inflows-y"
+name "fig:y3-own-buy"
 
 \end_inset
 
@@ -4996,9 +5056,171 @@ name "fig:inflows-y"
 
 \end_layout
 
+\begin_layout Plain Layout
+
+\end_layout
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Finally, let's discuss the case of moving renters when income is shocked
+ in Pacific for different periods of time.
+ The plot in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rent-rent-y-perm"
+
+\end_inset
+
+ shows a pronounced and persistent drop in the immigration rate of renters
+ into the region due to the shock to regional income.
+ The mechanics behind this are identical to the owners' case discussed just
+ before, with lower income leading to lower utility.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_6_permanent_2007_toj_rent_rent.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Renters' response to a permanent income reduction in Pacific.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rent-rent-y-perm"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Last to discuss in this subsection is the response of renters to the temporary
+ income shock.
+ We observe in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rent-rent-y3"
+
+\end_inset
+
+ that there is only a marginal response in the immigration rate due to the
+ temporary decrease in income.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y3_6_3-year_2007_toj_rent_rent.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Renters' change in immigration to Pacific when the region's income level
+ is temporarily reduced by 30%.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rent-rent-y3"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is at this point worth taking stock of the effects of shocking regional
+ level house price or income levels.
+ Firstly, there is stark difference in responses depending on whether the
+ shock is expected to last forever or only for a certain period.
+ This is the case for all types of agents (owners as well as renters) and
+ for the shocks applied to either regional variable price or income.
+ Secondly, it is important to distinguish between renters and owners when
+ appreciating the migratory response to regional shocks.
+ Owners have different concerns than renters, relating mainly to their expectati
+on about capital gains from selling the house in some future period or bequeatin
+g it to their offspring.
+ For example the effects of a drop in house prices triggers vastly different
+ responses in immigration decisions from owners, depending on the length
+ of the low-price period.
+ In figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:own-buy-p-perm"
+
+\end_inset
+
+, where the shock is permanent, the immigration of owners drops to a permanently
+ lower level because housing is not a good investment; in constrast to that,
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:own-buy-p3"
+
+\end_inset
+
+ shows the case where the price drop is temporarily, causing great numbers
+ of people to move into the region to take advantage of the current low
+ prices, which are expected to recover after 3 years.
 \end_layout
 
 \begin_layout Standard

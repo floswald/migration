@@ -215,12 +215,12 @@ facts("z shock sequences are identical in baseline and shocked versions") do
 	sim0 = simulate(m,p)
 	sim0 = sim0[!mig.isna(sim0[:cohort]),:]
 
-	opts = mig.selectPolicy("p",5,2006,p)
+	opts = mig.selectPolicy("p",5,2007,p)
 
 	s10 = mig.computeShockAge(m,opts,10);
 	coh = unique(s10[:cohort])
 
-	@fact coh[1] => p.nt-1 - 10 + 2006 - 1997
+	@fact coh[1] => p.nt - 10 + 2007 - 1997
 
 	@fact all(sim0[sim0[:cohort].==coh,:z] .== s10[:z]) => true
 
