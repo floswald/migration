@@ -882,6 +882,18 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	merged[empstat==1|empstat==2|empstat==4, employed := TRUE ] # .With a job entire month, worked all weeks, absent 1 week not due layoff, absent 1+ weeks, with job at least 1 week no layoff no jobsearch
 
 
+	# get income in next period
+	# =========================
+
+	merged[,HHincome_plus := merged[list(upid,timeid+1)][["HHincome"]] ]
+	merged[,hvalue_plus   := merged[list(upid,timeid+1)][["hvalue"]] ]
+
+	# imputed renters house value assuming a 
+	# effective user cost of 5%	
+	merged[own==FALSE,r_hvalue := mortg.rent / 0.05 ]
+	merged[,r_hvalue_plus   := merged[list(upid,timeid+1)][["r_hvalue"]] ]
+
+
 
 	# do time aggregation
 	# ===================
@@ -903,6 +915,7 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   Division=Division[1],
 						   Div2=Div2[1],
 						   HHincome=mean(HHincome,na.rm=T),
+						   HHincome_plus=mean(HHincome_plus,na.rm=T),
 						   metro=tmetro[1]	,
 						   kids=kids[1],
 						   numkids=numkids[1],
@@ -917,6 +930,9 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 						   nonh_wealth=mean(nonh_wealth,na.rm=T),
 						   saving=mean(saving,na.rm=T),
 						   hvalue=mean(hvalue,na.rm=T),
+						   hvalue_plus=mean(hvalue_plus,na.rm=T),
+						   r_hvalue=mean(r_hvalue,na.rm=T),
+						   r_hvalue_plus=mean(r_hvalue_plus,na.rm=T),
 						   RE.equity.other=mean(RE.equity.other,na.rm=T),
 						   home.equity=mean(home.equity,na.rm=T),
 						   mortg.rent=mean(mortg.rent,na.rm=T),
@@ -982,9 +998,6 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# setnames(cpi,"cpi.CPIAUCSL.Open","cpi96")
 
 
-	# imputed renters house value assuming a 
-	# effective user cost of 5%	
-	merged[own==FALSE,r_hvalue := mortg.rent / 0.05 ]
 
 	# wealth to income ratio: measure of assets
 	# TODO

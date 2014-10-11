@@ -153,26 +153,20 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	Poterba = m.gridsXD["Poterba"]
 	mortgageSub  = false
-	mortgageSub1 = false
-	mortgageSub2 = false
-	if p.policy == "mortgageSubsidy_oldyoung" 
+	if p.policy == "mortgageSubsidy" 
 		mortgageSub  = true
-		mortgageSub1 = true  
-		@assert length(p.mort_LumpSum) == 1
-	elseif p.policy == "mortgageSubsidy_in_age"
-		mortgageSub  = true
-		mortgageSub2 = true  
-		@assert length(p.mort_LumpSum) == p.nt-1
+		@assert length(p.redistribute) == p.nt-1
+		if p.verbose > 0
+			println("policy is on: $mortgageSub")
+		end
 	end
-	MortgageSubsidy =0.0
-	subsidize = 0.0
 
 
 	# shocks
 	#-------
 
 	pshock = false
-	if (p.policy == "shockp") && (age >= p.shockAge) 
+	if ((p.policy == "shockp") && (age >= p.shockAge))
 		pshock = true
 	end
 
@@ -201,26 +195,25 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							end
 
 							for ih=0:1
+	
+								newz = 0.0
 
 								# if mortgage subsidy policy is on: 
 								if mortgageSub
-	                            	MortgageSubsidy = Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
 
 									# 1) take away subsidy from owners
-									if ih == 1
-										z -= MortgageSubsidy
+									if ih == 1 
+										newz = z - Poterba[iz+p.nz*(iy-1 + p.ny*(ip-1 + p.np*(age-1 + (p.nt-1)*(ij-1))))]
+									else
+										newz = z
 									end
 
-									# 2) redestribute according to policy
-									if mortgageSub1
-										# redestribute tax receipts generated in baseline as lump sum period 1 payment
-										if age == 1
-											z += p.mort_LumpSum[1]
-										end
-									elseif mortgageSub2
-										# give each age group the tax generated in that same age group
-										z += p.mort_LumpSum[age]
-									end
+									# 2) redistribute according to selected rule
+									newz += p.redistribute[age]
+
+								else
+									# no policy
+									newz = z
 								end
 
 
@@ -251,11 +244,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											price_k = m.gridsXD["p"][iy,ip,ik]
 										end
 
-										canbuy = a + z > p.chi * price_k
-
 										# kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 										# @assert offset_k+1 == kidx
 										kidx = offset_k + 1
+
+										canbuy = a + newz > p.chi * price_k
+										m.canbuy[kidx] = canbuy
+
 
 										# you have a housing choice
 										if ih==1 || (ih==0 && canbuy)
@@ -282,7 +277,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(w,p.myNA)
 
 
-												cash = cashFunction(a,z,ih,ihh,price_j,price_k,ij!=ik,ik,p)
+												cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ik,p)
 												m.cash[hidx] = cash
 
 												# find moving cost
@@ -345,7 +340,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											fill!(EV,p.myNA)	
 											fill!(w,p.myNA)
 
-											cash = cashFunction(a,z,ih,ihh,price_j,price_k,ij!=ik,ij,p)
+											cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ij,p)
 											m.cash[hidx] = cash
 
 											# find moving cost
@@ -375,7 +370,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.vh[hidx]   = r[1]
 												m.sh[hidx]   = r[2] 
 												m.ch[hidx]   = r[3] 
-												m.v[kidx]    = r[1]
+												m.v[kidx]    = r[1] 	# for renter optimal housing choice is easy: value of renting.
 												m.dh[kidx] = 0
 											else
 												m.vh[hidx]   = p.myNA
@@ -422,7 +417,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# of the exp function!
 
 											# @assert idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p) == ik + p.nJ * offset_1
-											@inbounds m.rho[ik + p.nJ * offset_1] = exp( (p.myNA + vtmp[ik]) -  (p.myNA + logsum))
+											@inbounds m.rho[ik + p.nJ * offset_1] = exp( (p.myNA + vtmp[ik]) - (p.myNA + logsum))
 										else
 											m.rho[ik + p.nJ * offset_1] = 0.0
 										end

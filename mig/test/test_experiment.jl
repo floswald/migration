@@ -147,6 +147,10 @@ facts("checking solution under price shock") do
 
 	# renter's cash after shock must increase with lower price
 	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .- m.cash[1,6,:,:,:,:,:,:,1,6,shockAge+1][:] .>= 0.0) => true
+
+	# same for owners who sell in different region and move to 6 to rent: they're cash on hand must be higher.
+	@fact all(m2.cash[1,6,:,:,:,:,:,:,2,5,shockAge+1][:] .- m.cash[1,6,:,:,:,:,:,:,2,5,shockAge+1][:] .>= 0.0) => true
+
 	# before shock or in another region, cash must be the same
 	@fact all(m2.cash[1,6,:,:,:,:,:,:,1,6,1][:] .== m.cash[1,6,:,:,:,:,:,:,1,6,1][:]) => true
 	@fact all(m2.cash[1,5,:,:,:,:,:,:,1,6,:][:] .== m.cash[1,5,:,:,:,:,:,:,1,6,:][:]) => true

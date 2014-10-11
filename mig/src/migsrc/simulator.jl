@@ -392,14 +392,16 @@ function simulate(m::Model,p::Param)
 					end
 
 					# 2) redistribute according to policy
+					yy *= 1.01
+
 					
 					# 2) a) all money to 20 year olds:
-					if mortgageSub1 && age == 1
-						yy += p.mort_LumpSum[1]
-					# 2) b) give money collected from owners to everybody
-					elseif mortgageSub2
-						yy += p.mort_LumpSum[age]
-					end
+					# if mortgageSub1 && age == 1
+					# 	yy += p.mort_LumpSum[1]
+					# # 2) b) give money collected from owners to everybody
+					# elseif mortgageSub2
+					# 	yy += p.mort_LumpSum[age]
+					# end
 				else
 					# mortgage subsidy policy is off: record amount paid to owners
 					if ih == 1

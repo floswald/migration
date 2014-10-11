@@ -50,7 +50,7 @@ type Param
 	# =================
 
 	policy       :: ASCIIString    # name of policy
-	mort_LumpSum :: Vector{Float64}  # redestributing amounts
+	redistribute :: Vector{Float64}  # redestributing amounts
 	ctax         :: Float64    # proportional consumption scale. used to find equalizing utility
 	shockReg     :: Int
 	shockAge     :: Int
@@ -70,16 +70,14 @@ type Param
 	ns    :: Int # number of HHsizes
 
 	# used in simulations
-	nsim::Int # number of individuals in each location
+	nsim::Int # number of individuals. this will be changed by cohort setup in model
 
 	verbose :: Int
 
 	# constructor assigning initial values
-	# function Param(size::Int;verbose=0,mLumpSum)
 	function Param(size::Int,opts=Dict())
 
 		if size==1
-
 			# super small: use for tests
 			na    = 10
 			namax  = 10
@@ -94,9 +92,8 @@ type Param
 			nsim  = 100
 
 		elseif size==2
-			# small: runs on my box
 			na    = 17
-			namax    = 21
+			namax = 21
 			nz    = 4
 			nh    = 2
 			ntau  = 2
@@ -131,7 +128,7 @@ type Param
 
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
-		phi    = 0.00		  # fixed cost of selling
+		phi    = 0.06		  # fixed cost of selling
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
@@ -146,7 +143,7 @@ type Param
 		# policy and shock setup
 		if length(opts) > 0 
 			pname    = get(opts,"policy","NULL")
-			lumpsum  = get(opts,"lumpsum",[0.0])
+			lumpsum  = get(opts,"redistribute",[0.0])
 			verbose  = get(opts,"verbose",0)
 			shockReg = get(opts,"shockRegion",0)
 			shockAge = get(opts,"shockAge",100)

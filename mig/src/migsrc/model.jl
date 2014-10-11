@@ -13,6 +13,7 @@ type Model
 	sh    :: Array{Float64,11}
 	ch    :: Array{Float64,11}
 	cash  :: Array{Float64,11}
+	canbuy  :: Array{Bool,10}
 	rho   :: Array{Float64,10}
 	dh    :: Array{Int,10}
 
@@ -85,7 +86,8 @@ type Model
 		vh= fill(p.myNA,dimvecH)
 		sh= fill(0.0,dimvecH)
 		ch= fill(0.0,dimvecH)
-		cash= fill(0.0,dimvecH)
+		cash= falses(dimvecH)
+		canbuy= fill(0.0,dimvec)
 		rho = fill(0.0,dimvec)
 
 		EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.ny,p.nJ))
@@ -166,6 +168,8 @@ type Model
 		pred_y = array(pred_ydf[:,2:end])
 		pred_p = array(pred_pdf[:,2:end])
 
+
+
 		# population weights
 		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
 
@@ -231,6 +235,16 @@ type Model
 			end
 		end
 
+
+		# if adjusting prices for GE effect after
+		# mortgage subsidy is removed:
+		if p.policy == "mortgageSubsidy_padjust"
+			ygrid = ygrid .* p.shockVal[1]
+			pgrid = pgrid .* p.shockVal[1]
+			pred_y = pred_y .* p.shockVal[1]
+			pred_p = pred_p .* p.shockVal[1]
+		end
+
 		# grid for individual income (based on ygrid(Y,P))
 		# -------------------------------------------
 
@@ -292,7 +306,7 @@ type Model
 		# 1D grids
 		# =========
 
-		bounds["assets"] = (-maximum(pgrid)*(1-p.chi),0.9*maximum(pgrid))
+		bounds["assets"] = (-maximum(pgrid)*0.9,0.9*maximum(pgrid))
 		grids = Dict{ASCIIString,Array{Float64,1}}()
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
@@ -391,7 +405,7 @@ type Model
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai)
 
 	end
 end

@@ -572,19 +572,40 @@ plot.PriceVAR <- function(){
 	pl = ggplot(py_pred,aes(x=year,y=value,color=Division)) + geom_line(size=0.9) + facet_wrap(~variable) + theme_bw() + scale_y_continuous("2012 dollars (1000s)") + ggtitle("Regional Price Time Series: Model vs Data") + scale_color_manual(values=cbPalette)
 	ggsave(pl,file="~/Dropbox/mobility/output/model/fit/VAR_data_model.pdf",width=8,height=6)
 
+	# same with income
+	predy = melt(x$pred_y,c("year"))
+	predy=data.table(predy)
+	setnames(predy,c("year","Division","predicted_y"))
+	setkey(predy,year,Division)
+	setkey(py,year,Division)
+	py_pred = py[predy]
+	py_pred = melt(py_pred[,list(year,Division,y,predicted_y)],c("year","Division"))
+	pl = ggplot(py_pred,aes(x=year,y=value,color=Division)) + geom_line(size=0.9) + facet_wrap(~variable) + theme_bw() + scale_y_continuous("2012 dollars (1000s)") + ggtitle("Regional Per Capita GDP Time Series: Model vs Data") + scale_color_manual(values=cbPalette)
+	ggsave(pl,file="~/Dropbox/mobility/output/model/fit/VAR_data_model_y.pdf",width=8,height=6)
 
 }
 
-change.PriceVAR <- function(by.factor){
+
+plot.dataP2Y <- function(){
+	data(BEA_fhfa,envir=environment())
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+	ggplot(py,aes(x=year,y=p/y,color=Division)) + geom_line(size=0.9) + theme_bw() + ggtitle("Price to Income Ratios") + scale_color_manual(values=cbPalette)
+	ggsave(pl,file="~/Dropbox/mobility/output/data/census/P2Y.pdf",width=6,height=5)
+
+}
+
+# change the "variance" of the aggregate price factor
+change.aggVariance <- function(by.factor){
 	x = Export.VAR()
-	agg = x$agg
-	agg[,dP := P - mean(P)]
-	agg[,P := dP * by.factor]
+	agg = data.table(x$agg_price)
+	agg[,dP := P - mean(P) ]
+	agg[,P2 := mean(P) + dP * by.factor]
 	agg[,dP := NULL]
 
-	divs = x$py[,unique(Division)]
+	divs =  names(x$Agg2Region_mods)
 	for (d in divs){
-		pyagg[Division==d,c("yhat","phat") := predict(x$Agg2Region_mods[[d]])]
+		newd = pyagg[Division==d,list(Y,P)]
+		pyagg[Division==d,c("yhat","phat") := predict(x$Agg2Region_mods[[d]],newd)]
 	}
 
 
