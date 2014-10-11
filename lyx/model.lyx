@@ -4519,28 +4519,25 @@ name "tab:fit-model-nontarget"
 
 \end_layout
 
-\begin_layout Section
-Experiments
-\end_layout
-
-\begin_layout Standard
-In this section I perform a series of counterfactual model simulations.
- Firstly, I investigate the effects of a large regional shock to either
- house prices of region level labor income in terms affecting migratory
- flows into and out of the affected region.
- Then I move on to the effects of a policy that affects the moving cost
- in the entire economy.
- Finally, I simulate the effects of abolishing the mortgage interest rate
- deduction under several redistribution schemes.
-\end_layout
-
 \begin_layout Subsection
-The effects of a shock to the regional house price level
+Comparative Statics
 \end_layout
 
 \begin_layout Standard
-In this experiment I reduce the level of the house price in the Pacific
- division in 2007 by 30% (Pacific has region index 
+In this section I illustrate how the model reacts to large economic shocks
+ at the regional level.
+ In particular, I present changes in migratory flows with respect to the
+ baseline environment, when the regional price or income level is reduced
+ unexpectedly at a certain point in time.
+\end_layout
+
+\begin_layout Subsubsection
+The effects on migration of a shock to the regional house price level
+\end_layout
+
+\begin_layout Standard
+I reduce the level of the house price in the Pacific division in 2007 by
+ 30% (Pacific has region index 
 \begin_inset Formula $d=6$
 \end_inset
 
@@ -4567,7 +4564,7 @@ reference "eq:VAR-reg-determ"
 \end_inset
 
  does not apply anymore, since they observe 
-\begin_inset Formula $0.7\times p_{6,2007}$
+\begin_inset Formula $\iota_{2007}\times p_{6,2007},\iota_{2007}=0.7$
 \end_inset
 
  instead of 
@@ -4593,15 +4590,21 @@ The surprise assumption is necessary to observe a causal effect of the price
 
 \end_inset
 
- There are two scenarios, one where the shock is assumed permanent thereafter,
- and a second one where the shock reverts back to trend over three years,
- with the shock sequence applied given by 
-\begin_inset Formula $\{0.7,0.8,0.9\}$
+ I consider two scenarios, one where the shock is permanent thereafter,
+ i.e.
+ 
+\begin_inset Formula $\iota_{2007+t}=0.7,t=0,1,\dots$
+\end_inset
+
+, and a second one where the shock reverts back to trend over three years,
+ i.e.
+ 
+\begin_inset Formula $\iota=0.7,t=0,1,\dots$
 \end_inset
 
 .
- The experiment highlights the very different incentives to renters and
- owners to move or not to or from any given region.
+ The experiment highlights the different incentives to renters and owners
+ to move to a given region, or to leave a region.
  
 \end_layout
 
@@ -4757,10 +4760,6 @@ name "fig:own-buy-p3"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -4895,16 +4894,12 @@ name "fig:p-3yr-rent-rent"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 The effects of a shock to the regional labor income level
 \end_layout
 
@@ -4991,10 +4986,6 @@ name "fig:own-buy-y-perm"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -5056,10 +5047,6 @@ name "fig:y3-own-buy"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -5114,10 +5101,6 @@ name "fig:rent-rent-y-perm"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -5178,10 +5161,6 @@ name "fig:rent-rent-y3"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -5237,6 +5216,82 @@ newpage
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Policy Experiments
+\end_layout
+
+\begin_layout Standard
+In this section I perform a series of counterfactual model simulations.
+ Firstly, I investigate the effects of a large regional shock to either
+ house prices of region level labor income in terms affecting migratory
+ flows into and out of the affected region.
+ Then I move on to the effects of a policy that affects the moving cost
+ in the entire economy.
+ Finally, I simulate the effects of abolishing the mortgage interest rate
+ deduction under several redistribution schemes.
+\end_layout
+
+\begin_layout Subsection
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Standard
+In the US, homeowners are allowed to deduct the interest paid on the mortgage
+ for their primary residence from taxable income.
+ This reduces the user cost of owning and results in a subsidy of owner-occupied
+ accomodation.
+ The Joint Committee on Taxation estimates that tax expenditure to finance
+ the mortgage interest deduction, which is the largest housing policy policy
+ program in the states, was $71.7 billion in 2014 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JCT2012"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The mortgage interest deduction has been widely critized on grounds of equity
+ (it's a regressive subsidy since it benefits primarily wealthy households)
+ and distortionary effects in the housing market, see for example 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "glaeser2011rethinking"
+
+\end_inset
+
+ for an overview.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+It is often held that if there were an offsetting taxation of imputed rent
+ which owner-occupiers pay to themselves in place, the negative aspects
+ of the subsidy could be greatly reduced.
+ Implementing such taxes is politically difficult in most circumstances,
+ probably highlighted by the small number of nations which have adopted
+ some form of this tax.
+ For the case of Switzerland, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bourassa:2010fk"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ As discussed at length above, owners are less mobile than renters, so the
+ question investigated in this subsection is whether abolishing the mortgage
+ interest deduction would increase mobility, and if so, by how much.
+ It 
 \end_layout
 
 \begin_layout Subsection
