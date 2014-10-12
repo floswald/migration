@@ -1,7 +1,7 @@
 module mig
 
-using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Lazy, Optim, HDF5, JLD
-import Base.show, Base.convert
+using GLM, MOpt.transpose, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Lazy, Optim, HDF5, JLD,JSON
+import Base.show, Base.convert, Base.print
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 

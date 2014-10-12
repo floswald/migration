@@ -11,8 +11,7 @@ function runExperiment(which,region=2,year=1997)
 
 	# unneccesary?
 	# home = ENV["HOME"]
-	# require(joinpath(home,"git/migration/mig/src/cluster/loadmig.jl"))
-
+	# require(joinpath(home,"git/
 	indir, outdir = mig.setPaths()
 
 	if which=="mortgage_deduct"
@@ -113,7 +112,7 @@ function exp_changeMC(which)
 	m0   = Model(p0)
 	solve!(m0,p0)
 	sim0 = simulate(m0,p0)
-	w0 = getDiscountedValue(sim0,:v,p0,m0)
+	w0 = getDiscountedValue(sim0,p0,m0)
 
 	println("done.")
 
@@ -150,11 +149,10 @@ end
 
 
 
-function getDiscountedValue(df::DataFrame,var::Symbol,p::Param,m::Model)
+function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 
 	w = @> begin
 		df
-		@select(id=:id,age=:age,v=var,cohort = :cohort)
 		@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
 		@where(!isna(:cohort))
 		@transform(vbeta = :v .* :beta)
@@ -172,7 +170,7 @@ function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	m = Model(p)
 	solve!(m,p)
 	s = simulate(m,p)
-	w = getDiscountedValue(s,:v,p,m)
+	w = getDiscountedValue(s,p,m)
 	(w[1][1] - v0)^2
 end
 
@@ -189,11 +187,9 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 	sim_sample = @where(df,(:year.>1997) )
 	fullw = WeightVec(array(sim_sample[:density]))
 
-
-
 	own_move = @> begin
 		sim_sample
-		@select(own=mean(convert(Array{Float64},:h),fullw),move=mean(convert(Array{Float64},:move),fullw),income=mean(convert(Array{Float64},:income),fullw))
+		@select(own=mean(convert(Array{Float64},:h),fullw),move=mean(convert(Array{Float64},:move),fullw),income=mean(convert(Array{Float64},:income),fullw),policy=pol)
 	end
 	own_move_age = @> begin
 		sim_sample
@@ -212,6 +208,17 @@ function npv(x::DataArray,r,from::Int)
 	@assert(from <= length(x))
 	for i in from:length(x)
 		y += x[i]/((1+r)^i) 
+	end
+	return y
+end
+
+function npv(x::DataArray,r)
+	n = length(x)
+	y = zeros(n)
+	for from=1:n
+		for i in from:n
+			y[from] += x[i]/((1+r)^(i-from+1)) 
+		end
 	end
 	return y
 end
@@ -243,17 +250,7 @@ function exp_Mortgage(ctax=false)
 
 	println("done.")
 	# get baseline expected lifetime utility at age 1
-	# age = 20 
-	# j = 1
-	# h = 0
-	# assets = 0
-	# tau = 2
-	# y,p = 2,2
-	# income = z2
-	# s = 1
-	# k = 1
-	# hh = 1
-	v = m.vh[1,1,1,3,2,2,2,m.aone,1,1,1]
+	w0 = getDiscountedValue(sim,p,m)
 
 	# collect some baseline output
 	# ----------------------------
@@ -269,7 +266,7 @@ function exp_Mortgage(ctax=false)
 	# 1982 cohort
 	# their behaviour is pretty uniform, so doesn't matter
 	sim_T = @where(sim, :cohort.==16)
-	N_T    = length(unique(sim_T[:id]))  # number of people in that cohort
+	N_T   = length(unique(sim_T[:id]))  # number of people in that cohort
 
 	# keep in mind that in this model rich people = owners.
 
@@ -287,15 +284,26 @@ function exp_Mortgage(ctax=false)
 
 	# get per capita tax expenditure by age
 	Tot_tax_age = @by(sim_T,:realage,receipts=sum(:subsidy),N_own = sum(:own),N=length(:subsidy))
-	Tot_tax_age = @transform(Tot_tax_age,per_owner_subsidy = :receipts ./ :N_own,redist1 = Redist1,redist2 = :receipts ./ :N,redist3 = repeat([Tot_tax / (N_T * (p.nt-1))],inner=[p.nt-1],outer=[1]))
+	Tot_tax_age = @transform(Tot_tax_age,per_owner_subsidy = :receipts ./ :N_own,redist1 = Redist1,redist2 = :receipts ./ :N,redist3 = repeat([Tot_tax / (N_T * (p.nt-1))],inner=[p.nt-1],outer=[1]),own_rate = :N_own ./ :N)
 
 	# check
 	@assert all(abs(array(@select(Tot_tax_age,s1 = sum(N_T.*:redist1),s2=sum(N_T.*:redist2),s3 = sum(N_T.*:redist3))) .- Tot_tax) .< 1e-8)
 
-	Tot_tax_age = @transform(Tot_tax_age,npv_at_age = 0.0)
-	for i in 1:size(Tot_tax_age,1)
-		Tot_tax_age[i,:npv_at_age] = npv(Tot_tax_age[:per_owner_subsidy],p.R-1,i)
+	# get expected net present value of subsidy conditional on age.
+	x = @> begin
+		sim_T
+		@by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage)
+		@by(:realage, npv_at_age = mean(:npv_at_age))
 	end
+	Tot_tax_age = join(Tot_tax_age,x,on=:realage)
+
+	npv_age_income = @> begin
+		sim_T
+		@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
+		@by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)
+		@by([:realage,:ybin], npv_at_age = mean(:npv_at_age))
+	end
+
 	Redist2 = array(Tot_tax_age[:redist2])
 
 	# redistribution 3: in each period give back Tot_tax / nsim*T
@@ -316,7 +324,7 @@ function exp_Mortgage(ctax=false)
 
 	# utility equalizing consumption scaling:
 	if ctax
-		ctax0 = findctax(v0,opts)
+		ctax0 = findctax(w0[1][1],opts)
 	else
 		ctax0 = 0
 	end
@@ -344,7 +352,7 @@ function exp_Mortgage(ctax=false)
 
 	# utility equalizing consumption scaling:
 	if ctax
-		ctax1 = findctax(v0,opts)
+		ctax1 = findctax(w0[1][1],opts)
 	else
 		ctax1 = 0
 	end
@@ -373,7 +381,7 @@ function exp_Mortgage(ctax=false)
 
 	# utility equalizing consumption scaling:
 	if ctax
-		ctax2 = findctax(v0,opts)
+		ctax2 = findctax(w0[1][1],opts)
 	else
 		ctax2 = 0
 	end
@@ -396,7 +404,7 @@ function exp_Mortgage(ctax=false)
 
 	# utility equalizing consumption scaling:
 	if ctax
-		ctax3 = findctax(v0,opts)
+		ctax3 = findctax(w0[1][1],opts)
 	else
 		ctax3 = 0
 	end
@@ -420,7 +428,7 @@ function exp_Mortgage(ctax=false)
 
 	# utility equalizing consumption scaling:
 	if ctax
-		ctax4 = findctax(v0,opts)
+		ctax4 = findctax(w0[1][1],opts)
 	else
 		ctax4 = 0
 	end
@@ -432,17 +440,17 @@ function exp_Mortgage(ctax=false)
 	sim4 = simulate(m4,p4)
 	# throw away incomplete cohorts
 	sim4 = @where(sim4,(!isna(:cohort)) )
-	pol4_out = policyOutput(sim4,"pice_adjust")
+	pol4_out = policyOutput(sim4,"price_adjust")
 
 	# create a dataframe with all pol results by age stacked
-	move_own = vcat(base_out["move_own"],pol0_out["move_own"],pol1_out["move_own"],pol2_out["move_own"],pol3_out["move_own"],pol4_out["move_own"])
+	own_move = vcat(base_out["own_move"],pol0_out["own_move"],pol1_out["own_move"],pol2_out["own_move"],pol3_out["own_move"],pol4_out["own_move"])
 	# create a dataframe with all pol results by age stacked
 	move_own_age = vcat(base_out["move_own_age"],pol0_out["move_own_age"],pol1_out["move_own_age"],pol2_out["move_own_age"],pol3_out["move_own_age"],pol4_out["move_own_age"])
 
 
 
 	# return
-	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2, "pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => move_own, "move_own_age" => move_own_age]
+	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2,  "ctax3" => ctax3, "ctax4" => ctax4,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age]
 
 	return out
 

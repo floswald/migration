@@ -658,7 +658,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 
 	# transformations, adding columns
-	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 6 bins, and add age squared
+	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 3 bins, and add age squared
 	ngroups = 3
 	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
 

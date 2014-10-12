@@ -19,14 +19,12 @@ type Param
 	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
-	omega3  :: Float64			# final period utility parameters
 
 	# moving cost parameters
 	MC0    :: Float64 # parameters in moving cost: alpha0, intercept
 	MC1    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC2    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC3    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
-	MC3_2  :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 	MC4    :: Float64 # parameters in moving cost: alpha1, alpha2, alpha3
 
 	# fixed parameters
@@ -112,18 +110,16 @@ type Param
 		imgamma  = 1.0/mgamma
 		tau      = 100
 		taudist  = 0.7
-		xi1      = 0.016
-		xi2      = 0.039
-		omega1   = 1.300
-		omega2   = 1.0
-		omega3   = 4.8
+		xi1      = 0.010
+		xi2      = 0.048
+		omega1   = 1.0
+		omega2   = 1.04
 
 		MC0    = 3.05  	 	# intercept
 		MC1    = 0.017  	 	# age
 		MC2    = 0.0013 		# age2
 		MC3    = 0.26 		# owmer
 		# MC3    = 0.00      # dist
-		MC3_2  = 0.00 		# 
 		MC4    = 0.36 		# kids
 
 
@@ -161,7 +157,7 @@ type Param
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,omega3,MC0,MC1,MC2,MC3,MC3_2,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 
@@ -176,6 +172,33 @@ function update!(p::Param,pd::Dict)
 end
 
 
+function print(p::Param,file_est::ASCIIString,file_set::ASCIIString)
+	est = [:gamma,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
+	set = [:beta,:phi,:R,:Rm,:chi]
+	f_estimate = open(file_est,"w")
+	f_set      = open(file_set,"w")
+
+	pest = Dict{ASCIIString,Float64}()
+	for i in est
+		pest[string(i)] = getfield(p,i)
+	end
+
+	pset = Dict{ASCIIString,Float64}()
+	for i in set
+		pset[string(i)] = getfield(p,i)
+	end
+	# add manually 
+	pset["rho"] = 0.96
+	pset["std_u"] = 0.118
+
+	JSON.print(f_estimate,pest)
+	JSON.print(f_set,pset)
+	close(f_estimate)
+	close(f_set)
+end
+
+
+
 function show(io::IO, p::Param)
 	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
 	print(io,"free params:
@@ -186,12 +209,10 @@ function show(io::IO, p::Param)
 	xi2     = $(p.xi2)
 	omega1  = $(p.omega1)
 	omega2  = $(p.omega2)
-	omega3  = $(p.omega3)
 	MC0     = $(p.MC0)
 	MC1     = $(p.MC1)
 	MC2     = $(p.MC2)
 	MC3     = $(p.MC3)
-	MC3_2   = $(p.MC3_2)
 	MC4     = $(p.MC4)
 	policy  = $(p.policy)")
 end
