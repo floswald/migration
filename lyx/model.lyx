@@ -2077,6 +2077,13 @@ reference "sub:Aggregate-to-regional"
 
 \begin_layout Subsection
 Home Ownership Choice
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Home-Ownership-Choice"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2103,30 +2110,14 @@ Ownership choice is discrete,
 \end_inset
 
 .
- In order to buy, a proportion 
-\begin_inset Formula $\chi p_{dt}$
-\end_inset
-
- of the house value needs to be paid up front as a downpayment, while the
- remainder 
-\begin_inset Formula $(1-\chi)p_{dt}$
-\end_inset
-
- is financed by a standard fixed rate mortgage.
- In other words, only owners are allowed to borrow with their house as a
- collateral, and there is no unsecured debt.
- 
-\end_layout
-
-\begin_layout Standard
-Similar to the setup in 
+ Similar to the setup in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Attanasio20121"
 
 \end_inset
 
-, I denote nonhousing wealth at age 
+, I denote total nonhousing wealth at age 
 \begin_inset Formula $t$
 \end_inset
 
@@ -2142,51 +2133,71 @@ assets
 \begin_inset Formula $a_{t}$
 \end_inset
 
- and assume as a terminal condition that net wealth be non-negative by the
- last period of life in the model, i.e.
+.
+ This includes liquid savings and mortgage debt.
+ There is a terminal condition for net wealth to be non-negative by the
+ last period of life, i.e.
  
 \begin_inset Formula $a_{T}+p_{dT}h_{T-1}\geq0$
 \end_inset
 
 , which translates into an implicit borrowing limit for owners.
- This implies that owners will choose a savings path contingent on the current
- price, their debt level, and their current age 
-\begin_inset Formula $t$
+ Additional to that, in order to buy a proportion 
+\begin_inset Formula $\chi p_{dt}$
 \end_inset
 
- such that they can satisfy this constraint in the final period.
- Furthermore, this setup does not require the owner to fulfil the downpayment
- (or margin) constraint in every period, but only in the period of purchase.
- This implies that when prices fall, owners do not have to adjust the size
- of their mortgage by remortgaging or selling the home, as long as the make
- the required interest payment.
+ of the house value needs to be paid up front as a downpayment, while the
+ remainder 
+\begin_inset Formula $(1-\chi)p_{dt}$
+\end_inset
+
+ is financed by a standard fixed rate mortgage.
+ This constraint must be satisfied in each period, i.e.
+ 
+\begin_inset Formula $a_{t+1}\geq-(1-\chi)p_{dt},\forall t$
+\end_inset
+
+.
+ In other words, only owners are allowed to borrow with their house as a
+ collateral, there is no unsecured debt, and the equity constraint must
+ be satisfied in each period.
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-In contrast to a fully specified mortgage repayment schedule, which requires
- knowledge of remaining mortgage debt and 
-\begin_inset Quotes eld
+This implies that if prices fall, owners may have to sell their house because
+ they cannot satisfy the equity constraint.
+ There is no mortgage default in the model.
+\end_layout
+
 \end_inset
 
-periods paid
-\begin_inset Quotes erd
+ Selling the house incurs proportional transaction cost 
+\begin_inset Formula $\phi$
 \end_inset
 
-, this approach saves on the counting state variable 
-\begin_inset Quotes eld
+, such that given current house price 
+\begin_inset Formula $p_{t}$
 \end_inset
 
-periods paid
-\begin_inset Quotes erd
+, upon sale the owner receives 
+\begin_inset Formula $(1-\phi)p_{t}$
 \end_inset
 
 .
 \end_layout
 
+\begin_layout Standard
+This implies that owners will choose a savings path contingent on the current
+ price, their debt level, and their current age 
+\begin_inset Formula $t$
 \end_inset
 
- I formally define this arrangement below in subsections 
+, such that they can satisfy the final period constraint.
+\end_layout
+
+\begin_layout Standard
+The setup is formally defined in subsections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Budget-stayers"
@@ -2201,24 +2212,6 @@ reference "sub:Budget-movers"
 \end_inset
 
  which describe the budget constraints.
-\end_layout
-
-\begin_layout Standard
-This arrangement is sufficient to induce individuals to engage in savings
- behaviour that mimicks the repayment path of a mortgage contract.
- Selling the house incurs proportional cost 
-\begin_inset Formula $\phi$
-\end_inset
-
-, such that given current house price 
-\begin_inset Formula $p_{t}$
-\end_inset
-
-, upon sale the owner receives 
-\begin_inset Formula $(1-\phi)p_{t}$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Subsection
@@ -2956,7 +2949,7 @@ reference "eq:final-period-value"
 .
 \begin_inset Formula 
 \begin{equation}
-V_{T}(a,h_{T-1},d)=\omega_{0}+\omega_{1}\ln\left(a+h_{T-1}p_{dT}\right)\label{eq:final-period-value}
+V_{T}(a,h_{T-1},d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\ln p_{dT}\label{eq:final-period-value}
 \end{equation}
 
 \end_inset
@@ -4283,14 +4276,6 @@ Results
 Parameter Estimates
 \end_layout
 
-\begin_layout Itemize
-table with preset parameters
-\end_layout
-
-\begin_layout Itemize
-table with estimated parameters
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -4298,7 +4283,23 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-TODO
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/param-edit.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -5257,7 +5258,6 @@ key "JCT2012"
 
 \begin_layout Standard
 The mortgage interest deduction has been widely critized on grounds of equity
- (it's a regressive subsidy since it benefits primarily wealthy households)
  and distortionary effects in the housing market, see for example 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5288,10 +5288,304 @@ key "Bourassa:2010fk"
 
 \end_inset
 
+ The common wisdom is that it distorts the housing market by subsidizing
+ owners, thereby leading to a higher rate of ownership as would arise without
+ the subsidy.
  As discussed at length above, owners are less mobile than renters, so the
  question investigated in this subsection is whether abolishing the mortgage
  interest deduction would increase mobility, and if so, by how much.
- It 
+ The answer to this question provides some guidance on whether housing policy
+ could serve as an effective means to enhance the efficiency of the labor
+ market by fostering greater mobility, or not.
+\end_layout
+
+\begin_layout Standard
+At this point it is important to emphasize that depending on the elasticity
+ of housing supply in a given market, we expect to see a general equilibrium
+ effect of house prices in response to the policy change.
+ The subsidy implied by the interest deduction can be viewed much like a
+ characteristic of the house, like for instance distance to schools, or
+ access to transportation networks.
+ As such, it is capitalized into house prices in the baseline.
+ Therefore, removing the subsidy would change long-run equilibrium prices,
+ in the same way as moving a certain property to a location with a different
+ set of available amenities would change its value.
+ In order to partially accomodate this effect, I will refer to the recent
+ paper by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sommer2013implications"
+
+\end_inset
+
+, in which the authors compute the stationary general equilibrium in a model
+ with infinitely lived, heterogeneous agents who are either renters, owner-occup
+iers or owner-landlords.
+ They compute equilibrium prices and rents arising from different assumption
+ about the tax system.
+ They find that house prices decrease on the order of 5% when the mortgage
+ interest deduction is abolished, with rents keeping roughly constant and
+ the homeownership rate increases from 65% to 71%.
+ The mechanism is as follows: removing the subsidy lowers the equilibrium
+ house price, since this is no longer capitalized into the value of the
+ house; lower house prices makes housing affordable to more low wealth people
+ who couldn't buy before, thereby increasing the ownership rate.
+ Their model does not feature multiple labor or housing markets, and resting
+ on the stationary equilibrium concept it does not allow for variation in
+ house prices over time as is the case here; nevertheless, using their result
+ to adjust the level of house prices by 5% in all locations when removing
+ the mortgage deduction seems like a worthwhile exercise to at least approximate
+ a potential general equilibrium effect in my model.
+\end_layout
+
+\begin_layout Standard
+The experiment is implemented here as follows.
+ The model being in after tax terms, it does not feature a formal tax system
+ which could be changed in an experiment.
+ The role of taxes and, in general, the user cost of housing is subsumed
+ in the implicit mortgage repayment path brought about by the final period
+ restriction on assets, as explained in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Home-Ownership-Choice"
+
+\end_inset
+
+.
+ In reality the interest rate deduction reduces taxable income, thereby
+ increasing disposable income of owners.
+ Therefore, to simulate the removal of the deduction, I reduce disposable
+ income of owners by an amount equivalent to their average implied tax savings.
+ To do this I use data from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Poterba:2008fk"
+
+\end_inset
+
+, which provides estimates of the average tax savings from the interest
+ deduction for several income and age brackets.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:sinai-data"
+
+\end_inset
+
+ shows my version of their table.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_data_jl/sinai.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Average annual tax savings in dollars implied by the mortgage interest rate
+ deduction for owners at various age and income groups.
+ Data from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Poterba:2008fk"
+
+\end_inset
+
+ adjusted to 2012 dollars.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:sinai-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To provide some guidance, it is useful to start with a simple calculation
+ to gauge the likely effect of the policy change on migration rates under
+ the assumption that the conditional choice probabilities (i.e.
+ whether to move or not) in the model do not change.
+ To simplify the example, let's assume that the baseline ownership rate
+ is 
+\begin_inset Formula $\pi_{o}=0.6$
+\end_inset
+
+, and that the annual migration rates for owners and renters are given by
+ 
+\begin_inset Formula $m_{o}=0.7$
+\end_inset
+
+% and 
+\begin_inset Formula $m_{r}=2\%$
+\end_inset
+
+ respectively.
+ This would give rise to a baseline unconditional migration rate of 
+\begin_inset Formula $\pi_{o}m_{o}+(1-\pi_{o})m_{r}=1.22\%$
+\end_inset
+
+.
+ Assuming the conditional choice probabilities which give rise to 
+\begin_inset Formula $m_{o}$
+\end_inset
+
+ and 
+\begin_inset Formula $m_{r}$
+\end_inset
+
+ do not change due to the policy change, and assuming, for example, that
+ removing the subsidy reduces the ownership rate by 3% such that 
+\begin_inset Formula $\pi_{o}'=0.57$
+\end_inset
+
+, we would expect to see a new migration rate of 
+\begin_inset Formula $\pi_{o}'m_{o}+(1-\pi_{o}')m_{r}=1.259\%$
+\end_inset
+
+, implying a change in the migration rate of 0.04%.
+\end_layout
+
+\begin_layout Standard
+I conduct the experiment under four different scenarious concerning how
+ the raised tax revenue is to be redistributed.
+ The first scenario is an unrealistic benchmark where no redistribution
+ takes place at all, and the money is destroyed.
+ The remaining three redistribution schemes allocate the total tax receipts
+ to all 20 year-olds, distribute the tax receipts generated by age 
+\begin_inset Formula $t$
+\end_inset
+
+ owners to all age 
+\begin_inset Formula $t$
+\end_inset
+
+ households, and finally a scheme that distributes the receipts on a per-capita,
+ per-period basis.
+ The last scheme comes closest to decreasing the level of income taxation,
+ so is the most relevant.
+\end_layout
+
+\begin_layout Standard
+The results are listed in table 
+\end_layout
+
+\begin_layout Standard
+| Row # | own | move | income | policy |
+\end_layout
+
+\begin_layout Standard
+| 1 | 0.607926 | 0.0130464 | 56.4935 | "baseline" |
+\end_layout
+
+\begin_layout Standard
+| 2 | 0.572722 | 0.0132334 | 56.4904 | "burning_money" |
+\end_layout
+
+\begin_layout Standard
+| 3 | 0.587812 | 0.0133106 | 56.4865 | "lumpsum_age20" |
+\end_layout
+
+\begin_layout Standard
+| 4 | 0.573603 | 0.0133435 | 56.4973 | "lumpsum_by_age" |
+\end_layout
+
+\begin_layout Standard
+| 5 | 0.576764 | 0.0133402 | 56.4948 | "lumpsum_per_capita" |
+\end_layout
+
+\begin_layout Standard
+| 6 | 0.616632 | 0.0133666 | 56.059 | "pice_adjust" |
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSub
+sidy/receipts.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+subsidy paid per owner, net present value if owning at age 
+\begin_inset Formula $t$
+\end_inset
+
+ until end of life, and per capita lumpsum if redestributing within each
+ age group from baseline owners to policy renters.
+ 2012 US dollars.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:subsidy-receipts"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -5332,12 +5626,12 @@ reference "eq:moving-cost"
 
 .
  As a metric of welfare I compute the implicit consumption tax 
-\begin_inset Formula $\xi$
+\begin_inset Formula $\delta$
 \end_inset
 
  which would make agents indifferent in terms of expected lifetime utility
  between the baseline and policy regimes.
- I label the baseline and regimes 1 and 2 as 
+ I label the regimes as baseline, regime 1 and 2 with 
 \begin_inset Formula $\lambda_{0}=1$
 \end_inset
 
@@ -5350,24 +5644,24 @@ reference "eq:moving-cost"
 \end_inset
 
  and consumption tax 
-\begin_inset Formula $\xi$
+\begin_inset Formula $\delta$
 \end_inset
 
  by 
-\begin_inset Formula $U_{i}(\xi)$
+\begin_inset Formula $U_{i}(\delta)$
 \end_inset
 
 .
- The equalizing tax 
-\begin_inset Formula $\xi^{*}$
+ The equalizing consumption tax 
+\begin_inset Formula $\delta^{*}$
 \end_inset
 
- then solves
+ solves
 \begin_inset Formula 
 \begin{eqnarray*}
-U_{0}-U_{i}(\xi^{*}) & = & 0\\
+U_{0}-U_{i}(\delta^{*}) & = & 0\\
 U_{0} & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(c_{it})\\
-U_{i}(\xi) & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(\xi c_{it})
+U_{i}(\delta) & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(\delta c_{it})
 \end{eqnarray*}
 
 \end_inset
@@ -5394,14 +5688,14 @@ reference "eq:utility"
 
  as implied by optimal behaviour.
  Accordingly, a value 
-\begin_inset Formula $\xi^{*}>1$
+\begin_inset Formula $\delta^{*}>1$
 \end_inset
 
  implies that agents would be indifferent between any proposed policy change
  if consumption were scaled up in every period, i.e.
  they would demand a subsidy.
  In the opposite case of 
-\begin_inset Formula $\xi^{*}<1$
+\begin_inset Formula $\delta^{*}<1$
 \end_inset
 
  they would be happy to give up a fixed proportion of period consumption
@@ -5427,7 +5721,7 @@ reference "tab:halfMC"
  per period, owners increase from 1% to 3% of movers.
  Accordingly the ownership rate drops to 42%.
  The policy is very valuable in terms of welfare, with 
-\begin_inset Formula $\xi=0.88$
+\begin_inset Formula $\delta=0.88$
 \end_inset
 
  implying that agents in the baseline would be ready to give up 12% of period
@@ -5584,134 +5878,7 @@ key "Poterba:2008fk"
 
 , which lists estimated tax savings for owners implied by the mortgage interest
  rate tax deduction for several income and age brackets.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:sinai-data"
-
-\end_inset
-
- shows my version of their table.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/data_repo/out_data_jl/sinai.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Average annual tax savings implied by the mortgage interest rate deduction
- for owners at various age and income groups.
- Data from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-
-\end_inset
-
- adjusted to 2012 dollars.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:sinai-data"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSub
-sidy/receipts.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-subsidy paid per owner, net present value if owning at age 
-\begin_inset Formula $t$
-\end_inset
-
- until end of life, and per capita lumpsum if redestributing within each
- age group from baseline owners to policy renters.
- 2012 US dollars.
  
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:subsidy-receipts"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
