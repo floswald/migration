@@ -196,26 +196,25 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-The propensity of being a homeowner and the likelihood of moving across
- regions are negatively correlated.
- Owners move less because they have higher transaction and moving costs
- than renters.
+Homeownership and the likelihood of moving across regions are negatively
+ correlated.
  This negative correlation has important implications when considering the
  insurance mechanisms available to consumers in the face of regional shocks
  to housing and labor productivity.
- The possiblity of moving to another region in case the current region is
- hit by an economic shock is a way to self insure in a world of incomplete
- markets.
+ The possiblity of moving to another region in the event of a shock is a
+ way to self insure in a world of incomplete markets.
  The aim of this paper is firstly to investigate the value of this self
- insurance mechanism in terms of welfare, and secondly to establish how
- several government policies interact with it.
+ insurance mechanism in terms of welfare, and secondly to establish whether
+ changing government housing policy to abolish the mortgage interest rate
+ deduction is an effective lever to increase migration rates.
  To address both issues, I propose a lifecycle model of consumption and
- savings, housing tenure and location choice, where aggregate fluctuations
- affect prices in regions differentially, which leads to welfare effects
- of moving that depend on the extent of variation in those prices.
+ savings, housing tenure and location choice, with aggregate uncertainty
+ which affects prices in regions differentially.
+ The differential impact of aggregate shocks by region allows migration
+ to serve a partial insurance device.
  Taking a lifecycle perspective is necessary to account for a strong age
- effect in both mobility and ownership, which in turn has implications for
- welfare statements about policies, since different age groups will be affected
+ effect in both mobility and ownership, which has implications for welfare
+ statements about policies, since different age groups will be affected
  differently.
 \end_layout
 
@@ -234,7 +233,7 @@ Government policy plays an important role in both housing and labor markets.
  that warranted government backing to provide cheaper mortgages) and in
  part to respond to political pressures of the day (e.g.
  the desire of the median voter for large suburban houses and cheap commuting
- into town), and there is an well-informed debate in economics about the
+ into town), and there is a well-informed debate in economics about the
  the desireability of each of them (see 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -244,7 +243,7 @@ key "glaeser2011rethinking"
 
 ).
  What is less well understood is how those policies interact with regional
- mobility when regional shocks occur, an anlysis of which is the contribution
+ mobility when economic shocks occur, which is one of the contributions
  made by this paper.
 \end_layout
 
@@ -260,40 +259,42 @@ see American Community Survey 2013, table DP04.
 
 \end_inset
 
- At the same time, the annual mobility rate across US census divisions is
- roughly 1.3% of the population, and it factors as 1.9% for renters and 0.67%
- for owners.
+ At the same time, roughly 1.3% of the population migrate across US census
+ division boundaries per year.
+ This number is composed of 1.9% of renters and 0.67% owners who move.
  These are large differences in the propensity to move, and the natural
  question to ask is why do we observe owners moving less? All else equal,
- owners face higher costs of effort when moving because they have to spend
- time finding a suitable buyer and meet with agents and lawyers and so forth
- -- in short, things a comparable renter does not have to contemplate.
- Additional to that, by buying a house owners make a specific investment
- into an asset that provides both a stream of utlility and a financial return,
- but is tied to a location.
+ owners face higher moving costs, both in terms of financial as well as
+ time and effort costs.
+ Financial costs occur because of transaction costs in the housing market
+ upon sale of the house (e.g.
+ agency fees or transaction taxes), while costs of effort arise from owners
+ having to spend time finding a suitable buyer, meet with agents and lawyers
+ etc.
+ A comparable renter is subject to those costs only to a lesser degree,
+ if at all.
+ Additional to greater moving costs, by buying a house owners make a specific
+ investment into an asset that provides both a stream of utlility and a
+ financial return, but is tied to a location.
  The stream of utility is only available if they reside in that location,
  and transaction costs imply that switching houses is costly, making owners
  more reluctant to move.
- It is conceivable that there is an interaction between a preference for
- a given location which influences the decision to make the investment.
- My model incorporates all of the aforementioned factors influencing owner's
- moving decisions and it allows for this potential interaction in preferences.
+ Finally, it is conceivable that there is an interaction between a location
+ preference and the decision to buy a house in the first place.
+ My model incorporates all of the aforementioned factors influencing the
+ housing and mobility choices of individuals and it allows for this potential
+ interaction in preferences.
 \end_layout
 
 \begin_layout Standard
-In the model I develop there are several mechanims which affect the home
+In the model I develop, there are several mechanims which affect the home
  ownership choice of individuals.
  A downpayment requirement means that only individuals with sufficient cash
- on hand are eligible to buy a house at the current price.
- Given that income increases on average over the lifecycle and depending
- on the path their individual income shocks have taken, it will in general
- take several years of assets accumulation before this constraint is satisfied.
+ on hand are able to buy a house at the current price.
  Even though all individuals share a common preference for owning, not all
  will buy a house once the downpayment constraint is satisfied.
- This decision interacts with an unobserved moving cost type, where a high
- cost is supposed to capture a strong preference for the current location,
- implying that high cost types are more likely to own and less likely to
- move.
+ This decision depends on individual specific costs of moving, implying
+ that high cost types are more likely to own and less likely to move.
  Finally, regional variation in price to income ratios imply different ownership
  rates in different regions, reflecting the relative differences found in
  the data.
@@ -303,49 +304,104 @@ In the model I develop there are several mechanims which affect the home
 In terms of the decision to migrate to another region, the model predicts
  that the likelihood of migration is increasing in the difference of discounted
  expected lifetime utilities between any two regions.
- This assumes that agents have rational expectations about the stochastic
- processes driving aggregate prices, and the way they affect their regional
- counterparts.
- As lifetime utility in one region decreases in response to a change in
- the aggregate house price level, say, the relative odds of moving from
- that region, to a region where the aggregate movement had a less negative
- impact, increase.
+ Those relative utilities, in turn, depend on the average regional income
+ level and the level of regional house prices, both of which vary over time.
+ Allowing regional characteristics to vary is a significant contribution
+ to the literature on dynamic migration models such as for example 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+, since it provides a reason for agents to move in response to a change
+ in their economic environment, rather than as a result of idiosyncratic
+ preference shocks alone.
+ Including time-varying location characteristics, however, increases computation
+al demands substantially.
+ The model features a factor structure which allows aggregate shocks to
+ affect regions differently, and at the same time helps to preserve computationa
+l tractability.
 \end_layout
 
 \begin_layout Standard
-I estimate the preference parameters of the model using a simulated method
- of moments estimator which operates inside a parallel MCMC algorithm.
+I estimate the model using a simulated method of moments estimator.
  I find that the model fits the data very well along the main dimensions
  of interest, which are mobility and ownership patterns over the lifecycle,
  ownership rates by region, as well as wealth accumulation over the lifecycle
  and by region.
+ After fitting the model to the data, I first perform some comparative statics
+ exercises and then move on to counterfactual policy simulations.
  
 \end_layout
 
 \begin_layout Standard
-The results indicate that abolishing the mortgage interest rate deduction
- has a large impact on the mobility rate of young owners, if the tax receipts
- are redistributed as a lump sum payment at the beginning of life, but that
- any other (politically more feasible) redistribution mechanism results
- in negligible changes in overall mobility rates.
- Policies which target the moving cost directly (government voucher for
- movers) have a large impact.
- I find that regional house price and income shocks strongly affect the
- rate of immigration into the affected area, with a substantial but smaller
- effect on emigration from the region.
+The comparative statics illustrate the reaction of migration rates with
+ respect to large regional shocks to either labor income or house prices.
+ The impulse responses differ depending on the direction of migratory flows
+ (i.e.
+ whether we consider in or out migration) and on ownership status.
+ For example, conditional on being able to buy in a region, the immigration
+ rate of owners is positively related to a change in house price, since
+ their utility depends on the net present value of the housing investment,
+ which is positively related to price.
+ The opposite is true for renters, whose utility depends on the level of
+ rents, which in turn depends on the house price, thus renter immigration
+ is negatively related to a price increase in a given region.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-more here on why those policies
-\end_layout
+Regarding policy experiments, I'm interested in the effectiveness of policies
+ which might increase labor mobility across regions with the ultimate aim
+ to enhance labor market efficiency.
+ Moving costs as well as liquidity constraints and imperfect rental markets
+ are the main inefficiencies a government may want to address in this context.
+ For example, I find that abolishing the mortgage interest deduction would
+ have a small positive impact on the migration rate.
+ At first sight one might be tempted to think that removing the deduction
+ would result in more renters, which would translate into an increase in
+ migration, since renters move more.
+ The actual effect is more nuanced.
+ First of all, relative moving probabilities change as the policy is enacted.
+ Owning becomes a less attractive option, which decreases the incentives
+ to search for a better housing market.
+ Secondly, there is a general equilibrium effect at play which reduces equilibri
+um house prices.
+ The interest rate deduction is a subsidy that is capitalized into house
+ values, so removing it will reduce prices.
+ In order to account for this general equilibrium effect to some extent
+ in the realm of my partial equilibrium model, I use recent results from
+ a stationary GE model by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sommer2013implications"
 
 \end_inset
 
+ to adjust prices after the policy is changed.
+ Applying the price correction further attenuates the initially expected
+ positive effect on migration, since lower prices allow more people to buy,
+ thereby increasing the ownership rate.
+ The change in the migration rate is of the order of 0.1 percentage points
+ (corresponding to a 7.7% increase in the migration rate), depending on the
+ way revenue neutrality is enforced and whether prices are adjusted.
+\end_layout
 
+\begin_layout Standard
+The second experiment investigates the effects of a government policy which
+ directly affects the moving decision by altering the moving cost.
+ The results of this highlight that moving costs are of first order importance
+ for migration decisions, but that they also affect housing choices.
+ Reducing moving costs to half their baseline level results in an increase
+ in the annual moving rate of 13.7 and 2.7 percentage points for renters and
+ owners, respectively.
+ The ownership rate decreases by 6.1 percentage points.
+ Agents in the model would forgo 12% of annual consumption under this new
+ regime and be indifferent to the baseline.
+ When increasing the moving cost to double its baseline level, the migration
+ rates go to virtually zero, and ownership increases by 1.8 percentage points.
+ Agents would demand an annual increase in consumption of 1.2% under this
+ regime before being indifferent to the baseline.
 \end_layout
 
 \begin_layout Paragraph
@@ -593,7 +649,7 @@ The contribution of this paper is to provide a link between models of housing
  demand over the lifecycle, as for example 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Attanasio20121"
+key "bk_wenli"
 
 \end_inset
 
@@ -609,7 +665,8 @@ key "kennan2003effect"
  decision.
  The likelihood of any given move depends not only on whether or not the
  individual owns their house, but also on the price and income levels in
- all potential destination regions, and the current level of mortgage debt.
+ all potential destination regions, including the current one, and the current
+ level of mortgage debt.
  To my knowledge this is the first empirical lifecycle model which takes
  the observed house price as given and models actual geographic location.
  
@@ -2194,10 +2251,7 @@ This implies that owners will choose a savings path contingent on the current
 \end_inset
 
 , such that they can satisfy the final period constraint.
-\end_layout
-
-\begin_layout Standard
-The setup is formally defined in subsections 
+ The setup is formally defined in subsections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Budget-stayers"
@@ -2225,15 +2279,11 @@ Moving Costs.
 \begin_layout Standard
 Moving across locations is assumed to be costly in terms of utility.
  Denote 
-\begin_inset Formula $\Delta(d,k,x)$
+\begin_inset Formula $\Delta(d,x)$
 \end_inset
 
  the utility costs of moving from 
 \begin_inset Formula $d$
-\end_inset
-
- to 
-\begin_inset Formula $k$
 \end_inset
 
  at a current value of the state vector 
@@ -2253,7 +2303,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(d,k,x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}\delta(d,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}\label{eq:moving-cost}
+\Delta(d,x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}\label{eq:moving-cost}
 \end{equation}
 
 \end_inset
@@ -2281,27 +2331,19 @@ reference "eq:moving-cost"
 \begin_inset Formula $\alpha_{2}$
 \end_inset
 
- measures the importance of distance 
-\begin_inset Formula $\delta$
-\end_inset
-
- between locations 
-\begin_inset Formula $d$
-\end_inset
-
  and 
-\begin_inset Formula $k$
-\end_inset
-
-, 
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
- is an age effect and 
+ are age effects and 
 \begin_inset Formula $\alpha_{4}$
 \end_inset
 
- measures moving cost differential arising from family size s.
+ measures moving cost differential arising from family size 
+\begin_inset Formula $s_{it}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -2309,8 +2351,7 @@ Restrictions.
 \end_layout
 
 \begin_layout Standard
-Moving is subject to a restriction regarding housing choices.
- I rule out the possibility of owning a home in region 
+I rule out the possibility of owning a home in region 
 \begin_inset Formula $d$
 \end_inset
 
@@ -2329,77 +2370,9 @@ Moving is subject to a restriction regarding housing choices.
 \end_inset
 
 .
- I rule out this possibility because I observe very few movers in my sample
- doing this, presumably deterred by high management costs for letting agents
- and because of liquidity constraints, i.e.
- they need the money to buy a new place in the new region 
-\begin_inset Formula $k$
-\end_inset
-
-.
- I illustrate this in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:movers-own-d-rent-k"
-
-\end_inset
-
-, where less than 1% of movers report possessing real estate other than
- their current home right after a move.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/move_2_landlord.pdf
-	scale 65
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Percentage of movers in SIPP who did not possess other real estate equity
- before moving (i.e.
- they only owned their home, if at all), and who subsequently report possessing
- real estate equity other than their current home after the move.
- This would indicate they still own their previous home after the move.
- The fact that the figure is increasing in time shows that movers gradually
- acquire other real estate, however, this cannot be their previous home.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:movers-own-d-rent-k"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
+ In my sample I observe less than 1% of movers report possessing real estate
+ other than their current home right after a move, probably as a result
+ of high agency fees and the 
 \end_layout
 
 \begin_layout Subsection
@@ -2441,7 +2414,7 @@ Period utility
 
 \begin_inset Formula 
 \begin{equation}
-u\left(c_{it},h_{it},k,x_{it}\right)=\frac{\left(\frac{c_{it}}{\zeta s_{it}}\right)^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq k\right]\Delta\left(k,x_{it}\right)+\varepsilon_{ikt}\label{eq:utility}
+u\left(c_{it},h_{it},k,x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq k\right]\Delta\left(k,x_{it}\right)+\varepsilon_{ikt}\label{eq:utility}
 \end{equation}
 
 \end_inset
@@ -2458,24 +2431,15 @@ u\left(c_{it},h_{it},k,x_{it}\right)=\frac{\left(\frac{c_{it}}{\zeta s_{it}}\rig
 \uwave default
 \noun default
 \color inherit
-The period payoff is composed of consumption 
-\begin_inset Formula $c$
+The period payoff is composed of utility from consumption 
+\begin_inset Formula $c_{it}$
 \end_inset
 
-, which is adjusted by household size at age 
-\begin_inset Formula $t$
-\end_inset
-
-, 
+, from owning a house valued differently at different household sizes 
 \begin_inset Formula $s_{it}$
 \end_inset
 
- scaled by 
-\begin_inset Formula $\zeta$
-\end_inset
-
-, utility from owning valued according to household size and the idiosyncratic
- preference shock for the chosen region 
+ and the idiosyncratic preference shock for the chosen region 
 \begin_inset Formula $k$
 \end_inset
 
@@ -2485,10 +2449,7 @@ The period payoff is composed of consumption
 \end_inset
 
  is only incurred if in fact a move takes place.
-\end_layout
-
-\begin_layout Standard
-Household size 
+ Household size 
 \begin_inset Formula $s$
 \end_inset
 
@@ -2496,8 +2457,13 @@ Household size
 \begin_inset Formula $t$
 \end_inset
 
- is a random variable, and it evolves from one period to the next in an
- age-dependent way as described in the following section.
+ is a binary random variable, 
+\begin_inset Formula $s\in\left\{ 0,1\right\} $
+\end_inset
+
+, relating to whether or not children are present in the household.
+ It evolves from one period to the next in an age-dependent way as described
+ in the following section.
 \end_layout
 
 \begin_layout Subsection
@@ -2761,17 +2727,7 @@ s'|s_{j} & \sim & \Gamma_{s,j}\\
 
 \end_inset
 
-In what follows I will use the expectations operator 
-\begin_inset Formula $\mathbb{E}_{z',s',\mathbf{P}'}\left[V|z,s,\mathbf{P}\right]$
-\end_inset
-
- to abbreviate the implied tensor product multiplication used in obtaining
- the expected future value function.
- 
-\end_layout
-
-\begin_layout Standard
-It is useful to define the conditional value function 
+Let us define the conditional value function 
 \begin_inset Formula $v\left(x,k\right)$
 \end_inset
 
@@ -2784,12 +2740,15 @@ It is useful to define the conditional value function
 \begin_inset Formula $k$
 \end_inset
 
-, net of 
+, net of idiosyncratic location shock 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
 .
- 
+ The consumer faces a nested optimization problem in each period.
+ At the lower level optimal savings and housing decision must be taken condition
+al on any discrete location choice, and at the upper level the discrete
+ location choice with the maximal value is chosen.
 \end_layout
 
 \begin_layout Standard
@@ -2847,13 +2806,8 @@ reference "eq:v"
 \end_inset
 
 ).
- This expression shows the maximization problem faced by the consumer conditiona
-l on choosing region 
-\begin_inset Formula $k$
-\end_inset
-
-, where consumption and housing need to be chosen subject to the constraints
- outlined just below.
+ This optimization problem is subject to several constraints which are outlined
+ below.
 \end_layout
 
 \begin_layout Standard
@@ -2869,8 +2823,8 @@ reference "eq:vbar"
 \end_inset
 
 , which admits a closed form expression of the expected value function,
- whereby 
-\begin_inset Formula $\bar{\gamma}$
+ where 
+\begin_inset Formula $\bar{\gamma}\approx0.577$
 \end_inset
 
  is Euler's constant.
@@ -2880,11 +2834,11 @@ reference "eq:vbar"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-V_{t}\left(x\right) & = & \max_{k\in D}\left\{ v_{t}(x,k)+\varepsilon_{ikt}\right\} \label{eq:V}\\
-v_{t}(x,k) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u(c,h,d,k)+\beta\mathbb{E}_{z',s',\mathbf{P}'}\left[\overline{v}_{t+1}(x')|z,s,\mathbf{P}\right]\label{eq:v}\\
-x' & = & \left(a',z',s',\mathbf{P}',h,k,t+1\right)\nonumber \\
-\overline{v}_{t}(x) & = & E_{\varepsilon}V_{t}(x)\nonumber \\
- & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}(x,k)\right)\right)\label{eq:vbar}
+V_{t}\left(x_{it}\right) & = & \max_{k\in D}\left\{ v_{t}\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \label{eq:V}\\
+v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},k)+\beta\mathbb{E}_{z,s,\mathbf{P}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{P}_{t}\right]\label{eq:v}\\
+x_{it+1} & = & \left(a_{it+1},z_{it+1},s_{it+1},\mathbf{P}_{t+1},h_{it+1},k,t+1\right)\nonumber \\
+\overline{v}_{t}\left(x_{it}\right) & = & E_{\varepsilon}V_{t}\left(x_{it}\right)\nonumber \\
+ & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}\left(x_{it},k\right)\right)\right)\label{eq:vbar}
 \end{eqnarray}
 
 \end_inset
@@ -2903,12 +2857,12 @@ Another convient by-product of the Type 1 EV assumption is that there is
 \begin_inset Formula $x$
 \end_inset
 
-, denoted 
-\begin_inset Formula $\rho(x,d,k)$
+, denoted as 
+\begin_inset Formula $q(x,d,k)$
 \end_inset
 
 .
- This is used in the model simulation:
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2926,10 +2880,10 @@ Another convient by-product of the Type 1 EV assumption is that there is
 \color none
 \begin_inset Formula 
 \begin{eqnarray}
-\rho(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
+q(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
  & = & \frac{\exp\left(v(x,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,z)\right)}\nonumber \\
  & = & \frac{\exp\left(v(x,k)\right)}{\exp\left(\overline{v}(x)\right)/\exp(\overline{\gamma})}\nonumber \\
- & = & \exp\left(\overline{\gamma}+v(x,k)-\overline{v}(x)\right)\label{eq:prob-of-moving-1}
+ & = & \exp\left(\overline{\gamma}+v(x,k)-\overline{v}(x)\right)\label{eq:prob-of-moving}
 \end{eqnarray}
 
 \end_inset
@@ -3132,7 +3086,7 @@ For individuals entering the period as owners
 \end_inset
 
 , arises naturally from the terminal condition 
-\begin_inset Formula $a_{iJ}+p_{J}h_{iJ-1}>0$
+\begin_inset Formula $a_{iT}+p_{dT}h_{iT-1}>0$
 \end_inset
 
 , as mentioned above.
@@ -3143,53 +3097,20 @@ For individuals entering the period as owners
 \end_inset
 
 .
- In this case, they obtain the purchase price net of the proportional selling
+ In this case, they obtain the house price net of the proportional selling
  cost 
 \begin_inset Formula $\phi$
 \end_inset
 
-, plus they have to pay rent in 
+, plus they have to pay rent in region 
 \begin_inset Formula $d$
 \end_inset
 
-, which is as already mentioned a fraction 
+, which is, as already mentioned, a fraction 
 \begin_inset Formula $\kappa_{d}$
 \end_inset
 
  of the prevailing house price.
- 
-\end_layout
-
-\begin_layout Standard
-In terms of the borrowing constraint, I don't require the owner to comply
- with the downpayment constraint 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:budget-rent-downpay"
-
-\end_inset
-
- in every period, as this would imply that a reduction in house price requires
- the owner to reduce the size of their mortgage, similarly to an investor
- who receives a margin call.
- Imposing this constraint in every period substantially decreases the amount
- of insurance against house price fluctuations provided by ownership and
- to which renters are exposed, thereby shutting down one important motivation
- to own in the model (see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sinai2005owner"
-
-\end_inset
-
-).
- Instead, owners are allowed to only make the interest payment on the mortgage,
- thus keep the balance constant, or borrow up to proportion 
-\begin_inset Formula $(1-\chi)$
-\end_inset
-
- of the current price as a buyer would, whichever amount is smaller (i.e.
- less positive).
  Apart from this, the same interest rate function 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -3216,25 +3137,8 @@ reference "eq:terminal-condition"
 \begin_inset Formula 
 \begin{eqnarray}
 a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-h_{it})(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own}\\
-a_{it+1} & \geq & \min\left\{ a_{it},-(1-\chi)p_{dt}\right\} \label{eq:budget-own-borrow}
+a_{it+1} & \geq & -(1-\chi)p_{dt}\label{eq:budget-own-borrow}
 \end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-is 
-\begin_inset Formula $a_{it+1}\geq\min\left\{ a_{it},-(1-\chi)p_{dt}\right\} $
-\end_inset
-
- really necessary?
-\end_layout
 
 \end_inset
 
@@ -3340,13 +3244,14 @@ reference "eq:budget-own-borrow-1"
 .
  It is important to note that this formulation precludes moving with negative
  equity if labor income is not enough to cover it.
- This is exacerbated in cases where the mover wants to buy immediately,
- since in that case the downpayment needs to be made as well, i.e.
+ This is exacerbated in cases where the mover wants to buy immediately in
+ the new region, since in that case the downpayment needs to be made as
+ well, i.e.
  if 
 \begin_inset Formula $y_{idt}<a_{it}+(1-\phi)p_{dt}-\chi h_{it}p_{kt}$
 \end_inset
 
- then the budget set is empty and the move is infeasible.
+ then the budget set is empty and moving and buying is infeasible.
 \begin_inset Foot
 status collapsed
 
@@ -3591,7 +3496,7 @@ reference "tab:Aggregate-to-Regional-VAR"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3848,33 +3753,21 @@ status collapsed
 \color none
 A copula is a multivariate probability distribution function which connects
  univariate margins by taking into account the underlying dependence structure.
- 
+ For example, a finite state Markov transition matrix is a nonparametric
+ approximation to a bivariate copula, and they converge as the number of
+ states goes to infinity, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bonhomme2006modeling"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-To provide some evidence for the particular parametric form of the evolution
- of 
-\begin_inset Formula $z$
-\end_inset
-
- when moving across regions, it is useful to view 
+ To estimate the parameters of the copula, I view 
 \begin_inset Formula $z_{idt}$
 \end_inset
 
@@ -3909,11 +3802,8 @@ reference "eq:income-process"
  cross-sectional distribution of both margins.
  Unsurprisingly, both margins are close to normal, which indicates a well-specif
 ied regression model.
- The next step involves fitting the copula 
-\begin_inset Formula $C$
-\end_inset
-
- via maximum likelihood to those data.
+ The next step involves fitting the copula via maximum likelihood to those
+ data.
  The results indicate that there is a relatively high degree of dependence
  in the residual, with the estimated copula parameter of the order of 0.7.
  This estimate is in line with a simple correlation measure between 
@@ -3932,14 +3822,8 @@ reference "tab:Correlation-z"
 \end_inset
 
 .
- A surface plot of the resulting copula density is plotted in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:density-of-copula"
-
-\end_inset
-
-.
+ Notice also that the correlation is smaller than then one observed in the
+ period preceding the move.
 \end_layout
 
 \begin_layout Standard
@@ -3947,7 +3831,7 @@ reference "fig:density-of-copula"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3982,48 +3866,6 @@ Correlation measures of log income residual of cross-divison movers in SIPP
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Correlation-z"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/z_cop_surf.pdf
-	scale 85
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-density of copula fitted to movers' wage residuals
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:density-of-copula"
 
 \end_inset
 
@@ -4600,7 +4442,7 @@ The surprise assumption is necessary to observe a causal effect of the price
 , and a second one where the shock reverts back to trend over three years,
  i.e.
  
-\begin_inset Formula $\iota=0.7,t=0,1,\dots$
+\begin_inset Formula $\iota=\left\{ 0.7,0.8,0.9,1.0,1.0,\dots\right\} $
 \end_inset
 
 .
@@ -5225,13 +5067,85 @@ Policy Experiments
 
 \begin_layout Standard
 In this section I perform a series of counterfactual model simulations.
- Firstly, I investigate the effects of a large regional shock to either
- house prices of region level labor income in terms affecting migratory
- flows into and out of the affected region.
- Then I move on to the effects of a policy that affects the moving cost
- in the entire economy.
- Finally, I simulate the effects of abolishing the mortgage interest rate
- deduction under several redistribution schemes.
+ Firstly, I investigate the impact of abolishing the mortgage interest deduction
+ on migration and ownership rates.
+ Then I move on to evaluate the effects of a policy that directly affects
+ moving costs.
+\end_layout
+
+\begin_layout Standard
+As a metric of welfare I compute the implicit consumption tax 
+\begin_inset Formula $\delta$
+\end_inset
+
+ which would make agents indifferent in terms of expected lifetime utility
+ between the baseline and policy regimes.
+ Denoting the expected lifetime utility from the baseline and policy regimes
+ under consumption tax 
+\begin_inset Formula $\delta$
+\end_inset
+
+ by 
+\begin_inset Formula $U$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{U}(\delta)$
+\end_inset
+
+ respectively, the equalizing consumption tax 
+\begin_inset Formula $\delta^{*}$
+\end_inset
+
+ solves
+\begin_inset Formula 
+\begin{eqnarray*}
+U-\hat{U}(\delta^{*}) & = & 0\\
+U & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(c_{it})\\
+\hat{U}(\delta) & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(\delta c_{it})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of simulated individuals and 
+\begin_inset Formula $u(c)$
+\end_inset
+
+ stands, with some abuse of notation, for the stream of utility from equation
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:utility"
+
+\end_inset
+
+ as implied by optimal behaviour.
+ Accordingly, a value 
+\begin_inset Formula $\delta^{*}>1$
+\end_inset
+
+ implies that agents would be indifferent between any proposed policy change
+ if consumption were scaled up in every period, i.e.
+ they would demand a subsidy.
+ In the opposite case of 
+\begin_inset Formula $\delta^{*}<1$
+\end_inset
+
+ they would be happy to give up a fixed proportion 
+\begin_inset Formula $\delta^{*}$
+\end_inset
+
+of period consumption if they were given the opportunity to participate
+ in the policy.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -5339,7 +5253,7 @@ iers or owner-landlords.
 \end_layout
 
 \begin_layout Standard
-The experiment is implemented here as follows.
+The experiment is implemented as follows.
  The model being in after tax terms, it does not feature a formal tax system
  which could be changed in an experiment.
  The role of taxes and, in general, the user cost of housing is subsumed
@@ -5459,7 +5373,7 @@ To provide some guidance, it is useful to start with a simple calculation
 \end_inset
 
 .
- Assuming the conditional choice probabilities which give rise to 
+ Assuming that the conditional choice probabilities which give rise to 
 \begin_inset Formula $m_{o}$
 \end_inset
 
@@ -5476,59 +5390,490 @@ To provide some guidance, it is useful to start with a simple calculation
 \begin_inset Formula $\pi_{o}'m_{o}+(1-\pi_{o}')m_{r}=1.259\%$
 \end_inset
 
-, implying a change in the migration rate of 0.04%.
+, implying an increase in the migration rate of 0.04 percentage points (or
+ 3.1%).
 \end_layout
 
 \begin_layout Standard
-I conduct the experiment under four different scenarious concerning how
+The choice probabilities do change after the policy is implemented for various
+ reasons.
+ Without a GE price adjustment, removing the subsidy makes housing less
+ desirable.
+ This affects owners and renters alike because the value of housing is an
+ important determinant for lifetime utility.
+ In the case of owners this is obvious as they receive a stream of utility
+ from the house and a final period payoff from accumulated equity.
+ For renters the same holds, because the majority of them will be owners
+ at some point in their lifecycle, so their expected utility depends on
+ the expected value of housing.
+ Therefore, removing the subsidy lowers the incentives to move to a more
+ profitable housing market.
+ A different way to see this is to look at the conditional choice probability
+ function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+ and realize that reducing all components by the same amount 
+\begin_inset Formula $b>0$
+\end_inset
+
+ results in a lower probability of moving for the same difference in values
+ 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+, by the shape of the exponential function.
+ I provide a simple example in the appendix.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+instead of lowering all values by 
+\begin_inset Formula $b$
+\end_inset
+
+, the policy will affect the conditional values 
+\begin_inset Formula $v(x,k)$
+\end_inset
+
+ differentially because even though the same monetary amount is involved
+ in each region (i.e.
+ cash on hand changes in exactly the same way), the implications for choice
+ behaviour differ across regions.
+ For example, an increase in cash 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ may lead a renter to buy in region 
+\begin_inset Formula $j$
+\end_inset
+
+ but not in region 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+I conduct the experiment under three different scenarious concerning how
  the raised tax revenue is to be redistributed.
- The first scenario is an unrealistic benchmark where no redistribution
- takes place at all, and the money is destroyed.
- The remaining three redistribution schemes allocate the total tax receipts
- to all 20 year-olds, distribute the tax receipts generated by age 
-\begin_inset Formula $t$
+ The results are listed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Abolishing-the-mortgage"
+
 \end_inset
 
- owners to all age 
-\begin_inset Formula $t$
+.
+ Scenario (1) is an unrealistic benchmark where no redistribution takes
+ place at all, and resources are destroyed (the money is burnt).
+ Scenario (2) is a scheme that distributes the generated receipts on a per-capit
+a, per-period basis.
+ The final scheme (3) is identical to policy (2) but adds the GE price correctio
+n as referred to above.
+ 
+\end_layout
+
+\begin_layout Standard
+Looking at the table and starting with scenario (1), we see that removing
+ the subsidy without any compensation decreases the ownership rate by 6%.
+ This is a result of shifting owners, who are at the margin in the baseline
+ scenario, into the renter population by making owning more expensive.
+ The migration rate increases slightly by 1.5%.
+ This policy results in a decrease in expected lifetime utility, and agents
+ in the model would be indifferent to the baseline if they were compensated
+ by a 2.7% increase of annual consumption.
+ 
+\end_layout
+
+\begin_layout Standard
+Scenario (2) redistributes the taxes saved by removing the subsidy to the
+ population on a per capita, per period basis.
+ In other words, for total tax revenue 
+\begin_inset Formula $X$
 \end_inset
 
- households, and finally a scheme that distributes the receipts on a per-capita,
- per-period basis.
- The last scheme comes closest to decreasing the level of income taxation,
- so is the most relevant.
+, each individual receives 
+\begin_inset Formula $X/(TN)$
+\end_inset
+
+ additional dollars per period.
+ This scheme approximates a reduction in income taxes financed by the removal
+ of the mortgage subsidy.
+ The redistribution means that fewer marginal owners are priced out of the
+ ownership pool such that the ownership rate decreases by 5.2%.
+ Similarly, given that incomes are higher in all regions and housing is
+ a less bad option than in scenario (1), the migration rate increases by
+ 2.3%.
+ Given the compensation, individuals are close to indifferent between this
+ policy and the baseline, with the implied consumption increase amounting
+ to 0.2% of annual consumption.
 \end_layout
 
 \begin_layout Standard
-The results are listed in table 
+Finally let's look at scenario (3), where we apply the 5% GE house price
+ reduction.
+ Here agents are compensated in two complementary ways, i.e.
+ through lower house prices and additional income.
+ As a result, the ownership rate increases by 1.4%, and the migration rate
+ reaches 2.5%.
+ As before, the higher migration rate comes from greater incentives to exploit
+ differences in relative utilities.
+ Agents strongly prefer this policy to the baseline, and accordingly would
+ be happy to give up 5% of period consumption before they would be indifferent
+ to the baseline.
 \end_layout
 
 \begin_layout Standard
-| Row # | own | move | income | policy |
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
-\begin_layout Standard
-| 1 | 0.607926 | 0.0130464 | 56.4935 | "baseline" |
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Baseline
 \end_layout
 
-\begin_layout Standard
-| 2 | 0.572722 | 0.0132334 | 56.4904 | "burning_money" |
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(1)
 \end_layout
 
-\begin_layout Standard
-| 3 | 0.587812 | 0.0133106 | 56.4865 | "lumpsum_age20" |
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(2)
 \end_layout
 
-\begin_layout Standard
-| 4 | 0.573603 | 0.0133435 | 56.4973 | "lumpsum_by_age" |
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(3)
 \end_layout
 
-\begin_layout Standard
-| 5 | 0.576764 | 0.0133402 | 56.4948 | "lumpsum_per_capita" |
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Ownership Rate
 \end_layout
 
-\begin_layout Standard
-| 6 | 0.616632 | 0.0133666 | 56.059 | "pice_adjust" |
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.608
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.572
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.576
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.617
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Migration Rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.01304
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.01323
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.01334
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.01336
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\%\Delta$
+\end_inset
+
+ Ownership
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-6%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-5.2%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.4%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\%\Delta$
+\end_inset
+
+ Migration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.5%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.3%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.5%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.027
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.002
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.95
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Abolishing the mortgage interest deduction.
+ Policy regimes are (1): burning money, (2): redistribute saved taxes per
+ capita per period, and (3): regime (2) plus 5% decrease in house prices,
+ approximating a GE effect.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Abolishing-the-mortgage"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5536,7 +5881,19 @@ The results are listed in table
 placement H
 wide false
 sideways false
-status collapsed
+status open
+
+\begin_layout Plain Layout
+TODO: insert a table with net present value of the mortgage deduction at
+ various by age and income quintile.
+ or a plot.
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Note Note
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5557,18 +5914,16 @@ sidy/receipts.tex}
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
-subsidy paid per owner, net present value if owning at age 
-\begin_inset Formula $t$
-\end_inset
-
- until end of life, and per capita lumpsum if redestributing within each
- age group from baseline owners to policy renters.
- 2012 US dollars.
- 
+subsidy 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:subsidy-receipts"
@@ -5625,81 +5980,6 @@ reference "eq:moving-cost"
 \end_inset
 
 .
- As a metric of welfare I compute the implicit consumption tax 
-\begin_inset Formula $\delta$
-\end_inset
-
- which would make agents indifferent in terms of expected lifetime utility
- between the baseline and policy regimes.
- I label the regimes as baseline, regime 1 and 2 with 
-\begin_inset Formula $\lambda_{0}=1$
-\end_inset
-
- and 
-\begin_inset Formula $\lambda_{i},i=1,2$
-\end_inset
-
- respectively and denote the expected lifetime utility from regime 
-\begin_inset Formula $i$
-\end_inset
-
- and consumption tax 
-\begin_inset Formula $\delta$
-\end_inset
-
- by 
-\begin_inset Formula $U_{i}(\delta)$
-\end_inset
-
-.
- The equalizing consumption tax 
-\begin_inset Formula $\delta^{*}$
-\end_inset
-
- solves
-\begin_inset Formula 
-\begin{eqnarray*}
-U_{0}-U_{i}(\delta^{*}) & = & 0\\
-U_{0} & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(c_{it})\\
-U_{i}(\delta) & = & \frac{1}{TN}\sum_{i=1}^{N}\sum_{t=1}^{T}\beta^{t-1}u(\delta c_{it})
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\begin_inset Formula $N$
-\end_inset
-
- is the number of simulated individuals and 
-\begin_inset Formula $u(c)$
-\end_inset
-
- stands, with some abuse of notation, for the stream of utility from equation
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:utility"
-
-\end_inset
-
- as implied by optimal behaviour.
- Accordingly, a value 
-\begin_inset Formula $\delta^{*}>1$
-\end_inset
-
- implies that agents would be indifferent between any proposed policy change
- if consumption were scaled up in every period, i.e.
- they would demand a subsidy.
- In the opposite case of 
-\begin_inset Formula $\delta^{*}<1$
-\end_inset
-
- they would be happy to give up a fixed proportion of period consumption
- if they were given the opportunity to participate in the policy.
  
 \end_layout
 
@@ -5849,73 +6129,6 @@ name "tab:doubleMC"
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Abolishing the mortgage interest rate deduction
-\end_layout
-
-\begin_layout Standard
-First I investigate the effects on regional mobility arising from an abolishment
- of the mortgage interest rate deduction policy, under various scenarious
- of redestributing the generated tax savings to the population.
- The experiment is based on data shown in panel of table 1 in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-
-\end_inset
-
-, which lists estimated tax savings for owners implied by the mortgage interest
- rate tax deduction for several income and age brackets.
- 
-\end_layout
-
-\begin_layout Standard
-the lumpsum if paid to 20 year olds only as a one-off is $17685.
-\end_layout
-
-\begin_layout Standard
-here lumpsum_by_age means that each age group gets a per capita redistribution
- of the subsidy that was paid to 34 year old homeowners in the baseline.
- lumpsum_age20 means all 20 year olds get a one off lumpsum payment, financed
- through the pooled subsidies that were paid to all owners in the baseline.
- see figures 1 and 2 below.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/mobility/output/model/experiments/MortgageSubsidy/moving.pdf
-	scale 90
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-mobility rate
 \end_layout
 
 \end_inset
