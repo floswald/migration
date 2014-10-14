@@ -18,6 +18,7 @@
     citecolor={dark-blue}, urlcolor={medium-blue}
 }
 \newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
+\usepackage{multirow}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -152,6 +153,11 @@ JOB MARKET PAPER DRAFT
 \end_layout
 
 \begin_layout Abstract
+
+\series bold
+ABSTRACT IS OUTDATED - currently rewriting this.
+ 
+\series default
 In this paper I propose a structural lifecycle model of consumption, savings
  and regional migration in the US which explicitly takes the decision to
  buy or rent a home into account.
@@ -200,9 +206,9 @@ Homeownership and the likelihood of moving across regions are negatively
  correlated.
  This negative correlation has important implications when considering the
  insurance mechanisms available to consumers in the face of regional shocks
- to housing and labor productivity.
+ to housing and labor productivity in a world of incomplete markets.
  The possiblity of moving to another region in the event of a shock is a
- way to self insure in a world of incomplete markets.
+ way to self insure.
  The aim of this paper is firstly to investigate the value of this self
  insurance mechanism in terms of welfare, and secondly to establish whether
  changing government housing policy to abolish the mortgage interest rate
@@ -216,6 +222,7 @@ Homeownership and the likelihood of moving across regions are negatively
  effect in both mobility and ownership, which has implications for welfare
  statements about policies, since different age groups will be affected
  differently.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -410,23 +417,38 @@ Literature.
 \end_layout
 
 \begin_layout Standard
-There are several relevant strands of literature related to this paper.
- One strand is the labor literature on the determinants of individual migration
- decisions in dynamic models, as embodied by 
+This paper builds on the work of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
 
 \end_inset
 
-.
- This is a partial equilibrium model of the determinants of individual migration
- decisions across US states in a dynamic context, with a particular focus
+, who study the determinants of individual migration decisions across US
+ states in a dynamic partial equilibrium model, with a particular focus
  on the importance of return migration.
- The paper ignores housing market and savings considerations and finds that
- income prospects in other states are an important determinant of individual
- migration decisions.
- Using a similar setup, 
+ Their main finding is that expected income is an important determinant
+ of migration decisions.
+ My paper adds to their setup a homeownership choice, and time-varying regional
+ income and price levels, which they implicitly assume fixed throughout.
+ Adding the ownership choice does justice to a stark separation of owners
+ and renters in the data with respect to their relative migration behaviour;
+ allowing regional prices to vary gives agents in the model a fundamental
+ economic reason to migrate, i.e.
+ as the economic fortunes in a region change, so does the migration behaviour
+ of people from and to that region.
+ In 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+, a move is triggered by an idiosyncratic preference shock alone.
+\end_layout
+
+\begin_layout Standard
+Using a similar setup, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
@@ -447,20 +469,7 @@ key "gregory2013impact"
 
  analyzes the impact of a home-rebuilding grant extended to victims of the
  Katrina hurricane in New Orleans in a dynamic discrete choice model.
- My paper contributes to this literature by extending 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
- with a time-varying regional income and house price process, while at the
- same time including assets and housing status as a state variable.
- The combination of a lifecycle housing and savings problem in multiple
- locations with different price processes poses the main challenge in this
- extension.
- This extension is necessary for the study of migration as an insurance
- device to regional level price and income shocks in a dynamic setup.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -491,15 +500,9 @@ key "Diamond:2012fk"
 
  analyses the welfare implications of geographic skill sorting in the US,
  whereby college graduates increasingly locate in high wage, high rent cities.
- This obfuscates any welfare comparisons, since high and low skilled pay
- different rents and consume different amenities, and she finds taking skill
- sorting into account substantially increases the welfare differential.
- I take from this literature the basic idea that welfare in any given location,
- and thus the decision to migrate to it, depends among other things on the
- tension between wages and rents in that location.
- At difference to this framework my model is dynamic, so it can capture
- the human capital investment aspect of migration, while having to relax
- the general equilibrium structure.
+ In contrast to this framework my model is dynamic, so it can capture the
+ human capital investment aspect of migration, while abstracting from GE
+ considerations.
 \end_layout
 
 \begin_layout Standard
@@ -638,10 +641,10 @@ key "nenov2012regional"
  and migration decisions in the data, which brings with it the need to consider
  a finite time horizon, implying that any mortgage taken out must be paid
  back at some point -- which is not implied by the previous set of papers.
- Furthermore, and as mentioned previously, it seems that the dynamics of
- house prices over the recent couple of decades are hard to reconcile with
- those models, which is particularly worrying if the exercise is to deliver
- estimates of structural parameters, as is the aim here.
+ [NEED SOMETHING BETTER HERE] Furthermore, it seems that the dynamics of
+ house prices over the last decade are hard to reconcile with equilibrium
+ models of this kind, which is particularly worrying if the exercise is
+ to deliver estimates of structural parameters, as is the aim here.
 \end_layout
 
 \begin_layout Standard
@@ -667,8 +670,7 @@ key "kennan2003effect"
  individual owns their house, but also on the price and income levels in
  all potential destination regions, including the current one, and the current
  level of mortgage debt.
- To my knowledge this is the first empirical lifecycle model which takes
- the observed house price as given and models actual geographic location.
+ Regional shocks are important drivers of migration.
  
 \end_layout
 
@@ -677,8 +679,8 @@ Empirical Background
 \end_layout
 
 \begin_layout Standard
-Despite a recent declining trend, the amount of regional migration in the
- US is still relatively high by international standards.
+The amount of regional migration in the US is still high by international
+ standards.
  According to 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1005,7 +1007,7 @@ It is possible to construct a panel dataset from the CPS, but only with
 \end_layout
 
 \begin_layout Standard
-Before presenting statistics from SIPP data, I need to explain the geographic
+Before presenting statistics from SIPP data, I will explain the geographic
  concept I will be using in this paper, which is a US Census Division.
  Census Divisions are nine relatively large regions which separate the United
  States into groups of states 
@@ -1070,8 +1072,8 @@ The aggregation of states into this particular grouping is but one of many
  In many respects the ideal concept of a region is what economists would
  refer to as a local labor market, and metropolitan statistical areas (MSA)
  or commuting zones (CZ) come close to this.
- Alas, for the purpose of the model in this paper, the so defined number
- of regions would be far too large to be computationally feasible.
+ Unfortunately, for the purpose of the model in this paper, the so--defined
+ number of regions would be far too large to be computationally feasible.
  Hence the choice of census divisions.
 \begin_inset Foot
 status collapsed
@@ -1113,10 +1115,10 @@ reference "tab:Migration-rates-Molloy"
 
 \end_inset
 
- most likely because I set up the SIPP data in terms of household heads,
- thereby missing some moves of non--reference persons, and potentially because
- of sample attrition.
- It is quite clear form table 
+ because I set up the SIPP data in terms of household heads, thereby missing
+ some moves of non--reference persons, and potentially because of sample
+ attrition.
+ It is quite clear from table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Annual-moving-rate"
@@ -1164,9 +1166,9 @@ reference "fig:SIPP-sample-proportion-1"
 
 \end_inset
 
- that firstly, renters are more likely to move at all ages, and secondly
- that there is a strong and declining age effect -- younger individuals
- move more.
+ firstly that renters are more likely to move at all ages, and secondly
+ that there is a strongly declining age effect -- younger individuals move
+ more.
  Both of those are highly salient features of the data, and they are the
  main dimension along which my model's performance is going to be evaluated.
 \end_layout
@@ -1565,7 +1567,7 @@ Dropbox/data/sipp/D2D-probit-edit.tex}
 \begin_layout Plain Layout
 Determinants of cross census division moves in SIPP data.
  Household income and wealth are measured in 100,000 USD.
- This regresses an binary indicator for whether a cross division move takes
+ This regresses a binary indicator for whether a cross division move takes
  place at age 
 \begin_inset Formula $t$
 \end_inset
@@ -1616,7 +1618,7 @@ Model
 \end_layout
 
 \begin_layout Standard
-In the model I view households as unitary units, and I'll use the terms
+In the model I view households as a single unit, and I'll use the terms
  
 \emph on
 household 
@@ -1712,16 +1714,16 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \end_inset
 
 .
- Additional to that, 
+ In addition to that, 
 \begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
  enters the individual wage equation as a level shifter.
  At the individual level uncertainty enters the model through an idiosyncratic
- component of income risk, through a markovian process that models changes
- of household size over the lifecycle, and a location--specific preference
- shock, which is assumed identically and independently distributed across
- agents, regions and time.
+ component of income risk, a Markovian process that models changes in household
+ size over the lifecycle, and a location--specific preference shock, which
+ is assumed identically and independently distributed across agents, regions
+ and time.
 \end_layout
 
 \begin_layout Standard
@@ -1741,8 +1743,10 @@ key "kennan2003effect"
 \begin_inset Formula $t$
 \end_inset
 
-, the actual job obtained after a move is an experience good and it is impossibl
-e to be certain about the exact match quality ex ante.
+, it is impossible to be certain about the exact match quality of the new
+ job ex ante.
+ The new job can be viewed as an experience good where quality is revealed
+ only after an initial period.
  This setup gives rise to income risk associated with moving.
 \end_layout
 
@@ -1842,7 +1846,7 @@ The price of human capital
  It is plausible to think that within a single country, wages should tend
  to converge to a common level, particularly in the presence of large migratory
  flows from one region to the next.
- In assuming no relative factor price equality across US regions I rely
+ In assuming no relative factor price equalization across US regions I rely
  on a host of evidence showing that relative wages vary considerably across
  regions over a long time horizon (see for example 
 \begin_inset CommandInset citation
@@ -1908,22 +1912,21 @@ When moving from region
 \begin_inset Formula $z_{it}$
 \end_inset
 
- is drawn from the conditional distribution 
-\begin_inset Formula $G_{k\neq d}\equiv z_{ik}|z_{id},\,\forall k\neq d$
+ is drawn from a different conditional distribution than is the case for
+ non-movers.
+ Let us denote the conditional distributions of 
+\begin_inset Formula $z_{ik}|z_{id}$
 \end_inset
 
-.
- This conditional distribution is assumed to be known to all agents, and
- it is allowed to differ from the conditional distribution of 
-\begin_inset Formula $z$
+ by 
+\begin_inset Formula $G_{k=d}$
 \end_inset
 
- for non-movers, i.e.
- 
-\begin_inset Formula $G_{k=d}\neq G_{k\neq d},\,\forall k\neq d$
+ and 
+\begin_inset Formula $G_{k\neq d}$
 \end_inset
 
-.
+ for stayers and movers, respectively.
  This setup allows for some uncertainty related to the quality of the match
  with a job in the new region 
 \begin_inset Formula $k$
@@ -2014,17 +2017,7 @@ reference "eq:VAR-process-agg"
 \end_inset
 
 .
- Agents in the model have rational expectations which coincide with this
- model of aggregate price dynamics, i.e.
- when forecasting next period's aggregate state, they use the linear predictor
- implied by model 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:VAR-process-agg"
-
-\end_inset
-
-.
+ Agents in the model have rational expectations concerning this process.
 \begin_inset Formula 
 \begin{eqnarray}
 \mathbf{P}_{t} & = & A\mathbf{P}_{t-1}+\nu_{t-1}\nonumber \\
@@ -2081,7 +2074,7 @@ reference "eq:VAR-reg-determ"
 
 .
  Similarly to the aggregate case, 
-\begin_inset Formula $a_{d}$
+\begin_inset Formula $\mathbf{a}_{d}$
 \end_inset
 
  is a matrix of coefficients specific to region 
@@ -2094,7 +2087,7 @@ reference "eq:VAR-reg-determ"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\mathbf{p}_{dt} & = & a_{d}\mathbf{P}_{t}\nonumber \\
+\mathbf{p}_{dt} & = & \mathbf{a}_{d}\mathbf{P}_{t}\nonumber \\
 \mathbf{p}_{dt} & = & \begin{bmatrix}\overline{y}_{dt}\\
 p_{dt}
 \end{bmatrix}\label{eq:VAR-reg-determ}
@@ -2121,7 +2114,7 @@ reference "sub:Aggregate-to-regional"
 \end_inset
 
 , given the assumption that 
-\begin_inset Formula $a_{d}$
+\begin_inset Formula $\mathbf{a}_{d}$
 \end_inset
 
  is known for all 
@@ -2246,7 +2239,8 @@ This implies that if prices fall, owners may have to sell their house because
 
 \begin_layout Standard
 This implies that owners will choose a savings path contingent on the current
- price, their debt level, and their current age 
+ price, their income and debt level, the mortgage interest rate, and their
+ current age 
 \begin_inset Formula $t$
 \end_inset
 
@@ -2370,9 +2364,22 @@ I rule out the possibility of owning a home in region
 \end_inset
 
 .
- In my sample I observe less than 1% of movers report possessing real estate
- other than their current home right after a move, probably as a result
- of high agency fees and the 
+ In my sample I observe less than 1% of movers for which this appears to
+ be true, most likely as a result of high managment fees or a binding liquidity
+ constraint that forces them to sell the house to be able to afford the
+ downpayment in the new region.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+SIPP allows me to verify whether individuals possess any real estate other
+ than their current home at any point in time.
+ Fewer than 1% of movers provide an affirmative answer to this.
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -2431,15 +2438,19 @@ u\left(c_{it},h_{it},k,x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{i
 \uwave default
 \noun default
 \color inherit
-The period payoff is composed of utility from consumption 
+The period 
+\begin_inset Formula $t$
+\end_inset
+
+ payoff consists of utility from consumption 
 \begin_inset Formula $c_{it}$
 \end_inset
 
-, from owning a house valued differently at different household sizes 
+, from owning a house, valued differently at different household sizes 
 \begin_inset Formula $s_{it}$
 \end_inset
 
- and the idiosyncratic preference shock for the chosen region 
+, and the idiosyncratic preference shock for the chosen region 
 \begin_inset Formula $k$
 \end_inset
 
@@ -2575,8 +2586,8 @@ choose optimal location, based on the value of optimal housing in each location
 \begin_layout Standard
 There is in fact no timing issue in point 3., as the optimization problem
  is simultaneous.
- However, the quasi-cronological order is helpful to expose the interdependence
- of one choice on another.
+ However, the quasi-cronological order is helpful for emphasizing the interdepen
+dence of one choice on another.
 \end_layout
 
 \begin_layout Subsection
@@ -2680,13 +2691,13 @@ is irrelevant from the perspective of the individual: The only care about
 
 \end_inset
 
- I make the standard assumption of additive separability between utility
- and idiosyncratic location shock 
+ I assume additive separability between utility and idiosyncratic location
+ shock 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- as well as the conditional independence assumption that says that the transitio
-n of 
+ as well as conditional independence assumption that says that the transition
+ of 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
@@ -2712,7 +2723,7 @@ The laws of motion for
 \begin_inset Formula $\mathbf{P}$
 \end_inset
 
- evolve according to markovian processes.
+ evolve according to Markovian processes.
  In each case, this is modeled by a transition matrix 
 \begin_inset Formula $\Gamma$
 \end_inset
@@ -2727,7 +2738,11 @@ s'|s_{j} & \sim & \Gamma_{s,j}\\
 
 \end_inset
 
-Let us define the conditional value function 
+The consumer faces a nested optimization problem in each period.
+ At the lower level, optimal savings and housing decision must be taken
+ conditional on any discrete location choice, and at the upper level the
+ discrete location choice with the maximal value is chosen.
+ It is useful to define the conditional value function 
 \begin_inset Formula $v\left(x,k\right)$
 \end_inset
 
@@ -2736,7 +2751,7 @@ Let us define the conditional value function
 \begin_inset Formula $x$
 \end_inset
 
- while moving to location 
+, while moving to location 
 \begin_inset Formula $k$
 \end_inset
 
@@ -2745,10 +2760,7 @@ Let us define the conditional value function
 \end_inset
 
 .
- The consumer faces a nested optimization problem in each period.
- At the lower level optimal savings and housing decision must be taken condition
-al on any discrete location choice, and at the upper level the discrete
- location choice with the maximal value is chosen.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2806,7 +2818,7 @@ reference "eq:v"
 \end_inset
 
 ).
- This optimization problem is subject to several constraints which are outlined
+ The optimization problem is subject to several constraints which are outlined
  below.
 \end_layout
 
@@ -2823,7 +2835,7 @@ reference "eq:vbar"
 \end_inset
 
 , which admits a closed form expression of the expected value function,
- where 
+ whereby 
 \begin_inset Formula $\bar{\gamma}\approx0.577$
 \end_inset
 
@@ -2858,15 +2870,11 @@ Another convient by-product of the Type 1 EV assumption is that there is
 \end_inset
 
 , denoted as 
-\begin_inset Formula $q(x,d,k)$
+\begin_inset Formula $Q(x,d,k)$
 \end_inset
 
 .
  
-\end_layout
-
-\begin_layout Standard
-
 \family roman
 \series medium
 \shape up
@@ -2878,9 +2886,10 @@ Another convient by-product of the Type 1 EV assumption is that there is
 \uwave off
 \noun off
 \color none
+
 \begin_inset Formula 
 \begin{eqnarray}
-q(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
+Q(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
  & = & \frac{\exp\left(v(x,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,z)\right)}\nonumber \\
  & = & \frac{\exp\left(v(x,k)\right)}{\exp\left(\overline{v}(x)\right)/\exp(\overline{\gamma})}\nonumber \\
  & = & \exp\left(\overline{\gamma}+v(x,k)-\overline{v}(x)\right)\label{eq:prob-of-moving}
@@ -3106,11 +3115,7 @@ For individuals entering the period as owners
 \begin_inset Formula $d$
 \end_inset
 
-, which is, as already mentioned, a fraction 
-\begin_inset Formula $\kappa_{d}$
-\end_inset
-
- of the prevailing house price.
+.
  Apart from this, the same interest rate function 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -3259,8 +3264,7 @@ status collapsed
 In my sample I observe 29 owners who move with negative equity (amounting
  to 3.4% of moving owners).
  78% of those do buy in the new location, the rest rent.
- I do not observe whether or not an owner defaults on the mortgage, which
- may be the action taken by this group of movers.
+ I do not observe whether or not an owner defaults on the mortgage.
  Accounting for this subset of the population would require to 1) assume
  that they actually defaulted and 2) it would substantially increase the
  computational burden.
@@ -3290,40 +3294,203 @@ Estimation
 \end_layout
 
 \begin_layout Standard
-In this section I explain how the model is calibrated and estimated to fit
- some features of the data.
+In this section I explain how the model is estimated to fit some features
+ of the data.
  There is a set of preset model parameters, the values of which I either
  take from other papers in the literature or I estimate them outside of
  the structural model and treat them as inputs.
- They are listed in table x.
  The remaining set of parameters are estimated using the simulated method
  of moments (SMM) approach, whereby given a set of parameters, the model
  is used to compute decision rules of agents, which in turn are used to
- simulate artificial data that should be close in some sense to the real
- data.
- The set of parameters to be estimated by SMM is 
-\begin_inset Formula $\theta=\left\{ \alpha_{0,\tau},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega,\pi_{\tau},\xi(0),\xi(1)\right\} $
+ simulate artificial data.
+ A set of summarizing features from the artificial data should then be close
+ to the same features of the the real data.
+ The parameter vector to be estimated by SMM contains the parameters of
+ the moving cost function (
+\begin_inset Formula $\alpha$
+\end_inset
+
+), the coefficient of relative risk aversion 
+\begin_inset Formula $(\gamma)$
+\end_inset
+
+, the parameters of the final period value function 
+\begin_inset Formula $\left(\omega_{1},\omega_{2}\right)$
+\end_inset
+
+, the population proportion of high moving cost types 
+\begin_inset Formula $(\pi_{\tau})$
+\end_inset
+
+, and the utility derived from housing for both household sizes, 
+\begin_inset Formula $\left(\xi(0),\xi(1)\right)$
 \end_inset
 
 .
- The objective function is the squared distance between the model moments
- and the corresponding data moments, each weighted by the variance in the
- data.
- In other words, if 
-\begin_inset Formula $\sigma^{2}$
+ We'll denote the parameter vector 
+\begin_inset Formula $\theta=\left\{ \alpha_{0,\tau},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi(0),\xi(1)\right\} $
 \end_inset
 
- is the vector of variances of data moments, the weighting matrix of the
- SMM estimator is 
-\begin_inset Formula $I\sigma^{2}$
+ in the following.
+ 
+\end_layout
+
+\begin_layout Standard
+Given 
+\begin_inset Formula $\theta$
+\end_inset
+
+, the model generates a set of model moments 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
+
+, where 
+\begin_inset Formula $\hat{m}()$
+\end_inset
+
+ is of dimension 
+\begin_inset Formula $K$
+\end_inset
+
+.
+ After obtaining the same set of moments 
+\begin_inset Formula $m$
+\end_inset
+
+ from the data, the SMM proceedure seeks to minimize the criterion function
+ 
+\begin_inset Formula 
+\[
+L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],
+\]
+
+\end_inset
+
+which delivers point estimate 
+\begin_inset Formula $\hat{\theta}=\arg\min_{\theta}L(\theta)$
+\end_inset
+
+.
+ The weighting matrix 
+\begin_inset Formula $W$
+\end_inset
+
+ is formed of the inverse of the diagonal elements of the variance-covariance
+ matrix of data moments 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, i.e.
+ I set 
+\begin_inset Formula $W=\left(\text{diag}\left(\hat{\Sigma}\right)\right)^{-1}$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-I can estimate the house price and income processes outside of the main
- model using standard methods, to which I will turn first.
+I obtain point estimates for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ by following a modification of the pseudo-likelihood estimator as introduced
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+.
+ The modification defines 
+\begin_inset Formula $N$
+\end_inset
+
+ parallel instances of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+--MCMC chains, which are differently 
+\begin_inset Quotes eld
+\end_inset
+
+tempered
+\begin_inset Quotes erd
+\end_inset
+
+ (i.e.
+ they have different shock variances and rejection criteria), and are able
+ to communicate with each other.
+ This helps to explore large areas of the parameter space and avoids getting
+ stuck in local minima.
+ The proceedure is formally defined in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "baragatti2013likelihood"
+
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+I've co-authored a software package that implements the proceedure at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/floswald/MOpt.jl
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ The quasi-posterior mean and confidence intervals are computed from the
+ chain with lowest temperature analogously to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+My estimation sample is formed out of averages over SIPP data moments covering
+ the period 1997--2012.
+ Averaging over years was necessary to preserve a reasonable sample size
+ in all conditioning cells.
+ However, it also introduces an initial conditions and cohort effects problem,
+ since, for example, a 30-year-old in 1997 faced a different economic environmen
+t over their lifecycle than a similar 30-year-old in 2012 would have.
+ The challenge is to construct an artificial dataset from simulated data,
+ which has the same time and age structure as the sample taken from the
+ data -- in particular, agents in the model should have faced the same sequence
+ of aggregate shocks as their data counterparts.
+ This requires to simulate individuals starting in different calendar years,
+ taking into account the actual observed time series for regional house
+ prices and incomes.
+ I describe the proceedure in detail in the appendix.
+\end_layout
+
+\begin_layout Standard
+Before discussing the estimates for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and the fit of the structural model, I will now turn to the estimation
+ of the various exogenous processes and fixed parameters which serve as
+ inputs to the model.
 \end_layout
 
 \begin_layout Subsection
@@ -3339,14 +3506,69 @@ VAR process for aggregates
 \end_layout
 
 \begin_layout Standard
-For ease of reading, I reproduce equation 
+The VAR processes at the aggreate and regional level are estimated using
+ a seemingly unrelated regression with two equations, one for each factor
+ 
+\begin_inset Formula $Y_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{t},t=1967,\dots,2012$
+\end_inset
+
+.
+ I use real GDP per capita as a measure for 
+\begin_inset Formula $Y_{t}$
+\end_inset
+
+, and the Federal Housing and Finance Association (FHFA) US house price
+ index for 
+\begin_inset Formula $P_{t}$
+\end_inset
+
+.
+ Given that I am interested in the level of house prices (i.e.
+ a measure of house 
+\emph on
+value
+\emph default
+), I compute the average level of house prices found in SIPP data for the
+ year 2012 and then apply the FHFA index to construct the house value for
+ each year.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The GDP series is as provided by the Bureau of Economic Analysis through
+ the FRED database.
+ All non-SIPP data used in this paper are provided in an R package at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/floswald/EconData
+\end_layout
+
+\end_inset
+
+, documenting all sources and data-cleaning proceedures.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+I reproduce equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:VAR-process-agg"
 
 \end_inset
 
- here:
+ here for ease of reading:
 \begin_inset Formula 
 \begin{eqnarray*}
 \mathbf{P}_{t} & = & A\mathbf{P}_{t-1}+\nu_{t-1}\\
@@ -3364,9 +3586,14 @@ P_{t}
 \end_layout
 
 \begin_layout Standard
-The estimates from this equation by region are given in table .
- An illustration of the fit and a simulation sample path for each region
- are shown in figures x and y.
+The estimates from this equation by region are given in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Estimates-VAR-agg"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -3413,7 +3640,7 @@ end{centering}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Estimates for Aggregate VAR processes
+Estimates for Aggregate VAR process
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Estimates-VAR-agg"
@@ -3438,7 +3665,7 @@ name "tab:Estimates-VAR-agg"
 \end_layout
 
 \begin_layout Subsection
-Aggregate to regional price mapping
+Aggregate to regional price mappings
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Aggregate-to-regional"
@@ -3446,6 +3673,17 @@ name "sub:Aggregate-to-regional"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The series for 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ is constructed as per capita personal income by region, with a measure
+ of personal income obtained from the Bureau of Economic Analysis and population
+ counts by state from intercensal estimates from the census Bureau.
+ The price series by region comes from the same FHFA dataset as used above.
 \end_layout
 
 \begin_layout Standard
@@ -3470,14 +3708,14 @@ The performance of this model in terms of delivered predictions from the
  aggregate state can be gauged visually in figures 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Mapping-P-p"
+reference "fig:mapping-Y-y"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:mapping-Y-y"
+reference "fig:Mapping-P-p"
 
 \end_inset
 
@@ -3510,7 +3748,14 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/sipp/VAR1.tex}
+Dropbox/data/sipp/VAR1-edit.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
 \end_layout
 
 \end_inset
@@ -3530,7 +3775,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/sipp/VAR2.tex}
+Dropbox/data/sipp/VAR2-edit.tex}
 \end_layout
 
 \end_inset
@@ -3707,7 +3952,7 @@ Copula estimates for
 \noun off
 \color none
 
-\begin_inset Formula $\left(z_{idt},z_{ikt+1}\right)$
+\begin_inset Formula $G_{k\neq d}\left(z_{ikt+1},z_{idt}\right)$
 \end_inset
 
 
@@ -3883,60 +4128,23 @@ name "tab:Correlation-z"
 \end_layout
 
 \begin_layout Subsection
-MCMC algorithm
+Values for preset parameters
 \end_layout
 
 \begin_layout Standard
-I use an adapted version of the MCMC algorithm as devised by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "baragatti2013likelihood"
-
-\end_inset
-
-.
- In essence, this is a likelihood free estimator which employs what is called
- parallel tempering, i.e.
- several Monte Carlo chains that evolve in parallel and at different 
-\begin_inset Quotes eld
-\end_inset
-
-temperatures
-\begin_inset Quotes erd
-\end_inset
-
- (i.e.
- with different variances of the shock used to generate new parameter guesses).
- The key is that the chains are allowed to communicate at random times,
- such that if for example a hot (high variance) chain explored and area
- of the parameter space with relatively small function evaluations, cooler
- chains can jump to that region.
- This is an advantage in problems with multiple local optima and non-differentia
-bilities, such as the one at hand.
- Furthermore, the parallel setup of the estimator lends itself almost naturally
- to large computer clusters, where each compute node is a chain.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-For more information on the implementation of this and to see the computer
- code that runs it please visit 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://github.com/floswald/MOpt.jl
+todo.
 \end_layout
 
-\end_inset
-
-
+\begin_layout Subsection
+Identification
 \end_layout
 
-\end_inset
+\begin_layout Standard
+todo.
+\end_layout
 
- Slices through the SMM objective function at the initial value of the parameter
+\begin_layout Standard
+Slices through the SMM objective function at the initial value of the parameter
  vector are shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3982,132 +4190,9 @@ name "fig:SMM-objective-function"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Initial Conditions
-\end_layout
-
-\begin_layout Standard
-The SIPP estimation sample runs from 1998 through 2012.
- The data moments the model is supposed to replicate are weighted averages
- over this period, where the weights are the SIPP sampling weights.
- When reconstructing an artificial sample from the model simulation, care
- must be taken to replicate the shocks experienced by each cohort in the
- data leading up to the point where they are observed.
- 
-\end_layout
-
-\begin_layout Standard
-The data is subset to the ages allowed for in the model, i.e.
- 20--50.
- I compute data moments, for example the average homeownership rate in region
- 
-\begin_inset Formula $d$
-\end_inset
-
-, or the average total wealth of age group 40--45 in 
-\begin_inset Formula $d$
-\end_inset
-
-, as averages over the entire sample period:
-\begin_inset Formula 
-\begin{eqnarray*}
-\text{mean\_own\_data}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt}}\sum_{i\in d,t}^{N_{dt}}\omega_{it}\mathbf{1}\left[h_{it}=1\right]\right)\\
-\text{mean\_wealth\_data\_40\_45}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt,j\in[40,45]}}\sum_{i\in d,t,j\in[40,45]}^{N_{dt,j\in[40,45]}}\omega_{it}w_{ijt}\right)
-\end{eqnarray*}
-
-\end_inset
-
-where 
-\begin_inset Formula $N_{dt}$
-\end_inset
-
- is the number of people in 
-\begin_inset Formula $d$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
-, and 
-\begin_inset Formula $\omega_{it}$
-\end_inset
-
- is a person's crossectional weight, and 
-\begin_inset Formula $i\in d,t$
-\end_inset
-
- stands for 
-\begin_inset Formula $i$
-\end_inset
-
- is in 
-\begin_inset Formula $d$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
-.
- Similarly, 
-\begin_inset Formula $i\in d,t,j\in[40,45]$
-\end_inset
-
- stands for 
-\begin_inset Formula $i$
-\end_inset
-
- is in 
-\begin_inset Formula $d$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
- and age 
-\begin_inset Formula $j$
-\end_inset
-
- in [40,45].
-\end_layout
-
-\begin_layout Standard
-This means that for the second data moment, for example, 40 year-olds from
- 1998 contributed as well as 40 year-olds from the 2012 cohort.
- Needless to say, those cohorts faced a different sequence of house price
- shocks leading up the point of observation.
- For individuals 
-\begin_inset Quotes eld
-\end_inset
-
-born
-\begin_inset Quotes erd
-\end_inset
-
- before the first data period, i.e.
- 1998, I construct regional house price and regional income series going
- back until 1968.
- Simulating individuals from the 1968 cohort for a full lifetime of J=30
- years until the reach age 50 brings them into the year 1998, where they
- form the group of 50 year-olds in that particular year.
- This sort of staggered simulation is carried out until the final cohort
- is born in 2012 at age 20.
- No simulation needs to take place for any individual alive at years after
- 2012.
- The initial distribution of assets is drawn from the empirical distribution
- of assets in the SIPP data.
- 
 \end_layout
 
 \begin_layout Section
@@ -4116,6 +4201,17 @@ Results
 
 \begin_layout Subsection
 Parameter Estimates
+\end_layout
+
+\begin_layout Standard
+see table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Parameter-estimates"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -4174,6 +4270,10 @@ name "tab:Parameter-estimates"
 
 \begin_layout Subsection
 Fit
+\end_layout
+
+\begin_layout Standard
+TODO.
 \end_layout
 
 \begin_layout Standard
@@ -5538,7 +5638,7 @@ Finally let's look at scenario (3), where we apply the 5% GE house price
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -5881,7 +5981,7 @@ name "tab:Abolishing-the-mortgage"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 TODO: insert a table with net present value of the mortgage deduction at
@@ -6160,6 +6260,125 @@ computational details
 \noun off
 \color none
 to be added
+\end_layout
+
+\begin_layout Section
+Initial Conditions and Cohort Setup
+\end_layout
+
+\begin_layout Standard
+The SIPP estimation sample runs from 1998 through 2012.
+ The data moments the model is supposed to replicate are weighted averages
+ over this period, where the weights are the SIPP sampling weights.
+ When reconstructing an artificial sample from the model simulation, care
+ must be taken to replicate the shocks experienced by each cohort in the
+ data leading up to the point where they are observed.
+ 
+\end_layout
+
+\begin_layout Standard
+The data is subset to the ages allowed for in the model, i.e.
+ 20--50.
+ I compute data moments, for example the average homeownership rate in region
+ 
+\begin_inset Formula $d$
+\end_inset
+
+, or the average total wealth of age group 40--45 in 
+\begin_inset Formula $d$
+\end_inset
+
+, as averages over the entire sample period:
+\begin_inset Formula 
+\begin{eqnarray*}
+\text{mean\_own\_data}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt}}\sum_{i\in d,t}^{N_{dt}}\omega_{it}\mathbf{1}\left[h_{it}=1\right]\right)\\
+\text{mean\_wealth\_data\_40\_45}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt,j\in[40,45]}}\sum_{i\in d,t,j\in[40,45]}^{N_{dt,j\in[40,45]}}\omega_{it}w_{ijt}\right)
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $N_{dt}$
+\end_inset
+
+ is the number of people in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+, and 
+\begin_inset Formula $\omega_{it}$
+\end_inset
+
+ is a person's crossectional weight, and 
+\begin_inset Formula $i\in d,t$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Similarly, 
+\begin_inset Formula $i\in d,t,j\in[40,45]$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ and age 
+\begin_inset Formula $j$
+\end_inset
+
+ in [40,45].
+\end_layout
+
+\begin_layout Standard
+This means that for the second data moment, for example, 40 year-olds from
+ 1998 contributed as well as 40 year-olds from the 2012 cohort.
+ Needless to say, those cohorts faced a different sequence of house price
+ shocks leading up the point of observation.
+ For individuals 
+\begin_inset Quotes eld
+\end_inset
+
+born
+\begin_inset Quotes erd
+\end_inset
+
+ before the first data period, i.e.
+ 1998, I construct regional house price and regional income series going
+ back until 1968.
+ Simulating individuals from the 1968 cohort for a full lifetime of J=30
+ years until the reach age 50 brings them into the year 1998, where they
+ form the group of 50 year-olds in that particular year.
+ This sort of staggered simulation is carried out until the final cohort
+ is born in 2012 at age 20.
+ No simulation needs to take place for any individual alive at years after
+ 2012.
+ The initial distribution of assets is drawn from the empirical distribution
+ of assets in the SIPP data.
+ 
 \end_layout
 
 \begin_layout Section
