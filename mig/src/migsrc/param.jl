@@ -134,7 +134,7 @@ type Param
 		maxAge = minAge + nt
 		ages   = minAge:maxAge
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
-		sscale = 0.8 	# with kids your consumption goes down 20%
+		sscale = 1.0 	# with kids your consumption goes down 20%
 
 		# policy and shock setup
 		if length(opts) > 0 
