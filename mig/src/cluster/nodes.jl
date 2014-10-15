@@ -14,7 +14,7 @@ indir, outdir = mig.setPaths()
 moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 
 # want to estimate those:
-plist = ["gamma","xi1","xi2","omega3","MC1","MC3","MC3_2","MC4","taudist"]
+plist = ["gamma","xi1","xi2","omega2","MC0","MC1","MC2","MC3","MC4","taudist"]
 
 p2 = Dict{ASCIIString,Float64}()
 
@@ -45,12 +45,12 @@ pb["gamma"]  = [1.1,3]
 pb["xi1"]    = [0.0,0.1]
 pb["xi2"]    = [0.0,0.1]
 # pb["omega1"] = [0.0,3]
-pb["omega3"] = [0.0,0.1]
-# pb["MC0"]    = [4,10]
-pb["MC1"]    = [0.0,0.5]
-# pb["MC2"]    = [0.0,0.0005]
-pb["MC3"]    = [0,0.2]
-pb["MC3_2"]    = [0.0,0.003]
+# pb["omega1"] = [0.9,1.1]
+pb["omega2"] = [0.9,1.1]
+pb["MC0"]    = [2.5,5]
+pb["MC1"]    = [0.0,0.04]
+pb["MC2"]    = [0.0,0.005]
+pb["MC3"]    = [0,0.5]
 pb["MC4"]    = [0,1]
 pb["taudist"]    = [0.01,0.99]
 
