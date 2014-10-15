@@ -2,7 +2,7 @@
 #PBS -S /bin/bash
 #PBS -q consort
 #PBS -l nodes=3:ppn=12
-#PBS -l walltime=55:00
+#PBS -l walltime=01:30
 #PBS -o migslices.out
 #PBS -e migslices.err
 

@@ -45,6 +45,18 @@ irid_slices7:
   run:   pbs_slices7.jl 
   exec:   /home/eisuc151/local/bin/julia
 
+irid_slices6:
+  name:   mig-slices  
+  desc:   slices on 4 nodes using 6 cores each 
+  nnodes:   4
+  ppnodes:   12
+  hours: 01
+  mins: 30
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  run:   pbs_slices6.jl 
+  exec:   /home/eisuc151/local/bin/julia
 
 irid_estim:
   name:   mig-slices  
