@@ -187,6 +187,7 @@ function simulate(m::Model,p::Param)
 	Dsave    = zeros(nsim*T)
 	Dincome  = zeros(nsim*T)
 	Dprob    = zeros(nsim*T)
+	Dcumprob = zeros(nsim*T)
 	Dwealth  = zeros(nsim*T)
 	Ddist    = zeros(nsim*T)
 	Dcash    = zeros(nsim*T)
@@ -199,9 +200,9 @@ function simulate(m::Model,p::Param)
 	DP       = zeros(nsim*T)
 	DM       = falses(nsim*T)
 	Dcanbuy  = falses(nsim*T)
-	Di       = repeat([1:nsim],inner=[T],outer=[1])
-	Dage     = repeat([1:T],inner=[1],outer=[nsim])
-	Drealage = repeat([p.ages[1:T]],inner=[1],outer=[nsim])
+	Di       = repeat([1:nsim],inner = [T],outer = [1])
+	Dage     = repeat([1:T],inner = [1],outer = [nsim])
+	Drealage = repeat([p.ages[1:T]],inner = [1],outer = [nsim])
 	Dyear    = DataArray(Int,nsim*T)
 	Dcohort  = DataArray(Int,nsim*T) # allocates as NA
 	Dhh      = zeros(Int,nsim*T)
@@ -361,6 +362,7 @@ function simulate(m::Model,p::Param)
 				# get cumulative prob
 				cumsum!(ktmp2,ktmp,1)
 				# throw a k-sided dice 
+				cum_moveprob = sum(ktmp[setdiff(1:9,ij)])
 				moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
 				move   = ij != moveto
 				prob   = ktmp[moveto]
@@ -463,6 +465,7 @@ function simulate(m::Model,p::Param)
 				Dincome[i_idx]  = yy
 				Dhh[i_idx]      = ihh
 				Dprob[i_idx]    = prob
+				Dcumprob[i_idx] = cum_moveprob
 				DM[i_idx]       = move
 				DMt[i_idx]      = moveto
 				Dregname[i_idx] = regnames[ij]
@@ -499,7 +502,7 @@ function simulate(m::Model,p::Param)
 
 	# pack into a dataframe
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------

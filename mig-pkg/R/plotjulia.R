@@ -1,5 +1,18 @@
 
 
+
+# plot example of CCP
+plot.CCP <- function(){
+	f = function(x){
+		exp(x - log(exp(x) + exp(1.0)))
+	}
+	df = data.frame(x=seq(-3,4,le=100),P=f(seq(-3,4,le=100)))
+	tikz("~/Dropbox/mobility/output/model/fit/ccp-plot.tex",width=7,height=7)
+	ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$Pr(v_1|v_2 = 1)$") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
+	dev.off()
+}
+
+
 # plot julia data
 
 plot.simReports <- function(){
@@ -146,6 +159,22 @@ mom.table <- function(){
 	dignontarget = matrix(c(rep(2,14)),nrow=14,ncol=4)
 	print(xtable(target,digits=digtarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/mobility/output/model/fit/moms.tex")
 	print(xtable(nontarget,digits=dignontarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/mobility/output/model/fit/moms_nontarget.tex")
+
+}
+
+par.tables <- function(){
+	p = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json")))
+	f = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/mobility/output/model/fit/fixed.json")))
+	p = as.data.frame(p[order(rownames(p)),])
+	f = as.data.frame(f[order(rownames(f)),])
+	names(p) = "value"
+	names(f) = "value"
+
+	rownames(p) <- c("$\\gamma$","$\\alpha_0$","$\\alpha_1$","$\\alpha_2$","$\\alpha_3$","$\\alpha_4$","$\\omega_1$","$\\omega_2$","$\\tau$","$\\pi_{\\tau}$","$\\xi_1$","$\\xi_2$")
+	rownames(f) <- c("$\\beta$","$\\chi$","$\\phi$","$1+r$","$\\rho$","$1+r^m$","$\\sigma_u$")
+
+	print(xtable(p,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/mobility/output/model/fit/param.tex")
+	print(xtable(f,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/mobility/output/model/fit/fixed.tex")
 
 }
 
@@ -452,20 +481,27 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# data(sipp_psid,envir=environment())
 	data(BEA_fhfa,envir=environment())
 	# py = combine_sipp_psid()
+	py = BEA_fhfa_agg$py
 	setkey(py,year,Division)
 
 	# aggregates house price is mean over regions
 	# agg <- py[,list(P=mean(p,na.rm=T),Y=mean(y,na.rm=T)),by=year]
 	# setkey(agg,year)
 
-	# taking gdp instead of mean over regions:
-	agg <- py[,list(P=mean(p,na.rm=T)),by=year]
+	# computing agg here as mean of regions
+	# agg <- py[,list(P=mean(p,na.rm=T)),by=year]
+	# fhfa = getFHFA_realPrices()
+	# setkey(fhfa,year)
+	# agg <- fhfa[Division=="USA",list(year,P=p)]
+	# setkey(agg,year)
+	# gdp = getFRED_gdp()
+	# agg = gdp[agg]
+	# setnames(agg,"gdp","Y")
+	# agg[,LY := agg[list(year-1)][["Y"]]]
+	# agg[,LP := agg[list(year-1)][["P"]]]
+
+	agg = BEA_fhfa_agg$agg
 	setkey(agg,year)
-	gdp = getFRED_gdp()
-	agg = gdp[agg]
-	setnames(agg,"gdp","Y")
-	agg[,LY := agg[list(year-1)][["Y"]]]
-	agg[,LP := agg[list(year-1)][["P"]]]
 
 	# aggregate income is GDP per capita
 
@@ -473,7 +509,7 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
 
 	# print model
-	texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+	texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE,custom.model.names=c("$Y_t$","$P_t$"),custom.coef.names=c("Intercept","$Y_{t-1}$","$P_{t-1}$"))
 
 	# export coefficients as table
 	aggcoefs <- as.data.frame(coef(aggmod))
@@ -492,7 +528,7 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# coefs <- coefs[, !names(coefs) %in% "Division_1"]
 
 	# merge aggregate into regional data
-	pyagg = py[agg]
+	pyagg = agg[py]
 
 	# plot region and agg overlaid
 	# ----------------------------
@@ -936,12 +972,25 @@ combine_BEA_fhfa <-function(){
 	setkey(fhfa,year,Division)
 
 	py <- BEA[fhfa]
+	py = 
 	py = py[,list(year,Division,y,p)]
 	py = py[complete.cases(py)]
 
+	setkey(fhfa,year)
+	agg <- fhfa[Division=="USA",list(year,P=p)]
+	setkey(agg,year)
+	gdp = getFRED_gdp()
+	agg = gdp[agg]
+	setnames(agg,"gdp","Y")
+	agg[,LY := agg[list(year-1)][["Y"]]]
+	agg[,LP := agg[list(year-1)][["P"]]]
+
+	BEA_fhfa_agg = list(py=py,agg=agg)
 
 
-	save(py,file="~/git/migration/mig-pkg/data/BEA_fhfa.rda")
+	save(BEA_fhfa_agg,file="~/git/migration/mig-pkg/data/BEA_fhfa.rda")
+
+	return(BEA_fhfa_agg)
 }
 
 get_BEA_persincome <- function(){

@@ -690,8 +690,19 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	}
 	
 	merged <- rbindlist(m)
+	merged[,timeid := NULL]
+
+	# need to redefine timeid here!!!!!
+	tmp <- merged[,list(yearmon=unique(yearmon))]
+	setkey(tmp,yearmon)
+	tmp[,timeid := 1:nrow(tmp)]
+
+	setkey(merged,yearmon)
+	merged <- merged[ tmp ]
 
 	if (verbose) cat("combined all panels into one data.table\n")
+
+
 
 	
 	
@@ -805,7 +816,6 @@ Clean.Sipp <- function(inpath="~/Dropbox/mobility/data/SIPP",outpath="~/git/migr
 	# cpi <- window(cpi$qtr.base2010,start=c(1995,4))
 	# cpi <- cpi/cpi[1]	# base year 1996
 	# cpi <- data.table(qtr=as.yearqtr(index(cpi)),cpi96=coredata(cpi),key="qtr")
-
 
 	merged <- cpi[ merged ]
          

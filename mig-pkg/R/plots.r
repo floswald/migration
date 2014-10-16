@@ -900,7 +900,7 @@ PlotSippMigrationRates <- function(){
 	dev.off()
 
 	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
-	 ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
+	 # ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
 
 	 return(list(S2S=p1,D2D=p2))
 

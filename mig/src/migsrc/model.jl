@@ -378,6 +378,8 @@ type Model
 			mc = mc .* 0.5
 		elseif p.policy == "doubleMC"
 			mc = mc .* 2.0
+		elseif p.policy == "tripleMC"
+			mc = mc .* 3.0
 		end
 
         gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]

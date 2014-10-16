@@ -106,7 +106,7 @@ tabs.MC <- function(){
 	htab = as.matrix(subset(h$mv,select=c(move_baseline,move_policy)))
 	htab = rbind(htab,as.matrix(h$own))
 	htab = rbind(htab,c(NA,0.88))
-	rownames(htab) <- c("Renter Moving Rate","Owner Moving Rate","Ownership Rate","$\\xi$")
+	rownames(htab) <- c("Renter Moving Rate","Owner Moving Rate","Ownership Rate","$\\delta$")
 	colnames(htab) <- c("Baseline","half MC")
 	h$tab <- htab
 
@@ -118,7 +118,7 @@ tabs.MC <- function(){
 	htab = as.matrix(subset(d$mv,select=c(move_baseline,move_policy)))
 	htab = rbind(htab,as.matrix(d$own))
 	htab = rbind(htab,c(NA,1.012))
-	rownames(htab) <- c("Renter Moving Rate","Owner Moving Rate","Ownership Rate","$\\xi$")
+	rownames(htab) <- c("Renter Moving Rate","Owner Moving Rate","Ownership Rate","$\\delta$")
 	colnames(htab) <- c("Baseline","double MC")
 	d$tab <- htab
 

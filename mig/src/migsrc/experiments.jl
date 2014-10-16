@@ -112,12 +112,13 @@ function exp_changeMC(which)
 	m0   = Model(p0)
 	solve!(m0,p0)
 	sim0 = simulate(m0,p0)
-	w0 = getDiscountedValue(sim0,p0,m0)
+	w0 = getDiscountedValue(sim0,p0,m0,true)
 
 	println("done.")
 
 	# find welfare
-	opts = ["policy" => which]
+	# measure welfare net of moving cost
+	opts = ["policy" => which, "noMove" => true]
 
 	println("finding ctax.")
 	ctax = findctax(w0[1][1],opts)
@@ -138,9 +139,9 @@ function exp_changeMC(which)
 
 	indir, outdir = mig.setPaths()
 
-	writetable(joinpath(outdir,"exp_$which","mv.csv"),agg_mv)
-	writetable(joinpath(outdir,"exp_$which","own.csv"),agg_own)
-	writetable(joinpath(outdir,"exp_$which","own_mv.csv"),agg_own_age)
+	# writetable(joinpath(outdir,"exp_$which","mv.csv"),agg_mv)
+	# writetable(joinpath(outdir,"exp_$which","own.csv"),agg_own)
+	# writetable(joinpath(outdir,"exp_$which","own_mv.csv"),agg_own_age)
 
 
 	out = ["move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax]
@@ -161,7 +162,33 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 	end
 	return w
 end
+function getDiscountedValue(df::DataFrame,p::Param,m::Model,noMove::Bool)
 
+	if noMove
+
+		w = @> begin
+			df
+			@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+			@where((!isna(:cohort)) & (!:move))
+			@transform(vbeta = :v .* :beta)
+			@by(:id, meanv = mean(:vbeta))
+			@select(meanv = mean(:meanv))
+		end
+		return w
+
+	else
+
+		w = @> begin
+			df
+			@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+			@where(!isna(:cohort))
+			@transform(vbeta = :v .* :beta)
+			@by(:id, meanv = mean(:vbeta))
+			@select(meanv = mean(:meanv))
+		end
+		return w
+	end
+end
 
 # age 1 utility difference between 2 policies
 function welfare(ctax::Float64,v0::Float64,opts::Dict)
@@ -170,7 +197,7 @@ function welfare(ctax::Float64,v0::Float64,opts::Dict)
 	m = Model(p)
 	solve!(m,p)
 	s = simulate(m,p)
-	w = getDiscountedValue(s,p,m)
+	w = getDiscountedValue(s,p,m,get(opts,"noMove",false))
 	(w[1][1] - v0)^2
 end
 
@@ -250,7 +277,7 @@ function exp_Mortgage(ctax=false)
 
 	println("done.")
 	# get baseline expected lifetime utility at age 1
-	w0 = getDiscountedValue(sim,p,m)
+	w0 = getDiscountedValue(sim,p,m,false)
 
 	# collect some baseline output
 	# ----------------------------
