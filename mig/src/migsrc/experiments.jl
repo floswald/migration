@@ -35,6 +35,8 @@ function runExperiment(which,region=2,year=1997)
 		e = mig.exp_changeMC("doubleMC")
 	elseif which=="noShocks"
 		e = mig.noShocks()
+	elseif which=="smallShocks"
+		e = mig.smallShocks()
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -811,7 +813,7 @@ end
 
 
 # run Model without only small deviations from aggregate
-function noShocks()
+function smallShocks()
 
 	p = Param(2)
 	m = Model(p)
