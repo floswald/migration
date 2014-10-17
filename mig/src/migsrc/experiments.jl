@@ -749,7 +749,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Vector{Float64},ia::Int,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abstol=0.1)
+	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abs_tol=0.1)
 	return ctax
 end
 
@@ -792,7 +792,7 @@ function noShocks()
 	p = Param(2)
 	m = Model(p)
 	solve!(m,p)
-	s = simuluate(m,p)
+	s = simulate(m,p)
 	s = @where(s,!isna(:cohort))
 
 	opts=Dict()
@@ -808,6 +808,8 @@ function noShocks()
 	println(mean(s[:move]))
 	println("noShocks")
 	println(mean(s[:move]))
+
+	return (s,s1)
 
 end
 
