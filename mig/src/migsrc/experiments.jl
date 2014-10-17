@@ -33,7 +33,9 @@ function runExperiment(which,region=2,year=1997)
 	elseif which=="doubleMC"
 		e = mig.exp_changeMC("doubleMC")
 	elseif which=="moneyMC"
-		e = mig.moneyMC()
+		e = mig.exp_changeMC("doubleMC")
+	elseif which=="noShocks"
+		e = mig.noShocks()
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -786,7 +788,25 @@ end
 # run Model without aggregate shocks
 function noShocks()
 
-	# need a different price data set
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	s = simuluate(m,p)
+	s = @where(s,!isna(:cohort))
+
+	opts=Dict()
+	opts["policy"] = "noShocks"
+
+	p1 = Param(2,opts)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	s1 = simulate(m1,p1)
+	s1 = @where(s1,!isna(:cohort))
+
+	println("baseline")
+	println(mean(s[:move]))
+	println("noShocks")
+	println(mean(s[:move]))
 
 end
 

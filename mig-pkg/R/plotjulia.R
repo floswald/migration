@@ -369,120 +369,9 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 
 }
 
-# TODO
 
 
-Export.adjustedVAR <- function(adjustY,adjustP){
-
-	# data(sipp_psid,envir=environment())
-	data(BEA_fhfa,envir=environment())
-	# py = combine_sipp_psid()
-	setkey(py,year,Division)
-
-	agg <- py[,list(P=mean(p,na.rm=T)),by=year]
-	setkey(agg,year)
-	gdp = getFRED_gdp()
-	agg = gdp[agg]
-
-	# adjust aggregate prices here!
-
-
-	setnames(agg,"gdp","Y")
-	agg[,LY := agg[list(year-1)][["Y"]]]
-	agg[,LP := agg[list(year-1)][["P"]]]
-
-	# aggregate income is GDP per capita
-
-
-	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
-
-	# print model
-	texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-
-	# export coefficients as table
-	aggcoefs <- as.data.frame(coef(aggmod))
-	aggcoefs$param <- names(coef(aggmod))
-	names(aggcoefs)[1] <- "value"
-	aggcoefs$param <- gsub("\\(|\\)","",aggcoefs$param)
-
-	# add bounds on P and Y
-	aggcoefs <- rbind(aggcoefs,agg[,list(value=min(Y),param="min_Y")],agg[,list(value=max(Y),param="max_Y")],agg[,list(value=min(P),param="min_P")],agg[,list(value=max(P),param="max_P")])
-
-	# covariance matrix 
-	sigma <- data.frame(aggmod$residCov)
-
-	# setkey(py,Division)
-	# coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
-	# coefs <- coefs[, !names(coefs) %in% "Division_1"]
-
-	# merge aggregate into regional data
-	pyagg = py[agg]
-
-	# plot region and agg overlaid
-	# ----------------------------
-
-	my = melt(pyagg[,list(year,Division,y,Y)],c("year","Division"))
-	pl = list()
-	pl$y <- ggplot(my,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate Income")
-	mp = melt(pyagg[,list(year,Division,p,P)],c("year","Division"))
-
-	pl$p <- ggplot(mp,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate house price")
-
-	# estimate regional models: what is relationship y ~ P + Y
-	ep <- p ~ Y + P
-	ey <- y ~ Y + P
-	divs = py[,unique(Division)]
-	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
-	names(mods) = divs
-
-	# pritn models
-	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-
-	# predict 
-	pyagg[,yhat := 0]
-	pyagg[,phat := 0]
-
-
-	for (d in divs){
-		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
-	}
-
-	pred_y_out = dcast(year ~ Division, value.var="yhat",data=pyagg )
-	pred_p_out = dcast(year ~ Division, value.var="phat",data=pyagg )
-
-	# visualize fit
-
-
-	mdy = melt(pyagg[,list(year,Division,y,yhat)],c("year","Division"))
-
-	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") 
-
-	mdp = melt(pyagg[,list(year,Division,p,phat)],c("year","Division"))
-
-	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") 
-	# plot with aggregate as well
-	# mdp = melt(pyagg[,list(year,Division,p,P,phat)],c("year","Division"))
-	# pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","P"="blue","phat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
-
-	# export coefficients as table
-	coefs <- as.data.frame(t(sapply(mods,coef)))
-	coefs <- coefs[order(rownames(coefs)), ]
-	coefs <- cbind(coefs,py[,list(mean_y = mean(y)),by=Division])
-	PYseries = as.data.frame(agg[,list(year,Y,P)])
-
-	n <- names(coefs)
-	n <- gsub("\\(|\\)","",n)
-	names(coefs) <- n
-
-
-
-
-	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg))
-
-}
 Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
-	# py = merged[,list(p = Hmisc::wtd.quantile(hvalue,HHweight,probs=0.5,na.rm=T),y = Hmisc::wtd.quantile(HHincome,HHweight,probs=0.5,na.rm=T)),by=list(year,Division)]
 
 	# data(sipp_psid,envir=environment())
 	data(BEA_fhfa,envir=environment())
@@ -600,6 +489,87 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 }
 
+# get a no-shock scenario
+# compute linear trends on all series
+# estimate factor model on that
+Export.VAR2 <- function(){
+
+	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+
+	data(BEA_fhfa,envir=environment())
+
+	# get linear regional data
+	r = list()
+	r$y <- lm(y ~ year + Division,BEA_fhfa_agg$py)
+	r$p <- lm(p ~ year + Division,BEA_fhfa_agg$py)
+
+	nd = expand.grid(year=1967:2012,Division=BEA_fhfa_agg$py[,unique(Division)])
+	r$p_y = data.table(cbind(nd,predict(r$y,nd)))
+	r$p_p = data.table(cbind(nd,predict(r$p,nd)))
+	setnames(r$p_y,3,"y")
+	setnames(r$p_p,3,"p")
+
+	pl = list()
+	pl$regy = ggplot(r$p_y,aes(x=year,y=pred_y,color=Division)) + geom_line()
+	pl$regp = ggplot(r$p_p,aes(x=year,y=pred_p,color=Division)) + geom_line()
+
+
+	# get linear trend aggregate data
+	a = list()
+	a$Y = lm(Y ~ year,BEA_fhfa_agg$agg)
+	a$P = lm(P ~ year,BEA_fhfa_agg$agg)
+	nd = data.frame(year=1967:2012)
+	a$p_Y = cbind(nd,predict(a$Y,nd))
+	a$p_P = cbind(nd,predict(a$P,nd))
+	names(a$p_Y)[2] = "pred_Y"
+	names(a$p_P)[2] = "pred_P"
+	pl$Y = ggplot(a$p_Y,aes(x=year,y=pred_Y)) + geom_line()
+	pl$P = ggplot(a$p_P,aes(x=year,y=pred_P)) + geom_line()
+
+
+	# aggregate factors
+	PYdata = data.table(merge(a$p_Y,a$p_P))
+	setkey(PYdata,year)
+	setnames(PYdata,c("pred_Y","pred_P"),c("Y","P"))
+
+
+	# merge into regional data
+
+	setkey(r$p_y,year)
+	tmp = r$p_y[PYdata]
+	tmod = lm(y ~ Y + Division,tmp)
+
+	# export coefficients as table
+	regY <- as.data.frame(coef(tmod))
+	regY$param <- names(coef(tmod))
+	names(regY)[1] <- "value"
+	regY$param <- gsub("\\(|\\)","",regY$param)
+
+	setkey(r$p_p,year)
+	tmp = r$p_p[PYdata]
+	tmod = lm(p ~ P + Division,tmp)
+
+	# export coefficients as table
+	regP <- as.data.frame(coef(tmod))
+	regP$param <- names(coef(tmod))
+	names(regY)[1] <- "value"
+	regY$param <- gsub("\\(|\\)","",regY$param)
+
+	pred_y = dcast(r$p_y,year ~ Division)
+	pred_p = dcast(r$p_p,year ~ Division)
+
+	PYdata = as.data.frame(PYdata)
+
+	save(regY,file=file.path(path,"regY.rda"))
+	save(regP,file=file.path(path,"regP.rda"))
+	save(pred_y,file=file.path(path,"pred_y_noShock.rda"))
+	save(pred_p,file=file.path(path,"pred_p_noShock.rda"))
+	save(PYdata,file=file.path(path,"PYdata_noShock.rda"))
+
+	return(list(regY=regY,regP=regP,pred_y=pred_y,pred_p=pred_p,PYdata=PYdata))
+
+}
+
 
 plot.PriceVAR <- function(){
 	x = Export.VAR()
@@ -633,24 +603,6 @@ plot.dataP2Y <- function(){
 	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 	ggplot(py,aes(x=year,y=p/y,color=Division)) + geom_line(size=0.9) + theme_bw() + ggtitle("Price to Income Ratios") + scale_color_manual(values=cbPalette)
 	ggsave(pl,file="~/Dropbox/mobility/output/data/census/P2Y.pdf",width=6,height=5)
-
-}
-
-# change the "variance" of the aggregate price factor
-change.aggVariance <- function(by.factor){
-	x = Export.VAR()
-	agg = data.table(x$agg_price)
-	agg[,dP := P - mean(P) ]
-	agg[,P2 := mean(P) + dP * by.factor]
-	agg[,dP := NULL]
-
-	divs =  names(x$Agg2Region_mods)
-	for (d in divs){
-		newd = pyagg[Division==d,list(Y,P)]
-		pyagg[Division==d,c("yhat","phat") := predict(x$Agg2Region_mods[[d]],newd)]
-	}
-
-
 
 }
 

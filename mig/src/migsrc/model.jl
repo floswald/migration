@@ -148,22 +148,31 @@ type Model
 		# aggregate house price and income
 		# VAR P ~ LY + LP
 		# VAR Y ~ LY + LP
-		VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
-		sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
+		if p.policy == "noShocks"
+			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
+			regY = DataFrame(read_rda(joinpath(indir,"regY.rda"))["regY"])
+			regP = DataFrame(read_rda(joinpath(indir,"regP.rda"))["regP"])
+			PYdata = DataFrame(read_rda(joinpath(indir,"PYdata_noShock.rda"))["PYdata"])
+			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y_noShock.rda"))["pred_y"])
+			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p_noShock.rda"))["pred_p"])
+		else
+			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
+			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
+			YPsigma = zeros(2,2)
+			YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
+			YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
+			YPsigma[2,1] = @where(sigma_agg,:row.=="P")[:Y][1]
+			YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
+			PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
+			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y.rda"))["pred_y"])
+			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p.rda"))["pred_p"])
+		end
 
 		# fill into a matrix
 		# Var(Y),cov(Y,P),cov(P,Y),Var(P)
-		YPsigma = zeros(2,2)
-		YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
-		YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
-		YPsigma[2,1] = @where(sigma_agg,:row.=="P")[:Y][1]
-		YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
 
 
 		# P,Y data series.
-		PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
-		pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y.rda"))["pred_y"])
-		pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p.rda"))["pred_p"])
 
 		pred_y = array(pred_ydf[:,2:end])
 		pred_p = array(pred_pdf[:,2:end])
@@ -226,11 +235,24 @@ type Model
 
 		ygrid = zeros(p.ny,p.np,p.nJ)
 		pgrid = zeros(p.ny,p.np,p.nJ)
-		for j in 1:p.nJ
-			for iP in 1:p.np
-				for iY in 1:p.ny
-					ygrid[iY,iP,j] = @with(VAR_reg[j,:], :y_Intercept + :y_P * Pgrid[iP] + :y_Y * Ygrid[iY])[1]
-					pgrid[iY,iP,j] = @with(VAR_reg[j,:], :p_Intercept + :p_P * Pgrid[iP] + :p_Y * Ygrid[iY])[1]
+
+		if p.policy=="noShocks"
+			for j in 1:p.nJ
+				for iP in 1:p.np
+					for iY in 1:p.ny
+						ygrid[iY,iP,j] = regY[1,1] + regY[2,1] * Ygrid[iY] + (j>1)*regY[2+j-1,1]
+						pgrid[iY,iP,j] = regP[1,1] + regP[2,1] * Pgrid[iY] + (j>1)*regP[2+j-1,1]
+					end
+				end
+			end
+
+		else
+			for j in 1:p.nJ
+				for iP in 1:p.np
+					for iY in 1:p.ny
+						ygrid[iY,iP,j] = @with(VAR_reg[j,:], :y_Intercept + :y_P * Pgrid[iP] + :y_Y * Ygrid[iY])[1]
+						pgrid[iY,iP,j] = @with(VAR_reg[j,:], :p_Intercept + :p_P * Pgrid[iP] + :p_Y * Ygrid[iY])[1]
+					end
 				end
 			end
 		end
@@ -344,7 +366,12 @@ type Model
 		# Cov : sig
 		# here ymod(y,p) and pmod(y,p) are the linear predictors
 		# of the VAR models for y and p
-		Gyp = get_yp_transition(VAR_agg,p,YPsigma,Pgrid,Ygrid)
+
+		if p.policy== "noShocks"
+			Gyp = convert(Matrix,Diagonal(ones(p.ny*p.np)))
+		else
+			Gyp = get_yp_transition(VAR_agg,p,YPsigma,Pgrid,Ygrid)
+		end
 
 
 
@@ -596,6 +623,7 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = Gyp ./ sum(Gyp,2)
 	return Gyp
 end
+
 
 # function(ff::HDF5File,path)
 # 	fid = h5open(ff,"r")

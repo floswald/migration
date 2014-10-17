@@ -18,7 +18,7 @@
     citecolor={dark-blue}, urlcolor={medium-blue}
 }
 \newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
-\usepackage{multirow}
+\usepackage{tikz}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -149,36 +149,28 @@ today
 
 \family typewriter
 \size large
-JOB MARKET PAPER DRAFT
+JOB MARKET PAPER
 \end_layout
 
 \begin_layout Abstract
-
-\series bold
-ABSTRACT IS OUTDATED - currently rewriting this.
- 
-\series default
-In this paper I propose a structural lifecycle model of consumption, savings
- and regional migration in the US which explicitly takes the decision to
- buy or rent a home into account.
- Labor income and house price risk are of first order importance for welfare,
- and both have a location specific element.
- The paper asks the question to which extent regional migration serves as
- a self insurance mechanism against regional economic shocks, and how such
- self insurance interacts with government policy.
- Homeowners have greater costs of relocation, resulting in a lower propensity
- to move relative to renters, which has implications for how they can respond
- to such shocks.
- After fitting the model to match some important features of the data, I
- perform a series of counterfactual policy experiments.
- Policies which try to affect the rent/buy decision, like the abolition
- of the mortgage interest rate tax deduction, affect mobility patterns depending
- on the particular redistribution scheme applied.
- Policies which target the moving cost directly (government voucher for
- movers) have a large impact.
- I find that regional house price and income shocks strongly affect the
- rate of immigration into the affected area, with a substantial but smaller
- effect on emigration from the region.
+I propose a lifecycle model of consumption, savings, homeownership and location
+ choice to investigate the interaction of housing with regional migration
+ decisions in the USA.
+ Labor income and house price risk have an important impact on consumer
+ welfare, and shocks to both are correlated at the aggregate and regional
+ level.
+ This leads to different implications for owners and renters, not only because
+ of their differing balance sheets, but also because the former are less
+ mobile than the latter.
+ The paper asks two questions: First, is government housing policy an effective
+ lever to affect migration, and if so, to which extent? Second, how valuable
+ is regional migration in terms of consumer welfare when there are large
+ regional shocks? Regarding the first question, I analyse the role of the
+ US mortgage interest deduction on migration behaviour and find that abolishing
+ it would increase the migration rate by 2.5%, corresponding to a 5% increase
+ in per-period consumption.
+ Concerning the second point, the model predicts that doubling the moving
+ cost implies a 1.2% reduction in per-period consumption.
 \end_layout
 
 \begin_layout Abstract
@@ -1572,7 +1564,7 @@ Determinants of cross census division moves in SIPP data.
 \begin_inset Formula $t$
 \end_inset
 
- on set of variables relevant that date.
+ on a set of variables relevant at that date.
  The first column shows marginal effects, the second column shows the marginal
  effects relative to the unconditional baseline mobility rate of 0.0132.
  The interpretation of this column is for example that the effect of being
@@ -4467,6 +4459,61 @@ Comparative Statics
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/ccp-plot.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Illustration of conditional choice probabilities for 2 discrete choices
+ with associated values 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 In this section I illustrate how the model reacts to large economic shocks
  at the regional level.
  In particular, I present changes in migratory flows with respect to the
@@ -6452,9 +6499,10 @@ More tables
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6508,9 +6556,10 @@ movers with zero wage in month they are moving
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6554,6 +6603,126 @@ movers employed in month they are moving
 
 \begin_layout Plain Layout
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/owntab.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+ownership status in month households are moving 
+\begin_inset Formula $(t)$
+\end_inset
+
+ and month after 
+\begin_inset Formula $(t+1)$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/owntab_nomove.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+ownership status in month 
+\begin_inset Formula $(t)$
+\end_inset
+
+ and month after 
+\begin_inset Formula $(t+1)$
+\end_inset
+
+ conditional on not moving.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
 \end_layout
 
 \end_inset
