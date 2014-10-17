@@ -7,9 +7,15 @@ plot.CCP <- function(){
 		exp(x - log(exp(x) + exp(1.0)))
 	}
 	df = data.frame(x=seq(-3,4,le=100),P=f(seq(-3,4,le=100)))
-	tikz("~/Dropbox/mobility/output/model/fit/ccp-plot.tex",width=7,height=7)
-	ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$Pr(v_1|v_2 = 1)$") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
+	tikz("~/Dropbox/mobility/output/model/fit/ccp-plot.tex",width=6,height=4)
+	ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$\\Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
 	dev.off()
+}
+
+plot.CCP2 <- function(){
+	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
+	inc = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_inc.csv")
+	z   = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_z.csv")
 }
 
 

@@ -161,6 +161,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
+	moneyMC = ((p.policy == "moneyMC")&&(age==p.shockAge)) ? true : false
+
 
 	# shocks
 	#-------
@@ -220,6 +222,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
 									a = agrid[ia]
+
+									if moneyMC
+										a += p.shockVal[1]
+									end
 
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 

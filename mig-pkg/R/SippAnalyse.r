@@ -616,28 +616,31 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	gc()
 	# monthly data
 	data(Sipp_aggby_NULL,envir=environment())
+	d = merged
+	setkey(d,upid,timeid)
 	# get empstat before after
 	d[,employed_minus := d[list(upid,timeid-1)][["employed"]]]
 	d[,employed_plus  := d[list(upid,timeid+1)][["employed"]]]
-	ta$emptab <- d[D2D==TRUE,as.matrix(table(employed,employed_plus))]
-	ta$p_emptab <- round(ta$emptab / sum(ta$emptab),2)
-	rownames(ta$p_emptab) <- c("unemployed $t$","employed $t$")
-	colnames(ta$p_emptab) <- c("unemployed $t+1$","employed $t+1$")
+	ta$emptab <- d[D2D==TRUE,as.matrix(round(prop.table(table(employed,employed_plus),margin=1),3))]
+	rownames(ta$emptab) <- c("unemployed $t$","employed $t$")
+	colnames(ta$emptab) <- c("unemployed $t+1$","employed $t+1$")
 
 	# get nowage before after
 	d[,nowage := FALSE]
 	d[HHincome<=0, nowage := TRUE]
 	d[,nowage_plus := d[list(upid,timeid+1)][["nowage"]] ]
-	ta$wagetab <- d[D2D==TRUE,as.matrix(table(nowage,nowage_plus))]
-	ta$p_wagetab <- round(ta$wagetab / sum(ta$wagetab),2)
-	rownames(ta$p_wagetab) <- c("$w_{t} > 0$","$w_{t} < 0$")
-	colnames(ta$p_wagetab) <- c("$w_{t+1} > 0$","$w_{t+1} < 0$")
+	ta$wagetab <- d[D2D==TRUE,as.matrix(round(prop.table(table(nowage,nowage_plus),margin=1),3))]
+	rownames(ta$wagetab) <- c("$w_{t} > 0$","$w_{t} < 0$")
+	colnames(ta$wagetab) <- c("$w_{t+1} > 0$","$w_{t+1} < 0$")
 
 	# get ownership before after
 	d[,own_plus := d[list(upid,timeid+1)][["own"]]]
-	ta$owntab <- d[D2D==TRUE & age>19 & age<51, round(prop.table(table(own,own_plus),margin=2),2)]
+	ta$owntab <- d[D2D==TRUE & age>19 & age<51, round(prop.table(table(own,own_plus),margin=1),2)]
+	ta$owntab_nomove <- d[D2D==FALSE& age>19 & age<51, round(prop.table(table(own,own_plus),margin=1),4)]
 	rownames(ta$owntab) <- c("Rent today","Own today")
 	colnames(ta$owntab) <- c("Rent tomorrow","Own tomorrow")
+	rownames(ta$owntab_nomove) <- c("Rent today","Own today")
+	colnames(ta$owntab_nomove) <- c("Rent tomorrow","Own tomorrow")
 
 
 	# print tables
@@ -646,10 +649,10 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	print(xtable(ta$nmv),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"num_moves.tex"))
 	print(xtable(ta$home),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"mv_home.tex"))
 
-	print(xtable(ta$p_emptab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"emptab.tex"))
-	print(xtable(ta$p_wagetab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"wagetab.tex"))
-
+	print(xtable(ta$emptab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"emptab.tex"))
+	print(xtable(ta$wagetab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"wagetab.tex"))
 	print(xtable(ta$owntab),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"owntab.tex"))
+	print(xtable(ta$owntab_nomove,digits=4),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,sanitize.colnames.function=function(x){x},sanitize.rownames.function=function(x){x},file=file.path(path,"owntab_nomove.tex"))
 
 	return(ta)
 

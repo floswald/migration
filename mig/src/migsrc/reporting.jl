@@ -56,6 +56,12 @@ function simReport(s::DataFrame)
     	@by([:z_bin,:own],prob=mean(:cumprob))
     end
 
+	mp_p = @> begin
+    	s
+    	@transform(p_bin=cut(:p,round(quantile(:p,(0:20)./20),1)))
+    	@by([:p_bin,:own],prob=mean(:cumprob))
+    end
+
     mp_age = @> begin
     	s
     	@by(:age,prob=mean(:cumprob))
@@ -67,22 +73,57 @@ function simReport(s::DataFrame)
 
     mp_ass = mp_ass[2:end,:]
     mp_inc = mp_inc[2:end,:]
-    mp_z = mp_z[2:end,:]
+
+    writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv",mp_ass)
+    writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_inc.csv",mp_inc)
+    writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_z.csv",mp_z)
 
     myt = Theme(line_width=0.5mm,major_label_color=color("black"),minor_label_color=color("black"))
     pinc = plot(mp_inc,x="inc_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by income"))
     pz = plot(mp_z,x="z_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by income shock"))
     pass=plot(mp_ass,x="assets",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by assets"))
+    pp  =plot(mp_p,x="p_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by House Price"))
 
     draw(PDF("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf",6inch,4inch),pass)
     draw(PDF("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_income.pdf",6inch,4inch),pinc)
     draw(PDF("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_pz.pdf",6inch,4inch),pz)
 
-    (mp,mp_own,mp_ass,mp_age,m_age)
+    (pinc,pz,pass,pp)
 end
 
 
 
+function compareMC_hfriction()
+
+	s0 = runObj(false)
+	s0 = @transform(s0["moments"],regime="baseline")
+
+	# no owner MC
+	p1 = Dict{ASCIIString,Float64}()
+	p1["MC3"] = 0.0
+	s1 = runObj(false,p1)
+	s1 = @transform(s1["moments"],regime="MC3_0")
+
+	# no owner MC and no transaction cost 
+	p1["phi"] = 0.0
+	s2 = runObj(false,p1)
+	s2 = @transform(s2["moments"],regime="MC3_0_phi_0")
+
+	# no transaction cost 
+	pop!(p1,"MC3")
+	s3 = runObj(false,p1)
+	s3 = @transform(s3["moments"],regime="phi_0")
+
+	out = vcat(s0,s1,s2,s3)
+
+	println(@select(out,:regime,:mean_move_ownTRUE,:mean_move_ownFALSE,:mean_own_kidsTRUE,:mean_own_kidsFALSE))
+
+	return(out)
+end
+
+
+
+	
 
 
 

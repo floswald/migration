@@ -32,6 +32,8 @@ function runExperiment(which,region=2,year=1997)
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
 		e = mig.exp_changeMC("doubleMC")
+	elseif which=="moneyMC"
+		e = mig.moneyMC()
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -712,3 +714,66 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 end
 
 
+# Monetize the moving cost
+# ========================
+
+# what's the dollar value of the moving cost at different points
+# in the state space?
+
+# in particular: 
+# how does it vary across the asset grid and age by own/rent?
+
+# answer:
+# compute the factor xtra_ass which equalizes the baseline value (no MC) to the one with MC but where you multiply assets with xtra_ass at a certain age (only at that age, not all ages!)
+
+# adds xtra_ass dollars to each asset grid point at age t
+function valueDiff(xtra_ass::Float64,v0::Vector{Float64},ia::Int,opts::Dict)
+	p = Param(2,opts)
+	setfield!(p,:shockVal,[xtra_ass])
+	setfield!(p,:shockAge,opts["it"])
+	m = Model(p)
+	solve!(m,p)
+	w = m.v[1,1,2,2,2,1,ia,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1
+	(w - v0[ia])^2
+end
+
+
+
+# find consumption scale ctax such that
+# two policies yield identical period 1 value
+function find_xtra_ass(v0::Vector{Float64},ia::Int,opts::Dict)
+	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,1000.0,show_trace=true,method=:brent)
+	return ctax
+end
+
+function moneyMC()
+
+	MC = Array(Any,2)
+
+	# compute a baseline without MC
+	p = Param(2)
+	setfield!(p,:MC0,0.0)
+	setfield!(p,:MC1,0.0)
+	setfield!(p,:MC2,0.0)
+	setfield!(p,:MC3,0.0)
+	setfield!(p,:MC4,0.0)
+	m = Model(p)
+	solve!(m,p)
+
+
+	opts = Dict()
+	opts["policy"] = "moneyMC"
+	for it in 1:p.nt-1
+		for ih in 0:1
+			first = ih + (1-ih)*m.aone 	# first admissible asset index
+			opts["ih"] = ih+1
+			opts["it"] = it
+			v0 = m.v[1,1,2,2,2,1,:,opts["ih"],2,opts["it"]][:]	# comparing values of moving from 2 to 1
+			MC[ih+1,it] = pmap(x->find_xtra_ass(v0,x,opts),first:p.na)
+			println("done with ih=$ih in period $it")
+		end
+	end
+
+	return MC
+
+end
