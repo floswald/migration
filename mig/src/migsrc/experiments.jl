@@ -734,7 +734,11 @@ function valueDiff(xtra_ass::Float64,v0::Vector{Float64},ia::Int,opts::Dict)
 	m = Model(p)
 	solve!(m,p)
 	w = m.v[1,1,2,2,2,1,ia,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1
-	(w - v0[ia])^2
+	if w == p.myNA
+		return NaN 
+	else
+		(w - v0[ia])^2
+	end
 end
 
 
@@ -742,7 +746,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Vector{Float64},ia::Int,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,1000.0,show_trace=true,method=:brent)
+	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=true,method=:brent,iterations=50)
 	return ctax
 end
 
@@ -775,5 +779,14 @@ function moneyMC()
 	end
 
 	return MC
+end
+
+
+
+# run Model without aggregate shocks
+function noShocks()
+
+	# need a different price data set
 
 end
+
