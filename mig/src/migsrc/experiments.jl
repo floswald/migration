@@ -1,5 +1,4 @@
 
-
 # list of experiments:
 # 1) changing the mortgage interest rate deduction
 # 2) fannie mae and freddie max guarantee: mortgage interest rate is too low.
@@ -748,7 +747,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Vector{Float64},ia::Int,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=true,method=:brent,iterations=50)
+	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abstol=0.1)
 	return ctax
 end
 
@@ -810,3 +809,28 @@ function noShocks()
 
 end
 
+
+# run Model without only small deviations from aggregate
+function noShocks()
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	s = simuluate(m,p)
+	s = @where(s,!isna(:cohort))
+
+	opts=Dict()
+	opts["policy"] = "smallShocks"
+
+	p1 = Param(2,opts)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	s1 = simulate(m1,p1)
+	s1 = @where(s1,!isna(:cohort))
+
+	println("baseline")
+	println(mean(s[:move]))
+	println("smallShocks")
+	println(mean(s[:move]))
+
+end

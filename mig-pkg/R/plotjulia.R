@@ -489,9 +489,93 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 }
 
+Export.VAR3 <- function(){
+
+	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+
+	data(BEA_fhfa,envir=environment())
+
+	# reduce the variance in prices
+	agg = BEA_fhfa_agg$agg
+	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
+	# export coefficients as table
+	aggcoefs <- as.data.frame(coef(aggmod))
+	aggcoefs$param <- names(coef(aggmod))
+	names(aggcoefs)[1] <- "value"
+	aggcoefs$param <- gsub("\\(|\\)","",aggcoefs$param)
+
+	# add bounds on P and Y
+	aggcoefs <- rbind(aggcoefs,agg[,list(value=min(Y),param="min_Y")],agg[,list(value=max(Y),param="max_Y")],agg[,list(value=min(P),param="min_P")],agg[,list(value=max(P),param="max_P")])
+
+	# covariance matrix 
+	sigma <- data.frame(aggmod$residCov)
+
+
+	py = BEA_fhfa_agg$py 
+	setkey(agg,year)
+	pyagg = agg[py]
+
+	pyagg[,dp := p - P]
+	pyagg[,p := P + dp * 0.1]
+
+	# estimate regional models: what is relationship y ~ P + Y
+	ep <- p ~ Y + P
+	ey <- y ~ Y + P
+	divs = py[,unique(Division)]
+	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
+	names(mods) = divs
+
+
+	pyagg[,yhat := 0]
+	pyagg[,phat := 0]
+
+
+	for (d in divs){
+		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]])]
+	}
+
+	pred_y = dcast(year ~ Division, value.var="yhat",data=pyagg )
+	pred_p = dcast(year ~ Division, value.var="phat",data=pyagg )
+	# visualize fit
+
+
+	mdy = melt(pyagg[,list(year,Division,y,yhat)],c("year","Division"))
+
+	pl = list()
+
+	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") 
+
+	mdp = melt(pyagg[,list(year,Division,p,phat)],c("year","Division"))
+
+	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") 
+
+	# export coefficients as table
+	coefs <- as.data.frame(t(sapply(mods,coef)))
+	coefs <- coefs[order(rownames(coefs)), ]
+	coefs <- cbind(coefs,py[,list(mean_y = mean(y)),by=Division])
+	PYdata = as.data.frame(agg[,list(year,Y,P)])
+
+	n <- names(coefs)
+	n <- gsub("\\(|\\)","",n)
+	names(coefs) <- n
+
+	VAR_reg   <- coefs
+	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
+	save(pred_y,file=file.path(path,"pred_y_small.rda"))
+	save(pred_p,file=file.path(path,"pred_p_small.rda"))
+	save(VAR_reg,file=file.path(path,"VAR_reg_small.rda"))
+
+
+
+	return(list(Agg2Region_coefs=coefs,plots=pl,pred_y=pred_y,pred_p=pred_p))
+}
+
+
+
 # get a no-shock scenario
 # compute linear trends on all series
 # estimate factor model on that
+# not clear this is correct. probably need to re-estimate the individual income model as well.
 Export.VAR2 <- function(){
 
 	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"

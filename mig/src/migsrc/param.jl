@@ -145,6 +145,13 @@ type Param
 			shockAge = get(opts,"shockAge",100)
 			shockVal = get(opts,"shockVal",ones(nt-1))	# multiplicative factor
 
+			# check policy name is valid
+			if pname != "NULL"
+				if !in(pname,["noShocks","smallShocks","mortgageSubsidy_padjust","halfMC","doubleMC","tripleMC","mortgageSubsidy","moneyMC","shocky","shockp"])
+					warn("your policy $pname is not in the set of admissible policies")
+				end
+			end
+
 		else
 			pname    = "NULL"
 			lumpsum  = [0.0]
