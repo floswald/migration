@@ -767,17 +767,19 @@ function moneyMC()
 	m = Model(p)
 	solve!(m,p)
 
+	ages = (1,10,20,30)
+
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
-	for it in (1,10,20,30)
+	for it in 1:length(ages)
 		for ih in 0:1
 			first = ih + (1-ih)*m.aone 	# first admissible asset index
 			opts["ih"] = ih+1
-			opts["it"] = it
+			opts["it"] = ages[it]
 			v0 = m.v[1,1,2,2,2,1,:,opts["ih"],2,opts["it"]][:]	# comparing values of moving from 2 to 1
 			MC[ih+1,it] = pmap(x->find_xtra_ass(v0,x,opts),first:p.na)
-			println("done with ih=$ih in period $it")
+			println("done with ih=$ih in period $(ages[it])")
 		end
 	end
 
