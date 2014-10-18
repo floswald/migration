@@ -1852,6 +1852,33 @@ key "redding"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Shaded
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+TO DO: explain here better that use rank of 
+\begin_inset Formula $z$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 When moving from region 
 \begin_inset Formula $d$
 \end_inset
@@ -4124,7 +4151,8 @@ Values for preset parameters
 \end_layout
 
 \begin_layout Standard
-todo.
+to do.
+ discuss sources.
 \end_layout
 
 \begin_layout Subsection
@@ -4132,7 +4160,7 @@ Identification
 \end_layout
 
 \begin_layout Standard
-todo.
+to do.
 \end_layout
 
 \begin_layout Standard
@@ -4265,12 +4293,12 @@ Fit
 \end_layout
 
 \begin_layout Standard
-TODO.
+TO DO.
+ excellent fit.
 \end_layout
 
 \begin_layout Standard
-The empirical target moments and their model counterparts are shown in table
- 
+empirical moments in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:fit-model-and-data"
@@ -4278,74 +4306,18 @@ reference "tab:fit-model-and-data"
 \end_inset
 
 .
- The sum of squared distances between both columns forms the objective funciton
- in the SMM algorithm.
  
 \end_layout
 
 \begin_layout Standard
-Starting from the top of the table, the fit to average moving rates is very
- good.
- The average moving rates conditional on having children or on being an
- owner are in line with the shares observed in the data, as are the covariances
- of moving with owning and moving with children.
- Next in line are coefficients from a linear regression model (prefixed
- 
-\begin_inset Quotes eld
-\end_inset
-
-lm
-\begin_inset Quotes erd
-\end_inset
-
-), relating cross division moves to a quadratic age term.
- The fit on the age coefficients is good.
-\end_layout
-
-\begin_layout Standard
-The moments 
-\begin_inset Quotes eld
-\end_inset
-
-moved0
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-moved1
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-moved2
-\begin_inset Quotes erd
-\end_inset
-
- relate to the fraction of the population that moved zero, one or two and
- more times respectively.
- 
-\end_layout
-
-\begin_layout Standard
-It is worth pointing out that the model has an excellent fit on non-targeted
- wealth moments.
- As illustrated in table 
+non-targetted moments in
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:fit-model-nontarget"
 
 \end_inset
 
-, the model implied average wealth holdings by region are very close to
- the ones computed from the data, and similarly for the wealth measures
- by age group.
- 
+
 \end_layout
 
 \begin_layout Standard
@@ -4459,10 +4431,196 @@ Comparative Statics
 \end_layout
 
 \begin_layout Standard
+In this section I use model to illustrate several mechanisms which are implied
+ by the inclusion of homeownership status and assets into the state space
+ of a dynamic migration model à la 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+.
+ Before going into greater detail, it is worth pointing out that owners
+ and renters have opposed incentives with regards to house prices, which
+ will be a recurring theme in the following.
+ The opposing incentives are a result of the specification of the final
+ period value function, which depends on home equity.
+ This implies that, all else equal, owners prefer higher prices, while renters
+ prefer lower ones.
+ This has to do with renters' desire to become owners (which is more difficult
+ with higher prices given the downpayment constraint) and higher rents associate
+d with higher prices.
+ 
+\end_layout
+
+\begin_layout Standard
+We will now discuss how the probability of migrating varies over the state
+ space along the asset, income, and ownership status dimensions.
+ In order to help this discussion, it is useful to briefly refer to an example
+ with two discrete choices 
+\begin_inset Formula $j=1$
+\end_inset
+
+ and 
+\begin_inset Formula $j=2$
+\end_inset
+
+ and consider the effects on the probability of choosing option 
+\begin_inset Formula $j=1$
+\end_inset
+
+ as the associated value, 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+, varies.
+ This will enable us to better relate changes in the state space of the
+ model, which affect the relative values of any given location (e.g.
+ 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+), to changes in moving probabilities.
+ Let us start therefore with figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Illustration-of-conditional"
+
+\end_inset
+
+, which plots the conditional choice probability function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+ for the simplified case of 
+\begin_inset Formula $D=2$
+\end_inset
+
+, i.e.
+ for two regions.
+ Denoting the lifetime utilities in each region by 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{2}$
+\end_inset
+
+, and fixing 
+\begin_inset Formula $v_{2}=1$
+\end_inset
+
+, we are interested in how the probability of moving to region 
+\begin_inset Formula $j=1$
+\end_inset
+
+ changes as the 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+ is changed.
+ It is clear that if 
+\begin_inset Formula $v_{1}=v_{2}$
+\end_inset
+
+, the probability of moving is 0.5, and it is increasing along the sigmoid
+ curve in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Illustration-of-conditional"
+
+\end_inset
+
+ in the difference 
+\begin_inset Formula $v_{1}-v_{2}$
+\end_inset
+
+.
+ In the examples to follow, changes in the differences 
+\begin_inset Formula $v_{d}-v_{k}$
+\end_inset
+
+ determine changes to the aggregate moving probability.
+ It is clear that, given the nonlinear nature of any given value function
+ 
+\begin_inset Formula $v$
+\end_inset
+
+, those change will be nonlinear over the state space.
+\end_layout
+
+\begin_layout Standard
+In figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:CS-assets"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:CS-prob-income"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:CS-prob-z"
+
+\end_inset
+
+ I plot the conditional mean of the moving probability function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+, conditioning on quantiles of the state space variables assets 
+\begin_inset Formula $(a)$
+\end_inset
+
+, income 
+\begin_inset Formula $(y)$
+\end_inset
+
+, income shock 
+\begin_inset Formula $(z)$
+\end_inset
+
+, and housing status 
+\begin_inset Formula $(h)$
+\end_inset
+
+.
+ The plots show throughout a marked difference by housing status 
+\begin_inset Formula $h$
+\end_inset
+
+, which is fully expected given the data.
+ Perhaps more interesting is the shape of the average moving rate over the
+ space of assets, which shows different probabilities throughout.
+ For example, not only is the probability higher for renters almost everywhere,
+ it is also declining as assets increase.
+ Since households in the model build up assets in order to buy, this shows
+ that for renters with higher assets (thus closer to being an owner), the
+ likelihood of moving away is lower.
+ Observing high asset owners and renters with greater likelihood of moving
+ shows that they are particularly mobile.
+ The density is very small at high asset values.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -4496,7 +4654,26 @@ Illustration of conditional choice probabilities for 2 discrete choices
 \end_inset
 
 .
+ This is equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+ for 
+\begin_inset Formula $D=2$
+\end_inset
+
+ options.
  
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Illustration-of-conditional"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4514,15 +4691,164 @@ Illustration of conditional choice probabilities for 2 discrete choices
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Average Probability of moving by level of assets and ownership status.
+ This is 
+\begin_inset Formula $E[Q(d,k,x)|\overline{a},h],d\neq k$
+\end_inset
+
+, where 
+\begin_inset Formula $\overline{a}$
+\end_inset
+
+ are 20 quantiles of the asset state space.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:CS-assets"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_income.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Average probability of moving by income quantiles.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:CS-prob-income"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_pz.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Probability of moving by income shock 
+\begin_inset Formula $z$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:CS-prob-z"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+The effects on migration of a shock to the regional house price level
+\end_layout
+
+\begin_layout Standard
 In this section I illustrate how the model reacts to large economic shocks
  at the regional level.
  In particular, I present changes in migratory flows with respect to the
  baseline environment, when the regional price or income level is reduced
  unexpectedly at a certain point in time.
-\end_layout
-
-\begin_layout Subsubsection
-The effects on migration of a shock to the regional house price level
 \end_layout
 
 \begin_layout Standard
@@ -5190,6 +5516,298 @@ reference "fig:own-buy-p3"
  shows the case where the price drop is temporarily, causing great numbers
  of people to move into the region to take advantage of the current low
  prices, which are expected to recover after 3 years.
+\end_layout
+
+\begin_layout Subsection
+Reducing the price variance
+\end_layout
+
+\begin_layout Standard
+In this subsection I investigate the effect of regional variation in house
+ prices on migration and ownership decisions.
+ We will compare the baseline model to a scenario where the variance in
+ regional prices is greatly reduced, and therefore house prices are close
+ to the aggregate factor 
+\begin_inset Formula $P_{t}$
+\end_inset
+
+.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Compressing-the-regional"
+
+\end_inset
+
+ visualizes the price transformation.
+\end_layout
+
+\begin_layout Standard
+I'll first refer to the overall effects in aggregate ownership and mobility
+ rates with the help of table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:compress-summary"
+
+\end_inset
+
+ and will then discuss the underlying mechanisms in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:compress-mechanisms"
+
+\end_inset
+
+.
+ In the first row of table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:compress-summary"
+
+\end_inset
+
+ we note that the compression in prices leads to fewer high price regions
+ around 2007, thereby allowing more households to buy.
+ This is reflected in an increase of the ownership rate.
+ Secondly, we see that the unconditional migration rate increases slightly
+ by 0.1 percentage point.
+ This increase is driven exclusively by greater mobility of renters, as
+ is evident in the third row of the table.
+ The fourth row shows that owners move less when prices are compressed.
+ 
+\end_layout
+
+\begin_layout Standard
+These effects are driven by a change in composition (fewer owners), and
+ a change in migration behaviour due to the now different values of housing
+ in each region.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:compress-mechanisms"
+
+\end_inset
+
+ lists the precentage change in migratory moves on behalf of renters and
+ owners 
+\emph on
+to
+\emph default
+ any given region, where the change is defined as 
+\begin_inset Formula $\%\Delta_{d}=100\times\frac{m'_{d}-m_{d}}{m_{d}}$
+\end_inset
+
+, with 
+\begin_inset Formula $m_{d},m'_{d}$
+\end_inset
+
+ denoting the migration rate into 
+\begin_inset Formula $d$
+\end_inset
+
+ before and after the price compression.
+ The columns labelled 
+\begin_inset Formula $y,\frac{p}{y}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\hat{p}}{y}$
+\end_inset
+
+ show the average regional income level (unchanged), and the price to income
+ ratio before and after the price compression took place.
+ One can relate the changes in immigration to a region to changes in those
+ variables.
+ For example, the Pacific region, which used to be very attractive for owners
+ because of strong price growth looses it's appeal, and proportion of owners
+ moving into Pacific decreases by 52%.
+ At the same time, Pacific is relatively desireable for renters, with average
+ income 
+\begin_inset Formula $y=44$
+\end_inset
+
+ and now lower rents, therefore renter immigration increases by almost 50%.
+ The effects are not linear in any sense, however, as the case of New England
+ illustrates: this region was subject to the same reduction in house price
+ as Pacific, the question therefore arises why there is an increase in owners
+ moving there.
+ The answer lies in the average income level, which is unchanged and remains
+ the highest overall.
+ This, combined with the fact that even after the compression, New England
+ is the second highest house price region in the economy means that owners
+ shift from moving to Pacific and into New England.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/smallShocks/prices.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Compressing the regional price variation.
+ This transformation shrinks the deviation of regional price 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ from the aggregate factor 
+\begin_inset Formula $P_{t}$
+\end_inset
+
+ by 90%.
+ In other words, the right panel shows 
+\begin_inset Formula $\hat{p}_{dt}=P_{t}+0.1\times\left(p_{dt}-P_{t}\right)$
+\end_inset
+
+.
+ The experiment considers only years 
+\begin_inset Formula $t\geq1997$
+\end_inset
+
+, in line with the estimation sample used to fit the model.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compressing-the-regional"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/smallShocks/smallShocks_sum.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Average ownership and mobility rates in baseline and compressed price variance
+ scenarios.
+ The first row shows the ownership rate, the second to last rows show mobility
+ rate, mobility rate conditional on renting, and mobility rate conditional
+ on owning.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:compress-summary"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/smallShocks/smallShocks_moveto.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Effects of smaller price shocks.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:compress-mechanisms"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6426,6 +7044,53 @@ born
  The initial distribution of assets is drawn from the empirical distribution
  of assets in the SIPP data.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/mytemp.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+test
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
