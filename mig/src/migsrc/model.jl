@@ -144,6 +144,11 @@ type Model
 		# VAR P ~ LY + LP
 		# VAR Y ~ LY + LP
 		if p.policy == "noShocks"
+			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
+			Regmods_YP = Dict{Int,Matrix{Float64}}()
+			for j in 1:p.nJ
+				Regmods_YP[j] = vcat(mig.array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),mig.array(VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
+			end
 			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
 			regY = DataFrame(read_rda(joinpath(indir,"regY.rda"))["regY"])
 			regP = DataFrame(read_rda(joinpath(indir,"regP.rda"))["regP"])

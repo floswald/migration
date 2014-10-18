@@ -755,10 +755,10 @@ end
 
 function moneyMC()
 
-	MC = Array(Any,2)
 
 	# compute a baseline without MC
 	p = Param(2)
+	MC = Array(Any,2,p.nt-1)
 	setfield!(p,:MC0,0.0)
 	setfield!(p,:MC1,0.0)
 	setfield!(p,:MC2,0.0)
@@ -770,7 +770,7 @@ function moneyMC()
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
-	for it in 1:p.nt-1
+	for it in (1,10,20,30)
 		for ih in 0:1
 			first = ih + (1-ih)*m.aone 	# first admissible asset index
 			opts["ih"] = ih+1
@@ -807,7 +807,7 @@ function noShocks()
 	println("baseline")
 	println(mean(s[:move]))
 	println("noShocks")
-	println(mean(s[:move]))
+	println(mean(s1[:move]))
 
 	return (s,s1)
 
@@ -836,5 +836,14 @@ function smallShocks()
 	println(mean(s[:move]))
 	println("smallShocks")
 	println(mean(s[:move]))
+
+	# print JSON table
+	out = @by(s,:own,mobility=mean(:move),regime="baseline")
+	out = vcat(out,@by(s1,:own,mobility=mean(:move),regime="smallShocks"))
+
+	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
+	JSON.print(f,out)
+
+	return (s,s1,out)
 
 end
