@@ -736,7 +736,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:shockAge,1)
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,1,2,2,1,m.aone,opts["ih"],2,1]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,1]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
@@ -749,7 +749,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abs_tol=0.1)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=true,method=:brent,iterations=40,abs_tol=0.1)
 	return ctax
 end
 
@@ -757,34 +757,43 @@ function moneyMC()
 
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,2)
+	MC = Array(Any,2,p.nz)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
+
+	df = DataFrame(a = 0.0,v0 = 0.0,v1 = 0.0,Type="")
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
 	for ih in 0:1
 		opts["ih"] = ih+1
-		v0 = m.v[1,1,2,2,2,1,m.aone,opts["ih"],2,1]	# comparing values of moving from 2 to 1a
-		MC[ih+1] = find_xtra_ass(v0,opts)
-		println("done with ih=$ih")
+		for iz in 1:p.nz
+			opts["iz"] = iz
+			v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,1]	# comparing values of moving from 2 to 1
+			MC[ih+1,iz] = find_xtra_ass(v0,opts)
+			println("done with MC for iz=$iz, ih=$ih")
+			println("moving cost: $(MC[ih+1,iz].minimum)")
+
+			p1 = Param(2,opts)
+			setfield!(p1,:shockAge,1)
+			# plug in money 
+			setfield!(p1,:shockVal,[MC[opts["ih"],opts["iz"]].minimum])
+			m1 = Model(p1)
+			solve!(m1,p1)
+			df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],h=opts["ih"]))
+			println("done with recomputing model for iz=$iz, ih=$ih")
 	end
 
-	# recompute model with optimal additional assets
-	p1 = Param(2,opts)
-	setfield!(p1,:shockAge,1)
-	# plug in money for renter
-	setfield!(p1,:shockVal,MC[1].minimum)
-	m1 = Model(p1)
-	solve!(m1,p1)
-	df = DataFrame(a = m.grids["assets"],v0 = m.v[1,1,1,2,2,1,:,1,2,1][:],v1 = m1.v[1,1,1,2,2,1,:,1,2,1][:],Type="renter")
+	zs = m.gridsXD["zsupp"][:,1]
+	# make an out dict
+	d = [ "z$i" => ["z" => zs[i], "rent" => MC[1,i].minimum, "own" => MC[2,i].minimum] for i in 1:p.nz]
 
-	# plug in money for owner
-	setfield!(p1,:shockVal,MC[2].minimum)
-	m1 = Model(p1)
-	solve!(m1,p1)
-	df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,1,2,2,1,:,2,2,1][:],v1 = m1.v[1,1,1,2,2,1,:,2,2,1][:],Type="owner"))
+	indir, outdir = mig.setPaths()
+	f = open(joinpath(outdir,"moneyMC.json"),"w")
+	JSON.print(f,d)
+	close(f)
+
 
 	return (df,MC)
 end
