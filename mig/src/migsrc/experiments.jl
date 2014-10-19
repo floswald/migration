@@ -776,13 +776,13 @@ function moneyMC()
 				opts["it"] = ages[it]
 				v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,iz,it] = find_xtra_ass(v0,opts)
-				println("done with MC for iz=$iz, ih=$ih")
-				println("moving cost: $(MC[ih+1,iz].minimum)")
+				println("done with MC for iz=$iz, ih=$ih, it=$it")
+				println("moving cost: $(MC[ih+1,iz,it].minimum)")
 
 				p1 = Param(2,opts)
 				setfield!(p1,:shockAge,1)
 				# plug in money 
-				setfield!(p1,:shockVal,[MC[opts["ih"],opts["iz"]].minimum])
+				setfield!(p1,:shockVal,[MC[ih+1,iz,it].minimum])
 				m1 = Model(p1)
 				solve!(m1,p1)
 				df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],h=opts["ih"],z=opts["iz"],it=opts["it"]))
