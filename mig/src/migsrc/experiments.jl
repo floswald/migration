@@ -781,8 +781,9 @@ function moneyMC()
 			setfield!(p1,:shockVal,[MC[opts["ih"],opts["iz"]].minimum])
 			m1 = Model(p1)
 			solve!(m1,p1)
-			df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],h=opts["ih"]))
+			df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],h=opts["ih"],z=opts["iz"]))
 			println("done with recomputing model for iz=$iz, ih=$ih")
+		end
 	end
 
 	zs = m.gridsXD["zsupp"][:,1]
