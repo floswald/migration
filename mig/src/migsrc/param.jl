@@ -53,6 +53,7 @@ type Param
 	shockReg     :: Int
 	shockAge     :: Int
 	shockVal     :: Vector{Float64}
+	noMC         :: Bool
 
 	# numerical setup
 	# points in each dimension
@@ -160,11 +161,12 @@ type Param
 			shockAge = 100
 			shockVal = ones(nt-1)
 		end
+		noMC = false	# default: there IS a moving cost. experiments switch this off in certain periods.
 		ctax = 1.0 
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 

@@ -161,7 +161,20 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	moneyMC = ((p.policy == "moneyMC")&&(age==p.shockAge)) ? true : false
+	moneyMC = false
+	if p.policy=="moneyMC"
+		if age == p.shockAge
+			moneyMC = true
+			# if now is age where you want to measure MC,
+			# switch cost on
+			setfield!(p,:noMC,false)
+		else
+			moneyMC = true
+			# if not, switch cost off as in baseline
+			setfield!(p,:noMC,true)
+		end
+	end
+
 
 
 	# shocks
@@ -221,11 +234,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 								first = ih + (1-ih)*m.aone	# first admissible asset index
 								for ia=first:p.na
-									a = agrid[ia]
+									a_0 = agrid[ia]
 
-									if moneyMC
-										a += p.shockVal[1]
-									end
 
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
@@ -253,6 +263,18 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 										# @assert offset_k+1 == kidx
 										kidx = offset_k + 1
+
+										# add money to assets of movers if required
+
+										# if in moneyMC experiment and
+										# if this is the period where we measure, ie there IS a MC (!p.noMC) and
+										# if this is the value of someone who is moving
+										if moneyMC && (!p.noMC) && (ij!=ik)
+											a = a_0 + p.shockVal[1]
+										else
+											a = a_0
+										end
+
 
 										canbuy = a + newz > p.chi * price_k
 										m.canbuy[kidx] = canbuy
@@ -287,7 +309,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.cash[hidx] = cash
 
 												# find moving cost
-												mc = movecost[age,ij,ik,itau,ih+1,is]
+												if p.noMC 
+													mc = 0.0
+												else
+													mc = movecost[age,ij,ik,itau,ih+1,is]
+												end
 
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
@@ -350,7 +376,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											m.cash[hidx] = cash
 
 											# find moving cost
-											mc = movecost[age,ij,ik,itau,ih+1,is]
+											if p.noMC 
+												mc = 0.0
+											else
+												mc = movecost[age,ij,ik,itau,ih+1,is]
+											end
 
 											# find relevant future value:
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)

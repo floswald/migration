@@ -730,17 +730,17 @@ end
 # compute the factor xtra_ass which equalizes the baseline value (no MC) to the one with MC but where you multiply assets with xtra_ass at a certain age (only at that age, not all ages!)
 
 # adds xtra_ass dollars to each asset grid point at age t
-function valueDiff(xtra_ass::Float64,v0::Vector{Float64},ia::Int,opts::Dict)
+function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	p = Param(2,opts)
 	setfield!(p,:shockVal,[xtra_ass])
-	setfield!(p,:shockAge,opts["it"])
+	setfield!(p,:shockAge,1)
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,2,2,2,1,ia,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1
+	w = m.v[1,1,1,2,2,1,m.aone,opts["ih"],2,1]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
-		(w - v0[ia])^2
+		(w - v0)^2
 	end
 end
 
@@ -748,42 +748,45 @@ end
 
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
-function find_xtra_ass(v0::Vector{Float64},ia::Int,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,ia,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abs_tol=0.1)
+function find_xtra_ass(v0::Float64,opts::Dict)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=false,method=:brent,iterations=40,abs_tol=0.1)
 	return ctax
 end
 
 function moneyMC()
 
-
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,2,p.nt-1)
-	setfield!(p,:MC0,0.0)
-	setfield!(p,:MC1,0.0)
-	setfield!(p,:MC2,0.0)
-	setfield!(p,:MC3,0.0)
-	setfield!(p,:MC4,0.0)
+	MC = Array(Any,2)
+	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
 
-	ages = (1,10,20,30)
-
-
 	opts = Dict()
 	opts["policy"] = "moneyMC"
-	for it in 1:length(ages)
-		for ih in 0:1
-			first = ih + (1-ih)*m.aone 	# first admissible asset index
-			opts["ih"] = ih+1
-			opts["it"] = ages[it]
-			v0 = m.v[1,1,2,2,2,1,:,opts["ih"],2,opts["it"]][:]	# comparing values of moving from 2 to 1
-			MC[ih+1,it] = pmap(x->find_xtra_ass(v0,x,opts),first:p.na)
-			println("done with ih=$ih in period $(ages[it])")
-		end
+	for ih in 0:1
+		opts["ih"] = ih+1
+		v0 = m.v[1,1,2,2,2,1,m.aone,opts["ih"],2,1]	# comparing values of moving from 2 to 1a
+		MC[ih+1] = find_xtra_ass(v0,opts)
+		println("done with ih=$ih")
 	end
 
-	return MC
+	# recompute model with optimal additional assets
+	p1 = Param(2,opts)
+	setfield!(p1,:shockAge,1)
+	# plug in money for renter
+	setfield!(p1,:shockVal,MC[1].minimum)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	df = DataFrame(a = m.grids["assets"],v0 = m.v[1,1,1,2,2,1,:,1,2,1][:],v1 = m1.v[1,1,1,2,2,1,:,1,2,1][:],Type="renter")
+
+	# plug in money for owner
+	setfield!(p1,:shockVal,MC[2].minimum)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,1,2,2,1,:,2,2,1][:],v1 = m1.v[1,1,1,2,2,1,:,2,2,1][:],Type="owner"))
+
+	return (df,MC)
 end
 
 
@@ -822,8 +825,9 @@ function smallShocks()
 	p = Param(2)
 	m = Model(p)
 	solve!(m,p)
-	s = simuluate(m,p)
-	s = @where(s,!isna(:cohort))
+	s = simulate(m,p)
+	s = @where(s,(!isna(:cohort) & (:year.>1996)))
+	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
 
 	opts=Dict()
 	opts["policy"] = "smallShocks"
@@ -832,19 +836,35 @@ function smallShocks()
 	m1 = Model(p1)
 	solve!(m1,p1)
 	s1 = simulate(m1,p1)
-	s1 = @where(s1,!isna(:cohort))
+	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
+	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-	println("baseline")
-	println(mean(s[:move]))
-	println("smallShocks")
-	println(mean(s[:move]))
+	# make several out dicts
+	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
+	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
+	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
+	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
+	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
+	y_s = @by(s1,:Division,p2y=mean(:p2y))
 
-	# print JSON table
-	out = @by(s,:own,mobility=mean(:move),regime="baseline")
-	out = vcat(out,@by(s1,:own,mobility=mean(:move),regime="smallShocks"))
+	# get percent difference in moveto distribution
+	out = Dict()
+	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
+
+	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
+
+	# summaries
+	summa = Dict()
+
+	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
+	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
+	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
+
+	out["summary"] = summa
 
 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
 	JSON.print(f,out)
+	close(f)
 
 	return (s,s1,out)
 
