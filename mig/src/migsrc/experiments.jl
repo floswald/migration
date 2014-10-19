@@ -736,7 +736,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:shockAge,1)
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,1]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
@@ -757,12 +757,14 @@ function moneyMC()
 
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,2,p.nz)
+	MC = Array(Any,2,p.nz,2)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
 
-	df = DataFrame(a = 0.0,v0 = 0.0,v1 = 0.0,Type="")
+	df = DataFrame(a = 0.0,v0 = 0.0,v1 = 0.0,Type="",h=0,z=0,it=0)
+
+	ages = (1,30)
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
@@ -770,25 +772,28 @@ function moneyMC()
 		opts["ih"] = ih+1
 		for iz in 1:p.nz
 			opts["iz"] = iz
-			v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,1]	# comparing values of moving from 2 to 1
-			MC[ih+1,iz] = find_xtra_ass(v0,opts)
-			println("done with MC for iz=$iz, ih=$ih")
-			println("moving cost: $(MC[ih+1,iz].minimum)")
+			for it in 1:2
+				opts["it"] = ages[it]
+				v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+				MC[ih+1,iz] = find_xtra_ass(v0,opts)
+				println("done with MC for iz=$iz, ih=$ih")
+				println("moving cost: $(MC[ih+1,iz].minimum)")
 
-			p1 = Param(2,opts)
-			setfield!(p1,:shockAge,1)
-			# plug in money 
-			setfield!(p1,:shockVal,[MC[opts["ih"],opts["iz"]].minimum])
-			m1 = Model(p1)
-			solve!(m1,p1)
-			df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,1][:],h=opts["ih"],z=opts["iz"]))
-			println("done with recomputing model for iz=$iz, ih=$ih")
+				p1 = Param(2,opts)
+				setfield!(p1,:shockAge,1)
+				# plug in money 
+				setfield!(p1,:shockVal,[MC[opts["ih"],opts["iz"]].minimum])
+				m1 = Model(p1)
+				solve!(m1,p1)
+				df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],h=opts["ih"],z=opts["iz"],it=opts["it"]))
+				println("done with recomputing model for iz=$iz, ih=$ih, it=$it")
+			end
 		end
 	end
 
 	zs = m.gridsXD["zsupp"][:,1]
 	# make an out dict
-	d = [ "z$i" => ["z" => zs[i], "rent" => MC[1,i].minimum, "own" => MC[2,i].minimum] for i in 1:p.nz]
+	d =[  "z$i" => [ "age_$ti" => ["z" => zs[i], "rent" => MC[1,i,ti].minimum, "own" => MC[2,i,ti].minimum] for ti in 1:2] for i in 1:p.nz] 
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"moneyMC.json"),"w")
