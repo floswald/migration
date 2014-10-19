@@ -1,0 +1,13 @@
+{% macro showparam(param,dd) %}
+    {{param}} & {{ dd.baseline | prettyNum(3) }}   &  {{ dd.smallShocks | prettyNum(3) }} \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+  \toprule 
+     & \multicolumn{1}{c}{Baseline} & \multicolumn{1}{c}{Small Shocks}\\ 
+  \midrule
+  {{  showparam("$E[ h ]$", summary.own ) }}
+  {{  showparam("$E[ d \\neq k ]$", summary.move ) }}
+  {{  showparam("$E[ d \\neq k | h=0 ]$", summary.move_by_own.rent ) }}
+  {{  showparam("$E[ d \\neq k | h=1 ]$", summary.move_by_own.own  ) }}
+  \bottomrule
+\end{tabular}

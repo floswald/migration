@@ -733,7 +733,7 @@ end
 function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	p = Param(2,opts)
 	setfield!(p,:shockVal,[xtra_ass])
-	setfield!(p,:shockAge,1)
+	setfield!(p,:shockAge,opts["it"])
 	m = Model(p)
 	solve!(m,p)
 	w = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
@@ -775,7 +775,7 @@ function moneyMC()
 			for it in 1:2
 				opts["it"] = ages[it]
 				v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-				MC[ih+1,iz] = find_xtra_ass(v0,opts)
+				MC[ih+1,iz,it] = find_xtra_ass(v0,opts)
 				println("done with MC for iz=$iz, ih=$ih")
 				println("moving cost: $(MC[ih+1,iz].minimum)")
 

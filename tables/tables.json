@@ -1,0 +1,17 @@
+{
+  "smallShocks_sum":{
+    "template" : "smallShocks_summary.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/smallShocks/smallShocks_sum.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
+  },
+ "smallShocks_moveto":{
+    "template" : "smallShocks_moveto.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/smallShocks/smallShocks_moveto.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
+  },
+  "moneyMC":{
+    "template" : "moneyMC.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/moneyMC/moneyMC.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/moneyMC.json"
+  } 
+}

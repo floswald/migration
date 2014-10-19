@@ -1,0 +1,18 @@
+{% macro showparam(param,dd) %}
+    {{param}} & {{ dd.rent | prettyNum(3) }}   &  {{ dd.own | prettyNum(3) }}   &  {{ dd.y | prettyNum(3) }}  &  {{ dd.p2y | prettyNum(2) }} &  {{ dd.p2y_small | prettyNum(3) }}\\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{5.4}@{} D{.}{.}{5.7}@{} | D{.}{.}{3.2}@{} D{.}{.}{3.2}@{}  D{.}{.}{3.2}@{}}
+  \toprule 
+   moving to & \multicolumn{1}{c}{$\% \Delta$ Renters} & \multicolumn{1}{c|}{$\% \Delta$ Owners} & \multicolumn{1}{c}{$y$} & \multicolumn{1}{c}{$\frac{p}{y}$}  & \multicolumn{1}{c}{$\frac{\hat{p}}{y}$}\\ 
+  \midrule
+  {{  showparam("East North Central", moveto.ENC ) }}
+  {{  showparam("East South Central", moveto.ESC ) }}
+  {{  showparam("Middle Atlantic", moveto.MdA) }}
+  {{  showparam("Mountain", moveto.Mnt ) }}
+  {{  showparam("New England", moveto.NwE ) }}
+  {{  showparam("Pacific", moveto.Pcf ) }}
+  {{  showparam("South Atlantic", moveto.StA ) }}
+  {{  showparam("West North Central", moveto.WNC ) }}
+  {{  showparam("West South Central", moveto.WSC ) }}
+  \bottomrule
+\end{tabular}
