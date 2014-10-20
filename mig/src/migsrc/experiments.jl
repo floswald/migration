@@ -524,6 +524,7 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	else 
 		throw(ArgumentError("invalid policy $which selected"))
+	end
 	return opts
 
 end
