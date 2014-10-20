@@ -533,7 +533,7 @@ end
 # get the consumption subsidy that makes
 # you indifferent from living through the shock 
 # in j with a policy applied (i.e. no moving, no saving, no)
-function exp_shockRegion_vdiff(which_base::String,which_pol::String)
+function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
 
 	# w0 = value of living in shock region from shockYear forward
 	# w1 = value of living in shock region from shockYear forward UNDER POLICY
@@ -568,10 +568,10 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 	w = e[1]["values"][opts["policy"]][1]
 
 	if get(opts,"verbose",0) > 0
-		println("current value from opts["policy"] is $(round(w,2))")
+		println("current value from $(opts["policy"]) is $(round(w,2))")
 	end
 
-	return (w - v0) ^2
+	return (w - v0)^2
 end
 
 
