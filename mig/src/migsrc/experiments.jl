@@ -14,7 +14,7 @@ function runExperiment(which::String,region::Int,year::Int)
 	indir, outdir = mig.setPaths()
 
 	p = Param(2)
-	opts = selectPolicy(which,j,year,p)
+	opts = selectPolicy(which,region,year,p)
 
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)

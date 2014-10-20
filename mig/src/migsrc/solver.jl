@@ -351,14 +351,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.cash[hidx] = cash
 
 												# find moving cost
+												mc = movecost[age,ij,ik,itau,ih+1,is]
 												if p.noMC 
 													mc = 0.0
-												else
-													mc = movecost[age,ij,ik,itau,ih+1,is]
 												end
 
 												# if shut down moving from region ij
-												if highMC && (p.shockReg==ij)
+												if highMC && (p.shockReg==ij) && (ij!=ik)
 													mc = 100.0
 												end
 
@@ -423,14 +422,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											m.cash[hidx] = cash
 
 											# find moving cost
+											mc = movecost[age,ij,ik,itau,ih+1,is]
 											if p.noMC 
 												mc = 0.0
-											else
-												mc = movecost[age,ij,ik,itau,ih+1,is]
 											end
 
 											# if shut down moving from region ij
-											if highMC && p.shockReg==ij
+											if highMC && (p.shockReg==ij) && (ij!=ik)
 												mc = 100.0
 											end
 
