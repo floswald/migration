@@ -168,7 +168,7 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 
 	w = @> begin
 		df
-		@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+		@transform(beta=p.beta .^ :age)
 		@where(!isna(:cohort))
 		@transform(vbeta = :v .* :beta)
 		@by(:id, meanv = mean(:vbeta))
@@ -183,7 +183,7 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model,noMove::Bool)
 
 		w = @> begin
 			df
-			@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+			@transform(beta=p.beta .^ :age)
 			@where((!isna(:cohort)) & (!:move))
 			@transform(vbeta = :v .* :beta)
 			@by(:id, meanv = mean(:vbeta))
@@ -195,7 +195,7 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model,noMove::Bool)
 
 		w = @> begin
 			df
-			@transform(beta=repeat([p.beta^i for i=1:p.nt-1],inner=[1],outer=[m.coh_breaks[end]]))
+			@transform(beta=p.beta .^ :age)
 			@where(!isna(:cohort))
 			@transform(vbeta = :v .* :beta)
 			@by(:id, meanv = mean(:vbeta))
@@ -521,6 +521,26 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	end
 	return opts
+
+end
+
+
+# get the consumption subsidy that makes
+# you indifferent from living through the shock 
+# in j with a policy applied (i.e. no moving, no saving, no)
+function valdiff_shockRegion()
+
+	# w0 = value of living in shock region from shockYear forward
+	# w1 = value of living in shock region from shockYear forward UNDER POLICY
+
+	# w0 - w1 is diff in value from policy
+
+	e1 = runExperiment("p",6,2007);
+	w0 = e[1]["values"]["p"]
+
+
+
+
 
 end
 
