@@ -251,6 +251,7 @@ function simulate(m::Model,p::Param)
 	mortgageSub1 = false
 	mortgageSub2 = false
 	noBuying     = false
+	highMC       = false
 
 	if p.policy == "mortgageSubsidy_oldyoung" 
 		mortgageSub  = true
@@ -277,6 +278,12 @@ function simulate(m::Model,p::Param)
 	if p.policy == "noBuying" 
 		noBuying = true
 	end
+
+	if p.policy == "shockp_highMC"
+		pshock = true
+		highMC = true
+	end
+
 
 	for age = 1:T
 
@@ -357,28 +364,36 @@ function simulate(m::Model,p::Param)
 				# this is baseline income, i.e. before any policy induced adjustments
 				yy = getIncome(m,y,z,age,ij) 
 
+				# if moving is not allowed from your region...
+				if highMC && (p.shockReg==ij)
 
+					moveto = ij
+					move = false
+					prob = 1.0
 
-				# get moving choice given current state
-				# =====================================
-		
-				# 4D interpolation on (a,z,Y,P)
-				ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
-				# normalizing vector of moving probs: because of approximation error
-				# sometimes this is not *exactly* summing to 1
-				ktmp = ktmp ./ sum(ktmp)
-				
-				# get cumulative prob
-				cumsum!(ktmp2,ktmp,1)
-				# throw a k-sided dice 
-				cum_moveprob = sum(ktmp[setdiff(1:9,ij)])
-				moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
-				move   = ij != moveto
-				prob   = ktmp[moveto]
+				else
 
-				if moveto>p.nJ || moveto < 1
-					println(ktmp2)
-					error("problem in moveto = $moveto")
+					# get moving choice given current state
+					# =====================================
+			
+					# 4D interpolation on (a,z,Y,P)
+					ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
+					# normalizing vector of moving probs: because of approximation error
+					# sometimes this is not *exactly* summing to 1
+					ktmp = ktmp ./ sum(ktmp)
+					
+					# get cumulative prob
+					cumsum!(ktmp2,ktmp,1)
+					# throw a k-sided dice 
+					cum_moveprob = sum(ktmp[setdiff(1:9,ij)])
+					moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
+					move   = ij != moveto
+					prob   = ktmp[moveto]
+
+					if moveto>p.nJ || moveto < 1
+						println(ktmp2)
+						error("problem in moveto = $moveto")
+					end
 				end
 
 				# house price in new region "moveto"

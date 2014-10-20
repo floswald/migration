@@ -13,6 +13,9 @@ function runExperiment(which::String,region::Int,year::Int)
 	# require(joinpath(home,"git/
 	indir, outdir = mig.setPaths()
 
+	p = Param(2)
+	opts = selectPolicy(which,j,year,p)
+
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
 	elseif which=="p"
@@ -22,7 +25,7 @@ function runExperiment(which::String,region::Int,year::Int)
 		e = mig.exp_shockRegion(region,"p3",year)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="shockp_highMC"
-		e = mig.exp_shockRegion(region,which,year)
+		e = mig.exp_shockRegion(opts)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="shockp_noBuying"
 		e = mig.exp_shockRegion(region,which,year)
@@ -528,20 +531,37 @@ end
 # get the consumption subsidy that makes
 # you indifferent from living through the shock 
 # in j with a policy applied (i.e. no moving, no saving, no)
-function valdiff_shockRegion()
+function exp_shockRegion_vdiff(which::String)
 
 	# w0 = value of living in shock region from shockYear forward
 	# w1 = value of living in shock region from shockYear forward UNDER POLICY
 
 	# w0 - w1 is diff in value from policy
 
-	e1 = runExperiment("p",6,2007);
-	w0 = e[1]["values"]["p"]
+	# baseline: a shock to p in 2007 in region 6.
+	opts = ["policy" => "shockp", "shockRegion" => 6, "shockYear"=> 2007,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 
+	e = exp_shockRegion(opts);
+	w0 = e[1]["values"]["p"][1]
 
+	# the policy: same shock as in baseline, but:
+	opts["policy"] = which
+	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,1.8,show_trace=true,method=:brent)
+	return ctax
 
+end
 
+function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 
+	# change value of ctax on options dict
+	opts["ctax"] = ctax
+	println("current ctax level = $ctax")
+
+	# and recompute
+	e = exp_shockRegion(opts);
+	w = e[1]["values"][opts["policy"]][1]
+
+	return (w - v0) ^2
 end
 
 
@@ -556,7 +576,11 @@ end
 # from the standard solution, since otherwise agents will expect the shock
 # then simulate as usual and pick up the behaviour in j around 1997
 # and compare to behaviour in the non-shocked version.
-function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
+function exp_shockRegion(opts::Dict)
+
+	j         = opts["shockRegion"]
+	which     = opts["policy"]
+	shockYear = opts["shockYear"]
 
 	if shockYear<1998
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
@@ -743,6 +767,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	# else
 		opts["shockAge"] = shockAge
 		p = Param(2,opts)
+		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
