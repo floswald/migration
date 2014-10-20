@@ -20,6 +20,12 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif which=="pshock_highMC"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_highMC")
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
+	elseif which=="pshock_noBuying"
+		e = mig.exp_shockRegion_vdiff("pshock","pshock_noBuying")
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
+	elseif which=="pshock_noBuying"
+		e = mig.exp_shockRegion_vdiff("pshock","pshock_noSaving")
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"

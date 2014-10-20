@@ -70,3 +70,43 @@ irid_estim:
   template: PBS.qsub
   run:   pbs_estim8.jl 
   exec:   /home/eisuc151/local/bin/julia
+
+
+highMC:
+  name:   highMC  
+  desc:   highMC on 5 nodes using 7 cores each 
+  nnodes:   5
+  ppnodes:   12
+  hours: 04
+  mins: 00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  run:   pbs_shockp_highMC.jl 
+  exec:   /home/eisuc151/local/bin/julia
+
+noBuy:
+  name:   noBuy  
+  desc:   noBuy on 5 nodes using 7 cores each 
+  nnodes:   5
+  ppnodes:   12
+  hours: 04
+  mins: 00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  run:   pbs_shockp_noBuying.jl 
+  exec:   /home/eisuc151/local/bin/julia
+
+noSaving:
+  name:   noSave  
+  desc:   noSave on 5 nodes using 7 cores each 
+  nnodes:   5
+  ppnodes:   12
+  hours: 04
+  mins: 00
+  logout:   migslices.log
+  logerr:   migslices.err
+  template: PBS.qsub
+  run:   pbs_shockp_noSaving.jl 
+  exec:   /home/eisuc151/local/bin/julia
