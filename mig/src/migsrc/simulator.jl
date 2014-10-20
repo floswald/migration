@@ -265,13 +265,13 @@ function simulate(m::Model,p::Param)
 
 	pshock = false
 	yshock = false
-	if p.policy == "shockp" 
+	if p.policy == "pshock" 
 		pshock = true
 	end
-	if p.policy == "shocky" 
+	if p.policy == "yshock" 
 		yshock = true
 	end
-	if p.policy == "shockp_noBuying" 
+	if p.policy == "pshock_noBuying" 
 		pshock = true
 		noBuying = true
 	end
@@ -279,7 +279,7 @@ function simulate(m::Model,p::Param)
 		noBuying = true
 	end
 
-	if p.policy == "shockp_highMC"
+	if p.policy == "pshock_highMC"
 		pshock = true
 		highMC = true
 	end

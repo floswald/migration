@@ -195,11 +195,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		highMC = true
 	end
 
-	if ((p.policy == "shockp") && (age >= p.shockAge))
+	if ((p.policy == "pshock") && (age >= p.shockAge))
 		pshock = true
 	end
 
-	if p.policy == "shockp_highMC"
+	if p.policy == "pshock_highMC"
 		# you can never move?
 		# or you cannot move as soon as shock hits?
 		highMC = true
@@ -208,14 +208,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	if p.policy == "shockp_noSaving"
+	if p.policy == "pshock_noSaving"
 		noSaving = true
 		if age >= p.shockAge
 			pshock = true
 		end
 	end
 
-	if p.policy == "shockp_noBuying"
+	if p.policy == "pshock_noBuying"
 		noBuying = true
 		if age >= p.shockAge
 			pshock = true

@@ -14,31 +14,12 @@ function runExperiment(which::String,region::Int,year::Int)
 	indir, outdir = mig.setPaths()
 
 	p = Param(2)
-	opts = selectPolicy(which,region,year,p)
 
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
-	elseif which=="p"
-		e = mig.exp_shockRegion(region,"p",year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="p3"
-		e = mig.exp_shockRegion(region,"p3",year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="shockp_highMC"
-		e = mig.exp_shockRegion_vdiff("p","shockp_highMC")
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="shockp_noBuying"
-		e = mig.exp_shockRegion(region,which,year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="shockp_noSaving"
-		e = mig.exp_shockRegion(region,which,year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="y"
-		e = mig.exp_shockRegion(region,"y",year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-	elseif which=="y3"
-		e = mig.exp_shockRegion(region,"y3",year)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
+	elseif which=="pshock_highMC"
+		e = mig.exp_shockRegion_vdiff("pshock","pshock_highMC")
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -49,6 +30,11 @@ function runExperiment(which::String,region::Int,year::Int)
 		e = mig.noShocks()
 	elseif which=="smallShocks"
 		e = mig.smallShocks()
+
+	elseif in(which,["pshock","pshock3","yshock","yshock3","pshock_noBuying","pshock_highMC","pshock_noSaving"])
+		opts = selectPolicy(which,region,year,p)
+		e = mig.exp_shockRegion(opts)
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -506,21 +492,21 @@ end
 function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 
 	# shocks p at shockAge for ever after
-	if which=="p"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	if which=="pshock"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
-	elseif which=="p3"
-		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
-	elseif which=="y3"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
-	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="pshock3"
+		opts = ["policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="yshock3"
+		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="yshock"
+		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 
-	elseif which=="shockp_highMC"
+	elseif which=="pshock_highMC"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	elseif which=="shockp_noBuying"
+	elseif which=="pshock_noBuying"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	elseif which=="shockp_noSaving"
+	elseif which=="pshock_noSaving"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	else 
 		throw(ArgumentError("invalid policy $which selected"))
@@ -549,7 +535,7 @@ function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
 
 	# the policy
 	opts["policy"] = which_pol
-	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent)
+	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent,iterations=15)
 	return ctax
 
 end
@@ -564,7 +550,8 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 	e = exp_shockRegion(opts);
 	w = e[1]["values"][opts["policy"]][1]
 
-		println("current value from $(opts["policy"]) is $(round(w,2))")
+	println("current value from $(opts["policy"]) is $(round(w,2))")
+	println("current difference is $(w - v0)")
 
 	return (w - v0)^2
 end

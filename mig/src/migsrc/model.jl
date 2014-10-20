@@ -301,7 +301,7 @@ type Model
 				for ip in 1:p.np
 					for it in 1:p.nt-1
 						for iz in 1:p.nz
-							if p.policy=="shocky" && ((it >= p.shockAge) && (j==p.shockReg))
+							if p.policy=="yshock" && ((it >= p.shockAge) && (j==p.shockReg))
 								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]*p.shockVal[it-p.shockAge+1]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 							else
 								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
