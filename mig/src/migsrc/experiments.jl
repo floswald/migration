@@ -25,7 +25,7 @@ function runExperiment(which::String,region::Int,year::Int)
 		e = mig.exp_shockRegion(region,"p3",year)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="shockp_highMC"
-		e = mig.exp_shockRegion(opts)
+		e = mig.exp_shockRegion_vdiff("p","shockp_highMC")
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="shockp_noBuying"
 		e = mig.exp_shockRegion(region,which,year)
@@ -542,11 +542,10 @@ function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
 
 	# baseline: a shock to p in 2007 in region 6.
 	p = Param(2)
-	opts = selectPolicy(which,6,2007,p)
-	opts["verbose"] = 1
+	opts = selectPolicy(which_base,6,2007,p)
 
 	e = exp_shockRegion(opts);
-	w0 = e[1]["values"][which][1][1]
+	w0 = e[1]["values"][which_base][1][1]
 
 	# the policy
 	opts["policy"] = which_pol
@@ -559,17 +558,13 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 
 	# change value of ctax on options dict
 	opts["ctax"] = ctax
-	if get(opts,"verbose",0) > 0
 		println("current ctax level = $ctax")
-	end
 
 	# and recompute
 	e = exp_shockRegion(opts);
 	w = e[1]["values"][opts["policy"]][1]
 
-	if get(opts,"verbose",0) > 0
 		println("current value from $(opts["policy"]) is $(round(w,2))")
-	end
 
 	return (w - v0)^2
 end
