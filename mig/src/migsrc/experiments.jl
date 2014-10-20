@@ -522,7 +522,8 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	elseif which=="shockp_noSaving"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	end
+	else 
+		throw(ArgumentError("invalid policy $which selected"))
 	return opts
 
 end
@@ -531,7 +532,7 @@ end
 # get the consumption subsidy that makes
 # you indifferent from living through the shock 
 # in j with a policy applied (i.e. no moving, no saving, no)
-function exp_shockRegion_vdiff(which::String)
+function exp_shockRegion_vdiff(which_base::String,which_pol::String)
 
 	# w0 = value of living in shock region from shockYear forward
 	# w1 = value of living in shock region from shockYear forward UNDER POLICY
@@ -539,14 +540,16 @@ function exp_shockRegion_vdiff(which::String)
 	# w0 - w1 is diff in value from policy
 
 	# baseline: a shock to p in 2007 in region 6.
-	opts = ["policy" => "shockp", "shockRegion" => 6, "shockYear"=> 2007,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	p = Param(2)
+	opts = selectPolicy(which,6,2007,p)
+	opts["verbose"] = 1
 
 	e = exp_shockRegion(opts);
-	w0 = e[1]["values"]["p"][1]
+	w0 = e[1]["values"][which][1][1]
 
-	# the policy: same shock as in baseline, but:
-	opts["policy"] = which
-	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,1.8,show_trace=true,method=:brent)
+	# the policy
+	opts["policy"] = which_pol
+	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent)
 	return ctax
 
 end
@@ -555,11 +558,17 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 
 	# change value of ctax on options dict
 	opts["ctax"] = ctax
-	println("current ctax level = $ctax")
+	if get(opts,"verbose",0) > 0
+		println("current ctax level = $ctax")
+	end
 
 	# and recompute
 	e = exp_shockRegion(opts);
 	w = e[1]["values"][opts["policy"]][1]
+
+	if get(opts,"verbose",0) > 0
+		println("current value from opts["policy"] is $(round(w,2))")
+	end
 
 	return (w - v0) ^2
 end
@@ -589,6 +598,9 @@ function exp_shockRegion(opts::Dict)
 	# Baseline
 	# --------
 
+	# note: we must know the baseline model in any case.
+	# this is because policy functions of agents in years
+	# BEFORE the shock need to be adjusted to be equal to the baseline ones.
 	p = Param(2)
 	m = Model(p)
 	solve!(m,p)
@@ -599,8 +611,6 @@ function exp_shockRegion(opts::Dict)
 	# Policy
 	# ------
 	
-	opts = selectPolicy(which,j,shockYear,p)
-
 	# compute behaviour for all individuals, assuming each time the shock
 	# hits at a different age. selecting the right cohort will then imply
 	# that the shock hits you in a given year.
@@ -625,7 +635,9 @@ function exp_shockRegion(opts::Dict)
 
 
 	# compute behaviour of all born into post shock world
-	println("computing behaviour for post shock cohorts")
+	if get(opts,"verbose",0) > 0
+		println("computing behaviour for post shock cohorts")
+	end
 
 	if which=="p3" || which == "y3"
 		# assume shock goes away immediately and all behave as in baseline
@@ -634,6 +646,7 @@ function exp_shockRegion(opts::Dict)
 		# assume shock stays forever
 		opts["shockAge"] = 1
 		p1 = Param(2,opts)
+		setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		mm = Model(p1)
 		solve!(mm,p1)
 		sim2 = simulate(mm,p1)
@@ -653,7 +666,7 @@ function exp_shockRegion(opts::Dict)
 	# =================
 
 	# get discounted lifetime utility of people in j
-	# ---------------------------------------------------
+	# ----------------------------------------------
 	w0   = getDiscountedValue(@where(sim0,:j.==j),p,m,false)
 	mms0 = computeMoments(sim0,p,m)	
 
@@ -772,7 +785,9 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4]), keeping cohort $keep")
+	if get(opts,"verbose",0) > 0
+		println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4]), keeping cohort $keep")
+	end
 	mm = Model(p)
 	solve!(mm,p)
 
