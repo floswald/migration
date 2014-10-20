@@ -50,7 +50,7 @@ facts("test param with policy") do
 
 	p = Param(2)
 	@fact p.policy => "NULL"
-	@fact p.mort_LumpSum => [0.0]
+	@fact p.redistribute => [0.0]
 	@fact p.verbose => 0
 	@fact p.shockReg => 0
 	@fact p.shockAge => 100
@@ -59,12 +59,12 @@ facts("test param with policy") do
 
 
 	lumpSum1 = [rand()]
-	opts = ["policy" => "mortgageSubsidy_oldyoung","lumpsum" => lumpSum1]
+	opts = ["policy" => "mortgageSubsidy","redistribute" => lumpSum1]
 
 	p = mig.Param(2,opts);
 
-	@fact p.policy => "mortgageSubsidy_oldyoung"
-	@fact p.mort_LumpSum => lumpSum1
+	@fact p.policy => "mortgageSubsidy"
+	@fact p.redistribute => lumpSum1
 	@fact p.ctax => 1.0
 	@fact p.shockReg => 0
 	@fact p.shockAge => 100
@@ -73,12 +73,12 @@ facts("test param with policy") do
 
 	p0 = mig.Param(1,opts);
 	lumpSum2 = [rand(p0.nt-1)]
-	opts = ["policy" => "mortgageSubsidy_in_age","lumpsum" => lumpSum2]
+	opts = ["policy" => "mortgageSubsidy","redistribute" => lumpSum2]
 
 	p = mig.Param(1,opts);
 
-	@fact p.policy => "mortgageSubsidy_in_age"
-	@fact p.mort_LumpSum => lumpSum2
+	@fact p.policy => "mortgageSubsidy"
+	@fact p.redistribute => lumpSum2
 	@fact p.ctax => 1.0
 	@fact p.shockReg => 0
 	@fact p.shockAge => 100
@@ -91,7 +91,7 @@ facts("test param with policy") do
 
 	@fact p.policy => "shocky"
 	@fact p.ctax => 1.0
-	@fact p.mort_LumpSum => [0.0]
+	@fact p.redistribute => [0.0]
 	@fact p.shockAge => 1
 	@fact p.shockVal => [0.7, 0.8, 0.9, ones(p.nt-3)]
 	@fact p.shockReg => 5
@@ -103,7 +103,7 @@ facts("test param with policy") do
 
 	@fact p.policy => "shocky"
 	@fact p.ctax => 1.0
-	@fact p.mort_LumpSum => [0.0]
+	@fact p.redistribute => [0.0]
 	@fact p.shockAge => 1
 	@fact p.shockVal => ones(p.nt-1) * 0.7
 	@fact p.shockReg => 5
@@ -121,7 +121,7 @@ facts("test param with policy") do
 
 	@fact p.policy => "shockp"
 	@fact p.ctax => 1.0
-	@fact p.mort_LumpSum => [0.0]
+	@fact p.redistribute => [0.0]
 	@fact p.shockAge => 10
 	@fact p.shockVal => ones(p.nt-1) * 3.3
 	@fact p.shockReg => 6

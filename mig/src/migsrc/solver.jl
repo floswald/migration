@@ -148,11 +148,20 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# setup interpolation accelerator
 	acc = Accelerator(0)
 
-	# policy
-	# ------
+
+
+	# ===============
+	# policy switches
+	# ===============
+
+	mortgageSub = false
+	moneyMC     = false
+	noSaving    = false
+	noBuying    = false
+	highMC      = false
+	pshock      = false
 
 	Poterba = m.gridsXD["Poterba"]
-	mortgageSub  = false
 	if p.policy == "mortgageSubsidy" 
 		mortgageSub  = true
 		@assert length(p.redistribute) == p.nt-1
@@ -161,7 +170,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	moneyMC = false
 	if p.policy=="moneyMC"
 		if age == p.shockAge
 			moneyMC = true
@@ -175,14 +183,43 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
+	if p.policy=="noSaving"
+		noSaving = true
+	end
 
+	if p.policy=="noBuying"
+		noBuying = true
+	end
 
-	# shocks
-	#-------
+	if p.policy=="highMC"
+		highMC = true
+	end
 
-	pshock = false
 	if ((p.policy == "shockp") && (age >= p.shockAge))
 		pshock = true
+	end
+
+	if p.policy == "shockp_highMC"
+		# you can never move?
+		# or you cannot move as soon as shock hits?
+		highMC = true
+		if age >= p.shockAge
+			pshock = true
+		end
+	end
+
+	if p.policy == "shockp_noSaving"
+		noSaving = true
+		if age >= p.shockAge
+			pshock = true
+		end
+	end
+
+	if p.policy == "shockp_noBuying"
+		noBuying = true
+		if age >= p.shockAge
+			pshock = true
+		end
 	end
 
 	# state dependent stochastic states 
@@ -277,6 +314,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 
 										canbuy = a + newz > p.chi * price_k
+
+										if noBuying
+											canbuy = false
+										end
+
 										m.canbuy[kidx] = canbuy
 
 
@@ -315,6 +357,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 													mc = movecost[age,ij,ik,itau,ih+1,is]
 												end
 
+												# if shut down moving from region ij
+												if highMC && (p.shockReg==ij)
+													mc = 100.0
+												end
+
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
@@ -322,7 +369,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# setVals
 
 												# optimal savings choice
-												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc)
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
 
 												vstay[ihh+1] = rh[1]
 
@@ -382,22 +429,16 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												mc = movecost[age,ij,ik,itau,ih+1,is]
 											end
 
+											# if shut down moving from region ij
+											if highMC && p.shockReg==ij
+												mc = 100.0
+											end
+
 											# find relevant future value:
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
-											# TODO
-											# you could just fix (ip,iy) at middle index here
-											# to get "unconditional distribution"
-											# EVfunChooser!(EV,iz,ihh+1,itau,iP,ip,iy,ik,age,m,p)
-
-											# TODO
-											# EVfunChooser should depend on whether you move or not?
-											# if you move, must select the EV that corresponds to movers, 
-											# i.e. reversion to the mean of the shock? (for example)
-
-
 											# optimal savings choice
-											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc)
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
 
 
 											# checking for infeasible choices
@@ -643,7 +684,7 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator)
+function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator,noSaving::Bool)
 
 	# if your current cash debt is lower than 
 	# maximum borrowing, infeasible
@@ -654,7 +695,8 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 
 		x = 0.0
 		# grid for next period assets
-		s = linspace(lb,cash-0.01,p.namax)	# this implies you can save a lot if you have a lot of cash
+		ub = noSaving ?  0.0 : cash-0.01 
+		s = linspace(lb,ub,p.namax)	# this implies you can save a lot if you have a lot of cash
 		# however in the interpolation you don't allow s > a[end]
 		cons = zeros(p.namax)
 		# fix upper bound of search grid

@@ -250,6 +250,8 @@ function simulate(m::Model,p::Param)
 	mortgageSub  = false
 	mortgageSub1 = false
 	mortgageSub2 = false
+	noBuying     = false
+
 	if p.policy == "mortgageSubsidy_oldyoung" 
 		mortgageSub  = true
 		mortgageSub1 = true  
@@ -267,6 +269,13 @@ function simulate(m::Model,p::Param)
 	end
 	if p.policy == "shocky" 
 		yshock = true
+	end
+	if p.policy == "shockp_noBuying" 
+		pshock = true
+		noBuying = true
+	end
+	if p.policy == "noBuying" 
+		noBuying = true
 	end
 
 	for age = 1:T
@@ -415,6 +424,10 @@ function simulate(m::Model,p::Param)
 
 				# flag for downpayment constraint
 				canbuy = a + yy > p.chi * price_k
+
+				if noBuying
+					canbuy = false
+				end
 
 				# get value, consumption and savings given moving choice
 				# ======================================================

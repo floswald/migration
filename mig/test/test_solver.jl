@@ -213,6 +213,42 @@ facts("testing cashFunction") do
 end
 
 
+facts("testing maxvalue") do
+	
+	# assumptions
+	# ===========
+	p = Param(2)
+	setfield!(p,:R,1.9)
+	m = Model(p)
+
+	acc = mig.Accelerator(1)
+
+    w = zeros(p.namax)
+    cons = zeros(p.namax)
+    a = m.grids["assets"]
+
+    w_t = 0.0
+    cons_t = 0.0
+
+    fac = 2
+    EV = a.^fac  	# just take a straight line with slope fac
+    cash = 80.0
+    mc = rand()
+    lb = 0.0
+
+    noSaving = false
+    v1 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving)
+    println(v1)
+    @fact v1[2] > 0.0 => true
+
+    noSaving = true
+	acc = mig.Accelerator(1)
+    w = zeros(p.namax)
+    v2 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving)
+	    println(v2)
+    @fact v2[2] == 0.0 => true
+end
+
 
 facts("testing vsavings!()") do
 	

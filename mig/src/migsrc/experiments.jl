@@ -1,4 +1,4 @@
-
+	
 # list of experiments:
 # 1) changing the mortgage interest rate deduction
 # 2) fannie mae and freddie max guarantee: mortgage interest rate is too low.
@@ -6,7 +6,7 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which,region=2,year=1997)
+function runExperiment(which::String,region::Int,year::Int)
 
 	# unneccesary?
 	# home = ENV["HOME"]
@@ -20,6 +20,15 @@ function runExperiment(which,region=2,year=1997)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="p3"
 		e = mig.exp_shockRegion(region,"p3",year)
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
+	elseif which=="shockp_highMC"
+		e = mig.exp_shockRegion(region,which,year)
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
+	elseif which=="shockp_noBuying"
+		e = mig.exp_shockRegion(region,which,year)
+		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
+	elseif which=="shockp_noSaving"
+		e = mig.exp_shockRegion(region,which,year)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
 	elseif which=="y"
 		e = mig.exp_shockRegion(region,"y",year)
@@ -167,6 +176,7 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 	end
 	return w
 end
+
 function getDiscountedValue(df::DataFrame,p::Param,m::Model,noMove::Bool)
 
 	if noMove
@@ -498,10 +508,17 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="p3"
 		opts = ["policy" => "shockp","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
-	elseif which=="y"
-		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	elseif which=="y3"
 		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="y"
+		opts = ["policy" => "shocky","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+
+	elseif which=="shockp_highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="shockp_noBuying"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="shockp_noSaving"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	end
 	return opts
 
@@ -525,12 +542,19 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
 	end
 
+	# Baseline
+	# --------
+
 	p = Param(2)
 	m = Model(p)
 	solve!(m,p)
 	sim0 = simulate(m,p)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 
+
+	# Policy
+	# ------
+	
 	opts = selectPolicy(which,j,shockYear,p)
 
 	# compute behaviour for all individuals, assuming each time the shock
@@ -584,6 +608,17 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 	# compute summaries
 	# =================
 
+	# get discounted lifetime utility of people in j
+	# ---------------------------------------------------
+	w0   = getDiscountedValue(@where(sim0,:j.==j),p,m,false)
+	mms0 = computeMoments(sim0,p,m)	
+
+	w1 = getDiscountedValue(@where(sim1,:j.==j),p,m,false)
+	mms1 = computeMoments(sim1,p,m)	
+
+
+	# get dataframes for plotting.
+
 	dd1 = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
 	dd2 = @by(@where(sim1,:j.==j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
 	df_fromj = join(dd1,dd2,on=:year)
@@ -631,21 +666,14 @@ function exp_shockRegion(j::Int,which::ASCIIString,shockYear)
 
 	indir, outdir = mig.setPaths()
 
-	# writetable(joinpath(outdir,"exp_$which","from$(j).csv"),df_fromj)
-	# writetable(joinpath(outdir,"exp_$which","from$(j)_own.csv"),df_fromj_own)
-	# writetable(joinpath(outdir,"exp_$which","from$(j)_rent.csv"),df_fromj_rent)
-	# writetable(joinpath(outdir,"exp_$which","to$(j).csv"),df_toj)
-	# writetable(joinpath(outdir,"exp_$which","to$(j)_own.csv"),df_toj_own)
-	# writetable(joinpath(outdir,"exp_$which","to$(j)_rent.csv"),df_toj_rent)
-
-	# out = ["Baseline" => sim0, "Policy" => sim1, "fromj" => df_fromj, "fromj_own" => df_fromj_own,"fromj_rent" => df_fromj_rent,"toj" => df_toj, "toj_own" => df_toj_own,"toj_rent" => df_toj_rent]
 	out = ["which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
-	       "dfs" => dfs]
+	       "dfs" => dfs,
+	       "values" => ["base" => w0, which => w1],
+	       "moments" => ["base" => mms0, which => mms1]]
 
 	return (out,sim0,sim1)
-
 end
 
 
@@ -683,6 +711,8 @@ function adjustVShocks!(mm::Model,m::Model,p::Param)
 
 end
 
+
+# apply a shock at a certain age.
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
 	# if shockAge==0
@@ -780,7 +810,7 @@ function moneyMC()
 				println("moving cost: $(MC[ih+1,iz,it].minimum)")
 
 				p1 = Param(2,opts)
-				setfield!(p1,:shockAge,1)
+				setfield!(p1,:shockAge,opts["it"])
 				# plug in money 
 				setfield!(p1,:shockVal,[MC[ih+1,iz,it].minimum])
 				m1 = Model(p1)
@@ -834,7 +864,7 @@ function noShocks()
 end
 
 
-# run Model without only small deviations from aggregate
+# run Model with only small deviations from aggregate
 function smallShocks()
 
 	p = Param(2)
@@ -884,3 +914,33 @@ function smallShocks()
 	return (s,s1,out)
 
 end
+
+
+
+
+# run model without the ability to save!
+function exp_noSavings()
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	s = simulate(m,p)
+	w0 = getDiscountedValue(s,p,m,false)
+	mms = computeMoments(s,p,m)	
+
+	opts=Dict()
+	opts["policy"] = "noSaving"
+
+	p1 = Param(2,opts)
+	m1 = Model(p1)
+	solve!(m1,p1)
+	s1 = simulate(m1,p1)
+	w1 = getDiscountedValue(s1,p1,m1,false)
+	mms1 = computeMoments(s1,p1,m1)	
+
+	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+
+	return d
+end
+
+
