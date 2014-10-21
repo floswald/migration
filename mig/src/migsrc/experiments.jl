@@ -541,7 +541,7 @@ function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
 
 	# the policy
 	opts["policy"] = which_pol
-	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent,iterations=15)
+	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent,iterations=10)
 	return ctax
 
 end
@@ -554,12 +554,12 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 
 	# and recompute
 	e = exp_shockRegion(opts);
-	w = e[1]["values"][opts["policy"]][1]
+	w = e[1]["values"][opts["policy"]][1][1]
 
 	println("current value from $(opts["policy"]) is $(round(w,2))")
 	println("current difference is $(w - v0)")
 
-	return (w - v0)^2
+	return (w - v0).^2
 end
 
 
