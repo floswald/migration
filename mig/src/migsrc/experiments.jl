@@ -663,10 +663,10 @@ function exp_shockRegion(opts::Dict)
 
 	# get discounted lifetime utility of people in j from shockYear forward
 	# ----------------------------------------------
-	w0   = getDiscountedValue(@where(sim0,(:j.==j)&(:year.>=shockYear)),p,m,false)
+	w0   = getDiscountedValue(@where(sim0,(:j.==j)&(:year.>=shockYear)),p,m,true)
 	mms0 = computeMoments(sim0,p,m)	
 
-	w1 = getDiscountedValue(@where(sim1,(:j.==j)&(:year.>=shockYear)),p,m,false)
+	w1 = getDiscountedValue(@where(sim1,(:j.==j)&(:year.>=shockYear)),p,m,true)
 	mms1 = computeMoments(sim1,p,m)	
 
 
