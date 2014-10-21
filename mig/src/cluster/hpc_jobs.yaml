@@ -75,9 +75,9 @@ irid_estim:
 highMC:
   name:   highMC  
   desc:   highMC on 5 nodes using 7 cores each 
-  nnodes:   5
+  nnodes:   3
   ppnodes:   12
-  hours: 04
+  hours: 02
   mins: 00
   logout:   highMC.log
   logerr:   highMC.err
@@ -88,9 +88,9 @@ highMC:
 noBuy:
   name:   noBuy  
   desc:   noBuy on 5 nodes using 7 cores each 
-  nnodes:   5
+  nnodes:   3
   ppnodes:   12
-  hours: 04
+  hours: 02
   mins: 00
   logout:   noBuy.log
   logerr:   noBuy.err
@@ -101,9 +101,9 @@ noBuy:
 noSaving:
   name:   noSave  
   desc:   noSave on 5 nodes using 7 cores each 
-  nnodes:   5
+  nnodes:   3
   ppnodes:   12
-  hours: 04
+  hours: 02
   mins: 00
   logout:   noSave.log
   logerr:   noSave.err

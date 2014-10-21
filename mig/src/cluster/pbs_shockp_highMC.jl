@@ -15,7 +15,10 @@ bind_iridis_procs(7)
 
 require("loadmig.jl")
 
-e = runExperiment("pshock_highMC",6,2007)
+indir, outdir = mig.setPaths()
+
+e = mig.exp_shockRegion_vdiff("pshock","pshock_highMC")
+save(joinpath(outdir,"shockReg","exp_region6_shockp_highMC.JLD"),e)
 
 
 println("done after $(round((time()-t0)/60)) minutes")
