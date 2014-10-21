@@ -278,6 +278,9 @@ function simulate(m::Model,p::Param)
 	if p.policy == "noBuying" 
 		noBuying = true
 	end
+	if p.policy == "highMC" 
+		highMC = true
+	end
 
 	if p.policy == "pshock_highMC"
 		pshock = true
@@ -512,6 +515,9 @@ function simulate(m::Model,p::Param)
 					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
 					# Dz[i_idx_next] = 0.0 # TODO drawign this from the right distribution depending on whether move or not!
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
+				end
+				if highMC && (p.shockReg==ij) && move
+					println("ind=$id, cohort = $coh moved even though it's ruled out.")
 				end
 			end # individual
 

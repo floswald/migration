@@ -358,7 +358,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 												# if shut down moving from region ij
 												if highMC && (p.shockReg==ij) && (ij!=ik)
-													mc = 100.0
+													mc = 10000.0
 												end
 
 												# find relevant future value:
@@ -429,7 +429,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											# if shut down moving from region ij
 											if highMC && (p.shockReg==ij) && (ij!=ik)
-												mc = 100.0
+												mc = 10000.0
 											end
 
 											# find relevant future value:

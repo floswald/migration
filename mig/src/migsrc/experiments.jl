@@ -37,7 +37,7 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif which=="smallShocks"
 		e = mig.smallShocks()
 
-	elseif in(which,["pshock","pshock3","yshock","yshock3","pshock_noBuying","pshock_highMC","pshock_noSaving"])
+	elseif in(which,["pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,p)
 		e = mig.exp_shockRegion(opts)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
@@ -508,6 +508,8 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 	elseif which=="yshock"
 		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 
+	elseif which=="highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]
 	elseif which=="pshock_highMC"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	elseif which=="pshock_noBuying"
@@ -518,6 +520,31 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 		throw(ArgumentError("invalid policy $which selected"))
 	end
 	return opts
+
+end
+
+# compares pshock with pshcock_highMC
+function pshock_vs_highMC()
+
+
+	opts = selectPolicy("pshock",6,2007,p)
+	p = exp_shockRegion(opts);
+
+	opts = selectPolicy("pshock_highMC",6,2007,p)
+	h = exp_shockRegion(opts);
+
+	# people who moved away from j=6 after shock hits in 2007
+	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
+	pmv = p[findin(p[:id],pmv_id[:id]),:]
+
+	# find those guys in the highMC world
+	hmv = h[findin(h[:id],pmv_id[:id]),:]
+
+	# subset to right years
+	pmv2 = @select(@where(pmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
+	hmv2 = @select(@where(hmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
+
+	# compare
 
 end
 
@@ -779,6 +806,8 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		println("in computeShockAge. param = ")
+		println(p)
 	# end
 
 	if get(opts,"verbose",0) > 0
