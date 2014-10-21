@@ -23,7 +23,7 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif which=="pshock_noBuying"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_noBuying")
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
-	elseif which=="pshock_noBuying"
+	elseif which=="pshock_noSaving"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_noSaving")
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="halfMC"
@@ -539,6 +539,9 @@ function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
 	e = exp_shockRegion(opts);
 	w0 = e[1]["values"][which_base][1][1]
 
+	e = 0
+	gc()
+
 	# the policy
 	opts["policy"] = which_pol
 	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent,iterations=10)
@@ -555,6 +558,7 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 	# and recompute
 	e = exp_shockRegion(opts);
 	w = e[1]["values"][opts["policy"]][1][1]
+	e = 0
 	gc()
 
 	println("baseline value is $(round(v0,2))")
@@ -651,6 +655,7 @@ function exp_shockRegion(opts::Dict)
 	# stack
 	sim1 = vcat(df1,sim2)
 	df1 = 0
+	sim2 = 0
 	gc()
 
 	# compute summaries
