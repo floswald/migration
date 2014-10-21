@@ -555,7 +555,9 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 	# and recompute
 	e = exp_shockRegion(opts);
 	w = e[1]["values"][opts["policy"]][1][1]
+	gc()
 
+	println("baseline value is $(round(v0,2))")
 	println("current value from $(opts["policy"]) is $(round(w,2))")
 	println("current difference is $(w - v0)")
 
