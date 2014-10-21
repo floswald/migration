@@ -79,8 +79,8 @@ highMC:
   ppnodes:   12
   hours: 04
   mins: 00
-  logout:   migslices.log
-  logerr:   migslices.err
+  logout:   highMC.log
+  logerr:   highMC.err
   template: PBS.qsub
   run:   pbs_shockp_highMC.jl 
   exec:   /home/eisuc151/local/bin/julia
@@ -92,8 +92,8 @@ noBuy:
   ppnodes:   12
   hours: 04
   mins: 00
-  logout:   migslices.log
-  logerr:   migslices.err
+  logout:   noBuy.log
+  logerr:   noBuy.err
   template: PBS.qsub
   run:   pbs_shockp_noBuying.jl 
   exec:   /home/eisuc151/local/bin/julia
@@ -105,8 +105,8 @@ noSaving:
   ppnodes:   12
   hours: 04
   mins: 00
-  logout:   migslices.log
-  logerr:   migslices.err
+  logout:   noSave.log
+  logerr:   noSave.err
   template: PBS.qsub
   run:   pbs_shockp_noSaving.jl 
   exec:   /home/eisuc151/local/bin/julia
