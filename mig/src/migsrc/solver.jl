@@ -127,6 +127,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	first = 1
 
 	canbuy = false
+	move = false
 
 	movecost = m.gridsXD["movecost"]
 
@@ -287,6 +288,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									fill!(feasible_k,false)
 										
 									for ik=1:p.nJ
+									
+										move = ij != ik
 
 										offset_k = ik-1 + p.nJ * offset_1
 
@@ -323,7 +326,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 
 										# you have a housing choice
-										if ih==1 || (ih==0 && canbuy)
+										# if
+										# 1) you are current owner who stays, or 
+										# 2) you are current owner who moves and can buy, or
+										# 3) you are current renter who can buy
+
+										if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy))
 
 											fill!(vstay,p.myNA)
 
@@ -404,8 +412,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-										else # you're a renter who cannot buy
-											# compute vmove(k,j,h)
+										else # you cannot buy
+
 											ihh = 0
 
 											# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)

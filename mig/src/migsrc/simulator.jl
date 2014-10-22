@@ -450,8 +450,12 @@ function simulate(m::Model,p::Param)
 				# get value, consumption and savings given moving choice
 				# ======================================================
 
-				# you are current owner or you can buy
-				if (ih==1 || (ih==0 && canbuy))
+				# if
+				# 1) you are current owner who stays or 
+				# 2) you are current owner who moves and can buy
+				# 3) you are current renter who can buy
+
+				if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy))
 
 					# get housing choice
 					v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
@@ -464,12 +468,9 @@ function simulate(m::Model,p::Param)
 					cons       = cs[1]
 					ss         = cs[2]
 
-				# else you are current renter who cannot buy
+				# else you cannot buy
 				else
 					ihh = 0
-					if a < -0.1
-						println("error: id=$i,age=$age,ih=$ih,canbuy=$canbuy,a=$a")
-					end
 					# for iia in aone:p.na
 					# 	for iz in 1:p.nz
 					# 		idx = mig.idx11(ihh+1,moveto,is,iz,iy,ip,itau,iia,ih+1,ij,age,p)
