@@ -808,8 +808,6 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
-		println("in computeShockAge. param = ")
-		println(p)
 	# end
 
 	if get(opts,"verbose",0) > 0
