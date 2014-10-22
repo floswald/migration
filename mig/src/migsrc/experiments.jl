@@ -546,8 +546,10 @@ function pshock_vs_highMC()
 	pmv2 = @select(@where(pmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
 	hmv2 = @select(@where(hmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
 
-	# compare
+	d = ["p"=>p,"h"=>h,"pmv"=>pmv,"hmv"=>hmv]
+	return d
 
+	# compare
 end
 
 
