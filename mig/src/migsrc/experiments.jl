@@ -41,6 +41,8 @@ function runExperiment(which::String,region::Int,year::Int)
 		opts = selectPolicy(which,region,year,p)
 		e = mig.exp_shockRegion(opts)
 		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
+		writetable(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_both.csv"),e[1]["sums"]["both"])
+		writetable(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_both_toj.csv"),e[1]["sums"]["both_toj"])
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -50,7 +52,7 @@ function runExperiment(which::String,region::Int,year::Int)
 
 end
 
-function plotShockRegions2(print=false)
+function plotShockRegions2(printp=false)
 
 	# download experiments
 	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
@@ -60,41 +62,130 @@ function plotShockRegions2(print=false)
 	opth = "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp"
 	fi = readdir(pth)
 
-	out = Dict()
+	# get only csv's for now
+	fi = fi[map(x->contains(x,"csv"),fi)]
 
-	for i in fi
-		x = load(joinpath(pth,i))
-		bp = x["sums"]["both"]
-		b = x["sums"]["base"]
-		p = x["sums"][x["which"]]
+	out  = Dict()
+	away  = Dict()
+	toj  = Dict()
 
-		# add regime identifier
-		b = @transform(b,regime="baseline")
-		p = @transform(p,regime=x["which"])
+	# plot pshock
+	# ===========
 
-		# stack
-		bp = vcat(b,p)
+	both = readtable(joinpath(pth,"exp_region6_pshock_both.csv"))
+	both_toj = readtable(joinpath(pth,"exp_region6_pshock_both_toj.csv"))
 
-		# make plots
-		exp_typ = contains(x["which"],"3") ? "3-year" : "permanent"
-		exp_var = contains(x["which"],"y") ? "y" : "p"
-		dd = Dict()
+	exp_typ = "permanent"
+	exp_var = "p"
+	j = 6
+	
+	p_away = Dict()
+	p_toj  = Dict()
+	# moving away from j
+	p_away["move"] = plot(both,x="year",y="move",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("People leaving region $j, $exp_typ shock to $exp_var in 2007"))
+	p_away["move_own"] = plot(both,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Owners leaving region $j, $exp_typ shock to $exp_var in 2007"))
+	p_away["move_rent"] = plot(both,x="year",y="move_rent",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $j, $exp_typ shock to $exp_var in 2007"))
+
+	# moving to j
+	p_toj["move_own"] = plot(both_toj,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Owners moving to region $j, $exp_typ shock to $exp_var in 2007"))
+
+	p_toj["move_rent"] = plot(both_toj,x="year",y="move_rent",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters moving to region $j, $exp_typ shock to $exp_var in 2007"))
+
+	away["pshock"] = p_away
+	toj["pshock"] = p_toj
+
+	# compute average increase in migration rates
+	# -------------------------------------------
+
+	pp = @select(both,:year,:move,:move_own,:move_rent,:regime)
+	pp = hcat(@select(@where(pp,:regime.=="baseline"),:year,base_move=:move,base_move_own=:move_own,base_move_rent=:move_rent),@select(@where(pp,:regime.=="pshock"),shock_move=:move,shock_move_own=:move_own,shock_move_rent=:move_rent))
+
+	pp = @transform(pp,d_move = :shock_move .- :base_move)
+	pp = @transform(pp,d_move_own =  :shock_move_own  .- :base_move_own  )
+	pp = @transform(pp,d_move_rent = :shock_move_rent .- :base_move_rent )
+	pp = @transform(pp,p_move = (:shock_move .- :base_move) ./:base_move)
+	pp = @transform(pp,p_move_own =  (:shock_move_own  .- :base_move_own ) ./:base_move_own  )
+	pp = @transform(pp,p_move_rent = (:shock_move_rent .- :base_move_rent) ./:base_move_rent )
+
+	pp_sum = @select(@where(pp,:year.>2006),d_move=mean(:d_move),d_move_own=mean(:d_move_own),d_move_rent=mean(:d_move_rent),p_move=mean(:p_move),p_move_own=mean(:p_move_own),p_move_rent=mean(:p_move_rent))
+
+	pp_sum =  [ i => pp_sum[i][1] for i in names(pp_sum)]
+
+	f = open(joinpath(opth,"pshock.json"),"w")
+	JSON.print(f,pp_sum)
+	close(f)
+
+
+
+
+
+	# plot yshock
+	# ===========
+
+	both = readtable(joinpath(pth,"exp_region6_yshock_both.csv"))
+	both_toj = readtable(joinpath(pth,"exp_region6_yshock_both_toj.csv"))
+
+	exp_typ = "permanent"
+	exp_var = "y"
+	j = 6
+	
+	p_away = Dict()
+	p_toj  = Dict()
+	# moving away from j
+	p_away["move"] = plot(both,x="year",y="move",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("People leaving region $j, $exp_typ shock to $exp_var in 2007"))
+	p_away["move_own"] = plot(both,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Owners leaving region $j, $exp_typ shock to $exp_var in 2007"))
+	p_away["move_rent"] = plot(both,x="year",y="move_rent",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $j, $exp_typ shock to $exp_var in 2007"))
+
+	# moving to j
+	p_toj["move_own"] = plot(both_toj,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Owners moving to region $j, $exp_typ shock to $exp_var in 2007"))
+
+	p_toj["move_rent"] = plot(both_toj,x="year",y="move_rent",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters moving to region $j, $exp_typ shock to $exp_var in 2007"))
+
+	away["yshock"] = p_away
+	toj["yshock"] = p_toj
+
+
+	# compute average increase in migration rates
+	# -------------------------------------------
+
+	yy = @select(both,:year,:move,:move_own,:move_rent,:regime)
+	yy = hcat(@select(@where(yy,:regime.=="baseline"),:year,base_move=:move,base_move_own=:move_own,base_move_rent=:move_rent),@select(@where(yy,:regime.=="yshock"),shock_move=:move,shock_move_own=:move_own,shock_move_rent=:move_rent))
+
+	yy = @transform(yy,d_move = :shock_move .- :base_move)
+	yy = @transform(yy,d_move_own =  :shock_move_own  .- :base_move_own  )
+	yy = @transform(yy,d_move_rent = :shock_move_rent .- :base_move_rent )
+	yy = @transform(yy,p_move = (:shock_move .- :base_move) ./:base_move)
+	yy = @transform(yy,p_move_own =  (:shock_move_own  .- :base_move_own ) ./:base_move_own  )
+	yy = @transform(yy,p_move_rent = (:shock_move_rent .- :base_move_rent) ./:base_move_rent )
+
+	yy_sum = @select(@where(yy,:year.>2006),d_move=mean(:d_move),d_move_own=mean(:d_move_own),d_move_rent=mean(:d_move_rent),p_move=mean(:p_move),p_move_own=mean(:p_move_own),p_move_rent=mean(:p_move_rent))
+
+	yy_sum =  [ i => yy_sum[i][1] for i in names(yy_sum)]
+	f = open(joinpath(opth,"yshock.json"),"w")
+	JSON.print(f,yy_sum)
+	close(f)
+
+	if printp
+
+		# print price
+		draw(PDF(joinpath(opth,"away_pshock_move.pdf"),6inch,5inch),away["pshock"]["move"])
+		draw(PDF(joinpath(opth,"away_pshock_own_move.pdf"),6inch,5inch),away["pshock"]["move_own"])
+		draw(PDF(joinpath(opth,"away_pshock_rent_move.pdf"),6inch,5inch),away["pshock"]["move_rent"])
+
+		draw(PDF(joinpath(opth,"toj_pshock_own_move.pdf"),6inch,5inch),toj["pshock"]["move_own"])
+		draw(PDF(joinpath(opth,"toj_pshock_rent_move.pdf"),6inch,5inch),toj["pshock"]["move_rent"])
 		
-		dd["move"] = plot(bp,x="year",y="move",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("People leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		dd["own_move"] = plot(bp,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		dd["rent_move"] = plot(bp,x="year",y="rent_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# print income
+		draw(PDF(joinpath(opth,"away_yshock_move.pdf"),6inch,5inch),away["yshock"]["move"])
+		draw(PDF(joinpath(opth,"away_yshock_own_move.pdf"),6inch,5inch),away["yshock"]["move_own"])
+		draw(PDF(joinpath(opth,"away_yshock_rent_move.pdf"),6inch,5inch),away["yshock"]["move_rent"])
 
+		draw(PDF(joinpath(opth,"toj_yshock_own_move.pdf"),6inch,5inch),toj["yshock"]["move_own"])
+		draw(PDF(joinpath(opth,"toj_yshock_rent_move.pdf"),6inch,5inch),toj["yshock"]["move_rent"])
 
-		kkey = "$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"
-		plotkey = "plots_"*kkey
-		out[plotkey] = dd
-		if print
-			for (k,v) in dd
-				draw(PDF(joinpath(opth,string(kkey,"_",k,".pdf")),6inch,5inch),v)
-			end
-		end
-		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
 	end
+
+
 	return out
 
 end
@@ -583,6 +674,18 @@ function pshock_vs_highMC()
 	h = exp_shockRegion(opts);
 	h = h[3];
 
+	xh = @> begin
+		h 
+		@where((:j.==6)&(:year.>2006)) 
+		@select(v=mean(:v),mv=mean(:move))
+	end
+
+	xp = @> begin
+		p 
+		@where((:j.==6)&(:year.>2006)) 
+		@select(v=mean(:v),mv=mean(:move))
+	end
+
 	# people who moved away from j=6 after shock hits in 2007
 	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
@@ -591,10 +694,24 @@ function pshock_vs_highMC()
 	hmv = h[findin(	h[:id],pmv_id[:id]),:]
 
 	# subset to right years
-	pmv2 = @select(@where(pmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
-	hmv2 = @select(@where(hmv,:year.>2006),:id,:age,:cohort,:move,:cons,:v,:a,:h,:j,:year)
+	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v))
 
-	d = ["p"=>p,"h"=>h,"pmv"=>pmv,"hmv"=>hmv]
+	d=Dict()
+	d["v"] = ["base" => pmv2[:v][1], "nomove"=>hmv2[:v][1], "pct" => 100*(pmv2[:v][1] - hmv2[:v][1])/hmv2[:v][1] ]
+	d["a"] = ["base" => pmv2[:a][1], "nomove"=>hmv2[:a][1], "pct" => 100*(pmv2[:a][1] - hmv2[:a][1])/hmv2[:a][1] ]
+	d["w"] = ["base" => pmv2[:w][1], "nomove"=>hmv2[:w][1], "pct" => 100*(pmv2[:w][1] - hmv2[:w][1])/hmv2[:w][1] ]
+	d["c"] = ["base" => pmv2[:cons][1], "nomove"=>hmv2[:cons][1], "pct" => 100*(pmv2[:cons][1] - hmv2[:cons][1])/hmv2[:cons][1] ]
+	d["h"] = ["base" => pmv2[:h][1], "nomove"=>hmv2[:h][1], "pct" => 100*(pmv2[:h][1] - hmv2[:h][1])/hmv2[:h][1] ]
+
+
+	indir, outdir = mig.setPaths()
+	f = open(joinpath(outdir,"pct_increase_v.json"),"w")
+	JSON.print(d)
+	close(f)
+
+	d = ["p"=>p,"h"=>h,"xh"=>xh,"xp"=>xp]
 	return d
 
 	# compare
