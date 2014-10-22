@@ -50,6 +50,54 @@ function runExperiment(which::String,region::Int,year::Int)
 
 end
 
+function plotShockRegions2(print=false)
+
+	# download experiments
+	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
+
+	# load all experiments
+	pth = "/Users/florianoswald/git/migration/data/shockReg/"
+	opth = "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp"
+	fi = readdir(pth)
+
+	out = Dict()
+
+	for i in fi
+		x = load(joinpath(pth,i))
+		bp = x["sums"]["both"]
+		b = x["sums"]["base"]
+		p = x["sums"][x["which"]]
+
+		# add regime identifier
+		b = @transform(b,regime="baseline")
+		p = @transform(p,regime=x["which"])
+
+		# stack
+		bp = vcat(b,p)
+
+		# make plots
+		exp_typ = contains(x["which"],"3") ? "3-year" : "permanent"
+		exp_var = contains(x["which"],"y") ? "y" : "p"
+		dd = Dict()
+		
+		dd["move"] = plot(bp,x="year",y="move",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("People leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		dd["own_move"] = plot(bp,x="year",y="move_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		dd["rent_move"] = plot(bp,x="year",y="rent_own",color="regime",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+
+
+		kkey = "$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"
+		plotkey = "plots_"*kkey
+		out[plotkey] = dd
+		if print
+			for (k,v) in dd
+				draw(PDF(joinpath(opth,string(kkey,"_",k,".pdf")),6inch,5inch),v)
+			end
+		end
+		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
+	end
+	return out
+
+end
 
 function plotShockRegions(print=false)
 
@@ -703,73 +751,50 @@ function exp_shockRegion(opts::Dict)
 
 	sum0 = @> begin
 		sim0	
-		@where((:j.==j) & (:year.>1998)) 
-		@transform(move_own = :move .* :own, buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)))
+		@where((:j.==j) & (:year.>1997)) 
+		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
+		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)))
 		end
 
 	sum1 = @> begin
 		sim1	
-		@where((:j.==j) & (:year.>1998)) 
-		@transform(move_own = :move .* :own, buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)))
+		@where((:j.==j) & (:year.>1997)) 
+		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
+		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)))
 		end
 
 
-	# get dataframes for plotting.
+	# same for moving to j
+	sum0_toj = @> begin
+		sim0
+		@where((:j.!=j) & (:year.>1997)) 
+		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+		end
 
-	dd1 = @by(@where(sim0,:j.==j),:year,baseline_move=mean(:move),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
-	dd2 = @by(@where(sim1,:j.==j),:year,shock_move=mean(:move),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
-	df_fromj = join(dd1,dd2,on=:year)
+	sum1_toj = @> begin
+		sim1
+		@where((:j.!=j) & (:year.>1997)) 
+		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+		end
 
-	dd1 = @by(@where(sim0,(:j.==j)&(:h.==1)),:year,baseline=mean(:move))
-	dd2 = @by(@where(sim1,(:j.==j)&(:h.==1)),:year,shock=mean(:move))
-	df_fromj_own  = join(dd1,dd2,on=:year)
 
-	dd1 = @by(@where(sim0,(:j.==j)&(:h.==0)),:year,baseline=mean(:move))
-	dd2 = @by(@where(sim1,(:j.==j)&(:h.==0)),:year,shock=mean(:move))
-	df_fromj_rent  = join(dd1,dd2,on=:year)
+	sum0 = @transform(sum0,regime="baseline")
+	sum1 = @transform(sum1,regime=which)
 
-	dd1 = @by(@where(sim0,:j.!=j),:year,baseline_move=mean(:moveto.==j),baseline_own=mean(:own),baseline_p=mean(:p),baseline_y=mean(:y),baseline_inc=mean(:income))
-	dd2 = @by(@where(sim1,:j .!= j),:year,shock_move=mean(:moveto.==j),shock_own=mean(:own),shock_p=mean(:p),shock_y=mean(:y),shock_inc=mean(:income))
-	df_toj = join(dd1,dd2,on=:year)
+	sum0_toj = @transform(sum0_toj,regime="baseline")
+	sum1_toj = @transform(sum1_toj,regime=which)
 
-	# owners who move to j and rent
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,baseline=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==0)),:year,shock=mean(:moveto.==j))
-	df_toj_own_rent = join(dd1,dd2,on=:year)
-
-	# owners who move to j and buy 
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,baseline=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==1)&(:hh.==1)),:year,shock=mean(:moveto.==j))
-	df_toj_own_buy  = join(dd1,dd2,on=:year)
-
-	# renters who move to j and rent
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)&(:hh.==0)),:year,baseline=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)&(:hh.==0)),:year,shock=mean(:moveto.==j))
-	df_toj_rent_rent  = join(dd1,dd2,on=:year)
-
-	# renters who move to j and buy
-	dd1 = @by(@where(sim0,(:j.!=j)&(:h.==0)&(:hh.==1)),:year,baseline=mean(:moveto.==j))
-	dd2 = @by(@where(sim1,(:j.!=j)&(:h.==0)&(:hh.==1)),:year,shock=mean(:moveto.==j))
-	df_toj_rent_buy  = join(dd1,dd2,on=:year)
-
-	dfs = ["fromj" => df_fromj, 
-	       "fromj_own" => df_fromj_own,
-	       "fromj_rent" => df_fromj_rent,
-	       "toj" => df_toj, 
-	       "toj_own_rent" => df_toj_own_rent,
-	       "toj_own_buy" => df_toj_own_buy,
-	       "toj_rent_rent" => df_toj_rent_rent,
-	       "toj_rent_buy" => df_toj_rent_buy]
-
-	indir, outdir = mig.setPaths()
+	# stack
+	sums = vcat(sum0,sum1)
+	sums_toj = vcat(sum0_toj,sum1_toj)
 
 	out = ["which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
-	       "dfs" => dfs,
-	       "sums" => ["base"=>sum0,which=>sum1]
+	       # "dfs" => dfs,
+	       "sums" => ["base"=>sum0,which=>sum1,"both"=>sums,"both_toj"=>sums_toj],
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
