@@ -703,14 +703,14 @@ function exp_shockRegion(opts::Dict)
 
 	sum0 = @> begin
 		sim0	
-		@where((:j.==j) & (:year.>2003)) 
+		@where((:j.==j) & (:year.>1998)) 
 		@transform(move_own = :move .* :own, buy = (:h.==0).*(:hh.==1))
 		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)))
 		end
 
 	sum1 = @> begin
 		sim1	
-		@where((:j.==j) & (:year.>2003)) 
+		@where((:j.==j) & (:year.>1998)) 
 		@transform(move_own = :move .* :own, buy = (:h.==0).*(:hh.==1))
 		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)))
 		end
