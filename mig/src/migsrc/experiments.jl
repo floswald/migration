@@ -526,12 +526,14 @@ end
 # compares pshock with pshcock_highMC
 function pshock_vs_highMC()
 
-
-	opts = selectPolicy("pshock",6,2007,p)
+	par = Param(2)
+	opts = selectPolicy("pshock",6,2007,par)
 	p = exp_shockRegion(opts);
+	p = p[3];
 
-	opts = selectPolicy("pshock_highMC",6,2007,p)
+	opts = selectPolicy("pshock_highMC",6,2007,par)
 	h = exp_shockRegion(opts);
+	h = h[3];
 
 	# people who moved away from j=6 after shock hits in 2007
 	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
@@ -652,7 +654,7 @@ function exp_shockRegion(opts::Dict)
 
 	if minc > 1
 		# add all cohorts that were not simulated in computeShockAge
-		df1 = vcat(df1,@where(sim0,:cohort.<=minc))
+		df1 = vcat(df1,@where(sim0,:cohort.<minc))
 	end
 
 
