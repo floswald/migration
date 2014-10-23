@@ -95,7 +95,7 @@
 \begin_body
 
 \begin_layout Title
-Regional Migration and Homeownership in the USA
+Regional Shocks, Migration and Homeownership
 \end_layout
 
 \begin_layout Author
@@ -409,201 +409,119 @@ Literature.
 \end_layout
 
 \begin_layout Standard
-This paper builds on the work of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
 
 \end_inset
 
-, who study the determinants of individual migration decisions across US
- states in a dynamic partial equilibrium model, with a particular focus
- on the importance of return migration.
+ first develop a model of migration with multiple location choices over
+ the lifecycle.
  Their main finding is that expected income is an important determinant
- of migration decisions.
- My paper adds to their setup a homeownership choice, and time-varying regional
- income and price levels, which they implicitly assume fixed throughout.
- Adding the ownership choice does justice to a stark separation of owners
- and renters in the data with respect to their relative migration behaviour;
- allowing regional prices to vary gives agents in the model a fundamental
- economic reason to migrate, i.e.
- as the economic fortunes in a region change, so does the migration behaviour
- of people from and to that region.
- In 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-, a move is triggered by an idiosyncratic preference shock alone.
-\end_layout
-
-\begin_layout Standard
-Using a similar setup, 
+ of migration decisions, and their framework requires large moving costs
+ to match observed migration decisions.
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
 
 \end_inset
 
- considers the joint location problem of couples where both partners are
- participating in the labor force.
- Casting the problem as an intra-household bargaining game over the lifecycle,
- she finds that family ties significantly hinder migration decisions and
- wage growth.
- Following in this tradition of models, 
+ focuses on migration decisions of couples with two working spouses and
+ finds that, for this subgroup, family ties can significantly hinder migration
+ decisions and wage growth.
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "gregory2013impact"
+key "winkler2010effect"
 
 \end_inset
 
- analyzes the impact of a home-rebuilding grant extended to victims of the
- Katrina hurricane in New Orleans in a dynamic discrete choice model.
- 
+ investigates the effect of homeownership on migration as a response to
+ idiosyncratic unemployment shocks.
+ In my paper shocks to income and house prices are at the regional level.
 \end_layout
 
 \begin_layout Standard
-A different and well--established literature on migration and local labor
- markets is based on the static spatial equilibrium concept going back to
- 
+By considering regional shocks, this paper builds on the seminal contribution
+ of 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Roback:1982uq"
+key "blanchard1992regional"
 
 \end_inset
 
 .
- In an authoritative handbook chapter, 
+ In light of state-specific shocks to labor demand, the authors find that
+ after an adverse shock, the relocation of workers is one of the main mechanisms
+ to restore unemployment and participation rates back to trend in an affected
+ region.
+ Related to this, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Moretti:2011fk"
 
 \end_inset
 
- provides an overview over much of this literature.
- As an example for a recent application, 
+ analyses the welfare implications of shifts in productivity of certain
+ types of workers in the static spatial equilibrium framework based on 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Roback:1982uq"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "rosen1979wage"
+
+\end_inset
+
+.
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Diamond:2012fk"
 
 \end_inset
 
- analyses the welfare implications of geographic skill sorting in the US,
- whereby college graduates increasingly locate in high wage, high rent cities.
- In contrast to this framework my model is dynamic, so it can capture the
- human capital investment aspect of migration, while abstracting from GE
- considerations.
+, for example, uses this setup to analyse the welfare implications of the
+ sorting of higher educated individuals into higher rent areas.
+ The dynamic nature of my model allows me to evaluate the response of migration
+ to shocks over time.
 \end_layout
 
 \begin_layout Standard
-The paper is also related to the public finance literature, in particular
- to the tax treatment of housing in general and ownership in particular.
- Economists have long had good reasons to be critical of the US housing
- tax code
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-some references here: it's regressive (benefits only rich people), there
- is no visible market failure that would warrant any intervention at all,
- it's a poor instrument to encourage wealth accumulation (see house prices
- in January 2008)
-\end_layout
-
-\end_inset
-
-, and 
+The effect of the 2007 housing bust on labor market mobility has spurred
+ a lot of interest recently.
+ In terms of empirical contributions, 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "glaeser2011rethinking"
+key "Ferreira201034"
 
 \end_inset
 
- in a recent paper encourages to rethink what he terms 
-\emph on
-the federal housing bias
-\emph default
-.
- He argues that public policy which encourages ownership through subsidy
- or building restrictions moves people away from dense, urban neighborhoods
- with predominatly rental accomodation and into suburban areas with owner
- occupied housing and long associated commutes.
- This is a distortion of a market where the need for public intervention
- is not obvious even after close scrutiny, and it affects inner city economic
- development and has large environmental consequences, reenforcing the need
- for policy change in the view of Glaeser.
- 
+, 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "glaeser2002benefits"
+key "schulhofer2011negative"
 
 \end_inset
 
- is a paper which fed into this conclusion, analysing the benefits of the
- home mortgage interest deduction.
- In it, the authors use a measure of the tax benefit to owners arising from
- the mortgage interest rate deduction similar to the one used in 
+ and 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Poterba:2008fk"
+key "demyanyk2013moving"
 
 \end_inset
 
-.
- They find that based on this measure, it seems there is no impact of the
- amount of the deduction on the aggregate homeownership rate in time series
- data, but only on the amount of housing consumed.
- As pointed out in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-
-\end_inset
-
-, it is indeed the case that the amount of tax savings is increasing in
- household income, as higher income households are more likely to itemize
- their tax return, which is a precondition for applying for the deduction;
- However, the average tax savings for a households are still significant
- in all age and income brackets, as evident in panel B of table 1 therein.
-\end_layout
-
-\begin_layout Standard
-In a series of papers starting with 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "oswald1996conjecture"
-
-\end_inset
-
- and leading up to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "blanchflower2013does"
-
-\end_inset
-
-, the authors advance the theory that homeownership is an impediment to
- labor market mobility.
- Initially based on cross-country regressions and later on state--level
- cross sectional data for the US, they find a statistical relationship between
- current unemployment and past homeownership at a lag of up to five years.
- As poptential mechanisms they cite negative externalities of homeownership
- on the wider labor market, in particular greater NIMBYism (Not In My Back
- Yard) reducing business creation and productive investments and lower attractio
-n of no migrants, who may be important for economic growth but demand rental
- accomodation.
-\end_layout
-
-\begin_layout Standard
-Providing a more structural approach to the link between homeownership and
- unemployment, there is a growing literature analyzing if and how the recent
- house price crash has affected the reallocation of workers across locations,
- or if it affected the unemployment rate.
- The mechanisms are a variant of negative equity lock-in and search frictions
- in housing and labor markets.
- An incomplete list of contributions includes 
+ look at whether negative equity in the home reduces the mobility of owners
+ and report mixed findings.
+ The first paper finds an effect, whereas the next two do not, with the
+ difference arising from different datasets and definitions of long-distance
+ moves.
+ More theoretical papers like 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "head2012housing"
@@ -613,30 +531,67 @@ key "head2012housing"
 , 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "karahan2011housing"
+key "nenov2012regional"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "song2012measuring"
 
 \end_inset
 
  and 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "nenov2012regional"
+key "karahan2011housing"
 
 \end_inset
 
-.
- At difference to those papers which focus on the equilibrium properties
- of housing and unemployment, here I spend a lot of effort in trying to
- model the budget constraint and instutional environment of a consumer as
- accurately as possible.
- In particular, age seems to be of first order importance in both housing
- and migration decisions in the data, which brings with it the need to consider
- a finite time horizon, implying that any mortgage taken out must be paid
- back at some point -- which is not implied by the previous set of papers.
- [NEED SOMETHING BETTER HERE] Furthermore, it seems that the dynamics of
- house prices over the last decade are hard to reconcile with equilibrium
- models of this kind, which is particularly worrying if the exercise is
- to deliver estimates of structural parameters, as is the aim here.
+ use search models of labor and housing markets to look at geographical
+ mismatch and how the price drop affects unemployment and migration rates.
+ The last paper, in particular, formalizes the negative equity lock-in notion
+ in a model with two locations and finds only a moderate effect of lock--in
+ on the increase in unemployment.
+\end_layout
+
+\begin_layout Standard
+The federal tax code in the United States allows households to deduct mortgage
+ interest payments from Federal taxes.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "glaeser2011rethinking"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "glaeser2002benefits"
+
+\end_inset
+
+ respectively discuss the benefits and distortions generated by this policy,
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Poterba:2008fk"
+
+\end_inset
+
+ provide an estimate of the financial benefit to owners from it.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sommer2013implications"
+
+\end_inset
+
+ is a recent contribution that analyses the policy in a GE framework.
+ I evaluate the effect of removing the deduction on both homeownership and
+ mobility.
 \end_layout
 
 \begin_layout Standard
@@ -3835,14 +3790,13 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_y.pdf
-	scale 80
 
 \end_inset
 
@@ -3907,7 +3861,6 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_p.pdf
-	scale 80
 
 \end_inset
 
@@ -4236,9 +4189,10 @@ reference "tab:Parameter-estimates"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4322,6 +4276,7 @@ reference "tab:fit-model-nontarget"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -4376,6 +4331,7 @@ name "tab:fit-model-and-data"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -4427,7 +4383,7 @@ name "tab:fit-model-nontarget"
 \end_layout
 
 \begin_layout Subsection
-Comparative Statics
+Comparative Statics (or: Model Mechanisms?)
 \end_layout
 
 \begin_layout Standard
@@ -4444,8 +4400,8 @@ key "kennan2003effect"
  Before going into greater detail, it is worth pointing out that owners
  and renters have opposed incentives with regards to house prices, which
  will be a recurring theme in the following.
- The opposing incentives are a result of the specification of the final
- period value function, which depends on home equity.
+ The opposing incentives are mainly a result of the specification of the
+ final period value function, which depends on home equity.
  This implies that, all else equal, owners prefer higher prices, while renters
  prefer lower ones.
  This has to do with renters' desire to become owners (which is more difficult
@@ -4454,11 +4410,80 @@ d with higher prices.
  
 \end_layout
 
+\begin_layout Subsubsection
+Probability of Migrating
+\end_layout
+
 \begin_layout Standard
-We will now discuss how the probability of migrating varies over the state
- space along the asset, income, and ownership status dimensions.
- In order to help this discussion, it is useful to briefly refer to an example
- with two discrete choices 
+Characterizing migration decisions with the help of observational data is
+ not an easy task.
+ In the vast majority of cases there is no observable difference between
+ two individuals, where one moves and the other does not.
+ Unobservable state variables play clearly an important role here.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The list of potentially strong predictors of moving decisions is job offers,
+ family reunions, sickness of family member, children having left home (for
+ college, for example), etc.
+\end_layout
+
+\end_inset
+
+ Following directly the reasoning in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1987"
+
+\end_inset
+
+, those unobservables are collected in a location-specific vector of shocks
+ 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+.
+ This is not to say that we cannot say anything at all about migration decisions
+ -- far from it.
+ This is more a case of acknowledging that we only have data 
+\begin_inset Formula $x$
+\end_inset
+
+ available and trying to model the conditional choice probability function
+ 
+\begin_inset Formula $Q(d,k,x)$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+ 
+\begin_inset Formula $ $
+\end_inset
+
+as good as possible to reflect observable differences in the probability
+ of moving.
+ I will discuss 
+\begin_inset Formula $Q(d,k,x)$
+\end_inset
+
+ in detail now.
+\end_layout
+
+\begin_layout Standard
+The probability of migrating 
+\begin_inset Formula $Q$
+\end_inset
+
+ varies over the state space along the asset, income, and ownership status
+ dimensions.
+ In order to facilitate the discussion, it is useful to briefly refer to
+ an example with two discrete choices 
 \begin_inset Formula $j=1$
 \end_inset
 
@@ -4470,7 +4495,7 @@ We will now discuss how the probability of migrating varies over the state
 \begin_inset Formula $j=1$
 \end_inset
 
- as the associated value, 
+, as its associated value, 
 \begin_inset Formula $v_{1}$
 \end_inset
 
@@ -4518,7 +4543,7 @@ reference "eq:prob-of-moving"
 \begin_inset Formula $j=1$
 \end_inset
 
- changes as the 
+ changes as the corresponding value 
 \begin_inset Formula $v_{1}$
 \end_inset
 
@@ -4545,8 +4570,7 @@ reference "fig:Illustration-of-conditional"
 \end_inset
 
  determine changes to the aggregate moving probability.
- It is clear that, given the nonlinear nature of any given value function
- 
+ Given the nonlinear nature of any given value function 
 \begin_inset Formula $v$
 \end_inset
 
@@ -4594,7 +4618,7 @@ reference "eq:prob-of-moving"
 \begin_inset Formula $(z)$
 \end_inset
 
-, and housing status 
+, each by housing status 
 \begin_inset Formula $(h)$
 \end_inset
 
@@ -4604,13 +4628,14 @@ reference "eq:prob-of-moving"
 \end_inset
 
 , which is fully expected given the data.
- Perhaps more interesting is the shape of the average moving rate over the
- space of assets, which shows different probabilities throughout.
- For example, not only is the probability higher for renters almost everywhere,
- it is also declining as assets increase.
+ Perhaps the most interesting case is the shape of the average moving rate
+ over the space of assets, which shows different probabilities for each
+ asset level.
+ For example, not only is the probability of moving higher for renters than
+ for owners almost everywhere, it is also declining as assets increase.
  Since households in the model build up assets in order to buy, this shows
  that for renters with higher assets (thus closer to being an owner), the
- likelihood of moving away is lower.
+ likelihood of moving is lower.
  Observing high asset owners and renters with greater likelihood of moving
  shows that they are particularly mobile.
  The density is very small at high asset values.
@@ -4831,6 +4856,333 @@ name "fig:CS-prob-z"
 \end_layout
 
 \begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+The role of moving costs 
+\end_layout
+
+\begin_layout Standard
+Moving costs in the model are measured in terms of utility.
+ I convert them to dollar values by finding the amount of compensating assets
+ 
+\begin_inset Formula $a'$
+\end_inset
+
+ which would make an individual at state 
+\begin_inset Formula $x$
+\end_inset
+
+ indifferent between the value of moving with costs 
+\begin_inset Formula $(v)$
+\end_inset
+
+ (but extra assets) and without 
+\begin_inset Formula $(\tilde{v})$
+\end_inset
+
+.
+ Without loss of generality I consider moves from region 
+\begin_inset Formula $d=2$
+\end_inset
+
+ to 
+\begin_inset Formula $k=1$
+\end_inset
+
+.
+ In other words, moving costs are measured by 
+\begin_inset Formula $a'$
+\end_inset
+
+ which solves
+\begin_inset Formula 
+\[
+v(2,1,x+a')-\tilde{v}(2,1,x)=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The measure is taken at a state 
+\begin_inset Formula $x$
+\end_inset
+
+ where the individual has zero asset and where the aggreagate factors 
+\begin_inset Formula $P$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ are at the midpoint of their respective grids.
+ 
+\end_layout
+
+\begin_layout Standard
+Similarly to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+, the moving costs are large.
+ As they explain, this is because 
+\begin_inset Quotes eld
+\end_inset
+
+[the estimated moving costs] do not refer to the costs of moves that are
+ actually made, but rather to the costs of hypothetical moves to arbitrary
+ locations.
+\begin_inset Quotes erd
+\end_inset
+
+ There is no clear mapping from their moving cost to what moving costs stand
+ for in this model; for instance, given their linear utility setup, a conversion
+ to dollar values is simple, whereas here it's somewhat more complicated.
+ First, the utility function is composed of multiple parts, so that the
+ above measurement needs to be applied; second, risk aversion and the curvature
+ of the consumption function imply diminishing returns from greater amounts
+ of consumption.
+ So while a clear-cut comparison is not possible, I can show that moving
+ cost vary by housing status.
+\end_layout
+
+\begin_layout Standard
+The results of this exercise are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:MC-money"
+
+\end_inset
+
+.
+ Calculating the moving cost as outlined above implies a moving cost for
+ renters at age 20 
+\begin_inset Formula $(t=1)$
+\end_inset
+
+ of $159,000, and it is only $6,830 in their final period of life.
+ The corresponding numbers for owners are $575,000 and $7,266,000 in first
+ and final period of life.
+ It is interesting to note that the estimates in period one bracket the
+ average cost of $312,000 reported in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+.
+ The very large costs for owners in the final period are implied by the
+ big value owners obtain from exiting the model with home equity (i.e.
+ staying in their house).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/moneyMC/moneyMC.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
+ renters at 
+\begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
+\end_inset
+
+ and first and last period of life.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+ report an average moving cost of $384,000 for a young and $312,000 for
+ an average mover.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:MC-money"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are several reasons for why owners move less than renters.
+ First, they have higher moving costs as implied by a positive estimate
+ for parameter 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+.
+ Second, owners pay a transaction cost each time they sell the house (proportion
+al fixed cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+), which affects the value of migration.
+ Third, owners have to comply with the downpayment constraint if they wish
+ to buy in the new region, which puts restrictions on the consumption paths
+ of movers.
+ Finally, ownership is correlated with larger household size 
+\begin_inset Formula $(s=1)$
+\end_inset
+
+, which itself carries a higher moving cost 
+\begin_inset Formula $(\alpha_{4})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Decomposing-owner's-moving"
+
+\end_inset
+
+ I decompose the reduced mobility of owners arising from higher utility
+ costs 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ and the fixed cost of selling 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ Ownership increases as we successively remove frictions along the first
+ row of the table, which is only natural.
+ Perhaps more surprisingly, the second row shows that the average migration
+ rate increases by roughly the same amount if we remove the owner's moving
+ cost 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ or the fixed cost of selling 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ We must not immediately jump to the conclusion that this tells us that
+ financial frictions are of equal importance for the greater reluctance
+ of owners to move than non-financial frictions.
+ As shown in the final two rows of the table, this result is driven by a
+ change in composition, i.e.
+ the aggregate migration rate is higher because we have more owners, who
+ also move more.
+ The final row shows that the increase in migration resulting from zero
+ non-financial costs is greater than the increase from no financial transaction
+ costs.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/HC_friction/HC_friction.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Decomposing owner's moving costs.
+ Compares baseline statistics to scenarios with no additional moving cost
+ for owners (
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+), no financial transaction costs from selling the house 
+\begin_inset Formula $(\phi=0)$
+\end_inset
+
+, and neither of the two 
+\begin_inset Formula $(\alpha_{3}=\phi=0)$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Decomposing-owner's-moving"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -7044,53 +7396,6 @@ born
  The initial distribution of assets is drawn from the empirical distribution
  of assets in the SIPP data.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/mytemp.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-test
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
