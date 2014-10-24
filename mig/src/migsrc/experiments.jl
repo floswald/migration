@@ -662,6 +662,58 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 
 end
 
+function valdiff_pshock_highMC(ctax::Float64,v0::Float64,opts::Dict,pmv_id::DataFrame)
+
+	# change value of ctax on options dict
+	opts["ctax"] = ctax
+		println("current ctax level = $ctax")
+
+	# and recompute
+	p0 = exp_shockRegion(opts);
+	p = p0[3];
+	p0 = 0
+	gc()
+	pmv = p[findin(p[:id],pmv_id[:id]),:]
+
+	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+
+	# baseline value
+	v1 = pmv2[:v][1]
+
+	println("baseline value is $(round(v0,2))")
+	println("current value from $(opts["policy"]) is $(round(v1,2))")
+	println("current difference is $(v1 - v0)")
+
+	return (v1 - v0).^2
+end
+
+function pshock_highMC_cdiff()
+
+	par = Param(2)
+	opts = selectPolicy("pshock",6,2007,par)
+	p0 = exp_shockRegion(opts);
+
+	# returns a triple. third element is a data.frame with policy results.
+	p = p0[3];
+	p0 = 0
+	gc()
+	# people who moved away from j=6 after shock hits in 2007
+	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
+	pmv = p[findin(p[:id],pmv_id[:id]),:]
+
+	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+
+	# baseline value
+	v0 = pmv2[:v][1]
+
+	opts["policy"] = "pshock_highMC"
+
+	ctax = optimize((x)->valdiff_shockRegion(x,v0,opts,pmv_id),0.5,2.0,show_trace=true,method=:brent,iterations=10)
+	return ctax
+
+end
+
+
 # compares pshock with pshcock_highMC
 function pshock_vs_highMC()
 
@@ -696,7 +748,6 @@ function pshock_vs_highMC()
 	# subset to right years
 	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
 	hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
-	hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v))
 
 	d=Dict()
 	d["v"] = ["base" => pmv2[:v][1], "nomove"=>hmv2[:v][1], "pct" => 100*(pmv2[:v][1] - hmv2[:v][1])/hmv2[:v][1] ]
