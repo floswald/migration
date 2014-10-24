@@ -708,7 +708,7 @@ function pshock_highMC_cdiff()
 
 	opts["policy"] = "pshock_highMC"
 
-	ctax = optimize((x)->valdiff_shockRegion(x,v0,opts,pmv_id),0.5,2.0,show_trace=true,method=:brent,iterations=10)
+	ctax = optimize((x)->valdiff_pshock_highMC(x,v0,opts,pmv_id),1.0,2.0,show_trace=true,method=:brent,iterations=10)
 	return ctax
 
 end
@@ -726,35 +726,63 @@ function pshock_vs_highMC()
 	h = exp_shockRegion(opts);
 	h = h[3];
 
-	xh = @> begin
-		h 
-		@where((:j.==6)&(:year.>2006)) 
-		@select(v=mean(:v),mv=mean(:move))
-	end
-
-	xp = @> begin
-		p 
-		@where((:j.==6)&(:year.>2006)) 
-		@select(v=mean(:v),mv=mean(:move))
-	end
-
 	# people who moved away from j=6 after shock hits in 2007
 	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
+	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
+	pmv3 = @where(pmv,:year .> 2006)
+	pmv3 = @transform(pmv3,row_idx=1:size(pmv3,1))
+
+	hmv = h[findin(	h[:id],pmv_id[:id]),:]
+	hmv = @transform(hmv,buy = (:h.==0)&(:hh.==1))
+	hmv3 = @where(hmv,:year .> 2006)
+	hmv3 = @transform(hmv3,row_idx=1:size(hmv3,1))
+	
+	# what's the first observationin j=6?
+	# drop all periods before first in 2006
+	drops = Int[]
+	for i in unique(pmv3[:id])
+		goon = true
+		ti = minimum(@where(pmv3,:id.==i)[:age])
+		maxage = maximum(@where(pmv3,:id.==i)[:age])
+		while goon
+			if pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:j][1] != 6
+				push!(drops,pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:row_idx][1])
+				if ti == maxage
+					goon=false
+				else
+					ti+=1
+				end
+			else
+				goon = false
+			end
+		end
+	end
+
+	pmv3 = pmv3[setdiff(1:size(pmv3,1),drops),:]
+	hmv3 = hmv3[setdiff(1:size(hmv3,1),drops),:]
+
+	pmv4 = @select(@where(pmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	hmv4 = @select(@where(hmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+
+	# caution.
+	# do you want to throw away periods before they moved into 6 after 2006? 
+	# say a guy moves to 6 in 2007. you are pretending they lived in 6 from the beginning.
 
 	# find those guys in the highMC world
-	hmv = h[findin(	h[:id],pmv_id[:id]),:]
+	# hmv = h[findin(	h[:id],pmv_id[:id]),:]
+	# hmv = @transform(hmv,buy = (:h.==0)&(:hh.==1))
 
-	# subset to right years
-	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
-	hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	# # subset to right years
+	# pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	# hmv2 = @select(@where(hmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
 
 	d=Dict()
-	d["v"] = ["base" => pmv2[:v][1], "nomove"=>hmv2[:v][1], "pct" => 100*(pmv2[:v][1] - hmv2[:v][1])/hmv2[:v][1] ]
-	d["a"] = ["base" => pmv2[:a][1], "nomove"=>hmv2[:a][1], "pct" => 100*(pmv2[:a][1] - hmv2[:a][1])/hmv2[:a][1] ]
-	d["w"] = ["base" => pmv2[:w][1], "nomove"=>hmv2[:w][1], "pct" => 100*(pmv2[:w][1] - hmv2[:w][1])/hmv2[:w][1] ]
-	d["c"] = ["base" => pmv2[:cons][1], "nomove"=>hmv2[:cons][1], "pct" => 100*(pmv2[:cons][1] - hmv2[:cons][1])/hmv2[:cons][1] ]
-	d["h"] = ["base" => pmv2[:h][1], "nomove"=>hmv2[:h][1], "pct" => 100*(pmv2[:h][1] - hmv2[:h][1])/hmv2[:h][1] ]
+	d["v"] = ["base" => pmv4[:v][1], "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
+	d["a"] = ["base" => pmv4[:a][1], "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
+	d["w"] = ["base" => pmv4[:w][1], "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
+	d["c"] = ["base" => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
+	d["h"] = ["base" => pmv4[:h][1], "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
 
 
 	indir, outdir = mig.setPaths()
@@ -762,7 +790,7 @@ function pshock_vs_highMC()
 	JSON.print(d)
 	close(f)
 
-	d = ["p"=>p,"h"=>h,"xh"=>xh,"xp"=>xp]
+	d = ["p"=>pmv3,"h"=>hmv3]
 	return d
 
 	# compare
