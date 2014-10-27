@@ -153,24 +153,38 @@ JOB MARKET PAPER
 \end_layout
 
 \begin_layout Abstract
-I propose a lifecycle model of consumption, savings, homeownership and location
- choice to investigate the interaction of housing with regional migration
- decisions in the USA.
- Labor income and house price risk have an important impact on consumer
- welfare, and shocks to both are correlated at the aggregate and regional
- level.
- This leads to different implications for owners and renters, not only because
- of their differing balance sheets, but also because the former are less
- mobile than the latter.
- The paper asks two questions: First, is government housing policy an effective
- lever to affect migration, and if so, to which extent? Second, how valuable
- is regional migration in terms of consumer welfare when there are large
- regional shocks? Regarding the first question, I analyse the role of the
- US mortgage interest deduction on migration behaviour and find that abolishing
- it would increase the migration rate by 2.5%, corresponding to a 5% increase
- in per-period consumption.
- Concerning the second point, the model predicts that doubling the moving
- cost implies a 1.2% reduction in per-period consumption.
+\paragraph_spacing onehalf
+\noindent
+Households are subject to many types of shocks, such as aggregate shocks,
+ regional shocks and idiosyncratic shocks.
+ As the recent crisis painfully reminds us, regional shocks to wages and
+ house prices can be deep and prolonged.
+ This paper develops and estimates a structural model with aggregate and
+ regional shocks to wages and house prices in a life-cycle setting, in which
+ households can insure against these shocks by migrating to another region,
+ saving, and buying or renting a house.
+ The model is estimated to match key moments from the Survey of Income and
+ Program Participation (SIPP) related to mobility and homeownership across
+ regions and by age.
+ This framework helps evaluate the costs of regional shocks and the benefits
+ of the various channels of self-insurance, thus also helps to inform policy
+ reform that affect the costs of these self-insurance mechanisms, including
+ changing the costs of owning a house and moving.
+ The estimated model implies that, while yearly mobility flows across regions
+ are small, mobility is a very valuable option to those who move in face
+ of a regional shock.
+ In fact, when a regional shock of the size observed in the recent crises
+ hits one region, were we to prevent the movers from moving, their loss
+ in utility implies a reduction of 13% of period consumption during their
+ remaining lifetime.
+ It also finds that, were the interest-rate mortgage deduction eliminated,
+ migration would increase 2.5%.
+ Using a general equilibrium correction, house prices are reduced by 5%,
+ which results in an increase in ownership.
+ Combined with more disposable income after redistribution, this results
+ in greater incentives to exploit regional differences.
+ Finally, if moving costs were to double, the welfare cost would be of the
+ order of a 1.2% reduction of per-period consumption.
 \end_layout
 
 \begin_layout Abstract
@@ -200,16 +214,20 @@ Homeownership and the likelihood of moving across regions are negatively
  insurance mechanisms available to consumers in the face of regional shocks
  to housing and labor productivity in a world of incomplete markets.
  The possiblity of moving to another region in the event of a shock is a
- way to self insure.
- The aim of this paper is firstly to investigate the value of this self
- insurance mechanism in terms of welfare, and secondly to establish whether
- changing government housing policy to abolish the mortgage interest rate
- deduction is an effective lever to increase migration rates.
+ way to self-insure against tail risk.
+\end_layout
+
+\begin_layout Standard
+The aim of this paper is firstly to investigate the value of this self insurance
+ mechanism, and secondly to establish whether changing government housing
+ policy to abolish the mortgage interest rate deduction is an effective
+ lever to increase migration rates.
  To address both issues, I propose a lifecycle model of consumption and
  savings, housing tenure and location choice, with aggregate uncertainty
  which affects prices in regions differentially.
- The differential impact of aggregate shocks by region allows migration
- to serve a partial insurance device.
+ Migration serves as a partial insurance device because regions are exposed
+ to aggregate shocks to a different degree, consistent with the observed
+ data.
  Taking a lifecycle perspective is necessary to account for a strong age
  effect in both mobility and ownership, which has implications for welfare
  statements about policies, since different age groups will be affected
@@ -218,32 +236,39 @@ Homeownership and the likelihood of moving across regions are negatively
 \end_layout
 
 \begin_layout Standard
-Government policy plays an important role in both housing and labor markets.
- In a US context, housing policies such as the mortgage interest tax deduction,
- the backing of mortgages originated through government sponsored agencies
- Fannie Mae and Freddie Mac, as well as zoning restrictions and building
- regulations all have profound impacts on the incentives consumers face
- in the housing market.
- Each of those policies may have been implemented originally in part to
- address a certain economic inefficiency in housing and capital markets
- (e.g.
- a shortage of housing after the second World War and moral hazard concerns
- may have warranted a down payment for mortgages, creating liquidity constraints
- that warranted government backing to provide cheaper mortgages) and in
- part to respond to political pressures of the day (e.g.
- the desire of the median voter for large suburban houses and cheap commuting
- into town), and there is a well-informed debate in economics about the
- the desireability of each of them (see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2011rethinking"
+Regional shocks to labor demand and house prices have profound and longlasting
+ impacts, as we are still witnessing in the aftermath of the 2007 fall in
+ house prices and ensuing Great Recession.
+ In this episode, we have seen highly correlated house price movements,
+ but widely varying magnitudes of shocks at the local level.
+ For example, the peak-to-trough decline in the Federal Housing Financing
+ Agency (FHFA) house price index from 2007 to 2011 ranged from -2.3% in Pittsburg
+h, to -61% for Las Vegas.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This refers to FHFA expanded house price index data for the 50 largest MSAs
+ in the USA.
+ Available at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_EXP_metro.txt
+\end_layout
 
 \end_inset
 
-).
- What is less well understood is how those policies interact with regional
- mobility when economic shocks occur, which is one of the contributions
- made by this paper.
+
+\end_layout
+
+\end_inset
+
+ The decline of the automobile industry in Detroit provides a vivid example
+ of the effects of a permanent shock to labor income and the ensuing consequence
+s for population growth in the area.
 \end_layout
 
 \begin_layout Standard
@@ -260,11 +285,10 @@ see American Community Survey 2013, table DP04.
 
  At the same time, roughly 1.3% of the population migrate across US census
  division boundaries per year.
- This number is composed of 1.9% of renters and 0.67% owners who move.
- These are large differences in the propensity to move, and the natural
- question to ask is why do we observe owners moving less? All else equal,
- owners face higher moving costs, both in terms of financial as well as
- time and effort costs.
+ Conditioning on ownership we find that 1.9% of renters and 0.67% owners move.
+ A natural question is then to ask why do we observe owners moving less?
+ All else equal, owners face higher moving costs, both in terms of financial
+ as well as time and effort costs.
  Financial costs occur because of transaction costs in the housing market
  upon sale of the house (e.g.
  agency fees or transaction taxes), while costs of effort arise from owners
@@ -303,8 +327,9 @@ In the model I develop, there are several mechanims which affect the home
 In terms of the decision to migrate to another region, the model predicts
  that the likelihood of migration is increasing in the difference of discounted
  expected lifetime utilities between any two regions.
- Those relative utilities, in turn, depend on the average regional income
- level and the level of regional house prices, both of which vary over time.
+ Those relative utilities, in turn, depend among other things on the average
+ regional income level and the level of regional house prices, both of which
+ vary over time.
  Allowing regional characteristics to vary is a significant contribution
  to the literature on dynamic migration models such as for example 
 \begin_inset CommandInset citation
@@ -313,9 +338,9 @@ key "kennan2003effect"
 
 \end_inset
 
-, since it provides a reason for agents to move in response to a change
- in their economic environment, rather than as a result of idiosyncratic
- preference shocks alone.
+, since it provides an additional reason for agents to move in response
+ to a change in their economic environment, rather than as a result of idiosyncr
+atic preference shocks alone.
  Including time-varying location characteristics, however, increases computation
 al demands substantially.
  The model features a factor structure which allows aggregate shocks to
@@ -329,24 +354,42 @@ I estimate the model using a simulated method of moments estimator.
  of interest, which are mobility and ownership patterns over the lifecycle,
  ownership rates by region, as well as wealth accumulation over the lifecycle
  and by region.
- After fitting the model to the data, I first perform some comparative statics
- exercises and then move on to counterfactual policy simulations.
+ After fitting the model to the data, I first illustrate how adding ownership
+ and assets to a dynamic migration model affects behaviour.
+ Then I use the model to compute the value of migration in case of a large
+ and permanent regional shock.
+ Finally, the model is used to perform counterfactual policy simulations.
  
 \end_layout
 
 \begin_layout Standard
-The comparative statics illustrate the reaction of migration rates with
- respect to large regional shocks to either labor income or house prices.
- The impulse responses differ depending on the direction of migratory flows
- (i.e.
- whether we consider in or out migration) and on ownership status.
- For example, conditional on being able to buy in a region, the immigration
- rate of owners is positively related to a change in house price, since
- their utility depends on the net present value of the housing investment,
- which is positively related to price.
- The opposite is true for renters, whose utility depends on the level of
- rents, which in turn depends on the house price, thus renter immigration
- is negatively related to a price increase in a given region.
+I find that owners and renters face very different incentives in the model.
+ The probability of moving conditional on being a renter is consistently
+ higher than the one for owners, and it varies considerably with income
+ and assets.
+ The model can be used to quantify the moving cost in terms of dollars,
+ and I find that the estimates for renters and owners bracket the moving
+ cost obtained in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Migration is a low probability event in both data and model.
+ Nevertheless, for individuals who actually move, the welfare implications
+ are large.
+ In particular, I investigate the reponse of the model to a realistically
+ large shock to house prices in a region.
+ By looking at the subset of people who move as a result of the shock, and
+ by comparing their respective outcomes to a scenario where moving is impossible
+, I'm able to quantify the value of the migration option.
+ I find that shutting down mobility for the group of would-be movers implies
+ a reduction of 13% of period consumption over the remainder of their lifetimes.
 \end_layout
 
 \begin_layout Standard
@@ -358,14 +401,11 @@ Regarding policy experiments, I'm interested in the effectiveness of policies
  For example, I find that abolishing the mortgage interest deduction would
  have a small positive impact on the migration rate.
  At first sight one might be tempted to think that removing the deduction
- would result in more renters, which would translate into an increase in
- migration, since renters move more.
+ would result in more renters, which would mechanically translate into an
+ increase in migration, since renters move more.
  The actual effect is more nuanced.
- First of all, relative moving probabilities change as the policy is enacted.
- Owning becomes a less attractive option, which decreases the incentives
- to search for a better housing market.
- Secondly, there is a general equilibrium effect at play which reduces equilibri
-um house prices.
+ First of all, there is a general equilibrium effect at play which reduces
+ equilibrium house prices.
  The interest rate deduction is a subsidy that is capitalized into house
  values, so removing it will reduce prices.
  In order to account for this general equilibrium effect to some extent
@@ -378,17 +418,19 @@ key "sommer2013implications"
 \end_inset
 
  to adjust prices after the policy is changed.
- Applying the price correction further attenuates the initially expected
- positive effect on migration, since lower prices allow more people to buy,
- thereby increasing the ownership rate.
- The change in the migration rate is of the order of 0.1 percentage points
- (corresponding to a 7.7% increase in the migration rate), depending on the
- way revenue neutrality is enforced and whether prices are adjusted.
+ Applying the price correction partly offsets the initial reduction in ownership
+, since lower prices allow more people to buy.
+ Lower prices and a higher level of disposable income for the poor after
+ redistribution of tax proceeds leads to easier access to ownership, in
+ more locations, and for a larger proportion of the population.
+ This results in a slight increase of the migration of 0.1 percentage points,
+ corresponding to a 2.5% increase in the migration rate.
 \end_layout
 
 \begin_layout Standard
 The second experiment investigates the effects of a government policy which
- directly affects the moving decision by altering the moving cost.
+ directly affects the moving decision by altering the moving cost in the
+ entire economy.
  The results of this highlight that moving costs are of first order importance
  for migration decisions, but that they also affect housing choices.
  Reducing moving costs to half their baseline level results in an increase
@@ -409,14 +451,15 @@ Literature.
 \end_layout
 
 \begin_layout Standard
+My paper builds on 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
 
 \end_inset
 
- first develop a model of migration with multiple location choices over
- the lifecycle.
+, who are the first to develop a model of migration with multiple location
+ choices over the lifecycle.
  Their main finding is that expected income is an important determinant
  of migration decisions, and their framework requires large moving costs
  to match observed migration decisions.
@@ -443,8 +486,8 @@ key "winkler2010effect"
 \end_layout
 
 \begin_layout Standard
-By considering regional shocks, this paper builds on the seminal contribution
- of 
+By considering regional shocks, this paper is also related to the seminal
+ contribution of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "blanchard1992regional"
@@ -459,12 +502,26 @@ key "blanchard1992regional"
  Related to this, 
 \begin_inset CommandInset citation
 LatexCommand cite
+key "notowidigdo2011incidence"
+
+\end_inset
+
+ analyses the incidence of local labor demand shocks on low-skilled workers
+ in a static spatial equilibrium model and finds that they are more likely
+ to stay in a declining city than high-skilled workers to take advantage
+ of cheaper housing.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+See 
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Moretti:2011fk"
 
 \end_inset
 
- analyses the welfare implications of shifts in productivity of certain
- types of workers in the static spatial equilibrium framework based on 
+ for a comprehensive overview of this literature going back to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Roback:1982uq"
@@ -479,22 +536,18 @@ key "rosen1979wage"
 \end_inset
 
 .
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Diamond:2012fk"
+\end_layout
 
 \end_inset
 
-, for example, uses this setup to analyse the welfare implications of the
- sorting of higher educated individuals into higher rent areas.
- The dynamic nature of my model allows me to evaluate the response of migration
- to shocks over time.
+ The same mechanism operates in my model.
+ Furthermore, the dynamic nature of my model allows me to evaluate the response
+ of migration to shocks over time.
 \end_layout
 
 \begin_layout Standard
-The effect of the 2007 housing bust on labor market mobility has spurred
- a lot of interest recently.
+Also related is a recent literature that considers the effects of the 2007
+ housing bust on labor market mobility.
  In terms of empirical contributions, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -550,14 +603,19 @@ key "karahan2011housing"
 \end_inset
 
  use search models of labor and housing markets to look at geographical
- mismatch and how the price drop affects unemployment and migration rates.
+ mismatch in order to understand how a fall in house prices affects unemployment
+ and migration rates.
  The last paper, in particular, formalizes the negative equity lock-in notion
  in a model with two locations and finds only a moderate effect of lock--in
  on the increase in unemployment.
+ The present paper differs from this group of contributions by assuming
+ multiple locations and by adopting a life-cycle framework.
 \end_layout
 
 \begin_layout Standard
-The federal tax code in the United States allows households to deduct mortgage
+Finally, the paper relates to the literature on tax treatment of housing
+ and ownership.
+ The federal tax code in the United States allows households to deduct mortgage
  interest payments from Federal taxes.
  
 \begin_inset CommandInset citation
@@ -595,30 +653,20 @@ key "sommer2013implications"
 \end_layout
 
 \begin_layout Standard
-The contribution of this paper is to provide a link between models of housing
- demand over the lifecycle, as for example 
+This paper merges housing demand over the lifecycle, as for example 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "bk_wenli"
 
 \end_inset
 
-, with the literature on dynamic migration following 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-.
+, with dynamic migration decisions under aggregate and regional shocks.
  I find that housing is an important feature of the individual migration
  decision.
- The likelihood of any given move depends not only on whether or not the
- individual owns their house, but also on the price and income levels in
- all potential destination regions, including the current one, and the current
- level of mortgage debt.
- Regional shocks are important drivers of migration.
- 
+ The likelihood of moving depends not only on whether or not the individual
+ owns their house and on their asset holdings, but also on the price and
+ income levels in all potential destination regions.
+ The value of the migration option to actual migrants is very large.
 \end_layout
 
 \begin_layout Section
@@ -1486,7 +1534,7 @@ CPS 2013 data on main motivation of moving, conditional on a cross Division
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1574,7 +1622,7 @@ and
 \emph on
 individual
 \emph default
- interchangeably in what follows.
+ interchangeably.
  Individuals are assumed to live in census Division (or 
 \emph on
 region
@@ -1788,6 +1836,10 @@ The price of human capital
 
  differs by region to reflect different industry compositions by region,
  which are taken as given.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
  Underlying this is an assumption about non--equalizing factor prices across
  regions.
  It is plausible to think that within a single country, wages should tend
@@ -1804,28 +1856,6 @@ key "redding"
 
 ).
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Shaded
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status collapsed
-
-\begin_layout Plain Layout
-TO DO: explain here better that use rank of 
-\begin_inset Formula $z$
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -1853,7 +1883,11 @@ When moving from region
 
 .
  The individual's next period income is then composed of the corresponding
- mean income at that date, 
+ mean income at that date in the new region 
+\begin_inset Formula $k$
+\end_inset
+
+, 
 \family roman
 \series medium
 \shape up
@@ -1869,7 +1903,7 @@ When moving from region
 \begin_inset Formula $\overline{y}_{kt+1}$
 \end_inset
 
-, and the deterministic age 
+, the deterministic age 
 \begin_inset Formula $t+1$
 \end_inset
 
@@ -1877,30 +1911,34 @@ When moving from region
 \begin_inset Formula $f(t+1)$
 \end_inset
 
-.
- The individual--specific idiosyncratic component 
+, and a new draw for 
 \begin_inset Formula $z_{it+1}$
 \end_inset
 
- for a mover with 
+ conditional on their current shock 
 \begin_inset Formula $z_{it}$
 \end_inset
 
- is drawn from a different conditional distribution than is the case for
- non-movers.
- Let us denote the conditional distributions of 
-\begin_inset Formula $z_{ik}|z_{id}$
+.
+ For a mover, this individual--specific idiosyncratic component is drawn
+ from a different conditional distribution than for non-movers.
+ Let us denote the different conditional distributions of 
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
- by 
-\begin_inset Formula $G_{k=d}$
+ given 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ for stayers and movers by 
+\begin_inset Formula $G_{\text{stay}}$
 \end_inset
 
  and 
-\begin_inset Formula $G_{k\neq d}$
+\begin_inset Formula $G_{\text{move}}$
 \end_inset
 
- for stayers and movers, respectively.
+, respectively.
  This setup allows for some uncertainty related to the quality of the match
  with a job in the new region 
 \begin_inset Formula $k$
@@ -1908,7 +1946,7 @@ When moving from region
 
 , as mentioned above.
  The shape of 
-\begin_inset Formula $G_{k\neq d}$
+\begin_inset Formula $G_{\text{move}}$
 \end_inset
 
  determines the probability with which a mover with current value 
@@ -1926,7 +1964,7 @@ When moving from region
 .
  The data will be informative about whether there is mean reversion or high
  persistence in 
-\begin_inset Formula $z'|z$
+\begin_inset Formula $G_{\text{move}}$
 \end_inset
 
  for movers.
@@ -2073,15 +2111,15 @@ p_{dt}
 \end_layout
 
 \begin_layout Standard
-I provide some illustration to the fit this model provides to the data in
- section 
+I provide some illustration regarding the fit this model provides to the
+ data in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Aggregate-to-regional"
 
 \end_inset
 
- where I describe the estimation of this part of the model in greater detail.
+, where I describe the estimation of this part of the model in greater detail.
  Notice that the great virtue of this formulation is that the relevant price
  and income related state variables in each region are subsumed in 
 \begin_inset Formula $\mathbf{P}_{t}$
@@ -2141,7 +2179,8 @@ key "Attanasio20121"
 
 \end_inset
 
-, I denote total nonhousing wealth at age 
+, I denote total financial (i.e.
+ non-housing) wealth at age 
 \begin_inset Formula $t$
 \end_inset
 
@@ -2166,7 +2205,7 @@ assets
 \end_inset
 
 , which translates into an implicit borrowing limit for owners.
- Additional to that, in order to buy a proportion 
+ Additional to that, in order to buy, a proportion 
 \begin_inset Formula $\chi p_{dt}$
 \end_inset
 
@@ -2175,7 +2214,12 @@ assets
 \begin_inset Formula $(1-\chi)p_{dt}$
 \end_inset
 
- is financed by a standard fixed rate mortgage.
+ is financed by a standard fixed rate mortgage with exogenous interest rate
+ 
+\begin_inset Formula $r^{m}$
+\end_inset
+
+.
  This constraint must be satisfied in each period, i.e.
  
 \begin_inset Formula $a_{t+1}\geq-(1-\chi)p_{dt},\forall t$
@@ -2185,17 +2229,6 @@ assets
  In other words, only owners are allowed to borrow with their house as a
  collateral, there is no unsecured debt, and the equity constraint must
  be satisfied in each period.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-This implies that if prices fall, owners may have to sell their house because
- they cannot satisfy the equity constraint.
- There is no mortgage default in the model.
-\end_layout
-
-\end_inset
-
  Selling the house incurs proportional transaction cost 
 \begin_inset Formula $\phi$
 \end_inset
@@ -2262,8 +2295,8 @@ Moving across locations is assumed to be costly in terms of utility.
  Moving costs differ between renters and owners.
  Moving for an owner requires to sell the house, which in turn requires
  some effort and time costs.
- This is on top of any other psychological costs incurred from moving states
- which are common between renters and owners.
+ This is in addition to any other psychological costs incurred from moving
+ states which are common between renters and owners.
  I specify the moving cost function as linear in parameters 
 \begin_inset Formula $\alpha$
 \end_inset
@@ -2287,7 +2320,7 @@ reference "eq:moving-cost"
 \begin_inset Formula $\alpha_{0,\tau}$
 \end_inset
 
- is an intercept that varies by unobserved type 
+ is an intercept that varies by unobserved moving cost type 
 \begin_inset Formula $\tau$
 \end_inset
 
@@ -2312,6 +2345,12 @@ reference "eq:moving-cost"
 \end_inset
 
 .
+ The unobserved moving cost type 
+\begin_inset Formula $\tau$
+\end_inset
+
+ takes on a finite number of discrete values and is a way to account for
+ the fact that in the data, some individuals never move.
 \end_layout
 
 \begin_layout Paragraph
@@ -2448,7 +2487,14 @@ The period
 
 , relating to whether or not children are present in the household.
  It evolves from one period to the next in an age-dependent way as described
- in the following section.
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Recursive-Formulation"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -2566,6 +2612,13 @@ dence of one choice on another.
 
 \begin_layout Subsection
 Recursive Formulation
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Recursive-Formulation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2593,7 +2646,7 @@ It is now possible to formulate the problem recursively.
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,j\right)
+x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,t\right)
 \]
 
 \end_inset
@@ -2665,17 +2718,23 @@ is irrelevant from the perspective of the individual: The only care about
 
 \end_inset
 
- I assume additive separability between utility and idiosyncratic location
+ Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1987"
+
+\end_inset
+
+, I assume additive separability between utility and idiosyncratic location
  shock 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- as well as conditional independence assumption that says that the transition
- of 
+ as well as independence of the transition of 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- is independent of 
+ conditional on 
 \begin_inset Formula $x$
 \end_inset
 
@@ -3297,15 +3356,15 @@ In this section I explain how the model is estimated to fit some features
 \end_inset
 
 , and the utility derived from housing for both household sizes, 
-\begin_inset Formula $\left(\xi(0),\xi(1)\right)$
+\begin_inset Formula $\left(\xi_{1},\xi_{2}\right)$
 \end_inset
 
 .
  We'll denote the parameter vector 
-\begin_inset Formula $\theta=\left\{ \alpha_{0,\tau},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi(0),\xi(1)\right\} $
+\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} $
 \end_inset
 
- in the following.
+.
  
 \end_layout
 
@@ -3560,7 +3619,7 @@ P_{t}
 \end_layout
 
 \begin_layout Standard
-The estimates from this equation by region are given in table 
+The estimates from this equation are given in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Estimates-VAR-agg"
@@ -3701,96 +3760,14 @@ reference "tab:Aggregate-to-Regional-VAR"
 
 \end_inset
 
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/VAR1-edit.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{1cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/VAR2-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Aggregate to Regional price mappings.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Aggregate-to-Regional-VAR"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
+ in the appendix.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3807,11 +3784,27 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Using the observed aggregate time series 
+This figure shows the observed 
+\begin_inset Formula $(y)$
+\end_inset
+
+ and predicted 
+\begin_inset Formula $(yhat)$
+\end_inset
+
+ time series for mean income by Census Division.
+ The prediction is obtained from the VAR model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+, which relates the aggreate series 
 \begin_inset Formula $\left\{ Y_{t},P_{t}\right\} _{t=1968}^{2012}$
 \end_inset
 
- to predict 
+ to mean income 
 \begin_inset Formula $\left\{ \overline{y}_{dt}\right\} _{t=1968}^{2012}$
 \end_inset
 
@@ -3819,14 +3812,24 @@ Using the observed aggregate time series
 \begin_inset Formula $d$
 \end_inset
 
+
+\emph on
 .
- The figures plots the actual regional median income 
-\emph on
-y
+ 
 \emph default
- and the model prediction 
+Agents use this prediction in the model, i.e.
+ from observing an aggregate value 
+\begin_inset Formula $\mathbf{P}_{t}=\left(P_{t},Y_{t}\right)$
+\end_inset
+
+ they infer a value 
 \emph on
-yhat.
+yhat 
+\emph default
+for each region above.
+ 
+\emph on
+
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:mapping-Y-y"
@@ -3871,26 +3874,25 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Using the observed aggregate time series 
-\begin_inset Formula $\left\{ Y_{t},P_{t}\right\} _{t=1968}^{2012}$
+This figure shows the observed 
+\begin_inset Formula $(p)$
 \end_inset
 
- to predict 
-\begin_inset Formula $\left\{ p_{dt}\right\} _{t=1968}^{2012}$
+ and predicted 
+\begin_inset Formula $(phat)$
 \end_inset
 
- for each region 
-\begin_inset Formula $d$
+ time series for house prices by Census Division.
+ Please refer to the previous figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mapping-Y-y"
+
 \end_inset
 
-.
- The figures plots the actual regional median house value 
+, which uses an identical proceedure.
 \emph on
-p
-\emph default
- and the model prediction 
-\emph on
-phat.
+
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Mapping-P-p"
@@ -3911,6 +3913,67 @@ name "fig:Mapping-P-p"
 \end_layout
 
 \begin_layout Subsection
+Individual Income Process
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Individual-Income-Process"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This part deals with the empirical implementation of equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:budget-labor-income"
+
+\end_inset
+
+, which models log labor income at the individual level.
+ I estimate the linear regression 
+\begin_inset Formula 
+\begin{eqnarray}
+\ln y_{idt} & = & \beta_{0}+\eta_{d}\ln\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\nonumber \\
+ & = & \beta_{0}+\left(\gamma_{d}\times\gamma_{\overline{y}}\right)\ln\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\label{eq:indiv-labor-empirical}
+\end{eqnarray}
+
+\end_inset
+
+where the region-specific influence of regional mean income 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ on individual income is specified as an interaction between a regional
+ fixed effect 
+\begin_inset Formula $\gamma_{d}$
+\end_inset
+
+ and the average effect 
+\begin_inset Formula $\gamma_{\overline{y}}$
+\end_inset
+
+ of regional income.
+ The results of this are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Regional-2-indiv-income"
+
+\end_inset
+
+ in the appendix.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:age-profiles"
+
+\end_inset
+
+, also in the appendix, illustrates predicted age profiles from this model.
+\end_layout
+
+\begin_layout Subsection
 Copula estimates for 
 \family roman
 \series medium
@@ -3924,7 +3987,7 @@ Copula estimates for
 \noun off
 \color none
 
-\begin_inset Formula $G_{k\neq d}\left(z_{ikt+1},z_{idt}\right)$
+\begin_inset Formula $G_{\text{move}}$
 \end_inset
 
 
@@ -3947,11 +4010,11 @@ The conditional distribution of
 \begin_inset Formula $z$
 \end_inset
 
- for movers is specified as the density of a bivariate copula 
-\begin_inset Formula $C$
+ for movers is specified as the density of a bivariate normal copula 
+\begin_inset Formula $G_{\text{move}}$
 \end_inset
 
- with normal margins, which is invariant to date and region.
+, which is invariant to date and region.
 \begin_inset Foot
 status collapsed
 
@@ -3984,7 +4047,33 @@ key "bonhomme2006modeling"
 
 \end_inset
 
- To estimate the parameters of the copula, I view 
+ This means I assume that the conditional probability of drawing 
+\begin_inset Formula $z'$
+\end_inset
+
+ in new region 
+\begin_inset Formula $k$
+\end_inset
+
+ is the same regardless the origin location.
+ It would be straightforward to relax this assumption, but data limitations
+ forced me to impose this restriction.
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+To estimate the parameters of the copula, I view 
 \begin_inset Formula $z_{idt}$
 \end_inset
 
@@ -3996,7 +4085,7 @@ reference "eq:income-process"
 \end_inset
 
  as the residual from an ordinary least squares regression of log wages
- on time and region effects, as well as person specific demographic predictors.
+ on time and region effects, as well as person specific demographic variables.
  The question is whether individuals with a particularly high residual 
 \begin_inset Formula $z_{idt}$
 \end_inset
@@ -4015,15 +4104,23 @@ reference "eq:income-process"
 \end_inset
 
 .
- In a first step I estimate the marginal distributions, which is just the
- cross-sectional distribution of both margins.
- Unsurprisingly, both margins are close to normal, which indicates a well-specif
-ied regression model.
- The next step involves fitting the copula via maximum likelihood to those
- data.
- The results indicate that there is a relatively high degree of dependence
- in the residual, with the estimated copula parameter of the order of 0.7.
- This estimate is in line with a simple correlation measure between 
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+In a first step I estimate the marginal distributions of 
 \begin_inset Formula $z_{idt}$
 \end_inset
 
@@ -4031,72 +4128,91 @@ ied regression model.
 \begin_inset Formula $z_{ikt+1}$
 \end_inset
 
- in table 
+ for all movers.
+ These are the cross-sectional distributions of residuals 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ from the regression in expression 
 \begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Correlation-z"
+LatexCommand eqref
+reference "eq:copula-margins"
 
 \end_inset
 
-.
- Notice also that the correlation is smaller than then one observed in the
- period preceding the move.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/z_corrtab.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Correlation measures of log income residual of cross-divison movers in SIPP
- data in period before and after the move at dat 
+, which is estimated for all movers.
+ The move takes place in period 
 \begin_inset Formula $t$
 \end_inset
 
+, such that by assumption, 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ is the residual wage in origin location 
+\begin_inset Formula $d$
+\end_inset
+
+, and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ is the residual wage in the new location 
+\begin_inset Formula $k$
+\end_inset
+
 .
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Correlation-z"
+\begin_inset Formula 
+\begin{equation}
+\ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins}
+\end{equation}
 
 \end_inset
 
+Here 
+\begin_inset Formula $p(\text{age})$
+\end_inset
 
-\end_layout
+ is a third order polynomial in age, metro is an indicator for metropolitan
+ status and 
+\begin_inset Formula $\gamma_{d}$
+\end_inset
+
+ is a Division fixed effect.
+ Then I convert the residuals into their respective rank in the empirical
+ distributions of before and after move residuals.
+ Denoting the standardized values by 
+\begin_inset Formula $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$
+\end_inset
+
+, the next step involves fitting the a normal copula via maximum likelihood
+ to this data.
+ The results are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Normal-Copula-estimates"
 
 \end_inset
 
-
-\end_layout
-
+, and they indicate relatively high correlation in the copula dependence
+ parameter of around 0.7.
+ In the structural model, I use the current rank of 
+\begin_inset Formula $z$
 \end_inset
 
+ for a mover together with the copula estimate 
+\begin_inset Formula $\hat{G}_{\text{move}}$
+\end_inset
 
+ to draw the next period rank and thus value of 
+\begin_inset Formula $z'$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -4104,58 +4220,76 @@ Values for preset parameters
 \end_layout
 
 \begin_layout Standard
-to do.
- discuss sources.
-\end_layout
-
-\begin_layout Subsection
-Identification
-\end_layout
-
-\begin_layout Standard
-to do.
-\end_layout
-
-\begin_layout Standard
-Slices through the SMM objective function at the initial value of the parameter
- vector are shown in figure 
+I take several parameters for the model from the literature, as shown in
+ table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:SMM-objective-function"
+reference "tab:Parameter-estimates"
 
 \end_inset
 
 .
-\end_layout
+ The estimates for the components of the idiosyncratic income shock process
+ for non-movers, i.e.
+ the autocorrelation 
+\begin_inset Formula $\rho=0.96$
+\end_inset
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
+ and standard deviation of the innovation 
+\begin_inset Formula $\sigma=0.118$
+\end_inset
+
+ are taken from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "french_2005"
+
+\end_inset
+
+.
+ I set the financial transaction cost of selling a house, 
+\begin_inset Formula $\phi$
+\end_inset
+
+, to 6% in line with 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Li"
+
+\end_inset
+
+ and conventionally charged brokerage fees.
+ The time discount factor 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is set to 0.96, and the downpayment fraction 
+\begin_inset Formula $\chi$
+\end_inset
+
+ is 10%, in line with lower downpayment requirements for much of the period
+ 1997--2012.
+ The interest rate for savings, 
+\begin_inset Formula $r$
+\end_inset
+
+ is 3% and the interest rate for fixed rate mortgages is 
+\begin_inset Formula $r^{m}$
+\end_inset
+
+ is set at 6%, broadly in line with average rates observed by the Board
+ of Governors
+\begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_graphs_jl/objfun copy.pdf
-	scale 75
-
-\end_inset
-
-
-\end_layout
+Data from FRED: 
+\begin_inset Flex URL
+status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Caption
 
-\begin_layout Plain Layout
-SMM objective function slices
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:SMM-objective-function"
-
-\end_inset
-
-
+http://research.stlouisfed.org/fred2/series/MORTG
 \end_layout
 
 \end_inset
@@ -4165,7 +4299,12 @@ name "fig:SMM-objective-function"
 
 \end_inset
 
+.
+ 
+\end_layout
 
+\begin_layout Subsection
+Identification
 \end_layout
 
 \begin_layout Section
@@ -4383,13 +4522,13 @@ name "tab:fit-model-nontarget"
 \end_layout
 
 \begin_layout Subsection
-Comparative Statics (or: Model Mechanisms?)
+Properties of the model
 \end_layout
 
 \begin_layout Standard
 In this section I use model to illustrate several mechanisms which are implied
- by the inclusion of homeownership status and assets into the state space
- of a dynamic migration model à la 
+ by the inclusion of homeownership status and assets into a dynamic migration
+ model à la 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
@@ -4397,184 +4536,15 @@ key "kennan2003effect"
 \end_inset
 
 .
- Before going into greater detail, it is worth pointing out that owners
- and renters have opposed incentives with regards to house prices, which
- will be a recurring theme in the following.
- The opposing incentives are mainly a result of the specification of the
- final period value function, which depends on home equity.
- This implies that, all else equal, owners prefer higher prices, while renters
- prefer lower ones.
- This has to do with renters' desire to become owners (which is more difficult
- with higher prices given the downpayment constraint) and higher rents associate
-d with higher prices.
+ A central theme will be the opposing effects of house prices between owners
+ and renters.
+ This is due to wealth effects of housing (owners prefer higher prices),
+ and the effect of prices on rents (renters prefer lower rent).
  
 \end_layout
 
 \begin_layout Subsubsection
 Probability of Migrating
-\end_layout
-
-\begin_layout Standard
-Characterizing migration decisions with the help of observational data is
- not an easy task.
- In the vast majority of cases there is no observable difference between
- two individuals, where one moves and the other does not.
- Unobservable state variables play clearly an important role here.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The list of potentially strong predictors of moving decisions is job offers,
- family reunions, sickness of family member, children having left home (for
- college, for example), etc.
-\end_layout
-
-\end_inset
-
- Following directly the reasoning in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "1987"
-
-\end_inset
-
-, those unobservables are collected in a location-specific vector of shocks
- 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
-.
- This is not to say that we cannot say anything at all about migration decisions
- -- far from it.
- This is more a case of acknowledging that we only have data 
-\begin_inset Formula $x$
-\end_inset
-
- available and trying to model the conditional choice probability function
- 
-\begin_inset Formula $Q(d,k,x)$
-\end_inset
-
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:prob-of-moving"
-
-\end_inset
-
- 
-\begin_inset Formula $ $
-\end_inset
-
-as good as possible to reflect observable differences in the probability
- of moving.
- I will discuss 
-\begin_inset Formula $Q(d,k,x)$
-\end_inset
-
- in detail now.
-\end_layout
-
-\begin_layout Standard
-The probability of migrating 
-\begin_inset Formula $Q$
-\end_inset
-
- varies over the state space along the asset, income, and ownership status
- dimensions.
- In order to facilitate the discussion, it is useful to briefly refer to
- an example with two discrete choices 
-\begin_inset Formula $j=1$
-\end_inset
-
- and 
-\begin_inset Formula $j=2$
-\end_inset
-
- and consider the effects on the probability of choosing option 
-\begin_inset Formula $j=1$
-\end_inset
-
-, as its associated value, 
-\begin_inset Formula $v_{1}$
-\end_inset
-
-, varies.
- This will enable us to better relate changes in the state space of the
- model, which affect the relative values of any given location (e.g.
- 
-\begin_inset Formula $v_{1}$
-\end_inset
-
-), to changes in moving probabilities.
- Let us start therefore with figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Illustration-of-conditional"
-
-\end_inset
-
-, which plots the conditional choice probability function 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:prob-of-moving"
-
-\end_inset
-
- for the simplified case of 
-\begin_inset Formula $D=2$
-\end_inset
-
-, i.e.
- for two regions.
- Denoting the lifetime utilities in each region by 
-\begin_inset Formula $v_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $v_{2}$
-\end_inset
-
-, and fixing 
-\begin_inset Formula $v_{2}=1$
-\end_inset
-
-, we are interested in how the probability of moving to region 
-\begin_inset Formula $j=1$
-\end_inset
-
- changes as the corresponding value 
-\begin_inset Formula $v_{1}$
-\end_inset
-
- is changed.
- It is clear that if 
-\begin_inset Formula $v_{1}=v_{2}$
-\end_inset
-
-, the probability of moving is 0.5, and it is increasing along the sigmoid
- curve in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Illustration-of-conditional"
-
-\end_inset
-
- in the difference 
-\begin_inset Formula $v_{1}-v_{2}$
-\end_inset
-
-.
- In the examples to follow, changes in the differences 
-\begin_inset Formula $v_{d}-v_{k}$
-\end_inset
-
- determine changes to the aggregate moving probability.
- Given the nonlinear nature of any given value function 
-\begin_inset Formula $v$
-\end_inset
-
-, those change will be nonlinear over the state space.
 \end_layout
 
 \begin_layout Standard
@@ -4606,7 +4576,7 @@ reference "eq:prob-of-moving"
 
 \end_inset
 
-, conditioning on quantiles of the state space variables assets 
+, conditioning on quantiles of the variables assets 
 \begin_inset Formula $(a)$
 \end_inset
 
@@ -4726,6 +4696,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf
+	height 49theight%
 
 \end_inset
 
@@ -4780,6 +4751,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_income.pdf
+	height 45theight%
 
 \end_inset
 
@@ -4826,6 +4798,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_pz.pdf
+	height 45theight%
 
 \end_inset
 
@@ -4948,19 +4921,11 @@ key "kennan2003effect"
 \begin_inset Quotes erd
 \end_inset
 
- There is no clear mapping from their moving cost to what moving costs stand
- for in this model; for instance, given their linear utility setup, a conversion
- to dollar values is simple, whereas here it's somewhat more complicated.
- First, the utility function is composed of multiple parts, so that the
- above measurement needs to be applied; second, risk aversion and the curvature
- of the consumption function imply diminishing returns from greater amounts
- of consumption.
- So while a clear-cut comparison is not possible, I can show that moving
- cost vary by housing status.
+ 
 \end_layout
 
 \begin_layout Standard
-The results of this exercise are displayed in table 
+The results are displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:MC-money"
@@ -4968,16 +4933,17 @@ reference "tab:MC-money"
 \end_inset
 
 .
- Calculating the moving cost as outlined above implies a moving cost for
- renters at age 20 
+ To calculate moving costs from my nonlinear model, I use a money metric
+ measure.
+ The moving costs for renters at age 20 
 \begin_inset Formula $(t=1)$
 \end_inset
 
- of $159,000, and it is only $6,830 in their final period of life.
- The corresponding numbers for owners are $575,000 and $7,266,000 in first
- and final period of life.
- It is interesting to note that the estimates in period one bracket the
- average cost of $312,000 reported in 
+ are $159,000, and only $6,830 in their final period of life.
+ The corresponding numbers for owners are $575,000 and $7,266,000 in the
+ first and the final period of life.
+ The estimates in period one bracket the average cost of $312,000 reported
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
@@ -4986,8 +4952,7 @@ key "kennan2003effect"
 
 .
  The very large costs for owners in the final period are implied by the
- big value owners obtain from exiting the model with home equity (i.e.
- staying in their house).
+ big value owners obtain from home equity.
 \end_layout
 
 \begin_layout Standard
@@ -5063,7 +5028,7 @@ There are several reasons for why owners move less than renters.
 
 .
  Second, owners pay a transaction cost each time they sell the house (proportion
-al fixed cost 
+al cost 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -5102,7 +5067,7 @@ reference "tab:Decomposing-owner's-moving"
 
 .
  Ownership increases as we successively remove frictions along the first
- row of the table, which is only natural.
+ row of the table, as expected.
  Perhaps more surprisingly, the second row shows that the average migration
  rate increases by roughly the same amount if we remove the owner's moving
  cost 
@@ -5114,9 +5079,8 @@ reference "tab:Decomposing-owner's-moving"
 \end_inset
 
 .
- We must not immediately jump to the conclusion that this tells us that
- financial frictions are of equal importance for the greater reluctance
- of owners to move than non-financial frictions.
+ This does not mean that financial frictions are of equal importance for
+ mobility than non-financial ones.
  As shown in the final two rows of the table, this result is driven by a
  change in composition, i.e.
  the aggregate migration rate is higher because we have more owners, who
@@ -5192,7 +5156,7 @@ name "tab:Decomposing-owner's-moving"
 \end_layout
 
 \begin_layout Subsubsection
-The effects on migration of a shock to the regional house price level
+The effects on migration of a regional shock
 \end_layout
 
 \begin_layout Standard
@@ -5258,551 +5222,112 @@ The surprise assumption is necessary to observe a causal effect of the price
 
 \end_inset
 
- I consider two scenarios, one where the shock is permanent thereafter,
- i.e.
+ The shock is permanent thereafter, i.e.
  
-\begin_inset Formula $\iota_{2007+t}=0.7,t=0,1,\dots$
-\end_inset
-
-, and a second one where the shock reverts back to trend over three years,
- i.e.
- 
-\begin_inset Formula $\iota=\left\{ 0.7,0.8,0.9,1.0,1.0,\dots\right\} $
+\begin_inset Formula $\iota_{2007+\kappa}=0.7,\kappa=0,1,\dots$
 \end_inset
 
 .
- The experiment highlights the different incentives to renters and owners
- to move to a given region, or to leave a region.
- 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+ A separate experiment with a shock that reverts back over 3 years to trend
+ delivered similar results, just limited to a shorter timeframe.
 \end_layout
 
-\begin_layout Standard
-Starting with the case for current owners, I will focus here on the effect
- of owners who move into and subsequently decide to buy in Pacific.
- Their decision to move and buy is driven mainly by the long-term prospects
- for the housing investment.
- This is driven in part by the final period value function, which depends
- on the value of the house in the last period, and in part by the capital
- gains realized in case the house is sold.
- Therefore we would expect short-term and permanent shocks to have differential
- impacts on the respective decisions to move into Pacific and not.
- 
+\end_inset
+
+ The series for mean income is held constant in this experiment.
+ An illustration of the shocked price series is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Shocked-price-series."
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:own-buy-p-perm"
+reference "fig:pshock-outflow"
 
 \end_inset
 
- shows the case for the permanent price shock.
- We see that under the baseline the immigration rate of owners, who decide
- to buy, tracks the baseline house price curve as shown in the panel for
- Pacific in figure 
+ gives an overview of total outflow from Pacific as the price drops in 2007.
+ We can see that on average around 1% of households would leave the region
+ in any given year, and there are fewer individuals leaving after the shock
+ hits in 2007.
+ To understand why the rate of outflow falls, we must look at the behaviour
+ of renters and owners separately.
+\end_layout
+
+\begin_layout Standard
+Let's first look at the migration behaviour of owners.
+ The left panel of figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Mapping-P-p"
+reference "fig:pshock-outflow-own-rent"
 
 \end_inset
 
-.
- Owner/buyers here have a strong investment motive, where the value of owning
- in Pacific is strictly increasing in the house price.
- Comparing this to the shock scenario where the price is permanently reduced
- by 30%, the immigration rate drops dramatically: the price having dropped
- makes housing in Pacific appear as a much less worthwhile investment, and
- the rate at which owners who want to buy are moving into Pacific collapses.
- Notice that agents here have rational expectations about the fact that
- prices are not going to recover, as this is embedded in the expected future
- values they compute, now taking into account the lower future prices.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_6_permanent_2007_toj_own_buy.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Change in migration rates into Pacific of owners who are looking to buy,
- when applying a permanent shock to prices.
- This compares the immigration rates of buying owners under the baseline
- (i.e.
- real data) scenario with a scenario where the baseline price is reduced
- to 30% of it's level starting in year 2007.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:own-buy-p-perm"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Contrasting this to the 3-year reverting price shock reveals a different
- picture.
- In this instance, the immigration rate of owners who buy in Pacific jumps
- to very high level relative to the baseline before reverting back in 2009--2010
-, when the shock fades out.
- The interpretation of this is straightforward and has to do with above
- mentioned investment motives of owners: relative to the baseline, where
- prices in 2007 are close to their peak, a 30% reduction in the price level
- makes buying in Pacific a very sound investment for agents in the model.
- They expect prices to return to the levels implied by the current state
- of the aggregate factors 
-\begin_inset Formula $\mathbf{P}_{2007}$
-\end_inset
-
-, which -- given the degree of persistence observed in that process -- means
- they expect high prices into the foreseeable future.
- According to the assumed expectations model, this is an investment with
- high expected return.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p3_6_3-year_2007_toj_own_buy.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Change in migration rates into Pacific of owners who are looking to buy,
- when applying a 3--year reverting shock to prices.
- We observe a very large increase in immigration when the shock hits in
- 2007, quickly fading out after 2009 when the price series reverts back
- to the baseline.
- Moving in 2007 to Pacific to buy at 30% reduced prices is a high return
- investment.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:own-buy-p3"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The response of renters who want to continue renting in Pacific tells a
- largely similar tale, albeit driven by different motivating factors.
- Renters in the model are renters only because they cannot afford the downpaymen
-t.
- In other words, all agents in the model agree that owning a house is preferrabl
-e to renting it.
- This in turn implies that if a household rents in a given location, they
- are likely to rent in another location, because their level of wealth has
- not changed.
- Of course this is conditional on the relative price difference between
- any two regions.
- Summing up, renters who want to continue renting are expected to care about
- the rent they have to pay in any given destination region.
- We would expect the immigration rate of renters to be negatively correlated
- to the level of prices (which affects rents).
-\end_layout
-
-\begin_layout Standard
-Looking at figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:exp-p-rent-perm-to6"
-
-\end_inset
-
-, where I plot the response of moving renters to the permanent price shock
- in Pacific, we can see that after the shock arrives, the immigration rate
- more than doubles and stays at a permanently higher level relative to the
- baseline.
- This is driven by the higher levels of consumption and saving renters can
- afford in Pacific under the lower price scenario, which translate into
- higher levels of utility.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p_6_permanent_2007_toj_rent_rent.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Response in immigration rates for renters choosing to rent in the destination
- region Pacific as a result of a permanent reduction of prices of 30% from
- 2007 onwards.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:exp-p-rent-perm-to6"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The corresponding case for the temporary shock to prices is again similar
- for renters and owners.
- The sudden drop in prices in 2007 makes Pacific a more desireable location
- to rent relative to other regions, and relative to the baseline, where
- the immigration of renters actually decreases as prices to towards their
- 2008 peak.
- At difference to the case with a permanent shock, it is quite clear that
- the change in behaviour lasts only as long as the reduction in rent: as
- soon as the shock fades out in 2010, the immigration rate in baseline and
- shock scenario are the same.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/p3_6_3-year_2007_toj_rent_rent.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Response in immigration rates for renters choosing to rent in the destination
- region Pacific as a result of a temporary shock to house price in 2007
- which reverts back to the baseline over the course of 3 years.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:p-3yr-rent-rent"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-The effects of a shock to the regional labor income level
-\end_layout
-
-\begin_layout Standard
-This experiment is analogous in spirit to the previous one.
- It is worth keeping in mind, however, that the regional factor 
-\begin_inset Formula $\overline{y}_{d,t}$
-\end_inset
-
- enters with a factor loading into the log earnings equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:income-process"
-
-\end_inset
-
-, whereas the price effects enter directly into the budget constraints.
- Other than applying the 30% shock to the regional income level 
-\begin_inset Formula $\overline{y}_{6,t}$
-\end_inset
-
- instead of to prices, the experiment is set up identically with what regards
- assumptions about behaviour and expectations.
- In order to faciliate a comparison across experiments, I will discuss the
- results in the same order as in the price shock case.
-\end_layout
-
-\begin_layout Standard
-Starting therefore with the immigration rate of owners into the Pacific
- region, in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:own-buy-y-perm"
-
-\end_inset
-
- we can see that moving becomes less attractive for owners after the reduction
- of the income level.
- The channel through which this operates is clear, since a lower level of
- income at all ages and realizations of the idiosyncratic shock 
-\begin_inset Formula $z_{it}$
-\end_inset
-
- implies lower levels of consumption over the lifecycle, leading to lower
- utility and therefore lower attraction to Pacific.
- The fact that the shock is permanent means that the immigration rate does
- not revert back after 2010.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_6_permanent_2007_toj_own_buy.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Migration rates for owners moving to Pacific in baseline in permanent regional
- income shock scenarios.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:own-buy-y-perm"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The effects are different for owners and renters alike in the case of a
- temporary shock to the regional income level.
- Focusing on owners first, figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:y3-own-buy"
-
-\end_inset
-
- illustrates the immigration rate drops temorarily in 2007 and 2008, but
- thereafter quickly recovers to the baseline level.
- In comparison to the response temporary price drop, notice first that the
- effect goes in the opposite direction, and secondly that it is less pronounced.
- The no long-term effects from temporarily reduced income are smaller than
- the ones associated with the house price drop.
- This is due to very large capital gains on housing.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y3_6_3-year_2007_toj_own_buy.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Changes in immigration to Pacific of owners as a result of a 3 year temporary
- shock to the regional mean income level.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:y3-own-buy"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Finally, let's discuss the case of moving renters when income is shocked
- in Pacific for different periods of time.
- The plot in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:rent-rent-y-perm"
-
-\end_inset
-
- shows a pronounced and persistent drop in the immigration rate of renters
- into the region due to the shock to regional income.
- The mechanics behind this are identical to the owners' case discussed just
- before, with lower income leading to lower utility.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y_6_permanent_2007_toj_rent_rent.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Renters' response to a permanent income reduction in Pacific.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:rent-rent-y-perm"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Last to discuss in this subsection is the response of renters to the temporary
- income shock.
- We observe in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:rent-rent-y3"
-
-\end_inset
-
- that there is only a marginal response in the immigration rate due to the
- temporary decrease in income.
+ plots the proportion of owners in Pacific who leave the region in each
+ year.
+ The price shock causes a much larger fraction of owners to move away.
+ The mechanism here is that owners care about capital gains, and the drop
+ in prices means that they earn a lower return in Pacific than in other
+ regions.
  
 \end_layout
 
 \begin_layout Standard
+The reverse mechanism is at work for renters.
+ We can see in the right panel of the same figure that the rate of emigrating
+ renters falls sharply after the shock to almost half its level in the baseline
+ scenario.
+ Renters have two motives to remain in Pacific, when before they would have
+ moved away.
+ First of all, given that rent is a constant fraction of house price, their
+ cost of living was reduced substantially by the cost, so they enjoy greater
+ disposable income.
+ Secondly, renters want to become owners at some point, and the downpayment
+ constraint is less severe with lower prices.
+ In fact, the homeownership rate in Pacific increases substantially due
+ to this effect.
+ This links back to the initially mentioned result found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "notowidigdo2011incidence"
+
+\end_inset
+
+.
+ There, low skilled individuals are less likely to move away from a depressed
+ region because they want to take advantage of cheap housing.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
+placement p
 wide false
 sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/y3_6_3-year_2007_toj_rent_rent.pdf
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/pshock.tex}
+\end_layout
 
 \end_inset
 
@@ -5813,11 +5338,65 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Renters' change in immigration to Pacific when the region's income level
- is temporarily reduced by 30%.
+Shocking the house price series for Pacific from 2007 onwards, The shock
+ multiplies the data series with the factor 
+\begin_inset Formula $\iota=0.7$
+\end_inset
+
+, i.e reduces the level by 30%.
+ The dashed line in the right panel is the path of house prices after the
+ shock.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:rent-rent-y3"
+name "fig:Shocked-price-series."
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_move.pdf
+	height 49theight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The effect of a 30% decrease of the house price level in 2007 for the Pacific
+ region on the outflow of migrants from the region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pshock-outflow"
 
 \end_inset
 
@@ -5835,46 +5414,162 @@ name "fig:rent-rent-y3"
 \end_layout
 
 \begin_layout Standard
-It is at this point worth taking stock of the effects of shocking regional
- level house price or income levels.
- Firstly, there is stark difference in responses depending on whether the
- shock is expected to last forever or only for a certain period.
- This is the case for all types of agents (owners as well as renters) and
- for the shocks applied to either regional variable price or income.
- Secondly, it is important to distinguish between renters and owners when
- appreciating the migratory response to regional shocks.
- Owners have different concerns than renters, relating mainly to their expectati
-on about capital gains from selling the house in some future period or bequeatin
-g it to their offspring.
- For example the effects of a drop in house prices triggers vastly different
- responses in immigration decisions from owners, depending on the length
- of the low-price period.
- In figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:own-buy-p-perm"
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
+	width 49text%
 
 \end_inset
 
-, where the shock is permanent, the immigration of owners drops to a permanently
- lower level because housing is not a good investment; in constrast to that,
- figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:own-buy-p3"
+
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_rent_move.pdf
+	width 49text%
 
 \end_inset
 
- shows the case where the price drop is temporarily, causing great numbers
- of people to move into the region to take advantage of the current low
- prices, which are expected to recover after 3 years.
+
 \end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The effect of a 30% decrease of the house price level in 2007 for the Pacific
+ region on the outflow of owners and renters from the region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pshock-outflow-own-rent"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For owners and renters who are considering to move to Pacific, the incentives
+ are aligned.
+ Both prefer to stay away from the now relatively low-price region.
+ This is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pshock-inflow-own-rent"
+
+\end_inset
+
+.
+ For the case of owners this is as above: because owners want a high return
+ on their investment, there are now better regions to move to than Pacific.
+ Somewhat counterintuitively, the same is true for renters: also renters
+ care about the value of the housing stock in a given region, since this
+ is what they are ultimately interested in -- i.e.
+ they want to become owners.
+ Given that Pacific has lost it's high-return status, they prefer to move
+ elsewhere.
+ 
+\end_layout
+
+\begin_layout Standard
+The effects of a shock to regional labor income are as expected: a shock
+ to labor income makes the region less desirable for both renters and owners,
+ and we see a reduced inflow and an increased outflow of individuals.
+ The corresponding graphs can be found in the appendix as figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:yshock-aggregate-out"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:yshock-out-rent-own"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_own_move.pdf
+	width 49text%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_rent_move.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Changes in migratory flows into the Pacific region after a 30% price shock
+ in 2007.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pshock-inflow-own-rent"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The value of Migration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
 
 \begin_layout Subsection
 Reducing the price variance
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In this subsection I investigate the effect of regional variation in house
  prices on migration and ownership decisions.
  We will compare the baseline model to a scenario where the variance in
@@ -5894,7 +5589,7 @@ reference "fig:Compressing-the-regional"
  visualizes the price transformation.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 I'll first refer to the overall effects in aggregate ownership and mobility
  rates with the help of table 
 \begin_inset CommandInset ref
@@ -5929,7 +5624,7 @@ reference "tab:compress-summary"
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 These effects are driven by a change in composition (fewer owners), and
  a change in migration behaviour due to the now different values of housing
  in each region.
@@ -5990,7 +5685,7 @@ to
  shift from moving to Pacific and into New England.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -6045,16 +5740,12 @@ name "fig:Compressing-the-regional"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6103,16 +5794,12 @@ name "tab:compress-summary"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6146,6 +5833,11 @@ Effects of smaller price shocks.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:compress-mechanisms"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -6357,6 +6049,10 @@ iers or owner-landlords.
  They find that house prices decrease on the order of 5% when the mortgage
  interest deduction is abolished, with rents keeping roughly constant and
  the homeownership rate increases from 65% to 71%.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
  The mechanism is as follows: removing the subsidy lowers the equilibrium
  house price, since this is no longer capitalized into the value of the
  house; lower house prices makes housing affordable to more low wealth people
@@ -6367,6 +6063,11 @@ iers or owner-landlords.
  to adjust the level of house prices by 5% in all locations when removing
  the mortgage deduction seems like a worthwhile exercise to at least approximate
  a potential general equilibrium effect in my model.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6408,6 +6109,7 @@ reference "tab:sinai-data"
 
 \begin_layout Standard
 \begin_inset Float table
+placement h
 wide false
 sideways false
 status collapsed
@@ -6512,10 +6214,29 @@ To provide some guidance, it is useful to start with a simple calculation
 \end_layout
 
 \begin_layout Standard
-The choice probabilities do change after the policy is implemented for various
- reasons.
- Without a GE price adjustment, removing the subsidy makes housing less
- desirable.
+The choice probabilities do change after the policy is implemented.
+ In fact, it is easy to show that the only case under which the relative
+ moving probabilities would remain constant is the one where the relative
+ lifetime utilities in each region would change by exactly the same amount.
+ This is not very likely to happen.
+ Remember that the value in any location is determined by the utility derived
+ from owning (enters utility directly), by the level of house prices (enters
+ utility in a dynamic sense by affecting final period value), and by the
+ level of consumption.
+ Given a vector of house prices and incomes in the baseline environment,
+ we can determine the relative differences in utilities and the corresponding
+ probabilities of moving.
+ Removing the mortgage deduction affects the price and income vectors.
+ Furthermore, by redistributing tax receipts we increase disposable income
+ of a set of the population that was not able to buy before -- not in their
+ current region, and possibly not in another region.
+ Higher income increases the odds that this group is able to buy, and if
+ they are able to buy in another, more desireable region, the odds of them
+ moving increase as well.
+\end_layout
+
+\begin_layout Standard
+Without a GE price adjustment, removing the subsidy makes housing less desirable.
  This affects owners and renters alike because the value of housing is an
  important determinant for lifetime utility.
  In the case of owners this is obvious as they receive a stream of utility
@@ -6525,59 +6246,6 @@ The choice probabilities do change after the policy is implemented for various
  the expected value of housing.
  Therefore, removing the subsidy lowers the incentives to move to a more
  profitable housing market.
- A different way to see this is to look at the conditional choice probability
- function 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:prob-of-moving"
-
-\end_inset
-
- and realize that reducing all components by the same amount 
-\begin_inset Formula $b>0$
-\end_inset
-
- results in a lower probability of moving for the same difference in values
- 
-\begin_inset Formula $\epsilon$
-\end_inset
-
-, by the shape of the exponential function.
- I provide a simple example in the appendix.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-instead of lowering all values by 
-\begin_inset Formula $b$
-\end_inset
-
-, the policy will affect the conditional values 
-\begin_inset Formula $v(x,k)$
-\end_inset
-
- differentially because even though the same monetary amount is involved
- in each region (i.e.
- cash on hand changes in exactly the same way), the implications for choice
- behaviour differ across regions.
- For example, an increase in cash 
-\begin_inset Formula $\hat{x}$
-\end_inset
-
- may lead a renter to buy in region 
-\begin_inset Formula $j$
-\end_inset
-
- but not in region 
-\begin_inset Formula $k$
-\end_inset
-
-.
- 
-\end_layout
-
-\end_inset
-
  
 \end_layout
 
@@ -6606,7 +6274,8 @@ Looking at the table and starting with scenario (1), we see that removing
  the subsidy without any compensation decreases the ownership rate by 6%.
  This is a result of shifting owners, who are at the margin in the baseline
  scenario, into the renter population by making owning more expensive.
- The migration rate increases slightly by 1.5%.
+ The migration rate increases slightly by 1.5% mainly due to the change in
+ composition.
  This policy results in a decrease in expected lifetime utility, and agents
  in the model would be indifferent to the baseline if they were compensated
  by a 2.7% increase of annual consumption.
@@ -6629,9 +6298,8 @@ Scenario (2) redistributes the taxes saved by removing the subsidy to the
  of the mortgage subsidy.
  The redistribution means that fewer marginal owners are priced out of the
  ownership pool such that the ownership rate decreases by 5.2%.
- Similarly, given that incomes are higher in all regions and housing is
- a less bad option than in scenario (1), the migration rate increases by
- 2.3%.
+ Similarly, given that incomes are higher in all regions and the set of
+ affordable housing markets increased, the migration rate increases by 2.3%.
  Given the compensation, individuals are close to indifferent between this
  policy and the baseline, with the implied consumption increase amounting
  to 0.2% of annual consumption.
@@ -6645,7 +6313,8 @@ Finally let's look at scenario (3), where we apply the 5% GE house price
  As a result, the ownership rate increases by 1.4%, and the migration rate
  reaches 2.5%.
  As before, the higher migration rate comes from greater incentives to exploit
- differences in relative utilities.
+ differences in relative utilities, which stem from greater access to ownership
+ in more regions.
  Agents strongly prefer this policy to the baseline, and accordingly would
  be happy to give up 5% of period consumption before they would be indifferent
  to the baseline.
@@ -7464,7 +7133,341 @@ name "fig:Census-Division-Map"
 \end_layout
 
 \begin_layout Section
-More tables
+Additional tables and figures
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/copulas.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Normal Copula estimates for the rank of wage residuals 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ for individuals who move in period 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ The first row shows the estimated copula parameter for the period of the
+ move, the second row is the estimate for the same set of individuals in
+ the period preceeding the move.
+ The dependence between ranks of 
+\begin_inset Formula $u$
+\end_inset
+
+ is stronger for periods without a move.
+ Notice that the estimate for stayers is much lower than the estimate used
+ in the model, since 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "french_2005"
+
+\end_inset
+
+ uses several observations of 
+\begin_inset Formula $u_{it+\tau}$
+\end_inset
+
+ in a GMM estimator.
+ The estimate of 
+\begin_inset Formula $\rho$
+\end_inset
+
+ for stayers uses just 2 observations per individual and is just for comparison.
+ It is not feasible to obtain a better estimate of 
+\begin_inset Formula $\rho$
+\end_inset
+
+ for movers, since a move involves just two periods.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Normal-Copula-estimates"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR1-edit.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR2-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Aggregate to Regional price mappings.
+ This table shows the estimated coefficients from equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+, which relates the aggregate factors 
+\begin_inset Formula $\left(Y_{t},P_{t}\right)$
+\end_inset
+
+ to regional income and house price 
+\begin_inset Formula $\left(\overline{y}_{dt},p_{dt}\right)$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Aggregate-to-Regional-VAR"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/region_2_indi_y.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Regional Mean Income to Individual level income mapping.
+ This is the empirical implementation of equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:income-process"
+
+\end_inset
+
+, as explained in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Individual-Income-Process"
+
+\end_inset
+
+.
+ The estimated equation is 
+\begin_inset Formula $\log y_{idt}=\beta_{0}+\eta_{d}\log\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}$
+\end_inset
+
+ and the coefficients 
+\begin_inset Formula $\eta$
+\end_inset
+
+ are denoted with the Division names.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Regional-2-indiv-income"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/income_profiles.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Age profiles as predicted by the empirical implementation of individual
+ labor income, equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:indiv-labor-empirical"
+
+\end_inset
+
+, for three different levels of regional mean income 
+\begin_inset Formula $\overline{y}$
+\end_inset
+
+.
+ Notice that in the model as well as in the data it is never the case that
+ all regions have the sam e level of average income.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:age-profiles"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7637,7 +7640,7 @@ ownership status in month households are moving
 placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7676,6 +7679,120 @@ ownership status in month
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/yshock.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_move.pdf
+	height 49theight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The top panel shows the shocked mean income series for Pacific, holding
+ the house price series constant.
+ The bottom panel shows the total outflows from the Pacific region after
+ the shock in 2007.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:yshock-aggregate-out"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_own_move.pdf
+	width 49text%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_rent_move.pdf
+	width 49text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Outflows from Pacific by owners (left panel) and renters (right panel).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:yshock-out-rent-own"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 

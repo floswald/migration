@@ -9,6 +9,7 @@
 \usepackage{color}
 \usepackage{dcolumn}
 \usepackage{booktabs}
+\usepackage{multicol}
 \newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
 \end_preamble
 \use_default_options true
@@ -77,7 +78,7 @@
 \begin_body
 
 \begin_layout Title
-Internal Migration and Homeownership 
+Regional Shocks, Migration and Homeownership
 \end_layout
 
 \begin_layout Author
@@ -98,7 +99,7 @@ vspace{10pt}
 
 \end_inset
 
-UCL SWIPS
+University College London
 \begin_inset Newline newline
 \end_inset
 
@@ -106,112 +107,137 @@ UCL SWIPS
 \end_layout
 
 \begin_layout BeginFrame
-What's the cost of homeownership?
+Risk and Insurance
 \end_layout
 
 \begin_layout Itemize
-Labor mobility enables adjustments to regional labor market shocks
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
- (Blanchard and Katz 1992)
+Many papers have studied 
 \end_layout
 
-\end_inset
-
-
+\begin_deeper
+\begin_layout Itemize
+idiosyncratic risk and self insurance mechanisms
 \end_layout
 
 \begin_layout Itemize
-Mobility depends on housing
+aggregate risk and its costs
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Little work has been done on regional risk and how to insure it
 \end_layout
 
 \begin_layout Itemize
-Buying or selling a home has large costs
+This paper focuses on regional risk coming from house price and wage risk.
 \end_layout
 
-\begin_layout Itemize
-Government policy is biased towards owning
-\end_layout
-
-\begin_layout Pause
-
+\begin_layout BeginFrame
+Detroit, Michigan
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Shaded
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
-1.
- Does homeownership reduce labor mobility?
+
+
+\backslash
+begin{columns}
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Shaded
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
 
 \begin_layout Plain Layout
-2.
- Would abolishing the mortgage interest rate deduction increase labor mobility?
+
+
+\backslash
+column{0.49
+\backslash
+textwidth}
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Shaded
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
 
 \begin_layout Plain Layout
-3.
- What are the welfare implications of such a policy?
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Fisher Body Plant}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth]{
+\backslash
+Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}% 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+column{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{House in Delray}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth]{
+\backslash
+Dropbox/../pictures/AbandonedHouseDelray.jpg}% 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{columns}
 \end_layout
 
 \end_inset
@@ -220,62 +246,313 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
-This Paper
+Palo Alto, California
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{columns}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+column{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Google Offices}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth]{
+\backslash
+Dropbox/../pictures/google_Palo_Alto}% 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+column{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Napa Valley Mansion}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth]{
+\backslash
+Dropbox/../pictures/napa_valley.png}% 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{columns}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Regional Shocks 
+\end_layout
+
+\begin_layout Standard
+Shocks to income or house prices affect regions differently.
 \end_layout
 
 \begin_layout Itemize
-I will model ownership and migration choices
-\end_layout
-
-\begin_layout Itemize
-Lifecycle model in partial equilibrium setting, with 
+Shocks to labor income / productivity of a certain industry
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-consumption and savings choice, 
-\end_layout
-
-\begin_layout Itemize
-homeownership choice and 
-\end_layout
-
-\begin_layout Itemize
-location choice 
+Detroit lost over 60% of its population since the 1950s
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-Aggregate uncertainty in house prices and income
-\end_layout
-
-\begin_layout Itemize
-Estimate parameters on micro panel data
-\end_layout
-
-\begin_layout Itemize
-Output:
+Shocks to house prices
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Simulate responses of labor mobility to different housing policies
+peak-to-trough decline in FHFA house price index 2007--2010:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+largest decline: 61% in Las Vegas
 \end_layout
 
 \begin_layout Itemize
-Evaluate welfare implications of those policies
+smallest decline: 2.3% in Pittsburgh
 \end_layout
 
+\end_deeper
 \end_deeper
 \begin_layout BeginFrame
-US Migration Rates: How many do move?
+What this paper does
+\end_layout
+
+\begin_layout Standard
+In this paper, I allow for
+\end_layout
+
+\begin_layout Itemize
+Regional risk in house prices and labor income
+\end_layout
+
+\begin_layout Itemize
+Migration 
+\end_layout
+
+\begin_layout Itemize
+Saving in assets
+\end_layout
+
+\begin_layout Itemize
+Buying or renting a home
+\end_layout
+
+\begin_layout BeginFrame
+How the paper will do this
+\end_layout
+
+\begin_layout Itemize
+Lifecycle model with choices over
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consumption / savings
+\end_layout
+
+\begin_layout Itemize
+buying or renting
+\end_layout
+
+\begin_layout Itemize
+moving or staying to one of several regions
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Regional Shocks to house prices and labor income
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Strong correlation at aggregate level: factor model
+\end_layout
+
+\begin_layout Itemize
+Regions are affected to different extents by aggregate shocks
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Estimate with SIPP micro data for 1997--2012
+\end_layout
+
+\begin_layout BeginFrame
+What we will learn
+\end_layout
+
+\begin_layout Enumerate
+What is the value of migration as a self-insurance device when a large regional
+ shock hits?
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+What do we learn from adding 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+regional shocks
+\end_layout
+
+\begin_layout Itemize
+assets
+\end_layout
+
+\begin_layout Itemize
+housing choices
+\end_layout
+
+\begin_layout Standard
+to dynamic migration models like Kennan and Walker (2011)?
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<3->
+\end_layout
+
+\end_inset
+
+What would happen to migration if government policy changed?
+\end_layout
+
+\begin_layout BeginFrame
+Roadmap
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Empirical Facts
+\end_layout
+
+\begin_layout BeginFrame
+Mobility Facts I
+\end_layout
+
+\begin_layout Itemize
+annual moving rate at county level 
+\begin_inset Formula $\approx\frac{1}{3}$
+\end_inset
+
+ of annual flows into or out of employment (Fallick and Fleischmann 2004)
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -287,7 +564,7 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -296,7 +573,7 @@ Period
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -305,7 +582,7 @@ Across
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -316,16 +593,16 @@ Across
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Annual
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -334,7 +611,7 @@ county
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -345,16 +622,16 @@ county
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Annual
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -363,7 +640,7 @@ state
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -374,7 +651,7 @@ state
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -383,7 +660,7 @@ state
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -392,7 +669,7 @@ region
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -403,16 +680,16 @@ region
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-5-year
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -421,7 +698,7 @@ county
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -432,16 +709,16 @@ county
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+5-year
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -450,7 +727,7 @@ state
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -461,7 +738,7 @@ state
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -470,7 +747,7 @@ state
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -479,7 +756,7 @@ region
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -500,7 +777,7 @@ region
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Source Molloy et al, J.
+Source: Molloy et al, J.
  of Economic Perspectives (2011).
  
 \end_layout
@@ -515,33 +792,19 @@ Source Molloy et al, J.
 
 \end_layout
 
-\begin_layout Itemize
-annual moving rate at county level 
-\begin_inset Formula $\approx\frac{1}{3}$
-\end_inset
-
- of annual flows into or out of employment (Fallick and Fleischmann 2004)
-\end_layout
-
-\begin_layout Itemize
-regional rate 
-\begin_inset Formula $\approx\frac{1}{10}$
-\end_inset
-
- of annual flows in/out of labor force
-\end_layout
-
 \begin_layout BeginFrame
-Reasons to migrate across states I
+Mobility Facts II
+\end_layout
+
+\begin_layout Itemize
+Owners move less than renters
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -555,7 +818,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/CPS/mv5_2013-edit.tex}
+Dropbox/data/sipp/move_rates_edit.tex}
 \end_layout
 
 \end_inset
@@ -567,52 +830,9 @@ Dropbox/data/CPS/mv5_2013-edit.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-CPS 2013.
- Conditional on moving across state lines.
+Percent of population.
+ SIPP data, subset to 20--50 year olds.
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\size small
-Housing: better house, other housing, estab.
- own household, want to own, cheaper housing
-\end_layout
-
-\begin_layout Itemize
-
-\size small
-Work: new job, attend/leave college, other job reason, look for job, closer
- to work
-\end_layout
-
-\begin_layout BeginFrame
-Determinants of migration
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/Screenshots/Screenshot 2014-07-23 10.59.35.png
-	scale 70
 
 \end_inset
 
@@ -620,992 +840,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
 
-\begin_layout Plain Layout
-Probit of cross state moves.
- SIPP 1996--2012.
- Controlling for quadratic in age, race and marital status.
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Roadmap
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset toc
-LatexCommand tableofcontents
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Literature
-\end_layout
-
-\begin_layout BeginFrame
-What we know from the literature
-\end_layout
-
-\begin_layout Itemize
-Migration
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Workers move to better opportunities:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Kennan and Walker (2011)
-\end_layout
-
-\begin_layout Itemize
-Blanchard and Katz (1992)
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Family considerations are important
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Gemici (2011)
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Housing Demand
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Aggregate price/income fluctuations affect demand
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Bajari, Chan, Krueger, Miller (2013)
-\end_layout
-
-\begin_layout Itemize
-Attanasio, Bottazzi, Low, Nesheim, Wakefield (2012)
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Bankruptcy and Default institutions matter
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Li, Meghir, Oswald (2014)
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout Section
-Model
-\end_layout
-
-\begin_layout BeginFrame
-Model: General Setup
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $(i,j,k,t)$
-\end_inset
-
- indexes individual, origin location, destination location and 
-\begin_inset Formula $t$
-\end_inset
-
- is age
-\end_layout
-
-\begin_layout Itemize
-in each period, choose 
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-location: 
-\begin_inset Formula $k\in J$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-rent or own: 
-\begin_inset Formula $h_{t}\in\{0,1\}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-savings: 
-\begin_inset Formula $a_{t+1}\in\mathbb{R}$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout BeginFrame
-What 
-\emph on
-is
-\emph default
- a Location?
-\end_layout
-
-\begin_layout Itemize
-Location is a bundle of attributes 
-\begin_inset Formula 
-\[
-\left(p_{jt},\overline{y}_{jt},\tau_{ij}\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-When in 
-\begin_inset Formula $j$
-\end_inset
-
-, 
-\begin_inset Formula $\left(p_{jt},\overline{y}_{jt},\tau_{ij}\right)$
-\end_inset
-
- are known
-\end_layout
-
-\begin_layout Itemize
-But imperfect information about 
-\begin_inset Formula $\left(p_{kt},\overline{y}_{kt}\right)$
-\end_inset
-
-: 
-\emph on
-location
-\emph default
- is an experience good.
-\end_layout
-
-\begin_layout Itemize
-Agents know the mean of 
-\begin_inset Formula $\left(p_{kt},\overline{y}_{kt}\right)$
-\end_inset
-
- in 
-\begin_inset Formula $k\neq j$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Also know the geographic location in the plane of 
-\begin_inset Formula $j$
-\end_inset
-
-: distance.
-\end_layout
-
-\begin_layout Itemize
-In each location, 
-\begin_inset Formula $\mathbf{P}_{jt}\equiv\left(p_{jt},\overline{y}_{jt}\right)$
-\end_inset
-
- is markovian
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\tau_{ij}$
-\end_inset
-
- is unobserved location preference.
- Permanent for duration of stay.
-\end_layout
-
-\begin_layout BeginFrame
-Labor Income and Household Size
-\end_layout
-
-\begin_layout Itemize
-Labor income is
-\begin_inset Formula 
-\begin{eqnarray*}
-\ln y_{ijt} & = & \overline{y}_{jt}+f\left(j,t\right)+z_{it}\\
-z_{ijt} & = & \rho_{j}z_{ijt-1}+u_{ijt},u_{ijt}\sim N(0,\sigma_{j}^{2})
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $z$
-\end_inset
-
- is individual productivity / time-varying match effect
-\end_layout
-
-\begin_layout Itemize
-Household size 
-\begin_inset Formula $s$
-\end_inset
-
- proxied by presence or not of children 
-\end_layout
-
-\begin_layout Itemize
-children arrive/leave according to a markov process 
-\begin_inset Formula $\Gamma_{s}(t)$
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Housing Choice
-\end_layout
-
-\begin_layout Itemize
-Households choose to rent or own: 
-\begin_inset Formula $h_{t}=\{0,1\}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Renters:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Rent in 
-\begin_inset Formula $j$
-\end_inset
-
- is a constant fraction 
-\begin_inset Formula $\kappa_{j}$
-\end_inset
-
- of current price 
-\begin_inset Formula $p_{jt}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Renters cannot borrow: one-period bond 
-\begin_inset Formula $a\geq0$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-can buy subject to downpayment constraint
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Owners:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Owners borrow with house as collateral
-\end_layout
-
-\begin_layout Itemize
-Selling incurs proportional costs 
-\begin_inset Formula $\phi$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Payment function 
-\begin_inset Formula $\pi(h_{t-1},h_{t},p_{t})$
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Assumptions about Movers
-\end_layout
-
-\begin_layout Itemize
-movers loose their 
-\begin_inset Formula $z_{ijt}$
-\end_inset
-
- when going to 
-\begin_inset Formula $k$
-\end_inset
-
-: 
-\begin_inset Formula $z_{ikt+1}\sim U[\underline{z},\overline{z}]$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-movers cannot own in 
-\begin_inset Formula $j$
-\end_inset
-
- while moving to 
-\begin_inset Formula $k$
-\end_inset
-
-: moving implies selling.
-\end_layout
-
-\begin_layout Itemize
-movers get a draw from the location preference distribution upon arrival:
- 
-\begin_inset Formula $\tau_{ik}\sim U[0,\overline{\tau}]$
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Timing within each period
-\end_layout
-
-\begin_layout Enumerate
-observe 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
- and
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iJt}\right)$
-\end_inset
-
-,
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- iid location taste shock 
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-onslide+<2->
-\end_layout
-
-\end_inset
-
-choose whether to move at end of period
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-onslide+<3->
-\end_layout
-
-\end_inset
-
-if yes 
-\begin_inset Formula $(j\neq k)$
-\end_inset
-
-, 
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-sell house: 
-\begin_inset Formula $h_{it}=0$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume and incur moving cost 
-\begin_inset Formula $\Delta(k,x)$
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-onslide+<4->
-\end_layout
-
-\end_inset
-
-if no 
-\begin_inset Formula $(j=k)$
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $h_{it}\in\{0,1\}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-choose 
-\begin_inset Formula $a_{it+1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-consume
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout BeginFrame
-Mechanisms
-\end_layout
-
-\begin_layout Enumerate
-Why do people move?
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-\begin_inset Formula $z_{it}$
-\end_inset
-
- gets low (match quality deteriorates)
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Formula $\bar{y}_{jt}$
-\end_inset
-
- gets low (recession in region 
-\begin_inset Formula $j$
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Formula $p_{jt}$
-\end_inset
-
- gets high/low (depends on renter/owner)
-\end_layout
-
-\begin_layout Enumerate
-unexplained preference shock
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-Why do people buy houses?
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-final period value of owning (form of precautionary saving)
-\end_layout
-
-\begin_layout Enumerate
-potential of capital gains (and losses)
-\end_layout
-
-\begin_layout Enumerate
-utility from owning increases in family size 
-\end_layout
-
-\begin_layout Enumerate
-financing: implied user cost of owning may be lower than rent
-\end_layout
-
-\end_deeper
-\begin_layout BeginFrame
-Moving Costs
-\end_layout
-
-\begin_layout Itemize
-In terms of utility: psychological costs
-\end_layout
-
-\begin_layout Itemize
-Costs differ by ownership status and type
-\end_layout
-
-\begin_layout Itemize
-Owners incur additional time and effort cost from having to sell
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\Delta(j,k,x)=\alpha_{0}+\alpha_{1}p_{it}h_{it}+\alpha_{2}\delta(j,k)+\alpha_{3}t_{it}+\alpha_{4}s_{it}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Budget Constraint
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{t+1} & = & (1+r(a_{t}))\left(a_{t}+y_{t}-c_{t}-\pi(h_{t-1},h_{t},p_{t})\right)\\
-\onslide+<2->r(a_{t}) & = & \begin{cases}
-r & \text{if }a_{t}\geq0\\
-r^{m} & \text{if }a_{t}<0
-\end{cases},r^{m}>r\\
-\onslide+<3->\pi(h_{t-1},h_{t},p_{t}) & = & \begin{cases}
-(1-h_{t})\kappa_{j}p_{tj}+h_{t}p_{tj} & \text{if }h_{t-1}=0\\
-\\
-\onslide+<4->\begin{array}{c}
--\left\{ \mathbf{1}\left[j=k\right](1-h_{t})+\mathbf{1}\left[j\neq k\right]\right\} \\
-\times\left((1-\phi)p_{jt}-\kappa_{j}p_{jt}\right)
-\end{array} & \text{if }h_{t-1}=1
-\end{cases}\\
-\onslide+<5->a_{t+1} & \geq & \begin{cases}
-0 & \text{if }h_{t}=0\\
-\min\left\{ \mathbf{1}\left[j=k\right]a_{t},-(1-\chi)p_{jt}\right\}  & \text{if }h_{t}=1
-\end{cases}\\
-\onslide+<5->a_{T} & \geq & 0
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Period utility and state space
-\end_layout
-
-\begin_layout Itemize
-State space of individual is
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{it},z_{it},s_{it,}\mathbf{P}_{t},h_{it-1},j,\tau,t\right)\in X
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Period utility is given by
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-u\left(c_{it},h_{it},k,x_{it}\right)=\begin{cases}
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}\\
-+\alpha_{\tau}\times\tau_{it}+\varepsilon_{ijt} & \text{if }j=k\\
-\\
-\frac{\left(\frac{c}{gs_{it}}\right)_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}\\
-+\alpha_{\tau}\times\tau_{it}-\Delta\left(k,x_{it}\right)-\lambda def_{it}+\varepsilon_{ijt} & \text{if }j\neq k
-\end{cases}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Maximize expected lifetime utility
-\begin_inset Formula 
-\begin{eqnarray*}
-U & = & E_{0}\sum_{t=1}^{T}\beta^{t-1}u\left(c_{t},h_{t},k_{t},x_{t}\right)+\beta^{T}b\left(\cdot\right)\\
-b\left(a_{T},h_{T-1},p_{jT}\right) & = & \omega_{0}+\omega_{1}\ln\left(a+h_{T-1}p_{jt}\right)
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Identification
-\end_layout
-
-\begin_layout Enumerate
-Heterogeneous moving probabilities in data: given observable 
-\begin_inset Formula $x$
-\end_inset
-
-, some owners move, some don't 
-\begin_inset Formula $\Rightarrow$
-\end_inset
-
- different location preference 
-\begin_inset Formula $\tau$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-variation in mean wages 
-\begin_inset Formula $\overline{y}_{jt}$
-\end_inset
-
- across and 
-\begin_inset Formula $j,t$
-\end_inset
-
- 
-\begin_inset Formula $\Rightarrow$
-\end_inset
-
- income -- migration link
-\end_layout
-
-\begin_layout Enumerate
-variation in prices 
-\begin_inset Formula $p_{jt}$
-\end_inset
-
-: different realizations of 
-\begin_inset Formula $p$
-\end_inset
-
- allow different sets of people to buy
-\end_layout
-
-\begin_layout Enumerate
-household size: 
-\end_layout
-
-\begin_layout Enumerate
-variation in initial draws 
-\begin_inset Formula $z$
-\end_inset
-
-: initial wage of movers
-\end_layout
-
-\begin_layout Section
-Data
-\end_layout
-
-\begin_layout BeginFrame
-Survey for Income and Program Participation (SIPP)
-\end_layout
-
-\begin_layout Itemize
-Panels 1996, 2001, 2004 and 2008
-\end_layout
-
-\begin_layout Itemize
-Need to observe movers in 
-\begin_inset Formula $j$
-\end_inset
-
- 
-\series bold
-and 
-\series default
-
-\begin_inset Formula $k$
-\end_inset
-
-.
- (50,50) transition matrix.
- Need a large estimation sample! 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Sipp}{
-\backslash
-beamergotobutton{Sipp Info}}
-\end_layout
-
-\end_inset
-
- 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{SippTrans}{
-\backslash
-beamergotobutton{Transition Matrix}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-panel duration 2.5 years -- 4 years.
- Interviewed every 4 months.
-\end_layout
-
-\begin_layout Itemize
-SIPP sample sizes range from 15.000 to 52.000 households.
- Nationally representative.
-\end_layout
-
-\begin_layout Itemize
-Claim to have a good track record with following movers
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{SippInfo}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Sipp Raw Data
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf
-	scale 60
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Sipp Summary Statistics
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/stats.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Implementation
-\end_layout
-
-\begin_layout BeginFrame
-Exogenous Price and Income Process: 
-\begin_inset Formula $\mathbf{P}_{t}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Assume AR(1) process in each region 
-\begin_inset Formula $j$
-\end_inset
-
-
-\begin_inset Formula 
-\begin{eqnarray*}
-\overline{y}_{jt} & = & \beta_{0j}+\beta_{1j}\overline{y}_{jt-1}+\nu_{yjt}\\
-p_{jt} & = & \gamma_{0j}+\gamma_{1j}p_{jt-1}+\nu_{pjt}\\
-\left[\begin{array}{cc}
-\nu_{yjt} & \nu_{pjt}\end{array}\right]' & \sim & N\left(\left[\begin{array}{c}
-0\\
-0
-\end{array}\right]\left[\begin{array}{cc}
-\sigma_{yj}^{2} & \sigma_{ypj}\\
- & \sigma_{pj}^{2}
-\end{array}\right]\right)
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{PriceDeviations}{
-\backslash
-beamergotobutton{Division Deviations}}
-\end_layout
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{AggPricesSlide2}{}
 \end_layout
 
 \end_inset
@@ -1618,6 +853,35 @@ hypertarget{AggPricesSlide2}{}
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf
+	height 100pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving I: CPS Data
+\end_layout
+
+\begin_layout Itemize
+27% cite housing as the main reason
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset ERT
 status open
 
@@ -1625,12 +889,115 @@ status open
 
 
 \backslash
-hypertarget{Prices}{}
+input{
+\backslash
+Dropbox/data/CPS/mv8.tex}
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:CPS-reason-move"
+
+\end_inset
+
+CPS 2013 data on main motivation of moving, conditional on a cross Division
+ move
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving II: SIPP Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/D2D-probit-edit-slides.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Probit model, regressing binary moving indicator on household characteristics.
+ Baseline probability of moving is 1.32%.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Summary of empirical facts
+\end_layout
+
+\begin_layout Enumerate
+1.32% of US housholds move across Division borders each year
+\end_layout
+
+\begin_layout Enumerate
+Renters move at more than double the rate of owners
+\end_layout
+
+\begin_layout Enumerate
+Younger people move more, with renter--owner gap persistent at all ages
+\end_layout
+
+\begin_layout Enumerate
+People think about housing as a reason to move
+\end_layout
+
+\begin_layout Enumerate
+Controlling for other factors, being an owner reduces baseline moving probabilit
+y by one half
+\end_layout
+
+\begin_layout BeginFrame
+Regional Shocks: House Prices
 \end_layout
 
 \begin_layout Standard
@@ -1641,7 +1008,7 @@ status open
 
 
 \backslash
-hspace*{-5pt}
+hspace*{-2pt}
 \backslash
 makebox[
 \backslash
@@ -1656,7 +1023,8 @@ linewidth][c]{%
 \begin_layout Standard
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/FHFA/bydiv.pdf
-	scale 40
+	width 115text%
+	height 90theight%
 
 \end_inset
 
@@ -1678,75 +1046,26 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
-Division Deviations from National Index: 
-\begin_inset Formula $\tilde{p}_{dt}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/census/DivisionPriceDevs.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Simulated Price Deviations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/PriceSimTruthDevs.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Division Income Deviations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/DivisionIncomeDevs.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Simulated Division Income Deviations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/BBL/factor/incomeSimTruthDevs.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Individual Income Processes by Region
+Regional Shocks: Wages
 \end_layout
 
 \begin_layout Itemize
-from income data net out regional macro effect: 
-\begin_inset Formula 
-\[
-\hat{y}_{ijt}=y_{ijt}-\bar{y}_{jt},\forall t\in\left\{ \text{1996,1997,...}\right\} 
-\]
+
+\series bold
+North Dakota Oil Boom
+\series default
+: Discovery of Parshall Oil Field in 2006 heralds strong job growth.
+ State climbes from rank 38 in the 2001 GDP per capita distribution to a
+ level of GDP of 29% above average in 2013.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
 
 \end_inset
 
@@ -1754,1007 +1073,320 @@ from income data net out regional macro effect:
 \end_layout
 
 \begin_layout Itemize
-obtain quantiles of 
-\begin_inset Formula $\hat{y}_{ijt}$
-\end_inset
 
- by age 
-\begin_inset Formula $\Rightarrow$
-\end_inset
+\series bold
+Rust Belt Decline
+\series default
+: Several decades into the decline of the automobile industry, population
+ change from 2000--2012 was
+\end_layout
 
- 
-\begin_inset Formula $z_{ijt}$
-\end_inset
-
-
+\begin_deeper
+\begin_layout Itemize
+-26.6% in Detroit, Michigan
 \end_layout
 
 \begin_layout Itemize
-obtain the rank correlation of 
-\begin_inset Formula $\hat{y}_{ijt}$
-\end_inset
+-23% in Gary, Indiana
+\end_layout
 
+\begin_layout Itemize
+-20% in Youngstown, Ohio
+\end_layout
 
-\begin_inset Formula $\Rightarrow$
-\end_inset
-
- 
-\begin_inset Formula $\rho_{j}$
-\end_inset
-
-
+\end_deeper
+\begin_layout Section
+Literature
 \end_layout
 
 \begin_layout BeginFrame
-Income Ranks by Region
+Literature
 \end_layout
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/z-quantiles-pct.pdf
-	scale 50
-
-\end_inset
-
-
+\begin_layout Enumerate
+Dynamic models of migration over lifecycle: Kennan and Walker (2011), Gemici
+ (2007), Winkler (2011)
 \end_layout
 
-\begin_layout BeginFrame
-Model Mechanism: Making Owners move less
+\begin_layout Enumerate
+Static spatial equilibrium models of migration and local labor markets:
+ Notowidigdo (2011), Moretti (2011)
 \end_layout
 
-\begin_layout Itemize
-Decision to move depends on entire state vector 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $x_{it}=\left(a_{it},z_{it},\mathbf{P}_{t},h_{it-1},j,\tau_{i},t\right)$
-\end_inset
-
-
+\begin_layout Enumerate
+Regional Economics / Trade literature ?
 \end_layout
 
-\begin_layout Itemize
-remember 
-\begin_inset Formula $\Delta(k,x)=\alpha_{0\tau}+\alpha_{1}p_{it}h_{it-1}+\alpha_{2}\delta(j,k)+\alpha_{3}t$
-\end_inset
-
-
+\begin_layout Enumerate
+On the effects of 2007 bust on unemployment and mobility: 
 \end_layout
 
-\begin_layout Itemize
-varying 
-\begin_inset Formula $\alpha_{1}$
-\end_inset
-
- must make owners less likely to move given a state 
-\begin_inset Formula $x$
-\end_inset
-
-
+\begin_deeper
+\begin_layout Enumerate
+empirical: Ferreira et al.
+ (2010), Schulhofer-Wohl (2011), Demyanyk et al.
+ (2013)
 \end_layout
 
-\begin_layout BeginFrame
-Model Mechanism: Making Owners move less
+\begin_layout Enumerate
+theoretical: Nenov (2012), Song et al.
+ (2014) and Karahan and Rhee (2011)
 \end_layout
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/full/expMC/alpha1.pdf
-	scale 60
-
-\end_inset
-
-
+\end_deeper
+\begin_layout Enumerate
+Housing demand over the lifecycle: Attanasio et al.
+ (2012), and Li, Meghir and Oswald (2014)
 \end_layout
 
 \begin_layout Section
-Policy
+Model
 \end_layout
 
 \begin_layout BeginFrame
-Policy experiment
+Model Outline I
 \end_layout
 
 \begin_layout Itemize
-From Poterba and Sinai (2008): annual tax savings from mortgage interest
- deduction
+9 regions: Census Divisions 
+\begin_inset Formula $d\in D$
+\end_inset
+
+, each with house price 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and mean income level 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Houses: choose whether to rent or own, 
+\begin_inset Formula $h_{t}\in\{0,1\}$
+\end_inset
+
+, fixed rate mortgage
+\end_layout
+
+\begin_layout Itemize
+Migration: in each period, compare values of each location and choose the
+ highest one.
+\end_layout
+
+\begin_layout BeginFrame
+Model Outline II
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="7">
+<lyxtabular version="3" rows="9" columns="2">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+State variable
 \end_layout
 
 \end_inset
 </cell>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Annual Household Income ($)
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
+Meaning
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Age
+\begin_inset Formula $a_{it}$
+\end_inset
+
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-<40K
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-40-75K
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-75-125K
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-125-250K
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-250K+
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-All
+financial assets
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $z_{it}$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-25-35
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$208
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$592
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$1817
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$3603
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$7077
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-$1155
+idiosyncratic income shock
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $s_{it}$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-35-50
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-216
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-719
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1483
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-3599
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-5833
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1598
+household size
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-50-65
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-143
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-476
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1074
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-2039
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-6348
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1226
+aggregate price factors
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $h_{it-1}$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
->65
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-134
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-351
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-914
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1435
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-149
+housing status when entering period
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $d$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-All
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-91
+current region out of 9 in total
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $\tau$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-523
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1264
+moving cost type
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
 
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-2703
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-5459
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family sans
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-1060
+age
 \end_layout
 
 \end_inset
@@ -2767,36 +1399,616 @@ All
 
 \end_layout
 
+\begin_layout Itemize
+State vector: 
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Choice variables:
+\begin_inset Formula 
+\[
+\left(a_{it+1},h_{it},k\in D\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Timing
+\end_layout
+
+\begin_layout Enumerate
+observe stochastic 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iDt}\right)$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ iid location taste shock 
+\begin_inset Formula $\sim$
+\end_inset
+
+ EV Type 1
+\end_layout
+
+\begin_layout Enumerate
+earn labor income in current region 
+\begin_inset Formula $d$
+\end_inset
+
+, as a function of 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+given state 
+\begin_inset Formula $x_{it}$
+\end_inset
+
+, compute optimal value 
+\begin_inset Formula $v_{d}$
+\end_inset
+
+ in each location:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+optimal consumption 
+\begin_inset Formula $c_{h}^{*}$
+\end_inset
+
+ conditional on housing choice 
+\begin_inset Formula $h\in\{0,1\}$
+\end_inset
+
+ in all regions 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose optimal housing 
+\begin_inset Formula $h_{d}^{*}(c_{h}^{*})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+choose optimal location, based on the value of optimal housing in each location
+ and location shock 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Labor Income
+\end_layout
+
+\begin_layout Itemize
+regional mean income 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ shifts individual income:
+\end_layout
+
 \begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\ln y_{idt} & = & \eta_{d}\ln\overline{y}_{dt}+f(t)+z_{it}\\
+z_{it} & = & \rho z_{it-1}+e_{it-1}\\
+e & \sim & N(0,\sigma^{2})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Individuals who move to 
+\begin_inset Formula $k$
+\end_inset
+
+ can predict deterministic part of income: 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+\eta_{k}\ln\overline{y}_{kt+1}+f(t+1)
+\]
+
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+but only know the conditional distribution of 
+\begin_inset Formula $z_{it+1}|z_{it}$
+\end_inset
+
+ for movers, denoted 
+\begin_inset Formula $G_{\text{move}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Aggregate and Regional Prices
+\end_layout
+
+\begin_layout Itemize
+Aggregate factor 
+\begin_inset Formula $\mathbf{P}_{t}\equiv\left[Y_{t},P_{t}\right]$
+\end_inset
+
+ follows a stationary VAR(1)
+\end_layout
+
+\begin_layout Itemize
+Regional prices 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ are functions of 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left[\overline{y}_{dt},p_{t}\right]=g_{d}\left(\mathbf{P}_{t}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Factor model 
+\begin_inset Formula $g_{d}$
+\end_inset
+
+ implies that different regions are affected to different extent by aggregate
+ shocks
+\end_layout
+
+\begin_layout Itemize
+Parametric restriction to maintain computational tractability
+\end_layout
+
+\begin_layout BeginFrame
+Homeownership Choice
+\end_layout
+
+\begin_layout Itemize
+Discrete choice 
+\begin_inset Formula $h_{t}\in\{0,1\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Buyers may borrow with house as collateral.
+ Borrowing constraint:
+\begin_inset Formula 
+\[
+a_{t+1}\geq-(1-\chi)p_{dt},\forall t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Terminal net wealth condition: 
+\begin_inset Formula $a_{T}+p_{dT}h_{T-1}\geq0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Proportional cost of selling the house: 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Preferences
+\end_layout
+
+\begin_layout Itemize
+period payoff depends on 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consumption 
+\begin_inset Formula $(c)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+household size 
+\begin_inset Formula $(s)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+housing status 
+\begin_inset Formula $(h)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+whether move is made 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left(\mathbf{1}\left[d\neq k\right]\right)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+idiosyncratic location shock 
+\begin_inset Formula $\left(\varepsilon\right)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+u\left(c_{it},h_{it},k,x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq k\right]\Delta\left(x_{it}\right)+\varepsilon_{ikt}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Moving Costs:
+\begin_inset Formula 
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Recursive Formulation
+\end_layout
+
+\begin_layout Itemize
+Define value function 
+\emph on
+conditional
+\emph default
+ on moving to 
+\begin_inset Formula $k$
+\end_inset
+
+, 
+\begin_inset Formula $v_{t}(x_{it},k)$
+\end_inset
+
+, net of 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Nested optimization problem:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+V_{t}\left(x_{it}\right) & = & \max_{k\in D}\left\{ v_{t}\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \\
+v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},k)\\
+ & + & \beta\mathbb{E}_{z,s,\mathbf{P}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{P}_{t}\right]\\
+\overline{v}_{t}\left(x_{it}\right) & = & E_{\varepsilon}V_{t}\left(x_{it}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Final period depends on net wealth
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint: Staying Renters
+\end_layout
+
+\begin_layout Itemize
+pay rent 
+\begin_inset Formula $\kappa_{d}p_{dt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+can buy, subject to downpayment
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\\
+\ln y_{idt} & = & \eta_{d}\ln(\overline{y}_{dt})+f(t)+z_{it}\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
+r(a_{it}) & = & \begin{cases}
+r & \text{if }a_{it}\geq0\\
+r^{m} & \text{if }a_{it}<0
+\end{cases},r^{m}>r\\
+p_{T}h_{iT-1} & \geq & -a_{iT}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint: Staying Owners
+\end_layout
+
+\begin_layout Itemize
+no mortgage payment: implied schedule
+\end_layout
+
+\begin_layout Itemize
+selling cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-h_{it})(1-\phi-\kappa_{d})p_{dt}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Budget Constraint: Movers
+\end_layout
+
+\begin_layout Itemize
+Renters:
+\begin_inset Formula 
+\[
+a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{k}p_{kt}-h_{it}p_{kt}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Owners:
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}\right.\\
+ & - & \left.\left[(1-h_{it})\kappa_{k}+h_{it}\right]p_{kt}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Both:
+\begin_inset Formula 
+\[
+a_{it+1}\geq-(1-\chi)p_{kt}h_{it}
+\]
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Section
-Conclusions
+Estimation
 \end_layout
 
 \begin_layout BeginFrame
-Conclusion
+Estimation Outline
 \end_layout
 
 \begin_layout Itemize
-Lifecycle model of housing, consumption and migration
+Fix a subset of model parameters 
 \end_layout
 
 \begin_layout Itemize
-Aim: evaluate welfare implications of housing subsidies
+Estimate stochastic processes outside structural model
 \end_layout
 
 \begin_layout Itemize
-So far: first stage policy functions unconditional of unobserved heterogeneity
+Use the structural model to find preference parameters with a simulated
+ method of moments (SMM) estimator
+\end_layout
+
+\begin_layout BeginFrame
+Data: SIPP
 \end_layout
 
 \begin_layout Itemize
-Proof of BBL estimator is work in progress
+Use the 1996, 2001, 2004 and 2008 SIPP panels
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout Itemize
+102,529 unique individuals, 2684 cross-Division moves
+\end_layout
 
+\begin_layout Itemize
+construct moments as averages over 1997--2012 to obtain reasonable sample
+ size in conditioning cells
+\end_layout
+
+\begin_layout Itemize
+Use a cohort estimator: concern is that different cohorts faced different
+ aggregate shocks.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+VAR predictions for regional house prices
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_p.pdf
+	height 91pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+VAR predictions for regional mean income
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_y.pdf
+	height 91pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Preset Parameters
 \end_layout
 
 \begin_layout Standard
@@ -2807,8 +2019,97 @@ status open
 
 
 \backslash
-hypertarget{SippTrans}{}
+input{
+\backslash
+Dropbox/model/fit/preset.tex}
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+SMM - MCMC estimator
+\end_layout
+
+\begin_layout Itemize
+Structural parameter vector
+\begin_inset Formula 
+\[
+\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SMM seeks to minimize
+\begin_inset Formula 
+\[
+L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m$
+\end_inset
+
+ is a 
+\begin_inset Formula $K$
+\end_inset
+
+ vector of data moments, 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
+
+ is model counterpart
+\end_layout
+
+\begin_layout BeginFrame
+Parameter estimates
+\end_layout
+
+\begin_layout Standard
+table
+\end_layout
+
+\begin_layout BeginFrame
+Model Fit
+\end_layout
+
+\begin_layout Standard
+table with model and data moments
+\end_layout
+
+\begin_layout BeginFrame
+Model Validation
+\end_layout
+
+\begin_layout Standard
+non-targetted moments
+\end_layout
+
+\begin_layout Section
+Properties of the model
+\end_layout
+
+\begin_layout BeginFrame
+Properties: Probability of migrating by assets
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf
+	scale 75
 
 \end_inset
 
@@ -2816,15 +2117,164 @@ hypertarget{SippTrans}{}
 \end_layout
 
 \begin_layout Standard
+blah
+\end_layout
+
+\begin_layout BeginFrame
+Properties II: Moving Costs
+\end_layout
+
+\begin_layout Itemize
+Moving cost for young mover in Kennan and Walker (2011): $384,000
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/SIPP-transition.pdf
-	scale 40
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/moneyMC/moneyMC.tex}
+\end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
+ renters at 
+\begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
+\end_inset
+
+ and first and last period of life.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Properties III: Decomposing Moving Costs
+\end_layout
+
+\begin_layout Itemize
+Why do owners move less?
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+because of utility cost (
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+)?
+\end_layout
+
+\begin_layout Itemize
+or because of financial friction 
+\begin_inset Formula $(\phi)$
+\end_inset
+
+?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/HC_friction/HC_friction.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Impulse response of a large price shock
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Insurance value of migration 
+\end_layout
+
+\begin_layout BeginFrame
+Value of migration in the face of large shocks
+\end_layout
+
+\begin_layout Standard
+blah
+\end_layout
+
+\begin_layout Section
+Policy Experiments
+\end_layout
+
+\begin_layout BeginFrame
+Mortgage Deduction
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout BeginFrame
+Conclusion
 \end_layout
 
 \begin_layout EndFrame
