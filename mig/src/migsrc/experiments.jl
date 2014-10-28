@@ -629,10 +629,12 @@ function exp_Mortgage(ctax=false)
 	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
 	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
 	d["p_own"] = Dict()
-	d["p_mig"] = Dict()
+	d["p_move"] = Dict()
 	for (k,v) in d["own"] 
 		d["p_own"][k] = (v - d["own"]["base"]) / d["own"]["base"]
-		d["p_mig"][k] = (v - d["mig"]["base"]) / d["mig"]["base"]
+	end
+	for (k,v) in d["move"] 
+		d["p_move"][k] = (v - d["move"]["base"]) / d["move"]["base"]
 	end
 	d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
 
