@@ -365,7 +365,7 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 
 	own_move = @> begin
 		sim_sample
-		@select(own=mean(convert(Array{Float64},:h),fullw),move=mean(convert(Array{Float64},:move),fullw),income=mean(convert(Array{Float64},:income),fullw),policy=pol)
+		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw))
 	end
 	own_move_age = @> begin
 		sim_sample
@@ -624,6 +624,23 @@ function exp_Mortgage(ctax=false)
 	move_own_age = vcat(base_out["move_own_age"],pol0_out["move_own_age"],pol1_out["move_own_age"],pol2_out["move_own_age"],pol3_out["move_own_age"],pol4_out["move_own_age"])
 
 
+	# out dict
+	d = Dict()
+	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
+	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
+	d["p_own"] = Dict()
+	d["p_mig"] = Dict()
+	for (k,v) in d["own"] 
+		d["p_own"][k] = (v - d["own"]["base"]) / d["own"]["base"]
+		d["p_mig"][k] = (v - d["mig"]["base"]) / d["mig"]["base"]
+	end
+	d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
+
+	indir, outdir = mig.setPaths()
+	f = open(joinpath(outdir,"exp_Mortgage","morgage.json"),"w")
+	JSON.print(f,d)
+	close(f)
+
 
 	# return
 	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2,  "ctax3" => ctax3, "ctax4" => ctax4,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age]
@@ -719,9 +736,13 @@ function pshock_vs_highMC()
 
 	par = Param(2)
 	opts = selectPolicy("pshock",6,2007,par)
-	p = exp_shockRegion(opts);
-	p = p[3];
-	base = p[2];
+	pr = exp_shockRegion(opts);
+	base = pr[2];
+	p = pr[3];
+
+	# release memory
+	pr = 0
+	gc()
 
 	opts = selectPolicy("pshock_highMC",6,2007,par)
 
@@ -741,6 +762,7 @@ function pshock_vs_highMC()
 
 	pmv3 = @where(pmv,:year .> 2006)
 	pmv3 = @transform(pmv3,row_idx=1:size(pmv3,1))
+
 	bmv3 = @where(bmv,:year .> 2006)
 	bmv3 = @transform(bmv3,row_idx=1:size(bmv3,1))
 
@@ -777,7 +799,60 @@ function pshock_vs_highMC()
 	pmv4 = @select(@where(pmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
 	hmv4 = @select(@where(hmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
 
+	# get immigration rates for after 2006
+	# uses data on everybody outside of j=6
+	b_in = @> begin
+			base
+			@where((:year.>2006)&(:j.!=6))
+			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	p_in = @> begin
+			p
+			@where((:year.>2006)&(:j.!=6))
+			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	h_in = @> begin
+			h
+			@where((:year.>2006)&(:j.!=6))
+			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	# get outmigration rates for after 2006
+	# uses data on those who would have migrated after pshock
+	b_out = @> begin
+			base
+			@where((:year.>2006)&(:j.==6))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	p_out = @> begin
+			p
+			@where((:year.>2006)&(:j.==6))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	h_out = @> begin
+			h
+			@where((:year.>2006)&(:j.==6))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
 	d=Dict()
+	d["inmig"]  = ["base" => b_in[:mig][1], "pshock" =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
+	d["inmig_own"]   = ["base" => b_in[:mig_own][1], "pshock" =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
+	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], "pshock" =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
+	d["outmig"] = ["base" => b_out[:mig][1], "pshock" =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
+	d["outmig_own"] = ["base" => b_out[:mig_own][1], "pshock" =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
+	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], "pshock" =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
+
 	d["v"] = ["base" => bmv4[:v][1],    "pshock" => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
 	d["a"] = ["base" => bmv4[:a][1],    "pshock" => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
 	d["w"] = ["base" => bmv4[:w][1],    "pshock" => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
@@ -787,7 +862,7 @@ function pshock_vs_highMC()
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"mig_value.json"),"w")
-	JSON.print(d)
+	JSON.print(f,d)
 	close(f)
 
 	d = ["p"=>pmv3,"h"=>hmv3,"summary"=>d]
