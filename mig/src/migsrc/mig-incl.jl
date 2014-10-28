@@ -41,7 +41,14 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},opts...)
 		showall(@by(s2,[:realage],own=mean(:own),move=mean(:move),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0))))
 		showall(hcat(@by(@where(s2,:own.==true),:realage,move_owner=mean(:move)),@by(@where(s2,:own.==false),:realage,move_renter=mean(:move))))
 	    if get(opts[1],"printmoms",false) 
-    		writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
+	    	d = Dict()
+	    	for ea in eachrow(mom2)
+	    		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd]]
+	    	end
+	    	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
+	    	JSON.print(f,d)
+	    	close(f)
+    		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
 	    end
 	    if get(opts[1],"plotsim",false) 
 	   		simplot(s[!isna(s[:cohort]),:],5)

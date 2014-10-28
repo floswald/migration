@@ -168,7 +168,7 @@ Households are subject to many types of shocks, such as aggregate shocks,
  regions and by age.
  This framework helps evaluate the costs of regional shocks and the benefits
  of the various channels of self-insurance, thus also helps to inform policy
- reform that affect the costs of these self-insurance mechanisms, including
+ reforms that affect the costs of these self-insurance mechanisms, including
  changing the costs of owning a house and moving.
  The estimated model implies that, while yearly mobility flows across regions
  are small, mobility is a very valuable option to those who move in face
@@ -4415,10 +4415,57 @@ reference "tab:fit-model-nontarget"
 
 \begin_layout Standard
 \begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+moments
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -4473,7 +4520,7 @@ name "tab:fit-model-and-data"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5314,7 +5361,7 @@ key "notowidigdo2011incidence"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -6236,16 +6283,15 @@ The choice probabilities do change after the policy is implemented.
 \end_layout
 
 \begin_layout Standard
-Without a GE price adjustment, removing the subsidy makes housing less desirable.
- This affects owners and renters alike because the value of housing is an
- important determinant for lifetime utility.
- In the case of owners this is obvious as they receive a stream of utility
+Without a GE price adjustment, removing the subsidy makes housing less desirable
+ across the board.
+ In the case of owners this is obvious, as they receive a stream of utility
  from the house and a final period payoff from accumulated equity.
  For renters the same holds, because the majority of them will be owners
  at some point in their lifecycle, so their expected utility depends on
  the expected value of housing.
- Therefore, removing the subsidy lowers the incentives to move to a more
- profitable housing market.
+ Therefore, following the reasoning above, removing the subsidy lowers the
+ incentives to move to a more profitable housing market.
  
 \end_layout
 

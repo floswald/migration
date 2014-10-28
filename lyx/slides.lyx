@@ -11,6 +11,7 @@
 \usepackage{booktabs}
 \usepackage{multicol}
 \newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
+\usepackage{tikz}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -53,6 +54,11 @@
 \selected 1
 \filename_suffix 0
 \color #faf0e6
+\end_branch
+\branch long
+\selected 0
+\filename_suffix 0
+\color #ffffff
 \end_branch
 \index Index
 \shortcut idx
@@ -132,6 +138,43 @@ Little work has been done on regional risk and how to insure it
 This paper focuses on regional risk coming from house price and wage risk.
 \end_layout
 
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Research Question:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Shaded
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+What is the insurance value of migration?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout BeginFrame
 Detroit, Michigan
 \end_layout
@@ -144,14 +187,14 @@ status open
 
 
 \backslash
-begin{columns}
+begin{columns}[t]
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-column{0.49
+begin{column}[t]{0.49
 \backslash
 textwidth}
 \end_layout
@@ -176,9 +219,15 @@ textbf{Fisher Body Plant}
 \backslash
 includegraphics[width=0.99
 \backslash
-textwidth]{
+textwidth,height=0.4
 \backslash
-Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}% 
+textheight]{
+\backslash
+Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}%
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -190,11 +239,27 @@ end{centering}
 
 \begin_layout Plain Layout
 
+
+\backslash
+end{column}
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \begin_layout Plain Layout
 
 
+\backslash
+begin{column}[t]{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
 \backslash
 column{0.49
 \backslash
@@ -212,7 +277,7 @@ begin{centering}
 
 
 \backslash
-textbf{House in Delray}
+textbf{House in Delray, Detroit}
 \end_layout
 
 \begin_layout Plain Layout
@@ -221,9 +286,11 @@ textbf{House in Delray}
 \backslash
 includegraphics[width=0.99
 \backslash
-textwidth]{
+textwidth,height=0.4
 \backslash
-Dropbox/../pictures/AbandonedHouseDelray.jpg}% 
+textheight]{
+\backslash
+Dropbox/../pictures/AbandonedHouseDelray.jpg}%
 \end_layout
 
 \begin_layout Plain Layout
@@ -231,6 +298,205 @@ Dropbox/../pictures/AbandonedHouseDelray.jpg}%
 
 \backslash
 end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{column}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{columns}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Detroit, Michigan
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{columns}[t]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{column}[t]{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{Fisher Body Plant}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth,height=0.4
+\backslash
+textheight]{
+\backslash
+Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+Constructed: 1921 
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+GM left: 1984 
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+closed: 1994
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{column}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{column}[t]{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+column{0.49
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+textbf{House in Delray, Detroit}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.99
+\backslash
+textwidth,height=0.4
+\backslash
+textheight]{
+\backslash
+Dropbox/../pictures/AbandonedHouseDelray.jpg}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+Delray population count: 
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+1933: 23,000 
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+2010:  2,300
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{column}
 \end_layout
 
 \begin_layout Plain Layout
@@ -257,14 +523,14 @@ status open
 
 
 \backslash
-begin{columns}
+begin{columns}[t]
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-column{0.49
+begin{column}[t]{0.49
 \backslash
 textwidth}
 \end_layout
@@ -303,13 +569,55 @@ end{centering}
 
 \begin_layout Plain Layout
 
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+Palo Alto population count:
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+2000: 58,598
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+2010: 64,403
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+10.3
+\backslash
+% increase
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-column{0.49
+end{column}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{column}[t]{0.49
 \backslash
 textwidth}
 \end_layout
@@ -336,7 +644,19 @@ includegraphics[width=0.99
 \backslash
 textwidth]{
 \backslash
-Dropbox/../pictures/napa_valley.png}% 
+Dropbox/../pictures/napa_valley.png}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline 
+\end_layout
+
+\begin_layout Plain Layout
+
+On sale for 28 million Dollars.
 \end_layout
 
 \begin_layout Plain Layout
@@ -344,6 +664,13 @@ Dropbox/../pictures/napa_valley.png}%
 
 \backslash
 end{centering}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{column}
 \end_layout
 
 \begin_layout Plain Layout
@@ -363,7 +690,7 @@ Regional Shocks
 \end_layout
 
 \begin_layout Standard
-Shocks to income or house prices affect regions differently.
+Shocks affect regions to different extents.
 \end_layout
 
 \begin_layout Itemize
@@ -438,7 +765,7 @@ buying or renting
 \end_layout
 
 \begin_layout Itemize
-moving or staying to one of several regions
+staying or moving to one of several regions
 \end_layout
 
 \end_deeper
@@ -519,17 +846,70 @@ onslide+<3->
 What would happen to migration if government policy changed?
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout BeginFrame
 Roadmap
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Literature
+\end_layout
+
+\begin_layout BeginFrame
+Related literature
+\end_layout
+
+\begin_layout Enumerate
+Dynamic models of migration over lifecycle: Kennan and Walker (2011), Gemici
+ (2007), Winkler (2011)
+\end_layout
+
+\begin_layout Enumerate
+Static spatial equilibrium models of migration and local labor markets:
+ Notowidigdo (2011), Moretti (2011)
+\end_layout
+
+\begin_layout Enumerate
+Regional Economics / Trade literature ?
+\end_layout
+
+\begin_layout Enumerate
+On the effects of 2007 bust on unemployment and mobility: 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+empirical: Ferreira et al.
+ (2010), Schulhofer-Wohl (2011), Demyanyk et al.
+ (2013)
+\end_layout
+
+\begin_layout Enumerate
+theoretical: Nenov (2012), Song et al.
+ (2014) and Karahan and Rhee (2011)
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Housing demand over the lifecycle: Attanasio et al.
+ (2012), and Li, Meghir and Oswald (2014)
 \end_layout
 
 \begin_layout Section
@@ -996,6 +1376,10 @@ Controlling for other factors, being an owner reduces baseline moving probabilit
 y by one half
 \end_layout
 
+\begin_layout Standard
+\begin_inset Branch long
+status open
+
 \begin_layout BeginFrame
 Regional Shocks: House Prices
 \end_layout
@@ -1056,7 +1440,7 @@ North Dakota Oil Boom
 \series default
 : Discovery of Parshall Oil Field in 2006 heralds strong job growth.
  State climbes from rank 38 in the 2001 GDP per capita distribution to a
- level of GDP of 29% above average in 2013.
+ level of GDP which is 29% above US average in 2013.
 \begin_inset ERT
 status open
 
@@ -1095,48 +1479,9 @@ Rust Belt Decline
 \end_layout
 
 \end_deeper
-\begin_layout Section
-Literature
-\end_layout
+\end_inset
 
-\begin_layout BeginFrame
-Literature
-\end_layout
 
-\begin_layout Enumerate
-Dynamic models of migration over lifecycle: Kennan and Walker (2011), Gemici
- (2007), Winkler (2011)
-\end_layout
-
-\begin_layout Enumerate
-Static spatial equilibrium models of migration and local labor markets:
- Notowidigdo (2011), Moretti (2011)
-\end_layout
-
-\begin_layout Enumerate
-Regional Economics / Trade literature ?
-\end_layout
-
-\begin_layout Enumerate
-On the effects of 2007 bust on unemployment and mobility: 
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-empirical: Ferreira et al.
- (2010), Schulhofer-Wohl (2011), Demyanyk et al.
- (2013)
-\end_layout
-
-\begin_layout Enumerate
-theoretical: Nenov (2012), Song et al.
- (2014) and Karahan and Rhee (2011)
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-Housing demand over the lifecycle: Attanasio et al.
- (2012), and Li, Meghir and Oswald (2014)
 \end_layout
 
 \begin_layout Section
@@ -1172,8 +1517,8 @@ Houses: choose whether to rent or own,
 \end_layout
 
 \begin_layout Itemize
-Migration: in each period, compare values of each location and choose the
- highest one.
+Migration: in each period, compare values of locations and choose the highest
+ one.
 \end_layout
 
 \begin_layout BeginFrame
@@ -1492,11 +1837,7 @@ given state
 \begin_inset Formula $x_{it}$
 \end_inset
 
-, compute optimal value 
-\begin_inset Formula $v_{d}$
-\end_inset
-
- in each location:
+, compute optimal value in each location:
 \end_layout
 
 \begin_deeper
@@ -2019,9 +2360,25 @@ status open
 
 
 \backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 input{
 \backslash
 Dropbox/model/fit/preset.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
 \end_layout
 
 \end_inset
@@ -2077,7 +2434,23 @@ Parameter estimates
 \end_layout
 
 \begin_layout Standard
-table
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/param-edit-pres.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -2234,7 +2607,53 @@ Dropbox/model/experiments/HC_friction/HC_friction.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Impulse response of a large price shock
+Impulse response to large regional price shock
+\end_layout
+
+\begin_layout Itemize
+Reduce observed house prices in Pacific by 30% in 2007
+\end_layout
+
+\begin_layout Itemize
+Mean income unchanged
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/pshock_pres.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in Pacific: Total outflow
 \end_layout
 
 \begin_layout Standard
@@ -2242,6 +2661,70 @@ Impulse response of a large price shock
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in Pacific: Outflow of owners
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in Pacific: Outflow of renters
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_rent_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in Pacific: Inflow of owners from elsewhere
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_own_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in Pacific: Inflow of renters from elsewhere
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_rent_move.pdf
 	scale 70
 
 \end_inset
@@ -2257,8 +2740,403 @@ Insurance value of migration
 Value of migration in the face of large shocks
 \end_layout
 
+\begin_layout Itemize
+Identical experiment to before, but shutting down migration
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Value of migration:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+focus on group that left Pacific after 2007 shock
+\end_layout
+
+\begin_layout Itemize
+rerun shock experiment under identical environment, but force people to
+ stay
+\end_layout
+
+\begin_layout Itemize
+compare lifetime utilities for this group after 2007
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+value 
+\emph default
+of migration measured in terms of consumption compensation 
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+The Value of Migration: Overview of flows
+\end_layout
+
 \begin_layout Standard
-blah
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+All values in Percent.
+ Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Value of Migration: Overview of flows
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value2.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+All values in Percent.
+ Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Value of Migration: Overview of flows
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value3.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+All values in Percent.
+ Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Value of Migration: Details
+\end_layout
+
+\begin_layout Itemize
+Comparing the set of movers across 
+\emph on
+Can leave 
+\emph default
+and 
+\emph on
+Can not leave 
+\emph default
+scenarios
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value_detail.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+ Conditions on individuals who moved in 
+\emph on
+Can leave 
+\emph default
+scenario.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Value of Migration: Details
+\end_layout
+
+\begin_layout Itemize
+Comparing the set of movers across 
+\emph on
+Can leave 
+\emph default
+and 
+\emph on
+Can not leave 
+\emph default
+scenarios
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value_detail2.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+ Conditions on individuals who moved in 
+\emph on
+Can leave 
+\emph default
+scenario.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2266,7 +3144,95 @@ Policy Experiments
 \end_layout
 
 \begin_layout BeginFrame
-Mortgage Deduction
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Itemize
+Would abolishing the mortgage deduction increase mobility?
+\end_layout
+
+\begin_layout Itemize
+Not clear because of GE effect on house prices
+\end_layout
+
+\begin_layout Itemize
+Use results from stationary GE model by Sommer and Sullivan (2013): 5% reduction
+ in eqm.
+ prices
+\end_layout
+
+\begin_layout Itemize
+Consider several redistribution schemes
+\end_layout
+
+\begin_layout BeginFrame
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Averages over 
+\begin_inset Formula $t>2007$
+\end_inset
+
+.
+ Conditions on individuals who moved in 
+\emph on
+Can leave 
+\emph default
+scenario.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
