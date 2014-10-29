@@ -365,15 +365,21 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 
 	own_move = @> begin
 		sim_sample
-		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw))
+		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw),assets=mean(:assets.data,fullw),q10=quantile(:income,0.1),q50=quantile(:income,0.5))
 	end
+	own_inc = @> begin
+		sim_sample
+		@transform(ybin = cut(:income,[0.0,20.0,40.0,60.0]))
+		@by(:ybin, own = mean(:own.data,WeightVec(:density.data)), value=mean(:v.data,WeightVec(:density.data)))
+	end
+
 	own_move_age = @> begin
 		sim_sample
 		@by(:realage,own=mean(:h),move=mean(:move),income=mean(:income),assets=mean(:a),policy=pol)
 	end
 	move_own_age = @by(sim_sample,[:own,:realage],move=mean(:move),income=mean(:income),assets=mean(:a),policy=pol)
 
-	out = ["own_move" => own_move, "own_move_age" => own_move_age, "move_own_age"=> move_own_age]
+	out = ["own_move" => own_move, "own_inc" => own_inc, "own_move_age" => own_move_age, "move_own_age"=> move_own_age]
 	return out
 end
 
@@ -628,13 +634,23 @@ function exp_Mortgage(ctax=false)
 	d = Dict()
 	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
 	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
+	d["income"] = ["base" => base_out["own_move"][:income][1], "burn" => pol0_out["own_move"][:income][1], "redist1" => pol1_out["own_move"][:income][1], "redist2" => pol2_out["own_move"][:income][1],"redist3" => pol3_out["own_move"][:income][1],"redist4" => pol4_out["own_move"][:income][1]]
+	d["q10"] = ["base" => base_out["own_move"][:q10][1], "burn" => pol0_out["own_move"][:q10][1], "redist1" => pol1_out["own_move"][:q10][1], "redist2" => pol2_out["own_move"][:q10][1],"redist3" => pol3_out["own_move"][:q10][1],"redist4" => pol4_out["own_move"][:q10][1]]
+	d["q50"] = ["base" => base_out["own_move"][:q50][1], "burn" => pol0_out["own_move"][:q50][1], "redist1" => pol1_out["own_move"][:q50][1], "redist2" => pol2_out["own_move"][:q50][1],"redist3" => pol3_out["own_move"][:q50][1],"redist4" => pol4_out["own_move"][:q50][1]]
+	d["own_inc1"] = ["base" => base_out["own_inc"][1,:own], "burn" => pol0_out["own_inc"][1,:own], "redist1" => pol1_out["own_inc"][1,:own], "redist2" => pol2_out[["own_inc"][1,:own],"redist3" => pol3_out["own_inc"][1,:own],"redist4" => pol4_out["own_inc"][1,:own]]
+	d["val_inc1"] = ["base" => base_out["own_inc"][1,:value], "burn" => pol0_out["own_inc"][1,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out[["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][1,:value],"redist4" => pol4_out["own_inc"][1,:value]]
+	d["own_inc2"] = ["base" => base_out["own_inc"][2,:own], "burn" => pol0_out["own_inc"][2,:own], "redist1" => pol1_out["own_inc"][2,:own], "redist2" => pol2_out[["own_inc"][2,:own],"redist3" => pol3_out["own_inc"][2,:own],"redist4" => pol4_out["own_inc"][2,:own]]
+	d["val_inc2"] = ["base" => base_out["own_inc"][2,:value], "burn" => pol0_out["own_inc"][2,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out[["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][2,:value],"redist4" => pol4_out["own_inc"][2,:value]]
+	d["own_inc3"] = ["base" => base_out["own_inc"][3,:own], "burn" => pol0_out["own_inc"][3,:own], "redist1" => pol1_out["own_inc"][3,:own], "redist2" => pol2_out[["own_inc"][3,:own],"redist3" => pol3_out["own_inc"][3,:own],"redist4" => pol4_out["own_inc"][3,:own]]
+	d["val_inc3"] = ["base" => base_out["own_inc"][3,:value], "burn" => pol0_out["own_inc"][3,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out[["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][3,:value],"redist4" => pol4_out["own_inc"][3,:value]]
+	d["assets"] = ["base" => base_out["own_move"][:assets][1], "burn" => pol0_out["own_move"][:assets][1], "redist1" => pol1_out["own_move"][:assets][1], "redist2" => pol2_out["own_move"][:assets][1],"redist3" => pol3_out["own_move"][:assets][1],"redist4" => pol4_out["own_move"][:assets][1]]
 	d["p_own"] = Dict()
 	d["p_move"] = Dict()
 	for (k,v) in d["own"] 
-		d["p_own"][k] = (v - d["own"]["base"]) / d["own"]["base"]
+		d["p_own"][k] = 100 * (v - d["own"]["base"]) / d["own"]["base"]
 	end
 	for (k,v) in d["move"] 
-		d["p_move"][k] = (v - d["move"]["base"]) / d["move"]["base"]
+		d["p_move"][k] = 100 * (v - d["move"]["base"]) / d["move"]["base"]
 	end
 	d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
 
@@ -645,7 +661,7 @@ function exp_Mortgage(ctax=false)
 
 
 	# return
-	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2,  "ctax3" => ctax3, "ctax4" => ctax4,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age]
+	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"ctax0" => ctax0, "ctax1" => ctax1, "pol1_out" =>pol1_out, "ctax2" => ctax2,  "ctax3" => ctax3, "ctax4" => ctax4,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age, "summary" => d]
 
 	return out
 
