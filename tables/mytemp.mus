@@ -1,0 +1,12 @@
+{% macro showparam(param,dd) %}
+    {{param}} & {{ dd.model | prettyNum(3) }}   &  {{ dd.m | prettyNum(3) }} \\
+{%- endmacro %}
+\begin{tabular}{lll}
+  \toprule 
+  param & model & data \\ 
+  \midrule
+  {{  showparam("$x$",m_x)  }}
+  {{  showparam("$y$",m_y)  }}
+  {{  showparam("$z$",m_z)  }}
+  \bottomrule
+\end{tabular}

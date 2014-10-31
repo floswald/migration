@@ -30,7 +30,8 @@ Depends:
     MASS,
     rhdf5,
     psidR,
-    erer
+    erer,
+    tikzDevice
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

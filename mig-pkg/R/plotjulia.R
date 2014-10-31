@@ -1,14 +1,89 @@
 
 
 
+# look at max/min deviation in house prices
+getFHFA_max_peak2trough <- function(){
+	data(FHFA_msa50,package="EconData")
+	ls()
+	FHFA_msa50
+	FHFA_msa50$yr
+	ff = FHFA_msa50$yr
+	ff[,maxp := .SD[yr>2005&yr<2011,max(index_nsa)],by=Metropolitan_Area_Name]
+	ff[,dmax := 100*(index_nsa - maxp) / maxp]
+	ff6 = ff[yr>2006 & yr<2012]
+	ff6[,list(max=Metropolitan_Area_Name[which.max(dmax)],min=Metropolitan_Area_Name[which.min(dmax)])]
+	ff6[Metropolitan_Area_Name=="Detroit-Dearborn-Livonia, MI  (MSAD)"]
+	ff6[,list(max=Metropolitan_Area_Name[which.max(dmax)],min=Metropolitan_Area_Name[which.min(dmax)])]
+	ff6[,list(max=Metropolitan_Area_Name[which.max(dmax)],maxv=max(dmax),min=Metropolitan_Area_Name[which.min(dmax)],minv=min(dmax))]
+	ff6[,list(min_idx = min(dmax)),by=Metropolitan_Area_Name]
+	dmin=ff6[,list(min_idx = min(dmax)),by=Metropolitan_Area_Name]
+	dmin[,range(min_idx)]
+	dmin[,list(max=Metropolitan_Area_Name[which.max(min_idx)],maxv=max(min_idx),min=Metropolitan_Area_Name[which.min(min_idx)],minv=min(min_idx))]
+	return(dmin)
+}
+
+plot_experimentPacific <- function(){
+
+	x = Export.VAR()
+	pcf = x$pyagg[Division=="Pcf"]
+	pcf[,c("y","p") := NULL]
+	setnames(pcf,c("yhat","phat"),c("y","p"))
+	pcf[,c("y_shock","p_shock") := list(y,p)]
+	pcf[year<2006,c("y_shock","p_shock") := NA]
+	pcf[year>2006,c("y_shock","p_shock") := list(y*0.7,p*0.7)]
+
+	yp = melt(pcf,id.vars="year",measure.vars=c("y","y_shock","p","p_shock"))
+	yp[,type := "y"]
+	yp[str_detect(variable,"p"), type := "$p_t$"]
+	yp[str_detect(variable,"y"), type := "$\\overline{y}_{dt}$"]
+
+	vline.data = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(NA,2007))
+	vline.data2 = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(2007,NA))
+	yscale = c(seq(1970,2000,by=10),2007)
+	yscale_pres = c(seq(1970,1990,by=10),2007)
+
+	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle("Shocking $\\overline{y}_{dt}$ for $d=$ Pacific, $t\\geq2007$ \n   ") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p1_pres = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres)
+	p2 = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle("Shocking $p_{dt}$ for $d=$ Pacific, $t\\geq2007$ \n   ") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p2_pres = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres) 
+	
+	# for paper
+	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/yshock.tex",width=6.5,height=3.0)
+	print(p1)
+	dev.off()
+
+	# for presentation
+	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/yshock_pres.tex",width=4.7,height=2.5)
+	print(p1_pres)
+	dev.off()
+
+	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/pshock.tex",width=6.5,height=3.0)
+	print(p2)
+	dev.off()
+
+	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/pshock_pres.tex",width=4.7,height=2.5)
+	print(p2_pres)
+	dev.off()
+
+	return(list(y=p1,y_pres=p1_pres,p=p2,p_pres=p2_pres))
+
+}
+
+
+
 # plot example of CCP
 plot.CCP <- function(){
 	f = function(x){
 		exp(x - log(exp(x) + exp(1.0)))
 	}
 	df = data.frame(x=seq(-3,4,le=100),P=f(seq(-3,4,le=100)))
+	p = ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$\\Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
 	tikz("~/Dropbox/mobility/output/model/fit/ccp-plot.tex",width=6,height=4)
-	ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$\\Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
+	print(p)
+	dev.off()
+	p = ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw()  + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
+	tikz("~/Dropbox/mobility/output/model/fit/ccp-plotsmall.tex",width=4,height=3)
+	print(p)
 	dev.off()
 }
 
@@ -485,11 +560,31 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 
 
-	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg))
+	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg,pyagg=pyagg))
 
 }
 
-Export.VAR3 <- function(){
+# plot both price series
+compareVars <- function(){
+
+	sm = Export.VAR_smallShocks()
+	s = Export.VAR()
+
+	base = s$pyagg[,list(year,Division,p,regime="baseline")]
+	small = sm$pyagg[,list(year,Division,p,regime="small Shocks")]
+
+	dall = rbind(base,small)
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+	pl = ggplot(dall,aes(x=year,y=p,color=Division)) + geom_line(size=0.8) + facet_wrap(~regime) + theme_bw() + scale_color_manual(values=cbPalette) + scale_y_continuous("2012 Dollars (1000)")
+
+	ggsave(plot=pl,file="~/Dropbox/mobility/output/model/experiments/smallShocks/prices.pdf",width=7,height=4.5)
+
+}
+
+
+# small shocks
+Export.VAR_smallShocks <- function(){
 
 	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
 
@@ -567,15 +662,86 @@ Export.VAR3 <- function(){
 
 
 
-	return(list(Agg2Region_coefs=coefs,plots=pl,pred_y=pred_y,pred_p=pred_p))
+	return(list(Agg2Region_coefs=coefs,plots=pl,pred_y=pred_y,pred_p=pred_p,pyagg=pyagg))
 }
 
 
 
+# WIP
+# constant series
+Export.VAR4 <- function(){
+
+	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+
+	data(BEA_fhfa,envir=environment())
+
+	py = BEA_fhfa_agg$py
+	py[,y := .SD[year==2012,y],by=Division]
+	py[,p := .SD[year==2012,p],by=Division]
+
+	pl = list()
+	pl$regy = ggplot(py,aes(x=year,y=y,color=Division)) + geom_line()
+	pl$regp = ggplot(pp,aes(x=year,y=p,color=Division)) + geom_line()
+
+
+	# get linear trend aggregate data
+	a = list()
+	a$Y = lm(Y ~ year,BEA_fhfa_agg$agg)
+	a$P = lm(P ~ year,BEA_fhfa_agg$agg)
+	nd = data.frame(year=1967:2012)
+	a$p_Y = cbind(nd,predict(a$Y,nd))
+	a$p_P = cbind(nd,predict(a$P,nd))
+	names(a$p_Y)[2] = "pred_Y"
+	names(a$p_P)[2] = "pred_P"
+	pl$Y = ggplot(a$p_Y,aes(x=year,y=pred_Y)) + geom_line()
+	pl$P = ggplot(a$p_P,aes(x=year,y=pred_P)) + geom_line()
+
+
+	# aggregate factors
+	PYdata = data.table(merge(a$p_Y,a$p_P))
+	setkey(PYdata,year)
+	setnames(PYdata,c("pred_Y","pred_P"),c("Y","P"))
+
+
+	# merge into regional data
+
+	setkey(r$p_y,year)
+	tmp = r$p_y[PYdata]
+	tmod = lm(y ~ Y + Division,tmp)
+
+	# export coefficients as table
+	regY <- as.data.frame(coef(tmod))
+	regY$param <- names(coef(tmod))
+	names(regY)[1] <- "value"
+	regY$param <- gsub("\\(|\\)","",regY$param)
+
+	setkey(r$p_p,year)
+	tmp = r$p_p[PYdata]
+	tmod = lm(p ~ P + Division,tmp)
+
+	# export coefficients as table
+	regP <- as.data.frame(coef(tmod))
+	regP$param <- names(coef(tmod))
+	names(regY)[1] <- "value"
+	regY$param <- gsub("\\(|\\)","",regY$param)
+
+	pred_y = dcast(r$p_y,year ~ Division)
+	pred_p = dcast(r$p_p,year ~ Division)
+
+	PYdata = as.data.frame(PYdata)
+
+	save(regY,file=file.path(path,"regY.rda"))
+	save(regP,file=file.path(path,"regP.rda"))
+	save(pred_y,file=file.path(path,"pred_y_noShock.rda"))
+	save(pred_p,file=file.path(path,"pred_p_noShock.rda"))
+	save(PYdata,file=file.path(path,"PYdata_noShock.rda"))
+
+	return(list(regY=regY,regP=regP,pred_y=pred_y,pred_p=pred_p,PYdata=PYdata))
+
+}
+
 # get a no-shock scenario
-# compute linear trends on all series
-# estimate factor model on that
-# not clear this is correct. probably need to re-estimate the individual income model as well.
+# all series are contant and equal to the most recent observation
 Export.VAR2 <- function(){
 
 	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
@@ -724,12 +890,18 @@ Export.IncomeProcess <- function(dat){
 
 
 	# TODO change this!!!!
-	# lmod = lm(log(HHincome) ~  Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
-	# newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
-	# ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~CensusMedinc)
-	# x=cbind(newdat,exp(predict(lmod,newdat)))
-	# names(x)[4] = "predict"
-	# ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~Medinc) + ggtitle("Labor Income profiles for different Y levels") + scale_y_continuous("Dollars (1000s)")
+	lmod = lm(log(HHincome) ~  Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
+	cnames = coef(lmod)
+	texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+
+	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
+	x=cbind(newdat,exp(predict(lmod,newdat)))
+	x$meany = paste0("$\\overline{y}_{dt}=",x$CensusMedinc,"$")
+	names(x)[4] = "predict"
+
+	tikz("~/Dropbox/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
+	ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	dev.off()
 
 	# add residuals indiv data
 	cd [ ,resid := 0]

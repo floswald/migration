@@ -143,12 +143,6 @@ This paper focuses on regional risk coming from house price and wage risk.
 \end_layout
 
 \begin_layout Standard
-
-\series bold
-Research Question:
-\end_layout
-
-\begin_layout Standard
 \noindent
 \align center
 \begin_inset Box Shaded
@@ -165,9 +159,22 @@ height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
+
+\series bold
+Research Questions:
+\end_layout
+
+\begin_layout Enumerate
 \noindent
-\align center
-What is the insurance value of migration?
+
+\series bold
+What is the value of migration when a regional shock occurs?
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+How does government housing policy interact with mobility?
 \end_layout
 
 \end_inset
@@ -686,7 +693,7 @@ end{columns}
 \end_layout
 
 \begin_layout BeginFrame
-Regional Shocks 
+Regional Shocks: large, and varied
 \end_layout
 
 \begin_layout Standard
@@ -709,28 +716,27 @@ Shocks to house prices
 
 \begin_deeper
 \begin_layout Itemize
-peak-to-trough decline in FHFA house price index 2007--2010:
+Falls in FHFA house price index 2007--2010:
+\end_layout
+
+\begin_layout Itemize
+largest: 61% in Las Vegas
+\end_layout
+
+\begin_layout Itemize
+smallest: 2.3% in Pittsburgh
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+This paper
+\end_layout
+
+\begin_layout Itemize
+In this paper, I build a lifecycle model that allows for
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
-largest decline: 61% in Las Vegas
-\end_layout
-
-\begin_layout Itemize
-smallest decline: 2.3% in Pittsburgh
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout BeginFrame
-What this paper does
-\end_layout
-
-\begin_layout Standard
-In this paper, I allow for
-\end_layout
-
 \begin_layout Itemize
 Regional risk in house prices and labor income
 \end_layout
@@ -747,44 +753,17 @@ Saving in assets
 Buying or renting a home
 \end_layout
 
-\begin_layout BeginFrame
-How the paper will do this
-\end_layout
-
-\begin_layout Itemize
-Lifecycle model with choices over
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-consumption / savings
-\end_layout
-
-\begin_layout Itemize
-buying or renting
-\end_layout
-
-\begin_layout Itemize
-staying or moving to one of several regions
-\end_layout
-
 \end_deeper
 \begin_layout Itemize
-Regional Shocks to house prices and labor income
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Strong correlation at aggregate level: factor model
+I will use SIPP micro data to estimate it
 \end_layout
 
 \begin_layout Itemize
-Regions are affected to different extents by aggregate shocks
+Develop a measure of insurance value of migration
 \end_layout
 
-\end_deeper
 \begin_layout Itemize
-Estimate with SIPP micro data for 1997--2012
+Analyse how policy changes would affect outcomes
 \end_layout
 
 \begin_layout BeginFrame
@@ -876,45 +855,106 @@ Literature
 Related literature
 \end_layout
 
-\begin_layout Enumerate
-Dynamic models of migration over lifecycle: Kennan and Walker (2011), Gemici
- (2007), Winkler (2011)
+\begin_layout Itemize
+Dynamic models of migration over lifecycle: 
+\size footnotesize
+Kennan and Walker (2011), Gemici (2007), Winkler (2011)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+
+\backslash
+vspace{3mm}
 \end_layout
 
-\begin_layout Enumerate
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 Static spatial equilibrium models of migration and local labor markets:
- Notowidigdo (2011), Moretti (2011)
+ 
+\size footnotesize
+Notowidigdo (2011), Moretti (2011)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+
+\backslash
+vspace{3mm}
 \end_layout
 
-\begin_layout Enumerate
-Regional Economics / Trade literature ?
+\end_inset
+
+
 \end_layout
 
-\begin_layout Enumerate
+\begin_layout Itemize
+Regional Fluctuations: 
+\size footnotesize
+Blanchard and Katz (1992)
+\end_layout
+
+\begin_layout BeginFrame
+Related literature
+\end_layout
+
+\begin_layout Itemize
 On the effects of 2007 bust on unemployment and mobility: 
 \end_layout
 
 \begin_deeper
-\begin_layout Enumerate
+\begin_layout Itemize
+
+\size footnotesize
 empirical: Ferreira et al.
  (2010), Schulhofer-Wohl (2011), Demyanyk et al.
  (2013)
 \end_layout
 
-\begin_layout Enumerate
+\begin_layout Itemize
+
+\size footnotesize
 theoretical: Nenov (2012), Song et al.
  (2014) and Karahan and Rhee (2011)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\size footnotesize
+
+\backslash
+vspace{3mm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
-\begin_layout Enumerate
-Housing demand over the lifecycle: Attanasio et al.
+\begin_layout Itemize
+Housing demand over the lifecycle:
+\size footnotesize
+ Attanasio et al.
  (2012), and Li, Meghir and Oswald (2014)
 \end_layout
 
 \begin_layout Section
 Empirical Facts
 \end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout BeginFrame
 Mobility Facts I
@@ -928,7 +968,7 @@ annual moving rate at county level
  of annual flows into or out of employment (Fallick and Fleischmann 2004)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -1172,8 +1212,13 @@ Source: Molloy et al, J.
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout BeginFrame
-Mobility Facts II
+Aggregate Migration Rates
 \end_layout
 
 \begin_layout Itemize
@@ -1184,7 +1229,7 @@ Owners move less than renters
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1210,16 +1255,12 @@ Dropbox/data/sipp/move_rates_edit.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Percent of population.
+Percent of US households.
  SIPP data, subset to 20--50 year olds.
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1372,8 +1413,9 @@ People think about housing as a reason to move
 \end_layout
 
 \begin_layout Enumerate
-Controlling for other factors, being an owner reduces baseline moving probabilit
-y by one half
+Controlling for other factors, effect of being an owner reduces baseline
+ prob.
+ by 50%.
 \end_layout
 
 \begin_layout Standard
@@ -1841,7 +1883,7 @@ given state
 \end_layout
 
 \begin_deeper
-\begin_layout Enumerate
+\begin_layout Itemize
 optimal consumption 
 \begin_inset Formula $c_{h}^{*}$
 \end_inset
@@ -1857,7 +1899,7 @@ optimal consumption
 
 \end_layout
 
-\begin_layout Enumerate
+\begin_layout Itemize
 choose optimal housing 
 \begin_inset Formula $h_{d}^{*}(c_{h}^{*})$
 \end_inset
@@ -1865,7 +1907,7 @@ choose optimal housing
 
 \end_layout
 
-\begin_layout Enumerate
+\begin_layout Itemize
 choose optimal location, based on the value of optimal housing in each location
  and location shock 
 \begin_inset Formula $\varepsilon$
@@ -1901,6 +1943,40 @@ e & \sim & N(0,\sigma^{2})
 \end_layout
 
 \begin_layout Itemize
+\begin_inset Formula $f(t)$
+\end_inset
+
+ is a deterministic age profile
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ is an idiosyncratic productivity shock
+\end_layout
+
+\begin_layout BeginFrame
+Job Search
+\end_layout
+
+\begin_layout Itemize
+Identical to Kennan and Walker (2011)
+\end_layout
+
+\begin_layout Itemize
+Must visit a location in order to discover the exact wage
+\end_layout
+
+\begin_layout Itemize
+There is uncertainty about the new draw for 
+\begin_inset Formula $z$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 Individuals who move to 
 \begin_inset Formula $k$
 \end_inset
@@ -1925,19 +2001,11 @@ Individuals who move to
 
 \end_inset
 
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-but only know the conditional distribution of 
+
+\end_layout
+
+\begin_layout Itemize
+but they only know the conditional distribution of 
 \begin_inset Formula $z_{it+1}|z_{it}$
 \end_inset
 
@@ -2166,7 +2234,18 @@ v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(
 \end_layout
 
 \begin_layout Itemize
-Final period depends on net wealth
+Final period value:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V_{T}(a,h_{T-1},s,d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\ln p_{dT}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -2188,7 +2267,7 @@ can buy, subject to downpayment
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\\
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\\
 \ln y_{idt} & = & \eta_{d}\ln(\overline{y}_{dt})+f(t)+z_{it}\\
 a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
 r(a_{it}) & = & \begin{cases}
@@ -2316,6 +2395,14 @@ Use a cohort estimator: concern is that different cohorts faced different
  
 \end_layout
 
+\begin_layout Itemize
+Use BEA personal income by state to get regional GDP/capita
+\end_layout
+
+\begin_layout Itemize
+FHFA house price index for prices
+\end_layout
+
 \begin_layout BeginFrame
 VAR predictions for regional house prices
 \end_layout
@@ -2430,6 +2517,409 @@ L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\
 \end_layout
 
 \begin_layout BeginFrame
+Identification
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moment
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moving Cost
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Average mobility
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moving Cost Owners
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Owner mobility
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moving Cost age
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age profile of mobility
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moving Cost age
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age profile of mobility
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moving Cost kids
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mobility cond.
+ on kids
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\gamma$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CRRA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+savings, ownership profile
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+weight in final period
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+savings profile
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\omega_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+weight in final period
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+fraction of owners who sell age 50
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\pi_{\tau}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+proportion of high cost
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+proportion who never move
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\xi_{1},\xi_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+utility from owning
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ownership profile
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
 Parameter estimates
 \end_layout
 
@@ -2454,11 +2944,51 @@ Dropbox/model/fit/param-edit-pres.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Model Fit
+Model Fit I
 \end_layout
 
 \begin_layout Standard
-table with model and data moments
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms_1.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Model Fit II
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms_2.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -2466,7 +2996,23 @@ Model Validation
 \end_layout
 
 \begin_layout Standard
-non-targetted moments
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms-nontarget.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2489,8 +3035,41 @@ Properties: Probability of migrating by assets
 
 \end_layout
 
+\begin_layout BeginFrame
+Probability of moving: Example with 2 regions
+\end_layout
+
+\begin_layout Itemize
+Probability of moving from region 2 to region 1, if 
+\begin_inset Formula $v_{2}=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Pr\left(\text{move to 1}|2\right)=\exp(v_{1}-\log(\exp(v_{1})+\exp(v_{2})))$
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-blah
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/ccp-plotsmall.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -2607,15 +3186,93 @@ Dropbox/model/experiments/HC_friction/HC_friction.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Impulse response to large regional price shock
+Impulse responses to large regional shocks
 \end_layout
 
 \begin_layout Itemize
-Reduce observed house prices in Pacific by 30% in 2007
+Reduce observed house price or mean income in Pacific by 30% in 2007
 \end_layout
 
 \begin_layout Itemize
-Mean income unchanged
+Leaving the other series unchanged
+\end_layout
+
+\begin_layout Itemize
+Look at changes in in/outflow
+\end_layout
+
+\begin_layout BeginFrame
+Sudden change in income level
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/yshock_pres.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Mean Income shock in Pacific: Outflow renters
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_rent_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Mean Income shock in Pacific: Outflow owners
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_own_move.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Sudden change in price level
 \end_layout
 
 \begin_layout Standard
@@ -2669,22 +3326,6 @@ Price shock in Pacific: Total outflow
 \end_layout
 
 \begin_layout BeginFrame
-Price shock in Pacific: Outflow of owners
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
-	scale 70
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
 Price shock in Pacific: Outflow of renters
 \end_layout
 
@@ -2701,30 +3342,14 @@ Price shock in Pacific: Outflow of renters
 \end_layout
 
 \begin_layout BeginFrame
-Price shock in Pacific: Inflow of owners from elsewhere
+Price shock in Pacific: Outflow of owners
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_own_move.pdf
-	scale 70
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Price shock in Pacific: Inflow of renters from elsewhere
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_rent_move.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
 	scale 70
 
 \end_inset
@@ -3166,6 +3791,98 @@ Consider several redistribution schemes
 \end_layout
 
 \begin_layout BeginFrame
+Sommer and Sullivan (2013)
+\end_layout
+
+\begin_layout Itemize
+With inelastic housing supply, deduction is capitalized into house prices
+\end_layout
+
+\begin_layout Itemize
+removing deduction lowers equilibrium prices by 5%
+\end_layout
+
+\begin_layout Itemize
+lower prices allow more low-wealth households to buy (lower downpayment)
+\end_layout
+
+\begin_layout Itemize
+Rents stay constant
+\end_layout
+
+\begin_layout Itemize
+% 
+\begin_inset Formula $\Delta$
+\end_inset
+
+ in EV of lifetime utility is 0.83%
+\end_layout
+
+\begin_layout BeginFrame
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Itemize
+Use estimates of average tax savings from Poterba and Sinai (2007)
+\end_layout
+
+\begin_layout Itemize
+Reduce disposable income of owners by implied savings
+\end_layout
+
+\begin_layout Itemize
+Redistribute the collected proceeds on a per-capita, per-period basis
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_data_jl/sinai-pres.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
@@ -3192,37 +3909,16 @@ linewidth][c]{%
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/.tex}
+Dropbox/model/experiments/MortgageSubsidy/mortgage_pres.tex}
 \end_layout
 
 \begin_layout Plain Layout
 
 }
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
- Conditions on individuals who moved in 
-\emph on
-Can leave 
-\emph default
-scenario.
 \end_layout
 
 \end_inset
@@ -3241,6 +3937,29 @@ Conclusion
 
 \begin_layout BeginFrame
 Conclusion
+\end_layout
+
+\begin_layout Itemize
+Migration has a large value in the event of a regional shock
+\end_layout
+
+\begin_layout Itemize
+Homeownership is an important factor in a migration model
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+affects probability of moving
+\end_layout
+
+\begin_layout Itemize
+affects response to shocks
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Abolishing the mortgage interest deduction has a small positive impact on
+ migration 
 \end_layout
 
 \begin_layout EndFrame

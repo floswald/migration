@@ -5361,7 +5361,7 @@ key "notowidigdo2011incidence"
 placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -5558,7 +5558,7 @@ reference "fig:yshock-out-rent-own"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -5606,6 +5606,56 @@ name "fig:pshock-inflow-own-rent"
 
 \begin_layout Subsection
 The value of Migration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/mig_value3.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Mobility flows in shock scenario and shock scenario without mobility.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:value-of-migration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6370,6 +6420,32 @@ Finally let's look at scenario (3), where we apply the 5% GE house price
 \begin_inset Float table
 wide false
 sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/MortgageSubsidy/mortgage.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Note Note
 status collapsed
 
 \begin_layout Plain Layout
@@ -6681,14 +6757,23 @@ Migration Rate
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
 Abolishing the mortgage interest deduction.
- Policy regimes are (1): burning money, (2): redistribute saved taxes per
- capita per period, and (3): regime (2) plus 5% decrease in house prices,
- approximating a GE effect.
+ Depending on whether or not a GE correction to house prices is applied
+ (house prices are 5% reduced), the migration rate increases slightly.
+ Cheaper housing everywhere and higher disposable income from redistribution
+ enables more previously liquidity constraint households to buy -- in their
+ home region, but crucially also in other regions.
+ This increases the migration rate.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Abolishing-the-mortgage"
@@ -6710,63 +6795,23 @@ name "tab:Abolishing-the-mortgage"
 
 \begin_layout Standard
 \begin_inset Float table
-placement H
 wide false
 sideways false
-status collapsed
-
-\begin_layout Plain Layout
-TODO: insert a table with net present value of the mortgage deduction at
- various by age and income quintile.
- or a plot.
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Note Note
 status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSub
-sidy/receipts.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
-subsidy 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:subsidy-receipts"
+mortgage deduction
+\end_layout
 
 \end_inset
 
 
 \end_layout
 
-\end_inset
-
+\begin_layout Plain Layout
 
 \end_layout
 

@@ -1,0 +1,17 @@
+{% macro showparam(param,dd) %}
+    {{param}} & {{ dd.base | prettyNum(3) }} & &  {{ dd.pshock | prettyNum(2) }} &   \\
+{%- endmacro %}
+{
+\renewcommand{\arraystretch}{1.2} 
+\begin{tabular}{l D{.}{.}{1.5}@{} D{.}{.}{1.1}@{} D{.}{.}{3.5}@{} D{.}{.}{3.5}@{} }
+  \toprule 
+     & \multicolumn{1}{c}{Baseline} & & \multicolumn{2}{c}{Price Shock} \\ 
+     \cmidrule{4-5}
+     &  & &  \multicolumn{1}{c}{Can leave}& \multicolumn{1}{c}{Can not} \\ 
+  \midrule
+  {{  showparam("Outflow", outmig ) }}
+  {{  showparam("\\hspace{6mm}Owners", outmig_own ) }}
+  {{  showparam("\\hspace{6mm}Renters", outmig_rent ) }}
+  \bottomrule
+\end{tabular}
+}

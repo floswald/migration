@@ -1,0 +1,20 @@
+{% macro showparam(param,dd,dec) %}
+    {{param}} & {{ dd.base | prettyNum(dec) }} & & {{ dd.redist3 | prettyNum(dec) }} & {{ dd.redist4 | prettyNum(dec) }}  \\
+{%- endmacro %}
+{% macro showperc(param,dd,dec) %}
+    {{param}} & {{ dd.base | prettyPerc(dec) }} & & {{ dd.redist3 | prettyPerc(dec) }} & {{ dd.redist4 | prettyPerc(dec) }}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.5}@{} c D{.}{.}{5.5}@{} D{.}{.}{5.5}@{} }
+  \toprule 
+     &  \multicolumn{1}{c}{Baseline} & & \multicolumn{2}{c}{Remove Deduction}  \\
+     \cmidrule{4-5}
+     &                               &  &\multicolumn{1}{c}{w/o GE} &\multicolumn{1}{c}{w GE}\\
+  \midrule
+  {{  showparam("Ownership Rate", own, 3) }}
+  {{  showparam("Migration Rate", move, 5) }}
+  {{  showperc("$\\% \\Delta$ Ownership", p_own, 3) }}
+  {{  showperc("$\\% \\Delta$ Migration", p_move, 3) }}
+  \midrule
+  {{  showparam("$\\delta$ Compensation", delta , 3) }}
+  \bottomrule
+\end{tabular}

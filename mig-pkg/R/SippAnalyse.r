@@ -426,71 +426,116 @@ Sipp.wage_residual_copulas <- function(){
 
 	library(copula)
 
-	data(Sipp_aggby_NULL,envir=environment())
+	data(Sipp_age,envir=environment())
 
-	# stayers
-	# =======
-
-	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
-	nmv <- merged[,unique(upid)[!unique(upid) %in% mv[,upid]]]
-	dat <- merged[upid %in% nmv & HHincome >0]
-
-	setkey(dat,upid,timeid,Division)
-
-	# log wage = beta0 + state +  beta1  *age + beta2*college + u
-
-	divs <- dat[,unique(Division)]
-
-	# get wage residual for each region
-	mods <- lapply(divs, function(x) lm(log(HHincome) ~ poly(age,degree=3,raw=T) + college + numkids , data=dat[Division==x]))
-	names(mods) <- divs
-
-	resids <- lapply(mods,resid)
-
-	dat[, u := 0.0]
-	for (d in divs){
-		dat[Division==d,u := resids[[d]]]
-	}
-
+	dat <- merged[HHincome > 0]
+	dat[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids +metro))]
+	setkey(dat,upid,timeid)
 	dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
-	d <- dat[!is.na(u_plus1),list(upid,timeid,Division,u,u_plus1)]
+	dat[,u_minus1 := dat[list(upid,timeid-1)][["u"]]]
+
+	# standardize into ranks
+	mmat = dat[,list(p_u=u,p_u_plus1=u_plus1,p_u_minus1=u_minus1)]
+	pmat = pobs(mmat)
+
+	data = cbind(dat[,list(upid,timeid,D2D,u,u_plus1,u_minus1)],pmat)
+
+	d1 = data[D2D==1,list(p_u,p_u_plus1)]
+	d1 = d1[complete.cases(d1)]
+	f1 = fitCopula(normal.cop,as.matrix(d1))
+
+	d2 = data[D2D==1,list(p_u_minus1,p_u)]
+	d2 = d2[complete.cases(d2)]
+	f2 = fitCopula(normal.cop,as.matrix(d2))
+
+	c1 = as.data.frame(summary(f1)$coefficients)
+	c2 = as.data.frame(summary(f2)$coefficients)
+	cat(toJSON(list(movers=c1,stayers=c2)),file="~/Dropbox/mobility/output/model/fit/copulas.json")
+	# # stayers
+	# # =======
+
+	# mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+	# nmv <- merged[,unique(upid)[!unique(upid) %in% mv[,upid]]]
+	# dat <- merged[upid %in% nmv & HHincome >0]
+
+	# setkey(dat,upid,timeid,Division)
+
+	# # log wage = beta0 + state +  beta1  *age + beta2*college + u
+
+	# divs <- dat[,unique(Division)]
+
+	# # get wage residual for each region
+	# mods <- lapply(divs, function(x) lm(log(HHincome) ~ poly(age,degree=3,raw=T) + college + numkids , data=dat[Division==x]))
+	# names(mods) <- divs
+
+	# resids <- lapply(mods,resid)
+
+	# # add residual u back to dataset
+	# dat[, u := 0.0]
+	# for (d in divs){
+	# 	dat[Division==d,u := resids[[d]]]
+	# }
+
+	# # get next period's residual
+	# dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
+	# d <- dat[!is.na(u_plus1),list(upid,timeid,Division,u,u_plus1)]
 
 
-	cops <- lapply(divs, function(x) mvdc(copula=ellipCopula(family="normal",param=0.1),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12))))
-	names(cops) <- divs
+	# cops <- lapply(divs, function(x) mvdc(copula=ellipCopula(family="normal",param=0.1),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12))))
+	# names(cops) <- divs
 
-	subs <- lapply(divs,function(x) as.matrix(d[Division==x][upid %in% sample(unique(upid),round(0.5*length(unique(upid)))),list(u,u_plus1)]))
-	names(subs) <- divs
+	# subs <- lapply(divs,function(x) as.matrix(d[Division==x][upid %in% sample(unique(upid),round(0.5*length(unique(upid)))),list(u,u_plus1)]))
+	# names(subs) <- divs
 
-	fits <- lapply(divs, function(x) fitMvdc(subs[[x]],cops[[x]],start=c(2, 1, 3, 2, 0.5),optim.control=list(trace=10)))
-	names(fits) <- divs
+	# fits <- lapply(divs, function(x) fitMvdc(subs[[x]],cops[[x]],start=c(2, 1, 3, 2, 0.5),optim.control=list(trace=10)))
+	# names(fits) <- divs
 
 
-	# movers
-	# ======
+	# # movers
+	# # ======
 
-	setkey(mv,upid)
-	setkey(merged,upid,timeid)
-	mvs <- merged[mv]
+	# setkey(mv,upid)
+	# setkey(merged,upid,timeid)
+	# mvs <- merged[mv]
 
-	mvs <- copy(mvs[HHincome > 0])
+	# mvs <- copy(mvs[HHincome > 0])
 
-	# log wage = beta0 + state +  beta1  *age + beta2*college + u
+	# # log wage = beta0 + state +  beta1  *age + beta2*college + u
 
-	# get wage residual
-	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
+	# # get wage residual
+	# mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
 
-	# aim: get cor( u(t), u(t+1) ) when move happened in t
-	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
-	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
-	dat = mvs[D2D==TRUE,list(u,u_plus1)]
-	dat = dat[complete.cases(dat)]
+	# # aim: get cor( u(t), u(t+1) ) when move happened in t
+	# mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
+	# mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
+	# dat = mvs[D2D==TRUE,list(u,u_plus1)]
+	# dat = dat[complete.cases(dat)]
+	# dat2 = mvs[D2D==TRUE,list(u,u_minus1)]
+	# dat2 = dat2[complete.cases(dat2)]
+
+	# mat = as.matrix(dat)
+	# mat2 = as.matrix(dat2)
+	# # just use the rank-normalized data for a normal copula
+	# normal.cop <- normalCopula(c(0.5),dim=2,dispstr="ar1")
+	# f1 = fitCopula(normal.cop,pobs(mat))
+	# f2 = fitCopula(normal.cop,pobs(mat2))
+
+
+
+
+	toJSON(f1)
+
+
+
+
 
 	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
 	mat = as.matrix(dat)
+	mat2 = as.matrix(dat2)
 	m_fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
+	m_fit2=fitMvdc(mat2,myMvd,start=c(2, 1, 3, 2, 0.5))
 
-	return(list(stayers=fits,movers=m_fit))
+	return(list(stayers=fits,movers=m_fit,movers_minus=m_fit2))
 }
 
 

@@ -1,0 +1,26 @@
+{% macro showmom(mom,dd,dec) %}
+    {{mom}} & {{ dd.data | prettyNum(dec) }} & {{ dd.model | prettyNum(dec) }}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+  \toprule 
+    \multicolumn{3}{c}{Non-targetted moments} \\
+  \midrule
+    \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Model}\\ 
+  \midrule
+  {{  showmom("$E[\\text{wealth}|t\in [20,30]]$", mean_wealth_20_30 ,3 ) }}
+  {{  showmom("$E[\\text{wealth}|t\in (30,40]]$", mean_wealth_30_40 ,3 ) }}
+  {{  showmom("$E[\\text{wealth}|t\in (40,50]]$", mean_wealth_40_50 ,3 ) }}
+  {{  showmom("$E[\\text{wealth|ENC}]$", mean_wealth_ENC ,3 ) }}
+  {{  showmom("$E[\\text{wealth|ESC}]$", mean_wealth_ESC ,3 ) }}
+  {{  showmom("$E[\\text{wealth|MdA}]$", mean_wealth_MdA ,3 ) }}
+  {{  showmom("$E[\\text{wealth|Mnt}]$", mean_wealth_Mnt ,3 ) }}
+  {{  showmom("$E[\\text{wealth|NwE}]$", mean_wealth_NwE ,3 ) }}
+  {{  showmom("$E[\\text{wealth|Pcf}]$", mean_wealth_Pcf ,3 ) }}
+  {{  showmom("$E[\\text{wealth|StA}]$", mean_wealth_StA ,3 ) }}
+  {{  showmom("$E[\\text{wealth|WNC}]$", mean_wealth_WNC ,3 ) }}
+  {{  showmom("$E[\\text{wealth|WSC}]$", mean_wealth_WSC ,3 ) }}
+  {{  showmom("$E[\\text{wealth}|h_{t-1} =0 ]$", mean_wealth_ownFALSE,3 ) }}
+  {{  showmom("$E[\\text{wealth}|h_{t-1} =1 ]$", mean_wealth_ownTRUE ,3 ) }}
+  \bottomrule
+\end{tabular}
+
