@@ -218,16 +218,20 @@ Homeownership and the likelihood of moving across regions are negatively
 \end_layout
 
 \begin_layout Standard
-The aim of this paper is firstly to investigate the value of this self insurance
- mechanism, and secondly to establish whether changing government housing
- policy to abolish the mortgage interest rate deduction is an effective
- lever to increase migration rates.
- To address both issues, I propose a lifecycle model of consumption and
+The aims of this paper are first to investigate the value of this self insurance
+ mechanism, second to analyse the reaction of regional mobility to regional
+ shocks and third to establish how important government policies such as
+ the mortgage interest tax deduction, which encourages ownership, interact
+ with regional migration.
+ To address those issues, I propose a lifecycle model of consumption and
  savings, housing tenure and location choice, with aggregate uncertainty
  which affects prices in regions differentially.
  Migration serves as a partial insurance device because regions are exposed
  to aggregate shocks to a different degree, consistent with the observed
  data.
+ The lifecycle considerations have important implications for the analysis
+ of welfare impacts of policy changes, since age groups are differentially
+ affected.
  Taking a lifecycle perspective is necessary to account for a strong age
  effect in both mobility and ownership, which has implications for welfare
  statements about policies, since different age groups will be affected
@@ -236,14 +240,14 @@ The aim of this paper is firstly to investigate the value of this self insurance
 \end_layout
 
 \begin_layout Standard
-Regional shocks to labor demand and house prices have profound and longlasting
- impacts, as we are still witnessing in the aftermath of the 2007 fall in
- house prices and ensuing Great Recession.
- In this episode, we have seen highly correlated house price movements,
- but widely varying magnitudes of shocks at the local level.
+Regional shocks to labor demand and house prices may have profound and longlasti
+ng impacts, as we are still witnessing in the aftermath of the 2007 fall
+ in house prices and ensuing Great Recession.
+ In this episode we have seen wide variation in the magnitude of local shocks
+ despite underlying high national correlations.
  For example, the peak-to-trough decline in the Federal Housing Financing
  Agency (FHFA) house price index from 2007 to 2011 ranged from -2.3% in Pittsburg
-h, to -61% for Las Vegas.
+h, to -61% in Las Vegas.
 \begin_inset Foot
 status collapsed
 
@@ -267,12 +271,31 @@ http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_EXP_metro.txt
 \end_inset
 
  The decline of the automobile industry in Detroit provides a vivid example
- of the effects of a permanent shock to labor income and the ensuing consequence
-s for population growth in the area.
+ of the effects of a permanent shock to labor income in a region: from the
+ 1950 to the 2010 censuses, the population of Detroit declined by 61%.
+ 
 \end_layout
 
 \begin_layout Standard
-In 2013, 63% of occupied housing units in the US are owned, while 37% are
+Shocks to regional labor demand affect renters and owners in a similar way,
+ i.e.
+ labor income of both falls.
+ The effects of a fall in house prices is more nuanced, since renters stand
+ to benefit from cheaper rent, if this is related to prices, while owners
+ may loose wealth invested in the house.
+ Furthermore, if house prices reflect the value of local amenities in some
+ kind of way, the location becomes less attractive for renters as well as
+ for owners.
+ For those reasons, we should expect to see different reactions in the mobility
+ of renters and owners in response to different shocks.
+ Labor market shocks should make both types more likely to leave the region,
+ while price shocks could have differential impacts, depending on the relative
+ importance of cheap rents, low value housing asset, lower amenity values,
+ and moving costs for renters and owners.
+\end_layout
+
+\begin_layout Standard
+In 2013, 63% of occupied housing units in the US were owned, while 37% were
  rented.
 \begin_inset Foot
 status collapsed
@@ -294,19 +317,15 @@ see American Community Survey 2013, table DP04.
  agency fees or transaction taxes), while costs of effort arise from owners
  having to spend time finding a suitable buyer, meet with agents and lawyers
  etc.
- A comparable renter is subject to those costs only to a lesser degree,
- if at all.
- Additional to greater moving costs, by buying a house owners make a specific
- investment into an asset that provides both a stream of utlility and a
- financial return, but is tied to a location.
- The stream of utility is only available if they reside in that location,
- and transaction costs imply that switching houses is costly, making owners
- more reluctant to move.
- Finally, it is conceivable that there is an interaction between a location
- preference and the decision to buy a house in the first place.
- My model incorporates all of the aforementioned factors influencing the
- housing and mobility choices of individuals and it allows for this potential
- interaction in preferences.
+ A comparable renter is subject to those costs only to a lesser degree.
+ Buying a house means to make a highly local financial investment, which
+ is subject to shocks as discussed above, is relatively illiquid, and in
+ addition may have a location specific flow of utility.
+ Consumers may have preferences for locations.
+ These factors interact to shape the joint decision of housing tenure, location
+ choice, and mortgage borrowing.
+ What is more, they all interact to influence the decision to move in response
+ to a shock.
 \end_layout
 
 \begin_layout Standard
@@ -2220,15 +2239,32 @@ assets
 \end_inset
 
 .
- This constraint must be satisfied in each period, i.e.
- 
-\begin_inset Formula $a_{t+1}\geq-(1-\chi)p_{dt},\forall t$
+ The mortgage interest rate is assumed at a constant markup 
+\begin_inset Formula $q>0$
+\end_inset
+
+ above the risk free interest rate 
+\begin_inset Formula $r$
+\end_inset
+
+, such that 
+\begin_inset Formula $r^{m}=r+q$
 \end_inset
 
 .
- In other words, only owners are allowed to borrow with their house as a
- collateral, there is no unsecured debt, and the equity constraint must
- be satisfied in each period.
+ The markup captures default risk incurred by a mortgage lender.
+ 
+\end_layout
+
+\begin_layout Standard
+The equity constraint must be satisfied in each period, i.e.
+ 
+\begin_inset Formula $a_{t+1}\geq-(1-\chi)p_{dt}h_{t},\forall t$
+\end_inset
+
+.
+ This means that only owners are allowed to borrow, with their house as
+ a collateral.
  Selling the house incurs proportional transaction cost 
 \begin_inset Formula $\phi$
 \end_inset
@@ -2245,9 +2281,9 @@ assets
 \end_layout
 
 \begin_layout Standard
-This implies that owners will choose a savings path contingent on the current
- price, their income and debt level, the mortgage interest rate, and their
- current age 
+This setup implies that owners will choose a savings path contingent on
+ the current price, their income and debt level, the mortgage interest rate,
+ and their current age 
 \begin_inset Formula $t$
 \end_inset
 
@@ -2304,7 +2340,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(d,x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}\label{eq:moving-cost}
+\Delta(d,x)=\alpha_{0,\tau}+\alpha_{1}t_{it}+\alpha_{2}t_{it}^{2}+\alpha_{3}h_{it-1}+\alpha_{4}s_{it}\label{eq:moving-cost}
 \end{equation}
 
 \end_inset
@@ -2328,15 +2364,15 @@ reference "eq:moving-cost"
 \begin_inset Formula $\alpha_{1}$
 \end_inset
 
- measures the additional moving cost for owners, 
+ and 
 \begin_inset Formula $\alpha_{2}$
 \end_inset
 
- and 
+ are age effects, 
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
- are age effects and 
+ measures the additional moving cost for owners, and 
 \begin_inset Formula $\alpha_{4}$
 \end_inset
 
@@ -2345,12 +2381,29 @@ reference "eq:moving-cost"
 \end_inset
 
 .
- The unobserved moving cost type 
-\begin_inset Formula $\tau$
+ 
+\end_layout
+
+\begin_layout Standard
+The unobserved moving cost type 
+\begin_inset Formula $\tau\in\{0,1\}$
 \end_inset
 
- takes on a finite number of discrete values and is a way to account for
- the fact that in the data, some individuals never move.
+, where 
+\begin_inset Formula $\tau=1$
+\end_inset
+
+ indexes the high type, is a parsimonious way to account for the fact that
+ in the data, some individuals never move.
+ This is of particular relevance when thinking about owners, who may self--selec
+t into ownership because they know they are unlikely to ever move.
+ In the model this selection mechanism, together with any other factor that
+ implies a high unobservable location preference, is collapsed into a type
+ of person that has prohibitively high moving costs (
+\begin_inset Formula $\alpha_{0,\tau=1}$
+\end_inset
+
+ is large) and thus is unlikely to move.
 \end_layout
 
 \begin_layout Paragraph
@@ -2763,11 +2816,11 @@ The laws of motion for
 
 :
 \begin_inset Formula 
-\begin{eqnarray*}
-z'|z & \sim & \Gamma_{z}\\
-s'|s_{j} & \sim & \Gamma_{s,j}\\
-\mathbf{P}'|\mathbf{P} & \sim & \Gamma_{\mathbf{P}}
-\end{eqnarray*}
+\begin{eqnarray}
+z'|z & \sim & \Gamma_{z}\nonumber \\
+s'|s_{t} & \sim & \Gamma_{s,t}\nonumber \\
+\mathbf{P}'|\mathbf{P} & \sim & \Gamma_{\mathbf{P}}\label{eq:transitions}
+\end{eqnarray}
 
 \end_inset
 
@@ -3101,7 +3154,7 @@ a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\label{eq:budget-rent-downpay}\\
 r(a_{it}) & = & \begin{cases}
 r & \text{if }a_{it}\geq0\\
 r^{m} & \text{if }a_{it}<0
-\end{cases},r^{m}>r\label{eq:budget-interest}\\
+\end{cases},r^{m}=r+q\label{eq:budget-interest}\\
 a_{iT}+p_{T}h_{iT-1} & \geq & 0\label{eq:terminal-condition}
 \end{eqnarray}
 
@@ -3323,6 +3376,121 @@ a_{it+1} & \geq & -(1-\chi)p_{kt}h_{it}\label{eq:budget-own-borrow-1}
 \end_layout
 
 \begin_layout Section
+Solving and Simulating the Model 
+\end_layout
+
+\begin_layout Standard
+The model described above is a typical application of a mixed discrete--continuo
+us choice problem.
+ In the next section I will introduce a nested fixed point estimator, which
+ requires repeated evaluation of the model solution at each parameter guess,
+ thus placing a binding time-contraint on time each solution may take.
+\end_layout
+
+\begin_layout Standard
+The consumption/savings problem to be solved at each state, and its combination
+ with multiple discrete choices and borrowing constraints, introduces several
+ non-differentiabilities in the asset dimension of the value function.
+ This makes using fast first order condition--based approaches to solve
+ the consumption problem more difficult.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+There has recently been a lot of progress on this front.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "clausenenvelope"
+
+\end_inset
+
+ provide an envolope theorem for the current case, and the endogenous grid
+ point method developed by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "carroll2006method"
+
+\end_inset
+
+, further extended to accomodate (multiple) discrete choice as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "fella2011generalized"
+
+\end_inset
+
+ are promising avenues.
+ I found my problem not easily amenable to their solution, and focused on
+ a robust solution (i.e.
+ one not subject to potential local minima to the savings problem).
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+I solve the model in a backward-recursive way.
+ Starting in the final period, the known final period value is computed
+ at all relevant states.
+ From period 
+\begin_inset Formula $T-1$
+\end_inset
+
+ onwards, the algorithm in each period iterates over all state variables
+ and computes a solution to the savings problem at each combination of state
+ and discrete choices variables (including housing and location choices).
+ After this solution is obtained at a certain state, the discrete housing
+ choice is computed, after which each conditional value function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ is known.
+ The distributional assumption on 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ implies that the discrete location choice does not have to be computed,
+ instead the main object of interest is the probability of moving function
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:prob-of-moving"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Once the solution is obtained, simulation of the model proceeds by using
+ the model implied decision rules and the observed aggreate prices series
+ 
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+ as well as their regional dependants 
+\begin_inset Formula $\left(\overline{y}_{dt},p_{dt}\right)$
+\end_inset
+
+ to obtain simulated lifecycle data.
+ As I will explain in greater detail in the next section, this proceedure
+ needs to replicate the time and age structure found in the data, which
+ is achieved by simulating different cohorts, starting life in 1967 and
+ all successive years up until 2012.
+ The model moments are then computed using the empirical age distribution
+ found in the estimation sample as sampling weights.
+ A more detailed description both solution and simulation is available in
+ the appendix.
+\end_layout
+
+\begin_layout Section
 Estimation
 \end_layout
 
@@ -3338,195 +3506,15 @@ In this section I explain how the model is estimated to fit some features
  simulate artificial data.
  A set of summarizing features from the artificial data should then be close
  to the same features of the the real data.
- The parameter vector to be estimated by SMM contains the parameters of
- the moving cost function (
-\begin_inset Formula $\alpha$
-\end_inset
-
-), the coefficient of relative risk aversion 
-\begin_inset Formula $(\gamma)$
-\end_inset
-
-, the parameters of the final period value function 
-\begin_inset Formula $\left(\omega_{1},\omega_{2}\right)$
-\end_inset
-
-, the population proportion of high moving cost types 
-\begin_inset Formula $(\pi_{\tau})$
-\end_inset
-
-, and the utility derived from housing for both household sizes, 
-\begin_inset Formula $\left(\xi_{1},\xi_{2}\right)$
-\end_inset
-
-.
- We'll denote the parameter vector 
-\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} $
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Given 
-\begin_inset Formula $\theta$
-\end_inset
-
-, the model generates a set of model moments 
-\begin_inset Formula $\hat{m}(\theta)$
-\end_inset
-
-, where 
-\begin_inset Formula $\hat{m}()$
-\end_inset
-
- is of dimension 
-\begin_inset Formula $K$
-\end_inset
-
-.
- After obtaining the same set of moments 
-\begin_inset Formula $m$
-\end_inset
-
- from the data, the SMM proceedure seeks to minimize the criterion function
- 
-\begin_inset Formula 
-\[
-L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],
-\]
-
-\end_inset
-
-which delivers point estimate 
-\begin_inset Formula $\hat{\theta}=\arg\min_{\theta}L(\theta)$
-\end_inset
-
-.
- The weighting matrix 
-\begin_inset Formula $W$
-\end_inset
-
- is formed of the inverse of the diagonal elements of the variance-covariance
- matrix of data moments 
-\begin_inset Formula $\Sigma$
-\end_inset
-
-, i.e.
- I set 
-\begin_inset Formula $W=\left(\text{diag}\left(\hat{\Sigma}\right)\right)^{-1}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-I obtain point estimates for 
-\begin_inset Formula $\theta$
-\end_inset
-
- by following a modification of the pseudo-likelihood estimator as introduced
- in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "chernozhukov2003mcmc"
-
-\end_inset
-
-.
- The modification defines 
-\begin_inset Formula $N$
-\end_inset
-
- parallel instances of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "chernozhukov2003mcmc"
-
-\end_inset
-
---MCMC chains, which are differently 
-\begin_inset Quotes eld
-\end_inset
-
-tempered
-\begin_inset Quotes erd
-\end_inset
-
- (i.e.
- they have different shock variances and rejection criteria), and are able
- to communicate with each other.
- This helps to explore large areas of the parameter space and avoids getting
- stuck in local minima.
- The proceedure is formally defined in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "baragatti2013likelihood"
-
-\end_inset
-
-.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-I've co-authored a software package that implements the proceedure at 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://github.com/floswald/MOpt.jl
-\end_layout
-
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
- The quasi-posterior mean and confidence intervals are computed from the
- chain with lowest temperature analogously to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "chernozhukov2003mcmc"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-My estimation sample is formed out of averages over SIPP data moments covering
- the period 1997--2012.
- Averaging over years was necessary to preserve a reasonable sample size
- in all conditioning cells.
- However, it also introduces an initial conditions and cohort effects problem,
- since, for example, a 30-year-old in 1997 faced a different economic environmen
-t over their lifecycle than a similar 30-year-old in 2012 would have.
- The challenge is to construct an artificial dataset from simulated data,
- which has the same time and age structure as the sample taken from the
- data -- in particular, agents in the model should have faced the same sequence
- of aggregate shocks as their data counterparts.
- This requires to simulate individuals starting in different calendar years,
- taking into account the actual observed time series for regional house
- prices and incomes.
- I describe the proceedure in detail in the appendix.
-\end_layout
-
-\begin_layout Standard
-Before discussing the estimates for 
-\begin_inset Formula $\theta$
-\end_inset
-
- and the fit of the structural model, I will now turn to the estimation
- of the various exogenous processes and fixed parameters which serve as
- inputs to the model.
+ I will first discuss estimation of the exogenous stochastic processes,
+ and then turn to the estimation of the model preference parameters.
 \end_layout
 
 \begin_layout Subsection
+Estimation of Exogenous Processes
+\end_layout
+
+\begin_layout Subsubsection*
 VAR process for aggregates 
 \begin_inset Formula $Y_{t}$
 \end_inset
@@ -3688,16 +3676,12 @@ name "tab:Estimates-VAR-agg"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection*
 Aggregate to regional price mappings
 \begin_inset CommandInset label
 LatexCommand label
@@ -3844,10 +3828,6 @@ name "fig:mapping-Y-y"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -3912,7 +3892,7 @@ name "fig:Mapping-P-p"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection*
 Individual Income Process
 \begin_inset CommandInset label
 LatexCommand label
@@ -3973,7 +3953,7 @@ reference "fig:age-profiles"
 , also in the appendix, illustrates predicted age profiles from this model.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection*
 Copula estimates for 
 \family roman
 \series medium
@@ -4215,7 +4195,7 @@ reference "tab:Normal-Copula-estimates"
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection*
 Values for preset parameters
 \end_layout
 
@@ -4224,7 +4204,7 @@ I take several parameters for the model from the literature, as shown in
  table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:Parameter-estimates"
+reference "tab:Preset-parameter-values"
 
 \end_inset
 
@@ -4263,33 +4243,87 @@ key "Li"
 \begin_inset Formula $\beta$
 \end_inset
 
- is set to 0.96, and the downpayment fraction 
+ is set to 0.96 which lies within the range of values commonly assumed in
+ dynamic discrete choice models (e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1987"
+
+\end_inset
+
+).
+ The downpayment fraction 
 \begin_inset Formula $\chi$
 \end_inset
 
- is 10%, in line with lower downpayment requirements for much of the period
- 1997--2012.
- The interest rate for savings, 
-\begin_inset Formula $r$
+ is set to 20%, which is a standard value on fixed rate mortgages and used
+ throughout the literature.
+ The coefficient of relative risk aversion could be estimated, but is in
+ this version of the model fixed to 1.43 as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "attanasio_weber"
+
 \end_inset
 
- is 3% and the interest rate for fixed rate mortgages is 
-\begin_inset Formula $r^{m}$
+.
+\end_layout
+
+\begin_layout Standard
+To calibrate the interest rate for savings and for mortage debt, I follow
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sommer2013implications"
+
 \end_inset
 
- is set at 6%, broadly in line with average rates observed by the Board
- of Governors
-\begin_inset Foot
+, who use the constant maturity Federal Funds rate, adjusted by headline
+ inflation as mesured by the year on year change in the CPI.
+ They obtain an average value of 4% for the period of 1977--2008, and I
+ thus set 
+\begin_inset Formula $r=0.04$
+\end_inset
+
+.
+ For the markup 
+\begin_inset Formula $q$
+\end_inset
+
+ of mortgage interest over the risk-free rate they use the average spread
+ between nominal interest on a thirty year constant maturity Treasury bond
+ and the average nominal interest rate on 30 year mortgages.
+ This spread equals 1.5% over 1977--2008, therefore 
+\begin_inset Formula $q=0.015$
+\end_inset
+
+, and 
+\begin_inset Formula $r^{m}=0.055$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
-Data from FRED: 
-\begin_inset Flex URL
-status collapsed
+\noindent
+\align center
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
-http://research.stlouisfed.org/fred2/series/MORTG
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/preset.tex}
 \end_layout
 
 \end_inset
@@ -4297,26 +4331,546 @@ http://research.stlouisfed.org/fred2/series/MORTG
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Preset parameter values
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Preset-parameter-values"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Estimation of Preference Parameters
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Estimation-of-Preference"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter vector to be estimated by SMM contains the parameters of the
+ moving cost function (
+\begin_inset Formula $\alpha$
+\end_inset
+
+), the parameters of the final period value function 
+\begin_inset Formula $\left(\omega_{1},\omega_{2}\right)$
+\end_inset
+
+, the population proportion of high moving cost types 
+\begin_inset Formula $(\pi_{\tau})$
+\end_inset
+
+, and the utility derived from housing for both household sizes, 
+\begin_inset Formula $\left(\xi_{1},\xi_{2}\right)$
+\end_inset
+
+.
+ We'll denote the parameter vector 
+\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} $
 \end_inset
 
 .
  
 \end_layout
 
-\begin_layout Subsection
-Identification
-\end_layout
+\begin_layout Standard
+Given 
+\begin_inset Formula $\theta$
+\end_inset
 
-\begin_layout Section
-Results
-\end_layout
+, the model generates a set of model moments 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
 
-\begin_layout Subsection
-Parameter Estimates
+, where 
+\begin_inset Formula $\hat{m}()$
+\end_inset
+
+ is of dimension 
+\begin_inset Formula $K$
+\end_inset
+
+.
+ After obtaining the same set of moments 
+\begin_inset Formula $m$
+\end_inset
+
+ from the data, the SMM proceedure seeks to minimize the criterion function
+ 
+\begin_inset Formula 
+\[
+L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],
+\]
+
+\end_inset
+
+which delivers point estimate 
+\begin_inset Formula $\hat{\theta}=\arg\min_{\theta}L(\theta)$
+\end_inset
+
+.
+ The weighting matrix 
+\begin_inset Formula $W$
+\end_inset
+
+ is formed of the inverse of the diagonal elements of the variance-covariance
+ matrix of data moments 
+\begin_inset Formula $\Omega$
+\end_inset
+
+, i.e.
+ I set 
+\begin_inset Formula $W=\left(\text{diag}\left(\hat{\Omega}\right)\right)^{-1}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-see table 
+I obtain point estimates for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ by following a modification of the pseudo-likelihood estimator as introduced
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+.
+ The modification defines 
+\begin_inset Formula $N$
+\end_inset
+
+ parallel instances of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+--MCMC chains, which are differently 
+\begin_inset Quotes eld
+\end_inset
+
+tempered
+\begin_inset Quotes erd
+\end_inset
+
+ (i.e.
+ they have different shock variances and rejection criteria), and are able
+ to communicate with each other.
+ This helps to explore large areas of the parameter space and avoids getting
+ stuck in local minima.
+ The proceedure is formally defined in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "baragatti2013likelihood"
+
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+I've co-authored a software package that implements the proceedure at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/floswald/MOpt.jl
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ The quasi-posterior mean and confidence intervals are computed from the
+ chain with lowest temperature analogously to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chernozhukov2003mcmc"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Estimation Sample
+\end_layout
+
+\begin_layout Standard
+My estimation sample is formed mainly out of averages over SIPP data moments
+ covering the period 1997--2012.
+ All moments are constructed using SIPP cross-sectional survey weights,
+ and all dollar values have been inflated to base year 2012 using the BLS
+ CPI for all urban consumers.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://research.stlouisfed.org/fred2/series/CPIAUCSL
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ Averaging over years was necessary to preserve a reasonable sample size
+ in all conditioning cells.
+ However, it also introduces an initial conditions and cohort effects problem,
+ since, for example, a 30-year-old in 1997 faced a different economic environmen
+t over their lifecycle than a similar 30-year-old in 2012 would have.
+ The challenge is to construct an artificial dataset from simulated data,
+ which has the same time and age structure as the sample taken from the
+ data -- in particular, agents in the model should have faced the same sequence
+ of aggregate shocks as their data counterparts from the estimation sample.
+ This requires to simulate individuals starting in different calendar years,
+ taking into account the actual observed time series for regional house
+ prices and incomes.
+ I describe the proceedure in detail in the appendix.
+\end_layout
+
+\begin_layout Standard
+Additional to SIPP data, the moment vector contains three statistics from
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+, which relate to the lifetime frequency of moves (
+\begin_inset Quotes eld
+\end_inset
+
+moved never
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+moved once
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+moved more two times or more
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The reason for using external data is that I cannot compute such a statistic
+ from SIPP, where the maximum panel length is four years.
+ 
+\end_layout
+
+\begin_layout Standard
+The moment vector 
+\begin_inset Formula $m$
+\end_inset
+
+ is shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+.
+ It contains conditional means and covariances, which are largely self-explanato
+ry.
+ I introduce here two auxiliary models inluded in 
+\begin_inset Formula $m$
+\end_inset
+
+ which relate to the age profiles of both migration and ownership.
+ Both models are linear probability models, where the dependent variable
+ is either ownership status at the beginning of the period, 
+\begin_inset Formula $h_{it-1}$
+\end_inset
+
+, or whether a move took place, denoted by 
+\begin_inset Formula $\text{move}_{it}=\mathbf{1}\left[d_{it}\neq k_{it}\right]$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+h_{it} & = & \beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{h,it}\label{eq:auxmod-h}\\
+\text{move}_{it} & = & \beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{m,it}\label{eq:auxmod-move}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Identification
+\end_layout
+
+\begin_layout Standard
+The structural parameters in 
+\begin_inset Formula $\theta$
+\end_inset
+
+ are related to the moment vector 
+\begin_inset Formula $m(\theta)$
+\end_inset
+
+ in a highly non-linear fashion.
+ In general, all moments in 
+\begin_inset Formula $m(\theta)$
+\end_inset
+
+ respond to a change in 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ However it is possible to use graphical analysis to show how some moments
+ relate more strongly to certain parameters than others.
+\end_layout
+
+\begin_layout Standard
+Regarding parameters of the moving cost function, parameters 
+\begin_inset Formula $\alpha_{0,\tau=0},\alpha_{3},\alpha_{4}$
+\end_inset
+
+ represent the intercept for low moving cost types, the coefficent on ownership
+ and the effect of household size on moving costs, respectivley.
+ They are related to, in order, the average moving rate 
+\begin_inset Formula $E[\text{move}]$
+\end_inset
+
+, the moving rate conditional on owning 
+\begin_inset Formula $E[\text{move}|h_{t}=1]$
+\end_inset
+
+, and the moving rate conditional on household size 
+\begin_inset Formula $E[\text{move}|s_{t}=1]$
+\end_inset
+
+.
+ The age effects 
+\begin_inset Formula $\alpha_{1},\alpha_{2}$
+\end_inset
+
+ are related to the age--coefficients of the auxiliary model for moving,
+ defined in expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-move"
+
+\end_inset
+
+, as well as the the average proportion of movers in the last period of
+ life 
+\begin_inset Formula $E[\text{move}|T]$
+\end_inset
+
+.
+ The relationship between mobility and ownership, as well as mobility and
+ household size are also captured by the covariances 
+\begin_inset Formula $Cov(\text{move},h)$
+\end_inset
+
+ and 
+\begin_inset Formula $Cov(\text{move},s)$
+\end_inset
+
+, both of which are again related to the moving cost parameters 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha_{4}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The proportion of high moving cost types 
+\begin_inset Formula $\pi_{\tau}$
+\end_inset
+
+ is related to the data moments concering the number of moves per person,
+ and in particular the fraction of individuals who never moved, 
+\begin_inset Formula $E[\text{moved never}]$
+\end_inset
+
+.
+ The other two moments on the frequency of moves, 
+\begin_inset Formula $E[\text{moved once}]$
+\end_inset
+
+ and 
+\begin_inset Formula $E[\text{moved twice+}]$
+\end_inset
+
+ help to identify all moving cost parameters.
+\end_layout
+
+\begin_layout Standard
+Given that the house price processes in each region are exogenous to the
+ model, the parameters measuring utility from ownership, 
+\begin_inset Formula $\xi_{1},\xi_{2}$
+\end_inset
+
+ are related to a relatively large number of moments: ownership rates by
+ region and by household size, the covariance of owning with household size,
+ and the age--profile parameters from the auxiliary model of ownership in
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-h"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Parameter Estimates and Moments (Preliminary)
+\end_layout
+
+\begin_layout Standard
+The model fits the data moments fairly well overall.
+ The fit is displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+.
+ The upper panel shows moments related to mobility, the lower panel shows
+ moments related to homeownership.
+ Regarding mobility, the fit is very good.
+ The only statistic slightly out of line is the frequency distribution of
+ moves per mover.
+ There is no mechanism in the model that could generate the observed pattern
+ in the data.
+ One possibility would be to augment the set of moving cost types with a
+ third type that has an even lower moving cost.
+ The estimates for the auxiliary model defined in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-move"
+
+\end_inset
+
+ representing the age profile in ownership also provide a good fit to the
+ data.
+\end_layout
+
+\begin_layout Standard
+Moving on to moments related to ownership, we see that the unconditional
+ mean of ownership is identical to the data moment.
+ Condition by region provides a more varied picture, with some regions overestim
+ated and others underestimated.
+ The reason for this is that there is heterogeneity in ownership rates by
+ region which is not easily accounted for by the fundamentals of regional
+ house price and mean income alone.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+There is large degree of house price heterogeneity at the local level with
+ is not in the model but which contributes to the average ownership rate
+ at the regional level.
+ Local building regulations, rent control or certain topographical features
+ all influence the actual house price that the local level; The price index
+ used in the model incurs some unavoidable aggregation error in this respect,
+ and the same holds for my estimate of the average rent to price ratio.
+\end_layout
+
+\end_inset
+
+ Remember that by taking prices and incomes as given, the model is restricted
+ to only few levers that affect the homeownership rate.
+ The main parameters in this respect are the utility premia 
+\begin_inset Formula $\xi_{1},\xi_{2}$
+\end_inset
+
+ and the weights in the final period utility 
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\omega_{2}$
+\end_inset
+
+.
+ Taking this into account, the ownership fit is overall satisfying.
+ 
+\end_layout
+
+\begin_layout Standard
+Given that the CRRA coefficient 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ is taken as fixed in the current implementation of the model, the moments
+ relating to wealth resulting from the model can be viewed as some form
+ of model validation.
+ The model moments in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-nontarget"
+
+\end_inset
+
+ are not included in the SMM objective function, that is, they are not targetted
+ by the estimation algorithm.
+ Despite this, they are very close the data counterparts.
+\end_layout
+
+\begin_layout Standard
+The estimated parameters are shown in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Parameter-estimates"
@@ -4345,92 +4899,6 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/param-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Parameter estimates
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Parameter-estimates"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Fit
-\end_layout
-
-\begin_layout Standard
-TO DO.
- excellent fit.
-\end_layout
-
-\begin_layout Standard
-empirical moments in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:fit-model-and-data"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-non-targetted moments in
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:fit-model-nontarget"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
 Dropbox/model/fit/moms.tex}
 \end_layout
 
@@ -4443,55 +4911,7 @@ Dropbox/model/fit/moms.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-moments
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/moms.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Empirical targets (data) and the corresponding model moment.
+Empirical targets and corresponding model moments.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:fit-model-and-data"
@@ -4520,7 +4940,7 @@ name "tab:fit-model-and-data"
 placement p
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4534,7 +4954,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/moms_nontarget.tex}
+Dropbox/model/fit/moms-nontarget.tex}
 \end_layout
 
 \end_inset
@@ -4568,7 +4988,59 @@ name "tab:fit-model-nontarget"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/params.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Parameter estimates.
+ Standard errors are still work in progress at this point.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Parameter-estimates"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Properties of the model
 \end_layout
 
@@ -4583,14 +5055,10 @@ key "kennan2003effect"
 \end_inset
 
 .
- A central theme will be the opposing effects of house prices between owners
- and renters.
- This is due to wealth effects of housing (owners prefer higher prices),
- and the effect of prices on rents (renters prefer lower rent).
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Probability of Migrating
 \end_layout
 
@@ -4884,7 +5352,7 @@ name "fig:CS-prob-z"
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The role of moving costs 
 \end_layout
 
@@ -4908,7 +5376,7 @@ Moving costs in the model are measured in terms of utility.
 \end_inset
 
 .
- Without loss of generality I consider moves from region 
+ I consider moves from region 
 \begin_inset Formula $d=2$
 \end_inset
 
@@ -4986,9 +5454,7 @@ reference "tab:MC-money"
 \begin_inset Formula $(t=1)$
 \end_inset
 
- are $159,000, and only $6,830 in their final period of life.
- The corresponding numbers for owners are $575,000 and $7,266,000 in the
- first and the final period of life.
+ are $159,000 and $575,000 for owners.
  The estimates in period one bracket the average cost of $312,000 reported
  in 
 \begin_inset CommandInset citation
@@ -4998,8 +5464,7 @@ key "kennan2003effect"
 \end_inset
 
 .
- The very large costs for owners in the final period are implied by the
- big value owners obtain from home equity.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5037,7 +5502,7 @@ Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
 \begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
 \end_inset
 
- and first and last period of life.
+ in the period of life.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5202,21 +5667,26 @@ name "tab:Decomposing-owner's-moving"
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The effects on migration of a regional shock
 \end_layout
 
 \begin_layout Standard
 In this section I illustrate how the model reacts to large economic shocks
  at the regional level.
- In particular, I present changes in migratory flows with respect to the
- baseline environment, when the regional price or income level is reduced
- unexpectedly at a certain point in time.
+ The presentation focuses on changes in migratory in and outflows to and
+ from a region, when the regional price or income level is reduced unexpectedly
+ at a certain point in time.
+ The implementation of the shock is symmetric for both the case of house
+ price and mean income, and I will use the price example to explain the
+ details.
+ 
 \end_layout
 
 \begin_layout Standard
-I reduce the level of the house price in the Pacific division in 2007 by
- 30% (Pacific has region index 
+The regional shock consists of reducing the level of the house price in
+ the Pacific division in the year 2007 by 30% (Pacific has region index
+ 
 \begin_inset Formula $d=6$
 \end_inset
 
@@ -5242,7 +5712,9 @@ reference "eq:VAR-reg-determ"
 
 \end_inset
 
- does not apply anymore, since they observe 
+ does not apply anymore.
+ In terms of their beliefs about aggregate and regional prices, they observe
+ 
 \begin_inset Formula $\iota_{2007}\times p_{6,2007},\iota_{2007}=0.7$
 \end_inset
 
@@ -5250,7 +5722,14 @@ reference "eq:VAR-reg-determ"
 \begin_inset Formula $p_{6,2007}=\mathbf{a}_{6}\mathbf{P}_{2007}$
 \end_inset
 
-, as predicted by the model.
+, as would be predicted by the model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+.
 \begin_inset Foot
 status collapsed
 
@@ -5285,15 +5764,31 @@ status collapsed
 
 \end_inset
 
- The series for mean income is held constant in this experiment.
- An illustration of the shocked price series is shown in figure 
+ Notice that none of the time series properties of the regional price series
+ other than the level are changed.
+ In particular, the growth rate and implied variance remain the same.
+ The other regional price (mean income in this instance) is held constant
+ in each experiment.
+ Illustrations of the shocked price and income series are shown in figures
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Shocked-price-series."
 
 \end_inset
 
-.
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:yshock-illustration"
+
+\end_inset
+
+, respectively.
+\end_layout
+
+\begin_layout Paragraph
+Shock to house price.
 \end_layout
 
 \begin_layout Standard
@@ -5313,6 +5808,19 @@ reference "fig:pshock-outflow"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+change the argument here after adding the amenity value!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Let's first look at the migration behaviour of owners.
  The left panel of figure 
 \begin_inset CommandInset ref
@@ -5324,10 +5832,9 @@ reference "fig:pshock-outflow-own-rent"
  plots the proportion of owners in Pacific who leave the region in each
  year.
  The price shock causes a much larger fraction of owners to move away.
- The mechanism here is that owners care about capital gains, and the drop
- in prices means that they earn a lower return in Pacific than in other
- regions.
- 
+ This happens because of the amenity value embedded in the house price from
+ the final period utility.
+ The price drop implies a loss in amenity value, thus owners move away.
 \end_layout
 
 \begin_layout Standard
@@ -5533,6 +6040,10 @@ reference "fig:pshock-inflow-own-rent"
  
 \end_layout
 
+\begin_layout Paragraph
+Shock to mean income.
+\end_layout
+
 \begin_layout Standard
 The effects of a shock to regional labor income are as expected: a shock
  to labor income makes the region less desirable for both renters and owners,
@@ -5612,7 +6123,7 @@ The value of Migration
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6420,7 +6931,7 @@ Finally let's look at scenario (3), where we apply the 5% GE house price
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6820,11 +7331,15 @@ mortgage deduction
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Subsection
 Changing the Moving Cost
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In this set of experiments I assume there is a government policy that can
  affect the moving cost as implied by equation 
 \begin_inset CommandInset ref
@@ -6860,7 +7375,7 @@ reference "eq:moving-cost"
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The results in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6890,7 +7405,7 @@ reference "tab:halfMC"
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 We see the opposite kind of effects if we perform the policy in the other
  direction, i.e.
  we increase the moving cost in policy 
@@ -6914,7 +7429,7 @@ reference "tab:doubleMC"
  The implied welfare equalizing consumption subsidy is 12% of period consumption.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6959,16 +7474,12 @@ name "tab:halfMC"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -7018,25 +7529,115 @@ name "tab:doubleMC"
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 \start_of_appendix
 computational details
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
+Solution
+\end_layout
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-to be added
+\begin_layout Standard
+The problem is fully discretized on a grid of points, however, the savings
+ decision is allowed to be continuous.
+ Linear interpolation is used to evaluate the value function between grid
+ points.
+ To compute the conditional expectation of the future value function in
+ each period, I use the method proposed by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kopecky2010701"
+
+\end_inset
+
+ to discretize the continuous variable 
+\begin_inset Formula $z$
+\end_inset
+
+.
+ The expectation with respect to household size is a simple matrix operation,
+ using the age-dependent transition matrices 
+\begin_inset Formula $\Gamma_{s,t}$
+\end_inset
+
+.
+ In order to compute the expectation with respect to the aggregate VAR(1)
+ process, I define a grid for both 
+\begin_inset Formula $Y$
+\end_inset
+
+ and 
+\begin_inset Formula $P$
+\end_inset
+
+ that spans all observed values in the data and compute the transition matrix
+ from each combination of grid points 
+\begin_inset Formula $\mathbf{P}_{t}^{(ij)}\equiv\left(Y_{i},P_{j}\right)$
+\end_inset
+
+ to the set of conditional expected values 
+\begin_inset Formula $\mathbf{P}_{t+1}\equiv\left(E[Y|Y_{i},P_{j}],E[P|Y_{i},P_{j}]\right)$
+\end_inset
+
+.
+ Those values are known from the estimated VAR(1) model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-process-1"
+
+\end_inset
+
+.
+ The so--constructed transition matrix then holds the values of the bivariate
+ normal probability distribution function implied by the estimates for 
+\begin_inset Formula $\nu$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-process-1"
+
+\end_inset
+
+, evaluted at the point 
+\begin_inset Formula $\left(\mathbf{P}_{t+1}-A\mathbf{P}_{t}\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Simulation
+\end_layout
+
+\begin_layout Standard
+The cohort structure of the estimation sample described in section for individua
+ls starting life in 1967 and living up to 1997
+\end_layout
+
+\begin_layout Standard
+involves the following steps.
+ First, random intial conditions are drawn for several state variables:
+ 
+\end_layout
+
+\begin_layout Standard
+the simulator takes three solution objects to simulate the economy: The
+ conditional value function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ (necessary to compute the 
 \end_layout
 
 \begin_layout Section
@@ -7782,9 +8383,11 @@ ownership status in month
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset ERT
 status open
 
@@ -7801,6 +8404,42 @@ Dropbox/model/experiments/exp_yp/yshock.tex}
 
 
 \end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Illustration of the level shock applied to the regional income series of
+ Pacific in 2007.
+ This reduces the level of the observed mean income series by 30%.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:yshock-illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
 \begin_layout Plain Layout
 \noindent
