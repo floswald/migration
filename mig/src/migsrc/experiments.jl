@@ -1049,7 +1049,6 @@ function exp_shockRegion(opts::Dict)
 
 
 	# TODO: get as fraction of all renters/owners in Pacific/elsewhere?
-	sum(:move)
 	sum0 = @> begin
 		sim0	
 		@where((:j.==j) & (:year.>1997)) 
