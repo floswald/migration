@@ -110,9 +110,9 @@ type Param
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
 		tau      = 100
-		taudist  = 0.7
-		xi1      = 0.010
-		xi2      = 0.048
+		taudist  = 0.68
+		xi1      = 0.012
+		xi2      = 0.052
 		omega1   = 1.0
 		omega2   = 1.04
 
@@ -128,8 +128,8 @@ type Param
 		phi    = 0.06		  # fixed cost of selling
 
 		R      = 1.03 	# gross interest rate savings: 1+r
-		Rm     = 1.06 	# gross interest rate mortgage: 1+rm
-		chi    = 0.1   # downpayment ratio
+		Rm     = 1.055 	# gross interest rate mortgage: 1+rm   sommer + sullivan. 
+		chi    = 0.2   # downpayment ratio
 		myNA   = -99.0
 		minAge = 20
 		maxAge = minAge + nt

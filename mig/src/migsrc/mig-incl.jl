@@ -43,8 +43,15 @@ function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},opts...)
 	    if get(opts[1],"printmoms",false) 
 	    	d = Dict()
 	    	for ea in eachrow(mom2)
-	    		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd]]
+	    		ea[:moment] = replace(ea[:moment],"[","")
+	    		ea[:moment] = replace(ea[:moment],"]","")
+	    		ea[:moment] = replace(ea[:moment],"(","")
+	    		ea[:moment] = replace(ea[:moment],",","_")
+	    		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd], "perc"=>ea[:perc]]
+
 	    	end
+	    	# change age brackets
+
 	    	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
 	    	JSON.print(f,d)
 	    	close(f)

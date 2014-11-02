@@ -686,6 +686,8 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]
 	elseif which=="pshock_highMC"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="yshock_highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	elseif which=="pshock_noBuying"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
 	elseif which=="pshock_noSaving"
@@ -748,12 +750,15 @@ function pshock_highMC_cdiff()
 
 end
 
+# VALUE OF MIGRATION
+# ==================
 
 # compares pshock with pshcock_highMC
-function pshock_vs_highMC()
+# ss = {"pshock","yshock"}
+function exp_value_mig(ss::ASCIIString)
 
 	par = Param(2)
-	opts = selectPolicy("pshock",6,2007,par)
+	opts = selectPolicy(ss,6,2007,par)
 	pr = exp_shockRegion(opts);
 	base = pr[2];
 	p = pr[3];
@@ -762,7 +767,12 @@ function pshock_vs_highMC()
 	pr = 0
 	gc()
 
-	opts = selectPolicy("pshock_highMC",6,2007,par)
+	if ss=="pshock"
+		opts = selectPolicy("pshock_highMC",6,2007,par)
+	else 
+		opts = selectPolicy("yshock_highMC",6,2007,par)
+	end
+	ostr = string(ss,"mig_value.json")
 
 	# this ctax gives equal values for
 	# pmv4[:value] and hmv4[:value] below
@@ -879,7 +889,7 @@ function pshock_vs_highMC()
 
 
 	indir, outdir = mig.setPaths()
-	f = open(joinpath(outdir,"mig_value.json"),"w")
+	f = open(joinpath(outdir,ostr),"w")
 	JSON.print(f,d)
 	close(f)
 
@@ -1038,18 +1048,32 @@ function exp_shockRegion(opts::Dict)
 	mms1 = computeMoments(sim1,p,m)	
 
 
+	# TODO: get as fraction of all renters/owners in Pacific/elsewhere?
+	sum(:move)
 	sum0 = @> begin
 		sim0	
 		@where((:j.==j) & (:year.>1997)) 
 		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)))
+		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./sum(:own.data,WeightVec(:density.data)),rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./sum(!(:own.data),WeightVec(:density.data)))
 		end
 
 	sum1 = @> begin
 		sim1	
 		@where((:j.==j) & (:year.>1997)) 
 		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)))
+		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./sum(:own.data,WeightVec(:density.data)),rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./sum(!(:own.data),WeightVec(:density.data)))
+		end
+
+	# how many renters/owners do you have each year in Pacific?
+	counts0 = @> begin
+			sim0
+			@where((:j.==j) & (:year.>1997))
+			@by(:year,n_rent = sum(!(:own)), n_own=sum(:own))
+		end
+	counts1 = @> begin
+			sim1
+			@where((:j.==j) & (:year.>1997))
+			@by(:year,n_rent = sum(!(:own)), n_own=sum(:own))
 		end
 
 
@@ -1058,14 +1082,20 @@ function exp_shockRegion(opts::Dict)
 		sim0
 		@where((:j.!=j) & (:year.>1997)) 
 		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+	end
+	sum0_toj = join(sum0_toj,counts0,on=:year)
+	sum0_toj = @> begin
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), rel_move_own=sum(:move_own.data,WeightVec(:density.data))./n_own, rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./n_rent, move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
 		end
 
 	sum1_toj = @> begin
 		sim1
 		@where((:j.!=j) & (:year.>1997)) 
 		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+	end
+	sum1_toj = join(sum1_toj,counts1,on=:year)
+	sum1_toj = @> begin
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./n_own, rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./n_rent, move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
 		end
 
 
