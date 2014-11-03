@@ -1083,8 +1083,11 @@ function exp_shockRegion(opts::Dict)
 		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
 	end
 	sum0_toj = join(sum0_toj,counts0,on=:year)
+
+
 	sum0_toj = @> begin
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), rel_move_own=sum(:move_own.data,WeightVec(:density.data))./n_own, rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./n_rent, move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+		sum0_toj
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), rel_move_own=sum(:move_own.data,WeightVec(:density.data))./:n_own[1], rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./:n_rent[1], move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
 		end
 
 	sum1_toj = @> begin
@@ -1094,7 +1097,8 @@ function exp_shockRegion(opts::Dict)
 	end
 	sum1_toj = join(sum1_toj,counts1,on=:year)
 	sum1_toj = @> begin
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./n_own, rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./n_rent, move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+		sum1_toj
+		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./:n_own[1], rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./:n_rent[1], move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
 		end
 
 
