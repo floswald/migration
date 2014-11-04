@@ -193,7 +193,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		noBuying = true
 	end
 
-	if p.policy=="highMC"
+	if p.policy=="highMC" || p.policy == "yshock_highMC"
 		highMC = true
 	end
 
