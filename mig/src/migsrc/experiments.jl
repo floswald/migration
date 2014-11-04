@@ -876,18 +876,18 @@ function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 		end
 
 	d=Dict()
-	d["inmig"]  = ["base" => b_in[:mig][1], "pshock" =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
-	d["inmig_own"]   = ["base" => b_in[:mig_own][1], "pshock" =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
-	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], "pshock" =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
-	d["outmig"] = ["base" => b_out[:mig][1], "pshock" =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
-	d["outmig_own"] = ["base" => b_out[:mig_own][1], "pshock" =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
-	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], "pshock" =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
+	d["inmig"]  = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
+	d["inmig_own"]   = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
+	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
+	d["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
+	d["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
+	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
 
-	d["v"] = ["base" => bmv4[:v][1],    "pshock" => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
-	d["a"] = ["base" => bmv4[:a][1],    "pshock" => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
-	d["w"] = ["base" => bmv4[:w][1],    "pshock" => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
-	d["c"] = ["base" => bmv4[:cons][1], "pshock" => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
-	d["h"] = ["base" => bmv4[:h][1],    "pshock" => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
+	d["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
+	d["a"] = ["base" => bmv4[:a][1],    ss => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
+	d["w"] = ["base" => bmv4[:w][1],    ss => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
+	d["c"] = ["base" => bmv4[:cons][1], ss => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
+	d["h"] = ["base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
 
 
 	indir, outdir = mig.setPaths()
