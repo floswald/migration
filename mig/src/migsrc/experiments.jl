@@ -755,10 +755,10 @@ end
 
 # compares pshock with pshcock_highMC
 # ss = {"pshock","yshock"}
-function exp_value_mig(ss::ASCIIString)
+function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 
 	par = Param(2)
-	opts = selectPolicy(ss,6,2007,par)
+	opts = selectPolicy(ss,j,yr,par)
 	pr = exp_shockRegion(opts);
 	base = pr[2];
 	p = pr[3];
@@ -768,9 +768,9 @@ function exp_value_mig(ss::ASCIIString)
 	gc()
 
 	if ss=="pshock"
-		opts = selectPolicy("pshock_highMC",6,2007,par)
+		opts = selectPolicy("pshock_highMC",j,yr,par)
 	else 
-		opts = selectPolicy("yshock_highMC",6,2007,par)
+		opts = selectPolicy("yshock_highMC",j,yr,par)
 	end
 	ostr = string(ss,"mig_value.json")
 
@@ -781,32 +781,34 @@ function exp_value_mig(ss::ASCIIString)
 	h = exp_shockRegion(opts);
 	h = h[3];
 
-	# people who moved away from j=6 after shock hits in 2007
-	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
+	cutyr = yr - 1
+
+	# people who moved away from j after shock hits in yr 
+	pmv_id = @select(@where(p,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 	bmv = base[findin(base[:id],pmv_id[:id]),:]
 	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
 	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
 
-	pmv3 = @where(pmv,:year .> 2006)
+	pmv3 = @where(pmv,:year .> cutyr)
 	pmv3 = @transform(pmv3,row_idx=1:size(pmv3,1))
 
-	bmv3 = @where(bmv,:year .> 2006)
+	bmv3 = @where(bmv,:year .> cutyr)
 	bmv3 = @transform(bmv3,row_idx=1:size(bmv3,1))
 
 	hmv = h[findin(	h[:id],pmv_id[:id]),:]
 	hmv = @transform(hmv,buy = (:h.==0)&(:hh.==1))
-	hmv3 = @where(hmv,:year .> 2006)
+	hmv3 = @where(hmv,:year .> cutyr)
 	hmv3 = @transform(hmv3,row_idx=1:size(hmv3,1))
 	# what's the first observationin j=6?
-	# drop all periods before first in 2006
+	# drop all periods before first in cutyr
 	drops = Int[]
 	for i in unique(pmv3[:id])
 		goon = true
 		ti = minimum(@where(pmv3,:id.==i)[:age])
 		maxage = maximum(@where(pmv3,:id.==i)[:age])
 		while goon
-			if pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:j][1] != 6
+			if pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:j][1] != j
 				push!(drops,pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:row_idx][1])
 				if ti == maxage
 					goon=false
@@ -823,52 +825,52 @@ function exp_value_mig(ss::ASCIIString)
 	bmv3 = bmv3[setdiff(1:size(bmv3,1),drops),:]
 	hmv3 = hmv3[setdiff(1:size(hmv3,1),drops),:]
 
-	bmv4 = @select(@where(bmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
-	pmv4 = @select(@where(pmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
-	hmv4 = @select(@where(hmv3,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	hmv4 = @select(@where(hmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
 
-	# get immigration rates for after 2006
-	# uses data on everybody outside of j=6
+	# get immigration rates for after cutyr
+	# uses data on everybody outside of j
 	b_in = @> begin
 			base
-			@where((:year.>2006)&(:j.!=6))
-			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
 
 	p_in = @> begin
 			p
-			@where((:year.>2006)&(:j.!=6))
-			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
 
 	h_in = @> begin
 			h
-			@where((:year.>2006)&(:j.!=6))
-			@transform(mig = (:moveto.==6),mig_own = (:moveto.==6).*(:own),mig_rent = (:moveto.==6).*(!:own))
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
 
-	# get outmigration rates for after 2006
+	# get outmigration rates for after cutyr
 	# uses data on those who would have migrated after pshock
 	b_out = @> begin
 			base
-			@where((:year.>2006)&(:j.==6))
+			@where((:year.>cutyr)&(:j.==j))
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
 
 	p_out = @> begin
 			p
-			@where((:year.>2006)&(:j.==6))
+			@where((:year.>cutyr)&(:j.==j))
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
 
 	h_out = @> begin
 			h
-			@where((:year.>2006)&(:j.==6))
+			@where((:year.>cutyr)&(:j.==j))
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
