@@ -1,5 +1,14 @@
 
 
+plot_shockyp <- function(reg,which){
+
+	b = read.csv(paste0("~/git/migration/data/shockReg/exp_region",reg,"_",which,"_both.csv"))
+	b = melt(b,id.vars=c("year","regime"))
+	b2 = read.csv(paste0("~/git/migration/data/shockReg/exp_region",reg,"_",which,"_both_toj.csv"))
+	b2 = melt(b2,id.vars=c("year","regime"))
+	
+}
+
 
 # look at max/min deviation in house prices
 getFHFA_max_peak2trough <- function(){
@@ -22,10 +31,10 @@ getFHFA_max_peak2trough <- function(){
 	return(dmin)
 }
 
-plot_experimentPacific <- function(){
+plot_experiment <- function(where,wherelong){
 
 	x = Export.VAR()
-	pcf = x$pyagg[Division=="Pcf"]
+	pcf = x$pyagg[Division==where]
 	pcf[,c("y","p") := NULL]
 	setnames(pcf,c("yhat","phat"),c("y","p"))
 	pcf[,c("y_shock","p_shock") := list(y,p)]
@@ -42,7 +51,7 @@ plot_experimentPacific <- function(){
 	yscale = c(seq(1970,2000,by=10),2007)
 	yscale_pres = c(seq(1970,1990,by=10),2007)
 
-	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle("Shocking $\\overline{y}_{dt}$ for $d=$ Pacific, $t\\geq2007$ \n   ") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $\\overline{y}_{dt}$ for $d=$",wherelong," $t\\geq2007$ \n   ")) + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p1_pres = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres)
 	p2 = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle("Shocking $p_{dt}$ for $d=$ Pacific, $t\\geq2007$ \n   ") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p2_pres = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres) 

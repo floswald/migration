@@ -753,6 +753,150 @@ end
 # VALUE OF MIGRATION
 # ==================
 
+# compares baesline with highMC
+function exp_value_mig_base(j::Int)
+
+	par = Param(2)
+	m = Model(par)
+	solve!(m,par)
+	sim0 = simulate(m,par)
+	base = sim0[!isna(sim0[:cohort]),:]
+	p = base;
+
+	# release memory
+	sim0 = 0
+	gc()
+
+	ostr = string(ss,j,"mig_value_baseline.json")
+
+	# this ctax gives equal values for
+	# pmv4[:value] and hmv4[:value] below
+	# opts["ctax"] = 1.13
+
+
+	cutyr = yr - 1
+
+	# people who moved away from j in the baseline
+	pmv_id = @select(@where(p,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	pmv = p[findin(p[:id],pmv_id[:id]),:]
+	bmv = base[findin(base[:id],pmv_id[:id]),:]
+	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
+	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
+
+	pmv3 = @where(pmv,:year .> cutyr)
+	pmv3 = @transform(pmv3,row_idx=1:size(pmv3,1))
+
+	bmv3 = @where(bmv,:year .> cutyr)
+	bmv3 = @transform(bmv3,row_idx=1:size(bmv3,1))
+
+	hmv = h[findin(	h[:id],pmv_id[:id]),:]
+	hmv = @transform(hmv,buy = (:h.==0)&(:hh.==1))
+	hmv3 = @where(hmv,:year .> cutyr)
+	hmv3 = @transform(hmv3,row_idx=1:size(hmv3,1))
+	# what's the first observationin j=6?
+	# drop all periods before first in cutyr
+	drops = Int[]
+	for i in unique(pmv3[:id])
+		goon = true
+		ti = minimum(@where(pmv3,:id.==i)[:age])
+		maxage = maximum(@where(pmv3,:id.==i)[:age])
+		while goon
+			if pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:j][1] != j
+				push!(drops,pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:row_idx][1])
+				if ti == maxage
+					goon=false
+				else
+					ti+=1
+				end
+			else
+				goon = false
+			end
+		end
+	end
+
+	pmv3 = pmv3[setdiff(1:size(pmv3,1),drops),:]
+	bmv3 = bmv3[setdiff(1:size(bmv3,1),drops),:]
+	hmv3 = hmv3[setdiff(1:size(hmv3,1),drops),:]
+
+	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	hmv4 = @select(@where(hmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+
+	# get immigration rates for after cutyr
+	# uses data on everybody outside of j
+	b_in = @> begin
+			base
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	p_in = @> begin
+			p
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	h_in = @> begin
+			h
+			@where((:year.>cutyr)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	# get outmigration rates for after cutyr
+	# uses data on those who would have migrated after pshock
+	b_out = @> begin
+			base
+			@where((:year.>cutyr)&(:j.==j))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	p_out = @> begin
+			p
+			@where((:year.>cutyr)&(:j.==j))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	h_out = @> begin
+			h
+			@where((:year.>cutyr)&(:j.==j))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+
+	d=Dict()
+	d["inmig"]  = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
+	d["inmig_own"]   = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
+	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
+	d["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
+	d["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
+	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
+
+	d["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
+	d["a"] = ["base" => bmv4[:a][1],    ss => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
+	d["w"] = ["base" => bmv4[:w][1],    ss => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
+	d["c"] = ["base" => bmv4[:cons][1], ss => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
+	d["h"] = ["base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
+
+
+	indir, outdir = mig.setPaths()
+	f = open(joinpath(outdir,ostr),"w")
+	JSON.print(f,d)
+	close(f)
+
+	d = ["p"=>pmv3,"h"=>hmv3,"summary"=>d]
+	return d
+
+end
+
+
+
+
+
 # compares pshock with pshcock_highMC
 # ss = {"pshock","yshock"}
 function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
@@ -772,7 +916,7 @@ function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 	else 
 		opts = selectPolicy("yshock_highMC",j,yr,par)
 	end
-	ostr = string(ss,"mig_value.json")
+	ostr = string(ss,j,"mig_value.json")
 
 	# this ctax gives equal values for
 	# pmv4[:value] and hmv4[:value] below
@@ -784,6 +928,8 @@ function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 	cutyr = yr - 1
 
 	# people who moved away from j after shock hits in yr 
+	# this includes people who move even in the baseline!
+
 	pmv_id = @select(@where(p,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 	bmv = base[findin(base[:id],pmv_id[:id]),:]
