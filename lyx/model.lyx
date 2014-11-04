@@ -329,17 +329,13 @@ see American Community Survey 2013, table DP04.
 \end_layout
 
 \begin_layout Standard
-In the model I develop, there are several mechanims which affect the home
+In the model I develop, there are several mechanisms which affect the home
  ownership choice of individuals.
  A downpayment requirement means that only individuals with sufficient cash
  on hand are able to buy a house at the current price.
- Even though all individuals share a common preference for owning, not all
- will buy a house once the downpayment constraint is satisfied.
- This decision depends on individual specific costs of moving, implying
- that high cost types are more likely to own and less likely to move.
- Finally, regional variation in price to income ratios imply different ownership
- rates in different regions, reflecting the relative differences found in
- the data.
+ The model assumes a preference for owner-occupied accomodation, which also
+ influences the buying decision next to age, the probability of moving,
+ and beliefs about future shocks.
 \end_layout
 
 \begin_layout Standard
@@ -362,9 +358,8 @@ key "kennan2003effect"
 atic preference shocks alone.
  Including time-varying location characteristics, however, increases computation
 al demands substantially.
- The model features a factor structure which allows aggregate shocks to
- affect regions differently, and at the same time helps to preserve computationa
-l tractability.
+ To keep those demands tractable, the model employs a factor structure which
+ allows aggregate shocks to affect regions differently.
 \end_layout
 
 \begin_layout Standard
@@ -400,8 +395,8 @@ key "kennan2003effect"
 
 \begin_layout Standard
 Migration is a low probability event in both data and model.
- Nevertheless, for individuals who actually move, the welfare implications
- are large.
+ Nevertheless, the welfare implications are large both for people who actually
+ move and in terms of an optimoal.
  In particular, I investigate the reponse of the model to a realistically
  large shock to house prices in a region.
  By looking at the subset of people who move as a result of the shock, and
@@ -412,38 +407,45 @@ Migration is a low probability event in both data and model.
 \end_layout
 
 \begin_layout Standard
-Regarding policy experiments, I'm interested in the effectiveness of policies
- which might increase labor mobility across regions with the ultimate aim
- to enhance labor market efficiency.
- Moving costs as well as liquidity constraints and imperfect rental markets
- are the main inefficiencies a government may want to address in this context.
- For example, I find that abolishing the mortgage interest deduction would
- have a small positive impact on the migration rate.
+Government policies might help to increase labor market efficiency, housing
+ market inefficiency or both.
+ The main inefficiencies any policy might target are incomplete asset markets,
+ liquidity constraints, moving and transaction costs, income taxes and imperfect
+ rental markets.
+ One large pre-existing intervention in this context is the mortgage interest
+ deduction.
+ It is interesting to consider how abolishing this tax deduction might interact
+ with borrowing, housing tenure choice and migration.
+ 
+\end_layout
+
+\begin_layout Standard
+I find that abolishing the mortgage interest deduction would have a small
+ positive impact on the migration rate.
  At first sight one might be tempted to think that removing the deduction
  would result in more renters, which would mechanically translate into an
  increase in migration, since renters move more.
  The actual effect is more nuanced.
- First of all, there is a general equilibrium effect at play which reduces
- equilibrium house prices.
- The interest rate deduction is a subsidy that is capitalized into house
- values, so removing it will reduce prices.
- In order to account for this general equilibrium effect to some extent
- in the realm of my partial equilibrium model, I use recent results from
- a stationary GE model by 
+ First, because the mortgage tax deduction is a large scale policy, there
+ is likely to be a general equilibrium effect.
+ While my model is a partial equilibrium model, I can approximate the general
+ equilibrium effect by assuing that the policy changes both taxes as well
+ as prices.
+ I use recent results from a stationary GE model by 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sommer2013implications"
 
 \end_inset
 
- to adjust prices after the policy is changed.
+ to adjust house prices after the policy is changed.
  Applying the price correction partly offsets the initial reduction in ownership
 , since lower prices allow more people to buy.
  Lower prices and a higher level of disposable income for the poor after
  redistribution of tax proceeds leads to easier access to ownership, in
  more locations, and for a larger proportion of the population.
- This results in a slight increase of the migration of 0.1 percentage points,
- corresponding to a 2.5% increase in the migration rate.
+ The ownership rate increases by 1.3%, the migration rate increases by 3%,
+ and the policy change has a value equivalent to 5% of period consumption.
 \end_layout
 
 \begin_layout Standard
@@ -2719,59 +2721,7 @@ where the variables stand for, in order, assets, individual income shock,
 \uwave default
 \noun default
 \color inherit
-To spare on notation I will drop the subscript 
-\begin_inset Formula $it$
-\end_inset
-
- for the remainder of this subsection, with the convention that next period
- variables are labelled with a prime.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The distinction between 
-\emph on
-date 
-\emph default
-and 
-\emph on
-age 
-\emph default
-is irrelevant from the perspective of the individual: The only care about
- the the current value of 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\mathbf{P}_{dt}$
-\end_inset
-
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- and how this evolves into the next period.
-\end_layout
-
-\end_inset
-
- Following 
+Following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "1987"
@@ -2801,29 +2751,6 @@ key "1987"
 \end_layout
 
 \begin_layout Standard
-The laws of motion for 
-\begin_inset Formula $s,z$
-\end_inset
-
- and 
-\begin_inset Formula $\mathbf{P}$
-\end_inset
-
- evolve according to Markovian processes.
- In each case, this is modeled by a transition matrix 
-\begin_inset Formula $\Gamma$
-\end_inset
-
-:
-\begin_inset Formula 
-\begin{eqnarray}
-z'|z & \sim & \Gamma_{z}\nonumber \\
-s'|s_{t} & \sim & \Gamma_{s,t}\nonumber \\
-\mathbf{P}'|\mathbf{P} & \sim & \Gamma_{\mathbf{P}}\label{eq:transitions}
-\end{eqnarray}
-
-\end_inset
-
 The consumer faces a nested optimization problem in each period.
  At the lower level, optimal savings and housing decision must be taken
  conditional on any discrete location choice, and at the upper level the
@@ -3432,9 +3359,10 @@ key "fella2011generalized"
 \end_layout
 
 \begin_layout Standard
-I solve the model in a backward-recursive way.
- Starting in the final period, the known final period value is computed
- at all relevant states.
+I solve the model in a backward-recursive way, starting at maximal age 50
+ and going back until initial age 20.
+ In the final period the known final period value is computed at all relevant
+ states.
  From period 
 \begin_inset Formula $T-1$
 \end_inset
@@ -5471,7 +5399,7 @@ key "kennan2003effect"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5502,7 +5430,7 @@ Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
 \begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
 \end_inset
 
- in the period of life.
+ in the first period of life (age 20).
  
 \begin_inset CommandInset citation
 LatexCommand cite

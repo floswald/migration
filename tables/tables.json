@@ -68,6 +68,11 @@
     "template" : "mortgage_pres.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/mortgage_pres.tex",
     "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mortgage.json"
+  },    
+  "params":{
+    "template" : "params.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/fit/params.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json"
   }    
 
 }

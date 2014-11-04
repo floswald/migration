@@ -182,11 +182,15 @@ How does government housing policy interact with mobility?
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout BeginFrame
 Detroit, Michigan
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -330,7 +334,7 @@ end{columns}
 Detroit, Michigan
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -522,7 +526,7 @@ end{columns}
 Palo Alto, California
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -685,6 +689,11 @@ end{column}
 
 \backslash
 end{columns}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -864,7 +873,6 @@ status open
 
 \begin_layout Plain Layout
 
-\size footnotesize
 
 \backslash
 vspace{3mm}
@@ -885,7 +893,6 @@ status open
 
 \begin_layout Plain Layout
 
-\size footnotesize
 
 \backslash
 vspace{3mm}
@@ -929,7 +936,6 @@ status open
 
 \begin_layout Plain Layout
 
-\size footnotesize
 
 \backslash
 vspace{3mm}

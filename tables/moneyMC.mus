@@ -1,11 +1,9 @@
 {% macro showparam(dd) %}
-     {{ dd.age_1.rent | prettyNum(3) }} & {{ dd.age_2.rent | prettyNum(3) }} && {{ dd.age_1.own| prettyNum(3) }} & {{ dd.age_2.own | prettyNum(3) }} \\
+     {{ dd.age_1.rent | prettyNum(3) }}  && {{ dd.age_1.own| prettyNum(3) }}  \\
 {%- endmacro %}
-\begin{tabular}{D{.}{.}{6.7}@{} D{.}{.}{6.7}@{} c D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+\begin{tabular}{D{.}{.}{6.7}@{}  c D{.}{.}{6.7}@{}}
   \toprule 
-      \multicolumn{2}{c}{Renter} && \multicolumn{2}{c}{Owner}\\ 
-      \multicolumn{1}{c}{$t=1$} & \multicolumn{1}{c}{$t=30$}&&  \multicolumn{1}{c}{$t=1$} & \multicolumn{1}{c}{$t=30$}\\ 
-  \cmidrule{1-2} \cmidrule{4-5}
+      \multicolumn{1}{c}{Renter} && \multicolumn{1}{c}{Owner}\\ 
   {{  showparam(z1 ) }}
   \bottomrule
 \end{tabular}
