@@ -40,9 +40,12 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif in(which,["pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,p)
 		e = mig.exp_shockRegion(opts)
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e[1])
-		writetable(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_both.csv"),e[1]["sums"]["both"])
-		writetable(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_both_toj.csv"),e[1]["sums"]["both_toj"])
+		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_outmig.json")
+		JSON.print(f,e["outmig"])
+		close(f)
+		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_inmig.json")
+		JSON.print(f,e["inmig"])
+		close(f)
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -1310,6 +1313,13 @@ function exp_shockRegion(opts::Dict)
 	       "moments" => ["base" => mms0, which => mms1]]
 
 	return (out,sim0,sim1)
+end
+
+function read_jsondf(f::ASCIIString)
+	d = JSON.parsefile(f)
+	df = DataFrame(d["columns"])
+	names!(df,Symbol[symbol(d["colindex"]["names"][i]) for i in 1:length(d["columns"])])
+	return df
 end
 
 
