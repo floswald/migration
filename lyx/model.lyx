@@ -5808,7 +5808,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/pshock.tex}
+Dropbox/model/experiments/exp_yp/WNCpshock.tex}
 \end_layout
 
 \end_inset
@@ -6048,10 +6048,32 @@ The value of Migration
 \end_layout
 
 \begin_layout Standard
+In this section I investigate the value of the migration option.
+ The experiment assumes that in region West North Central the migration
+ option is removed.
+ First we will discuss changes in migration flows, and subsequently we will
+ analyze the experience of individuals who would have moved in the baseline
+ environment, and who are now prevented from doing so.
+\end_layout
+
+\begin_layout Standard
+Migration flows are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:value-of-migration-flows"
+
+\end_inset
+
+.
+ The top panel shows changes in immigration flows to the region for both
+ scenarios, and the respective percentage change.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6065,7 +6087,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/mig_value3.tex}
+Dropbox/model/experiments/highMC/mig_value.tex}
 \end_layout
 
 \end_inset
@@ -6077,7 +6099,70 @@ Dropbox/model/experiments/exp_yp/mig_value3.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Mobility flows in shock scenario and shock scenario without mobility.
+Removing the migration option from residents of West North Central.
+ The top panel in the table shows migration flows from outside regions to
+ West North Central as a percentage of the resident population of the correspond
+ing group, i.e.
+ total inflow as percentage of total residents, owner inflow as percentage
+ of resident owners, etc.
+ The same holds for the second panel, measuring outflows.
+ The final row shows the average difference in expected lifetime utility
+  
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:value-of-migration-flows"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/highMC/mig_value_detail.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+This table compares individuals who move away from West North Central in
+ the baseline scenario and compares them to their hypothetical counterparts
+ in a world where moving from the region is impossible.
+ The large difference in lifetime utility is a result from the big house
+ price increases experienced in other regions.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:value-of-migration"

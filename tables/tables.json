@@ -26,8 +26,8 @@
   },
   "mig_value":{
     "template" : "mig_value.mus",
-    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/mig_value.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mig_value.json"
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/mig_value.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
   },
   "mig_value2":{
     "template" : "mig_value2.mus",
@@ -41,8 +41,8 @@
   },    
   "mig_value_detail":{
     "template" : "mig_value_detail.mus",
-    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/mig_value_detail.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mig_value.json"
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/mig_value_detail.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
   },    
   "mig_value_detail2":{
     "template" : "mig_value_detail2.mus",
@@ -73,6 +73,5 @@
     "template" : "params.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/fit/params.tex",
     "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json"
-  }    
-
+  }
 }

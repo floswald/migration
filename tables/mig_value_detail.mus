@@ -1,19 +1,15 @@
 {% macro showparam(param,dd) %}
-    {{param}} & {{ dd.pshock| prettyNum(3) }} & {{ dd.nomove | prettyNum(3) }} & {{ dd.pct | prettyNum(3) }}  \\
+    {{param}} & {{ dd.base | prettyNum(3) }} & {{ dd.noMove | prettyNum(3) }} & {{ dd.pct | prettyPerc(1) }}  \\
 {%- endmacro %}
-{
-\renewcommand{\arraystretch}{1.2} 
 \begin{tabular}{l D{.}{.}{3.5}@{} D{.}{.}{5.5}@{} D{.}{.}{5.5}@{} }
   \toprule 
-     &  \multicolumn{1}{c}{Can leave} & \multicolumn{1}{c}{Can not} &\multicolumn{1}{c}{$\% \Delta$} \\
+     &  \multicolumn{1}{c}{Baseline} & \multicolumn{1}{c}{No Moving} &\multicolumn{1}{c}{$\% \Delta$} \\
   \midrule
-  {{  showparam("Lifetime U", v) }}
-  {{  showparam("Assets (\$1000)", a ) }}
-  {{  showparam("Consumption (\$1000)", c ) }}
-  {{  showparam("Wealth (\$1000)", w ) }}
-  {{  showparam("Ownership", h ) }}
-  \midrule
-   \textcolor{white}{ \textbf{Cons. Compensation}} &  &  &   \\
+  {{  showparam("Lifetime U", movers.v) }}
+  {{  showparam("Assets", movers.a) }}
+  {{  showparam("Wealth", movers.w) }}
+  {{  showparam("Income", movers.inc) }}
+  {{  showparam("$E[\\overline{y}]$", movers.y) }}
+  {{  showparam("$E[p]$", movers.p) }}
   \bottomrule
 \end{tabular}
-}

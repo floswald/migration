@@ -1,17 +1,30 @@
 {% macro showparam(param,dd) %}
-    {{param}} & {{ dd.base | prettyNum(3) }} & &   &  \\
+    {{param}} & {{ dd.base | prettyNum(3) }} & {{ dd.noMove | prettyNum(3) }} &  {{ dd.pct | prettyPerc(1) }}  \\
 {%- endmacro %}
-{
-\renewcommand{\arraystretch}{1.2} 
-\begin{tabular}{l D{.}{.}{1.5}@{} D{.}{.}{1.1}@{} D{.}{.}{3.5}@{} D{.}{.}{3.5}@{} }
+{% macro show(param,dd) %}
+    {{param}} & {{ dd.base | prettyPerc(2) }} & {{ dd.noMove | prettyPerc(2) }} & {{ dd.pct | prettyPerc(1) }}\\
+{%- endmacro %}
+{% macro show2(param,dd) %}
+    {{param}} & {{ dd.base | prettyPerc(2) }} & {{ dd.noMove | prettyPerc(2) }} &  - \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.6}@{} D{.}{.}{4.5}@{} D{.}{.}{4.5}@{} }
   \toprule 
-     & \multicolumn{1}{c}{Baseline} & & \multicolumn{2}{c}{Price Shock} \\ 
-     \cmidrule{4-5}
-     &  & &  \multicolumn{1}{c}{Can leave}& \multicolumn{1}{c}{Can not} \\ 
+     & \multicolumn{1}{c}{Baseline} & \multicolumn{1}{c}{No Moving} & \multicolumn{1}{c}{$\% \Delta$} \\ 
   \midrule
-  {{  showparam("Outflow", outmig ) }}
-  {{  showparam("\\hspace{6mm}Owners", outmig_own ) }}
-  {{  showparam("\\hspace{6mm}Renters", outmig_rent ) }}
+     & \multicolumn{3}{c}{Immigration} \\[-6pt]
+     & \multicolumn{3}{c}{\scriptsize (within group percentage) } \\
+  \cmidrule{2-4}
+  {{  show("Total", flows.inmig_rel) }}
+  {{  show("Owners", flows.inmig_own_rel) }}
+  {{  show("Renters", flows.inmig_rent_rel) }}
+  \midrule
+     & \multicolumn{3}{c}{Emigration} \\[-6pt]
+     & \multicolumn{3}{c}{\scriptsize (within group percentage) } \\
+  \cmidrule{2-4}
+  {{  show2("Total", flows.outmig) }}
+  {{  show2("Owners", flows.outmig_own_rel) }}
+  {{  show2("Renters", flows.outmig_rent_rel) }}
+  \midrule
+  {{  showparam("E[Lifetime U]", EV) }}
   \bottomrule
 \end{tabular}
-}

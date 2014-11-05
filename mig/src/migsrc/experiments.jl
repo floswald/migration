@@ -839,7 +839,7 @@ function exp_value_mig_base(j::Int)
 
 
 	# out string
-	ostr = string(ss,j,"mig_value_baseline.json")
+	ostr = string("noMove",j,"mig_value_baseline.json")
 
 	# this ctax gives equal values for
 	# pmv4[:value] and hmv4[:value] below
@@ -951,12 +951,17 @@ function exp_value_mig_base(j::Int)
 	d["EV"] = Dict()
 	d["EV"] = ["base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] ]
 	d["flows"] = Dict()
-	d["flows"]["inmig"] = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "pct" => 100*(p_in[:mig][1] - b_in[:mig][1])/b_in[:mig][1] ]
-	d["flows"]["inmig_own"] = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - b_in[:mig_own][1])/b_in[:mig_own][1] ]
-	d["flows"]["inmig_rent"]   = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - b_in[:mig_rent][1])/b_in[:mig_rent][1] ]
-	d["flows"]["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1]]
-	d["flows"]["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1]]
-	d["flows"]["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1]]
+	d["flows"]["inmig"]       = ["base" => b_in[:mig][1],     ss =>p_in[:mig][1],       "pct" => 100*(p_in[:mig][1] - b_in[:mig][1])/b_in[:mig][1] ]
+	d["flows"]["inmig_rel"]   = ["base" => b_in[:rel_mig][1],     ss =>p_in[:rel_mig][1],       "pct" => 100*(p_in[:rel_mig][1] - b_in[:rel_mig][1])/b_in[:rel_mig][1] ]
+	d["flows"]["inmig_own"]   = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1],   "pct" => 100*(p_in[:mig_own][1] - b_in[:mig_own][1])/b_in[:mig_own][1] ]
+	d["flows"]["inmig_own_rel"]   = ["base" => b_in[:rel_mig_own][1], ss =>p_in[:rel_mig_own][1],   "pct" => 100*(p_in[:rel_mig_own][1] - b_in[:rel_mig_own][1])/b_in[:rel_mig_own][1] ]
+	d["flows"]["inmig_rent"]  = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - b_in[:mig_rent][1])/b_in[:mig_rent][1] ]
+	d["flows"]["inmig_rent_rel"]   = ["base" => b_in[:rel_mig_rent][1], ss =>p_in[:rel_mig_rent][1],   "pct" => 100*(p_in[:rel_mig_rent][1] - b_in[:rel_mig_rent][1])/b_in[:rel_mig_rent][1] ]
+	d["flows"]["outmig"]      = ["base" => b_out[:mig][1],     ss =>p_out[:mig][1]      ,"pct" => 100*(p_out[:mig][1] - b_out[:mig][1])/b_out[:mig][1] ]
+	d["flows"]["outmig_own"]  = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1]  ,"pct" => 100*(p_out[:mig_own][1] - b_out[:mig_own][1])/b_out[:mig_own][1] ]
+	d["flows"]["outmig_own_rel"]   = ["base" => b_out[:rel_mig_own][1], ss =>p_out[:rel_mig_own][1],   "pct" => 100*(p_out[:rel_mig_own][1] - b_out[:rel_mig_own][1])/b_out[:rel_mig_own][1] ]
+	d["flows"]["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1],"pct" => 100*(p_out[:mig_rent][1] - b_out[:mig_rent][1])/b_out[:mig_rent][1] ]
+	d["flows"]["outmig_rent_rel"]   = ["base" => b_out[:rel_mig_rent][1], ss =>p_out[:rel_mig_rent][1],   "pct" => 100*(p_out[:rel_mig_rent][1] - b_out[:rel_mig_rent][1])/b_out[:rel_mig_rent][1] ]
 
 	d["movers"] = Dict()
 	d["movers"]["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1], "pct" => 100*(pmv4[:v][1] - bmv4[:v][1])/bmv4[:v][1] ]
@@ -1347,12 +1352,24 @@ function exp_shockRegion(opts::Dict)
 	return (out,sim0,sim1)
 end
 
-function read_jsondf(f::ASCIIString)
+function read_exp_shockRegion(f::ASCIIString)
 	d = JSON.parsefile(f)
-	df = DataFrame(d["columns"])
-	names!(df,Symbol[symbol(d["colindex"]["names"][i]) for i in 1:length(d["columns"])])
-	return df
+
+	pth = replace(f,".json","")
+	di = Dict()
+	# out and in
+	for (k,v) in d
+		for (kk,vv) in v
+			str = string(pth,k,kk,".csv")
+			df = DataFrame(vv["columns"])
+			names!(df,Symbol[symbol(vv["colindex"]["names"][i]) for i in 1:length(vv["columns"])])
+			writetable(str,df)
+			di[string(k,kk)] = df
+		end
+	end
+	return di
 end
+
 
 
 function adjustVShocks!(mm::Model,m::Model,p::Param)
