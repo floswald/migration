@@ -111,7 +111,7 @@ function plotShockRegions2(printp=false)
 
 	pp_sum =  [ i => pp_sum[i][1] for i in names(pp_sum)]
 
-	f = open(joinpath(opth,"pshock.json"),"w")
+	f = open(joinpath(opth,string(j,"pshock.json")),"w")
 	JSON.print(f,pp_sum)
 	close(f)
 
@@ -305,7 +305,7 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 		@transform(beta=p.beta .^ :age)
 		@where(!isna(:cohort))
 		@transform(vbeta = :v .* :beta)
-		@by(:id, meanv = mean(:vbeta))
+		@by(:id, meanv = mean(:vbeta.data,WeightVec(:density.data)))
 		@select(meanv = mean(:meanv))
 	end
 	return w
@@ -754,55 +754,71 @@ end
 # ==================
 
 # compares baesline with highMC
+# differences in utility if moving in region j
+# is shut down.
 function exp_value_mig_base(j::Int)
 
-	par = Param(2)
-	m = Model(par)
-	solve!(m,par)
-	sim0 = simulate(m,par)
-	base = sim0[!isna(sim0[:cohort]),:]
-	p = base;
+	# look at results after full cohorts available
+	cutyr = 1997 - 1
 
-	# release memory
-	sim0 = 0
-	gc()
+	# baseline model
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	base = simulate(m,p);
+	base = base[!isna(base[:cohort]),:];
 
+	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m)
+
+	# model where moving is shut down in region j
+	opts = ["policy" => "highMC", "shockRegion" => j]
+	p2 = Param(2,opts)
+	m2 = Model(p2)
+	solve!(m2,p2)
+
+	pol = simulate(m2,p2);
+	pol = pol[!isna(pol[:cohort]),:];
+
+	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m)
+
+
+
+	# compare the ones who did move with their virtual counterparts
+	# =============================================================
+
+	# people who moved away from j in the baseline
+	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	bmv = base[findin(base[:id],mv_id[:id]),:]
+	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
+
+	bmv2 = @where(bmv,:year.>cutyr)
+	bmv2 = @transform(bmv2,row_idx=1:size(bmv2,1))
+
+	# find those guys in the policy environment
+	pmv = pol[findin(pol[:id],mv_id[:id]),:];
+	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
+	pmv2 = @where(pmv,:year.>cutyr)
+	pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
+
+
+
+	# out string
 	ostr = string(ss,j,"mig_value_baseline.json")
 
 	# this ctax gives equal values for
 	# pmv4[:value] and hmv4[:value] below
 	# opts["ctax"] = 1.13
 
-
-	cutyr = yr - 1
-
-	# people who moved away from j in the baseline
-	pmv_id = @select(@where(p,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
-	pmv = p[findin(p[:id],pmv_id[:id]),:]
-	bmv = base[findin(base[:id],pmv_id[:id]),:]
-	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
-	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
-
-	pmv3 = @where(pmv,:year .> cutyr)
-	pmv3 = @transform(pmv3,row_idx=1:size(pmv3,1))
-
-	bmv3 = @where(bmv,:year .> cutyr)
-	bmv3 = @transform(bmv3,row_idx=1:size(bmv3,1))
-
-	hmv = h[findin(	h[:id],pmv_id[:id]),:]
-	hmv = @transform(hmv,buy = (:h.==0)&(:hh.==1))
-	hmv3 = @where(hmv,:year .> cutyr)
-	hmv3 = @transform(hmv3,row_idx=1:size(hmv3,1))
 	# what's the first observationin j=6?
 	# drop all periods before first in cutyr
 	drops = Int[]
-	for i in unique(pmv3[:id])
+	for i in unique(pmv2[:id])
 		goon = true
-		ti = minimum(@where(pmv3,:id.==i)[:age])
-		maxage = maximum(@where(pmv3,:id.==i)[:age])
+		ti = minimum(@where(pmv2,:id.==i)[:age])
+		maxage = maximum(@where(pmv2,:id.==i)[:age])
 		while goon
-			if pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:j][1] != j
-				push!(drops,pmv3[(pmv3[:id].==i)&(pmv3[:age].==ti),:row_idx][1])
+			if pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:j][1] != j
+				push!(drops,pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:row_idx][1])
 				if ti == maxage
 					goon=false
 				else
@@ -814,13 +830,24 @@ function exp_value_mig_base(j::Int)
 		end
 	end
 
-	pmv3 = pmv3[setdiff(1:size(pmv3,1),drops),:]
-	bmv3 = bmv3[setdiff(1:size(bmv3,1),drops),:]
-	hmv3 = hmv3[setdiff(1:size(hmv3,1),drops),:]
+	pmv3 = pmv2[setdiff(1:size(pmv2,1),drops),:]
+	bmv3 = bmv2[setdiff(1:size(bmv2,1),drops),:]
 
-	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
-	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
-	hmv4 = @select(@where(hmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+
+	# get counts of owners in j by year
+	counts0 = @> begin
+			base	
+			@where((:j.==j) & (:year.>cutyr))
+			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
+		end
+	counts1 = @> begin
+			pol	
+			@where((:j.==j) & (:year.>cutyr))
+			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
+		end
+
 
 	# get immigration rates for after cutyr
 	# uses data on everybody outside of j
@@ -828,59 +855,83 @@ function exp_value_mig_base(j::Int)
 			base
 			@where((:year.>cutyr)&(:j.!=j))
 			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+		end
+	b_in = join(b_in,counts0,on=:year);
+	b_in = @> begin
+			b_in
+			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
 		end
 
 	p_in = @> begin
-			p
+			pol
 			@where((:year.>cutyr)&(:j.!=j))
 			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
 		end
-
-	h_in = @> begin
-			h
-			@where((:year.>cutyr)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+	p_in = join(p_in,counts1,on=:year);
+	p_in = @> begin
+			p_in
+			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
 		end
 
 	# get outmigration rates for after cutyr
-	# uses data on those who would have migrated after pshock
+	# uses data on everybody in j
 	b_out = @> begin
 			base
 			@where((:year.>cutyr)&(:j.==j))
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
 		end
 
 	p_out = @> begin
-			p
+			pol
 			@where((:year.>cutyr)&(:j.==j))
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
+			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
 		end
 
-	h_out = @> begin
-			h
-			@where((:year.>cutyr)&(:j.==j))
-			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
+	# net migration change from cutyr to end of sample
+	# by region
+	netmig_base=@> begin
+       base
+       @where(:year.>1997)
+       @by([:j,:year],n=length(:id))
+       @by(:j, net = :n[1] - :n[end])
+       end
+	netmig_pol=@> begin
+       pol
+       @where(:year.>1997)
+       @by([:j,:year],n=length(:id))
+       @by(:j, net = :n[1] - :n[end])
+       end
+
+       flows = map(x-> proportionmap(@where(base,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
+
+
+    # output dict
+    # ===========
 
 	d=Dict()
-	d["inmig"]  = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
-	d["inmig_own"]   = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
-	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
-	d["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
-	d["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
-	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
+	ss = "noMove"
+	d["EV"] = Dict()
+	d["EV"] = ["base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] ]
+	d["flows"] = Dict()
+	d["flows"]["inmig"] = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "pct" => 100*(p_in[:mig][1] - b_in[:mig][1])/b_in[:mig][1] ]
+	d["flows"]["inmig_own"] = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - b_in[:mig_own][1])/b_in[:mig_own][1] ]
+	d["flows"]["inmig_rent"]   = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - b_in[:mig_rent][1])/b_in[:mig_rent][1] ]
+	d["flows"]["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1]]
+	d["flows"]["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1]]
+	d["flows"]["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1]]
 
-	d["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
-	d["a"] = ["base" => bmv4[:a][1],    ss => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
-	d["w"] = ["base" => bmv4[:w][1],    ss => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
-	d["c"] = ["base" => bmv4[:cons][1], ss => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
-	d["h"] = ["base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
+	d["movers"] = Dict()
+	d["movers"]["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1], "pct" => 100*(pmv4[:v][1] - bmv4[:v][1])/bmv4[:v][1] ]
+	d["movers"]["a"] = ["base" => bmv4[:a][1],    ss => pmv4[:a][1], "pct" => 100*(pmv4[:a][1] - bmv4[:a][1])/bmv4[:a][1] ]
+	d["movers"]["inc"] = ["base" => bmv4[:inc][1],    ss => pmv4[:inc][1], "pct" => 100*(pmv4[:inc][1] - bmv4[:inc][1])/bmv4[:inc][1] ]
+	d["movers"]["y"] = ["base" => bmv4[:y][1],    ss => pmv4[:y][1],  "pct" => 100*(pmv4[:y][1] - bmv4[:y][1])/bmv4[:y][1] ]
+	d["movers"]["p"] = ["base" => bmv4[:p][1],    ss => pmv4[:p][1],  "pct" => 100*(pmv4[:p][1] - bmv4[:p][1])/bmv4[:p][1] ]
+	d["movers"]["inc"] = ["base" => bmv4[:inc][1],    ss => pmv4[:inc][1], "pct" => 100*(pmv4[:inc][1] - bmv4[:inc][1])/bmv4[:inc][1] ]
+	d["movers"]["w"] = ["base" => bmv4[:w][1],    ss => pmv4[:w][1],  "pct" => 100*(pmv4[:w][1] - bmv4[:w][1])/bmv4[:w][1] ]
+	d["movers"]["c"] = ["base" => bmv4[:cons][1], ss => pmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - bmv4[:cons][1])/bmv4[:cons][1] ]
+	d["movers"]["h"] = ["base" => bmv4[:h][1],    ss => pmv4[:h][1],  "pct" => 100*(pmv4[:h][1] - bmv4[:h][1])/bmv4[:h][1] ]
 
 
 	indir, outdir = mig.setPaths()
@@ -888,7 +939,6 @@ function exp_value_mig_base(j::Int)
 	JSON.print(f,d)
 	close(f)
 
-	d = ["p"=>pmv3,"h"=>hmv3,"summary"=>d]
 	return d
 
 end
@@ -1128,7 +1178,6 @@ function exp_shockRegion(opts::Dict)
 	sim0 = simulate(m,p)
 	sim0 = sim0[!isna(sim0[:cohort]),:]
 
-
 	# Policy
 	# ------
 	
@@ -1196,75 +1245,67 @@ function exp_shockRegion(opts::Dict)
 	mms1 = computeMoments(sim1,p,m)	
 
 
-	# TODO: get as fraction of all renters/owners in Pacific/elsewhere?
-	sum0 = @> begin
+	# migration outflows
+	# ==================
+
+	b_out = @> begin
 		sim0	
 		@where((:j.==j) & (:year.>1997)) 
-		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./sum(:own,WeightVec(:density.data)),rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./sum(!(:own),WeightVec(:density.data)))
+		@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+		@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
+
 		end
 
-	sum1 = @> begin
-		sim1	
-		@where((:j.==j) & (:year.>1997)) 
-		@transform(move_own = :move .* :own, move_rent = :move .* (!:own), buy = (:h.==0).*(:hh.==1))
-		@by(:year,v = mean(:v.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)),p=mean(:p),y=mean(:y),income=mean(:income.data,WeightVec(:density.data)),move=mean(:move.data,WeightVec(:density.data)),move_own=mean(:move_own.data,WeightVec(:density.data)),move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./sum(:own,WeightVec(:density.data)),rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./sum(!(:own),WeightVec(:density.data)))
+	p_out = @> begin
+			sim1
+			@where((:year.>1997)&(:j.==j))
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+			@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
 		end
 
-	# how many renters/owners do you have each year in Pacific?
+	# migration inflows
+	# =================
+
+	# how many renters/owners do you have each year in j?
 	counts0 = @> begin
 			sim0
 			@where((:j.==j) & (:year.>1997))
-			@by(:year,n_rent = sum(!(:own)), n_own=sum(:own))
+			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
 		end
 	counts1 = @> begin
 			sim1
 			@where((:j.==j) & (:year.>1997))
-			@by(:year,n_rent = sum(!(:own)), n_own=sum(:own))
+			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
 		end
 
-
-	# same for moving to j
-	sum0_toj = @> begin
-		sim0
-		@where((:j.!=j) & (:year.>1997)) 
-		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
-	end
-	sum0_toj = join(sum0_toj,counts0,on=:year)
-
-
-	sum0_toj = @> begin
-		sum0_toj
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)), rel_move_own=sum(:move_own.data,WeightVec(:density.data))./:n_own[1], rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./:n_rent[1], move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+	b_in = @> begin
+			sim0	
+			@where((:year.>1997)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+		end
+	b_in = join(b_in,counts0,on=:year);
+	b_in = @> begin
+			b_in
+			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
 		end
 
-	sum1_toj = @> begin
-		sim1
-		@where((:j.!=j) & (:year.>1997)) 
-		@transform(move_own = (:moveto.==j) .* :own, move_rent = (:moveto.==j) .* (!:own), move_own_buy = (:moveto.==j) .* (:h.==1).*(:hh.==1), move_own_rent = (:moveto.==j) .* (:h.==1).*(:hh.==0), move_rent_buy = (:moveto.==j) .* (:h.==0).*(:hh.==1), move_rent_rent = (:moveto.==j) .* (:h.==0).*(:hh.==0))
-	end
-	sum1_toj = join(sum1_toj,counts1,on=:year)
-	sum1_toj = @> begin
-		sum1_toj
-		@by(:year, move_own=mean(:move_own.data,WeightVec(:density.data)), move_rent=mean(:move_rent.data,WeightVec(:density.data)),rel_move_own=sum(:move_own.data,WeightVec(:density.data))./:n_own[1], rel_move_rent=sum(:move_rent.data,WeightVec(:density.data))./:n_rent[1], move_own_buy=mean(:move_own_buy.data,WeightVec(:density.data)), move_own_rent=mean(:move_own_rent.data,WeightVec(:density.data)), move_rent_rent=mean(:move_rent_rent.data,WeightVec(:density.data)), move_rent_buy=mean(:move_rent_buy.data,WeightVec(:density.data)))
+	p_in = @> begin
+			sim1
+			@where((:year.>1997)&(:j.!=j))
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
 		end
-
-
-	sum0 = @transform(sum0,regime="baseline")
-	sum1 = @transform(sum1,regime=which)
-
-	sum0_toj = @transform(sum0_toj,regime="baseline")
-	sum1_toj = @transform(sum1_toj,regime=which)
-
-	# stack
-	sums = vcat(sum0,sum1)
-	sums_toj = vcat(sum0_toj,sum1_toj)
+	p_in = join(p_in,counts1,on=:year);
+	p_in = @> begin
+			p_in
+			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
+		end
 
 	out = ["which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
-	       "sums" => ["base"=>sum0,which=>sum1,"both"=>sums,"both_toj"=>sums_toj],
+	       "outmig" => ["base"=>b_out,which=>p_out],
+	       "inmig"  => ["base"=>b_in,which=>p_in],
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
