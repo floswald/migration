@@ -6,7 +6,30 @@ plot_shockyp <- function(reg,which){
 	b = melt(b,id.vars=c("year","regime"))
 	b2 = read.csv(paste0("~/git/migration/data/shockReg/exp_region",reg,"_",which,"_both_toj.csv"))
 	b2 = melt(b2,id.vars=c("year","regime"))
-	
+
+	ostr = paste0(which,reg,".pdf")
+	if (which == "yshock"){
+		tstr = "Response to permanent reduction in mean income (10%) "
+	} else {
+		tstr = "Response to permanent reduction in house price (30%) "
+	}
+
+
+	# out mig
+	d = data.table(b)
+	rd = d[variable %like% "rel_move_"]
+	rd[,type := "Owner"]
+	rd[variable %like% "_rent", type := "Renter"]
+	out <- ggplot(rd, aes(x=year,y=value,linetype=regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="Proportion of Renters or Owners") + ggtitle(tstr)
+
+	# in mig
+	d2 = data.table(b2)
+	rd = d2[variable %like% "rel_move_"]
+	rd[,type := "Owner"]
+	rd[variable %like% "_rent", type := "Renter"]
+	out <- ggplot(rd, aes(x=year,y=value,linetype=regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="Proportion of Renters or Owners") + ggtitle(tstr)
+	ggsave(out,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr))
+
 }
 
 
@@ -31,46 +54,51 @@ getFHFA_max_peak2trough <- function(){
 	return(dmin)
 }
 
-plot_experiment <- function(where,wherelong){
+plot_experiment <- function(where,wherelong,when){
+
+	ostr_y = paste0(where,"yshock.tex")
+	ostr_p = paste0(where,"pshock.tex")
+	ostr_y_pres = paste0(where,"yshock_pres.tex")
+	ostr_p_pres = paste0(where,"pshock_pres.tex")
 
 	x = Export.VAR()
 	pcf = x$pyagg[Division==where]
 	pcf[,c("y","p") := NULL]
 	setnames(pcf,c("yhat","phat"),c("y","p"))
 	pcf[,c("y_shock","p_shock") := list(y,p)]
-	pcf[year<2006,c("y_shock","p_shock") := NA]
-	pcf[year>2006,c("y_shock","p_shock") := list(y*0.7,p*0.7)]
+	pcf[year<when,c("y_shock","p_shock") := NA]
+	pcf[year>when,c("y_shock","p_shock") := list(y*0.9,p*0.7)]
 
 	yp = melt(pcf,id.vars="year",measure.vars=c("y","y_shock","p","p_shock"))
 	yp[,type := "y"]
 	yp[str_detect(variable,"p"), type := "$p_t$"]
 	yp[str_detect(variable,"y"), type := "$\\overline{y}_{dt}$"]
 
-	vline.data = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(NA,2007))
-	vline.data2 = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(2007,NA))
-	yscale = c(seq(1970,2000,by=10),2007)
-	yscale_pres = c(seq(1970,1990,by=10),2007)
+	vline.data = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(NA,when))
+	vline.data2 = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(when,NA))
+	yscale = c(seq(1970,2000,by=10),when)
+	yscale_pres = c(seq(1970,1990,by=10),when)
 
-	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $\\overline{y}_{dt}$ for $d=$",wherelong," $t\\geq2007$ \n   ")) + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $\\overline{y}_{dt}$ for $d=$",wherelong,"\n   ")) + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p1_pres = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres)
-	p2 = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle("Shocking $p_{dt}$ for $d=$ Pacific, $t\\geq2007$ \n   ") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p2 = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $p_{dt}$ for $d=$",wherelong,"\n   ")) + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p2_pres = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres) 
 	
 	# for paper
-	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/yshock.tex",width=6.5,height=3.0)
+	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_y),width=6.5,height=3.0)
 	print(p1)
 	dev.off()
 
 	# for presentation
-	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/yshock_pres.tex",width=4.7,height=2.5)
+	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_y_pres),width=4.7,height=2.5)
 	print(p1_pres)
 	dev.off()
 
-	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/pshock.tex",width=6.5,height=3.0)
+	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_p),width=6.5,height=3.0)
 	print(p2)
 	dev.off()
 
-	tikz("~/Dropbox/mobility/output/model/experiments/exp_yp/pshock_pres.tex",width=4.7,height=2.5)
+	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_p_pres),width=4.7,height=2.5)
 	print(p2_pres)
 	dev.off()
 
