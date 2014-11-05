@@ -40,11 +40,8 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif in(which,["pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,p)
 		e = mig.exp_shockRegion(opts)
-		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_outmig.json")
-		JSON.print(f,e["outmig"])
-		close(f)
-		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_inmig.json")
-		JSON.print(f,e["inmig"])
+		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_flows.json"),"w")
+		JSON.print(f,e[1]["flows"])
 		close(f)
 	else
 		throw(ArgumentError("no valid experiment chosen"))
@@ -756,6 +753,42 @@ end
 # VALUE OF MIGRATION
 # ==================
 
+# find ctax of baseline vs highMC
+function find_ctax_value_mig_base(j::Int)
+
+	cutyr = 1997 - 1
+
+	# baseline model
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	base = simulate(m,p);
+	base = base[!isna(base[:cohort]),:];
+	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m)
+
+	ctax = optimize((x)->vdiff_value_mig_base(x,w0[1,1],j),0.5,1.5,show_trace=true,method=:brent)
+
+end
+
+function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
+
+	# look at results after full cohorts available
+	cutyr = 1997 - 1
+
+	println("current ctax = $ctax")
+
+	# model where moving is shut down in region j
+	opts = ["policy" => "highMC", "shockRegion" => j]
+	p2 = Param(2,opts)
+	setfield!(p2,:ctax,ctax)
+	m2 = Model(p2)
+	solve!(m2,p2)
+	pol = simulate(m2,p2);
+	pol = pol[!isna(pol[:cohort]),:];
+	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p2,m2)
+	(w1[1,1] - w0)^2
+end
+
 # compares baesline with highMC
 # differences in utility if moving in region j
 # is shut down.
@@ -1307,8 +1340,7 @@ function exp_shockRegion(opts::Dict)
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
-	       "outmig" => ["base"=>b_out,which=>p_out],
-	       "inmig"  => ["base"=>b_in,which=>p_in],
+	       "flows" => ["out" => ["base"=>b_out,which=>p_out], "in" => ["base"=>b_in,which=>p_in]],
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
