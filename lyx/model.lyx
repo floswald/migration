@@ -5055,6 +5055,10 @@ reference "eq:prob-of-moving"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -5119,7 +5123,8 @@ name "fig:Illustration-of-conditional"
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
 
@@ -5399,7 +5404,7 @@ key "kennan2003effect"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -5606,21 +5611,21 @@ In this section I illustrate how the model reacts to large economic shocks
  from a region, when the regional price or income level is reduced unexpectedly
  at a certain point in time.
  The implementation of the shock is symmetric for both the case of house
- price and mean income, and I will use the price example to explain the
- details.
+ price and mean income, and I will use the case of the regional income shock
+ to explain the implementation.
  
 \end_layout
 
 \begin_layout Standard
-The regional shock consists of reducing the level of the house price in
- the Pacific division in the year 2007 by 30% (Pacific has region index
- 
-\begin_inset Formula $d=6$
+The regional shock consists of reducing the level of the observed mean income
+ series by 10% in the West North Central division only (West North Central
+ (WNC) has region index 
+\begin_inset Formula $d=8$
 \end_inset
 
 ).
  The experiment is conducted under the assumption that agents did not foresee
- the shock and therefore are surprised in 2007 to find that the mapping
+ the shock and therefore are surprised in 2000 to find that the mapping
  form aggregate factors 
 \begin_inset Formula $\left(Y,P\right)$
 \end_inset
@@ -5630,7 +5635,7 @@ The regional shock consists of reducing the level of the house price in
 \end_inset
 
 
-\begin_inset Formula $\left(\bar{y}_{6},p_{6}\right)$
+\begin_inset Formula $\left(\bar{y}_{8},p_{8}\right)$
 \end_inset
 
  as defined in equation 
@@ -5643,11 +5648,11 @@ reference "eq:VAR-reg-determ"
  does not apply anymore.
  In terms of their beliefs about aggregate and regional prices, they observe
  
-\begin_inset Formula $\iota_{2007}\times p_{6,2007},\iota_{2007}=0.7$
+\begin_inset Formula $\iota_{2000}\times p_{8,2000},\iota_{2000}=0.9$
 \end_inset
 
  instead of 
-\begin_inset Formula $p_{6,2007}=\mathbf{a}_{6}\mathbf{P}_{2007}$
+\begin_inset Formula $p_{8,2000}=\mathbf{a}_{8}\mathbf{P}_{2000}$
 \end_inset
 
 , as would be predicted by the model in 
@@ -5666,9 +5671,9 @@ The surprise assumption is necessary to observe a causal effect of the price
  change, since otherwise the response of agents would be partially anticipating
  the shock.
  They immeditately adjust to the new mapping and behave optimally to the
- new sequence of prices in Pacific, i.e.
+ new sequence of prices in WNC, i.e.
  
-\begin_inset Formula $\left\{ \hat{p}_{6,t}\right\} _{t=2007}^{2012}$
+\begin_inset Formula $\left\{ \hat{p}_{8,t}\right\} _{t=2000}^{2012}$
 \end_inset
 
 .
@@ -5678,7 +5683,7 @@ The surprise assumption is necessary to observe a causal effect of the price
 
  The shock is permanent thereafter, i.e.
  
-\begin_inset Formula $\iota_{2007+\kappa}=0.7,\kappa=0,1,\dots$
+\begin_inset Formula $\iota_{2000+\kappa}=0.9,\kappa=0,1,\dots$
 \end_inset
 
 .
@@ -5695,8 +5700,8 @@ status collapsed
  Notice that none of the time series properties of the regional price series
  other than the level are changed.
  In particular, the growth rate and implied variance remain the same.
- The other regional price (mean income in this instance) is held constant
- in each experiment.
+ The other regional series (house price in this instance) is held constant
+ in each experiment, as well as both series in all other regions.
  Illustrations of the shocked price and income series are shown in figures
  
 \begin_inset CommandInset ref
@@ -5716,36 +5721,57 @@ reference "fig:yshock-illustration"
 \end_layout
 
 \begin_layout Paragraph
-Shock to house price.
+Shock to mean income.
 \end_layout
 
 \begin_layout Standard
-Figure 
+Reducing mean income 
+\begin_inset Formula $\overline{y}$
+\end_inset
+
+ in a given region translates directly into lower disposable income and
+ therefore less utility.
+ The effect of an unexpected reduction in the observed mean income level
+ for WNC by 10% on migration outflows are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:pshock-outflow"
+reference "fig:yshock-outflow"
 
 \end_inset
 
- gives an overview of total outflow from Pacific as the price drops in 2007.
- We can see that on average around 1% of households would leave the region
- in any given year, and there are fewer individuals leaving after the shock
- hits in 2007.
- To understand why the rate of outflow falls, we must look at the behaviour
- of renters and owners separately.
+.
+ The solid lines trace out the migration flows in the baseline scenario,
+ while the dashed lines correspond to the shock scenario.
+ In the right panel, showing renter emigration, we see clearly that the
+ income reduction leads to a sustained increase in emigrants.
+ The left panel shows owner outflows, and we also see a slight increase,
+ although the effect is smaller overall and wears off after prices start
+ to fall in 2008.
+ In terms of the above discussion about moving costs and preference shocks,
+ both results come from the fact that smaller payoff shocks are sufficient
+ to trigger a move in the shock scenario than was the case in the baseline.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-change the argument here after adding the amenity value!
-\end_layout
+Looking at the opposite flow of migration, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:yshock-inflows"
 
 \end_inset
 
-
+ shows the corresponding plots for immigration from the rest of the economy
+ into WNC.
+ Starting with owners moving to WNC in the left panel, lower mean income
+ makes the region less attractive as a destination relative to other regions,
+ thus we see a slight decrease in arrivals.
+ The effect is much more pronounced for renters in the right hand panel.
+ It is interesting to note the shape of the solid line tracing out the baseline
+ inflows: As prices in the rest of the economy start to increase towards
+ the peak in 2008, WNC, with it's relatively low level of house prices becomes
+ more attractive to renters.
+ This 
 \end_layout
 
 \begin_layout Standard
@@ -5791,183 +5817,6 @@ key "notowidigdo2011incidence"
  region because they want to take advantage of cheap housing.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/WNCpshock.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Shocking the house price series for Pacific from 2007 onwards, The shock
- multiplies the data series with the factor 
-\begin_inset Formula $\iota=0.7$
-\end_inset
-
-, i.e reduces the level by 30%.
- The dashed line in the right panel is the path of house prices after the
- shock.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Shocked-price-series."
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_move.pdf
-	height 49theight%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-The effect of a 30% decrease of the house price level in 2007 for the Pacific
- region on the outflow of migrants from the region.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pshock-outflow"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
-	width 49text%
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_rent_move.pdf
-	width 49text%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-The effect of a 30% decrease of the house price level in 2007 for the Pacific
- region on the outflow of owners and renters from the region.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pshock-outflow-own-rent"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For owners and renters who are considering to move to Pacific, the incentives
- are aligned.
- Both prefer to stay away from the now relatively low-price region.
- This is shown in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:pshock-inflow-own-rent"
-
-\end_inset
-
-.
- For the case of owners this is as above: because owners want a high return
- on their investment, there are now better regions to move to than Pacific.
- Somewhat counterintuitively, the same is true for renters: also renters
- care about the value of the housing stock in a given region, since this
- is what they are ultimately interested in -- i.e.
- they want to become owners.
- Given that Pacific has lost it's high-return status, they prefer to move
- elsewhere.
- 
-\end_layout
-
 \begin_layout Paragraph
 Shock to mean income.
 \end_layout
@@ -5991,56 +5840,6 @@ reference "fig:yshock-out-rent-own"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_own_move.pdf
-	width 49text%
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/toj_pshock_rent_move.pdf
-	width 49text%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Changes in migratory flows into the Pacific region after a 30% price shock
- in 2007.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pshock-inflow-own-rent"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -6073,7 +5872,7 @@ reference "tab:value-of-migration-flows"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6131,7 +5930,7 @@ name "tab:value-of-migration-flows"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7321,7 +7120,7 @@ name "tab:Abolishing-the-mortgage"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -7345,8 +7144,294 @@ mortgage deduction
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/WNCpshock.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Shocking the house price series for Pacific from 2007 onwards, The shock
+ multiplies the data series with the factor 
+\begin_inset Formula $\iota=0.7$
+\end_inset
+
+, i.e reduces the level by 30%.
+ The dashed line in the right panel is the path of house prices after the
+ shock.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Shocked-price-series."
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/WNCyshock.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Shocking the level of mean income in region West North Central by 10% in
+ 2000.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Shocked-income-series"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The effect of a 30% decrease of the house price level in 2007 for the Pacific
+ region on the outflow of migrants from the region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:yshock-outflow"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_in.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Changes in inflow patterns to WNC after the mean income level is permanently
+ reduced by 10% in 2000.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:yshock-inflows"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The effect of a 30% decrease of the house price level in 2000 in the West
+ North Central Division on migratory outflows from the region.
+ This measures flows as within-group percentage, e.g.
+ moving owners as percentage of all owners in the region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pshock-out"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The effect of a 30% decrease of the house price level in 2000 in the West
+ North Central Division on migratory outflows from the region.
+ This measures flows as within-group percentage, e.g.
+ moving owners as percentage of all owners in the region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pshock-in"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
 
 \begin_layout Subsection
 Changing the Moving Cost
