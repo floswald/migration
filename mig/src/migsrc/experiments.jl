@@ -1340,7 +1340,7 @@ function exp_shockRegion(opts::Dict)
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
-	       "flows" => flows],
+	       "flows" => flows,
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
