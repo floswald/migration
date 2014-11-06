@@ -245,4 +245,78 @@ function setupMC(autoload::Bool)
 	return moms
 end
 
+
+#' computes flow statistics of 
+#' baseline model. 
+#' 1. whats population growth by year in each region
+#' 2. what are the in and outflows relative to different populations.
+function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="shockReg8")
+
+	# s is a simulation output
+	d = Dict()
+
+	indir, outdir = mig.setPaths()
+	fi = readdir(outdir)
+	if !in(pth,fi)
+		mkpath(string(joinpath(outdir,pth)))
+	end
+	opth = string(joinpath(outdir,pth))
+
+	for (k,v) in dfs
+		v = v[!isna(v[:cohort]),:]
+
+		for j in 1:9 
+
+			# population of j over time
+			a = @> begin
+				v
+				@where((:year.>1997) & (:j.==j))
+				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own))
+				@transform(popgrowth = [diff(:All),0.0]./:All)
+			end
+
+			# movers to j over time
+			m_in = @> begin
+				v
+				@where((:year.>1997) & (:j.!=j))
+				@by(:year, Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)))
+			end
+
+			# movers from j over time
+			m_out = @> begin
+				v
+				@where((:year.>1997) & (:j.==j))
+				@by(:year, Owners_out=sum((:move).*(:h.==1)), Renters_out=sum((:move).*(:h.==0)))
+			end
+
+			# merge
+			ma = join(a,m_in,on=:year)
+			ma = join(ma,m_out,on=:year)
+			ma = @transform(ma,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners)
+
+			d[k] = [j => ma]
+
+			writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
+
+		end
+	end
+
+	return d
+end
+
+
+# get flows plot
+function FlowsPlot(s::DataFrame)
+
+       flows = map(x-> proportionmap(@where(base,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
+
+       fmat = zeros(9,length(flows))
+       for i in 1:length(flows)
+       for (k,v) in flows[i]
+       fmat[k,i] = v
+       end
+       end
+       PyPlot.plot(m')
+   end
+
 	

@@ -789,6 +789,9 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
 	(w1[1,1] - w0)^2
 end
 
+
+
+
 # compares baesline with highMC
 # differences in utility if moving in region j
 # is shut down.
@@ -924,23 +927,6 @@ function exp_value_mig_base(j::Int)
 			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
 		end
-
-	# net migration change from cutyr to end of sample
-	# by region
-	netmig_base=@> begin
-       base
-       @where(:year.>1997)
-       @by([:j,:year],n=length(:id))
-       @by(:j, net = :n[1] - :n[end])
-       end
-	netmig_pol=@> begin
-       pol
-       @where(:year.>1997)
-       @by([:j,:year],n=length(:id))
-       @by(:j, net = :n[1] - :n[end])
-       end
-
-       flows = map(x-> proportionmap(@where(base,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
 
 
     # output dict
@@ -1286,66 +1272,75 @@ function exp_shockRegion(opts::Dict)
 	mms1 = computeMoments(sim1,p,m)	
 
 
+	# get flows for each region
+	d = Dict{ASCIIString,DataFrame}()
+	d["base"] = sim0
+	d[which] = sim1
+	flows = getFlowStats(d,string(which,j))
+
+
 	# migration outflows
 	# ==================
 
-	b_out = @> begin
-		sim0	
-		@where((:j.==j) & (:year.>1997)) 
-		@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-		@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
+	
 
-		end
+	# b_out = @> begin
+	# 	sim0	
+	# 	@where((:j.==j) & (:year.>1997)) 
+	# 	@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+	# 	@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
 
-	p_out = @> begin
-			sim1
-			@where((:year.>1997)&(:j.==j))
-			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-			@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
-		end
+	# 	end
 
-	# migration inflows
-	# =================
+	# p_out = @> begin
+	# 		sim1
+	# 		@where((:year.>1997)&(:j.==j))
+	# 		@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+	# 		@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
+	# 	end
 
-	# how many renters/owners do you have each year in j?
-	counts0 = @> begin
-			sim0
-			@where((:j.==j) & (:year.>1997))
-			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
-		end
-	counts1 = @> begin
-			sim1
-			@where((:j.==j) & (:year.>1997))
-			@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
-		end
+	# # migration inflows
+	# # =================
 
-	b_in = @> begin
-			sim0	
-			@where((:year.>1997)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-		end
-	b_in = join(b_in,counts0,on=:year);
-	b_in = @> begin
-			b_in
-			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
-		end
+	# # how many renters/owners do you have each year in j?
+	# counts0 = @> begin
+	# 		sim0
+	# 		@where((:j.==j) & (:year.>1997))
+	# 		@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
+	# 	end
+	# counts1 = @> begin
+	# 		sim1
+	# 		@where((:j.==j) & (:year.>1997))
+	# 		@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
+	# 	end
 
-	p_in = @> begin
-			sim1
-			@where((:year.>1997)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-		end
-	p_in = join(p_in,counts1,on=:year);
-	p_in = @> begin
-			p_in
-			@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
-		end
+	# b_in = @> begin
+	# 		sim0	
+	# 		@where((:year.>1997)&(:j.!=j))
+	# 		@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+	# 	end
+	# b_in = join(b_in,counts0,on=:year);
+	# b_in = @> begin
+	# 		b_in
+	# 		@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
+	# 	end
+
+	# p_in = @> begin
+	# 		sim1
+	# 		@where((:year.>1997)&(:j.!=j))
+	# 		@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+	# 	end
+	# p_in = join(p_in,counts1,on=:year);
+	# p_in = @> begin
+	# 		p_in
+	# 		@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
+	# 	end
 
 	out = ["which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
-	       "flows" => ["out" => ["base"=>b_out,which=>p_out], "in" => ["base"=>b_in,which=>p_in]],
+	       "flows" => flows],
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
