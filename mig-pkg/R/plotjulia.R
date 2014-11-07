@@ -1,35 +1,77 @@
 
 
+plot_noMove <- function(reg){
+
+	ipth = paste0("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove",reg)
+	b = read.csv(file.path(ipth,"values.csv"))
+
+	d = list()
+	d$out = dcast(subset(b,region=="outside of WNC"),realage ~ regime, value.var="v")
+	d$out$region = "outside of WNC"
+	d$out$dv = d$out$baseline - d$out$noMove
+	d$ins = dcast(subset(b,region=="inside of WNC"),realage ~ regime, value.var="v")
+	d$ins$region = "inside of WNC"
+	d$ins$dv = d$ins$baseline - d$ins$noMove
+	d = rbind(d$out,d$ins)
+
+	p = ggplot(b,aes(x=realage,y=v,linetype=regime)) + geom_line() + facet_wrap(~region) + theme_bw() + scale_x_continuous("Age") + scale_y_continuous("E[v|Age]") + ggtitle("Average Utility by Age")
+	dp = ggplot(d,aes(x=realage,y=dv)) + geom_line() + facet_wrap(~region) + theme_bw() + scale_x_continuous("Age") + scale_y_continuous("Value difference") + ggtitle("Differences in Average Utility by Age")
+
+	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values.pdf"),height=3.0,width=7)
+	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues.pdf"),height=3.0,width=7)
+
+
+}
+
+
+
 plot_shockyp <- function(reg,which){
 
-	b = read.csv(paste0("~/git/migration/data/shockReg/exp_region",reg,"_",which,"_both.csv"))
-	b = melt(b,id.vars=c("year","regime"))
-	b2 = read.csv(paste0("~/git/migration/data/shockReg/exp_region",reg,"_",which,"_both_toj.csv"))
-	b2 = melt(b2,id.vars=c("year","regime"))
+	# read outmig data
+	# data stored in
+	ipth = "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl"
 
-	ostr = paste0(which,reg,".pdf")
+	# file locations
+	b_file = file.path(ipth,paste0(which,reg),paste0("base_flows",reg,".csv"))
+	p_file = file.path(ipth,paste0(which,reg),paste0(which,"_flows",reg,".csv"))
+
+	# load data
+	b = read.csv(b_file)
+	p = read.csv(p_file)
+
+	# melt baseline
+	mb = data.table(melt(subset(b,select=c(year,Rent_in_all,Rent_out_all,Own_out_all,Own_in_all)),id.vars="year"))
+	mb[,Regime := "Baseline"]
+	mb[,type := "Owner"]
+	mb[variable %like% "Rent_",type := "Renter"]
+
+	# melt policy
+	mp = data.table(melt(subset(p,select=c(year,Rent_in_all,Rent_out_all,Own_out_all,Own_in_all)),id.vars="year"))
+	mp[,Regime := which]
+	mp[,type := "Owner"]
+	mp[variable %like% "Rent_",type := "Renter"]
+
+	# join
+	m = rbind(mb,mp)
+
+	# title string
 	if (which == "yshock"){
-		tstr = "Response to permanent reduction in mean income (10%) "
+		ostr = "Outflows after permanent reduction in mean income (10%) "
+		istr = "Inflows after permanent reduction in mean income (10%) "
 	} else {
-		tstr = "Response to permanent reduction in house price (30%) "
+		ostr = "Outflows after permanent reduction in house price (30%) "
+		istr = "Inflows after permanent reduction in house price (30%) "
 	}
 
+	# plot
+	pl = list()
+	pl$imm = ggplot(m[variable %like% "_in_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of resident population") + ggtitle(istr)
+	pl$emi = ggplot(m[variable %like% "_out_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of resident population") + ggtitle(ostr)
 
-	# out mig
-	d = data.table(b)
-	rd = d[variable %like% "rel_move_"]
-	rd[,type := "Owner"]
-	rd[variable %like% "_rent", type := "Renter"]
-	out <- ggplot(rd, aes(x=year,y=value,linetype=regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="Proportion of Renters or Owners") + ggtitle(tstr)
-
-	# in mig
-	d2 = data.table(b2)
-	rd = d2[variable %like% "rel_move_"]
-	rd[,type := "Owner"]
-	rd[variable %like% "_rent", type := "Renter"]
-	out <- ggplot(rd, aes(x=year,y=value,linetype=regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="Proportion of Renters or Owners") + ggtitle(tstr)
-	ggsave(out,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr))
-
+	# save
+	ggsave(pl$emi,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)
+	ggsave(pl$imm,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
+	
 }
 
 

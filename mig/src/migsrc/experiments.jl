@@ -807,6 +807,8 @@ function exp_value_mig_base(j::Int)
 	base = simulate(m,p);
 	base = base[!isna(base[:cohort]),:];
 
+	regname = m.regnames[j,:Division]
+
 	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m)
 
 	# model where moving is shut down in region j
@@ -819,6 +821,37 @@ function exp_value_mig_base(j::Int)
 	pol = pol[!isna(pol[:cohort]),:];
 
 	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m)
+
+	# get values by age and for different regions
+	v0   = @> begin
+		base
+		@where((:j.!=j)&(:year.>cutyr))
+		@by(:realage,v=mean(:v))
+		@transform(region="outside of $regname",regime="baseline")
+	end
+	v1   = @> begin
+		pol
+		@where((:j.!=j)&(:year.>cutyr))
+		@by(:realage,v=mean(:v))
+		@transform(region="outside of $regname",regime="noMove")
+	end
+	v01 = vcat(v0,v1)
+	v0j   = @> begin
+		base
+		@where((:j.==j)&(:year.>cutyr))
+		@by(:realage,v=mean(:v))
+		@transform(region="inside of $regname",regime="baseline")
+	end
+	v1j   = @> begin
+		pol
+		@where((:j.==j)&(:year.>cutyr))
+		@by(:realage,v=mean(:v))
+		@transform(region="inside of $regname",regime="noMove")
+	end
+	v01j = vcat(v0,v1,v0j,v1j)
+
+
+
 
 
 
@@ -962,9 +995,17 @@ function exp_value_mig_base(j::Int)
 
 
 	indir, outdir = mig.setPaths()
+	ostr = string("noMove",j,"mig_value_baseline.json")
 	f = open(joinpath(outdir,ostr),"w")
 	JSON.print(f,d)
 	close(f)
+
+	# save csvs
+	fi = readdir(outdir)
+	if !in(string("noMove",j),fi)
+		mkpath(string(joinpath(outdir,string("noMove",j))))
+	end
+	writetable(joinpath(outdir,string("noMove",j),"values.csv"),v01j)
 
 	return d
 

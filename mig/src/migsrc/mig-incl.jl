@@ -320,3 +320,17 @@ function FlowsPlot(s::DataFrame)
    end
 
 	
+function growthExample(pcf::Float64, wnc::Float64)
+
+	P1 = 100.0
+	P2 = 90.0
+
+	chi = 0.8
+	d = Dict()
+	d["pcf"] = ["p1" => P1*pcf, "m1" => P1*pcf*chi, "eq1" => P1*pcf*(1-chi), "p2" => P2*pcf, "m2" => P1*pcf*chi, "eq2" => P2*pcf-P1*pcf*chi]
+	d["wnc"] = ["p1" => P1*wnc, "m1" => P1*wnc*chi, "eq1" => P1*wnc*(1-chi), "p2" => P2*wnc, "m2" => P1*wnc*chi, "eq2" => P2*wnc-P1*wnc*chi]
+	d["pcf"]["deq"] = (d["pcf"]["eq2"] - d["pcf"]["eq1"]) / d["pcf"]["eq1"]
+	d["wnc"]["deq"] = (d["wnc"]["eq2"] - d["wnc"]["eq1"]) / d["wnc"]["eq1"]
+
+	return d
+end
