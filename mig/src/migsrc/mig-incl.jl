@@ -220,6 +220,16 @@ function setPaths()
 	return (indir,outdir)
 end
 
+# set outpath rel to dropbox/mobility/output/model
+function setPaths(p::ASCIIString)
+	if Sys.OS_NAME == :Darwin
+		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+		outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model",p)
+	else
+		warn("no dropbox on this system")
+	end
+	return (indir,outdir)
+end
 
 function setupMC(autoload::Bool)
 	indir, outdir = setPaths()
@@ -331,6 +341,11 @@ function growthExample(pcf::Float64, wnc::Float64)
 	d["wnc"] = ["p1" => P1*wnc, "m1" => P1*wnc*chi, "eq1" => P1*wnc*(1-chi), "p2" => P2*wnc, "m2" => P1*wnc*chi, "eq2" => P2*wnc-P1*wnc*chi]
 	d["pcf"]["deq"] = (d["pcf"]["eq2"] - d["pcf"]["eq1"]) / d["pcf"]["eq1"]
 	d["wnc"]["deq"] = (d["wnc"]["eq2"] - d["wnc"]["eq1"]) / d["wnc"]["eq1"]
+
+	(i,o) = setPaths("properties")
+	f = open(joinpath(o,"growthEx.json"),"w")
+	JSON.print(f,d)
+	close(f)
 
 	return d
 end

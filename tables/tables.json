@@ -73,5 +73,11 @@
     "template" : "params.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/fit/params.tex",
     "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json"
+  },    
+  "growthEx":{
+    "template" : "growthEx.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/properties/growthEx.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/properties/growthEx.json"
   }
+
 }

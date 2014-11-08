@@ -5152,7 +5152,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf
 	height 49theight%
 
 \end_inset
@@ -5207,7 +5207,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_income.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_income.pdf
 	height 45theight%
 
 \end_inset
@@ -5254,7 +5254,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_pz.pdf
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_pz.pdf
 	height 45theight%
 
 \end_inset
