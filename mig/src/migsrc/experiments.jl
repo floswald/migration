@@ -809,7 +809,7 @@ function exp_value_mig_base(j::Int)
 
 	regname = m.regnames[j,:Division]
 
-	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m)
+	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
 
 	# model where moving is shut down in region j
 	opts = ["policy" => "highMC", "shockRegion" => j]
@@ -820,31 +820,31 @@ function exp_value_mig_base(j::Int)
 	pol = simulate(m2,p2);
 	pol = pol[!isna(pol[:cohort]),:];
 
-	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m)
+	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
 
 	# get values by age and for different regions
 	v0   = @> begin
 		base
-		@where((:j.!=j)&(:year.>cutyr))
+		@where((:j.!=j)&(:year.>cutyr)&(!:move))
 		@by(:realage,v=mean(:v))
 		@transform(region="outside of $regname",regime="baseline")
 	end
 	v1   = @> begin
 		pol
-		@where((:j.!=j)&(:year.>cutyr))
+		@where((:j.!=j)&(:year.>cutyr)&(!:move))
 		@by(:realage,v=mean(:v))
 		@transform(region="outside of $regname",regime="noMove")
 	end
 	v01 = vcat(v0,v1)
 	v0j   = @> begin
 		base
-		@where((:j.==j)&(:year.>cutyr))
+		@where((:j.==j)&(:year.>cutyr)&(!:move))
 		@by(:realage,v=mean(:v))
 		@transform(region="inside of $regname",regime="baseline")
 	end
 	v1j   = @> begin
 		pol
-		@where((:j.==j)&(:year.>cutyr))
+		@where((:j.==j)&(:year.>cutyr)&(!:move))
 		@by(:realage,v=mean(:v))
 		@transform(region="inside of $regname",regime="noMove")
 	end
@@ -860,6 +860,26 @@ function exp_value_mig_base(j::Int)
 
 	# people who moved away from j in the baseline
 	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	# own_mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:h.==1)),id=unique(:id))
+	# rent_mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:h.==0)),id=unique(:id))
+	
+	# own_bmv = base[findin(base[:id],own_mv_id[:id]),:]
+	# rent_bmv = base[findin(base[:id],rent_mv_id[:id]),:]
+	# own_bmv2 = @where(own_bmv,:year.>cutyr)
+	# own_bmv2 = @transform(own_bmv2,row_idx=1:size(own_bmv2,1))
+	# rent_bmv2 = @where(rent_bmv,:year.>cutyr)
+	# rent_bmv2 = @transform(rent_bmv2,row_idx=1:size(rent_bmv2,1))
+
+	# own_pmv = pol[findin(pol[:id],own_mv_id[:id]),:];
+	# own_pmv = @transform(own_pmv,buy = (:h.==0)&(:hh.==1))
+	# own_pmv2 = @where(own_pmv,:year.>cutyr)
+	# own_pmv2 = @transform(own_pmv2,row_idx=1:size(own_pmv2,1))
+
+	# rent_pmv = pol[findin(pol[:id],rent_mv_id[:id]),:];
+	# rent_pmv = @transform(rent_pmv,buy = (:h.==0)&(:hh.==1))
+	# rent_pmv2 = @where(rent_pmv,:year.>cutyr)
+	# rent_pmv2 = @transform(rent_pmv2,row_idx=1:size(rent_pmv2,1))
+
 	bmv = base[findin(base[:id],mv_id[:id]),:]
 	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
 
@@ -905,8 +925,12 @@ function exp_value_mig_base(j::Int)
 	pmv3 = pmv2[setdiff(1:size(pmv2,1),drops),:]
 	bmv3 = bmv2[setdiff(1:size(bmv2,1),drops),:]
 
-	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
-	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy))
+	# want to separate people by ownership status in period of moving
+
+
+	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
+	# bmv4 = @by(@where(bmv3,(:year.>cutyr)&(!:move)),:own,v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
+	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
 
 	# get counts of owners in j by year
 	counts0 = @> begin

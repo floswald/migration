@@ -319,7 +319,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										end
 
 
-										canbuy = a + newz > p.chi * price_k
+										if ih==0
+											canbuy = a + newz > p.chi * price_k
+										else
+											canbuy = a + newz + (1-p.phi)*price_j > p.chi * price_k
+										end
 
 										if noBuying
 											canbuy = false

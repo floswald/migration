@@ -421,6 +421,7 @@ function simulate(m::Model,p::Param)
 					end
 
 					# 2) redistribute according to policy
+					#  FUCKING TODO!!!!!!!!!!!
 					yy *= 1.01
 
 					
@@ -441,7 +442,11 @@ function simulate(m::Model,p::Param)
 
 
 				# flag for downpayment constraint
-				canbuy = a + yy > p.chi * price_k
+				if ih==0
+					canbuy = a + yy > p.chi * price_k
+				else
+					canbuy = a + yy + (1-p.phi)*price_j > p.chi * price_k
+				end
 
 				if noBuying
 					canbuy = false
