@@ -265,15 +265,19 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="shockReg8")
 	# s is a simulation output
 	d = Dict()
 
-	indir, outdir = mig.setPaths()
-	fi = readdir(outdir)
-	if !in(pth,fi)
-		mkpath(string(joinpath(outdir,pth)))
+
+	if pth != "null"
+		indir, outdir = mig.setPaths()
+		fi = readdir(outdir)
+		if !in(pth,fi)
+			mkpath(string(joinpath(outdir,pth)))
+		end
+		opth = string(joinpath(outdir,pth))
 	end
-	opth = string(joinpath(outdir,pth))
 
 	for (k,v) in dfs
 		v = v[!isna(v[:cohort]),:]
+		d[k] = Dict()
 
 		for j in 1:9 
 
@@ -304,9 +308,11 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="shockReg8")
 			ma = join(ma,m_out,on=:year)
 			ma = @transform(ma,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners)
 
-			d[k] = [j => ma]
+			d[k][j] = ma
 
-			writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
+			if pth != "null"
+				writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
+			end
 
 		end
 	end
@@ -318,7 +324,7 @@ end
 # get flows plot
 function FlowsPlot(s::DataFrame)
 
-       flows = map(x-> proportionmap(@where(base,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
+       flows = map(x-> proportionmap(@where(s,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
 
        fmat = zeros(9,length(flows))
        for i in 1:length(flows)
@@ -326,7 +332,7 @@ function FlowsPlot(s::DataFrame)
        fmat[k,i] = v
        end
        end
-       PyPlot.plot(m')
+       PyPlot.plot(fmat')
    end
 
 	

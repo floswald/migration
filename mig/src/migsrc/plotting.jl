@@ -258,7 +258,11 @@ end
 function simplot(sim::DataFrame,n::Int)
 
 	# choose n random individs
-	nr = rand(1:maximum(sim[:id]),n)
+	# get real random numbers
+	srand(int(time()))
+
+	nr = sample(unique(sim[:id]),n)
+
 
 	sim  = sim[findin(sim[:id],nr),:] 
 
