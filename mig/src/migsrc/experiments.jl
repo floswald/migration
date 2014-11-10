@@ -365,7 +365,7 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 
 	own_move = @> begin
 		sim_sample
-		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw),assets=mean(:assets.data,fullw),q10=quantile(:income,0.1),q50=quantile(:income,0.5))
+		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw),assets=mean(:a.data,fullw),q10=quantile(:income,0.1),q50=quantile(:income,0.5))
 	end
 	own_inc = @> begin
 		sim_sample
