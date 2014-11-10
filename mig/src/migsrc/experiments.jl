@@ -370,7 +370,7 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 	own_inc = @> begin
 		sim_sample
 		@transform(ybin = cut(:income,[0.0,20.0,40.0,60.0]))
-		@by(:ybin, own = mean(:own.data,WeightVec(:density.data)), value=mean(:v.data,WeightVec(:density.data)))
+		@by(:ybin, own = mean(:h.data,WeightVec(:density.data)), value=mean(:v.data,WeightVec(:density.data)))
 	end
 
 	own_move_age = @> begin
@@ -652,7 +652,9 @@ function exp_Mortgage(ctax=false)
 	for (k,v) in d["move"] 
 		d["p_move"][k] = 100 * (v - d["move"]["base"]) / d["move"]["base"]
 	end
-	d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
+	if ctax
+		d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
+	end
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"exp_Mortgage","morgage.json"),"w")
