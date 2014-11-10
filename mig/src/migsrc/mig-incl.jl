@@ -260,7 +260,7 @@ end
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="shockReg8")
+function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
 
 	# s is a simulation output
 	d = Dict()
@@ -293,20 +293,20 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="shockReg8")
 			m_in = @> begin
 				v
 				@where((:year.>1997) & (:j.!=j))
-				@by(:year, Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)))
+				@by(:year, Total_in=sum(:moveto.==j), Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)))
 			end
 
 			# movers from j over time
 			m_out = @> begin
 				v
 				@where((:year.>1997) & (:j.==j))
-				@by(:year, Owners_out=sum((:move).*(:h.==1)), Renters_out=sum((:move).*(:h.==0)))
+				@by(:year, Total_out=sum(:move), Owners_out=sum((:move).*(:h.==1)), Renters_out=sum((:move).*(:h.==0)))
 			end
 
 			# merge
 			ma = join(a,m_in,on=:year)
 			ma = join(ma,m_out,on=:year)
-			ma = @transform(ma,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners)
+			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners)
 
 			d[k][j] = ma
 
