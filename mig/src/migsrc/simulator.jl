@@ -421,9 +421,7 @@ function simulate(m::Model,p::Param)
 					end
 
 					# 2) redistribute according to policy
-					#  FUCKING TODO!!!!!!!!!!!
-					yy *= 1.01
-
+					yy += p.redistribute[age]
 					
 					# 2) a) all money to 20 year olds:
 					# if mortgageSub1 && age == 1
