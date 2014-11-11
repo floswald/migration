@@ -166,7 +166,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	pshock      = false
 
 	Poterba = m.gridsXD["Poterba"]
-	if p.policy == "mortgageSubsidy" 
+	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
 		mortgageSub  = true
 		@assert length(p.redistribute) == p.nt-1
 		if p.verbose > 0
