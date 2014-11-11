@@ -227,6 +227,7 @@ type Model
 			# p.kappa[j] = 0.02 	# override
 		end
 
+
 		ageprof = zeros(p.nt-1,p.nJ)
 		for it in 1:p.nt-1
 			for ij in 1:p.nJ
@@ -282,10 +283,10 @@ type Model
 		# if adjusting prices for GE effect after
 		# mortgage subsidy is removed:
 		if p.policy == "mortgageSubsidy_padjust"
-			ygrid = ygrid .* p.shockVal[1]
-			pgrid = pgrid .* p.shockVal[1]
-			pred_y = pred_y .* p.shockVal[1]
+			pgrid  = pgrid .* p.shockVal[1]
 			pred_p = pred_p .* p.shockVal[1]
+			# adjust price to rent ratio if doing GE adjustment
+			p.kappa = p.kappa ./ p.shockVal
 		end
 
 		# grid for individual income (based on ygrid(Y,P))

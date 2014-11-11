@@ -248,19 +248,11 @@ function simulate(m::Model,p::Param)
 	# ========
 
 	mortgageSub  = false
-	mortgageSub1 = false
-	mortgageSub2 = false
 	noBuying     = false
 	highMC       = false
 
-	if p.policy == "mortgageSubsidy_oldyoung" 
+	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
 		mortgageSub  = true
-		mortgageSub1 = true  
-		@assert length(p.mort_LumpSum) == 1
-	elseif p.policy == "mortgageSubsidy_in_age"
-		mortgageSub  = true
-		mortgageSub2 = true  
-		@assert length(p.mort_LumpSum) == p.nt-1
 	end
 
 	pshock = false
@@ -423,13 +415,6 @@ function simulate(m::Model,p::Param)
 					# 2) redistribute according to policy
 					yy += p.redistribute[age]
 					
-					# 2) a) all money to 20 year olds:
-					# if mortgageSub1 && age == 1
-					# 	yy += p.mort_LumpSum[1]
-					# # 2) b) give money collected from owners to everybody
-					# elseif mortgageSub2
-					# 	yy += p.mort_LumpSum[age]
-					# end
 				else
 					# mortgage subsidy policy is off: record amount paid to owners
 					if ih == 1

@@ -657,7 +657,7 @@ function exp_Mortgage(ctax=false)
 	end
 
 	indir, outdir = mig.setPaths()
-	f = open(joinpath(outdir,"exp_Mortgage","morgage.json"),"w")
+	f = open(joinpath(outdir,"exp_Mortgage","mortgage.json"),"w")
 	JSON.print(f,d)
 	close(f)
 
@@ -855,15 +855,21 @@ function exp_value_mig_base(j::Int)
 
     # total flows across regims
     flows = getFlowStats(["base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)],"null")
-    fj = [ k => flows[k][j] for k in keys(flows)]
+    f2 = [ k => flows[k][j] for k in keys(flows)]
 
     flows = Dict()
-    for (k,v) in fj
-    	flows[k] = ["inmig" => [ "tot" => 100*mean(v[:Total_in_all]),"own" => 100*mean(v[:Own_in_all]),"rent" => 100*mean(v[:Rent_in_all]),"own_in_own" => 100*mean(v[:Own_in_own]),"rent_in_rent" => 100*mean(v[:Rent_in_rent])] ,"outmig" => [ "tot" => 100*mean(v[:Total_out_all]),"own" => 100*mean(v[:Own_out_all]),"rent" => 100*mean(v[:Rent_out_all]),"own_in_own" => 100*mean(v[:Own_out_own]),"rent_in_rent" => 100*mean(v[:Rent_out_rent])]] 
-    end
-    flows["pct"] = ["inmig" => [ "tot" => (flows["pol"]["inmig"]["tot"]-flows["base"]["inmig"]["tot"])/flows["base"]["inmig"]["tot"],"own" => (flows["pol"]["inmig"]["own"]-flows["base"]["inmig"]["own"])/flows["base"]["inmig"]["own"],"rent" => (flows["pol"]["inmig"]["rent"]-flows["base"]["inmig"]["rent"])/flows["base"]["inmig"]["rent"] ] ] 
+    flows["inmig"] = ["base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all])]
+    flows["inmig"]["pct"] = (flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
 
+    flows["inmig_own"] = ["base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all])]
+    flows["inmig_own"]["pct"] = (flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
 
+    flows["inmig_rent"] = ["base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all])]
+    flows["inmig_rent"]["pct"] = (flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
+
+    flows["outmig"]      = ["base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all])]
+    flows["outmig_own"]  = ["base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all])]
+    flows["outmig_rent"] = ["base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all])]
 
 
 	# compare the ones who did move with their virtual counterparts
