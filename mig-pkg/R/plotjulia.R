@@ -19,8 +19,6 @@ plot_noMove <- function(reg){
 
 	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values.pdf"),height=3.0,width=7)
 	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues.pdf"),height=3.0,width=7)
-
-
 }
 
 

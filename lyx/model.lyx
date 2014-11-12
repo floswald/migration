@@ -172,16 +172,18 @@ Households are subject to many types of shocks, such as aggregate shocks,
  reforms that affect the costs of these self-insurance mechanisms, including
  changing the costs of owning a house and moving.
  The estimated model implies that, while yearly mobility flows across regions
- are small, mobility is a very valuable option to those who do move.
- In fact, were we to prevent the movers from moving away from a certain
- region, their lifetime utility falls by 66%.
- The model also finds that, were the interest-rate mortgage deduction eliminated
-, the migration rate would increase by 2.9%.
+ are small, mobility is a very valuable option.
+ In fact, were we to prevent the residents of a certain region from moving
+ away, their expected lifetime utility falls by 5.1% and they would demand
+ a 4.4% increase in period consumption for compensation.
+ The model also finds that, were the mortgage interest-rate deduction eliminated
+, the aggregate migration rate would increase only marginally by 0.1%.
  Using a general equilibrium correction, house prices are reduced by 5%,
- which results in an increase in ownership.
- Combined with more disposable income after redistribution, this results
- in greater incentives to exploit regional differences.
- 
+ which results in a 1% increase in ownership.
+ Redistribution of tax receipts towards poorer households and lower prices
+ everywhere increase the incentives to exploit regional differences, which
+ changes migration behaviour.
+ Individuals value the elimination of the deduction by 2.4% of period consumption.
 \end_layout
 
 \begin_layout Abstract
@@ -388,16 +390,17 @@ key "kennan2003effect"
 
 \begin_layout Standard
 Migration is a low probability event in both data and model.
- Nevertheless, the welfare implications are large both for people who actually
- move as well as for people who expect they might move at some point.
+ Nevertheless, the welfare implications are large.
  I conduct an experiment whereby moving away from a certain region is prohibited.
- By looking at the subset of people who would have moved absent the restriction,
- and by comparing their respective outcomes, I'm able to quantify the value
- of the migration option.
- I find that shutting down mobility for the group of would-be movers implies
- a reduction of around 66% of lifetime utility, while the corresponding
- reduction for all residents of the concerned region is 47%.
- 
+ I compute the expected lifetime utility of agents in the region under both
+ scenarios, and I find that removing the option to move away from the region
+ reduces expected utility by 5.1%.
+ This implies that residents of this region would demand a 4.4% increase
+ in per period consumption over their lifecycle in order to be indifferent
+ to the baseline environment.
+ Conditioning on age when computing expected utility reveals that the cost
+ of not being able to move is largest for younger individuals, and it gradually
+ fades out as agents grow older.
 \end_layout
 
 \begin_layout Standard
@@ -414,8 +417,8 @@ Government policies might help to increase labor market efficiency, housing
 \end_layout
 
 \begin_layout Standard
-I find that abolishing the mortgage interest deduction would have a small
- positive impact on the aggregate migration rate.
+I find that abolishing the mortgage interest deduction would have a only
+ a negligible impact on the aggregate migration rate.
  At first sight one might be tempted to think that removing the deduction
  would result in more renters, which would mechanically translate into an
  increase in migration, since renters move more.
@@ -423,7 +426,7 @@ I find that abolishing the mortgage interest deduction would have a small
  First, because the mortgage tax deduction is a large scale policy, there
  is likely to be a general equilibrium effect.
  While my model is a partial equilibrium model, I can approximate the general
- equilibrium effect by assuing that the policy changes both taxes as well
+ equilibrium effect by assuming that the policy changes both taxes as well
  as prices.
  I use recent results from a stationary GE model by 
 \begin_inset CommandInset citation
@@ -432,41 +435,21 @@ key "sommer2013implications"
 
 \end_inset
 
- to adjust house prices after the policy is changed.
- Applying the price correction partly offsets the initial reduction in ownership
-, since lower prices allow more people to buy.
+ who find that house prices fall, while rents keep constant, after the policy
+ is changed.
+ Applying this price and rent correction to my model results in an increase
+ in the ownership rate of roughly 1%, because more households are able to
+ buy at lower prices.
+ The net effect on migration is very small (0.1% of the baseline rate).
+ The reduction in mobility is smaller than what we would expect from a pure
+ change in composition towards more owners, because migration behaviour
+ changes as well.
  Lower prices and a higher level of disposable income for the poor after
- redistribution of tax proceeds leads to easier access to ownership, in
- more locations, and for a larger proportion of the population.
- The ownership rate increases by 1.3%, the migration rate increases by 3%,
- and the policy change has a value equivalent to 5% of period consumption.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-The second experiment investigates the effects of a government policy which
- directly affects the moving decision by altering the moving cost in the
- entire economy.
- The results of this highlight that moving costs are of first order importance
- for migration decisions, but that they also affect housing choices.
- Reducing moving costs to half their baseline level results in an increase
- in the annual moving rate of 13.7 and 2.7 percentage points for renters and
- owners, respectively.
- The ownership rate decreases by 6.1 percentage points.
- Agents in the model would forgo 12% of annual consumption under this new
- regime and be indifferent to the baseline.
- When increasing the moving cost to double its baseline level, the migration
- rates go to virtually zero, and ownership increases by 1.8 percentage points.
- Agents would demand an annual increase in consumption of 1.2% under this
- regime before being indifferent to the baseline.
-\end_layout
-
-\end_inset
-
-
+ redistribution of tax proceeds in all regions change the incentives to
+ exploit regional differences with respect to the baseline.
+ In terms of welfare, households prefer removing the deduction and would
+ agree to giving up 2.4% of period consumption before being indifferent to
+ the status quo.
 \end_layout
 
 \begin_layout Paragraph
@@ -497,10 +480,6 @@ key "gemici2007family"
  focuses on migration decisions of couples with two working spouses and
  finds that, for this subgroup, family ties can significantly hinder migration
  decisions and wage growth.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -508,14 +487,60 @@ key "winkler2010effect"
 
 \end_inset
 
- investigates the effect of homeownership on migration as a response to
- idiosyncratic unemployment shocks.
- In my paper shocks to income and house prices are at the regional level.
-\end_layout
+ is a recent paper that extends 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gemici2007family"
 
 \end_inset
 
+ to include housing choices and focuses on the response of owners to individual
+ labor market shocks.
+ 
+\end_layout
 
+\begin_layout Standard
+The main differences to this paper are the way I model regional price and
+ income dynamics and the assumption about how job search takes place.
+ Regarding regional dynamics, I am able to allow for shocks which are correlated
+ across regions and with an aggregate component that is persistent, while
+ they are assumed to be independent in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "winkler2010effect"
+
+\end_inset
+
+.
+ I follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+
+\end_inset
+
+ in assuming that individuals must visit a location in order to discover
+ the exact value of their new wage, over and above a predictable part, while
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "winkler2010effect"
+
+\end_inset
+
+ assumes that job offers arrive in the current location from a random alternativ
+e location.
+ My assumption implies firstly that individuals consider all potential locations
+ in each period, and decide to move based on their expectations about how
+ they will fare in each.
+ Secondly it allows for reasons other than job offers to trigger a move,
+ which is a feature of the data, as I will show below.
+ Finally, it is interesting to note that when simulating the effects of
+ abolishing the mortgage interest deduction, I correct for a GE effect on
+ house prices, which is likely to occur as a result of the policy change,
+ and I enforce revenue neutrality by redistributing saved tax receipts,
+ which is not done in his paper.
+ I find that that welfare implications strongly depend on those features.
 \end_layout
 
 \begin_layout Standard
@@ -568,7 +593,21 @@ key "rosen1979wage"
 
 \end_inset
 
-.
+, and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Diamond:2012fk"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "piypromdee"
+
+\end_inset
+
+ for recent applications.
 \end_layout
 
 \end_inset
@@ -1787,46 +1826,7 @@ name "sub:Individual-Labor-Income"
 \end_layout
 
 \begin_layout Standard
-I model labor income as the product of a region specific price of human
- capital 
-\begin_inset Formula $w_{dt}$
-\end_inset
-
- with individual specific human capital 
-\begin_inset Formula $q(i,t)$
-\end_inset
-
-, i.e.
- 
-\begin_inset Formula 
-\begin{eqnarray*}
-y_{idt} & = & w_{dt}q(i,t)\\
-w_{dt} & = & \left(\overline{y}_{dt}\right)^{\eta_{d}}\\
-q(i,t) & = & \exp(f(t)+z_{it})
-\end{eqnarray*}
-
-\end_inset
-
-where 
-\begin_inset Formula $f(t)$
-\end_inset
-
- is a deterministic age effect and 
-\begin_inset Formula $z_{it}$
-\end_inset
-
- stands for an individual specific persistent idiosyncratic shock.
- The coefficient 
-\begin_inset Formula $\eta_{d}$
-\end_inset
-
- allows for differential transmission of regional shocks into individual
- income by region 
-\begin_inset Formula $d$
-\end_inset
-
-.
- Thus, the logarithm of labor income of individual 
+The logarithm of labor income of individual 
 \begin_inset Formula $i$
 \end_inset
 
@@ -1834,7 +1834,7 @@ where
 \begin_inset Formula $t$
 \end_inset
 
- residing in region 
+, residing in region 
 \begin_inset Formula $d$
 \end_inset
 
@@ -1856,16 +1856,35 @@ e & \sim & N(0,\sigma^{2})\label{eq:income-process}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-The price of human capital 
-\begin_inset Formula $w_{dt}$
+Here 
+\begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
- differs by region to reflect different industry compositions by region,
- which are taken as given.
+ stands for the region specific price of human capital, 
+\begin_inset Formula $f(t)$
+\end_inset
+
+ is a deterministic age effect and 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ is an individual specific persistent idiosyncratic shock.
+ The coefficient 
+\begin_inset Formula $\eta_{d}$
+\end_inset
+
+ allows for differential transmission of regional shocks into individual
+ income by region 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ The log price of human capital 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ is allowed to differ by region to reflect different industry compositions
+ by region, which are taken as given.
 \begin_inset Foot
 status collapsed
 
@@ -2923,8 +2942,12 @@ Q(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
 \end_layout
 
 \begin_layout Standard
-The final period models a terminal value that depends on net wealth in a
- straightforward way, as shown in equation 
+The final period models a terminal value that depends on net wealth and
+ a term that captures future utility from the house after period 
+\begin_inset Formula $T$
+\end_inset
+
+, as shown in equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:final-period-value"
@@ -2934,7 +2957,7 @@ reference "eq:final-period-value"
 .
 \begin_inset Formula 
 \begin{equation}
-V_{T}(a,h_{T-1},d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\ln p_{dT}\label{eq:final-period-value}
+V_{T}(a,h_{T-1},d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\label{eq:final-period-value}
 \end{equation}
 
 \end_inset
@@ -5753,9 +5776,8 @@ reference "fig:yshock-outflow"
  while the dashed lines correspond to the shock scenario.
  In the right panel, showing renter emigration, we see clearly that the
  income reduction leads to a sustained increase in emigrants.
- The left panel shows owner outflows, and we also see a slight increase,
- although the effect is smaller overall and wears off after aggregate house
- prices start to fall in 2008.
+ The left panel shows owner outflows, and we also see a slight increase
+ in emigration owners.
  In terms of the above discussion about moving costs and preference shocks,
  both results come from the fact that smaller payoff shocks are sufficient
  to trigger a move in the shock scenario than was the case in the baseline.
@@ -5782,8 +5804,6 @@ reference "fig:yshock-inflows"
  more attractive to renters.
  The increase in renter immigration towards 2005 is large, however, it needs
  to be looked at together with the corresponding ouflows at the time.
- The increase in owners moving to higher price regions partly offsets the
- increase in population.
  Over the period 1998--2012, WNC experiences average annual population growth
  of 1.08% in the baseline model.
 \end_layout
@@ -5816,12 +5836,13 @@ reference "fig:pshock-out"
 
 \end_inset
 
-, the left panel shows that there is no big change in owner behaviour.
+, the left panel shows that fewer owners are leaving the region than before.
  Owners experience a loss in net wealth, but this results in only small
  changes to migration behaviour.
- From the perspective of owners, the loss are sunk costs, and they only
- marginally affect decisions to migrate.
- For renters, on the other hand, we see a clear reduction in ouflows.
+ From the perspective of owners, the losses are sunk costs, and to the extent
+ that lower current wealth makes it harder to afford a downpayment in other
+ regions, the benefits of moving are reduced.
+ For renters, we also see a clear reduction in ouflows.
  Given that rent in the region has fallen to lower levels than before, fewer
  renters decide to leave.
  It is interesting at this point to remember the result in 
@@ -5831,7 +5852,7 @@ key "notowidigdo2011incidence"
 
 \end_inset
 
-, low skilled individuals are less likely to move away from a depressed
+, where low skilled individuals are less likely to move away from a depressed
  region because they want to take advantage of cheap housing.
  The same mechanism operates here.
 \end_layout
@@ -5839,9 +5860,10 @@ key "notowidigdo2011incidence"
 \begin_layout Standard
 Turning finally to the effects of a reduction in house prices on inflows
  to WNC, we see in both panels that lower prices attract slightly more owners,
- and significantly more renters, particularly as aggregate price rise and
+ and significantly more renters, particularly as aggregate prices rise and
  therefore the cost of living in other regions increases disproportionately
  for renters.
+ Both owners and renters move to the region to enjoy cheaper housing.
 \end_layout
 
 \begin_layout Subsection
@@ -5850,14 +5872,13 @@ The value of Migration
 
 \begin_layout Standard
 In this section I investigate the value of the migration option.
- The experiment assumes that the West North Central region changes legislation
- that allows immigrants to arrive, but removes the possibility of residents
- to leave.
- First we will discuss changes in migration flows, and subsequently we will
- analyze the experience of individuals who would have moved in the baseline
- environment, but are now prevented from doing so.
- Comparing this group of people across both scenarios will shed some light
- on the value of migration for movers.
+ The experiment assumes that the situation of West North Central changes
+ in the sense that immigration is allowed, but emigrating is prohibited.
+ First we will discuss changes in migration flows, and the ex-ante welfare
+ effects for residents of WNC under both scenarios.
+ Finally, we will analyze the experience of individuals who would have moved
+ in the baseline environment, but are now prevented from doing so.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5871,20 +5892,20 @@ reference "tab:value-of-migration-flows"
 .
  The top panel shows changes in immigration flows to the region for both
  scenarios, and the respective percentage change.
- The tables shows the flows as percentages of the concerned group, i.e.
- inflow of owners as a percentage of residing owners, etc.
  Comparing the first two columns as percentage changes in column three,
  we see that inflows into the region fall dramatically in a world where
  moving away from WNC is not an option.
+ This shows that agents outside of the region perceive WNC as a much inferior
+ option to the baseline.
  In the lower panel of the table I show baseline emmigration flows for compariso
 n.
  The bottom row of the table gives an estimate of average lifetime utility
  across both regimes, and we see that removing the option to leave the region
  carries a very large penalty.
- The magnitude of this large value has two components: payoff shocks, and
- financial gains realized by moving away from WNC.
- Before analysing the composition of changes in lifetime histories across
- scenarios, it is useful to consider the welfare impacts by age.
+ Across both regimes, average expected lifetime utility falls by 5.1%, which
+ implies that individuals would demand a 4.4% increase in per period consumption
+ in a world without the moving option before they would be indifferent to
+ the baseline.
  
 \end_layout
 
@@ -5898,68 +5919,24 @@ reference "fig:Average-utility-levels"
 
  shows the average levels of utility conditional on age inside of WNC and
  in all other regions.
- We can see in the right panel, that the exclusion of WNC from the choice
- set of movers affects utility only marginally, and in a slightly positive
- way.
- For individuals inside the region, however, the changes are large.
- In the left panel of the figure, we see that it's in particular middle
- aged individuals who suffer from the removal of the option to move.
- This part of the lifecycle coincides with the ages where increases in income
- make homeownership feasible.
- For individuals in WNC, the option to move to higher price regions is valuable,
- since they themselves live in a low price environment.
- 
-\end_layout
-
-\begin_layout Standard
-In table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration"
-
-\end_inset
-
- I look in greater detail at the experience of individuals who, given their
- particular realizations of shocks over the lifecycle, move away from WNC
- in the baseline environment.
- Proceeding from top to bottom of the table, we see large losses in lifetime
- utility, assets and wealth.
- The key to understanding this is the bottom row, which shows the average
- house price faced by the group of movers.
- Given the different realizations of prices across regions as illustrated
- in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Mapping-P-p"
-
-\end_inset
-
-, moves away from WNC an to other regions proved highly profitable.
- Additional to that, the average value for regional income 
-\begin_inset Formula $\overline{y}$
-\end_inset
-
- is 6% lower for the group if they are forced to stay, showing that in the
- baseline they also benefitted from an increase in mean income.
+ We can see in the right panel, that reducing the value of WNC for potential
+ immigrants affects utility only marginally.
+ This comes from the fact that movers can easily avoid the region by moving
+ somewhere else.
+ For individuals inside the region, however, the changes are substantial
+ and they vary by age.
+ We can see that it is particularly younger individuals who suffer from
+ the removed option to move.
+ This makes intuitive sense, since the forgone expected gains from moving
+ are larger if we consider a longer time horizon.
 \end_layout
 
 \begin_layout Standard
 To summarize this subsection, restricting the ability to move implies large
  losses in welfare.
  This effect stems from the inability of residents to respond to changes
- in their economic environment over time.
- As seen in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration"
-
-\end_inset
-
-, for individuals with payoff shocks 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- that originally led to a move, the res
+ in their economic environment over time, as well as their inability to
+ accomodate location preference shocks.
 \end_layout
 
 \begin_layout Standard
@@ -5993,13 +5970,11 @@ Dropbox/model/experiments/highMC/mig_value.tex}
 
 \begin_layout Plain Layout
 Removing the migration option from residents of West North Central.
- The top panel in the table shows migration flows from outside regions to
- West North Central as a percentage of the resident population of the correspond
-ing group, i.e.
- total inflow as percentage of total residents, owner inflow as percentage
- of resident owners, etc.
- The same holds for the second panel, measuring outflows.
- The final row shows the average difference in expected lifetime utility
+ The top panel shows immigration flows to West North Central as a percentage
+ of the resident population.
+ The same holds for the second panel shows outflows in the baseline.
+ The final two rows show the average expected lifetime utility across scenarios,
+ and the required consumption compensation in order to make agents indifferent.
   
 \begin_inset CommandInset label
 LatexCommand label
@@ -6021,6 +5996,10 @@ name "tab:value-of-migration-flows"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6059,294 +6038,6 @@ This table compares individuals who move away from West North Central in
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:value-of-migration"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Subsection
-Reducing the price variance
-\end_layout
-
-\begin_layout Plain Layout
-In this subsection I investigate the effect of regional variation in house
- prices on migration and ownership decisions.
- We will compare the baseline model to a scenario where the variance in
- regional prices is greatly reduced, and therefore house prices are close
- to the aggregate factor 
-\begin_inset Formula $P_{t}$
-\end_inset
-
-.
- Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Compressing-the-regional"
-
-\end_inset
-
- visualizes the price transformation.
-\end_layout
-
-\begin_layout Plain Layout
-I'll first refer to the overall effects in aggregate ownership and mobility
- rates with the help of table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:compress-summary"
-
-\end_inset
-
- and will then discuss the underlying mechanisms in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:compress-mechanisms"
-
-\end_inset
-
-.
- In the first row of table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:compress-summary"
-
-\end_inset
-
- we note that the compression in prices leads to fewer high price regions
- around 2007, thereby allowing more households to buy.
- This is reflected in an increase of the ownership rate.
- Secondly, we see that the unconditional migration rate increases slightly
- by 0.1 percentage point.
- This increase is driven exclusively by greater mobility of renters, as
- is evident in the third row of the table.
- The fourth row shows that owners move less when prices are compressed.
- 
-\end_layout
-
-\begin_layout Plain Layout
-These effects are driven by a change in composition (fewer owners), and
- a change in migration behaviour due to the now different values of housing
- in each region.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:compress-mechanisms"
-
-\end_inset
-
- lists the precentage change in migratory moves on behalf of renters and
- owners 
-\emph on
-to
-\emph default
- any given region, where the change is defined as 
-\begin_inset Formula $\%\Delta_{d}=100\times\frac{m'_{d}-m_{d}}{m_{d}}$
-\end_inset
-
-, with 
-\begin_inset Formula $m_{d},m'_{d}$
-\end_inset
-
- denoting the migration rate into 
-\begin_inset Formula $d$
-\end_inset
-
- before and after the price compression.
- The columns labelled 
-\begin_inset Formula $y,\frac{p}{y}$
-\end_inset
-
- and 
-\begin_inset Formula $\frac{\hat{p}}{y}$
-\end_inset
-
- show the average regional income level (unchanged), and the price to income
- ratio before and after the price compression took place.
- One can relate the changes in immigration to a region to changes in those
- variables.
- For example, the Pacific region, which used to be very attractive for owners
- because of strong price growth looses it's appeal, and proportion of owners
- moving into Pacific decreases by 52%.
- At the same time, Pacific is relatively desireable for renters, with average
- income 
-\begin_inset Formula $y=44$
-\end_inset
-
- and now lower rents, therefore renter immigration increases by almost 50%.
- The effects are not linear in any sense, however, as the case of New England
- illustrates: this region was subject to the same reduction in house price
- as Pacific, the question therefore arises why there is an increase in owners
- moving there.
- The answer lies in the average income level, which is unchanged and remains
- the highest overall.
- This, combined with the fact that even after the compression, New England
- is the second highest house price region in the economy means that owners
- shift from moving to Pacific and into New England.
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/smallShocks/prices.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Compressing the regional price variation.
- This transformation shrinks the deviation of regional price 
-\begin_inset Formula $p_{dt}$
-\end_inset
-
- from the aggregate factor 
-\begin_inset Formula $P_{t}$
-\end_inset
-
- by 90%.
- In other words, the right panel shows 
-\begin_inset Formula $\hat{p}_{dt}=P_{t}+0.1\times\left(p_{dt}-P_{t}\right)$
-\end_inset
-
-.
- The experiment considers only years 
-\begin_inset Formula $t\geq1997$
-\end_inset
-
-, in line with the estimation sample used to fit the model.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Compressing-the-regional"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/smallShocks/smallShocks_sum.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Average ownership and mobility rates in baseline and compressed price variance
- scenarios.
- The first row shows the ownership rate, the second to last rows show mobility
- rate, mobility rate conditional on renting, and mobility rate conditional
- on owning.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:compress-summary"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/smallShocks/smallShocks_moveto.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Effects of smaller price shocks.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:compress-mechanisms"
 
 \end_inset
 
@@ -6612,9 +6303,11 @@ To provide some guidance, it is useful to start with a simple calculation
  to gauge the likely effect of the policy change on migration rates under
  the assumption that the conditional choice probabilities (i.e.
  whether to move or not) in the model do not change.
+ This is equivalent to saying that there is a pure composition effect, but
+ no effect on behaviour.
  To simplify the example, let's assume that the baseline ownership rate
  is 
-\begin_inset Formula $\pi_{o}=0.6$
+\begin_inset Formula $\pi_{o}=0.63$
 \end_inset
 
 , and that the annual migration rates for owners and renters are given by
@@ -6628,7 +6321,7 @@ To provide some guidance, it is useful to start with a simple calculation
 
  respectively.
  This would give rise to a baseline unconditional migration rate of 
-\begin_inset Formula $\pi_{o}m_{o}+(1-\pi_{o})m_{r}=1.22\%$
+\begin_inset Formula $\pi_{o}m_{o}+(1-\pi_{o})m_{r}=1.81\%$
 \end_inset
 
 .
@@ -6640,17 +6333,18 @@ To provide some guidance, it is useful to start with a simple calculation
 \begin_inset Formula $m_{r}$
 \end_inset
 
- do not change due to the policy change, and assuming, for example, that
- removing the subsidy reduces the ownership rate by 3% such that 
-\begin_inset Formula $\pi_{o}'=0.57$
+ do not change due to the policy change, and assume, for example, that removing
+ the subsidy increases the ownership rate by 1% such that 
+\begin_inset Formula $\pi_{o}'=0.64$
 \end_inset
 
-, we would expect to see a new migration rate of 
-\begin_inset Formula $\pi_{o}'m_{o}+(1-\pi_{o}')m_{r}=1.259\%$
+.
+ In that case we would expect to see a new migration rate of 
+\begin_inset Formula $\pi_{o}'m_{o}+(1-\pi_{o}')m_{r}=1.68\%$
 \end_inset
 
-, implying an increase in the migration rate of 0.04 percentage points (or
- 3.1%).
+, implying a decrease in the migration rate of 0.013 percentage points (or
+ a 35% reduction of the rate).
 \end_layout
 
 \begin_layout Standard
@@ -6665,13 +6359,15 @@ The choice probabilities do change after the policy is implemented.
  Given a vector of house prices and incomes in the baseline environment,
  we can determine the relative differences in utilities and the corresponding
  probabilities of moving.
- Removing the mortgage deduction affects the price and income vectors.
+ Removing the mortgage deduction affects the price vector.
  Furthermore, by redistributing tax receipts we increase disposable income
  of a set of the population that was not able to buy before -- not in their
  current region, and possibly not in another region.
- Higher income increases the odds that this group is able to buy, and if
- they are able to buy in another, more desireable region, the odds of them
- moving increase as well.
+ The overall effect on the migration rate will therefore be composed of
+ a composition effect (shifting individuals from renter to owner status
+ or vice versa), and an effect that arises from changes in behaviour, influenced
+ by different price levels, different price to rent ratios, and redistribution
+ of tax receipts from previous owners to the entire population.
 \end_layout
 
 \begin_layout Standard
@@ -6713,14 +6409,14 @@ show the results of the experiment with and without the GE correction.
 
 \begin_layout Standard
 In the column without the GE correction, we see that ownership decreases
- by roughly 5%.
+ by roughly 0.8%.
  This is a result of some marginal buyers being unable to satisfy the downpaymen
 t without the deduction.
  The migration rate increase only marginally despite this, because the change
- in composition towards more renters is offset by reduced incentives to
- explore better housing markets.
- This is also a result of the previous point about fewer people being able
- to buy.
+ in composition towards more renters is offset to some degree by harder
+ access to ownership in all regions without the benefits of the deduction.
+ This reduces the incentives to move for some households who would have
+ bought in different regions before.
  In terms of welfare effects, agents are close to indifferent between this
  policy and the baseline.
 \begin_inset Foot
@@ -6748,28 +6444,39 @@ reference "sec:Welfare-Measure"
 \end_layout
 
 \begin_layout Standard
-Finally, if we apply the GE correction and lower house prices by 5% in all
- regions, we find that ownership increases.
+The final column shows the results with the GE correction, which lowers
+ house prices by 5% in all regions, while keeping rents at a constant level.
+ Keeping rents constant is achieved by changing the price to rent ratios
+ 
+\begin_inset Formula $\kappa_{d}$
+\end_inset
+
+ in proportion to the reduction in prices.
+ We find that ownership increases by about 1.3% as a result of lower house
+ prices.
  The reverse mechanism to the previous paragraph is at work, implying that
- more people can buy.
- This, in addition to greater disposable income through redistribution,
- means that the set of affordable housing markets is greater than it was
- before, thereby increasing the aggregate mobility rate by 2.9%.
- The welfare implications of this policy change are large: agents value
- greater access to ownership combined with greater mobility by close to
- 5% of per period consumption.
+ more people can buy, in this case despite the removal of the subsidy to
+ owners.
+ The change in composition towards more owners combined with access to housing
+ in more regions produces a net effect on migration that is slightly positive
+ at 0.115% of the baseline rate.
+ The welfare implications for this experiment are larger than in the previous
+ case and amount to 2.4% of per period consumption over the lifecycle.
+ 
 \end_layout
 
 \begin_layout Standard
 In concluding this section, it is instructive to note the importance of
  the general equilibrium effect in this case.
  Under the assumption of constant prices, the effect of removing the deduction
- is negligle.
- Taking the price change into account, however, shows that the aggregate
- migration rate could be somewhat affected by such a policy change.
- Migration would change because of lower house prices in all regions, which
- combined with some redistribution from previously rich to poor households,
- enlarges the set of potential destinations for movers.
+ is that ownership is reduced and that migration slightly increases.
+ Removing the deduction means fewer low wealth housholds can buy housing,
+ which reduces welfare, and this offsets any gains made form slightly more
+ migration.
+ Taking the price change and the implications for the price to rent ratio
+ into account, however, shows that ownership would increase.
+ This would affect the migration rate only marginally, but have a significant
+ impact on welfare.
 \end_layout
 
 \begin_layout Section
@@ -6782,13 +6489,13 @@ The main result of this paper is to show that despite average migration
  a location in a world with regional shocks to house prices and labor income
  is large.
  Removing the option to leave a certain region in the model implies an associate
-d reduction in average lifetime utility of 66% for the group of individuals
- who would otherwise have moved.
+d reduction in expected lifetime utility of 5.1%, or 4.4% of per period consumptio
+n.
  To arrive at this result, I construct a lifecycle model which includes
  homeownership as a choice variable next to savings and location choices,
  which I then fit to SIPP data and use to make counterfactual experiments.
  Considering homeownership is motivated by the fact that well over 60% of
- the US population are owners and the observation that owners exhibit vastly
+ the US population are owners, and the observation that owners exhibit vastly
  different migratory behaviour than renters.
  The model places particular emphasis on a close representation of the observed
  house price and income series, both of which exhibit strong correlation
@@ -6800,10 +6507,8 @@ In a policy experiment where I remove the mortgage interest deduction for
  owners, I find that accounting for a likely general equilibrium effect
  is crucial for the resulting effects.
  Assuming that house prices would not change as a result of removing the
- deduction implies that migration rates would not increase: This is due
- to the fact that the change in composition towards more renters is offset
- by a contemporaneous decrease in the odds of becoming an owner in another
- location, which reduces the incentives to move.
+ deduction implies that migration rates would increase slightly, mainly
+ due to a shift in composition towards more renters.
  Correcting prices with an external estimate of the likely GE effect (a
  5% reduction as reported in 
 \begin_inset CommandInset citation
@@ -6812,15 +6517,19 @@ key "sommer2013implications"
 
 \end_inset
 
-) results in the opposite conclusion: lower prices after the removal of
- the deduction allow more people to buy, and in more locations, which increases
- the incentives to move to different markets, resulting in increase in the
- migration rate of roughly 3% (from the small baseline rate of 1.31%, this
- corresponds to a 0.03 percentage point increase).
+) results in a different conclusion: lower prices after the removal of the
+ deduction allow more people to buy, resulting in an increase of ownership.
+ The net effect on migration is only marginally positive, however, since
+ part of the shift in composition towards more owners is offset by changes
+ in migration behaviour brought about by lower prices in all regions and
+ redistribution of income to the poor.
+ The welfare implications depend greatly on whether or not prices are adjusted,
+ with net welfare gains close to zero in the former, and of the order of
+ 2.4% of period consumption in the latter case.
 \end_layout
 
 \begin_layout Standard
-In its current state, the model is silent in what regards location amenities.
+In its current state, the model is silent with regards to location amenities.
  Dissentangling the effects of price changes on the consumer's budget constraint
  from its effects on local amenities, and therefore utility, is clearly
  important to understand migration decisions better.
@@ -7207,7 +6916,7 @@ name "tab:Abolishing-the-mortgage"
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Float table
@@ -7268,8 +6977,8 @@ Dropbox/model/experiments/exp_yp/WNCpshock.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Shocking the house price series for Pacific from 2007 onwards, The shock
- multiplies the data series with the factor 
+Shocking the house price series for West North Central from 2000 onwards.
+ The shock multiplies the data series with the factor 
 \begin_inset Formula $\iota=0.7$
 \end_inset
 
