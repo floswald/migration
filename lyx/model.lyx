@@ -151,16 +151,74 @@ today
 \family typewriter
 \size large
 JOB MARKET PAPER
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+To obtain the most recent version of the paper, please go to
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://floswald.github.io/
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
-\paragraph_spacing onehalf
-\noindent
+This paper estimates a lifecycle model of consumption, housing choice and
+ migration in the presence of aggregate and regional shocks, using the Survey
+ of Income and Program Participation (SIPP).
+ Using the model I estimate the value of the migration option and the welfare
+ impact of policies that may restrict mobility.
+ The option to move is equivalent to 4.4% of lifetime consumption.
+ I also find that, were the mortgage interest-rate deduction to be eliminated,
+ the aggregate migration rate would increase only marginally by 0.1%.
+ Following a general equilibrium correction, house prices are reduced by
+ 5%, which results in a 1% increase in home ownership.
+ In a new steady state the elimination of the deduction is equivalent to
+ an increase of 2.4% of lifecycle consumption.
+\end_layout
+
+\begin_layout Abstract
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vfill
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Households are subject to many types of shocks, such as aggregate shocks,
  regional shocks and idiosyncratic shocks.
  As the recent crisis painfully reminds us, regional shocks to wages and
  house prices can be deep and prolonged.
- This paper develops and estimates a structural model with aggregate and
+ This paper develops and estimates a structural model with aggre- gate and
  regional shocks to wages and house prices in a life-cycle setting, in which
  households can insure against these shocks by migrating to another region,
  saving, and buying or renting a house.
@@ -184,17 +242,6 @@ Households are subject to many types of shocks, such as aggregate shocks,
  everywhere increase the incentives to exploit regional differences, which
  changes migration behaviour.
  Individuals value the elimination of the deduction by 2.4% of period consumption.
-\end_layout
-
-\begin_layout Abstract
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vfill
 \end_layout
 
 \end_inset
@@ -1157,6 +1204,10 @@ The model presented below contains 25.4 million different points in the state
 
 \end_layout
 
+\begin_layout Paragraph
+Descriptive Statistics on Cross Division Migration.
+\end_layout
+
 \begin_layout Standard
 I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
  with 102,529 individuals that I can follow over time and space.
@@ -1235,11 +1286,8 @@ reference "fig:SIPP-sample-proportion-1"
  more.
  Both of those are highly salient features of the data, and they are the
  main dimension along which my model's performance is going to be evaluated.
-\end_layout
-
-\begin_layout Standard
-A summary regarding homeownership rates and median price to income ratios
- by Census division is presented as an average over the years 1997--2011
+ Finally, a summary regarding homeownership rates and median price to income
+ ratios by Census division is presented as an average over the years 1997--2011
  in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1250,12 +1298,23 @@ reference "tab:SIPP-divisions"
 .
 \end_layout
 
+\begin_layout Paragraph
+Determinants of Migration.
+\end_layout
+
 \begin_layout Standard
-Survey evidence from the CPS suggests that among the main motivations for
- a move across census division borders are work reasons (50% of respondents),
- reasons relating to housing (25%), family--related reasons (22%) and an
- unclassified rest (3.7%).
- See table 
+The March Supplement to the Current Population Survey (CPS) contains several
+ questions relevant for the study of migration.
+ Here I analyse answers to the 2013 edition of the CPS to the question 
+\begin_inset Quotes eld
+\end_inset
+
+What was the main reason for moving
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The results are displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:CPS-reason-move"
@@ -1263,6 +1322,25 @@ reference "tab:CPS-reason-move"
 \end_inset
 
 .
+ It is striking to note that even though we are conditioning on moves across
+ Division boundaries (and thus think of long-range moves), the percentage
+ of people citing 
+\begin_inset Quotes eld
+\end_inset
+
+housing
+\begin_inset Quotes erd
+\end_inset
+
+ as their main motivation is roughly 24% of the total population of movers.
+ The table also disagreggates the response to the question by the distance
+ between origin and destination state (not Division), and we can see that
+ the proportion of respondents does vary with distance moved, but not to
+ an extent that would suggest that housing becomes irrelevant as a motivation
+ with increasing distance.
+ Summing up in the bottom row of the table, we see that 55% say work was
+ the main reason, 24% refer to housing and the remaining 21% is split between
+ family and other reasons.
 \end_layout
 
 \begin_layout Standard
@@ -1550,7 +1628,6 @@ name "tab:SIPP-divisions"
 
 \begin_layout Standard
 \begin_inset Float table
-placement p
 wide false
 sideways false
 status collapsed
@@ -1567,7 +1644,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/CPS/mv8.tex}
+Dropbox/data/cps/main-reason.tex}
 \end_layout
 
 \end_inset
@@ -1586,7 +1663,30 @@ name "tab:CPS-reason-move"
 \end_inset
 
 CPS 2013 data on main motivation of moving, conditional on a cross Division
- move
+ move.
+ This selects a sample of 20-50 year-olds and aggregates the response to
+ the question 
+\begin_inset Quotes eld
+\end_inset
+
+What was the main reason for moving
+\begin_inset Quotes erd
+\end_inset
+
+ (variable NXTRES) as follows.
+ Work = {new job/transfer, look for job, closer to work, retired}, Housing
+ = {estab.
+ own household, want to own, better house, better neighborhood, cheaper
+ housing, foreclosure, other housing}, family = {change marstat, other fam
+ reason}, other = {attend/leave college, climate change, health, natural
+ disaster, other}.
+ The distance of a move is computed as the distance between geographic center
+ of the 
+\emph on
+state
+\emph default
+ of origin (not Division) and the center of the destination state.
+ The rows of the table categorize the distance measure into its quartiles.
 \end_layout
 
 \end_inset
@@ -4824,7 +4924,7 @@ reference "tab:fit-model-nontarget"
 
 \end_inset
 
- are not included in the SMM objective function, that is, they are not targetted
+ are not included in the SMM objective function, that is, they are not targeted
  by the estimation algorithm.
  Despite this, they are very close the data counterparts.
 \end_layout
@@ -4926,7 +5026,7 @@ Dropbox/model/fit/moms-nontarget.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Non-targetted model and data moments.
+Non-targeted model and data moments.
  This set of moments does not enter the SMM objective function and can thus
  be seen as a form of external validation of the model.
 \begin_inset CommandInset label

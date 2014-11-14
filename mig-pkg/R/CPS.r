@@ -12,6 +12,12 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	d[nxtres %in% 4:8       ,nxtres.2 := 300L]	# work 
 	d[nxtres %in% 15:19     ,nxtres.2 := 400L]	# other
 
+	d[,nxtres.3 := nxtres]
+	d[nxtres %in% c(9:14) ,nxtres.3 := 100L]	# housing
+	d[nxtres %in% c(1L,3L)    ,nxtres.3 := 200L]	# family 
+	d[nxtres %in% 4:8       ,nxtres.3 := 300L]	# work 
+	d[nxtres %in% c(2,15:19)     ,nxtres.3 := 400L]	# other
+
 	# division moves
 	d[,currdiv:= as.character(gediv)]
     d[,prevdiv := as.character(mig_div)]
@@ -22,6 +28,7 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	levels(d$migsame) <- c("NIU","yes (nonmover)","no, different house in US","no, different foreign")
 
 	d[, main.reason := factor(nxtres.2, labels=c("NIU","housing","family","work","other"))]
+	d[, main.reason2 := factor(nxtres.3, labels=c("NIU","housing","family","work","other"))]
 
 	# some factor codign
 	d[,clswkr := relevel(a_clswkr,ref="Private")]
@@ -189,3 +196,52 @@ CPS.plot.tabs <- function(tabs,path="~/Dropbox/mobility/output/data/CPS"){
 	return(p)
 
 }
+
+
+
+CPS.distance <- function(){
+	load("~/git/migration/data/cps.RData")
+
+	data(US_states,package="EconData")
+	cps[,STATE := toupper(gestfips)]
+	setkey(cps,STATE)
+	setkey(US_states,STATE)
+	cps = US_states[cps]
+	data(State_distTable,package="EconData")
+	US = US_states[,list(STATE,to=state)]
+	setkey(US,STATE)
+	cps[,mig_STATE := toupper(mig_st)]
+	setkey(cps,mig_STATE)
+	cps2 = US[cps]
+	cps2[,from := state]
+	setkey(State_distTable,from,to)
+	setkey(cps2,from,to)
+	cps_dist = State_distTable[cps2]
+	qd=cps_dist[D2D==TRUE,quantile(km,na.rm=T)]
+	cps_dist[,distance := cut(km,breaks=qd,labels=c("<718","(718,1348]","(1348,2305]","(2305,8087]"))]
+	cps_mvs = cps_dist[D2D==TRUE& !is.na(to) & age > 19 & age<51]
+
+	d13 = svydesign(ids=~1,weights=~fsup_wgt,data=cps_mvs[h_year==2013])
+	tab = prop.table(svytable(~distance + main.reason,d13),margin=1)
+	tab2 = prop.table(svytable(~ main.reason,d13)) * 100
+	tab2 = tab2[-1]
+	tab = tab[,2:5] * 100
+	df = data.frame(tab)
+	df$distance= rownames(df)
+	df$id = paste0("row",1:nrow(df))
+	dl = list()
+	for (i in 1:nrow(df)){
+		dl[[df[i,"id"]]] = as.vector(df[i,1:5])
+	}
+	dl$total = tab2
+
+	cat(toJSON(dl),file="~/Dropbox/mobility/output/data/cps/main-reason.json")
+
+
+
+
+}
+
+
+
+

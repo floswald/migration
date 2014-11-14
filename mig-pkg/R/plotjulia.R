@@ -1,5 +1,18 @@
 
 
+plot_probMove_assets <- function(){
+	data(Sipp_age,envir=environment())
+	merged[,wbin := cut(wealth,quantile(wealth,probs=seq(0,1,le=11)))]
+	mmv=merged[age>19&age<51,weighted.mean(D2D==1,HHweight,na.rm=T),by=wbin][order(wbin)]
+	mmv = mmv[1:9]
+	mmv[,idx := 1:9]
+	p = ggplot(mmv,aes(x=idx,y=V1)) + geom_line(size=1) + scale_x_continuous(name="wealth quantile in 1000 dollars",breaks=1:9,label=mmv$wbin) + theme_bw()  + scale_y_continuous(name="probability of moving") + ggtitle("SIPP Proportion of movers by wealth") + theme(axis.text.x = element_text(angle=45,vjust=0.7))
+	ggsave(p,file=file.path("~/Dropbox/mobility/output/data/sipp/mv_prob_wealth.pdf"),height=5.0,width=7)
+	return(p)
+}
+
+
+
 plot_noMove <- function(reg){
 
 	ipth = paste0("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove",reg)
