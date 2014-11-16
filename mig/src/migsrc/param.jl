@@ -210,7 +210,8 @@ end
 
 
 function show(io::IO, p::Param)
-	print(io,"number of max problems=$(p.na*p.nz*p.nh*p.nh*p.ntau*p.np*p.ny*p.nJ*p.nJ*p.nt*p.ns)\n")
+	print(io,"number of states      =$(p.na*p.nz*p.np*p.ny*p.nh*p.ntau*p.nJ*p.nt*p.ns)\n")
+	print(io,"number of max problems=$(p.na*p.nz*p.np*p.ny*p.nh*p.ntau*p.nJ*p.nt*p.ns*p.nh*p.nJ)\n")
 	print(io,"free params:
 	gamma    = $(p.gamma)		
 	tau      = $(p.tau)

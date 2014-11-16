@@ -998,7 +998,7 @@ function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,feasib
 	return (r,jinf)
 end
 
-function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64,p::Param)
+function linearapprox(x::Array{Float64,1},y::Array{Float64,1},xi::Float64)
 	n = length(y)
 	@assert (length(x) == n)
 	lo = 1

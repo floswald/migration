@@ -147,12 +147,15 @@ function simulate(m::Model,p::Param)
 			end
 		end
 	end
+	# EV_arr = Array{Float64}[]
+	# push!(EV_arr,zeros(p.na,p.nz,p.ny,p.np))
 
 	# construct the interpolators
 	# ---------------------------
 	L = Dict{ASCIIString,lininterp}()
 	L["l_vcs"] = lininterp(vcs_arr,gs)
 	L["l_rho"] = lininterp(rho_arr,gs)
+	# L_EV  = lininterp(EV_arr,gs)
 
 	srand(54321)
 
@@ -381,6 +384,7 @@ function simulate(m::Model,p::Param)
 					cumsum!(ktmp2,ktmp,1)
 					# throw a k-sided dice 
 					cum_moveprob = sum(ktmp[setdiff(1:9,ij)])
+					stayprob = 1.0 - cum_moveprob
 					moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
 					move   = ij != moveto
 					prob   = ktmp[moveto]
@@ -477,6 +481,29 @@ function simulate(m::Model,p::Param)
 				# make sure savings is inside grid
 				# (although interpolator forces that anyway)
 				ss = forceBounds(ss,agrid[1],agrid[end])
+
+				# if move
+				# 	# find alternative value based on average moving cost for a mover
+				# 	# v = u(cons) + ihh*p.xi + p.beta * EV(ss,ihh+1,ij,age+1) - log(stayprob)/(1-log(stayprob))
+
+				# 	# 1. find EV(ss,ihh+1,ij,age+1)
+				# 	setGrid!(L_EV,2,zsupps[ij])
+				# 	resetCache!(L_EV)
+				# 	fill_interp_EV!(L_EV,is,ihh+1,itau,ij,age+1,p,m)
+
+				# 	szYP      = [ss,z,Y,P]
+				# 	ev = getValue(L_EV,szYP)
+
+				# 	# 2. put value together
+				# 	if is==1
+				# 		val2 = ufun(cons,ev,p) + ihh*p.xi1 - log(stayprob)/(1-log(stayprob))
+				# 	else
+				# 		val2 = ufun(cons,ev,p) + ihh*p.xi2 - log(stayprob)/(1-log(stayprob))
+				# 	end 
+				# else
+				# 	val2 = 0.0
+				# end
+
 
 				# storing choices and values
 				Dv[i_idx]       = val
@@ -615,10 +642,36 @@ function fill_interp_arrays!(L::Dict{ASCIIString,lininterp},is::Int,ih::Int,itau
 			end
 		end
 	end
-
-
 end
 
+# fills interp array for expected value function at
+# discrete state (is,ihh,itau,ij,age)
+# must pass age+1 !
+function fill_interp_EV!(L::lininterp,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
+
+	# L contains:
+	# 1. l_EV
+
+	# get part of index that does not change
+	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
+
+	for iia in 1:p.na
+		offset_a = iia-1 + p.na*offset_h_age_j
+		for iP in 1:p.np
+			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
+			for iY in 1:p.ny 
+				offset_Y = iY-1 + p.ny * offset_P
+				for iz in 1:p.nz
+					offset_z = iz-1 + p.nz * offset_Y
+
+					arr_idx = iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))
+					@inbounds L.vals[1][arr_idx] = m.EV[arr_idx] 	
+
+				end
+			end
+		end
+	end
+end
 
 
  # r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))

@@ -595,9 +595,9 @@ function exp_Mortgage(ctax=false)
 	p3 = Param(2,opts)
 	m3 = Model(p3)	# 1.5 secs
 	solve!(m3,p3)
-	sim3 = simulate(m3,p3)
+	sim3 = simulate(m3,p3);
 	# throw away incomplete cohorts
-	sim3 = @where(sim3,(!isna(:cohort)) )
+	sim3 = @where(sim3,(!isna(:cohort)) );
 	pol3_out = policyOutput(sim3,"lumpsum_per_capita")
 
 
@@ -619,10 +619,37 @@ function exp_Mortgage(ctax=false)
 	p4 = Param(2,opts)
 	m4 = Model(p4)	# 1.5 secs
 	solve!(m4,p4)
-	sim4 = simulate(m4,p4)
+	sim4 = simulate(m4,p4);
 	# throw away incomplete cohorts
-	sim4 = @where(sim4,(!isna(:cohort)) )
+	sim4 = @where(sim4,(!isna(:cohort)) );
 	pol4_out = policyOutput(sim4,"price_adjust")
+
+
+	# want to show:
+	# different buying behaviour of movers in sim3 and sim4:
+	# people move to buy more in 4
+	mv_buy0 = @> begin
+		sim
+		@where((:year.>1997)&(:move))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+	end
+
+	mv_buy3 = @> begin
+		sim3
+		@where((:year.>1997)&(:move))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+	end
+
+	mv_buy4 = @> begin
+		sim4
+		@where((:year.>1997)&(:move))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+	end
+
+
+
+
+
 
 	# create a dataframe with all pol results by age stacked
 	own_move = vcat(base_out["own_move"],pol0_out["own_move"],pol1_out["own_move"],pol2_out["own_move"],pol3_out["own_move"],pol4_out["own_move"])
@@ -1492,7 +1519,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:shockAge,opts["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[1,1,opts["iz"],2,2,opts["itau"],m.aone,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
@@ -1513,12 +1540,11 @@ function moneyMC()
 
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,2,p.nz,2)
+	MC = Array(Any,2,p.ntau)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
 
-	df = DataFrame(a = 0.0,v0 = 0.0,v1 = 0.0,Type="",h=0,z=0,it=0)
 
 	ages = (1,30)
 
@@ -1526,30 +1552,21 @@ function moneyMC()
 	opts["policy"] = "moneyMC"
 	for ih in 0:1
 		opts["ih"] = ih+1
-		for iz in 1:p.nz
-			opts["iz"] = iz
-			for it in 1:2
-				opts["it"] = ages[it]
-				v0 = m.v[1,1,opts["iz"],2,2,1,m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-				MC[ih+1,iz,it] = find_xtra_ass(v0,opts)
+		for itau in 1:p.ntau
+			opts["itau"] = itau
+			opts["iz"] = 1
+				opts["it"] = 1
+				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+				MC[ih+1,itau] = find_xtra_ass(v0,opts)
 				println("done with MC for iz=$iz, ih=$ih, it=$it")
 				println("moving cost: $(MC[ih+1,iz,it].minimum)")
 
-				p1 = Param(2,opts)
-				setfield!(p1,:shockAge,opts["it"])
-				# plug in money 
-				setfield!(p1,:shockVal,[MC[ih+1,iz,it].minimum])
-				m1 = Model(p1)
-				solve!(m1,p1)
-				df = vcat(df,DataFrame(a = m.grids["assets"],v0 = m.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],v1 = m1.v[1,1,opts["iz"],2,2,1,:,opts["ih"],2,opts["it"]][:],h=opts["ih"],z=opts["iz"],it=opts["it"]))
-				println("done with recomputing model for iz=$iz, ih=$ih, it=$it")
-			end
 		end
 	end
 
 	zs = m.gridsXD["zsupp"][:,1]
 	# make an out dict
-	d =[  "z$i" => [ "age_$ti" => ["z" => zs[i], "rent" => MC[1,i,ti].minimum, "own" => MC[2,i,ti].minimum] for ti in 1:2] for i in 1:p.nz] 
+	d =[ "low_type" => [ "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum], "high_type" => [ "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum] ] 
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"moneyMC.json"),"w")

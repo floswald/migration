@@ -333,6 +333,7 @@ function FlowsPlot(s::DataFrame)
        end
        end
        PyPlot.plot(fmat')
+       return fmat
    end
 
 	

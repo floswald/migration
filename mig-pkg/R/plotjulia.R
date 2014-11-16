@@ -1,5 +1,72 @@
 
 
+
+plot_age_effect_KW <- function(k_w=0.055,my=0.017,my2=0.0013){
+
+	df = data.frame(age=20:50)
+	df$k_and_w = df$age * k_w
+	df$oswald = df$age * my + df$age^2 * my2
+
+	m = melt(df,id.vars="age")
+	p = ggplot(m,aes(x=age,y=value,color=variable)) + geom_line() + theme_bw()
+	ggsave(p,width=7,height=3,file="~/Dropbox/mobility/output/model/fit/fit_ageeffect.pdf")
+
+	return(m)
+}
+
+
+# plot moments 
+plot_moment_fit <- function(){
+	j=fromJSON(file="~/Dropbox/mobility/output/model/fit/moms.json")
+	d = data.frame(moment=names(j))
+	d$m = 0.0
+	d$mod = 0.0
+	for (i in 1:nrow(d)){
+		d[i,2] = j[[i]]$data
+		d[i,3] = j[[i]]$model
+	}
+
+	d$type = "NA"
+	d0 = data.table(d)
+	d = d0[(!(moment %like% "lm_") & !(moment %like% "move_distance") & !(moment %like% "neg_equity"))]
+	d[m>-0.5 & m<0.3, type := "Mobility Rates"]
+	d[m>0.3 & m<1.0, type := "Ownership Rates"]
+	d[m>1.0 & m < 300 , type := "Wealth Moments"]
+
+	s = split(d,d$type)
+
+	l1 = data.table(nm = s$`Mobility Rates`$moment)
+	l1[nm == "moved2plus"][["nm"]] = "moved twice+"
+	l1[nm == "moved1"][["nm"]] = "moved once"
+	l1[nm == "cov_own_kids"][["nm"]] = "Cov(own,s)"
+	l1[!nm %in% c("moved once","moved twice+","Cov(own,s)")][["nm"]] = NA_character_
+
+	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod,label=l1$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.1))+ scale_x_continuous(name="data",limits=c(-0.01,0.1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3) + ggtitle("Mobility and Covariances")
+
+	l2 = data.table(nm = s$`Ownership Rates`$moment)
+	l2[nm == "moved0"][["nm"]] = "moved never"
+	l2[nm == "mean_own_NwE"][["nm"]] = "E[own|NwE]"
+	l2[nm == "mean_own_WSC"][["nm"]] = "E[own|WSC]"
+	l2[!nm %in% c("moved never","E[own|NwE]","E[own|WSC]")][["nm"]] = NA_character_
+	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod,label=l2$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3)+ ggtitle("Homeownership Rates and Non-movers")
+
+	l3 = data.table(nm = s$`Wealth Moments`$moment)
+	l3[nm == "mean_wealth_NwE"][["nm"]] = "E[wealth | NwE]"
+	l3[nm == "mean_wealth_30_40"][["nm"]] = "E[wealth | (30,40]]"
+	l3[!nm %in% c("E[wealth | NwE]","E[wealth | (30,40]]")][["nm"]] = NA_character_
+	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")
+
+	ggsave(p3,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_wealth.pdf")
+	ggsave(p2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_ownership.pdf")
+	ggsave(p1,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_mobility.pdf")
+
+
+	return(list(p1=p1,p2=p2))
+
+}
+
+
+
 plot_probMove_assets <- function(){
 	data(Sipp_age,envir=environment())
 	merged[,wbin := cut(wealth,quantile(wealth,probs=seq(0,1,le=11)))]

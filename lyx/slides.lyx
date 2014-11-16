@@ -780,8 +780,8 @@ What we will learn
 \end_layout
 
 \begin_layout Enumerate
-What is the value of migration as a self-insurance device when a large regional
- shock hits?
+What is the value of migration as a self-insurance device when aggregate
+ shocks affect regions differently?
 \end_layout
 
 \begin_layout Enumerate
@@ -834,22 +834,13 @@ onslide+<3->
 What would happen to migration if government policy changed?
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout BeginFrame
 Roadmap
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1295,16 +1286,12 @@ Percent of US households.
 Reasons for Moving I: CPS Data
 \end_layout
 
-\begin_layout Itemize
-27% cite housing as the main reason
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float table
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1318,7 +1305,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/CPS/mv8.tex}
+Dropbox/data/CPS/main-reason-pres.tex}
 \end_layout
 
 \end_inset
@@ -2358,7 +2345,170 @@ a_{it+1}\geq-(1-\chi)p_{kt}h_{it}
 \end_layout
 
 \begin_layout Section
-Estimation
+Solution and Estimation
+\end_layout
+
+\begin_layout BeginFrame
+Solving the Model
+\end_layout
+
+\begin_layout Itemize
+for each location 
+\begin_inset Formula $d=1,\dots,9$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+compute the value of moving to 
+\begin_inset Formula $k=1,\dots,9$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+as 
+\color blue
+owner
+\color inherit
+ or 
+\color red
+renter
+\color inherit
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+{\color{blue}v_{d}^{\text{own}}\left(x_{it},k\right)} & = & \max_{c}u(c,{\color{blue}1},d,k)+\beta E\overline{v}\left(x_{it+1}\right)\\
+{\color{red}v_{d}^{\text{rent}}\left(x_{it},k\right)} & = & \max_{c}u(c,{\color{red}0},d,k)+\beta E\overline{v}\left(x_{it+1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+
+\color green
+housing-optimal value
+\color inherit
+ of moving from 
+\begin_inset Formula $d$
+\end_inset
+
+ to 
+\begin_inset Formula $k$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+{\color{green}v_{d}\left(x_{it},k\right)} & = & \max\left({\color{blue}v_{d}^{\text{own}}\left(x_{it},k\right)},{\color{red}v_{d}^{\text{rent}}\left(x_{it},k\right)}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Solving the Model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{for all }d=1,\dots,9:\,\,\,\begin{cases}
+{\color{green}v_{d}\left(x_{it},1\right)}=\max & \begin{cases}
+{\color{blue}v_{1}^{\text{own}}\left(x_{it},k\right)}\\
+{\color{red}v_{1}^{\text{rent}}\left(x_{it},k\right)}
+\end{cases}\\
+{\color{green}v_{d}\left(x_{it},2\right)}=\max & \begin{cases}
+{\color{blue}v_{2}^{\text{own}}\left(x_{it},k\right)}\\
+{\color{red}v_{2}^{\text{rent}}\left(x_{it},k\right)}
+\end{cases}\\
+\vdots & \vdots\\
+{\color{green}v_{d}\left(x_{it},9\right)}=\max & \begin{cases}
+{\color{blue}v_{9}^{\text{own}}\left(x_{it},k\right)}\\
+{\color{red}v_{9}^{\text{rent}}\left(x_{it},k\right)}
+\end{cases}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V\left(x_{it},\varepsilon\right)=\max_{k\in D}\left\{ {\color{green}v\left(x_{it},k\right)}+\varepsilon_{ik}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+there are 1,410,000 states in 
+\begin_inset Formula $x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+there are 
+\begin_inset Formula $2D=18$
+\end_inset
+
+ optimization problems at each state 
+\begin_inset Formula $x_{it}$
+\end_inset
+
+: 25,380,000 maximization problems involved for one solution.
 \end_layout
 
 \begin_layout BeginFrame
@@ -2941,7 +3091,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/param-edit-pres.tex}
+Dropbox/model/fit/params.tex}
 \end_layout
 
 \end_inset
@@ -3021,40 +3171,42 @@ Dropbox/model/fit/moms-nontarget.tex}
 
 \end_layout
 
-\begin_layout Section
-Properties of the model
-\end_layout
-
 \begin_layout BeginFrame
-Properties: Probability of migrating by assets
+Model Fit
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/mp_assets.pdf
-	scale 75
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_mobility.pdf
+	scale 50
 
 \end_inset
 
 
-\end_layout
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_ownership.pdf
+	scale 50
 
-\begin_layout BeginFrame
-Probability of moving: Example with 2 regions
-\end_layout
-
-\begin_layout Itemize
-Probability of moving from region 2 to region 1, if 
-\begin_inset Formula $v_{2}=1$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\Pr\left(\text{move to 1}|2\right)=\exp(v_{1}-\log(\exp(v_{1})+\exp(v_{2})))$
 \end_inset
 
 
@@ -3066,11 +3218,7 @@ status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/ccp-plotsmall.tex}
+}
 \end_layout
 
 \end_inset
@@ -3079,7 +3227,81 @@ Dropbox/model/fit/ccp-plotsmall.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Properties II: Moving Costs
+Model Fit II
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_wealth.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Properties of the model
+\end_layout
+
+\begin_layout BeginFrame
+Properties: Probability of migrating by assets
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout BeginFrame
+Properties I: Moving Costs
 \end_layout
 
 \begin_layout Itemize
@@ -3135,7 +3357,7 @@ Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
 \end_layout
 
 \begin_layout BeginFrame
-Properties III: Decomposing Moving Costs
+Properties II: Decomposing Moving Costs
 \end_layout
 
 \begin_layout Itemize
@@ -3196,9 +3418,27 @@ Impulse responses to large regional shocks
 \end_layout
 
 \begin_layout Itemize
-Reduce observed house price or mean income in Pacific by 30% in 2007
+Reduce observed house price or mean income in West North Central in 2000
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+reduce 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ by 10%
+\end_layout
+
+\begin_layout Itemize
+reduce 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ by 30%
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Leaving the other series unchanged
 \end_layout
@@ -3208,7 +3448,7 @@ Look at changes in in/outflow
 \end_layout
 
 \begin_layout BeginFrame
-Sudden change in income level
+Sudden change in income level in WNC
 \end_layout
 
 \begin_layout Standard
@@ -3223,7 +3463,7 @@ hspace*{-2pt}
 \backslash
 makebox[
 \backslash
-linewidth][c]{%
+linewidth][c]{
 \end_layout
 
 \begin_layout Plain Layout
@@ -3232,7 +3472,7 @@ linewidth][c]{%
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/yshock_pres.tex}
+Dropbox/model/experiments/exp_yp/WNCyshock_pres.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3246,15 +3486,48 @@ Dropbox/model/experiments/exp_yp/yshock_pres.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Mean Income shock in Pacific: Outflow renters
+Mean Income shock in WNC
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{10pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \noindent
-\align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_rent_move.pdf
-	scale 70
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_in.pdf
+	width 100page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
@@ -3262,15 +3535,48 @@ Mean Income shock in Pacific: Outflow renters
 \end_layout
 
 \begin_layout BeginFrame
-Mean Income shock in Pacific: Outflow owners
+Mean Income shock in WNC
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{10pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \noindent
-\align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_yshock_own_move.pdf
-	scale 70
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
+	width 100page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
@@ -3302,7 +3608,7 @@ linewidth][c]{%
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/pshock_pres.tex}
+Dropbox/model/experiments/exp_yp/WNCpshock_pres.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3316,15 +3622,48 @@ Dropbox/model/experiments/exp_yp/pshock_pres.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Price shock in Pacific: Total outflow
+Price shock in WNC
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{10pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \noindent
-\align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_move.pdf
-	scale 70
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
+	width 100page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
@@ -3332,31 +3671,48 @@ Price shock in Pacific: Total outflow
 \end_layout
 
 \begin_layout BeginFrame
-Price shock in Pacific: Outflow of renters
+Price shock in WNC
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_rent_move.pdf
-	scale 70
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{10pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout BeginFrame
-Price shock in Pacific: Outflow of owners
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
+	width 100page%
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/away_pshock_own_move.pdf
-	scale 70
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
