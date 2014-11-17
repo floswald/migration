@@ -496,7 +496,6 @@ function exp_Mortgage(ctax=false)
 
 	# free some memory
 	m0 = 0
-	sim = 0
 	gc()
 
 	println("starting experiments")
