@@ -661,9 +661,9 @@ function exp_Mortgage(ctax=false)
 
 	# out dict
 	d = Dict()
-	d["move_rent"] = ["own" => ["base" => @where(mv_buy0,:own)[:rent],"redist3" => @where(mv_buy3,:own)[:rent],"redist4" => @where(mv_buy4,:own)[:rent],"rent" => ["base" => @where(mv_buy0,!:own)[:rent],"redist3" => @where(mv_buy3,!:own)[:rent],"redist4" => @where(mv_buy4,!:own)[:rent]]
-	d["move_buy"] = ["own" => ["base" => @where(mv_buy0,:own)[:buy],"redist3" => @where(mv_buy3,:own)[:buy],"redist4" => @where(mv_buy4,:own)[:buy],"rent" => ["base" => @where(mv_buy0,!:own)[:buy],"redist3" => @where(mv_buy3,!:own)[:buy],"redist4" => @where(mv_buy4,!:own)[:buy]]
-	
+	d["move_rent"] = ["own" => ["base" => @where(mv_buy0,:own)[:rent][1],"redist3" => @where(mv_buy3,:own)[:rent][1],"redist4" => @where(mv_buy4,:own)[:rent][1]],"rent" => ["base" => @where(mv_buy0,!:own)[:rent][1],"redist3" => @where(mv_buy3,!:own)[:rent][1],"redist4" => @where(mv_buy4,!:own)[:rent][1] ] ]
+	d["move_buy"] = ["own" => ["base" => @where(mv_buy0,:own)[:buy][1],"redist3" => @where(mv_buy3,:own)[:buy][1],"redist4" => @where(mv_buy4,:own)[:buy][1] ],"rent" => ["base" => @where(mv_buy0,!:own)[:buy][1],"redist3" => @where(mv_buy3,!:own)[:buy][1],"redist4" => @where(mv_buy4,!:own)[:buy][1]] ]
+
 	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
 	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
 	d["income"] = ["base" => base_out["own_move"][:income][1], "burn" => pol0_out["own_move"][:income][1], "redist1" => pol1_out["own_move"][:income][1], "redist2" => pol2_out["own_move"][:income][1],"redist3" => pol3_out["own_move"][:income][1],"redist4" => pol4_out["own_move"][:income][1]]
@@ -827,7 +827,7 @@ function decompose_MC_owners()
     d["move_own"] = ["base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1])]
 
     indir, outdir = mig.setPaths()
-    f = open(joinpath(outdir,"MC_hfriction.json"),"w")
+    f = open(joinpath(outdir,"decompose_MC_owners.json"),"w")
     JSON.print(f,d)
     close(f)
 
@@ -1601,7 +1601,7 @@ function moneyMC()
 	m = Model(p)
 	solve!(m,p)
 
-	whichasset = m.aone + 1
+	whichasset = m.aone
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
