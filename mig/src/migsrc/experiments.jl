@@ -631,19 +631,19 @@ function exp_Mortgage(ctax=false)
 	mv_buy0 = @> begin
 		sim
 		@where((:year.>1997)&(:move))
-		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
 	end
 
 	mv_buy3 = @> begin
 		sim3
 		@where((:year.>1997)&(:move))
-		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
 	end
 
 	mv_buy4 = @> begin
 		sim4
 		@where((:year.>1997)&(:move))
-		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0))
+		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
 	end
 
 
@@ -1558,8 +1558,8 @@ function moneyMC()
 				opts["it"] = 1
 				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,itau] = find_xtra_ass(v0,opts)
-				println("done with MC for iz=$iz, ih=$ih, it=$it")
-				println("moving cost: $(MC[ih+1,iz,it].minimum)")
+				println("done with MC ih=$ih, itau=$itau")
+				println("moving cost: $(MC[ih+1,itau].minimum)")
 
 		end
 	end
