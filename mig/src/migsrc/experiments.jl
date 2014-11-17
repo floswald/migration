@@ -659,8 +659,8 @@ function exp_Mortgage(ctax=false)
 
 	# out dict
 	d = Dict()
-	d["move_rent"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:rent][1],"redist3" => mv_buy3[mv_buy3[:own],:rent][1],"redist4" => mv_buy4[mv_buy4[:own],:rent][1],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:rent][1],"redist3" => mv_buy3[!mv_buy3[:own],:rent][1],"redist4" => mv_buy4[!mv_buy4[:own],:rent][1] ] ]
-	d["move_buy"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:buy][1],"redist3" => mv_buy3[mv_buy3[:own],:buy][1],"redist4" => mv_buy4[mv_buy4[:own],:buy][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:buy][1],"redist3" => mv_buy3[!mv_buy3[:own],:buy][1],"redist4" => mv_buy4[!mv_buy4[:own],:buy][1] ]
+	d["move_rent"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:rent][1],"redist3" => mv_buy3[mv_buy3[:own],:rent][1],"redist4" => mv_buy4[mv_buy4[:own],:rent][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:rent][1],"redist3" => mv_buy3[!mv_buy3[:own],:rent][1],"redist4" => mv_buy4[!mv_buy4[:own],:rent][1] ] ]
+	d["move_buy"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:buy][1],"redist3" => mv_buy3[mv_buy3[:own],:buy][1],"redist4" => mv_buy4[mv_buy4[:own],:buy][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:buy][1],"redist3" => mv_buy3[!mv_buy3[:own],:buy][1],"redist4" => mv_buy4[!mv_buy4[:own],:buy][1] ] ]
 
 	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
 	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
