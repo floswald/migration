@@ -1519,7 +1519,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	setfield!(p,:shockAge,opts["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opts["iz"],2,2,opts["itau"],m.aone,opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
@@ -1540,23 +1540,23 @@ function moneyMC()
 
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,2,p.ntau)
+	MC = Array(Any,p.nh,p.ntau)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
 
-
-	ages = (1,30)
+	whichasset = m.aone + 1
 
 	opts = Dict()
 	opts["policy"] = "moneyMC"
+	opts["asset"] = whichasset
 	for ih in 0:1
 		opts["ih"] = ih+1
 		for itau in 1:p.ntau
 			opts["itau"] = itau
 			opts["iz"] = 1
 				opts["it"] = 1
-				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],m.aone,opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,itau] = find_xtra_ass(v0,opts)
 				println("done with MC ih=$ih, itau=$itau")
 				println("moving cost: $(MC[ih+1,itau].minimum)")
@@ -1574,7 +1574,7 @@ function moneyMC()
 	close(f)
 
 
-	return (df,MC)
+	return (d,MC)
 end
 
 
