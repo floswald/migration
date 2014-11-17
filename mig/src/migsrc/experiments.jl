@@ -779,6 +779,53 @@ function pshock_highMC_cdiff()
 
 end
 
+
+# Decompose Moving Cost of Owners
+# ===============================
+
+function decompose_MC_owners()
+
+	s0 = runObj(false)
+	s0 = s0["moments"]
+
+	# no owner MC
+    # alpha_3 = 0
+	p1 = Dict{ASCIIString,Float64}()
+	p1["MC3"] = 0.0
+	s1 = runObj(false,p1)
+	s1 = s1["moments"]
+
+	# no owner MC and no transaction cost :
+    # alpha_3 = 0, phi = 0
+	p1["phi"] = 0.0
+	s2 = runObj(false,p1)
+	s2 = s2["moments"]
+
+	# no transaction cost: phi = 0
+	pop!(p1,"MC3")
+	s3 = runObj(false,p1)
+	s3 = s3["moments"]
+
+    pfun(x,y) = 100 * (x-y) / y
+
+    d = Dict()
+    d["own"] = ["base" => s0[:mean_own][1], "alpha" => s1[:mean_own][1], "phi" => s3[:mean_own][1], "alpha_phi" => s2[:mean_own][1]]
+
+    d["move"] = ["base" => pfun(s0[:mean_move][1],s0[:mean_move][1]), "alpha" => pfun(s1[:mean_move][1],s0[:mean_move][1]), "phi" => pfun(s3[:mean_move][1],s0[:mean_move][1]), "alpha_phi" => pfun(s2[:mean_move][1],s0[:mean_move][1])]
+
+    d["move_rent"] = ["base" => pfun(s0[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha" => pfun(s1[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "phi" => pfun(s3[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1])]
+   
+    d["move_own"] = ["base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1])]
+
+    indir, outdir = mig.setPaths()
+    f = open(joinpath(outdir,"MC_hfriction.json"),"w")
+    JSON.print(f,d)
+    close(f)
+
+	return(d)
+end
+
+
 # VALUE OF MIGRATION
 # ==================
 
