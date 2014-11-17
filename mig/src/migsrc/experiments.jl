@@ -504,80 +504,83 @@ function exp_Mortgage(ctax=false)
 	# model under no redistribution at all: burning money
 	# ---------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy","redistribute" => Redist0 ,"verbose"=>0]
+	# opts = ["policy" => "mortgageSubsidy","redistribute" => Redist0 ,"verbose"=>0]
 
-	# utility equalizing consumption scaling:
-	if ctax
-		ctax0 = findctax(w0[1][1],opts)
-	else
-		ctax0 = 0
-	end
+	# # utility equalizing consumption scaling:
+	# if ctax
+	# 	ctax0 = findctax(w0[1][1],opts)
+	# else
+	# 	ctax0 = 0
+	# end
 
-	# run simulation
-	p0   = Param(2,opts)
-	m0   = Model(p0)
-	solve!(m0,p0)
-	sim0 = simulate(m0,p0)
+	# # run simulation
+	# p0   = Param(2,opts)
+	# m0   = Model(p0)
+	# solve!(m0,p0)
+	# sim0 = simulate(m0,p0)
 
-	# some output form this policy:
-	# throw away incomplete cohorts
-	sim0 = @where(sim0,!isna(:cohort));
-	pol0_out = policyOutput(sim0,"burning_money")
+	# # some output form this policy:
+	# # throw away incomplete cohorts
+	# sim0 = @where(sim0,!isna(:cohort));
+	# pol0_out = policyOutput(sim0,"burning_money")
+	 pol0_out = base_out
 
-	m0 = 0
-	sim0 = 0
-	gc()
-	println("experiment with all money to 20yr old")
+	# m0 = 0
+	# sim0 = 0
+	# gc()
+	# println("experiment with all money to 20yr old")
 
 	# model under redistribution policy 1: lump sum to all 20 year olds
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy","redistribute" => Redist1 ,"verbose"=>0]
+	# opts = ["policy" => "mortgageSubsidy","redistribute" => Redist1 ,"verbose"=>0]
 
-	# utility equalizing consumption scaling:
-	if ctax
-		ctax1 = findctax(w0[1][1],opts)
-	else
-		ctax1 = 0
-	end
+	# # utility equalizing consumption scaling:
+	# if ctax
+	# 	ctax1 = findctax(w0[1][1],opts)
+	# else
+	# 	ctax1 = 0
+	# end
 
-	# run simulation
-	p1   = Param(2,opts)
-	m1   = Model(p1)
-	solve!(m1,p1)
-	sim1 = simulate(m1,p1)
+	# # run simulation
+	# p1   = Param(2,opts)
+	# m1   = Model(p1)
+	# solve!(m1,p1)
+	# sim1 = simulate(m1,p1)
 
-	# some output form this policy:
-	# throw away incomplete cohorts
-	sim1 = @where(sim1,!isna(:cohort))
-	pol1_out = policyOutput(sim1,"lumpsum_age20")
+	# # some output form this policy:
+	# # throw away incomplete cohorts
+	# sim1 = @where(sim1,!isna(:cohort))
+	# pol1_out = policyOutput(sim1,"lumpsum_age20")
+	 pol1_out = base_out
 
-	m1 = 0
-	sim1 = 0
-	gc()
+	# m1 = 0
+	# sim1 = 0
+	# gc()
 
 
 	println("experiment with within age redistribution")
 	# model under redistribution policy 2: lump sum from owners of age group
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy","redistribute" => Redist2 ,"verbose"=>0]
+	# opts = ["policy" => "mortgageSubsidy","redistribute" => Redist2 ,"verbose"=>0]
 
-	# utility equalizing consumption scaling:
-	if ctax
-		ctax2 = findctax(w0[1][1],opts)
-	else
-		ctax2 = 0
-	end
+	# # utility equalizing consumption scaling:
+	# if ctax
+	# 	ctax2 = findctax(w0[1][1],opts)
+	# else
+	# 	ctax2 = 0
+	# end
 
-	# some output form this policy:
-	p2 = Param(2,opts)
-	m2 = Model(p2)	# 1.5 secs
-	solve!(m2,p2)
-	sim2 = simulate(m2,p2)
-	# throw away incomplete cohorts
-	sim2 = @where(sim2,(!isna(:cohort)) )
-	pol2_out = policyOutput(sim2,"lumpsum_by_age")
+	# # some output form this policy:
+	# p2 = Param(2,opts)
+	# m2 = Model(p2)	# 1.5 secs
+	# solve!(m2,p2)
+	# sim2 = simulate(m2,p2)
+	# # throw away incomplete cohorts
+	# sim2 = @where(sim2,(!isna(:cohort)) )
+	# pol2_out = policyOutput(sim2,"lumpsum_by_age")
+	 pol2_out = base_out
 
 
 	println("experiment with per capita redistribution")
@@ -648,11 +651,6 @@ function exp_Mortgage(ctax=false)
 		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
 	end
 
-
-
-
-
-
 	# create a dataframe with all pol results by age stacked
 	own_move = vcat(base_out["own_move"],pol0_out["own_move"],pol1_out["own_move"],pol2_out["own_move"],pol3_out["own_move"],pol4_out["own_move"])
 	# create a dataframe with all pol results by age stacked
@@ -661,8 +659,8 @@ function exp_Mortgage(ctax=false)
 
 	# out dict
 	d = Dict()
-	d["move_rent"] = ["own" => ["base" => @where(mv_buy0,:own)[:rent][1],"redist3" => @where(mv_buy3,:own)[:rent][1],"redist4" => @where(mv_buy4,:own)[:rent][1]],"rent" => ["base" => @where(mv_buy0,!:own)[:rent][1],"redist3" => @where(mv_buy3,!:own)[:rent][1],"redist4" => @where(mv_buy4,!:own)[:rent][1] ] ]
-	d["move_buy"] = ["own" => ["base" => @where(mv_buy0,:own)[:buy][1],"redist3" => @where(mv_buy3,:own)[:buy][1],"redist4" => @where(mv_buy4,:own)[:buy][1] ],"rent" => ["base" => @where(mv_buy0,!:own)[:buy][1],"redist3" => @where(mv_buy3,!:own)[:buy][1],"redist4" => @where(mv_buy4,!:own)[:buy][1]] ]
+	d["move_rent"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:rent][1],"redist3" => mv_buy3[mv_buy3[:own],:rent][1],"redist4" => mv_buy4[mv_buy4[:own],:rent][1],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:rent][1],"redist3" => mv_buy3[!mv_buy3[:own],:rent][1],"redist4" => mv_buy4[!mv_buy4[:own],:rent][1] ] ]
+	d["move_buy"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:buy][1],"redist3" => mv_buy3[mv_buy3[:own],:buy][1],"redist4" => mv_buy4[mv_buy4[:own],:buy][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:buy][1],"redist3" => mv_buy3[!mv_buy3[:own],:buy][1],"redist4" => mv_buy4[!mv_buy4[:own],:buy][1] ]
 
 	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
 	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]

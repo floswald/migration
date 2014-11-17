@@ -1317,12 +1317,6 @@ Dropbox/data/CPS/main-reason-pres.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:CPS-reason-move"
-
-\end_inset
-
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move
 \end_layout
@@ -3764,8 +3758,8 @@ of migration measured in terms of consumption compensation
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
-The Value of Migration: Overview of flows
+\begin_layout BeginPlainFrame
+
 \end_layout
 
 \begin_layout Standard
@@ -3795,7 +3789,7 @@ linewidth][c]{%
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/mig_value.tex}
+Dropbox/model/experiments/highMC/mig_value1.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3812,12 +3806,7 @@ Dropbox/model/experiments/exp_yp/mig_value.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-All values in Percent.
- Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
+Value of migration option in WNC.
 \end_layout
 
 \end_inset
@@ -3830,8 +3819,8 @@ All values in Percent.
 
 \end_layout
 
-\begin_layout BeginFrame
-The Value of Migration: Overview of flows
+\begin_layout BeginPlainFrame
+
 \end_layout
 
 \begin_layout Standard
@@ -3861,7 +3850,7 @@ linewidth][c]{%
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/mig_value2.tex}
+Dropbox/model/experiments/highMC/mig_value2.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3878,12 +3867,7 @@ Dropbox/model/experiments/exp_yp/mig_value2.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-All values in Percent.
- Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
+Value of migration option in WNC.
 \end_layout
 
 \end_inset
@@ -3896,8 +3880,8 @@ All values in Percent.
 
 \end_layout
 
-\begin_layout BeginFrame
-The Value of Migration: Overview of flows
+\begin_layout BeginPlainFrame
+
 \end_layout
 
 \begin_layout Standard
@@ -3927,7 +3911,7 @@ linewidth][c]{%
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/exp_yp/mig_value3.tex}
+Dropbox/model/experiments/highMC/mig_value.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3944,12 +3928,7 @@ Dropbox/model/experiments/exp_yp/mig_value3.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-All values in Percent.
- Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
+Value of migration option in WNC.
 \end_layout
 
 \end_inset
@@ -3963,28 +3942,10 @@ All values in Percent.
 \end_layout
 
 \begin_layout BeginFrame
-The Value of Migration: Details
-\end_layout
-
-\begin_layout Itemize
-Comparing the set of movers across 
-\emph on
-Can leave 
-\emph default
-and 
-\emph on
-Can not leave 
-\emph default
-scenarios
+Value of migration by age
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -3992,21 +3953,32 @@ status open
 
 
 \backslash
-hspace*{-2pt}
+hspace*{2pt}
 \backslash
 makebox[
 \backslash
 linewidth][c]{%
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
 
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/mig_value_detail.tex}
 \end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/values_pres.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
@@ -4018,111 +3990,7 @@ Dropbox/model/experiments/exp_yp/mig_value_detail.tex}
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
- Conditions on individuals who moved in 
-\emph on
-Can leave 
-\emph default
-scenario.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-The Value of Migration: Details
-\end_layout
-
-\begin_layout Itemize
-Comparing the set of movers across 
-\emph on
-Can leave 
-\emph default
-and 
-\emph on
-Can not leave 
-\emph default
-scenarios
-\end_layout
-
 \begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/mig_value_detail2.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Averages over 
-\begin_inset Formula $t>2007$
-\end_inset
-
-.
- Conditions on individuals who moved in 
-\emph on
-Can leave 
-\emph default
-scenario.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -4245,6 +4113,22 @@ Dropbox/model/data_repo/out_data_jl/sinai-pres.tex}
 \end_layout
 
 \begin_layout BeginFrame
+Net Present Value of Deduction
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
@@ -4276,6 +4160,55 @@ linewidth][c]{%
 input{
 \backslash
 Dropbox/model/experiments/MortgageSubsidy/mortgage_pres.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/MortgageSubsidy/mortgage_change_mv.tex}
 \end_layout
 
 \begin_layout Plain Layout
