@@ -939,13 +939,13 @@ function exp_value_mig_base(j::Int)
 
     flows = Dict()
     flows["inmig"] = ["base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all])]
-    flows["inmig"]["pct"] = (flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
+    flows["inmig"]["pct"] = 100*(flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
 
     flows["inmig_own"] = ["base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all])]
-    flows["inmig_own"]["pct"] = (flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
+    flows["inmig_own"]["pct"] = 100*(flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
 
     flows["inmig_rent"] = ["base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all])]
-    flows["inmig_rent"]["pct"] = (flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
+    flows["inmig_rent"]["pct"] = 100*(flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
 
     flows["outmig"]      = ["base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all])]
     flows["outmig_own"]  = ["base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all])]

@@ -1,4 +1,91 @@
 
+plot_probMove = function(){
+	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
+	for (i in unique(ass$assets)){
+		ass[ass$assets==i&ass$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
+	}
+	pass = ggplot(ass,aes(x=quantile,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous("20 asset quantiles (0 assets at quantile 8)")
+	ggsave(pass,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf",width=7,height=4)
+}
+
+
+plot_npv_age_income = function(){
+	d = read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/npv_age_income.csv")
+	lower = strsplit(as.character(d$ybin),"\\,")
+	lower= unlist(lapply(lower,function(x) x[1]))
+	lower= gsub("\\[","",lower)
+	lower= gsub("\\(","",lower)
+	d$lower = round(as.numeric(lower))
+	d$income_pct = factor(lower,labels=paste0(seq(10,90,le=5),"%"))
+	names(d)[1] = "Age"
+
+	p = ggplot(d,aes(x=Age,y=npv_at_age,color=income_pct)) + geom_line(size=1) + theme_bw() + scale_y_continuous("Net present value (1000 dollars)")
+
+	ggsave(p,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf",width=7,height=5)
+}
+
+
+get_growth <- function(){
+
+	x = Export.VAR()
+	dd = data.table(x$PYdata)
+	setnames(dd,2:3,c("LY","LP"))
+	dd = cbind(dd,predict(x$Agg_mod,dd))
+	setnames(dd,4:5,c("Y","P"))
+
+	for (d in names(x$Agg2Region_mods)){
+		py =  predict(x$Agg2Region_mods[[d]],dd)
+		dd[,c("yp","pp") := py]
+		dd[,c("yp","pp") := py]
+		setnames(dd,c("yp","pp"),c(paste0("Ey_",d),paste0("Ep_",d)))
+	}
+	setnames(dd,2:5,c("Y","P","EY","EP"))
+
+	# get actual data for each division in wide form
+	# y = dcast(x$pyagg,year ~ Division, value.var="y")
+	# p = dcast(x$pyagg,year ~ Division, value.var="p")
+
+	# get model-predicted price and income
+	y = x$pred_y
+	p = x$pred_p
+
+	names(y)[-1] = paste0("y_",names(y)[-1])
+	names(p)[-1] = paste0("p_",names(p)[-1])
+
+	dd = merge(dd,y,by="year")
+	dd = merge(dd,p,by="year")
+
+	# compute percentage growth
+	for (div in names(x$Agg2Region_mods)){
+
+		expr_p = paste0("dd[,Eg_p",div," := 100*(Ep_",div," - p_",div,") / p_",div,"]")
+		expr_y = paste0("dd[,Eg_y",div," := 100*(Ey_",div," - y_",div,") / y_",div,"]")
+		eval(parse(text=expr_p))
+		eval(parse(text=expr_y))
+	}
+
+	# melt
+	m = melt(dd,"year")
+	m[,type := NA_character_]
+	m[,Division := NA_character_]
+	m[variable %like% "Eg_y", type := "ygrowth"]
+	m[variable %like% "Eg_p", type := "pgrowth"]
+	m[variable %like% "Eg_y", Division := gsub("Eg_y","",variable)]
+	m[variable %like% "Eg_p", Division := gsub("Eg_p","",variable)]
+
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+	gp = ggplot(m[type=="pgrowth"&year>1996],aes(x=year,y=value,color=Division)) + geom_line(size=1) + ggtitle("expected price growth") + scale_y_continuous(name="percent") + scale_color_manual(values=cbPalette) + theme_bw() 
+	gy = ggplot(m[type=="ygrowth"&year>1996],aes(x=year,y=value,color=Division)) + geom_line(size=1) + ggtitle("expected income growth")+ scale_y_continuous(name="percent")+ scale_color_manual(values=cbPalette) + theme_bw() 
+
+	ggsave(gp,file="~/Dropbox/mobility/output/model/properties/pgrowth.pdf")
+	ggsave(gy,file="~/Dropbox/mobility/output/model/properties/ygrowth.pdf")
+
+
+
+}
+
+
 
 
 plot_age_effect_KW <- function(k_w=0.055,my=0.017,my2=0.0013){
@@ -33,6 +120,9 @@ plot_moment_fit <- function(){
 	d[m>0.3 & m<1.0, type := "Ownership Rates"]
 	d[m>1.0 & m < 300 , type := "Wealth Moments"]
 
+	lms = d0[moment %like% "lm_"]
+	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.1,y=-0.0,label="age-ownership",size=3) #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
+
 	s = split(d,d$type)
 
 	l1 = data.table(nm = s$`Mobility Rates`$moment)
@@ -56,6 +146,7 @@ plot_moment_fit <- function(){
 	l3[!nm %in% c("E[wealth | NwE]","E[wealth | (30,40]]")][["nm"]] = NA_character_
 	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")
 
+	ggsave(plm,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods.pdf")
 	ggsave(p3,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_wealth.pdf")
 	ggsave(p2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_ownership.pdf")
 	ggsave(p1,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_mobility.pdf")
@@ -67,7 +158,7 @@ plot_moment_fit <- function(){
 
 
 
-plot_probMove_assets <- function(){
+plot_probMove_assets_sipp <- function(){
 	data(Sipp_age,envir=environment())
 	merged[,wbin := cut(wealth,quantile(wealth,probs=seq(0,1,le=11)))]
 	mmv=merged[age>19&age<51,weighted.mean(D2D==1,HHweight,na.rm=T),by=wbin][order(wbin)]
@@ -99,6 +190,9 @@ plot_noMove <- function(reg){
 
 	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values.pdf"),height=3.0,width=7)
 	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues.pdf"),height=3.0,width=7)
+
+	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values_pres.pdf"),height=3.5,width=6)
+	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues_pres.pdf"),height=4.0,width=6)
 }
 
 
@@ -143,8 +237,8 @@ plot_shockyp <- function(reg,which){
 
 	# plot
 	pl = list()
-	pl$imm = ggplot(m[variable %like% "_in_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of resident population") + ggtitle(istr)
-	pl$emi = ggplot(m[variable %like% "_out_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of resident population") + ggtitle(ostr)
+	pl$imm = ggplot(m[variable %like% "_in_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of total population") + ggtitle(istr)
+	pl$emi = ggplot(m[variable %like% "_out_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of total population") + ggtitle(ostr)
 
 	# save
 	ggsave(pl$emi,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)

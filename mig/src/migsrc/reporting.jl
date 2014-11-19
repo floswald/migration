@@ -38,13 +38,23 @@ function simReport(s::DataFrame)
        @by(:own,prob=mean(:cumprob))
     end
 
+    # mp_ass = transform(s,assets = 0.0)
+    # qt_a = quantile(s[:a],(0:20)./20)
+    # for i in 1:size(mp_ass,1)
+    #     mp_ass[i,:assets] = searchsortedfirst(qt_a,mp_ass[i,:a])
+    # end
+    cut_ass = (0:20)./20
     mp_ass = @> begin
     	s
-    	@transform(assets=cut(:a,round(quantile(:a,(0:20)./20),1)))
+    	@transform(assets=cut(:a,round(quantile(:a,^(cut_ass)),1)))
+        # @transform(assets=searchsortedlast(:a.data,quantile(:a,(0:20)./20)))
         @by([:assets,:own],prob=mean(:cumprob))
         @transform(Type="Owner")
     end
     mp_ass[!mp_ass[:own],:Type] = "Renter"
+    mp_ass[:quantile] = 0
+    mp_ass[mp_ass[:own],:quantile] = 1:size(mp_ass[mp_ass[:own],:],1)
+
 
     mp_ass_age = @> begin
         s

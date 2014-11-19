@@ -117,25 +117,26 @@ Risk and Insurance
 \end_layout
 
 \begin_layout Itemize
-Many papers have studied 
+Many papers have studied: 
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-idiosyncratic risk and self insurance mechanisms
+idiosyncratic risk and self insurance mechanisms,
 \end_layout
 
 \begin_layout Itemize
-aggregate risk and its costs
+aggregate risk and its costs.
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-Little work has been done on regional risk and how to insure it
+Little work has been done on regional risk and how to insure it.
 \end_layout
 
 \begin_layout Itemize
-This paper focuses on regional risk coming from house price and wage risk.
+This paper focuses on regional risk coming from house price and wage risk
+ in a rich lifecycle model.
 \end_layout
 
 \begin_layout Pause
@@ -168,7 +169,14 @@ Research Questions:
 \noindent
 
 \series bold
-What is the value of migration when a regional shock occurs?
+What is the value of migration when there are regional and aggregate price
+ fluctuations?
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+How do migration, housing choices and lifecycle savings interact?
 \end_layout
 
 \begin_layout Enumerate
@@ -184,7 +192,7 @@ How does government housing policy interact with mobility?
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout BeginFrame
 Detroit, Michigan
@@ -706,34 +714,42 @@ Regional Shocks: large, and varied
 \end_layout
 
 \begin_layout Standard
-Shocks affect regions to different extents.
+Aggregate shocks affect regions to different extents.
 \end_layout
 
 \begin_layout Itemize
-Shocks to labor income / productivity of a certain industry
+Shocks to labor income / productivity of a certain industry:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Detroit lost over 60% of its population since the 1950s
+The decline of the auto industry in Michigan reduced employment.
+\end_layout
+
+\begin_layout Itemize
+Detroit lost over 60% of its population since the 1950s.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+at the same time, other regions experienced growth.
+ which ones?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-Shocks to house prices
+Shocks to house prices:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Falls in FHFA house price index 2007--2010:
-\end_layout
-
-\begin_layout Itemize
-largest: 61% in Las Vegas
-\end_layout
-
-\begin_layout Itemize
-smallest: 2.3% in Pittsburgh
+Since the 2007 crisis, declines in the FHFA house price index ranged from
+ 61% in Las Vegas, to 2.3% in Pittsburgh.
 \end_layout
 
 \end_deeper
@@ -747,32 +763,60 @@ In this paper, I build a lifecycle model that allows for
 
 \begin_deeper
 \begin_layout Itemize
-Regional risk in house prices and labor income
+Regional risk in house prices and labor income,
 \end_layout
 
 \begin_layout Itemize
-Migration 
+Migration, 
 \end_layout
 
 \begin_layout Itemize
-Saving in assets
+Saving in assets,
 \end_layout
 
 \begin_layout Itemize
-Buying or renting a home
+The choice to buy or rent a home.
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-I will use SIPP micro data to estimate it
+I use SIPP micro data to estimate the parameters of the model, fitting moments
+ related to migration, housing, and wealth.
 \end_layout
 
 \begin_layout Itemize
-Develop a measure of insurance value of migration
+Analyse empirically how assets and housing choice interact with migration.
 \end_layout
 
 \begin_layout Itemize
-Analyse how policy changes would affect outcomes
+Develop a measure of the option value of migration.
+\end_layout
+
+\begin_layout Itemize
+Analyse how policy changes may affect outcomes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Itemize
+why do you add ownership and not something else? because more than 60% of
+ households are owners, houses are very large assets, which are subject
+ to substantial financial risk.
+ empirically, owners and renters haver very different mobility behaviour.
+\end_layout
+
+\begin_layout Itemize
+why do you have shocks that are persistent and correlated? because that
+ is what the data looks like.
+ the assumption of iid price shocks is clearly counterfactual to the data.
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -780,10 +824,58 @@ What we will learn
 \end_layout
 
 \begin_layout Enumerate
-What is the value of migration as a self-insurance device when aggregate
- shocks affect regions differently?
+What do we learn from adding 
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+regional shocks
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+i can show how behaviour reacts as one region is shocked.
+ you can do that without having regional shocks in the estimation/model,
+ but then this is clearly outside the domain of the model.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+assets
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+probability of moving differs with assets.
+ K+W say 
+\begin_inset Quotes eld
+\end_inset
+
+assets is clearly an important state variable, but...
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+housing choices
+\end_layout
+
+\begin_layout Standard
+to dynamic migration models like Kennan and Walker (2011)?
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 \begin_inset ERT
 status open
@@ -797,27 +889,10 @@ onslide+<2->
 
 \end_inset
 
-What do we learn from adding 
+What is the value of migration as a self-insurance device when aggregate
+ shocks affect regions differently?
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-regional shocks
-\end_layout
-
-\begin_layout Itemize
-assets
-\end_layout
-
-\begin_layout Itemize
-housing choices
-\end_layout
-
-\begin_layout Standard
-to dynamic migration models like Kennan and Walker (2011)?
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
 \begin_inset ERT
 status open
@@ -878,7 +953,7 @@ vspace{3mm}
 Static spatial equilibrium models of migration and local labor markets:
  
 \size footnotesize
-Notowidigdo (2011), Moretti (2011)
+Notowidigdo (2011), Moretti (2011), Piyapromdee (2013)
 \begin_inset ERT
 status open
 
@@ -887,6 +962,20 @@ status open
 
 \backslash
 vspace{3mm}
+\end_layout
+
+\end_inset
+
+
+\size default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+mention that you are not looking at immigrants from different countries
+ coming to the US.
+ 
 \end_layout
 
 \end_inset
@@ -951,7 +1040,7 @@ Empirical Facts
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout BeginFrame
 Mobility Facts I
@@ -1214,6 +1303,36 @@ Source: Molloy et al, J.
 
 \end_layout
 
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
+Empirical Facts
+\end_layout
+
 \begin_layout BeginFrame
 Aggregate Migration Rates
 \end_layout
@@ -1252,13 +1371,69 @@ Dropbox/data/sipp/move_rates_edit.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Percent of US households.
+Percent of US households who move per year.
  SIPP data, subset to 20--50 year olds.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Definition of 
+\emph on
+Region
+\emph default
+: Census Division
+\end_layout
+
+\begin_layout Itemize
+I assume regions correspond to Census Divisions (9 in total).
+\end_layout
+
+\begin_layout Itemize
+Each region is a market with uniform house price and average level of labor
+ productivity, but individual specific shocks to income.
+\end_layout
+
+\begin_layout Itemize
+Moves within a region are not counted as migration.
+\end_layout
+
+\begin_layout Itemize
+70% of interstate moves are cross Division moves.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Itemize
+As you will see, this is a very rich decision problem: people make choices
+ about savings, housing, migration, and have expectations about all other
+ regions, in each period of their life.
+ The great detail in the decision problem imposes some constraints on the
+ level of detail in the geographic dimension I can consider.
+ Defining regions this way is my current solution to this tradeoff.
+\end_layout
+
+\begin_layout Itemize
+K+W can't look at assets and housing because they have 50 states
+\end_layout
+
+\begin_layout Itemize
+not even 50 states is enough
+\end_layout
+
+\begin_layout Itemize
+there is a tradeoff between level of geographic detail and other features
+ one can analyse.
 \end_layout
 
 \end_inset
@@ -1283,7 +1458,56 @@ Percent of US households.
 \end_layout
 
 \begin_layout BeginFrame
-Reasons for Moving I: CPS Data
+Reasons for Moving: CPS Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/CPS/main-reason-pres1.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPS 2013 data on main motivation of moving, conditional on a cross Division
+ move
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving: CPS Data
 \end_layout
 
 \begin_layout Standard
@@ -1331,11 +1555,15 @@ CPS 2013 data on main motivation of moving, conditional on a cross Division
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout BeginFrame
 Reasons for Moving II: SIPP Data
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -1367,6 +1595,13 @@ Dropbox/data/sipp/D2D-probit-edit-slides.tex}
 \begin_layout Plain Layout
 Probit model, regressing binary moving indicator on household characteristics.
  Baseline probability of moving is 1.32%.
+ Income in $100,000.
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1384,30 +1619,24 @@ Summary of empirical facts
 \end_layout
 
 \begin_layout Enumerate
-1.32% of US housholds move across Division borders each year
+55% of people move for jobs: rest is housing, family and other.
 \end_layout
 
 \begin_layout Enumerate
-Renters move at more than double the rate of owners
+1.32% of US households move across Division borders each year.
 \end_layout
 
 \begin_layout Enumerate
-Younger people move more, with renter--owner gap persistent at all ages
+Renters move at more than double the rate of owners.
 \end_layout
 
 \begin_layout Enumerate
-People think about housing as a reason to move
-\end_layout
-
-\begin_layout Enumerate
-Controlling for other factors, effect of being an owner reduces baseline
- prob.
- by 50%.
+Younger people move more, with the renter--owner gap persistent at all ages.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Branch long
-status open
+status collapsed
 
 \begin_layout BeginFrame
 Regional Shocks: House Prices
@@ -1517,6 +1746,36 @@ Rust Belt Decline
 Model
 \end_layout
 
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
+Model
+\end_layout
+
 \begin_layout BeginFrame
 Model Outline I
 \end_layout
@@ -1530,11 +1789,11 @@ Model Outline I
 \begin_inset Formula $p_{dt}$
 \end_inset
 
- and mean income level 
+ and labor productivity 
 \begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1542,12 +1801,16 @@ Houses: choose whether to rent or own,
 \begin_inset Formula $h_{t}\in\{0,1\}$
 \end_inset
 
-, fixed rate mortgage
+, fixed rate mortgage.
 \end_layout
 
 \begin_layout Itemize
-Migration: in each period, compare values of locations and choose the highest
- one.
+Savings: choose how much to save/borrow.
+\end_layout
+
+\begin_layout Itemize
+Migration: in each period, compare utilities across regions and choose location
+ with highest utility.
 \end_layout
 
 \begin_layout BeginFrame
@@ -1656,7 +1919,7 @@ household size
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
 
@@ -1668,7 +1931,7 @@ household size
 \begin_inset Text
 
 \begin_layout Plain Layout
-aggregate price factors
+aggregate factors
 \end_layout
 
 \end_inset
@@ -1777,7 +2040,7 @@ age
 State vector: 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,t\right)
+x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{F}_{t},h_{it-1},d,\tau,t\right)
 \]
 
 \end_inset
@@ -1789,13 +2052,267 @@ x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,t\right)
 Choice variables:
 \begin_inset Formula 
 \[
-\left(a_{it+1},h_{it},k\in D\right)
+\left(a_{it+1},h_{it},d'\in D\right)
 \]
 
 \end_inset
 
 
 \end_layout
+
+\begin_layout BeginFrame
+Choice Problem
+\end_layout
+
+\begin_layout Itemize
+Define value function 
+\emph on
+conditional
+\emph default
+ on moving to 
+\begin_inset Formula $d'$
+\end_inset
+
+, 
+\begin_inset Formula $v_{t}(x_{it},d')$
+\end_inset
+
+, net of idiosyncratic location taste shock 
+\begin_inset Formula $\varepsilon\sim$
+\end_inset
+
+ EV type 1.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+The location choice solves:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+V_{t}\left(x_{it}\right) & = & \max_{d'\in D}\left\{ v_{t}\left(x_{it},d'\right)+\varepsilon_{id't}\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<3->
+\end_layout
+
+\end_inset
+
+The housing and savings problem solves:
+\begin_inset Formula 
+\begin{eqnarray*}
+v_{t}\left(x_{it},d'\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},d')\\
+ &  & +\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{F}_{t}\right]\\
+s.t. &  & \text{budget constraints}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\[
+\overline{v}_{t}\left(x_{it}\right)=E_{\varepsilon}V_{t}\left(x_{it}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Preferences
+\end_layout
+
+\begin_layout Itemize
+period payoff depends on 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consumption 
+\begin_inset Formula $(c)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+household size 
+\begin_inset Formula $(s)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+housing status 
+\begin_inset Formula $(h)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+whether move is made 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left(\mathbf{1}\left[d\neq d'\right]\right)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+idiosyncratic location shock 
+\begin_inset Formula $\left(\varepsilon\right)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+u\left(c_{it},h_{it},d,d'\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+\varepsilon_{id't}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Moving Costs:
+\begin_inset Formula 
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+emphasize 4 things on this slide:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\xi$
+\end_inset
+
+ value of owning varies with household size
+\end_layout
+
+\begin_layout Enumerate
+heterogeneous moving cost depends on age, household size, and the unobserved
+ type 
+\begin_inset Formula $\tau$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+explain what 
+\begin_inset Formula $\tau$
+\end_inset
+
+ is: 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+catch all variable that contains unobserved and idiosyncratic motives that
+ would make a person intrinsically less likely to move.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+high preference for current location
+\end_layout
+
+\begin_layout Enumerate
+strong family ties, etc
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+people with high type are more likley to buy, because they anticipate that
+ they will never move and by subject to high moving costs.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+logit shock captures moves made for other reasons than income or housing.
+ it is a way to rationalize moves without observable reason in the data.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
 
 \begin_layout BeginFrame
 Timing
@@ -1904,16 +2421,76 @@ choose optimal location, based on the value of optimal housing in each location
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Homeownership Choice
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $h_{t}=1$
+\end_inset
+
+ indicates ownership in current period.
+\end_layout
+
+\begin_layout Itemize
+Owners may borrow with house as collateral.
+ Borrowing constraint:
+\begin_inset Formula 
+\[
+a_{t+1}\geq-(1-\chi)p_{dt}h_{t},\forall t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Terminal net wealth condition: 
+\begin_inset Formula $a_{T}+p_{dT}h_{T-1}\geq0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+No explicit repayment schedule.
+\end_layout
+
+\begin_layout Itemize
+Proportional cost of selling the house: 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout BeginFrame
 Labor Income
 \end_layout
 
 \begin_layout Itemize
-regional mean income 
 \begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
- shifts individual income:
+ is an index of regional labor productivity.
+\end_layout
+
+\begin_layout Itemize
+Define the price of human capital by 
+\begin_inset Formula $\eta_{d}\ln\overline{y}_{dt}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Individual income is defined by:
 \end_layout
 
 \begin_layout Standard
@@ -1933,39 +2510,23 @@ e & \sim & N(0,\sigma^{2})
 \begin_inset Formula $f(t)$
 \end_inset
 
- is a deterministic age profile
+ is a deterministic age profile.
 \end_layout
 
 \begin_layout Itemize
 \begin_inset Formula $z_{it}$
 \end_inset
 
- is an idiosyncratic productivity shock
+ is an idiosyncratic productivity shock.
 \end_layout
 
 \begin_layout BeginFrame
-Job Search
-\end_layout
-
-\begin_layout Itemize
-Identical to Kennan and Walker (2011)
-\end_layout
-
-\begin_layout Itemize
-Must visit a location in order to discover the exact wage
-\end_layout
-
-\begin_layout Itemize
-There is uncertainty about the new draw for 
-\begin_inset Formula $z$
-\end_inset
-
-
+Job Search: Labor income of movers
 \end_layout
 
 \begin_layout Itemize
 Individuals who move to 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
  can predict deterministic part of income: 
@@ -1983,7 +2544,7 @@ Individuals who move to
 
 \begin_inset Formula 
 \[
-\eta_{k}\ln\overline{y}_{kt+1}+f(t+1)
+\eta_{d'}\ln\overline{y}_{d't+1}+f(t+1)
 \]
 
 \end_inset
@@ -1992,31 +2553,35 @@ Individuals who move to
 \end_layout
 
 \begin_layout Itemize
-but they only know the conditional distribution of 
-\begin_inset Formula $z_{it+1}|z_{it}$
+Movers get a new draw 
+\begin_inset Formula $z_{t+1}$
 \end_inset
 
- for movers, denoted 
-\begin_inset Formula $G_{\text{move}}$
+ which depends on their previous 
+\begin_inset Formula $z_{t}$
+\end_inset
+
+, according to the conditional distribution 
+\begin_inset Formula $G\left(z_{it+1}|z_{it}\right)$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout BeginFrame
-Aggregate and Regional Prices
+National factors and regional prices
 \end_layout
 
 \begin_layout Itemize
 Aggregate factor 
-\begin_inset Formula $\mathbf{P}_{t}\equiv\left[Y_{t},P_{t}\right]$
+\begin_inset Formula $\mathbf{F}_{t}\equiv\left[Y_{t},P_{t}\right]$
 \end_inset
 
- follows a stationary VAR(1)
+ follows a stationary VAR(1).
 \end_layout
 
 \begin_layout Itemize
-Regional prices 
+Regional state variables 
 \begin_inset Formula $\overline{y}_{dt}$
 \end_inset
 
@@ -2025,13 +2590,13 @@ Regional prices
 \end_inset
 
  are functions of 
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
 :
 \begin_inset Formula 
 \[
-\left[\overline{y}_{dt},p_{t}\right]=g_{d}\left(\mathbf{P}_{t}\right)
+\left[\overline{y}_{dt},p_{t}\right]=g_{d}\left(\mathbf{F}_{t}\right)
 \]
 
 \end_inset
@@ -2045,174 +2610,125 @@ Factor model
 \end_inset
 
  implies that different regions are affected to different extent by aggregate
- shocks
+ shocks.
 \end_layout
 
 \begin_layout Itemize
-Parametric restriction to maintain computational tractability
+Parametric restriction which fits the data well.
+ 
+\end_layout
+
+\begin_layout Itemize
+This allows for identification and reduces dimension to assist with tractability.
 \end_layout
 
 \begin_layout BeginFrame
-Homeownership Choice
+Budget Constraint: Renters who decide to stay
 \end_layout
 
-\begin_layout Itemize
-Discrete choice 
-\begin_inset Formula $h_{t}\in\{0,1\}$
+\begin_layout Enumerate
+Choose to remain renters: pay rent 
+\begin_inset Formula $\kappa_{d}p_{dt}$
 \end_inset
 
 
-\end_layout
-
-\begin_layout Itemize
-Buyers may borrow with house as collateral.
- Borrowing constraint:
 \begin_inset Formula 
-\[
-a_{t+1}\geq-(1-\chi)p_{dt},\forall t
-\]
+\begin{eqnarray*}
+a_{it+1} & = & (1+r)\left(a_{it}+y_{idt}-c_{it}-\kappa_{d}p_{dt}\right)\\
+a_{it+1} & \geq & 0
+\end{eqnarray*}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-Terminal net wealth condition: 
-\begin_inset Formula $a_{T}+p_{dT}h_{T-1}\geq0$
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+Choose to buy:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-p_{dt}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
+r(a_{it}) & = & \begin{cases}
+r & \text{if }a_{it}\geq0\\
+r^{m} & \text{if }a_{it}<0
+\end{cases},r^{m}>r\\
+p_{T}h_{iT-1}+a_{iT} & \geq & 0
+\end{eqnarray*}
+
 \end_inset
 
 
 \end_layout
 
+\begin_layout BeginFrame
+Budget Constraint: Owners who decide to stay
+\end_layout
+
 \begin_layout Itemize
-Proportional cost of selling the house: 
+No fixed mortgage payment: implied schedule.
+\end_layout
+
+\begin_layout Itemize
+Owners can choose to sell, incurring proportional fixed cost 
 \begin_inset Formula $\phi$
 \end_inset
 
-
-\end_layout
-
-\begin_layout BeginFrame
-Preferences
-\end_layout
-
-\begin_layout Itemize
-period payoff depends on 
+:
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
-consumption 
-\begin_inset Formula $(c)$
-\end_inset
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{it+1} & = & (1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d}p_{dt}\right)\\
+a_{it+1} & \geq & 0
+\end{eqnarray*}
 
-, 
-\end_layout
-
-\begin_layout Itemize
-household size 
-\begin_inset Formula $(s)$
-\end_inset
-
-, 
-\end_layout
-
-\begin_layout Itemize
-housing status 
-\begin_inset Formula $(h)$
-\end_inset
-
-, 
-\end_layout
-
-\begin_layout Itemize
-whether move is made 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\left(\mathbf{1}\left[d\neq k\right]\right)$
-\end_inset
-
-,
-\end_layout
-
-\begin_layout Itemize
-idiosyncratic location shock 
-\begin_inset Formula $\left(\varepsilon\right)$
 \end_inset
 
 
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset Formula 
-\[
-u\left(c_{it},h_{it},k,x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq k\right]\Delta\left(x_{it}\right)+\varepsilon_{ikt}
-\]
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Itemize
-Moving Costs:
-\begin_inset Formula 
-\[
-\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
-\]
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
 
 \end_inset
 
-
+Or they can choose to continue as owners:
 \end_layout
 
-\begin_layout BeginFrame
-Recursive Formulation
-\end_layout
-
-\begin_layout Itemize
-Define value function 
-\emph on
-conditional
-\emph default
- on moving to 
-\begin_inset Formula $k$
-\end_inset
-
-, 
-\begin_inset Formula $v_{t}(x_{it},k)$
-\end_inset
-
-, net of 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Nested optimization problem:
-\end_layout
-
+\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-V_{t}\left(x_{it}\right) & = & \max_{k\in D}\left\{ v_{t}\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \\
-v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},k)\\
- & + & \beta\mathbb{E}_{z,s,\mathbf{P}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{P}_{t}\right]\\
-\overline{v}_{t}\left(x_{it}\right) & = & E_{\varepsilon}V_{t}\left(x_{it}\right)
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}\\
+p_{T}h_{iT-1}+a_{iT} & \geq & 0
 \end{eqnarray*}
 
 \end_inset
@@ -2220,125 +2736,138 @@ v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(
 
 \end_layout
 
-\begin_layout Itemize
-Final period value:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-V_{T}(a,h_{T-1},s,d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\ln p_{dT}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Budget Constraint: Staying Renters
-\end_layout
-
-\begin_layout Itemize
-pay rent 
-\begin_inset Formula $\kappa_{d}p_{dt}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-can buy, subject to downpayment
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\\
-\ln y_{idt} & = & \eta_{d}\ln(\overline{y}_{dt})+f(t)+z_{it}\\
-a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
-r(a_{it}) & = & \begin{cases}
-r & \text{if }a_{it}\geq0\\
-r^{m} & \text{if }a_{it}<0
-\end{cases},r^{m}>r\\
-p_{T}h_{iT-1} & \geq & -a_{iT}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Budget Constraint: Staying Owners
-\end_layout
-
-\begin_layout Itemize
-no mortgage payment: implied schedule
-\end_layout
-
-\begin_layout Itemize
-selling cost 
-\begin_inset Formula $\phi$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-h_{it})(1-\phi-\kappa_{d})p_{dt}\right)\\
-a_{it+1} & \geq & -(1-\chi)p_{dt}
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
+\end_deeper
 \begin_layout BeginFrame
 Budget Constraint: Movers
 \end_layout
 
 \begin_layout Itemize
-Renters:
-\begin_inset Formula 
-\[
-a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{k}p_{kt}-h_{it}p_{kt}\right)
-\]
+When moving from 
+\begin_inset Formula $d$
+\end_inset
 
+ to 
+\begin_inset Formula $d'$
+\end_inset
+
+, households can either rent or buy in the new location 
+\begin_inset Formula $d'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Renters in 
+\begin_inset Formula $d$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+rent in 
+\begin_inset Formula $d'$
+\end_inset
+
+: 
+\begin_inset Formula $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}-\kappa_{d'}p_{d't}\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Owners:
-\begin_inset Formula 
-\begin{eqnarray*}
-a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}\right.\\
- & - & \left.\left[(1-h_{it})\kappa_{k}+h_{it}\right]p_{kt}\right)
-\end{eqnarray*}
+buy in 
+\begin_inset Formula $d'$
+\end_inset
 
+: 
+\begin_inset Formula $a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-p_{d't}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+Owners in 
+\begin_inset Formula $d$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+rent in 
+\begin_inset Formula $d'$
+\end_inset
+
+: 
+\begin_inset Formula $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d'}p_{d't}\right)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Both:
-\begin_inset Formula 
-\[
-a_{it+1}\geq-(1-\chi)p_{kt}h_{it}
-\]
+buy in 
+\begin_inset Formula $d'$
+\end_inset
 
+: 
+\begin_inset Formula $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)$
 \end_inset
 
 
 \end_layout
 
+\end_deeper
 \begin_layout Section
+Solution and Estimation
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
 Solution and Estimation
 \end_layout
 
@@ -2357,14 +2886,14 @@ for each location
 \begin_deeper
 \begin_layout Itemize
 compute the value of moving to 
-\begin_inset Formula $k=1,\dots,9$
+\begin_inset Formula $d'=1,\dots,9$
 \end_inset
 
  
 \end_layout
 
 \begin_layout Itemize
-as 
+becoming either 
 \color blue
 owner
 \color inherit
@@ -2372,11 +2901,15 @@ owner
 \color red
 renter
 \color inherit
+ in 
+\begin_inset Formula $d'$
+\end_inset
+
 :
 \begin_inset Formula 
 \begin{eqnarray*}
-{\color{blue}v_{d}^{\text{own}}\left(x_{it},k\right)} & = & \max_{c}u(c,{\color{blue}1},d,k)+\beta E\overline{v}\left(x_{it+1}\right)\\
-{\color{red}v_{d}^{\text{rent}}\left(x_{it},k\right)} & = & \max_{c}u(c,{\color{red}0},d,k)+\beta E\overline{v}\left(x_{it+1}\right)
+{\color{blue}v_{d}^{\text{own}}\left(x_{it},d'\right)} & = & \max_{c}u(c,{\color{blue}1},d,d')+\beta E\overline{v}\left(x_{it+1}\right)\\
+{\color{red}v_{d}^{\text{rent}}\left(x_{it},d'\right)} & = & \max_{c}u(c,{\color{red}0},d,d')+\beta E\overline{v}\left(x_{it+1}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -2399,20 +2932,20 @@ onslide+<2->
 
 
 \color green
-housing-optimal value
+unconditional value
 \color inherit
  of moving from 
 \begin_inset Formula $d$
 \end_inset
 
  to 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 
 \begin_inset Formula 
 \begin{eqnarray*}
-{\color{green}v_{d}\left(x_{it},k\right)} & = & \max\left({\color{blue}v_{d}^{\text{own}}\left(x_{it},k\right)},{\color{red}v_{d}^{\text{rent}}\left(x_{it},k\right)}\right)
+{\color{green}v_{d}\left(x_{it},d'\right)} & = & \max\left({\color{blue}v_{d}^{\text{own}}\left(x_{it},d'\right)},{\color{red}v_{d}^{\text{rent}}\left(x_{it},d'\right)}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -2430,17 +2963,17 @@ Solving the Model
 \[
 \text{for all }d=1,\dots,9:\,\,\,\begin{cases}
 {\color{green}v_{d}\left(x_{it},1\right)}=\max & \begin{cases}
-{\color{blue}v_{1}^{\text{own}}\left(x_{it},k\right)}\\
-{\color{red}v_{1}^{\text{rent}}\left(x_{it},k\right)}
+{\color{blue}v_{1}^{\text{own}}\left(x_{it},d'\right)}\\
+{\color{red}v_{1}^{\text{rent}}\left(x_{it},d'\right)}
 \end{cases}\\
 {\color{green}v_{d}\left(x_{it},2\right)}=\max & \begin{cases}
-{\color{blue}v_{2}^{\text{own}}\left(x_{it},k\right)}\\
-{\color{red}v_{2}^{\text{rent}}\left(x_{it},k\right)}
+{\color{blue}v_{2}^{\text{own}}\left(x_{it},d'\right)}\\
+{\color{red}v_{2}^{\text{rent}}\left(x_{it},d'\right)}
 \end{cases}\\
 \vdots & \vdots\\
 {\color{green}v_{d}\left(x_{it},9\right)}=\max & \begin{cases}
-{\color{blue}v_{9}^{\text{own}}\left(x_{it},k\right)}\\
-{\color{red}v_{9}^{\text{rent}}\left(x_{it},k\right)}
+{\color{blue}v_{9}^{\text{own}}\left(x_{it},d'\right)}\\
+{\color{red}v_{9}^{\text{rent}}\left(x_{it},d'\right)}
 \end{cases}
 \end{cases}
 \]
@@ -2453,7 +2986,7 @@ Solving the Model
 \begin_layout Standard
 \begin_inset Formula 
 \[
-V\left(x_{it},\varepsilon\right)=\max_{k\in D}\left\{ {\color{green}v\left(x_{it},k\right)}+\varepsilon_{ik}\right\} 
+V\left(x_{it},\varepsilon\right)=\max_{d'\in D}\left\{ {\color{green}v\left(x_{it},d'\right)}+\varepsilon_{id'}\right\} 
 \]
 
 \end_inset
@@ -2474,7 +3007,7 @@ onslide+<2->
 
 \end_inset
 
-there are 1,410,000 states in 
+there are 1,410,000 points in the state space 
 \begin_inset Formula $x$
 \end_inset
 
@@ -2494,15 +3027,11 @@ onslide+<2->
 
 \end_inset
 
-there are 
-\begin_inset Formula $2D=18$
-\end_inset
-
- optimization problems at each state 
+there are 18 optimization problems at point 
 \begin_inset Formula $x_{it}$
 \end_inset
 
-: 25,380,000 maximization problems involved for one solution.
+: Solving the model once requires solving 25,380,000 maximization problems.
 \end_layout
 
 \begin_layout BeginFrame
@@ -2510,16 +3039,17 @@ Estimation Outline
 \end_layout
 
 \begin_layout Itemize
-Fix a subset of model parameters 
+Fix a subset of model parameters.
+ 
 \end_layout
 
 \begin_layout Itemize
-Estimate stochastic processes outside structural model
+Estimate stochastic processes outside structural model.
 \end_layout
 
 \begin_layout Itemize
-Use the structural model to find preference parameters with a simulated
- method of moments (SMM) estimator
+Match moments predicted by the structural model to moments in SIPP, using
+ SMM.
 \end_layout
 
 \begin_layout BeginFrame
@@ -2527,7 +3057,7 @@ Data: SIPP
 \end_layout
 
 \begin_layout Itemize
-Use the 1996, 2001, 2004 and 2008 SIPP panels
+Use the 1996, 2001, 2004 and 2008 SIPP panels.
 \end_layout
 
 \begin_layout Itemize
@@ -2540,17 +3070,17 @@ construct moments as averages over 1997--2012 to obtain reasonable sample
 \end_layout
 
 \begin_layout Itemize
-Use a cohort estimator: concern is that different cohorts faced different
+Use a cohort estimator: accounts for fact that different cohorts faced different
  aggregate shocks.
  
 \end_layout
 
 \begin_layout Itemize
-Use BEA personal income by state to get regional GDP/capita
+Use BEA personal income by state to get regional GDP/capita.
 \end_layout
 
 \begin_layout Itemize
-FHFA house price index for prices
+FHFA house price index for prices.
 \end_layout
 
 \begin_layout BeginFrame
@@ -2570,7 +3100,28 @@ VAR predictions for regional house prices
 \end_layout
 
 \begin_layout BeginFrame
-VAR predictions for regional mean income
+VAR predictions for regional productivity index 
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+this shows good fit of the factor model to aggregate factors
+\end_layout
+
+\begin_layout Itemize
+shows that processes are correlated across regions, but not perfectly
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2587,6 +3138,23 @@ VAR predictions for regional mean income
 
 \begin_layout BeginFrame
 Preset Parameters
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+what do li and yao to get the 6% transaction cost?
+\end_layout
+
+\begin_layout Itemize
+why is french's estimate a good one for your model?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2624,49 +3192,6 @@ Dropbox/model/fit/preset.tex}
 \end_layout
 
 \begin_layout BeginFrame
-SMM - MCMC estimator
-\end_layout
-
-\begin_layout Itemize
-Structural parameter vector
-\begin_inset Formula 
-\[
-\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} 
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-SMM seeks to minimize
-\begin_inset Formula 
-\[
-L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $m$
-\end_inset
-
- is a 
-\begin_inset Formula $K$
-\end_inset
-
- vector of data moments, 
-\begin_inset Formula $\hat{m}(\theta)$
-\end_inset
-
- is model counterpart
-\end_layout
-
-\begin_layout BeginFrame
 Identification
 \end_layout
 
@@ -2693,7 +3218,7 @@ linewidth][c]{%
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="3">
+<lyxtabular version="3" rows="10" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -2893,38 +3418,6 @@ mobility cond.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\gamma$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-CRRA
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-savings, ownership profile
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
 \begin_inset Formula $\omega_{1}$
 \end_inset
 
@@ -2937,7 +3430,7 @@ savings, ownership profile
 \begin_inset Text
 
 \begin_layout Plain Layout
-weight in final period
+Terminal utility
 \end_layout
 
 \end_inset
@@ -2969,7 +3462,7 @@ savings profile
 \begin_inset Text
 
 \begin_layout Plain Layout
-weight in final period
+Terminal utility
 \end_layout
 
 \end_inset
@@ -3070,6 +3563,62 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
+SMM - MCMC estimator
+\end_layout
+
+\begin_layout Itemize
+Structural parameter vector
+\begin_inset Formula 
+\[
+\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SMM seeks to minimize
+\begin_inset Formula 
+\[
+L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m$
+\end_inset
+
+ is a 
+\begin_inset Formula $K$
+\end_inset
+
+ vector of data moments, 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
+
+ is model counterpart
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+explain MCMC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
 Parameter estimates
 \end_layout
 
@@ -3085,7 +3634,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/params.tex}
+Dropbox/model/fit/params-pres.tex}
 \end_layout
 
 \end_inset
@@ -3094,77 +3643,107 @@ Dropbox/model/fit/params.tex}
 \end_layout
 
 \begin_layout BeginFrame
-Model Fit I
+Moments
 \end_layout
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/moms_1.tex}
+\begin_layout Itemize
+Moments relating to mobility:
 \end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $E[\text{move}]$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{move}|T]$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{move}|s]$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{move}|h]$
+\end_inset
+
+, 
+\begin_inset Formula $Cov(\text{move},s)$
+\end_inset
+
+, 
+\begin_inset Formula $Cov(\text{move},h)$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{moved never}]$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{moved once}]$
+\end_inset
+
+, 
+\begin_inset Formula $E[\text{moved twice+}]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Auxiliary model
+\begin_inset Formula 
+\[
+\text{move}_{it}=\beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{it}
+\]
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout BeginFrame
-Model Fit II
+\end_deeper
+\begin_layout Itemize
+Moments relating to homeownership:
 \end_layout
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset ERT
-status open
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $E[h]$
+\end_inset
 
-\begin_layout Plain Layout
+, 
+\begin_inset Formula $E[h|d]$
+\end_inset
+
+, 
+\begin_inset Formula $E[h|s]$
+\end_inset
+
+, 
+\begin_inset Formula $E[h_{t-1}=1,h_{t}=0|T]$
+\end_inset
+
+, 
+\begin_inset Formula $Cov(h,s)$
+\end_inset
 
 
-\backslash
-input{
-\backslash
-Dropbox/model/fit/moms_2.tex}
 \end_layout
+
+\begin_layout Itemize
+Auxiliary model
+\begin_inset Formula 
+\[
+h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
+\]
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout BeginFrame
-Model Validation
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/moms-nontarget.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
+\end_deeper
 \begin_layout BeginFrame
 Model Fit
 \end_layout
@@ -3225,11 +3804,161 @@ Model Fit II
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+model
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age < 35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+31%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+44%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age > 35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+84%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+71%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \noindent
-\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_auxmods.pdf
+	scale 50
+
+\end_inset
+
+
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_wealth.pdf
-	scale 65
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
 
 \end_inset
 
@@ -3237,6 +3966,36 @@ Model Fit II
 \end_layout
 
 \begin_layout Section
+Properties of the model
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
 Properties of the model
 \end_layout
 
@@ -3303,6 +4062,8 @@ Moving cost for young mover in Kennan and Walker (2011): $384,000
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
 wide false
 sideways false
@@ -3320,7 +4081,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/moneyMC/moneyMC.tex}
+Dropbox/model/experiments/moneyMC/moneyMC2.tex}
 \end_layout
 
 \end_inset
@@ -3332,17 +4093,52 @@ Dropbox/model/experiments/moneyMC/moneyMC.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
- renters at 
-\begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
+Moving cost for owners and renters at state 
+\begin_inset Formula $a=0,z=z_{1},P=\bar{P},Y=\bar{Y}$
 \end_inset
 
- and first and last period of life.
+ in the first period of life.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+why are moving costs so large?
+\end_layout
+
+\begin_layout Itemize
+because moves are rare in the data
+\end_layout
+
+\begin_layout Itemize
+large costs do not refer to moves that are actually made, but rather hypothetica
+l moves to arbitray location.
+ people in the model only move if payoff shocks are favourable and there
+ is a net gain from moving.
+\end_layout
+
+\begin_layout Itemize
+think of the large moving cost as the amount of money you would be willing
+ to pay to avoid having to participate in a lottery where you have to draw
+ a random location to which you will be forced to move.
+\end_layout
+
+\begin_layout Itemize
+it is possible to estimate the moving cost for an actual mover.
+ Kennan shows how to do this within their model, should be able to do the
+ same thing here
 \end_layout
 
 \end_inset
@@ -3368,7 +4164,7 @@ because of utility cost (
 \end_layout
 
 \begin_layout Itemize
-or because of financial friction 
+or because of transaction costs 
 \begin_inset Formula $(\phi)$
 \end_inset
 
@@ -3380,7 +4176,7 @@ or because of financial friction
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -3394,7 +4190,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/HC_friction/HC_friction.tex}
+Dropbox/model/experiments/HC_friction/decompose.tex}
 \end_layout
 
 \end_inset
@@ -3714,47 +4510,58 @@ status open
 \end_layout
 
 \begin_layout Section
-Insurance value of migration 
+Value of migration 
 \end_layout
 
-\begin_layout BeginFrame
-Value of migration in the face of large shocks
+\begin_layout BeginPlainFrame
+
 \end_layout
 
-\begin_layout Itemize
-Identical experiment to before, but shutting down migration
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
 \end_layout
 
-\begin_layout Itemize
-
-\series bold
-Value of migration:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-focus on group that left Pacific after 2007 shock
-\end_layout
-
-\begin_layout Itemize
-rerun shock experiment under identical environment, but force people to
- stay
-\end_layout
-
-\begin_layout Itemize
-compare lifetime utilities for this group after 2007
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-value 
-\emph default
-of migration measured in terms of consumption compensation 
-\begin_inset Formula $\delta$
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
+Value of migration option
+\end_layout
+
+\begin_layout BeginFrame
+Value of the migration option
+\end_layout
+
+\begin_layout Itemize
+How valuable in terms of expected lifetime utility is the option to move?
+\end_layout
+
+\begin_layout Itemize
+Compare two scenarios:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Baseline
+\end_layout
+
+\begin_layout Enumerate
+Cannot move away from West North Central
 \end_layout
 
 \end_deeper
@@ -3998,26 +4805,58 @@ status open
 Policy Experiments
 \end_layout
 
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
+Abolishing the Mortgage Interest Deduction
+\end_layout
+
 \begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
 \begin_layout Itemize
-Would abolishing the mortgage deduction increase mobility?
+What is the impact of abolishing the deduction on welfare, ownership and
+ mobility?
 \end_layout
 
 \begin_layout Itemize
-Not clear because of GE effect on house prices
+Would abolishing lead to an increase in mobility?
+\end_layout
+
+\begin_layout Itemize
+Difficult question, because such a large tax policy change will have GE
+ effects.
 \end_layout
 
 \begin_layout Itemize
 Use results from stationary GE model by Sommer and Sullivan (2013): 5% reduction
  in eqm.
  prices
-\end_layout
-
-\begin_layout Itemize
-Consider several redistribution schemes
 \end_layout
 
 \begin_layout BeginFrame
@@ -4040,14 +4879,6 @@ lower prices allow more low-wealth households to buy (lower downpayment)
 Rents stay constant
 \end_layout
 
-\begin_layout Itemize
-% 
-\begin_inset Formula $\Delta$
-\end_inset
-
- in EV of lifetime utility is 0.83%
-\end_layout
-
 \begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
@@ -4057,11 +4888,19 @@ Use estimates of average tax savings from Poterba and Sinai (2007)
 \end_layout
 
 \begin_layout Itemize
-Reduce disposable income of owners by implied savings
+Raise taxes for owners by amount equal to average deduction
 \end_layout
 
 \begin_layout Itemize
 Redistribute the collected proceeds on a per-capita, per-period basis
+\end_layout
+
+\begin_layout Itemize
+Adjust price-to-rent ratios 
+\begin_inset Formula $\kappa_{d}$
+\end_inset
+
+ so that rent constant
 \end_layout
 
 \begin_layout Standard
@@ -4121,7 +4960,7 @@ Net Present Value of Deduction
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf
-	scale 70
+	scale 60
 
 \end_inset
 
@@ -4231,32 +5070,62 @@ Conclusion
 \end_layout
 
 \begin_layout BeginFrame
-Conclusion
+Conclusion and Outlook
 \end_layout
 
 \begin_layout Itemize
-Migration has a large value in the event of a regional shock
+Constructed a dynamic migration model capable of dealing with aggregate
+ fluctutations
 \end_layout
 
 \begin_layout Itemize
+Found that:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+The migration option has a large value
+\end_layout
+
+\begin_layout Enumerate
 Homeownership is an important factor in a migration model
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
+\begin_layout Enumerate
 affects probability of moving
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 affects response to shocks
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
+\begin_layout Enumerate
 Abolishing the mortgage interest deduction has a small positive impact on
  migration 
 \end_layout
 
+\end_deeper
+\begin_layout Itemize
+To do:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+amenities (regional fixed effect)
+\end_layout
+
+\begin_layout Itemize
+distance in moving cost
+\end_layout
+
+\begin_layout Itemize
+relax restrictions of factor model (trends?, three agg.
+ factors?)
+\end_layout
+
+\end_deeper
 \begin_layout EndFrame
 
 \end_layout
