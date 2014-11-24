@@ -1,6 +1,8 @@
 # documentation of data at http://www.nber.org/cps/cpsmar13.pdf
 
 
+
+
 Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 
 	d <- data.table(read.dta(dta))
@@ -45,8 +47,9 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	setnames(d,c("a_age","hh5to18"),c("age","numkids"))
 
 	# create a dummy for cross state move
-	d[, S2S.move := mig_mtr3 %in% c("Different state, same division","Different division, same region","Different region")]
-	d[, S2S.move := factor(S2S.move,labels=c("No","Yes"))]
+	d[, DinD := mig_mtr3 %in% c("Different state, same division")]
+	d[, S2S := mig_mtr3 %in% c("Different state, same division","Different division, same region","Different region")]
+	d[, S2S.move := factor(S2S,labels=c("No","Yes"))]
 	# create a dummy for cross Division move
 	# d[, D2D.move := mig_mtr3 %in% c("Different division, same region","Different region")]
 	d[, D2D.move := factor(D2D,labels=c("No","Yes"))]
@@ -55,6 +58,8 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	d[,race := prdtrace]
 	d[race>9,race:=9]
 	d[,race := factor(race,labels=c("white","black","american.indian","asian","hawaian","white-black","white-AI","white-asian","other"))]
+
+	save(d,file="~/git/migration/mig-pkg/data/cps.RData")
 
 	return(d)
 }

@@ -72,6 +72,12 @@ type Model
 	# ---------------
 	sinai::DataFrame
 
+	# copula objects
+	# --------------
+	copula::NormalCopula
+	cop_quants::Matrix
+	cop_shock::Vector
+
 
 	# constructor
     function Model(p::Param)
@@ -432,7 +438,8 @@ type Model
 			mc = mc .* 3.0
 		end
 
-        gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai]
+		zlength = [zsupp[end,1]-zsupp[1,1]]
+        gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai, "zlength" => zlength ]
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
@@ -449,15 +456,23 @@ type Model
 		# ======================
 		srand(12345)
 		N = c_breaks[end]
-		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*p.nt-1)
-		sshock = rand(N*p.nt-1)
-		mshock = rand(N*p.nt-1)
+		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*(p.nt-1))
+		sshock = rand(N*(p.nt-1))
+		mshock = rand(N*(p.nt-1))
 		zshock0    = rand(Normal(0,0.1),N)
 
 
+		# copula settings
+		# ===============
+		cop = NormalCopula(2,0.5976)   # a 2D normal copula with parameter 0.5976
+		cop_quants = zeros(1000,2)
+		cop_quants[:,1] = linspace(0.01,0.99,1000)
+		cop_shock = rand(N*(p.nt-1))
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai)
+
+
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
 
 	end
 end

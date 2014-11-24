@@ -442,6 +442,7 @@ Sipp.wage_residual_copulas <- function(){
 
 	d1 = data[D2D==1,list(p_u,p_u_plus1)]
 	d1 = d1[complete.cases(d1)]
+	normal.cop = normalCopula(0.7,2,"ar1")
 	f1 = fitCopula(normal.cop,as.matrix(d1))
 
 	d2 = data[D2D==1,list(p_u_minus1,p_u)]

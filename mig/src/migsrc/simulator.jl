@@ -77,8 +77,33 @@ function draw_z(m::Model,Lz::Float64,idx::Int)
 	zz = m.Inc_shocks[1,1] * Lz + m.zshock[idx]	
 	# zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
 	# z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.Inc_shocks[j,4])
-	z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.gridsXD["zsupp"][4,1])
+	z = forceBounds(zz,m.gridsXD["zsupp"][1,1],m.gridsXD["zsupp"][end,1])
 	return z
+end
+
+function draw_z_cop(m::Model,Lz::Float64,idx::Int)
+
+	# what rank is Lz in the range of z?
+	zr = (Lz-m.gridsXD["zsupp"][1,1]) / m.gridsXD["zlength"][1]
+
+	# fill in column 2 of copula quantiles with conditioning value:
+	m.cop_quants[:,2] = repeat([zr],inner=[size(m.cop_quants,1)],outer=[1])
+
+	# get copula density on those values
+	d = dnormCopula(m.cop_quants,m.copula)
+
+	# normalize to sum to 1
+	d = d ./ sum(d)
+	cdf = cumsum(d)
+
+	# get rank of random draw from this cdf
+	r = searchsortedfirst(cdf[:],m.cop_shock[idx])
+
+	# map this rank back into z-space
+	zr = cdf[r] * m.gridsXD["zlength"][1] + m.gridsXD["zsupp"][1,1]
+
+	# return
+	return zr
 end
 
 function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
@@ -529,7 +554,12 @@ function simulate(m::Model,p::Param)
 					Da[i_idx_next] = ss
 					Dj[i_idx_next] = moveto
 					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
-					# Dz[i_idx_next] = 0.0 # TODO drawign this from the right distribution depending on whether move or not!
+					# if !move
+					# 	# Dzcop[i_idx_next] = draw_z_cop(m,z,i_idx) 
+					# 	Dz[i_idx_next] = draw_z(m,z,i_idx) 
+					# else
+					# 	Dz[i_idx_next] = draw_z_cop(m,z,i_idx) 
+					# end
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
 				if highMC && (p.shockReg==ij) && move
@@ -552,7 +582,7 @@ function simulate(m::Model,p::Param)
 
 	# pack into a dataframe
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,zcop=Dzcop,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------

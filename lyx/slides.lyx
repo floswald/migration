@@ -970,12 +970,11 @@ vspace{3mm}
 \size default
 
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
-mention that you are not looking at immigrants from different countries
- coming to the US.
- 
+for example, GE models can look at how wages react to a change in the skill
+ distribution of workers caused by the inflow of immigrants from abroad.
 \end_layout
 
 \end_inset
@@ -1036,271 +1035,6 @@ Housing demand over the lifecycle:
 
 \begin_layout Section
 Empirical Facts
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout BeginFrame
-Mobility Facts I
-\end_layout
-
-\begin_layout Itemize
-annual moving rate at county level 
-\begin_inset Formula $\approx\frac{1}{3}$
-\end_inset
-
- of annual flows into or out of employment (Fallick and Fleischmann 2004)
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Period
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Across 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-% of US population
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-county
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Annual
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-state
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-region
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-county
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-18.6
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5-year
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-state
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-8.9
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-region
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4.8
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Source: Molloy et al, J.
- of Economic Perspectives (2011).
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout BeginPlainFrame
@@ -2077,11 +1811,11 @@ conditional
 \begin_inset Formula $v_{t}(x_{it},d')$
 \end_inset
 
-, net of idiosyncratic location taste shock 
+, net of location taste shock 
 \begin_inset Formula $\varepsilon\sim$
 \end_inset
 
- EV type 1.
+ EV type 1, iid.
 \end_layout
 
 \begin_layout Itemize
@@ -2474,19 +2208,28 @@ Proportional cost of selling the house:
 Labor Income
 \end_layout
 
-\begin_layout Itemize
-\begin_inset Formula $\overline{y}_{dt}$
-\end_inset
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
 
- is an index of regional labor productivity.
-\end_layout
-
-\begin_layout Itemize
+\begin_layout Plain Layout
 Define the price of human capital by 
 \begin_inset Formula $\eta_{d}\ln\overline{y}_{dt}$
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\overline{y}_{dt}$
+\end_inset
+
+ is an index of regional labor productivity.
 \end_layout
 
 \begin_layout Itemize
@@ -2779,6 +2522,18 @@ rent in
 \end_layout
 
 \begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
 buy in 
 \begin_inset Formula $d'$
 \end_inset
@@ -2799,7 +2554,7 @@ status open
 
 
 \backslash
-onslide+<2->
+onslide+<3->
 \end_layout
 
 \end_inset
@@ -2818,19 +2573,39 @@ rent in
 \end_inset
 
 : 
-\begin_inset Formula $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d'}p_{d't}\right)$
+\begin_inset Formula 
+\[
+a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d'}p_{d't}\right)
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<4->
+\end_layout
+
+\end_inset
+
 buy in 
 \begin_inset Formula $d'$
 \end_inset
 
 : 
-\begin_inset Formula $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)$
+\begin_inset Formula 
+\[
+a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)
+\]
+
 \end_inset
 
 
@@ -3607,7 +3382,7 @@ L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 explain MCMC
@@ -3805,7 +3580,7 @@ Model Fit II
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -3914,18 +3689,124 @@ age > 35
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_auxmods.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Model Fit II
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
 \begin_layout Plain Layout
 
+\end_layout
 
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+model
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age < 35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+31%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+44%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+age > 35
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+84%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+71%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3935,30 +3816,26 @@ linewidth][c]{%
 
 \begin_layout Standard
 \noindent
+\align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_auxmods.pdf
-	scale 50
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_auxmods2.pdf
+	scale 60
 
 \end_inset
 
 
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_wealth.pdf
-	scale 50
+\end_layout
 
-\end_inset
-
-
+\begin_layout BeginFrame
+Model Validation
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_wealth.pdf
+	scale 60
 
 \end_inset
 
@@ -4119,7 +3996,8 @@ why are moving costs so large?
 \end_layout
 
 \begin_layout Itemize
-because moves are rare in the data
+because moves are rare in the data.
+ these large numbers are the model mechanism to deter too many moves.
 \end_layout
 
 \begin_layout Itemize
@@ -4147,7 +4025,36 @@ it is possible to estimate the moving cost for an actual mover.
 \end_layout
 
 \begin_layout BeginFrame
-Properties II: Decomposing Moving Costs
+Properties II: Decomposing moving costs for owners
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Pr( High Type | own ) = 69% 
+\end_layout
+
+\begin_layout Plain Layout
+Pr( High Type | rent ) = 65%
+\end_layout
+
+\begin_layout Plain Layout
+or
+\end_layout
+
+\begin_layout Plain Layout
+Pr( own | high type ) = 64% 
+\end_layout
+
+\begin_layout Plain Layout
+Pr( own | low type ) = 60%
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -4169,6 +4076,20 @@ or because of transaction costs
 \end_inset
 
 ?
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Owners are more likely to be of high moving cost type:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Pr( High Type | own ) = 69% 
+\end_layout
+
+\begin_layout Itemize
+Pr( High Type | rent ) = 65%
 \end_layout
 
 \end_deeper
@@ -4836,6 +4757,37 @@ Abolishing the Mortgage Interest Deduction
 \end_layout
 
 \begin_layout BeginFrame
+Mortgage Interest Deduction
+\end_layout
+
+\begin_layout Itemize
+Owner-occupiers in the USA can deduct the interest paid on the mortgage
+ from taxable income.
+\end_layout
+
+\begin_layout Itemize
+The mortgage insterest deduction has been discussed many times in the tax
+ policy literature:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Poterba (1974, 1992), Poterba and Sinai (2008), Gervais (2002), Glaeser
+ (2011), Glaeser and Shapiro (2002), Gervais and Pandey (2008).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Big tax expenditure: $72 billion in 2014.
+\end_layout
+
+\begin_layout Itemize
+Economic rationale for the deduction is not clear.
+\end_layout
+
+\begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
@@ -4845,7 +4797,7 @@ What is the impact of abolishing the deduction on welfare, ownership and
 \end_layout
 
 \begin_layout Itemize
-Would abolishing lead to an increase in mobility?
+Would abolishing it lead to an increase in mobility?
 \end_layout
 
 \begin_layout Itemize
@@ -4864,19 +4816,19 @@ Sommer and Sullivan (2013)
 \end_layout
 
 \begin_layout Itemize
-With inelastic housing supply, deduction is capitalized into house prices
+With inelastic housing supply, deduction is capitalized into house prices.
 \end_layout
 
 \begin_layout Itemize
-removing deduction lowers equilibrium prices by 5%
+removing deduction lowers equilibrium prices by 5%.
 \end_layout
 
 \begin_layout Itemize
-lower prices allow more low-wealth households to buy (lower downpayment)
+lower prices allow more low-wealth households to buy (lower downpayment).
 \end_layout
 
 \begin_layout Itemize
-Rents stay constant
+Rents stay constant.
 \end_layout
 
 \begin_layout BeginFrame
@@ -4884,23 +4836,24 @@ Abolishing the Mortgage Interest Deduction
 \end_layout
 
 \begin_layout Itemize
-Use estimates of average tax savings from Poterba and Sinai (2007)
+Use estimates of average tax savings from Poterba and Sinai (2007).
 \end_layout
 
 \begin_layout Itemize
-Raise taxes for owners by amount equal to average deduction
+Raise taxes for owners by amount equal to average deduction in income-age
+ band.
 \end_layout
 
 \begin_layout Itemize
-Redistribute the collected proceeds on a per-capita, per-period basis
+Redistribute the collected proceeds on a per-capita, per-period basis.
 \end_layout
 
 \begin_layout Itemize
-Adjust price-to-rent ratios 
+Adjust rent-to-price ratios 
 \begin_inset Formula $\kappa_{d}$
 \end_inset
 
- so that rent constant
+ so that rent stays constant.
 \end_layout
 
 \begin_layout Standard
@@ -5075,7 +5028,7 @@ Conclusion and Outlook
 
 \begin_layout Itemize
 Constructed a dynamic migration model capable of dealing with aggregate
- fluctutations
+ fluctuations
 \end_layout
 
 \begin_layout Itemize

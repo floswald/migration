@@ -103,9 +103,11 @@ status collapsed
 I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
  for their continued support and advice throughout this project.
  I also thank Uta Schönberg, Jeremy Lise, Marco Bassetto, Suphanit Piyapromdee,
- Richard Blundell and seminar participants at UCL, IFS and Royal Holloway
- for comments and suggestions.
- Finally, I would like to acknowledge financial support from cemmap.
+ Richard Blundell, Jose-Victor Rios Rull, Morten Ravn, Fabien Postel-Vinay
+ and seminar participants at UCL, IFS and Royal Holloway for helpful comments
+ and suggestions.
+ Finally, I would like to acknowledge financial support from the ESRC centre
+ cemmap.
 \end_layout
 
 \end_inset
@@ -744,6 +746,53 @@ key "karahan2011housing"
  on the increase in unemployment.
  The present paper differs from this group of contributions by assuming
  multiple locations and by adopting a life-cycle framework.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In general, the relationship between homeownership and labor market mobility
+ or unemployment has been discussed in many other places, and an incomplete
+ list might include  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "oswald1996conjecture,blanchflower2013does"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "coulson2002tenure"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "guler2011homeownership"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "battu2008housing"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "halket2014saving"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8028,37 +8077,6 @@ Normal Copula estimates for the rank of wage residuals
 \end_inset
 
 .
- The first row shows the estimated copula parameter for the period of the
- move, the second row is the estimate for the same set of individuals in
- the period preceeding the move.
- The dependence between ranks of 
-\begin_inset Formula $u$
-\end_inset
-
- is stronger for periods without a move.
- Notice that the estimate for stayers is much lower than the estimate used
- in the model, since 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "french_2005"
-
-\end_inset
-
- uses several observations of 
-\begin_inset Formula $u_{it+\tau}$
-\end_inset
-
- in a GMM estimator.
- The estimate of 
-\begin_inset Formula $\rho$
-\end_inset
-
- for stayers uses just 2 observations per individual and is just for comparison.
- It is not feasible to obtain a better estimate of 
-\begin_inset Formula $\rho$
-\end_inset
-
- for movers, since a move involves just two periods.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Normal-Copula-estimates"

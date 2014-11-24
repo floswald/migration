@@ -1,4 +1,16 @@
 
+
+plot_sipp_r2p <- function(){
+	data(Sipp_age,envir=environment())
+	r2p = merged[age>19&age<51, list(p = .SD[hvalue>0,median(hvalue,na.rm=T)], y = .SD[HHincome>0,median(HHincome,na.rm=T)],rent=.SD[own==FALSE,median(mortg.rent,na.rm=T)]),by=list(year,Division)]
+	r2p[ , r2p := rent / p]
+	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+	p = ggplot(r2p,aes(x=year,y=r2p,color=Division)) + geom_line(size=1) + ggtitle("Rent to price ratio") + scale_color_manual(values=cbPalette) + scale_y_continuous("median rent / median price") + theme_bw()
+	ggsave(p,file="/Users/florianoswald/Dropbox/mobility/output/data/sipp/r2p.pdf")
+}
+
+
+
 plot_probMove = function(){
 	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
 	for (i in unique(ass$assets)){
@@ -122,6 +134,7 @@ plot_moment_fit <- function(){
 
 	lms = d0[moment %like% "lm_"]
 	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.1,y=-0.0,label="age-ownership",size=3) #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
+	plm2 = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
 
 	s = split(d,d$type)
 
@@ -147,6 +160,7 @@ plot_moment_fit <- function(){
 	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")
 
 	ggsave(plm,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods.pdf")
+	ggsave(plm2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods2.pdf")
 	ggsave(p3,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_wealth.pdf")
 	ggsave(p2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_ownership.pdf")
 	ggsave(p1,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_mobility.pdf")
@@ -1495,6 +1509,7 @@ get_BEA_persincome <- function(){
 
 }
 
+# gdp per capita
 getFRED_gdp <- function(){
 
 	gdp = quantmod:::getSymbols("A939RX0Q048SBEA",src="FRED",auto.assign=FALSE)
@@ -1555,6 +1570,9 @@ getFHFA_realPrices <- function(){
 	fhfa[,price := hvalue * index2012]
 
 	# get real house value
+	# TODO
+	# should use this inflation index. slightly different:
+	# CUUR0000SA0L2
 	data(CPIHOSSL,package="EconData",envir=environment())
 	cpi = to.yearly(CPIHOSSL)
 	cpi <- cpi[,1]
