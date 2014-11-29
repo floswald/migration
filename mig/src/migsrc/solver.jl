@@ -156,6 +156,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	noSaving    = false
 	noBuying    = false
 	highMC      = false
+	all_j       =  false
 	pshock      = false
 
 	Poterba = m.gridsXD["Poterba"]
@@ -192,6 +193,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		highMC = true
 	end
 
+	if p.policy=="highMC_all_j"
+		highMC = true
+		all_j  = true
+	end
+
+	if p.policy=="all_j"
+		all_j = true
+	end
 	if ((p.policy == "pshock") && (age >= p.shockAge))
 		pshock = true
 	end
@@ -241,6 +250,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal[age-p.shockAge+1]
 							else
 								price_j = m.gridsXD["p"][iy,ip,ij]
+							end
+
+							if all_j
+								price_j = m.gridsXD["p"][iy,ip,p.shockReg]
 							end
 
 							for ih=0:1
@@ -294,6 +307,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal[age-p.shockAge+1]
 										else
 											price_k = m.gridsXD["p"][iy,ip,ik]
+										end
+
+										if all_j
+											price_k = m.gridsXD["p"][iy,ip,p.shockReg]
 										end
 
 										# kidx = idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)

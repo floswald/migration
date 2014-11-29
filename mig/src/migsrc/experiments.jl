@@ -877,13 +877,20 @@ end
 # compares baesline with highMC
 # differences in utility if moving in region j
 # is shut down.
-function exp_value_mig_base(j::Int)
+function exp_value_mig_base(j::Int,allj=false)
 
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
 	# baseline model
-	p = Param(2)
+
+	if allj
+		opts = ["policy" => "all_j", "shockRegion" => j]
+		p = Param(2,opts)
+	else
+		p = Param(2)
+	end
+
 	m = Model(p)
 	solve!(m,p)
 	base = simulate(m,p);

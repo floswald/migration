@@ -7,13 +7,13 @@ t0 = time()
 require("nodes.jl")
 
 opts =[
-	"N"=>nprocs()-1,
+	"N"=>nprocs(),
 	"printlevel"=> 3,
 	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster","MA.h5"),	
 	"save_frequency"=> 10,
 	"user"=> ENV["USER"],
 	"date"=> readall(`date`),
-	"maxiter"=> 50,
+	"maxiter"=> 500,
 	"maxtemp"=>100,
 	"min_shock_sd"=>0.1,
 	"max_shock_sd"=>2,

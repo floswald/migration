@@ -273,7 +273,15 @@ type Model
 					end
 				end
 			end
-
+		elseif (p.policy=="all_j" || p.policy=="highMC_all_j")
+			for j in 1:p.nJ
+				for iP in 1:p.np
+					for iY in 1:p.ny
+						ygrid[iY,iP,j] = @with(VAR_reg[p.shockReg,:], :y_Intercept + :y_P * Pgrid[iP] + :y_Y * Ygrid[iY])[1]
+						pgrid[iY,iP,j] = @with(VAR_reg[p.shockReg,:], :p_Intercept + :p_P * Pgrid[iP] + :p_Y * Ygrid[iY])[1]
+					end
+				end
+			end
 		else
 			for j in 1:p.nJ
 				for iP in 1:p.np
