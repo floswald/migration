@@ -40,8 +40,8 @@ function runExperiment(which::String,region::Int,year::Int)
 	elseif in(which,["pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,p)
 		e = mig.exp_shockRegion(opts)
-		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_flows.json"),"w")
-		JSON.print(f,e[1]["flows"])
+		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
+		JSON.print(f,e[1])
 		close(f)
 	else
 		throw(ArgumentError("no valid experiment chosen"))
@@ -1398,69 +1398,44 @@ function exp_shockRegion(opts::Dict)
 	d[which] = sim1
 	flows = getFlowStats(d,string(which,j))
 
+	# calculate an elasticity of out and inflows
+	# -------------------------------------------
 
-	# migration outflows
-	# ==================
+	ela = join(flows["base"][[:Net,:Total_in_all,:Total_out_all,:year]],flows[which][[:Net,:Total_in_all,:Total_out_all,:year]],on=:year)
+	ela2 = @> begin
+		ela
+		@transform(d_net = (:Net_1 - :Net)./ :Net)
+		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all)
+		@where(:year.>=shockYear)
+		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net))
+	end
 
-	
+	elas = Dict()
 
-	# b_out = @> begin
-	# 	sim0	
-	# 	@where((:j.==j) & (:year.>1997)) 
-	# 	@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-	# 	@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
+	if which == "yshock"
+		elas["in"] = ela2[:mean_din][1] 
+		elas["out"]= ela2[:mean_dout][1]
+		elas["net"]= ela2[:mean_dnet][1]
+		elas["e_in"] = ela2[:mean_din][1] / -0.1
+		elas["e_out"]= ela2[:mean_dout][1] / -0.1
+		elas["e_net"]= ela2[:mean_dnet][1]/ -0.1
+	else
+		elas["in"] = ela2[:mean_din][1] 
+		elas["out"]= ela2[:mean_dout][1]
+		elas["net"]= ela2[:mean_dnet][1]
+		elas["e_in"] = ela2[:mean_din][1] / -0.3
+		elas["e_out"]= ela2[:mean_dout][1] / -0.3
+		elas["e_net"]= ela2[:mean_dnet][1]/ -0.3
+	end
 
-	# 	end
 
-	# p_out = @> begin
-	# 		sim1
-	# 		@where((:year.>1997)&(:j.==j))
-	# 		@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
-	# 		@by(:year,mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)),mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)), rel_mig_own = 100 .* sum(:mig_own.data,WeightVec(:density.data))./ sum(:own,WeightVec(:density.data)),rel_mig_rent = 100 .* sum(:mig_rent.data,WeightVec(:density.data))./ sum(!:own,WeightVec(:density.data)))
-	# 	end
-
-	# # migration inflows
-	# # =================
-
-	# # how many renters/owners do you have each year in j?
-	# counts0 = @> begin
-	# 		sim0
-	# 		@where((:j.==j) & (:year.>1997))
-	# 		@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
-	# 	end
-	# counts1 = @> begin
-	# 		sim1
-	# 		@where((:j.==j) & (:year.>1997))
-	# 		@by(:year,n_all = length(:own) ,n_rent = sum(!(:own)) , n_own=sum(:own) )
-	# 	end
-
-	# b_in = @> begin
-	# 		sim0	
-	# 		@where((:year.>1997)&(:j.!=j))
-	# 		@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-	# 	end
-	# b_in = join(b_in,counts0,on=:year);
-	# b_in = @> begin
-	# 		b_in
-	# 		@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
-	# 	end
-
-	# p_in = @> begin
-	# 		sim1
-	# 		@where((:year.>1997)&(:j.!=j))
-	# 		@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
-	# 	end
-	# p_in = join(p_in,counts1,on=:year);
-	# p_in = @> begin
-	# 		p_in
-	# 		@by(:year,mig = 100 .* mean(:mig), mig_own = 100 .* mean(:mig_own), mig_rent = 100 .* mean(:mig_rent), rel_mig = 100 .* sum(:mig)./:n_all[1], rel_mig_own = 100 .* sum(:mig_own)./:n_own[1], rel_mig_rent = 100 .* sum(:mig_rent)./:n_rent[1], abs_mig = sum(:mig), abs_mig_own = sum(:mig_own), abs_mig_rent =sum(:mig_rent))
-	# 	end
 
 	out = ["which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
 	       "flows" => flows,
+	       "elasticity" => elas,
 	       "values" => ["base" => w0, which => w1],
 	       "moments" => ["base" => mms0, which => mms1]]
 
