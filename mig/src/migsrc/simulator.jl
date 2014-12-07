@@ -217,6 +217,7 @@ function simulate(m::Model,p::Param)
 	Dprob    = zeros(nsim*T)
 	Dcumprob = zeros(nsim*T)
 	Dwealth  = zeros(nsim*T)
+	Dwealth2  = zeros(nsim*T)
 	Ddist    = zeros(nsim*T)
 	Dcash    = zeros(nsim*T)
 	Drent    = zeros(nsim*T)
@@ -543,6 +544,7 @@ function simulate(m::Model,p::Param)
 				Dregname[i_idx] = regnames[ij]
 				Dcanbuy[i_idx]  = canbuy
 				Dwealth[i_idx]  = (price_k * ih) + a
+				Dwealth2[i_idx]  = (price_j * ih) + a 	# TODO
 				Ddist[i_idx]    = m.distance[ij,moveto]
 				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price_k,move,ij,p)
 				Drent[i_idx]    = pifun(ih,ihh,price_j,price_k,move,ij,p)
@@ -582,7 +584,7 @@ function simulate(m::Model,p::Param)
 
 	# pack into a dataframe
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------

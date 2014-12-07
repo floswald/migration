@@ -640,6 +640,7 @@ function rouwenh(rho::Float64,mu_eps,sigma_eps,n)
 	return (z,P)
 end
 
+
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = zeros(p.ny*p.np, p.ny*p.np)
 	ycoef = array( @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
@@ -647,6 +648,10 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	for ip in 1:p.np
 		for iy in 1:p.ny
 
+		# TODO.
+		# this should be the other way around?
+		# i.e. define MvNormal on MvNormal([y,p]*coef,C)
+		# but maybe this is actually equivalent.
 			# setup MvNormal on that state
 			C = PDMat(sigs)
 			mvn = MvNormal([ygrid[iy],pgrid[ip]],C)

@@ -715,7 +715,7 @@ function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
 	elseif which=="yshock3"
 		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
 	elseif which=="yshock"
-		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1])]
+		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1])]
 
 	elseif which=="highMC"
 		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]

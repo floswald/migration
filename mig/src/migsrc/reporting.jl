@@ -26,7 +26,7 @@ end
 
 function simReport(s::DataFrame)
 
-	s = @where(s,!isna(:cohort));
+	s = @where(s,(!isna(:cohort) & (:year.>1997)));
 
 	mp = @> begin
        s
@@ -64,11 +64,36 @@ function simReport(s::DataFrame)
 
     mp_wealth = @> begin
         s
-        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:20)./20),1)))
-        @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)))
+        @where(:wealth.>-100)
+        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))
+        @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
         @transform(Type="Owner")
     end
     mp_wealth[!mp_wealth[:own],:Type] = "Renter"
+    writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth.csv",mp_wealth)
+
+
+    mp_wealth2 = @> begin
+        s
+        @where(:wealth.>-100)
+        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))
+        # @transform(qwealth=quantile(:wealth,(1:100)./100))
+        # @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
+        @by([:wealth],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move),n_own=mean(:h.data,WeightVec(:density.data)))
+        # @transform(Type="Owner")
+    end
+    writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth2.csv",mp_wealth)
+    # mp_wealth[!mp_wealth[:own],:Type] = "Renter"
+
+    # mp_wealth = @> begin
+    #     s
+    #     @where(:wealth2.>-100)
+    #     @transform(wealth=cut(:wealth2,round(quantile(:wealth2,(0:100)./100),1)))
+    #     # @transform(qwealth=quantile(:wealth,(1:100)./100))
+    #     @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
+    #     @transform(Type="Owner")
+    # end
+    # mp_wealth[!mp_wealth[:own],:Type] = "Renter"
 
     mp_inc = @> begin
     	s
@@ -111,7 +136,8 @@ function simReport(s::DataFrame)
     pinc = plot(mp_inc,x="inc_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by income"))
     pz = plot(mp_z,x="z_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by income shock"),Scale.discrete_color_manual("red","blue"))
     pass=plot(mp_ass,x="assets",y="prob",Geom.line,color="Type",myt,Guide.title("Probability of moving by assets"),Scale.discrete_color_manual("blue","red"))
-    pwealth=plot(mp_wealth,x="wealth",y="prob",Geom.line,color="Type",myt,Guide.title("Probability of moving by wealth"),Scale.discrete_color_manual("blue","red"))
+    pwealth=plot(mp_wealth,x="wealth",y="prob",Geom.point,color="n_own",myt,Guide.title("Probability of moving by wealth"))
+    pwealth=plot(mp_wealth,x="wealth",y="prob",Geom.line,color="n_own",myt,Guide.title("Probability of moving by wealth"),Scale.discrete_color_manual("blue","red"))
     pass0=plot(@where(mp_ass_age,:own),x="assets",y="prob",Geom.line,color="age",myt,Guide.title("Probability of Moving by assets"))
     pass1=plot(@where(mp_ass_age,!:own),x="assets",y="prob",Geom.line,color="age",myt,Guide.title("Probability of Moving by assets"))
     pp  =plot(mp_p,x="p_bin",y="prob",Geom.line,color="own",myt,Guide.title("Probability of Moving by House Price"))
