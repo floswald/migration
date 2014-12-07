@@ -1401,7 +1401,7 @@ function exp_shockRegion(opts::Dict)
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
 
-	ela = join(flows["base"][[:Net,:Total_in_all,:Total_out_all,:year]],flows[which][[:Net,:Total_in_all,:Total_out_all,:year]],on=:year)
+	ela = join(flows["base"][j][[:Net,:Total_in_all,:Total_out_all,:year]],flows[which][j][[:Net,:Total_in_all,:Total_out_all,:year]],on=:year)
 	ela2 = @> begin
 		ela
 		@transform(d_net = (:Net_1 - :Net)./ :Net)
