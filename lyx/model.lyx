@@ -106,8 +106,8 @@ I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
  Richard Blundell, Jose-Victor Rios Rull, Morten Ravn, Fabien Postel-Vinay
  and seminar participants at UCL, IFS and Royal Holloway for helpful comments
  and suggestions.
- Finally, I would like to acknowledge financial support from the ESRC centre
- cemmap.
+ I would like to acknowledge financial support from cemmap under ESRC grant
+ ES/I034021/1 and ESRC transformative grant ES/M000486/1.
 \end_layout
 
 \end_inset
@@ -3610,8 +3610,6 @@ Once the solution is obtained, simulation of the model proceeds by using
  all successive years up until 2012.
  The model moments are then computed using the empirical age distribution
  found in the estimation sample as sampling weights.
- A more detailed description both solution and simulation is available in
- the appendix.
 \end_layout
 
 \begin_layout Section
@@ -4162,6 +4160,7 @@ key "bonhomme2006modeling"
  is the same regardless the origin location.
  It would be straightforward to relax this assumption, but data limitations
  forced me to impose this restriction.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4208,10 +4207,11 @@ reference "eq:income-process"
 \end_inset
 
 .
- 
-\end_layout
+ I describe the full procedure in the appendix.
+\begin_inset Foot
+status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family roman
 \series medium
@@ -4224,99 +4224,29 @@ reference "eq:income-process"
 \uwave off
 \noun off
 \color none
-In a first step I estimate the marginal distributions of 
-\begin_inset Formula $z_{idt}$
-\end_inset
-
- and 
-\begin_inset Formula $z_{ikt+1}$
-\end_inset
-
- for all movers.
- These are the cross-sectional distributions of residuals 
-\begin_inset Formula $u_{it}$
-\end_inset
-
- and 
-\begin_inset Formula $u_{it+1}$
-\end_inset
-
- from the regression in expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:copula-margins"
-
-\end_inset
-
-, which is estimated for all movers.
- The move takes place in period 
-\begin_inset Formula $t$
-\end_inset
-
-, such that by assumption, 
-\begin_inset Formula $u_{it}$
-\end_inset
-
- is the residual wage in origin location 
-\begin_inset Formula $d$
-\end_inset
-
-, and 
-\begin_inset Formula $u_{it+1}$
-\end_inset
-
- is the residual wage in the new location 
-\begin_inset Formula $k$
+The proceedure relies crucially on the assumption that individuals have
+ to move to the new region before they can discover 
+\begin_inset Formula $z_{t+1}$
 \end_inset
 
 .
-\begin_inset Formula 
-\begin{equation}
-\ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins}
-\end{equation}
+ I am investigating ways to account for a potential selection effect on
+ 
+\begin_inset Formula $z_{t}$
+\end_inset
+
+ by moving estimation of this part into the structural model and jointly
+ estimate behavioural and wage related parameters.
+ The model provides a set of exclusion restrictions that would allow to
+ do this in theory.
+ Identification of a potential selection effect may be difficult, however,
+ because the sample of movers is small.
+ 
+\end_layout
 
 \end_inset
 
-Here 
-\begin_inset Formula $p(\text{age})$
-\end_inset
 
- is a third order polynomial in age, metro is an indicator for metropolitan
- status and 
-\begin_inset Formula $\gamma_{d}$
-\end_inset
-
- is a Division fixed effect.
- Then I convert the residuals into their respective rank in the empirical
- distributions of before and after move residuals.
- Denoting the standardized values by 
-\begin_inset Formula $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$
-\end_inset
-
-, the next step involves fitting the a normal copula via maximum likelihood
- to this data.
- The results are shown in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Normal-Copula-estimates"
-
-\end_inset
-
-, and they indicate relatively high correlation in the copula dependence
- parameter of around 0.7.
- In the structural model, I use the current rank of 
-\begin_inset Formula $z$
-\end_inset
-
- for a mover together with the copula estimate 
-\begin_inset Formula $\hat{G}_{\text{move}}$
-\end_inset
-
- to draw the next period rank and thus value of 
-\begin_inset Formula $z'$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -7647,6 +7577,11 @@ name "tab:doubleMC"
 
 \end_layout
 
+\begin_layout Standard
+\start_of_appendix
+\begin_inset Note Note
+status open
+
 \begin_layout Section
 \start_of_appendix
 computational details
@@ -7656,7 +7591,7 @@ computational details
 Solution
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The problem is fully discretized on a grid of points, however, the savings
  decision is allowed to be continuous.
  Linear interpolation is used to evaluate the value function between grid
@@ -7690,48 +7625,50 @@ key "Kopecky2010701"
 \end_inset
 
  that spans all observed values in the data and compute the transition matrix
- from each combination of grid points 
+ from each combination of grid points in the current period 
 \begin_inset Formula $\mathbf{P}_{t}^{(ij)}\equiv\left(Y_{i},P_{j}\right)$
 \end_inset
 
- to the set of conditional expected values 
-\begin_inset Formula $\mathbf{P}_{t+1}\equiv\left(E[Y|Y_{i},P_{j}],E[P|Y_{i},P_{j}]\right)$
+ to the set of all grid points in the next period 
+\begin_inset Formula $\mathbf{P}_{t+1}^{(mk)}\equiv\left(Y_{m},P_{k}\right)$
 \end_inset
 
 .
- Those values are known from the estimated VAR(1) model 
+ The VAR(1) model 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:VAR-process-1"
 
 \end_inset
 
-.
- The so--constructed transition matrix then holds the values of the bivariate
- normal probability distribution function implied by the estimates for 
-\begin_inset Formula $\nu$
+ implies that given 
+\begin_inset Formula $\mathbf{P}_{t}^{(ij)}$
 \end_inset
 
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:VAR-process-1"
-
-\end_inset
-
-, evaluted at the point 
-\begin_inset Formula $\left(\mathbf{P}_{t+1}-A\mathbf{P}_{t}\right)$
+, 
+\begin_inset Formula $\mathbf{P}_{t+1}^{(mk)}\sim N\left(A\mathbf{P}_{t}^{(ij)},\sigma_{\nu}^{2}\right)$
 \end_inset
 
 .
+ The transition matrix is then constructed by evaluating all grid points
+ 
+\begin_inset Formula $\mathbf{P}^{(mk)}$
+\end_inset
+
+ in the pdf of this distribution, and by normalizing over rows.
 \end_layout
 
 \begin_layout Subsection
 Simulation
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 [tbd]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7960,9 +7897,142 @@ born
  is born in 2012 at age 20.
  No simulation needs to take place for any individual alive at years after
  2012.
- The initial distribution of assets is drawn from the empirical distribution
- of assets in the SIPP data.
  
+\end_layout
+
+\begin_layout Section
+Estimation of 
+\begin_inset Formula $G_{move}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+In a first step I estimate the marginal distributions of 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{ikt+1}$
+\end_inset
+
+ for all movers.
+ These are the cross-sectional distributions of residuals 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ from the regression in expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:copula-margins-1"
+
+\end_inset
+
+, which is estimated for all movers.
+ The move takes place in period 
+\begin_inset Formula $t$
+\end_inset
+
+, such that by assumption, 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ is the residual wage in origin location 
+\begin_inset Formula $d$
+\end_inset
+
+, and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ is the residual wage in the new location 
+\begin_inset Formula $k$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+\ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins-1}
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $p(\text{age})$
+\end_inset
+
+ is a third order polynomial in age, metro is an indicator for metropolitan
+ status and 
+\begin_inset Formula $\gamma_{d}$
+\end_inset
+
+ is a Division fixed effect.
+ Then I convert the residuals into their respective rank in the empirical
+ distributions of before and after move residuals.
+ Denoting the standardized values by 
+\begin_inset Formula $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$
+\end_inset
+
+, the next step involves fitting the a normal copula via maximum likelihood
+ to this data.
+ The results are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Normal-Copula-estimates"
+
+\end_inset
+
+, and they indicate a correlation between 
+\begin_inset Formula $\hat{u}_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{u}_{it+1}$
+\end_inset
+
+ of 0.59.
+ This estimate together with the marginal distibutions of 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ are used in the structural model, where I use the current value of 
+\begin_inset Formula $z$
+\end_inset
+
+, evaluated in the marginal distribution of 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ for a mover together with the copula estimate 
+\begin_inset Formula $\hat{G}_{\text{move}}$
+\end_inset
+
+ to draw the next value of 
+\begin_inset Formula $z'$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
