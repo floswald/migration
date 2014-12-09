@@ -1401,13 +1401,13 @@ function exp_shockRegion(opts::Dict)
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
 
-	ela = join(flows["base"][j][[:Net,:Total_in_all,:Total_out_all,:year]],flows[which][j][[:Net,:Total_in_all,:Total_out_all,:year]],on=:year)
+	ela = join(flows["base"][j][[:Net,:Total_in_all,:Total_out_all,:Own_in_all,:Own_out_all,:Rent_in_all,:Rent_out_all,:year]],flows[which][j][[:Net,:Total_in_all,:Total_out_all,:Own_in_all,:Own_out_all,:Rent_in_all,:Rent_out_all,:year]],on=:year)
 	ela2 = @> begin
 		ela
 		@transform(d_net = (:Net_1 - :Net)./ :Net)
-		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all)
+		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all)
 		@where(:year.>=shockYear)
-		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net))
+		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
 	end
 
 	elas = Dict()
@@ -1419,6 +1419,10 @@ function exp_shockRegion(opts::Dict)
 		elas["e_in"] = ela2[:mean_din][1] / -0.1
 		elas["e_out"]= ela2[:mean_dout][1] / -0.1
 		elas["e_net"]= ela2[:mean_dnet][1]/ -0.1
+		elas["own_in"] = ela2[:mean_d_own_in][1] 
+		elas["own_out"] = ela2[:mean_d_own_out][1] 
+		elas["rent_in"] = ela2[:mean_d_rent_in][1] 
+		elas["rent_out"] = ela2[:mean_d_rent_out][1] 
 	else
 		elas["in"] = ela2[:mean_din][1] 
 		elas["out"]= ela2[:mean_dout][1]
@@ -1426,6 +1430,10 @@ function exp_shockRegion(opts::Dict)
 		elas["e_in"] = ela2[:mean_din][1] / -0.3
 		elas["e_out"]= ela2[:mean_dout][1] / -0.3
 		elas["e_net"]= ela2[:mean_dnet][1]/ -0.3
+		elas["own_in"] = ela2[:mean_d_own_in][1] 
+		elas["own_out"] = ela2[:mean_d_own_out][1] 
+		elas["rent_in"] = ela2[:mean_d_rent_in][1] 
+		elas["rent_out"] = ela2[:mean_d_rent_out][1] 
 	end
 
 
