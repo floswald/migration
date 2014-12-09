@@ -434,6 +434,8 @@ Sipp.wage_residual_copulas <- function(){
 	dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
 	dat[,u_minus1 := dat[list(upid,timeid-1)][["u"]]]
 
+	margins=dat[D2D==TRUE,list(m=mean(u),s=sd(u),m1=mean(u_plus1,na.rm=T),s1=sd(u_plus1,na.rm=T))]
+
 	# standardize into ranks
 	mmat = dat[,list(p_u=u,p_u_plus1=u_plus1,p_u_minus1=u_minus1)]
 	pmat = pobs(mmat)
@@ -444,6 +446,21 @@ Sipp.wage_residual_copulas <- function(){
 	d1 = d1[complete.cases(d1)]
 	normal.cop = normalCopula(0.7,2,"ar1")
 	f1 = fitCopula(normal.cop,as.matrix(d1))
+	cop <- mvdc(normalCopula(coef(f1)), c("norm", "norm"), list(list(mean = 0, sd =margins[,s]), list(mean = 0, sd =margins[,s1])))
+
+	# these are the grid points of z from the rouwenhorst discretization in the model:
+	q1 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=margins[,s1])
+	q2 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=margins[,s2])
+
+	qtl = expand.grid(q1,q2)
+	qtl$p = dMvdc(as.matrix(qtl),cop)
+	Gmove = matrix(qtl$p,4,4)
+	Gmove2 =  Gmove / rowSums(Gmove)
+	l = list()
+	l$cop_param = coef(f1)
+	l$cop_margins = margins
+	l$Gmove = Gmove2
+	cat(toJSON(l),file="~/Dropbox/mobility/output/model/data_repo/in_data_jl/Gmove.json")
 
 	d2 = data[D2D==1,list(p_u_minus1,p_u)]
 	d2 = d2[complete.cases(d2)]
@@ -452,91 +469,8 @@ Sipp.wage_residual_copulas <- function(){
 	c1 = as.data.frame(summary(f1)$coefficients)
 	c2 = as.data.frame(summary(f2)$coefficients)
 	cat(toJSON(list(movers=c1,stayers=c2)),file="~/Dropbox/mobility/output/model/fit/copulas.json")
-	# # stayers
-	# # =======
 
-	# mv <- merged[D2D==TRUE,list(upid=unique(upid))]
-	# nmv <- merged[,unique(upid)[!unique(upid) %in% mv[,upid]]]
-	# dat <- merged[upid %in% nmv & HHincome >0]
-
-	# setkey(dat,upid,timeid,Division)
-
-	# # log wage = beta0 + state +  beta1  *age + beta2*college + u
-
-	# divs <- dat[,unique(Division)]
-
-	# # get wage residual for each region
-	# mods <- lapply(divs, function(x) lm(log(HHincome) ~ poly(age,degree=3,raw=T) + college + numkids , data=dat[Division==x]))
-	# names(mods) <- divs
-
-	# resids <- lapply(mods,resid)
-
-	# # add residual u back to dataset
-	# dat[, u := 0.0]
-	# for (d in divs){
-	# 	dat[Division==d,u := resids[[d]]]
-	# }
-
-	# # get next period's residual
-	# dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
-	# d <- dat[!is.na(u_plus1),list(upid,timeid,Division,u,u_plus1)]
-
-
-	# cops <- lapply(divs, function(x) mvdc(copula=ellipCopula(family="normal",param=0.1),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12))))
-	# names(cops) <- divs
-
-	# subs <- lapply(divs,function(x) as.matrix(d[Division==x][upid %in% sample(unique(upid),round(0.5*length(unique(upid)))),list(u,u_plus1)]))
-	# names(subs) <- divs
-
-	# fits <- lapply(divs, function(x) fitMvdc(subs[[x]],cops[[x]],start=c(2, 1, 3, 2, 0.5),optim.control=list(trace=10)))
-	# names(fits) <- divs
-
-
-	# # movers
-	# # ======
-
-	# setkey(mv,upid)
-	# setkey(merged,upid,timeid)
-	# mvs <- merged[mv]
-
-	# mvs <- copy(mvs[HHincome > 0])
-
-	# # log wage = beta0 + state +  beta1  *age + beta2*college + u
-
-	# # get wage residual
-	# mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
-
-	# # aim: get cor( u(t), u(t+1) ) when move happened in t
-	# mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
-	# mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
-	# dat = mvs[D2D==TRUE,list(u,u_plus1)]
-	# dat = dat[complete.cases(dat)]
-	# dat2 = mvs[D2D==TRUE,list(u,u_minus1)]
-	# dat2 = dat2[complete.cases(dat2)]
-
-	# mat = as.matrix(dat)
-	# mat2 = as.matrix(dat2)
-	# # just use the rank-normalized data for a normal copula
-	# normal.cop <- normalCopula(c(0.5),dim=2,dispstr="ar1")
-	# f1 = fitCopula(normal.cop,pobs(mat))
-	# f2 = fitCopula(normal.cop,pobs(mat2))
-
-
-
-
-	toJSON(f1)
-
-
-
-
-
-	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
-	mat = as.matrix(dat)
-	mat2 = as.matrix(dat2)
-	m_fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
-	m_fit2=fitMvdc(mat2,myMvd,start=c(2, 1, 3, 2, 0.5))
-
-	return(list(stayers=fits,movers=m_fit,movers_minus=m_fit2))
+	return(list(movers=f1,Gmove=Gmove2))
 }
 
 

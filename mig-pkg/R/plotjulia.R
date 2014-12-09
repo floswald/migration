@@ -16,8 +16,54 @@ plot_probMove = function(){
 	for (i in unique(ass$assets)){
 		ass[ass$assets==i&ass$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
 	}
-	pass = ggplot(ass,aes(x=quantile,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous("20 asset quantiles (0 assets at quantile 8)")
+	x = gsub("\\(","",ass$assets)
+	x = gsub("\\]","",x)
+	x2 = strsplit(x,"\\,")
+	ass$mid = unlist(lapply(x2,function(x){mean(c(as.numeric(x[1]),as.numeric(x[2])))}))
+
+	labs = ass[ass$own=="true",]$mid[seq(1,18,by=2)]
+	brks = ass[ass$own=="true",]$quantile[seq(1,18,by=2)]
+
+	pass = ggplot(ass,aes(x=quantile,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous(name="Financial Assets (a) in 1000 dollars",breaks=brks,labels=paste(labs))
+	# pass = ggplot(ass,aes(x=mid,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous("Financial Assets (a) in 1000 dollars")
 	ggsave(pass,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf",width=7,height=4)
+
+	# not aggregating over own/rent
+
+	w = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth.csv")
+	# for (i in unique(w$wealth)){
+	# 	w[w$wealth==i&w$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
+	# }
+	x = gsub("\\(","",w$wealth)
+	x = gsub("\\]","",x)
+	x2 = strsplit(x,"\\,")
+	w$mid = unlist(lapply(x2,function(x){mean(c(as.numeric(x[1]),as.numeric(x[2])))}))
+
+	w = w[-1,]
+	w[w$mid==-46.0500,"mid"] = 0
+	w1 = subset(w,n_all>100)
+	p1=ggplot(w1,aes(x=mid,y=m_prob,color=Type)) + geom_point() + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
+
+	ggsave(p1,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth.pdf",width=7,height=4)
+
+
+	# aggregating over own/rent
+
+	w = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth2.csv")
+	# for (i in unique(w$wealth)){
+	# 	w[w$wealth==i&w$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
+	# }
+	x = gsub("\\(","",w$wealth)
+	x = gsub("\\]","",x)
+	x2 = strsplit(x,"\\,")
+	w$mid = unlist(lapply(x2,function(x){mean(c(as.numeric(x[1]),as.numeric(x[2])))}))
+
+	w1 = subset(w,mid>0 & mid < 550)
+	p1=ggplot(w1,aes(x=mid,y=m_prob)) + geom_point() + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
+	p2=ggplot(w1,aes(x=mid,y=m_prob,color=n_own)) + geom_point() + scale_color_gradient(name="Ownership\nrate",low="red",high="blue") + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
+
+	ggsave(p1,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth3.pdf",width=7,height=4)
+	ggsave(p2,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth4.pdf",width=7,height=4)
 }
 
 
@@ -299,15 +345,16 @@ plot_experiment <- function(where,wherelong,when){
 
 	yp = melt(pcf,id.vars="year",measure.vars=c("y","y_shock","p","p_shock"))
 	yp[,type := "y"]
-	yp[str_detect(variable,"p"), type := "$p_t$"]
-	yp[str_detect(variable,"y"), type := "$\\overline{y}_{dt}$"]
+	yp[str_detect(variable,"p"), type := "$p_{dt}$"]
+	# yp[str_detect(variable,"y"), type := "$\\overline{y}_{dt}$"]
+	yp[str_detect(variable,"y"), type := "$q_{dt}$"]
 
-	vline.data = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(NA,when))
-	vline.data2 = data.frame(type=c("$p_t$","$\\overline{y}_{dt}$"),z=c(when,NA))
+	vline.data = data.frame(type=c("$p_{dt}$","$q_{dt}$"),z=c(NA,when))
+	vline.data2 = data.frame(type=c("$p_{dt}$","$q_{dt}$"),z=c(when,NA))
 	yscale = c(seq(1970,2000,by=10),when)
 	yscale_pres = c(seq(1970,1990,by=10),when)
 
-	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $\\overline{y}_{dt}$ for $d=$",wherelong,"\n   ")) + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
+	p1 = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $q_{dt}$ for $d=$",wherelong,"\n   ")) + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p1_pres = ggplot(subset(yp,variable %in% c("y","y_shock","p")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","dashed","solid")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres)
 	p2 = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + ggtitle(paste0("Shocking $p_{dt}$ for $d=$",wherelong,"\n   ")) + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale)
 	p2_pres = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres) 
@@ -768,12 +815,22 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# plot region and agg overlaid
 	# ----------------------------
 
-	my = melt(pyagg[,list(year,Division,y,Y)],c("year","Division"))
-	pl = list()
-	pl$y <- ggplot(my,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate Income")
-	mp = melt(pyagg[,list(year,Division,p,P)],c("year","Division"))
+	# get full division name back
+	data(US_states,package="EconData",envir=environment())
+	US = US_states[,list(Div=unique(Division),Division=abbreviate(unique(Division),minlength=3))]
+	US = US[complete.cases(US)]
+	setkey(US,Division)
+	setkey(pyagg,Division)
+	pyagg = US[pyagg]
 
-	pl$p <- ggplot(mp,aes(x=year,y=value,color=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional and Aggregate house price")
+
+	my = melt(pyagg[,list(year,Division=Div,Regional=y,National=Y)],c("year","Division"))
+
+	pl = list()
+	pl$y <- ggplot(my,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (q) and National (Q) Labor Productivity Index") + scale_y_continuous(name="1000s of Dollars") +theme_bw()
+
+	mp = melt(pyagg[,list(year,Division=Div,Regional=p,National=P)],c("year","Division"))
+	pl$p <- ggplot(mp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (p) and National (P) house price index") + scale_y_continuous(name="1000s of Dollars")+theme_bw()
 
 	# estimate regional models: what is relationship y ~ P + Y
 	ep <- p ~ Y + P
@@ -801,11 +858,12 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	# visualize fit
 
 
-	mdy = melt(pyagg[,list(year,Division,y,yhat)],c("year","Division"))
+	mdy = melt(pyagg[,list(year,Division=Div,data=y,prediction=yhat)],c("year","Division"))
 
 	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") 
 
-	mdp = melt(pyagg[,list(year,Division,p,phat)],c("year","Division"))
+
+	mdp = melt(pyagg[,list(year,Division=Div,data=p,prediction=phat)],c("year","Division"))
 
 	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") 
 	# plot with aggregate as well
@@ -823,6 +881,10 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	names(coefs) <- n
 
 
+	ggsave(pl$y,file=file.path(plotpath,"agg_reg_y.pdf"),width=9,height=7)
+	ggsave(pl$p,file=file.path(plotpath,"agg_reg_p.pdf"),width=9,height=7)
+	ggsave(pl$pred_y,file=file.path(plotpath,"VAR_reg_y.pdf"),,width=9,height=7)
+	ggsave(pl$pred_p,file=file.path(plotpath,"VAR_reg_p.pdf"),,width=9,height=7)
 
 
 	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg,pyagg=pyagg))
@@ -1138,7 +1200,7 @@ Export.IncomeProcess <- function(dat){
 
 	
 	# cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
-	cd <- dat[HHincome>0,list(upid,timeid,year,MyMedinc,HHincome,age,Division)]
+	cd <- dat[HHincome>0,list(upid,timeid,D2D,year,MyMedinc,HHincome,age,Division)]
 	cd <- cd[complete.cases(cd)]
 	setkey(cd,year,Division)
 
@@ -1155,7 +1217,7 @@ Export.IncomeProcess <- function(dat){
 
 
 	# TODO change this!!!!
-	lmod = lm(log(HHincome) ~  Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
+	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
 	cnames = coef(lmod)
 	texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
 
@@ -1167,6 +1229,36 @@ Export.IncomeProcess <- function(dat){
 	tikz("~/Dropbox/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
 	ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
 	dev.off()
+
+	# new version
+	cd2 = copy(cd)
+	cd2[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3))) ]
+	setkey(cd2,upid,timeid)
+	cd2[, resid_p := cd2[list(upid,timeid+1)][["resid"]] ]
+
+	# standardize into ranks
+	mmat = cd2[,list(p_resid=resid,p_resid1=resid_p)]
+	pmat = pobs(mmat)
+	data = cbind(cd2[,list(upid,timeid,D2D,resid,resid_p)],pmat)
+	d1 = data[D2D==1,list(p_resid,p_resid1)]
+	d1 = d1[complete.cases(d1)]
+
+	normal.cop = normalCopula(0.7,2,"ar1")
+	f1 = fitCopula(normal.cop,as.matrix(d1))
+	sds = cd2[D2D==TRUE,list(sd=sd(resid),sd2=sd(resid_p,na.rm=T))]
+	cop <- mvdc(normalCopula(coef(f1)), c("norm", "norm"), list(list(mean = 0, sd =sds[,sd]), list(mean = 0, sd =sds[,sd])))
+
+	# these are the grid points of z from the rouwenhorst discretization in the model:
+	q1 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
+	q2 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
+
+	qtl = expand.grid(q1,q2)
+	qtl$p = dMvdc(as.matrix(qtl),cop)
+	Gmove = matrix(qtl$p,4,4)
+	Gmove2 =  Gmove / rowSums(Gmove)
+
+
+
 
 	# add residuals indiv data
 	cd [ ,resid := 0]

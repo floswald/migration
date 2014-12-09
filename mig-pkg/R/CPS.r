@@ -59,7 +59,9 @@ Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 	d[race>9,race:=9]
 	d[,race := factor(race,labels=c("white","black","american.indian","asian","hawaian","white-black","white-AI","white-asian","other"))]
 
-	save(d,file="~/git/migration/mig-pkg/data/cps.RData")
+	cps = d
+
+	save(cps,file="~/git/migration/mig-pkg/data/cps.RData")
 
 	return(d)
 }
@@ -222,6 +224,11 @@ CPS.distance <- function(){
 	setkey(State_distTable,from,to)
 	setkey(cps2,from,to)
 	cps_dist = State_distTable[cps2]
+	cps_dist[,miles := km * 0.621371]
+	dist_of_moves <- cps_dist[D2D==TRUE,summary(miles)]
+
+	l = list()
+	l$dist_of_moves = dist_of_moves
 	qd=cps_dist[D2D==TRUE,quantile(km,na.rm=T)]
 	cps_dist[,distance := cut(km,breaks=qd,labels=c("<718","(718,1348]","(1348,2305]","(2305,8087]"))]
 	cps_mvs = cps_dist[D2D==TRUE& !is.na(to) & age > 19 & age<51]
@@ -234,13 +241,13 @@ CPS.distance <- function(){
 	df = data.frame(tab)
 	df$distance= rownames(df)
 	df$id = paste0("row",1:nrow(df))
-	dl = list()
+	l$dl = list()
 	for (i in 1:nrow(df)){
-		dl[[df[i,"id"]]] = as.vector(df[i,1:5])
+		l$dl[[df[i,"id"]]] = as.vector(df[i,1:5])
 	}
-	dl$total = tab2
+	l$dl$total = tab2
 
-	cat(toJSON(dl),file="~/Dropbox/mobility/output/data/cps/main-reason.json")
+	cat(toJSON(l),file="~/Dropbox/mobility/output/data/cps/main-reason.json")
 
 
 

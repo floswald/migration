@@ -41,3 +41,5 @@ Collate:
     'plotjulia.R'
     'PsidPrices.r'
     'plotExperiments.r'
+    'RegionalPrices.r'
+    'ACS.r'
