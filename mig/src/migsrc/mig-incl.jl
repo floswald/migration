@@ -383,7 +383,7 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
 			# merge
 			ma = join(a,m_in,on=:year)
 			ma = join(ma,m_out,on=:year)
-			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out)./:All)
+			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out)./:All,Net_own = (:Owners_in - :Owners_out)./:All,Net_rent = (:Renters_in - :Renters_out)./:All)
 
 			d[k][j] = ma
 
