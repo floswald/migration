@@ -1420,8 +1420,8 @@ function exp_shockRegion(opts::Dict)
 		elas["all"]["out"]= ela2[:mean_dout][1]
 		elas["all"]["net"]= ela2[:mean_dnet][1]
 		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.1
-		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.1
 		elas["all"]["e_out"]= ela2[:mean_dout][1] / -0.1
+		elas["all"]["e_net"] = ela2[:mean_dnet][1]  / -0.1
 
 		elas["own"]["in"] = ela2[:mean_d_own_in][1] 
 		elas["own"]["out"] = ela2[:mean_d_own_out][1] 
@@ -1441,8 +1441,8 @@ function exp_shockRegion(opts::Dict)
 		elas["all"]["out"]= ela2[:mean_dout][1]
 		elas["all"]["net"]= ela2[:mean_dnet][1]
 		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.3
-		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.3
 		elas["all"]["e_out"]= ela2[:mean_dout][1] / -0.3
+		elas["all"]["e_net"] = ela2[:mean_dnet][1]  / -0.3
 
 		elas["own"]["in"] = ela2[:mean_d_own_in][1] 
 		elas["own"]["out"] = ela2[:mean_d_own_out][1] 
