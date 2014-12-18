@@ -1613,15 +1613,23 @@ function moneyMC()
 
 	whichasset = m.aone
 
+	# at P=Y=2, price in region 2 is 163K.
+	# compare a zero asset renter to an owner with 0 net wealth.
+	# 0 net wealth means that assets are -163K.
+
 	opts = Dict()
 	opts["policy"] = "moneyMC"
-	opts["asset"] = whichasset
 	for ih in 0:1
+		if ih==0
+			opts["asset"] = whichasset
+		else
+			opts["asset"] = 7 
+		end
 		opts["ih"] = ih+1
 		for itau in 1:p.ntau
 			opts["itau"] = itau
-			opts["iz"] = 1
-				opts["it"] = 1
+			opts["iz"] = 1  	# lowest income state
+				opts["it"] = 1 	# age 1
 				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,itau] = find_xtra_ass(v0,opts)
 				println("done with MC ih=$ih, itau=$itau")
