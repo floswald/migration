@@ -1623,7 +1623,7 @@ function moneyMC()
 		if ih==0
 			opts["asset"] = whichasset
 		else
-			opts["asset"] = 7 
+			opts["asset"] = 8 
 		end
 		opts["ih"] = ih+1
 		for itau in 1:p.ntau
