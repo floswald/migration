@@ -430,7 +430,7 @@ function exp_Mortgage(ctax=false)
 	p   = Param(2)
 	m   = Model(p)
 	solve!(m,p)
-	sim = simulate(m,p)
+	sim = simulate(m,p);
 
 	println("done.")
 	# get baseline expected lifetime utility at age 1
@@ -476,7 +476,7 @@ function exp_Mortgage(ctax=false)
 	# get expected net present value of subsidy conditional on age.
 	x = @> begin
 		sim_T
-		@by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage)
+		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage)
 		@by(:realage, npv_at_age = mean(:npv_at_age))
 	end
 	Tot_tax_age = join(Tot_tax_age,x,on=:realage)
@@ -484,7 +484,7 @@ function exp_Mortgage(ctax=false)
 	npv_age_income = @> begin
 		sim_T
 		@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
-		@by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)
+		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)
 		@by([:realage,:ybin], npv_at_age = mean(:npv_at_age))
 	end
 
@@ -627,6 +627,46 @@ function exp_Mortgage(ctax=false)
 	# throw away incomplete cohorts
 	sim4 = @where(sim4,(!isna(:cohort)) );
 	pol4_out = policyOutput(sim4,"price_adjust")
+
+
+	# want to show:
+	# how does wefare vary across various dimensions?
+	# need to merge base and sim4 on id and age.
+	bb = sim[[:id,:age,:v,:h,:income,:a,:kids,:density,:wealth]];
+	pp = sim4[[:id,:age,:v,:h,:income,:a,:kids,:wealth]];
+	names!(pp,[:id,:age,:v_pol,:h_pol,:income_pol,:a_pol,:kids_pol,:wealth_pol]);
+	bp = join(bb,pp,on=[:id,:age]);
+	bp = @transform(bp,dwealth=0.0,dinc=:income_pol .- :income,pinc=100.*(:income_pol .- :income)./:income,da=0.0,dv= :v_pol .- :v,pv= 100.*(:v_pol .- :v)./abs(:v),dh= :h_pol .- :h,ybin = cut(:income,quantile(:income)),abin = cut(:age,[5,10,15,20,25,31]))
+	bp[bp[:wealth].!=0.0,:dwealth] = 100.*(bp[bp[:wealth].!=0.0,:wealth_pol] .- bp[bp[:wealth].!=0.0,:wealth])./ bp[bp[:wealth].!=0.0,:wealth] 
+	bp[bp[:a].!=0.0,:da] = 100.*(bp[bp[:a].!=0.0,:a_pol] .- bp[bp[:a].!=0.0,:a])./ bp[bp[:a].!=0.0,:a] 
+
+	tt = @> begin
+		bp
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
+		@by(:age,mean_dinc = mean(:dinc),mean_pinc = mean(:pinc),mean_dwealth = mean(:dwealth),mean_dh=100*mean(:dh),mean_dassets= mean(:da),q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
+	end
+
+	a_ybin = @> begin
+		bp
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
+		@by([:age,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
+	end
+
+	@> begin
+		bp
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
+		@by([:h,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
+	end
+
+	@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
+
+	@by(bp,:age,m=mean(:dv),p=mean(:pv))
+	@by(bp,[:age,:h,:ybin],m=mean(:dv),pm=mean(:pv))
+	bp1=@by(bp,[:abin,:h],m=mean(:dv),pm=mean(:pv))
+	bp1=@by(bp,[:age,:ybin],m=mean(:dv),pm=mean(:pv))
+	@by(bp,:h,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
+	@by(bp,:ybin,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
+	@by(bp,[:ybin,:h],m=mean(:dv),p=mean(:pv))
 
 
 	# want to show:

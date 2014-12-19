@@ -51,6 +51,11 @@
 \use_refstyle 0
 \boxbgcolor #dbdbdb
 \branch 90mins
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch 25min
 \selected 0
 \filename_suffix 0
 \color #ffffff
@@ -705,11 +710,7 @@ end{columns}
 \end_layout
 
 \begin_layout BeginFrame
-Regional Shocks: large, and varied
-\end_layout
-
-\begin_layout Standard
-Aggregate shocks affect regions to different extents.
+Regional Shocks: large, and varied.
 \end_layout
 
 \begin_layout Itemize
@@ -799,7 +800,7 @@ onslide+<2->
 
 \end_inset
 
-I use SIPP micro data to estimate the preference parameters of the model.
+Use SIPP micro data to estimate the preference parameters of the model.
 \end_layout
 
 \begin_layout Itemize
@@ -1161,7 +1162,7 @@ Annual Migration Rates
 \end_layout
 
 \begin_layout Itemize
-Owners move less than renters
+Owners move less than renters.
 \end_layout
 
 \begin_layout Standard
@@ -1214,6 +1215,19 @@ Definition of
 Region
 \emph default
 : Census Division
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{Divisions}{}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -1231,6 +1245,64 @@ Moves within a region are not counted as migration.
 
 \begin_layout Itemize
 70% of interstate moves are cross Division moves.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align right
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{flushright}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{DivisionMaps}{
+\backslash
+beamergotobutton{Maps.}}
+\backslash
+par
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{DivisionPrices}{
+\backslash
+beamergotobutton{Prices.}}
+\backslash
+par
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+hyperlink{DivisionPricesDecomp}{
+\backslash
+beamergotobutton{Decompose prices.}}
+\backslash
+par
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{flushright}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1257,6 +1329,106 @@ not even 50 states is enough
 \begin_layout Itemize
 there is a tradeoff between level of geographic detail and other features
  one can analyse.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving: CPS Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/CPS/main-reason-pres1.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPS 2013 data on main motivation of moving, conditional on a cross Division
+ move.
+ Median distance moved is 837 miles.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving: CPS Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/CPS/main-reason-pres.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPS 2013 data on main motivation of moving, conditional on a cross Division
+ move.
+ Median distance moved is 837 miles.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1318,107 +1490,9 @@ status open
 \begin_inset Branch 90mins
 status open
 
-\begin_layout BeginFrame
-Reasons for Moving: CPS Data
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement p
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/main-reason-pres1.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS 2013 data on main motivation of moving, conditional on a cross Division
- move
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Note Note
-status collapsed
-
-\begin_layout BeginFrame
-Reasons for Moving: CPS Data
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-placement p
-wide false
-sideways false
 status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/CPS/main-reason-pres.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-CPS 2013 data on main motivation of moving, conditional on a cross Division
- move
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
 
 \begin_layout BeginFrame
 Reasons for Moving II: SIPP Data
@@ -2005,10 +2079,6 @@ s.t. &  & \text{budget constraints}
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginFrame
 Preferences
 \end_layout
@@ -2096,7 +2166,7 @@ Moving Costs:
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 emphasize 4 things on this slide:
@@ -2158,6 +2228,10 @@ logit shock captures moves made for other reasons than income or housing.
 
 
 \end_layout
+
+\begin_layout Standard
+\begin_inset Branch 90mins
+status open
 
 \begin_layout Standard
 \begin_inset Note Note
@@ -3017,8 +3091,41 @@ Match moments predicted by the structural model to moments in SIPP, using
 \end_layout
 
 \begin_layout Standard
+\begin_inset Branch 25min
+status open
+
+\begin_layout Itemize
+Moments relating to mobility: mobility rates conditional on 
+\begin_inset Formula $s,h,t$
+\end_inset
+
+, number of moves
+\end_layout
+
+\begin_layout Itemize
+Moments relating to homeownership: ownership rates conditional on 
+\begin_inset Formula $s,d,t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Average wealth conditional on 
+\begin_inset Formula $d,t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Branch 90mins
-status collapsed
+status open
 
 \begin_layout BeginFrame
 Data: SIPP
@@ -3194,7 +3301,7 @@ linewidth][c]{%
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="3">
+<lyxtabular version="3" rows="9" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -3394,7 +3501,7 @@ mobility cond.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\omega_{1}$
+\begin_inset Formula $\omega$
 \end_inset
 
 
@@ -3406,39 +3513,7 @@ mobility cond.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Terminal utility
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-savings profile
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\omega_{2}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Terminal utility
+Continuation value
 \end_layout
 
 \end_inset
@@ -3539,14 +3614,14 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
-SMM - MCMC estimator
+Estimation method
 \end_layout
 
 \begin_layout Itemize
 Structural parameter vector
 \begin_inset Formula 
 \[
-\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} 
+\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega,\pi_{\tau},\xi_{1},\xi_{2}\right\} 
 \]
 
 \end_inset
@@ -3555,30 +3630,59 @@ Structural parameter vector
 \end_layout
 
 \begin_layout Itemize
-SMM seeks to minimize
-\begin_inset Formula 
-\[
-L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]
-\]
-
+\begin_inset Formula $m_{n}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $m$
-\end_inset
-
- is a 
-\begin_inset Formula $K$
-\end_inset
-
- vector of data moments, 
-\begin_inset Formula $\hat{m}(\theta)$
+ is a vector of data moments, 
+\begin_inset Formula $m(\theta)$
 \end_inset
 
  is model counterpart
+\end_layout
+
+\begin_layout Itemize
+For each candidate 
+\begin_inset Formula $\theta$
+\end_inset
+
+, solve the model, simulate the economy, and compute moments 
+\begin_inset Formula $m(\theta)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The point estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ maximizes
+\begin_inset Formula 
+\[
+L(\theta)=-\frac{1}{2}\left[m_{n}-m(\theta)\right]^{T}W_{n}\left[m_{n}-m(\theta)\right]
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $m_{n}\sim_{d}N(m(\theta_{0}),\Sigma_{n})$
+\end_inset
+
+ and 
+\begin_inset Formula $W_{n}=\left(\text{diag}\left(\Sigma_{n}\right)\right)^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Optimization is done with a parallel derivative free method.
+\end_layout
+
+\begin_layout Itemize
+Standard errors are computed using simulation methods (Chernozhukov and
+ Hong, 2003).
 \end_layout
 
 \begin_layout BeginFrame
@@ -3683,6 +3787,47 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{moments}{}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{flushright}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{param-estimates}{
+\backslash
+beamergotobutton{Details.}}
+\backslash
+par
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{flushright}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Note Note
 status collapsed
@@ -3795,7 +3940,7 @@ it is possible to estimate the moving cost for an actual mover.
 
 \begin_layout Standard
 \begin_inset Branch 90mins
-status collapsed
+status open
 
 \begin_layout BeginFrame
 Model Fit II
@@ -4468,6 +4613,71 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
+Labor productivity shock in WNC
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/yelast.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Elasticity of net migration.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch 90mins
+status open
+
+\begin_layout BeginFrame
 Sudden change in price level
 \end_layout
 
@@ -4596,6 +4806,73 @@ status open
 \begin_layout Plain Layout
 
 }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Price shock in WNC
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/exp_yp/pelast.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Elasticity of net migration.
+ Average over 2000--2012.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4896,8 +5173,8 @@ status open
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
+\begin_inset Branch 90mins
+status open
 
 \begin_layout Section
 Policy Experiments
@@ -4933,10 +5210,6 @@ vspace{1cm}
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginFrame
 Mortgage Interest Deduction
 \end_layout
@@ -4968,11 +5241,6 @@ Big tax expenditure: $72 billion in 2014.
 Economic rationale for the deduction is not clear.
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout BeginFrame
 Abolishing the Mortgage Interest Deduction
 \end_layout
@@ -4997,10 +5265,6 @@ Use results from stationary GE model by Sommer and Sullivan (2013): 5% reduction
  prices
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginFrame
 Sommer and Sullivan (2013)
 \end_layout
@@ -5019,11 +5283,6 @@ lower prices allow more low-wealth households to buy (lower downpayment).
 
 \begin_layout Itemize
 Rents stay constant.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout BeginFrame
@@ -5149,17 +5408,26 @@ Dropbox/model/experiments/MortgageSubsidy/mortgage_change_mv.tex}
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Conclusion
 \end_layout
 
+\begin_layout Standard
+\begin_inset Branch 25min
+status open
+
 \begin_layout BeginFrame
-Conclusion and Outlook
+Conclusion
 \end_layout
 
 \begin_layout Itemize
-Constructed a dynamic migration model capable of dealing with aggregate
- fluctuations
+Constructed a model of migration over the lifecycle capable of dealing with
+ aggregate shocks.
 \end_layout
 
 \begin_layout Itemize
@@ -5168,29 +5436,76 @@ Found that:
 
 \begin_deeper
 \begin_layout Enumerate
-The migration option has a large value
+The migration option has a large value.
 \end_layout
 
 \begin_layout Enumerate
-Homeownership: important
+Homeownership: important.
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-affects probability of moving
+affects probability of moving.
 \end_layout
 
 \begin_layout Enumerate
-affects response to shocks
+affects response to shocks.
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch 90mins
+status open
+
+\begin_layout BeginFrame
+Conclusion
+\end_layout
+
+\begin_layout Itemize
+Constructed a dynamic migration model capable of dealing with aggregate
+ shocks.
+\end_layout
+
+\begin_layout Itemize
+Found that:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+The migration option has a large value.
+\end_layout
+
+\begin_layout Enumerate
+Homeownership: important.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+affects probability of moving.
+\end_layout
+
+\begin_layout Enumerate
+affects response to shocks.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
 Abolishing the mortgage interest deduction has a small positive impact on
- migration and a large welfare impact
+ migration and a large welfare impact.
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout BeginFrame
 To do
 \end_layout
@@ -5212,6 +5527,289 @@ relax restrictions of factor model (trends?, three agg.
 income model
 \end_layout
 
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\series bold
+\size largest
+\color blue
+Appendix
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{DivisionMaps}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{1pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapNOtext.pdf
+	width 110page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Divisions}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{1pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapText1.pdf
+	width 100page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Divisions}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{1pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapText2.pdf
+	width 100page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Divisions}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{DivisionPrices}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_p.pdf
+	height 90pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_y.pdf
+	height 90pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Divisions}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout BeginFrame
 Parameter estimates
 \end_layout
@@ -5226,9 +5824,27 @@ status open
 
 
 \backslash
+hypertarget{param-estimates}{}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 input{
 \backslash
 Dropbox/model/fit/params-pres.tex}
+\backslash
+par
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{moments}{
+\backslash
+beamergotobutton{back}}
 \end_layout
 
 \end_inset
