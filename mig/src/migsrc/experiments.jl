@@ -640,19 +640,20 @@ function exp_Mortgage(ctax=false)
 	bp[bp[:wealth].!=0.0,:dwealth] = 100.*(bp[bp[:wealth].!=0.0,:wealth_pol] .- bp[bp[:wealth].!=0.0,:wealth])./ bp[bp[:wealth].!=0.0,:wealth] 
 	bp[bp[:a].!=0.0,:da] = 100.*(bp[bp[:a].!=0.0,:a_pol] .- bp[bp[:a].!=0.0,:a])./ bp[bp[:a].!=0.0,:a] 
 
-	tt = @> begin
+	welf_age = @> begin
 		bp
 		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
 		@by(:age,mean_dinc = mean(:dinc),mean_pinc = mean(:pinc),mean_dwealth = mean(:dwealth),mean_dh=100*mean(:dh),mean_dassets= mean(:da),q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
 	end
 
-	a_ybin = @> begin
+
+	welf_age_ybin = @> begin
 		bp
 		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
 		@by([:age,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
 	end
 
-	@> begin
+	welf_h = @> begin
 		bp
 		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
 		@by([:h,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
@@ -734,6 +735,10 @@ function exp_Mortgage(ctax=false)
 	# write npv_age_income
 	writetable(joinpath(outdir,"exp_Mortgage","npv_age_income.csv"),npv_age_income)
 
+	# write welfare effects
+	writetable(joinpath(outdir,"exp_Mortgage","welfare_age.csv"),welf_age)
+	writetable(joinpath(outdir,"exp_Mortgage","welfare_age_y.csv"),welf_age_ybin)
+	writetable(joinpath(outdir,"exp_Mortgage","welfare_h.csv"),welf_h)
 
 	# return
 	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age, "summary" => d]

@@ -171,6 +171,8 @@ plot_moment_fit <- function(){
 		d[i,3] = j[[i]]$model
 	}
 
+	mytheme = theme(plot.title=element_text(vjust=1.5,size=18))
+
 	d$type = "NA"
 	d0 = data.table(d)
 	d = d0[(!(moment %like% "lm_") & !(moment %like% "move_distance") & !(moment %like% "neg_equity"))]
@@ -179,8 +181,8 @@ plot_moment_fit <- function(){
 	d[m>1.0 & m < 300 , type := "Wealth Moments"]
 
 	lms = d0[moment %like% "lm_"]
-	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.1,y=-0.0,label="age-ownership",size=3) #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
-	plm2 = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
+	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.1,y=-0.0,label="age-ownership",size=3) + mytheme #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
+	plm2 = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)+ mytheme
 
 	s = split(d,d$type)
 
@@ -190,20 +192,20 @@ plot_moment_fit <- function(){
 	l1[nm == "cov_own_kids"][["nm"]] = "Cov(own,s)"
 	l1[!nm %in% c("moved once","moved twice+","Cov(own,s)")][["nm"]] = NA_character_
 
-	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod,label=l1$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.1))+ scale_x_continuous(name="data",limits=c(-0.01,0.1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3) + ggtitle("Mobility and Covariances")
+	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod,label=l1$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.1))+ scale_x_continuous(name="data",limits=c(-0.01,0.1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3) + ggtitle("Mobility and Covariances") + mytheme
 
 	l2 = data.table(nm = s$`Ownership Rates`$moment)
 	l2[nm == "moved0"][["nm"]] = "moved never"
 	l2[nm == "mean_own_NwE"][["nm"]] = "E[own|NwE]"
 	l2[nm == "mean_own_WSC"][["nm"]] = "E[own|WSC]"
 	l2[!nm %in% c("moved never","E[own|NwE]","E[own|WSC]")][["nm"]] = NA_character_
-	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod,label=l2$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3)+ ggtitle("Homeownership Rates and Non-movers")
+	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod,label=l2$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3)+ ggtitle("Homeownership Rates and Non-movers")+ mytheme
 
 	l3 = data.table(nm = s$`Wealth Moments`$moment)
 	l3[nm == "mean_wealth_NwE"][["nm"]] = "E[wealth | NwE]"
 	l3[nm == "mean_wealth_30_40"][["nm"]] = "E[wealth | (30,40]]"
 	l3[!nm %in% c("E[wealth | NwE]","E[wealth | (30,40]]")][["nm"]] = NA_character_
-	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")
+	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")+ mytheme
 
 	ggsave(plm,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods.pdf")
 	ggsave(plm2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods2.pdf")
@@ -826,11 +828,13 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 	my = melt(pyagg[,list(year,Division=Div,Regional=y,National=Y)],c("year","Division"))
 
+	mytheme <- theme_bw() + theme(plot.title=element_text(vjust=1.9,size=21),legend.text=element_text(size=12),legend.key.size=unit(0.6, "cm"))
+
 	pl = list()
-	pl$y <- ggplot(my,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (q) and National (Q) Labor Productivity Index") + scale_y_continuous(name="1000s of Dollars") +theme_bw()
+	pl$y <- ggplot(my,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (q) and National (Q) Labor Productivity Index") + scale_y_continuous(name="1000s of Dollars") + mytheme
 
 	mp = melt(pyagg[,list(year,Division=Div,Regional=p,National=P)],c("year","Division"))
-	pl$p <- ggplot(mp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (p) and National (P) house price index") + scale_y_continuous(name="1000s of Dollars")+theme_bw()
+	pl$p <- ggplot(mp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Regional (p) and National (P) house price index") + scale_y_continuous(name="1000s of Dollars")+ mytheme
 
 	# estimate regional models: what is relationship y ~ P + Y
 	ep <- p ~ Y + P
@@ -860,12 +864,12 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 	mdy = melt(pyagg[,list(year,Division=Div,data=y,prediction=yhat)],c("year","Division"))
 
-	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional income data") + scale_y_continuous(name="1000s of Dollars") 
+	pl$pred_y <- ggplot(mdy,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("VAR fit to regional productivity data (q)") + scale_y_continuous(name="1000s of Dollars")  + mytheme
 
 
 	mdp = melt(pyagg[,list(year,Division=Div,data=p,prediction=phat)],c("year","Division"))
 
-	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") 
+	pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + mytheme + ggtitle("VAR fit to regional price data (p)") + scale_y_continuous(name="1000s of Dollars") 
 	# plot with aggregate as well
 	# mdp = melt(pyagg[,list(year,Division,p,P,phat)],c("year","Division"))
 	# pl$pred_p <- ggplot(mdp,aes(x=year,y=value,linetype=variable,color=variable)) + geom_line() + facet_wrap(~Division) + theme_bw() + ggtitle("VAR fit to regional price data") + scale_y_continuous(name="1000s of Dollars") + scale_color_manual(values=c("p"="red","P"="blue","phat"="red")) + scale_linetype_manual(values=c("solid","solid","dotdash"))
@@ -883,8 +887,8 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 
 	ggsave(pl$y,file=file.path(plotpath,"agg_reg_y.pdf"),width=9,height=7)
 	ggsave(pl$p,file=file.path(plotpath,"agg_reg_p.pdf"),width=9,height=7)
-	ggsave(pl$pred_y,file=file.path(plotpath,"VAR_reg_y.pdf"),,width=9,height=7)
-	ggsave(pl$pred_p,file=file.path(plotpath,"VAR_reg_p.pdf"),,width=9,height=7)
+	ggsave(pl$pred_y,file=file.path(plotpath,"VAR_reg_y.pdf"),width=9,height=7)
+	ggsave(pl$pred_p,file=file.path(plotpath,"VAR_reg_p.pdf"),width=9,height=7)
 
 
 	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg,pyagg=pyagg))
