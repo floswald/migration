@@ -659,15 +659,15 @@ function exp_Mortgage(ctax=false)
 		@by([:h,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
 	end
 
-	@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
+	# @transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
 
-	@by(bp,:age,m=mean(:dv),p=mean(:pv))
-	@by(bp,[:age,:h,:ybin],m=mean(:dv),pm=mean(:pv))
-	bp1=@by(bp,[:abin,:h],m=mean(:dv),pm=mean(:pv))
-	bp1=@by(bp,[:age,:ybin],m=mean(:dv),pm=mean(:pv))
-	@by(bp,:h,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
-	@by(bp,:ybin,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
-	@by(bp,[:ybin,:h],m=mean(:dv),p=mean(:pv))
+	# @by(bp,:age,m=mean(:dv),p=mean(:pv))
+	# @by(bp,[:age,:h,:ybin],m=mean(:dv),pm=mean(:pv))
+	# bp1=@by(bp,[:abin,:h],m=mean(:dv),pm=mean(:pv))
+	# bp1=@by(bp,[:age,:ybin],m=mean(:dv),pm=mean(:pv))
+	# @by(bp,:h,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
+	# @by(bp,:ybin,m=mean(:dv),p=mean(:pv.data,WeightVec(:density.data)))
+	# @by(bp,[:ybin,:h],m=mean(:dv),p=mean(:pv))
 
 
 	# want to show:
