@@ -1897,8 +1897,8 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \begin_inset Formula $p$
 \end_inset
 
- and income levels 
-\begin_inset Formula $\overline{y}$
+ and average labor productivity levels 
+\begin_inset Formula $q$
 \end_inset
 
  fluctuate.
@@ -1909,7 +1909,7 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \end_inset
 
  and 
-\begin_inset Formula $Y$
+\begin_inset Formula $Q$
 \end_inset
 
 .
@@ -1920,7 +1920,7 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \end_inset
 
  and 
-\begin_inset Formula $Y$
+\begin_inset Formula $Q$
 \end_inset
 
  to have differential impacts across regions, while maintaining a degree
@@ -1933,8 +1933,8 @@ Individuals are subject to uncertainty at both the aggregate and individual
 \begin_inset Formula $p_{dt}$
 \end_inset
 
- and mean income 
-\begin_inset Formula $\overline{y}_{dt}$
+ and mean labor productivity 
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  at time 
@@ -1943,7 +1943,7 @@ Individuals are subject to uncertainty at both the aggregate and individual
 
 .
  In addition to that, 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  enters the individual wage equation as a level shifter.
@@ -2013,7 +2013,7 @@ reference "eq:income-process"
  
 \begin_inset Formula 
 \begin{eqnarray}
-\ln y_{idt} & = & \eta_{d}\ln\overline{y}_{dt}+f(t)+z_{it}\nonumber \\
+\ln y_{idt} & = & \eta_{d}\ln q_{dt}+f(t)+z_{it}\nonumber \\
 z_{it} & = & \rho z_{it-1}+e_{it-1}\nonumber \\
 e & \sim & N(0,\sigma^{2})\label{eq:income-process}
 \end{eqnarray}
@@ -2021,7 +2021,7 @@ e & \sim & N(0,\sigma^{2})\label{eq:income-process}
 \end_inset
 
 Here 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  stands for the region specific price of human capital, 
@@ -2044,7 +2044,7 @@ Here
 
 .
  The log price of human capital 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  is allowed to differ by region to reflect different industry compositions
@@ -2082,7 +2082,7 @@ When moving from region
 \end_inset
 
  to region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
  at date 
@@ -2097,7 +2097,7 @@ When moving from region
 .
  The individual's next period income is then composed of the corresponding
  mean income at that date in the new region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 , 
@@ -2113,7 +2113,7 @@ When moving from region
 \noun off
 \color none
 
-\begin_inset Formula $\overline{y}_{kt+1}$
+\begin_inset Formula $q_{d't+1}$
 \end_inset
 
 , the deterministic age 
@@ -2154,7 +2154,7 @@ When moving from region
 , respectively.
  This setup allows for some uncertainty related to the quality of the match
  with a job in the new region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 , as mentioned above.
@@ -2171,7 +2171,7 @@ When moving from region
 \end_inset
 
  after moving to 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -2184,20 +2184,20 @@ When moving from region
 \end_layout
 
 \begin_layout Subsection
-Aggregate factors 
+National factors 
 \begin_inset Formula $P$
 \end_inset
 
  and 
-\begin_inset Formula $Y$
+\begin_inset Formula $Q$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-I assume the aggregate variables 
-\begin_inset Formula $Y$
+I assume the national state variables 
+\begin_inset Formula $Q$
 \end_inset
 
  and 
@@ -2210,7 +2210,7 @@ I assume the aggregate variables
 \end_inset
 
 , all individuals observe the price vector 
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
  containing both factors 
@@ -2218,7 +2218,7 @@ I assume the aggregate variables
 \end_inset
 
  and 
-\begin_inset Formula $Y_{t}$
+\begin_inset Formula $Q_{t}$
 \end_inset
 
 .
@@ -2245,11 +2245,11 @@ reference "eq:VAR-process-agg"
  Agents in the model have rational expectations concerning this process.
 \begin_inset Formula 
 \begin{eqnarray}
-\mathbf{P}_{t} & = & A\mathbf{P}_{t-1}+\nu_{t-1}\nonumber \\
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\nonumber \\
 \nu_{t} & \sim & N\left(\begin{bmatrix}0\\
 0
 \end{bmatrix},\Sigma\right)\label{eq:VAR-process-agg}\\
-\mathbf{P}_{t} & = & \begin{bmatrix}Y_{t}\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
 P_{t}
 \end{bmatrix}\nonumber 
 \end{eqnarray}
@@ -2266,7 +2266,7 @@ Mapping aggregate factors to regional prices
 \begin_layout Standard
 I assume that there is a deterministic mapping from the aggregate state
  
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
  into the price and income level of any region 
@@ -2280,13 +2280,13 @@ I assume that there is a deterministic mapping from the aggregate state
 \end_inset
 
  and income level 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  in each region with certainty.
  The mapping is defined in terms of a linear function that depends on both
  aggregate states 
-\begin_inset Formula $Y,P$
+\begin_inset Formula $Q,P$
 \end_inset
 
  and where the slope coefficients are region dependent, as shown in expression
@@ -2312,10 +2312,9 @@ reference "eq:VAR-reg-determ"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\mathbf{p}_{dt} & = & \mathbf{a}_{d}\mathbf{P}_{t}\nonumber \\
-\mathbf{p}_{dt} & = & \begin{bmatrix}\overline{y}_{dt}\\
+\begin{bmatrix}q_{dt}\\
 p_{dt}
-\end{bmatrix}\label{eq:VAR-reg-determ}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}\label{eq:VAR-reg-determ}
 \end{eqnarray}
 
 \end_inset
@@ -2335,7 +2334,7 @@ reference "sub:Aggregate-to-regional"
 , where I describe the estimation of this part of the model in greater detail.
  Notice that the great virtue of this formulation is that the relevant price
  and income related state variables in each region are subsumed in 
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
 , given the assumption that 
@@ -2434,7 +2433,7 @@ assets
 
 .
  The mortgage interest rate is assumed at a constant markup 
-\begin_inset Formula $q>0$
+\begin_inset Formula $\hat{r}>0$
 \end_inset
 
  above the risk free interest rate 
@@ -2442,7 +2441,7 @@ assets
 \end_inset
 
 , such that 
-\begin_inset Formula $r^{m}=r+q$
+\begin_inset Formula $r^{m}=r+\hat{r}$
 \end_inset
 
 .
@@ -2610,7 +2609,7 @@ I rule out the possibility of owning a home in region
 \end_inset
 
  while residing in region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -2620,7 +2619,7 @@ I rule out the possibility of owning a home in region
 
 , rent it out on the rental market, and purchase housing services either
  in rental or owner--occupied sector in the new region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -2681,7 +2680,7 @@ Period utility
 
 \begin_inset Formula 
 \begin{equation}
-u\left(c_{it},h_{it},k,x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq k\right]\Delta\left(k,x_{it}\right)+\varepsilon_{ikt}\label{eq:utility}
+u\left(c_{it},h_{it},d',x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(d',x_{it}\right)+\varepsilon_{ikt}\label{eq:utility}
 \end{equation}
 
 \end_inset
@@ -2711,12 +2710,12 @@ The period
 \end_inset
 
 , and the idiosyncratic preference shock for the chosen region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
  Notice the moving cost 
-\begin_inset Formula $\Delta\left(k,x_{it}\right)$
+\begin_inset Formula $\Delta\left(d',x_{it}\right)$
 \end_inset
 
  is only incurred if in fact a move takes place.
@@ -2758,7 +2757,7 @@ Timing within the period is assumed to proceed in two sub-periods: in the
 
 \begin_layout Enumerate
 observe 
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
 , 
@@ -2802,7 +2801,7 @@ earn labor income in current region
 \end_inset
 
 , as a function of 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  and 
@@ -2893,7 +2892,7 @@ It is now possible to formulate the problem recursively.
 
 \begin_inset Formula 
 \[
-x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{P}_{t},h_{it-1},d,\tau,t\right)
+x_{it}=\left(a_{it},z_{it},s_{it},\mathbf{F}_{t},h_{it-1},d,\tau,t\right)
 \]
 
 \end_inset
@@ -2957,7 +2956,7 @@ The consumer faces a nested optimization problem in each period.
 \end_inset
 
 , while moving to location 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 , net of idiosyncratic location shock 
@@ -3005,7 +3004,7 @@ reference "eq:v"
 \end_inset
 
  while moving to location 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -3019,7 +3018,7 @@ reference "eq:v"
 \end_inset
 
  to 
-\begin_inset Formula $k,\forall k\neq d$
+\begin_inset Formula $d',\forall d'\neq d$
 \end_inset
 
 ).
@@ -3051,11 +3050,11 @@ reference "eq:vbar"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-V_{t}\left(x_{it}\right) & = & \max_{k\in D}\left\{ v_{t}\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \label{eq:V}\\
-v_{t}\left(x_{it},k\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},k)+\beta\mathbb{E}_{z,s,\mathbf{P}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{P}_{t}\right]\label{eq:v}\\
-x_{it+1} & = & \left(a_{it+1},z_{it+1},s_{it+1},\mathbf{P}_{t+1},h_{it+1},k,t+1\right)\nonumber \\
+V_{t}\left(x_{it}\right) & = & \max_{k\in D}\left\{ v_{t}\left(x_{it},d'\right)+\varepsilon_{ikt}\right\} \label{eq:V}\\
+v_{t}\left(x_{it},d'\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},d')+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{F}_{t}\right]\label{eq:v}\\
+x_{it+1} & = & \left(a_{it+1},z_{it+1},s_{it+1},\mathbf{F}_{t+1},h_{it+1},d',t+1\right)\nonumber \\
 \overline{v}_{t}\left(x_{it}\right) & = & E_{\varepsilon}V_{t}\left(x_{it}\right)\nonumber \\
- & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{J}\exp\left(v_{t}\left(x_{it},k\right)\right)\right)\label{eq:vbar}
+ & = & \overline{\gamma}+\ln\left(\sum_{d'=1}^{D}\exp\left(v_{t}\left(x_{it},d'\right)\right)\right)\label{eq:vbar}
 \end{eqnarray}
 
 \end_inset
@@ -3075,7 +3074,7 @@ Another convient by-product of the Type 1 EV assumption is that there is
 \end_inset
 
 , denoted as 
-\begin_inset Formula $Q(x,d,k)$
+\begin_inset Formula $\mathcal{M}(x,d,d')$
 \end_inset
 
 .
@@ -3094,10 +3093,10 @@ Another convient by-product of the Type 1 EV assumption is that there is
 
 \begin_inset Formula 
 \begin{eqnarray}
-Q(x,d,k) & = & \Pr\left[\text{move to }k|x,d\right]\nonumber \\
- & = & \frac{\exp\left(v(x,k)\right)}{\sum_{z=1}^{J}\exp\left(v(x,z)\right)}\nonumber \\
- & = & \frac{\exp\left(v(x,k)\right)}{\exp\left(\overline{v}(x)\right)/\exp(\overline{\gamma})}\nonumber \\
- & = & \exp\left(\overline{\gamma}+v(x,k)-\overline{v}(x)\right)\label{eq:prob-of-moving}
+\mathcal{M}(x,d,d') & = & \Pr\left[\text{move to }d'|x,d\right]\nonumber \\
+ & = & \frac{\exp\left(v(x,d')\right)}{\sum_{d'=1}^{D}\exp\left(v(x,d')\right)}\nonumber \\
+ & = & \frac{\exp\left(v(x,d')\right)}{\exp\left(\overline{v}(x)\right)/\exp(\overline{\gamma})}\nonumber \\
+ & = & \exp\left(\overline{\gamma}+v(x,d')-\overline{v}(x)\right)\label{eq:prob-of-moving}
 \end{eqnarray}
 
 \end_inset
@@ -3121,7 +3120,7 @@ reference "eq:final-period-value"
 .
 \begin_inset Formula 
 \begin{equation}
-V_{T}(a,h_{T-1},d)=\omega_{1}\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega_{2}h_{T-1}\label{eq:final-period-value}
+V_{T}(a,h_{T-1},d)=\frac{\left(a+h_{T-1}p_{dT}\right)^{1-\gamma}}{1-\gamma}+\omega h_{T-1}\label{eq:final-period-value}
 \end{equation}
 
 \end_inset
@@ -3141,7 +3140,7 @@ reference "eq:v"
 \begin_layout Subsubsection
 Budget constraint for stayers, i.e.
  
-\begin_inset Formula $d=k$
+\begin_inset Formula $d=d'$
 \end_inset
 
 
@@ -3162,7 +3161,7 @@ Starting with the case for stayers, the relevant state variables in the
 
 .
  In particular, given 
-\begin_inset Formula $(p_{dt},\overline{y}_{dt})$
+\begin_inset Formula $(p_{dt},q_{dt})$
 \end_inset
 
 , renters may choose to become owners, and owners may choose to remain owners
@@ -3220,8 +3219,8 @@ reference "eq:budget-labor-income"
 
 \end_inset
 
- and depends on the regional mean income level 
-\begin_inset Formula $\overline{y}_{dt}$
+ and depends on the regional mean labor productivity level 
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  as introduced in section 
@@ -3272,7 +3271,7 @@ reference "eq:terminal-condition"
 \begin_inset Formula 
 \begin{eqnarray}
 a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d}p_{dt}-h_{it}p_{dt}\right)\label{eq:budget-renter-stay}\\
-\ln y_{idt} & = & \eta_{d}\ln(\overline{y}_{dt})+f(t)+z_{it}\label{eq:budget-labor-income}\\
+\ln y_{idt} & = & \eta_{d}\ln(q_{dt})+f(t)+z_{it}\label{eq:budget-labor-income}\\
 a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\label{eq:budget-rent-downpay}\\
 r(a_{it}) & = & \begin{cases}
 r & \text{if }a_{it}\geq0\\
@@ -3362,7 +3361,7 @@ a_{it+1} & \geq & -(1-\chi)p_{dt}\label{eq:budget-own-borrow}
 \begin_layout Subsubsection
 Budget constraint for movers, i.e.
  
-\begin_inset Formula $d\neq k$
+\begin_inset Formula $d\neq d'$
 \end_inset
 
 
@@ -3401,7 +3400,7 @@ reference "eq:budget-renter-stay"
  
 \begin_inset Formula 
 \begin{equation}
-a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{k}p_{kt}-h_{it}p_{kt}\right)\label{eq:budget-rent-move}
+a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-(1-h_{it})\kappa_{d'}p_{d't}-h_{it}p_{d't}\right)\label{eq:budget-rent-move}
 \end{equation}
 
 \end_inset
@@ -3440,7 +3439,7 @@ reference "eq:budget-own-1"
 \end_inset
 
 , whereas the square brackets describe expenditures in region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -3452,7 +3451,7 @@ reference "eq:budget-own-borrow-1"
 \end_inset
 
  now is a function of the value of the new house in 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
@@ -3462,7 +3461,7 @@ reference "eq:budget-own-borrow-1"
  the new region, since in that case the downpayment needs to be made as
  well, i.e.
  if 
-\begin_inset Formula $y_{idt}<a_{it}+(1-\phi)p_{dt}-\chi h_{it}p_{kt}$
+\begin_inset Formula $y_{idt}<a_{it}+(1-\phi)p_{dt}-\chi h_{it}p_{d't}$
 \end_inset
 
  then the budget set is empty and moving and buying is infeasible.
@@ -3489,8 +3488,8 @@ In my sample I observe 29 owners who move with negative equity (amounting
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\left[(1-h_{it})\kappa_{k}+h_{it}\right]p_{kt}\right)\label{eq:budget-own-1}\\
-a_{it+1} & \geq & -(1-\chi)p_{kt}h_{it}\label{eq:budget-own-borrow-1}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\left[(1-h_{it})\kappa_{d'}+h_{it}\right]p_{d't}\right)\label{eq:budget-own-1}\\
+a_{it+1} & \geq & -(1-\chi)p_{d't}h_{it}\label{eq:budget-own-borrow-1}
 \end{eqnarray}
 
 \end_inset
@@ -3596,11 +3595,11 @@ reference "eq:prob-of-moving"
 Once the solution is obtained, simulation of the model proceeds by using
  the model implied decision rules and the observed aggreate prices series
  
-\begin_inset Formula $\mathbf{P}_{t}$
+\begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
  as well as their regional dependants 
-\begin_inset Formula $\left(\overline{y}_{dt},p_{dt}\right)$
+\begin_inset Formula $\left(q_{dt},p_{dt}\right)$
 \end_inset
 
  to obtain simulated lifecycle data.
@@ -3638,7 +3637,7 @@ Estimation of Exogenous Processes
 
 \begin_layout Subsubsection*
 VAR process for aggregates 
-\begin_inset Formula $Y_{t}$
+\begin_inset Formula $Q_{t}$
 \end_inset
 
  and 
@@ -3652,7 +3651,7 @@ VAR process for aggregates
 The VAR processes at the aggreate and regional level are estimated using
  a seemingly unrelated regression with two equations, one for each factor
  
-\begin_inset Formula $Y_{t}$
+\begin_inset Formula $Q_{t}$
 \end_inset
 
  and 
@@ -3661,7 +3660,7 @@ The VAR processes at the aggreate and regional level are estimated using
 
 .
  I use real GDP per capita as a measure for 
-\begin_inset Formula $Y_{t}$
+\begin_inset Formula $Q_{t}$
 \end_inset
 
 , and the Federal Housing and Finance Association (FHFA) US house price
@@ -3714,11 +3713,11 @@ reference "eq:VAR-process-agg"
  here for ease of reading:
 \begin_inset Formula 
 \begin{eqnarray*}
-\mathbf{P}_{t} & = & A\mathbf{P}_{t-1}+\nu_{t-1}\\
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\\
 \nu_{t} & \sim & N\left(\begin{bmatrix}0\\
 0
 \end{bmatrix},\Sigma\right)\\
-\mathbf{P}_{t} & = & \begin{bmatrix}Y_{t}\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
 P_{t}
 \end{bmatrix}
 \end{eqnarray*}
@@ -3743,7 +3742,7 @@ reference "tab:Estimates-VAR-agg"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -3764,7 +3763,7 @@ begin{centering}
 \backslash
 input{
 \backslash
-Dropbox/data/sipp/VAR_agg.tex}
+Dropbox/data/sipp/VAR_agg-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3816,7 +3815,7 @@ name "sub:Aggregate-to-regional"
 
 \begin_layout Standard
 The series for 
-\begin_inset Formula $\overline{y}_{dt}$
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  is constructed as per capita personal income by region, with a measure
@@ -3828,13 +3827,12 @@ The series for
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-\mathbf{p}_{dt} & = & \mathbf{a}_{d}\mathbf{P}_{t}+\eta_{dt}\nonumber \\
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}+\eta_{dt}\nonumber \\
 \eta_{dt} & \sim & N\left(\begin{bmatrix}0\\
 0
-\end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}\\
-\mathbf{p}_{dt} & = & \begin{bmatrix}\overline{y}_{dt}\\
-p_{dt}
-\end{bmatrix}\nonumber 
+\end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}
 \end{eqnarray}
 
 \end_inset
@@ -3880,6 +3878,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_y.pdf
+	scale 80
 
 \end_inset
 
@@ -3890,15 +3889,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-This figure shows the observed 
-\begin_inset Formula $(y)$
-\end_inset
-
- and predicted 
-\begin_inset Formula $(yhat)$
-\end_inset
-
- time series for mean income by Census Division.
+This figure shows the observed and predicted time series for mean income
+ by Census Division.
  The prediction is obtained from the VAR model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -3907,11 +3899,11 @@ reference "eq:VAR-reg-determ"
 \end_inset
 
 , which relates the aggreate series 
-\begin_inset Formula $\left\{ Y_{t},P_{t}\right\} _{t=1968}^{2012}$
+\begin_inset Formula $\left\{ Q_{t},P_{t}\right\} _{t=1968}^{2012}$
 \end_inset
 
- to mean income 
-\begin_inset Formula $\left\{ \overline{y}_{dt}\right\} _{t=1968}^{2012}$
+ to mean labor productivity 
+\begin_inset Formula $\left\{ q_{dt}\right\} _{t=1968}^{2012}$
 \end_inset
 
  for each region 
@@ -3925,12 +3917,16 @@ reference "eq:VAR-reg-determ"
 \emph default
 Agents use this prediction in the model, i.e.
  from observing an aggregate value 
-\begin_inset Formula $\mathbf{P}_{t}=\left(P_{t},Y_{t}\right)$
+\begin_inset Formula $\mathbf{F}_{t}=\left(P_{t},Q_{t}\right)$
 \end_inset
 
- they infer a value 
+ they infer a value for 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+
 \emph on
-yhat 
+ 
 \emph default
 for each region above.
  
@@ -3966,6 +3962,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_p.pdf
+	scale 80
 
 \end_inset
 
@@ -3976,15 +3973,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-This figure shows the observed 
-\begin_inset Formula $(p)$
-\end_inset
-
- and predicted 
-\begin_inset Formula $(phat)$
-\end_inset
-
- time series for house prices by Census Division.
+This figure shows the observed and predicted time series for house prices
+ by Census Division.
  Please refer to the previous figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4037,14 +4027,14 @@ reference "eq:budget-labor-income"
  I estimate the linear regression 
 \begin_inset Formula 
 \begin{eqnarray}
-\ln y_{idt} & = & \beta_{0}+\eta_{d}\ln\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\nonumber \\
- & = & \beta_{0}+\left(\gamma_{d}\times\gamma_{\overline{y}}\right)\ln\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\label{eq:indiv-labor-empirical}
+\ln y_{idt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\nonumber \\
+ & = & \beta_{0}+\left(\gamma_{d}\times\gamma_{q}\right)\ln q_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}\label{eq:indiv-labor-empirical}
 \end{eqnarray}
 
 \end_inset
 
-where the region-specific influence of regional mean income 
-\begin_inset Formula $\overline{y}_{dt}$
+where the region-specific influence of regional mean productivity 
+\begin_inset Formula $q_{dt}$
 \end_inset
 
  on individual income is specified as an interaction between a regional
@@ -4053,7 +4043,7 @@ where the region-specific influence of regional mean income
 \end_inset
 
  and the average effect 
-\begin_inset Formula $\gamma_{\overline{y}}$
+\begin_inset Formula $\gamma_{q}$
 \end_inset
 
  of regional income.
@@ -4154,7 +4144,7 @@ key "bonhomme2006modeling"
 \end_inset
 
  in new region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
  is the same regardless the origin location.
@@ -4194,16 +4184,16 @@ reference "eq:income-process"
 \end_inset
 
  are likely to have a high residual 
-\begin_inset Formula $z_{ikt+1}$
+\begin_inset Formula $z_{id't+1}$
 \end_inset
 
  after their move to region 
-\begin_inset Formula $k$
+\begin_inset Formula $d'$
 \end_inset
 
 .
  In other words, we want to investigate the joint distribution of 
-\begin_inset Formula $\left(z_{idt},z_{ikt+1}\right)$
+\begin_inset Formula $\left(z_{idt},z_{id't+1}\right)$
 \end_inset
 
 .
@@ -4349,7 +4339,7 @@ key "sommer2013implications"
  between nominal interest on a thirty year constant maturity Treasury bond
  and the average nominal interest rate on 30 year mortgages.
  This spread equals 1.5% over 1977--2008, therefore 
-\begin_inset Formula $q=0.015$
+\begin_inset Formula $\hat{r}=0.015$
 \end_inset
 
 , and 
@@ -4426,8 +4416,8 @@ The parameter vector to be estimated by SMM contains the parameters of the
 \begin_inset Formula $\alpha$
 \end_inset
 
-), the parameters of the final period value function 
-\begin_inset Formula $\left(\omega_{1},\omega_{2}\right)$
+), the parameter in the final period value function 
+\begin_inset Formula $\omega$
 \end_inset
 
 , the population proportion of high moving cost types 
@@ -4440,7 +4430,7 @@ The parameter vector to be estimated by SMM contains the parameters of the
 
 .
  We'll denote the parameter vector 
-\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega_{1},\omega_{2},\pi_{\tau},\xi_{1},\xi_{2}\right\} $
+\begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\xi_{1},\xi_{2}\right\} $
 \end_inset
 
 .
@@ -4473,7 +4463,7 @@ Given
  
 \begin_inset Formula 
 \[
-L(\theta)=\frac{1}{K}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],
+L(\theta)=\frac{1}{2}\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],
 \]
 
 \end_inset
@@ -4574,7 +4564,8 @@ key "chernozhukov2003mcmc"
 
 \end_inset
 
-.
+, after accounting for the fact that I do not use the optimal weighting
+ matrix.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -4686,7 +4677,7 @@ ry.
 \end_inset
 
 , or whether a move took place, denoted by 
-\begin_inset Formula $\text{move}_{it}=\mathbf{1}\left[d_{it}\neq k_{it}\right]$
+\begin_inset Formula $\text{move}_{it}=\mathbf{1}\left[d_{it}\neq d'_{it}\right]$
 \end_inset
 
 :
@@ -4890,17 +4881,27 @@ There is large degree of house price heterogeneity at the local level with
 \begin_inset Formula $\xi_{1},\xi_{2}$
 \end_inset
 
- and the weights in the final period utility 
-\begin_inset Formula $\omega_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $\omega_{2}$
+ and the weight in the final period utility 
+\begin_inset Formula $\omega$
 \end_inset
 
 .
- Taking this into account, the ownership fit is overall satisfying.
- 
+ The model at the moment overpredicts ownership in later periods of life.
+ This is visible from the intercept of the auxiliary model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-h"
+
+\end_inset
+
+, which relates the ownership rate to an age profile.
+ The reason for this is that in a model where age and wealth are the main
+ dimensions of variation across households, as soon as a certain wealth
+ threshold is crossed, all agents become owners.
+ In other words, the model cannot account for wealthy houeholds who prefer
+ not to own.
+ One way to improve in this dimension would be to introduce different types
+ of housing preferences.
 \end_layout
 
 \begin_layout Standard
@@ -4924,7 +4925,7 @@ reference "tab:fit-model-nontarget"
 \end_layout
 
 \begin_layout Standard
-The estimated parameters are shown in table 
+The estimated parameters and standard errors are shown in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Parameter-estimates"
@@ -5061,7 +5062,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/params.tex}
+Dropbox/model/fit/params-pres.tex}
 \end_layout
 
 \end_inset
@@ -5145,11 +5146,7 @@ reference "eq:prob-of-moving"
 
 \end_inset
 
-, conditioning on quantiles of the variables assets 
-\begin_inset Formula $(a)$
-\end_inset
-
-, income 
+, conditioning on wealth, income 
 \begin_inset Formula $(y)$
 \end_inset
 
@@ -5157,7 +5154,7 @@ reference "eq:prob-of-moving"
 \begin_inset Formula $(z)$
 \end_inset
 
-, each by housing status 
+, and by housing status 
 \begin_inset Formula $(h)$
 \end_inset
 
@@ -5167,17 +5164,17 @@ reference "eq:prob-of-moving"
 \end_inset
 
 , which is fully expected given the data.
- Perhaps the most interesting case is the shape of the average moving rate
- over the space of assets, which shows different probabilities for each
- asset level.
- For example, not only is the probability of moving higher for renters than
- for owners almost everywhere, it is also declining as assets increase.
- Since households in the model build up assets in order to buy, this shows
- that for renters with higher assets (thus closer to being an owner), the
- likelihood of moving is lower.
- Observing high asset owners and renters with greater likelihood of moving
- shows that they are particularly mobile.
- The density is very small at high asset values.
+ The average probability of moving is decreasing in the level of wealth
+ of a houshold.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:CS-assets"
+
+\end_inset
+
+ illustrates that increasing wealth makes households more likely to become
+ owners, and at the same time decreases the probability of moving.
 \end_layout
 
 \begin_layout Standard
@@ -5263,14 +5260,14 @@ name "fig:Illustration-of-conditional"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf
-	height 49theight%
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth2.pdf
+	scale 80
 
 \end_inset
 
@@ -5281,16 +5278,9 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Average Probability of moving by level of assets and ownership status.
- This is 
-\begin_inset Formula $E[Q(d,k,x)|\overline{a},h],d\neq k$
-\end_inset
-
-, where 
-\begin_inset Formula $\overline{a}$
-\end_inset
-
- are 20 quantiles of the asset state space.
+Simulated probability of moving by wealth.
+ The figure shows that as wealth increases, individuals are both more likely
+ to be owners (color shading), as well as less likely to move.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:CS-assets"
@@ -5558,7 +5548,7 @@ Dropbox/model/experiments/moneyMC/moneyMC.tex}
 \begin_layout Plain Layout
 Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
  renters at 
-\begin_inset Formula $a=0,z=z_{1},P=P_{2},Y=Y_{2}$
+\begin_inset Formula $a=0,z=z_{1},Q=Q_{2},P=P_{2}$
 \end_inset
 
  in the first period of life (age 20).
@@ -5737,8 +5727,8 @@ In this section I illustrate how the model reacts to large economic shocks
  from a region, when the regional price or income level is reduced unexpectedly
  at a certain point in time.
  The implementation of the shock is symmetric for both the case of house
- price and mean income, and I will use the case of the regional income shock
- to explain the details.
+ price and mean income, and I will use the case of the regional productivity
+ shock to explain the details.
  
 \end_layout
 
@@ -5753,7 +5743,7 @@ The regional shock consists of reducing the level of the observed mean income
  The experiment is conducted under the assumption that agents did not foresee
  the shock and therefore are surprised in the year 2000 to find that the
  mapping form aggregate factors 
-\begin_inset Formula $\left(Y,P\right)$
+\begin_inset Formula $\left(Q,P\right)$
 \end_inset
 
  into 
@@ -5761,7 +5751,7 @@ The regional shock consists of reducing the level of the observed mean income
 \end_inset
 
 
-\begin_inset Formula $\left(\bar{y}_{8},p_{8}\right)$
+\begin_inset Formula $\left(q_{8},p_{8}\right)$
 \end_inset
 
  as defined in equation 
@@ -5774,11 +5764,11 @@ reference "eq:VAR-reg-determ"
  does not apply anymore.
  In terms of their beliefs about aggregate and regional prices, they observe
  
-\begin_inset Formula $\iota_{2000}\times p_{8,2000},\iota_{2000}=0.9$
+\begin_inset Formula $\iota_{2000}\times q_{8,2000},\iota_{2000}=0.9$
 \end_inset
 
  instead of 
-\begin_inset Formula $p_{8,2000}=\mathbf{a}_{8}\mathbf{P}_{2000}$
+\begin_inset Formula $q_{8,2000}=\mathbf{a}_{8}\mathbf{F}_{2000}$
 \end_inset
 
 , as would be predicted by the model in 
@@ -5847,12 +5837,12 @@ reference "fig:Shocked-income-series"
 \end_layout
 
 \begin_layout Paragraph
-Shock to mean income.
+Shock to average labor productivity.
 \end_layout
 
 \begin_layout Standard
-Reducing mean income 
-\begin_inset Formula $\overline{y}$
+Reducing mean labor productivity 
+\begin_inset Formula $q$
 \end_inset
 
  in a given region translates directly into lower disposable income and
@@ -6037,7 +6027,7 @@ To summarize this subsection, restricting the ability to move implies large
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6618,8 +6608,8 @@ key "sommer2013implications"
  in migration behaviour brought about by lower prices in all regions and
  redistribution of income to the poor.
  The welfare implications depend greatly on whether or not prices are adjusted,
- with net welfare gains close to zero in the former, and of the order of
- 2.4% of period consumption in the latter case.
+ with average welfare gains 1% in the former, and of the order of 2.4% of
+ period consumption in the latter case.
 \end_layout
 
 \begin_layout Standard
@@ -6649,327 +6639,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/MortgageSubsidy/mortgage.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="5">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Baseline
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(1)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(2)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-(3)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Ownership Rate
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.608
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.572
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.576
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.617
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Migration Rate
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.01304
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.01323
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.01334
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.01336
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\%\Delta$
-\end_inset
-
- Ownership
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.0%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
--6%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
--5.2%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.4%
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\%\Delta$
-\end_inset
-
- Migration
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.0%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.5%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2.3%
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2.5%
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\delta$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.0
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.027
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.002
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.95
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
+Dropbox/model/experiments/MortgageSubsidy/mortgage-edit.tex}
 \end_layout
 
 \end_inset
@@ -6987,7 +6657,7 @@ Abolishing the mortgage interest deduction.
  Cheaper housing everywhere and higher disposable income from redistribution
  enables more previously liquidity constraint households to buy -- in their
  home region, but crucially also in other regions.
- This increases the migration rate.
+ This leads to a very small increase in the migration rate.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -7129,8 +6799,8 @@ Dropbox/model/experiments/exp_yp/WNCyshock.tex}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Shocking the level of mean income in region West North Central by 10% in
- 2000.
+Shocking the level of average labor productivity in region West North Central
+ by 10% in 2000.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Shocked-income-series"
@@ -7172,8 +6842,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The effect of a permanent 10% reduction in mean income 
-\begin_inset Formula $\overline{y}$
+The effect of a permanent 10% reduction in productivity 
+\begin_inset Formula $q$
 \end_inset
 
  in 2000 in the WNC region only.
@@ -7220,8 +6890,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Changes in inflow patterns to WNC after the mean income level is permanently
- reduced by 10% in 2000.
+Changes in inflow patterns to WNC after the mean productivity level is permanent
+ly reduced by 10% in 2000.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:yshock-inflows"
@@ -8232,11 +7902,11 @@ reference "eq:VAR-reg-determ"
 \end_inset
 
 , which relates the aggregate factors 
-\begin_inset Formula $\left(Y_{t},P_{t}\right)$
+\begin_inset Formula $\left(Q_{t},P_{t}\right)$
 \end_inset
 
  to regional income and house price 
-\begin_inset Formula $\left(\overline{y}_{dt},p_{dt}\right)$
+\begin_inset Formula $\left(q_{dt},p_{dt}\right)$
 \end_inset
 
 .
@@ -8343,7 +8013,7 @@ name "tab:Regional-2-indiv-income"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -8377,13 +8047,13 @@ reference "eq:indiv-labor-empirical"
 
 \end_inset
 
-, for three different levels of regional mean income 
-\begin_inset Formula $\overline{y}$
+, for three different levels of regional mean productivity 
+\begin_inset Formula $q$
 \end_inset
 
 .
  Notice that in the model as well as in the data it is never the case that
- all regions have the sam e level of average income.
+ all regions have the same level of average income.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:age-profiles"
