@@ -643,7 +643,7 @@ function exp_Mortgage(ctax=false)
 	welf_age = @> begin
 		bp
 		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
-		@by(:age,mean_dinc = mean(:dinc),mean_pinc = mean(:pinc),mean_dwealth = mean(:dwealth),mean_dh=100*mean(:dh),mean_dassets= mean(:da),q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
+		@by(:age,mean_dinc = mean(:dinc),q50_dinc= median(:dinc),q10_dinc = quantile(:dinc,0.1),q90_dinc = quantile(:dinc,0.9),mean_pinc = mean(:pinc),mean_dwealth = mean(:dwealth),mean_dh=100*mean(:dh),mean_dassets= mean(:da),q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
 	end
 
 
