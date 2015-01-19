@@ -11,6 +11,45 @@ plot_sipp_r2p <- function(){
 
 
 
+plot_mortgage_welfare = function(){
+	w = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age.csv"))
+	w[,age := age+19]
+
+	m = melt(w[,list(age,median=q50pv,percentile_10=q10pv,percentile_90=q90pv)],"age")
+
+	p = list()
+
+	myth = theme(plot.title=element_text(vjust=1.0))
+
+	p$age = ggplot(m,aes(x=age,y=value,color=variable)) + geom_line(size=1) +theme_bw() + scale_y_continuous(name="% change in utility") + myth + ggtitle("% Change in Utility after Abolishing")
+
+	wh = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_h.csv"))
+	x = gsub("\\(","",wh$ybin)
+	x = gsub("\\]","",x)
+	x = gsub("\\[","",x)
+	x2 = strsplit(x,"\\,")
+	wh$income = unlist(lapply(x2,function(x){mean(c(as.numeric(x[1]),as.numeric(x[2])))}))
+	mh = melt(wh[,list(type=factor(h,labels=c("Renter","Owner")),income,median=q50pv,percentile_10=q10pv,percentile_90=q90pv)],id.vars=c("type","income"))
+
+	p$h_y = ggplot(mh,aes(x=income,y=value,color=variable)) + geom_line(size=1) + facet_wrap(~type) +theme_bw() + scale_y_continuous(name="% change in utility")+ myth + ggtitle("% Change in Utility after Abolishing")
+
+	wy = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age_y.csv"))
+	x = gsub("\\(","",wy$ybin)
+	x = gsub("\\]","",x)
+	x = gsub("\\[","",x)
+	x2 = strsplit(x,"\\,")
+	wy$income = factor(round(unlist(lapply(x2,function(x){mean(c(as.numeric(x[1]),as.numeric(x[2])))}))))
+	wy[,age := age + 20]
+
+	p$wy = ggplot(wy,aes(age,y=q50pv,color=income)) + geom_line(size=1) +theme_bw() + scale_y_continuous(name="% change in utility")+ myth + ggtitle("% Change in Utility after Abolishing")
+	
+	ggsave(p$age,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf",width=7,height=5)
+	ggsave(p$h_y,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf",width=7,height=5)
+	ggsave(p$wy,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf",width=7,height=5)
+
+}
+
+
 plot_probMove = function(){
 	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
 	for (i in unique(ass$assets)){
@@ -824,6 +863,15 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	setkey(US,Division)
 	setkey(pyagg,Division)
 	pyagg = US[pyagg]
+
+
+	pp=dcast(pyagg[,list(Division,year,p)],year ~ Division)
+	yy=dcast(pyagg[,list(Division,year,y)],year ~ Division)
+	y_cor = cor(yy[,-1])
+	p_cor = cor(pp[,-1])
+
+	price_correlation =  mean(p_cor[p_cor!=1])
+	income_correlation =  mean(y_cor[y_cor!=1])
 
 
 	my = melt(pyagg[,list(year,Division=Div,Regional=y,National=Y)],c("year","Division"))

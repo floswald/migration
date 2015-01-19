@@ -4697,6 +4697,31 @@ Identification
 \end_layout
 
 \begin_layout Standard
+Identification is achieved by comparing household behaviour under different
+ price regimes.
+ The variation comes from using the observed house price and labor productivity
+ series in estimation, which vary over time and by region.
+ The identifying assumption is that, conditional on all other model features,
+ households must be statistically identical across those differing price
+ regimes.
+ In particular, this requires that household preferences be stable over
+ time and do not vary by region.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The model is not non-parametrically identified; Both variation in prices
+ and further restrictions such as functional form are needed, because price
+ variation is at the regional (and not household-) level.
+ 
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
 The structural parameters in 
 \begin_inset Formula $\theta$
 \end_inset

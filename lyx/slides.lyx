@@ -111,12 +111,17 @@ vspace{1cm}
 Seminar am Deutschen Institut für Wirtschaftsforschung, Berlin
 \end_layout
 
+\begin_layout Date
+21.
+ January 2015
+\end_layout
+
 \begin_layout BeginFrame
 Housing and Mobility
 \end_layout
 
 \begin_layout Itemize
-Internal migration is a key adjustment mechanism in housing and labor markets.
+Regional migration is a key adjustment mechanism in housing and labor markets.
 \end_layout
 
 \begin_layout Itemize
@@ -1502,7 +1507,18 @@ Dropbox/data/CPS/main-reason-pres1.tex}
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
- Median distance moved is 837 miles.
+ Median distance moved is 1347 KM.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+837 miles.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1538,7 +1554,36 @@ status open
 \backslash
 input{
 \backslash
+Dropbox/data/CPS/main-reason-presKM.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
 Dropbox/data/CPS/main-reason-pres.tex}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1552,7 +1597,18 @@ Dropbox/data/CPS/main-reason-pres.tex}
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
- Median distance moved is 837 miles.
+ Median distance moved is 1347 KM.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+837 miles.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2190,7 +2246,7 @@ Preferences:
 \end_layout
 
 \begin_layout Itemize
-period payoff depends on 
+The within-period payoff depends on 
 \end_layout
 
 \begin_deeper
@@ -4126,57 +4182,7 @@ Properties of the model
 \end_layout
 
 \begin_layout BeginFrame
-Properties: Probability of migrating by wealth
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{1pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align left
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth2.pdf
-	scale 75
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-More Properties
+Properties of the model
 \end_layout
 
 \begin_layout Standard
@@ -4188,6 +4194,24 @@ status open
 
 \backslash
 hypertarget{Properties}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{PropProbMove}{
+\backslash
+beamergotobutton{Probability of Moving.}}
 \end_layout
 
 \end_inset
@@ -4714,9 +4738,11 @@ Dropbox/model/experiments/MortgageSubsidy/mortgage_pres-edit.tex}
 }
 \end_layout
 
-\end_inset
+\begin_layout Plain Layout
 
 
+\backslash
+hypertarget{MortgageExp}{}
 \end_layout
 
 \end_inset
@@ -4724,24 +4750,12 @@ Dropbox/model/experiments/MortgageSubsidy/mortgage_pres-edit.tex}
 
 \end_layout
 
-\begin_layout BeginFrame
-The Proportion of 
-\series bold
-\size largest
-\emph on
-\color blue
-Move to Buy 
-\emph default
-Changes
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -4749,73 +4763,91 @@ status open
 
 
 \backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
+begin{columns}[T]
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-input{
+begin{column}{.5
 \backslash
-Dropbox/model/experiments/MortgageSubsidy/mortgage_change_mv.tex}
+textwidth}
 \end_layout
 
 \begin_layout Plain Layout
 
-}
+
+\backslash
+hyperlink{MoveToBuy}{
+\backslash
+beamergotobutton{Change in Behaviour.}}
 \end_layout
 
-\end_inset
+\begin_layout Plain Layout
 
 
+\backslash
+end{column}
 \end_layout
 
-\end_inset
+\begin_layout Plain Layout
 
 
+\backslash
+begin{column}{.5
+\backslash
+textwidth}
 \end_layout
 
-\begin_layout BeginFrame
-Welfare Gains by Age
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf
-	scale 65
-
-\end_inset
+\begin_layout Plain Layout
 
 
-\end_layout
+\backslash
+hyperlink{GainsAge}{
+\backslash
+beamergotobutton{Welfare gains by age.}}
+\backslash
 
-\begin_layout BeginFrame
-Welfare Gains by Income and Housing Status
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf
-	scale 65
-
-\end_inset
-
+\backslash
 
 \end_layout
 
-\begin_layout BeginFrame
-Welfare Gains by Age and Income Quartile
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{GainsIncomeHousing}{
+\backslash
+beamergotobutton{Welfare gains by income and housing.}}
+\backslash
+
+\backslash
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf
-	scale 65
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{GainsIncomeAge}{
+\backslash
+beamergotobutton{Welfare gains by income and age.}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{column}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{columns}
+\end_layout
 
 \end_inset
 
@@ -4916,6 +4948,313 @@ vspace{1cm}
 \size largest
 \color blue
 Appendix
+\end_layout
+
+\begin_layout BeginFrame
+Welfare Gains by Age 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{MortgageExp}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{GainsAge}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Welfare Gains by Income and Housing Status 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{MortgageExp}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{GainsIncomeHousing}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Welfare Gains by Age and Income Quartile 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{MortgageExp}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{GainsIncomeAge}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Proportion of 
+\series bold
+\size largest
+\emph on
+\color blue
+Move to Buy 
+\emph default
+Changes 
+\series default
+\size default
+\color inherit
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{MortgageExp}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{MoveToBuy}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-2pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/MortgageSubsidy/mortgage_change_mv.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Properties: Probability of migrating by wealth 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{Properties}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{PropProbMove}{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{1pt}
+\backslash
+makebox[
+\backslash
+linewidth][c]{%
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth2.pdf
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
