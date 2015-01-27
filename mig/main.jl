@@ -26,8 +26,9 @@ x=mig.computeMoments(s,p,m)
 @profile s = mig.simulate(m,p);	
 
 
-s2 = s[!mig.isna(s[:cohort]),:]
-mig.simplot(s2[s2[:cohort].<=14,:],5)
+s2 = s[!mig.isna(s[:cohort]),:];
+mig.simplot(s2,[21607,21920,21152,21664,21385])
+mig.simplot(s2[s2[:cohort].>=20,:],5)
 s96 = @where(s2,:year .> 1996)
 
 # gadfly plotting
@@ -46,6 +47,7 @@ mig.vhplot(m,p,(1,1,1,3,3,1,1,1))
 mig.vhplot(m,p,(1,1,4,3,3,1,1,1))
 mig.vhplot(m,p,(1,1,4,3,3,1,1,30))
 mig.vhplot(m,p,(1,1,2,1,1,1,1,30))
+mig.vhplot(m,p,(1,1,2,1,1,1,6,30))
 
 hcat(m.vh[1,1,1,4,3,3,1,:,1,1,30][:],m.ch[1,1,1,4,3,3,1,:,1,1,30][:],m.sh[1,1,1,4,3,3,1,:,1,1,30][:])
 

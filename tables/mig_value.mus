@@ -11,20 +11,21 @@
   \toprule 
      & \multicolumn{1}{c}{Baseline} & \multicolumn{1}{c}{No Moving} & \multicolumn{1}{c}{$\% \Delta$} \\ 
   \midrule
-     & \multicolumn{3}{c}{Immigration} \\[-6pt]
-     & \multicolumn{3}{c}{\scriptsize (within group percentage) } \\
+     & \multicolumn{3}{c}{Immigration per period} \\[-6pt]
+     & \multicolumn{3}{c}{\scriptsize (percent of local population) } \\
   \cmidrule{2-4}
-  {{  show("Total", flows.inmig_rel) }}
-  {{  show("Owners", flows.inmig_own_rel) }}
-  {{  show("Renters", flows.inmig_rent_rel) }}
+  {{  show("Total", flows.inmig) }}
+  {{  show("Owners", flows.inmig_own) }}
+  {{  show("Renters", flows.inmig_rent) }}
   \midrule
-     & \multicolumn{3}{c}{Emigration} \\[-6pt]
-     & \multicolumn{3}{c}{\scriptsize (within group percentage) } \\
+     & \multicolumn{3}{c}{Emigration per period} \\[-6pt]
+     & \multicolumn{3}{c}{\scriptsize (percent of local population) } \\
   \cmidrule{2-4}
   {{  show2("Total", flows.outmig) }}
-  {{  show2("Owners", flows.outmig_own_rel) }}
-  {{  show2("Renters", flows.outmig_rent_rel) }}
+  {{  show2("Owners", flows.outmig_own) }}
+  {{  show2("Renters", flows.outmig_rent) }}
   \midrule
   {{  showparam("E[Lifetime U]", EV) }}
+  Cons. Compensation &  & 1.044 &  \\
   \bottomrule
 \end{tabular}

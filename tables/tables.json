@@ -16,8 +16,8 @@
   },
   "compareHC":{
     "template" : "compareHC_friction.mus",
-    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/HC_friction/HC_friction.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/MC_hfriction.json"
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/HC_friction/decompose.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/decompose_MC_owners.json"
   },
   "copulas":{
     "template" : "copulas.mus",
@@ -39,11 +39,6 @@
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/mig_value3.tex",
     "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mig_value.json"
   },    
-  "mig_value_detail":{
-    "template" : "mig_value_detail.mus",
-    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/mig_value_detail.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
-  },    
   "mig_value_detail2":{
     "template" : "mig_value_detail2.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/mig_value_detail2.tex",
@@ -62,22 +57,42 @@
   "mortgage":{
     "template" : "mortgage.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/mortgage.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mortgage.json"
-  },    
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/mortgage.json"
+  },     
+  "mortgage_change":{
+    "template" : "mortgage_change_mv.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/mortgage_change_mv.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/mortgage.json" 
+    },  
   "mortgage_pres":{
     "template" : "mortgage_pres.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/mortgage_pres.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/mortgage.json"
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/mortgage.json"
   },    
   "params":{
     "template" : "params.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/fit/params.tex",
-    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json"
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/fit/params.json"
   },    
   "growthEx":{
     "template" : "growthEx.mus",
     "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/properties/growthEx.tex",
     "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/properties/growthEx.json"
+  },    
+  "mainReason":{
+    "template" : "main-reason.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/data/cps/main-reason.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/data/cps/main-reason.json"
+  },    
+  "yshock_elast":{
+    "template" : "yshock_elast.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yelast.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/shockReg/exp_region8_yshock_all.json"
+  },    
+  "pshock_elast":{
+    "template" : "yshock_elast.mus",
+    "output"   : "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pelast.tex",
+    "data"     : "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/shockReg/exp_region8_pshock_all.json"
   }
 
 }

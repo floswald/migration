@@ -60,6 +60,16 @@
 \filename_suffix 0
 \color #ffffff
 \end_branch
+\branch europe
+\selected 0
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch US
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
 \index Index
 \shortcut idx
 \color #008000
@@ -105,15 +115,11 @@ vspace{1cm}
 
 \end_inset
 
-
-\size largest
-\color blue
-Seminar am Deutschen Institut für Wirtschaftsforschung, Berlin
+Boston College
 \end_layout
 
 \begin_layout Date
-21.
- January 2015
+26th of January 2015
 \end_layout
 
 \begin_layout BeginFrame
@@ -719,17 +725,6 @@ The decline of the auto industry in Michigan reduced employment.
 
 \begin_layout Itemize
 Detroit lost over 60% of its population since the 1950s.
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-at the same time, other regions experienced growth.
- which ones?
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Itemize
@@ -880,7 +875,7 @@ What do we learn from adding
 
 \begin_deeper
 \begin_layout Itemize
-regional shocks
+regional shocks,
 \begin_inset Note Note
 status open
 
@@ -896,7 +891,7 @@ i can show how behaviour reacts as one region is shocked.
 \end_layout
 
 \begin_layout Itemize
-assets
+assets and 
 \begin_inset Note Note
 status open
 
@@ -924,6 +919,21 @@ housing choices
 
 \begin_layout Standard
 to dynamic migration models like Kennan and Walker (2011)?
+\size footnotesize
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{3mm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -942,6 +952,21 @@ onslide+<2->
 
 What is the value of migration as a self-insurance device when aggregate
  shocks affect regions differently?
+\size footnotesize
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{3mm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Enumerate
@@ -961,10 +986,6 @@ What would happen to migration, homeownership and welfare if we abolished
  the mortgage interest deduction (taking into account potential price changes)?
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status collapsed
-
 \begin_layout BeginFrame
 Roadmap
 \end_layout
@@ -972,11 +993,6 @@ Roadmap
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1040,11 +1056,11 @@ vspace{3mm}
 \end_layout
 
 \begin_layout Itemize
-Static spatial equilibrium models of migration and local labor markets:
- 
+Static spatial equilibrium models of migration, local labor markets, city
+ development: 
 \size footnotesize
 Notowidigdo (2011), Moretti (2011), Diamond (2012), Piyapromdee (2013),
- Yagan (2013)
+ Yagan (2013), Konishi (2013)
 \begin_inset ERT
 status open
 
@@ -1079,22 +1095,15 @@ Regional Fluctuations:
 Blanchard and Katz (1992)
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginFrame
 Related literature 
 \end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
 
 \begin_layout Itemize
 On the effects of 2007 bust on unemployment and mobility: 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
@@ -1103,7 +1112,6 @@ empirical: Ferreira et al.
  (2013)
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
@@ -1125,12 +1133,41 @@ vspace{3mm}
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Housing and Labor reallocation: 
+\size footnotesize
+Davis, Fisher and Veracierto (2010, 2013)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{3mm}
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size footnotesize
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Housing demand over the lifecycle:
 \size footnotesize
  Attanasio et al.
@@ -1150,17 +1187,29 @@ vspace{3mm}
 
 \end_layout
 
-\begin_layout Itemize
-Lifecycle models of saving and retirement: 
-\size footnotesize
-French, De Nardi and Jones (2010), Haan and Prowse (2013) 
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
+\begin_layout Itemize
+Lifecycle models of saving and retirement, etc: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size footnotesize
+French, De Nardi and Jones (2010), 
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Manoli, Mullen and Wagner (2014) 
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Empirical Facts
 \end_layout
@@ -1381,10 +1430,6 @@ status open
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginPlainFrame
 
 \end_layout
@@ -1407,11 +1452,6 @@ status open
 \begin_inset Graphics
 	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_y.pdf
 	height 95pheight%
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1507,12 +1547,21 @@ Dropbox/data/CPS/main-reason-pres1.tex}
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
- Median distance moved is 1347 KM.
- 
-\begin_inset Note Note
+ Median distance moved is 
+\begin_inset Branch europe
 status open
 
-\begin_layout Plain Layout
+\begin_layout Standard
+1347 KM.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Branch US
+status open
+
+\begin_layout Standard
 837 miles.
 \end_layout
 
@@ -1545,6 +1594,12 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
+\begin_inset Branch europe
+status open
+
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset ERT
 status open
 
@@ -1562,11 +1617,18 @@ Dropbox/data/CPS/main-reason-presKM.tex}
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Note Note
-status open
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Branch US
+status open
+
+\begin_layout Standard
 \noindent
 \align center
 \begin_inset ERT
@@ -1597,12 +1659,21 @@ Dropbox/data/CPS/main-reason-pres.tex}
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
- Median distance moved is 1347 KM.
- 
-\begin_inset Note Note
+ Median distance moved is 
+\begin_inset Branch europe
 status open
 
-\begin_layout Plain Layout
+\begin_layout Standard
+1347 KM.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Branch US
+status open
+
+\begin_layout Standard
 837 miles.
 \end_layout
 
@@ -1670,10 +1741,6 @@ status open
 
 
 \end_layout
-
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
 
 \begin_layout Standard
 \begin_inset Note Note
@@ -1757,11 +1824,6 @@ Renters move at more than double the rate of owners.
 
 \begin_layout Enumerate
 Younger people move more, with the renter--owner gap shrinking with age.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -2391,10 +2453,6 @@ logit shock captures moves made for other reasons than income or housing.
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout BeginFrame
 Homeownership Choice
 \end_layout
@@ -2573,11 +2631,39 @@ People have to move to
 \begin_inset Formula $d'$
 \end_inset
 
- in order to discover exact value of new income.
+ before they discover the exact value of new income: experience good.
 \end_layout
 
 \begin_layout Itemize
-They know average log wages: 
+Expectations over idiosyncratic 
+\begin_inset Formula $z$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+differ for movers:
 \family roman
 \series medium
 \shape up
@@ -2591,9 +2677,11 @@ They know average log wages:
 \color none
 
 \begin_inset Formula 
-\[
-E\left[\eta_{d'}\ln q_{d't+1}|q_{d,t}\right]+f(t+1)
-\]
+\begin{eqnarray*}
+ & E[z_{t+1}|z_{t},\text{stay}]\\
+ & \neq\\
+ & E[z_{t+1}|z_{t},\text{move}]
+\end{eqnarray*}
 
 \end_inset
 
@@ -2605,7 +2693,7 @@ Movers get a new draw
 \begin_inset Formula $z_{t+1}$
 \end_inset
 
- which depends on their previous 
+, correlated with their previous 
 \begin_inset Formula $z_{t}$
 \end_inset
 
@@ -2614,6 +2702,10 @@ Movers get a new draw
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Itemize
+Rules out selection on offers.
 \end_layout
 
 \begin_layout Standard
@@ -2645,15 +2737,6 @@ I am aware that this is potentially a problem.
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
 
 \begin_layout BeginFrame
 Budget Constraint: Renters who decide to stay
@@ -2902,15 +2985,6 @@ a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)
 \end_layout
 
 \end_deeper
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Branch 90mins
-status open
-
 \begin_layout Section
 Estimation
 \end_layout
@@ -2960,7 +3034,7 @@ Identifying assumptions:
 
 \begin_deeper
 \begin_layout Enumerate
-Individual demand is not subject to aggregate shocks.
+Individual housing demand is not subject to aggregate shocks.
 \end_layout
 
 \begin_layout Enumerate
@@ -2995,7 +3069,7 @@ I implicitly assume that
 \begin_inset Formula $p_{dt},q_{dt}$
 \end_inset
 
- are shifted by supply shocks only.
+ are shifted by aggregate shocks only.
 \end_layout
 
 \end_deeper
@@ -3042,11 +3116,6 @@ FHFA for regional house price indeces.
 \end_layout
 
 \end_deeper
-\end_inset
-
-
-\end_layout
-
 \begin_layout BeginFrame
 Estimation Outline
 \begin_inset ERT
@@ -3183,7 +3252,7 @@ Parametric restriction which fits the data well.
 
 \begin_layout Standard
 \begin_inset Branch 25min
-status open
+status collapsed
 
 \begin_layout Itemize
 Moments relating to mobility: mobility rates conditional on 
@@ -3665,7 +3734,7 @@ Step 2: Estimation method
 Structural parameter vector
 \begin_inset Formula 
 \[
-\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\gamma,\omega,\pi_{\tau},\xi_{1},\xi_{2}\right\} 
+\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\xi_{1},\xi_{2}\right\} 
 \]
 
 \end_inset
@@ -4697,6 +4766,26 @@ Adjust rent-to-price ratios
 \end_inset
 
  so that rent stays constant.
+\end_layout
+
+\begin_layout BeginFrame
+Net Present Value of Deduction
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -6454,22 +6543,6 @@ Dropbox/model/data_repo/out_data_jl/sinai-pres.tex}
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Net Present Value of Deduction
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf
-	scale 60
 
 \end_inset
 
