@@ -61,12 +61,12 @@
 \color #ffffff
 \end_branch
 \branch europe
-\selected 0
+\selected 1
 \filename_suffix 0
 \color #ffffff
 \end_branch
 \branch US
-\selected 1
+\selected 0
 \filename_suffix 0
 \color #ffffff
 \end_branch
@@ -115,11 +115,11 @@ vspace{1cm}
 
 \end_inset
 
-Boston College
+Job Talk at the Stockholm School of Economics
 \end_layout
 
 \begin_layout Date
-26th of January 2015
+3rd of February 2015
 \end_layout
 
 \begin_layout BeginFrame
@@ -1056,11 +1056,10 @@ vspace{3mm}
 \end_layout
 
 \begin_layout Itemize
-Static spatial equilibrium models of migration, local labor markets, city
- development: 
+Static spatial equilibrium models of migration, local labor markets: 
 \size footnotesize
 Notowidigdo (2011), Moretti (2011), Diamond (2012), Piyapromdee (2013),
- Yagan (2013), Konishi (2013)
+ Yagan (2013)
 \begin_inset ERT
 status open
 
@@ -1100,7 +1099,8 @@ Related literature
 \end_layout
 
 \begin_layout Itemize
-On the effects of 2007 bust on unemployment and mobility: 
+On the effects of 2007 housing bust on unemployment and mobility, and mismatch:
+ 
 \end_layout
 
 \begin_deeper
@@ -1115,7 +1115,7 @@ empirical: Ferreira et al.
 \begin_layout Itemize
 
 \size footnotesize
-theoretical: Nenov (2012), Song et al.
+theoretical: Shimer (2005), Nenov (2012), Song et al.
  (2014) and Karahan and Rhee (2011)
 \begin_inset ERT
 status open
@@ -1193,20 +1193,20 @@ vspace{3mm}
 \end_layout
 
 \begin_layout Itemize
-Lifecycle models of saving and retirement, etc: 
+Lifecycle models of savings, retirement, tax reforms etc: 
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
-French, De Nardi and Jones (2010), 
+French, De Nardi and Jones (2010)
 \end_layout
 
 \begin_layout Itemize
 
 \size footnotesize
-Manoli, Mullen and Wagner (2014) 
+Laun and Wallenius (forthcoming)
 \end_layout
 
 \end_deeper
@@ -1742,23 +1742,11 @@ status open
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout BeginFrame
-Reasons for Moving II: SIPP Data
+Summary of empirical facts
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -1766,43 +1754,12 @@ status open
 
 
 \backslash
-input{
-\backslash
-Dropbox/data/sipp/D2D-probit-edit-slides.tex}
+hypertarget{SummaryEmpirical}{}
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Probit model, regressing binary moving indicator on household characteristics.
- Baseline probability of moving is 1.32%.
- Income in $100,000.
  
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Summary of empirical facts
 \end_layout
 
 \begin_layout Enumerate
@@ -1824,6 +1781,24 @@ Renters move at more than double the rate of owners.
 
 \begin_layout Enumerate
 Younger people move more, with the renter--owner gap shrinking with age.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{ProbitReasons}{
+\backslash
+beamergotobutton{Probit}}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -3199,6 +3174,13 @@ An aggregate factor
 \end_layout
 
 \begin_layout Itemize
+\begin_inset Formula $\mathbf{a}_{d}$
+\end_inset
+
+ is a known matrix of factor loadings.
+\end_layout
+
+\begin_layout Itemize
 Regional state variables 
 \begin_inset Formula $q_{dt}$
 \end_inset
@@ -3211,16 +3193,29 @@ Regional state variables
 \begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
+ and 
+\begin_inset Formula $\mathbf{a}_{d}$
+\end_inset
+
 :
 \begin_inset Formula 
 \[
-\left[q_{dt},p_{dt}\right]=g_{d}\left(\mathbf{F}_{t}\right)
+\left[q_{dt},p_{dt}\right]=g\left(\mathbf{F}_{t},\mathbf{a}_{d}\right)
 \]
 
 \end_inset
 
 
 \end_layout
+
+\begin_layout Itemize
+Parametric restriction which fits the data well.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout Itemize
 Factor model 
@@ -3230,11 +3225,11 @@ Factor model
  implies that 
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 different regions are affected to different extent by aggregate shocks.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 given a value 
 \begin_inset Formula $\mathbf{F_{t}}$
@@ -3245,39 +3240,6 @@ given a value
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
-Parametric restriction which fits the data well.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Branch 25min
-status collapsed
-
-\begin_layout Itemize
-Moments relating to mobility: mobility rates conditional on 
-\begin_inset Formula $s,h,t$
-\end_inset
-
-, number of moves
-\end_layout
-
-\begin_layout Itemize
-Moments relating to homeownership: ownership rates conditional on 
-\begin_inset Formula $s,d,t$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Average wealth conditional on 
-\begin_inset Formula $d,t$
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -3372,6 +3334,15 @@ linewidth][c]{
 
 
 \backslash
+renewcommand{
+\backslash
+arraystretch}{1.2}  
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 input{
 \backslash
 Dropbox/model/fit/preset.tex}
@@ -3404,6 +3375,15 @@ hspace*{-2pt}
 makebox[
 \backslash
 linewidth][c]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+arraystretch}{1.2}  
 \end_layout
 
 \end_inset
@@ -6651,6 +6631,84 @@ status open
 hyperlink{CurseDim}{
 \backslash
 beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reasons for Moving: SIPP Data
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hypertarget{ProbitReasons}{}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hyperlink{SummaryEmpirical}{
+\backslash
+beamergotobutton{back}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/D2D-probit-edit-slides.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Probit model, regressing binary moving indicator on household characteristics.
+ Baseline probability of moving is 1.32%.
+ Income in $100,000.
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
