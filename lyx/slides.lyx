@@ -115,11 +115,11 @@ vspace{1cm}
 
 \end_inset
 
-Job Talk at the Stockholm School of Economics
+Job Talk at the Toulouse School of Economics
 \end_layout
 
 \begin_layout Date
-3rd of February 2015
+6th of February 2015
 \end_layout
 
 \begin_layout BeginFrame
@@ -1056,10 +1056,11 @@ vspace{3mm}
 \end_layout
 
 \begin_layout Itemize
-Static spatial equilibrium models of migration, local labor markets: 
+Static spatial equilibrium models of migration, and local labor markets:
+ 
 \size footnotesize
 Notowidigdo (2011), Moretti (2011), Diamond (2012), Piyapromdee (2013),
- Yagan (2013)
+ Gobillon, Magnac and Selod (2011)
 \begin_inset ERT
 status open
 
@@ -1076,7 +1077,7 @@ vspace{3mm}
 \size default
 
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
 for example, GE models can look at how wages react to a change in the skill
@@ -1161,17 +1162,23 @@ vspace{3mm}
 
 \end_layout
 
-\begin_layout Standard
-
-\size footnotesize
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
+\begin_layout Itemize
 Housing demand over the lifecycle:
 \size footnotesize
- Attanasio et al.
- (2012), and Li, Meghir and Oswald (2014)
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size footnotesize
+Bracke, Hilber and Silva (2014)
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Li, Meghir and Oswald (2014)
 \begin_inset ERT
 status open
 
@@ -1187,29 +1194,37 @@ vspace{3mm}
 
 \end_layout
 
-\end_inset
+\end_deeper
+\begin_layout Standard
 
-
-\end_layout
+\size footnotesize
+\begin_inset Note Note
+status open
 
 \begin_layout Itemize
-Lifecycle models of savings, retirement, tax reforms etc: 
+Savings, retirement, tax reforms, human capital formation over the life
+ cycle
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
 French, De Nardi and Jones (2010)
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
-Laun and Wallenius (forthcoming)
+Magnac, Pistolesi and Roux (2013)
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Empirical Facts
 \end_layout
@@ -3113,7 +3128,7 @@ Estimation proceeds in two steps:
 \end_layout
 
 \begin_layout Enumerate
-Estimate a model of household beliefs: 
+Reduce dimensionality of stochastic processes: 
 \end_layout
 
 \begin_deeper
@@ -3139,7 +3154,7 @@ beamergotobutton{details}}
 \end_layout
 
 \begin_layout Itemize
-I will impose more structure on expectations.
+I will employ a low-dimensional factor model to approximate this space.
 \end_layout
 
 \end_deeper
@@ -3162,7 +3177,7 @@ Step 1: Factor Model of Aggregate and Regional Prices
 \end_layout
 
 \begin_layout Itemize
-I assume that beliefs follow a 2-dimensional factor model.
+I assume that agents use a 2-dimensional factor model to forecast prices.
 \end_layout
 
 \begin_layout Itemize
@@ -3189,7 +3204,7 @@ Regional state variables
 \begin_inset Formula $p_{dt}$
 \end_inset
 
- are functions of 
+ are known functions of 
 \begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
