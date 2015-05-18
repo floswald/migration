@@ -177,10 +177,10 @@ function simulate(m::Model,p::Param)
 
 	# construct the interpolators
 	# ---------------------------
-	L = Dict{ASCIIString,lininterp}()
-	L["l_vcs"] = lininterp(vcs_arr,gs)
-	L["l_rho"] = lininterp(rho_arr,gs)
-	# L_EV  = lininterp(EV_arr,gs)
+	L = Dict{ASCIIString,Lininterp}()
+	L["l_vcs"] = Lininterp(vcs_arr,gs)
+	L["l_rho"] = Lininterp(rho_arr,gs)
+	# L_EV  = Lininterp(EV_arr,gs)
 
 	srand(54321)
 
@@ -634,7 +634,7 @@ end
 # fills arrays with corresponding values at 
 # discrete state (is,ih,itau,ij,age)
 # fills l_vcs with all possible combinations of (ihh,ik)
-function fill_interp_arrays!(L::Dict{ASCIIString,lininterp},is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
+function fill_interp_arrays!(L::Dict{ASCIIString,Lininterp},is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
 
 	# L contains:
 	# 1. l_vcs
@@ -679,7 +679,7 @@ end
 # fills interp array for expected value function at
 # discrete state (is,ihh,itau,ij,age)
 # must pass age+1 !
-function fill_interp_EV!(L::lininterp,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
+function fill_interp_EV!(L::Lininterp,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
 
 	# L contains:
 	# 1. l_EV
@@ -709,7 +709,7 @@ end
  # r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 
 
-function get_rho_ktmp(l::lininterp,azYP::Vector{Float64},p::Param)
+function get_rho_ktmp(l::Lininterp,azYP::Vector{Float64},p::Param)
 	out = zeros(p.nJ)
 
 	getValue!(out,l,azYP,[1:p.nJ])
@@ -718,7 +718,7 @@ end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_vcs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
+function get_vcs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
 	out = zeros(3)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
@@ -731,7 +731,7 @@ end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_v1v2(l::lininterp,azYP::Vector{Float64},ik::Int,p::Param)
+function get_v1v2(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 
 	out = zeros(2)
 	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
@@ -743,7 +743,7 @@ end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
-function get_cs(l::lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
+function get_cs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
 	out = zeros(2)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
@@ -761,6 +761,7 @@ end
 
 
 # computing moments from simulation
+# takes df: simulation output
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# keep only relevant years
@@ -779,6 +780,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# create a dataframe to push moments on to
 	mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
+
+	moms = Dict()
 
 
 	# grouped dfs
@@ -1005,9 +1008,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h], model_sd = [std_mv,std_h])
 
-	dfout = rbind(mom1,mom2)
+	dfout = vcat(mom1,mom2)
 
-	# 	push!(dfs,rbind(mom1,mom2))
+	# 	push!(dfs,vcat(mom1,mom2))
 
 	# end
 

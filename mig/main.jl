@@ -10,7 +10,7 @@ cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
-x=mig.runObj(true)
+x=mig.runObj()
 					
 # run simulation
 # plot 5 guys

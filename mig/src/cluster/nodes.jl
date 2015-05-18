@@ -39,7 +39,7 @@ pb["taudist"] = [p0.taudist, 0.0,1]
 # options for objective function
 objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
 
-mprob = @> MOpt.MProb() MOpt.addSampledParam!(pb) MOpt.addMoment(moms) MOpt.addEvalFunc(mig.objfunc)
+mprob = @> MOpt.MProb() MOpt.addSampledParam!(pb) MOpt.addMoment!(moms_use) MOpt.addEvalFunc!(mig.objfunc)
 
 
 

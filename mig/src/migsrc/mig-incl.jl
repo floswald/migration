@@ -1,157 +1,80 @@
 
 
+function mydf2dict(df::DataFrame)
+	if names(df) != [:moment,:model_value,:model_sd]
+		throw(ArgumentError("need columns :moment,:model_value,:model_sd"))
+	end
+	d = Dict()
+	for e in eachrow(df)
+		# d[symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
+		# does not make sense to return model_sd!
+		d[symbol(e[:moment])] = e[:model_value]
+	end
+	return d
+end
+
 # miscellaneous includes
 
 # objective function to work with mopt
-# function objfunc2(ev::Eval)
+@debug function objfunc(ev::Eval)
 
-# 	start(ev)
-# 	info("in objective function 2")
+	start(ev)
+	info("in objective function")
 
-# 	# info("start model solution")
-# 	time0 = time()
-# 	p = Param(2)	# create a default param type
-# 	pd = ev.params	# get all params as a dict
-# 	update!(p,pd)	# update with values changed by the optimizer
-# 	m = Model(p)
-# 	mig.solve!(m,p)
-# 	s   = simulate(m,p)
-# 	mms = computeMoments(s,p,m)	
-# 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
-
-# 	mom2 = join(mom,mms,on=:moment)
-# 	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:perc)
-# 	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:sqdist)
-
-# 	# get subset of moments
-# 	subset = findin(mom2[:moment],whichmom)
-
-# 	# get percentage difference
-# 	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
-
-# 	# get mean squared distance over standard edeivation
-# 	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:data_sd] ).^2
-
-# 	fval = mean(mom2[subset,:sqdist]) / 1000
-# 	# fval = mean(abs(mom2[subset,:perc]))
-
-#     mout = transpose(mom2[[:moment,:model_value]],1)
-
-#     if Sys.OS_NAME == :Darwin
-# 	    showall(mom2[:,[:moment,:data_value,:model_value,:sqdist]])
-# 	    println(p)
-# 		s2 = @where(s,(:year.>1996) & (!isna(:cohort)))
-# 		showall(@by(s2,[:realage],own=mean(:own),move=mean(:move),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0))))
-# 		showall(hcat(@by(@where(s2,:own.==true),:realage,move_owner=mean(:move)),@by(@where(s2,:own.==false),:realage,move_renter=mean(:move))))
-# 	    if get(opts[1],"printmoms",false) 
-# 	    	d = Dict()
-# 	    	for ea in eachrow(mom2)
-# 	    		ea[:moment] = replace(ea[:moment],"[","")
-# 	    		ea[:moment] = replace(ea[:moment],"]","")
-# 	    		ea[:moment] = replace(ea[:moment],"(","")
-# 	    		ea[:moment] = replace(ea[:moment],",","_")
-# 	    		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd], "perc"=>ea[:perc]]
-
-# 	    	end
-# 	    	# change age brackets
-
-# 	    	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
-# 	    	JSON.print(f,d)
-# 	    	close(f)
-#     		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
-# 	    end
-# 	    if get(opts[1],"plotsim",false) 
-# 	   		simplot(s[!isna(s[:cohort]),:],5)
-# 	   	end
-# 	    println()
-# 	end
-
-# 	status = 1
-# 	# if isnan(fval)
-# 	# 	status = -1
-# 	# end
-
-# 	if get(opts[1],"printlevel",0) > 0
-# 		println("objfunc runtime = $(time()-time0)")
-# 		println("objfunc value = $(fval)")
-# 	end
-# 	time1 = round(time()-time0)
-# 	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => status, "moments" => mout]
-# 	return ret
-# end
-function objfunc(pd::Dict,mom::DataFrame,whichmom::Array{ASCIIString,1},opts...)
-
-
-	# info("start model solution")
-	time0 = time()
 	p = Param(2)	# create a default param type
-	update!(p,pd)	# update with values changed by the optimizer
+	MOpt.fill(p,ev)      # fill p with current values on eval object
+
 	m = Model(p)
 	mig.solve!(m,p)
 	s   = simulate(m,p)
-	mms = computeMoments(s,p,m)	
+	smm = computeMoments(s,p,m)	
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
+	simMoments = mydf2dict(smm)
 
-	mom2 = join(mom,mms,on=:moment)
-	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:perc)
-	insert!(mom2,6,DataArray(Float64,nrow(mom2)),:sqdist)
+	v = Dict{Symbol,Float64}()
+	for (k,mom) in dataMomentd(ev)
+		if haskey(dataMomentWd(ev),k)
+			v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+		else
+			v[k] = ((simMoments[k] .- mom) ) .^2
+		end
+		v[k] = v[k] / 1000
+	end
+	setValue(ev, mean(collect(values(v))))
 
-	# get subset of moments
-	subset = findin(mom2[:moment],whichmom)
-
-	# get percentage difference
-	mom2[subset,:perc] = (mom2[subset,:data_value] - mom2[subset,:model_value]) ./ mom2[subset,:data_value]
-
-	# get mean squared distance over standard edeivation
-	mom2[subset,:sqdist] = ((mom2[subset,:data_value] - mom2[subset,:model_value])./ mom2[subset,:data_sd] ).^2
-
-	fval = mean(mom2[subset,:sqdist]) 
-	# fval = mean(abs(mom2[subset,:perc]))
-
-    mout = transpose(mom2[[:moment,:model_value]],1)
+	setMoment(ev,simMoments)
 
     if Sys.OS_NAME == :Darwin
-	    showall(mom2[:,[:moment,:data_value,:model_value,:sqdist]])
-	    println(p)
-		s2 = @where(s,(:year.>1996) & (!isna(:cohort)))
-		showall(@by(s2,[:realage],own=mean(:own),move=mean(:move),buy=mean((:h.==0)&(:hh.==1)),sell=mean((:h.==1)&(:hh.==0))))
-		showall(hcat(@by(@where(s2,:own.==true),:realage,move_owner=mean(:move)),@by(@where(s2,:own.==false),:realage,move_renter=mean(:move))))
-	    if get(opts[1],"printmoms",false) 
-	    	d = Dict()
-	    	for ea in eachrow(mom2)
-	    		ea[:moment] = replace(ea[:moment],"[","")
-	    		ea[:moment] = replace(ea[:moment],"]","")
-	    		ea[:moment] = replace(ea[:moment],"(","")
-	    		ea[:moment] = replace(ea[:moment],",","_")
-	    		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd], "perc"=>ea[:perc]]
+    	# ToDO nicer printing
+	    # if get(opts[1],"printmoms",false) 
+	    # 	d = Dict()
+	    # 	for ea in eachrow(mom2)
+	    # 		ea[:moment] = replace(ea[:moment],"[","")
+	    # 		ea[:moment] = replace(ea[:moment],"]","")
+	    # 		ea[:moment] = replace(ea[:moment],"(","")
+	    # 		ea[:moment] = replace(ea[:moment],",","_")
+	    # 		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd], "perc"=>ea[:perc]]
 
-	    	end
-	    	# change age brackets
+	    # 	end
+	    # 	# change age brackets
 
-	    	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
-	    	JSON.print(f,d)
-	    	close(f)
-    		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
-	    end
-	    if get(opts[1],"plotsim",false) 
-	   		simplot(s[!isna(s[:cohort]),:],5)
-	   	end
-	    println()
+	    # 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
+	    # 	JSON.print(f,d)
+	    # 	close(f)
+    	# 	# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
+	    # end
+	    # if get(opts[1],"plotsim",false) 
+	   	# 	simplot(s[!isna(s[:cohort]),:],5)
+	   	# end
 	end
 
-	status = 1
-	# if isnan(fval)
-	# 	status = -1
-	# end
+	finish(ev)
 
-	if get(opts[1],"printlevel",0) > 0
-		println("objfunc runtime = $(time()-time0)")
-		println("objfunc value = $(fval)")
-	end
-	time1 = round(time()-time0)
-	ret = ["value" => fval, "params" => deepcopy(pd), "time" => time1, "status" => status, "moments" => mout]
-	return ret
+	return ev
 end
+
+
+
 
 function mywrap()
 	p = mig.Param(2)
@@ -180,29 +103,29 @@ end
 
 
 # single test run of objective
-function runObj(printmoms::Bool)
-	# run objective
-	p2 = Dict{ASCIIString,Float64}()
-	if Sys.OS_NAME == :Darwin
-		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
-	elseif Sys.OS_NAME == :Windows
-		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
-	else
-		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
-	end
+function runObj()
+
+	# create MProb
+
+	indir, outdir = mig.setPaths()
 	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
+	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
 	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
-	for iw in moms[:moment]
+	for iw in moms[:name]
 		if contains(iw,"wealth") 
 			push!(dont_use,iw)
 		end
 	end
-	submom = setdiff(moms[:moment],dont_use)
+	use_names = setdiff(moms[:name],dont_use)
+	moms_use = moms[findin(moms[:name],use_names) ,:]
 
- 	objfunc_opts = ["printlevel" => 1,"printmoms"=>printmoms]
-	@time x = mig.objfunc(p2,moms,submom,objfunc_opts)
+	mprob = @> MOpt.MProb() MOpt.addMoment!(moms_use) MOpt.addEvalFunc!(mig.objfunc)
 
+	# create Eval
+
+	ev = MOpt.Eval(Dict(),moms_use)
+	x = objfunc(ev)
 	return x
 end
 
