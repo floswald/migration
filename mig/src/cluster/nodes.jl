@@ -1,9 +1,13 @@
 
+# sets up an MProb on each node
+
 
 if ENV["USER"] == "florian_o"
 	push!(DL_LOAD_PATH, "/home/florian_o/local/lib")
 elseif ENV["USER"] == "eisuc151"
 	push!(DL_LOAD_PATH, "/home/eisuc151/local/lib")
+elseif ENV["USER"] == "uctpfos"
+	push!(DL_LOAD_PATH, "/home/eisuc151/local/hdf5/lib")
 end
 
 
@@ -36,12 +40,8 @@ pb["MC3"] = [p0.MC3, 0.0,1]
 pb["MC4"] = [p0.MC4, 0.0,1]
 pb["taudist"] = [p0.taudist, 0.0,1]
 
-# options for objective function
-objfunc_opts = ["printlevel" => 1,"printmoms"=>false]
+mprob = MOpt.MProb() 
+MOpt.addSampledParam!(mprob,pb) 
+MOpt.addMoment!(mprob,moms_use) 
+MOpt.addEvalFunc!(mprob,mig.objfunc)
 
-mprob = @> MOpt.MProb() MOpt.addSampledParam!(pb) MOpt.addMoment!(moms_use) MOpt.addEvalFunc!(mig.objfunc)
-
-
-
-# setup the minimization problem
-mprob = MProb(p2,pb,mig.objfunc,moms,moments_subset=submom,objfunc_opts=objfunc_opts)

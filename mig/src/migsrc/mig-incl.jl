@@ -16,7 +16,7 @@ end
 # miscellaneous includes
 
 # objective function to work with mopt
-@debug function objfunc(ev::Eval)
+function objfunc(ev::Eval)
 
 	start(ev)
 	info("in objective function")
@@ -68,6 +68,8 @@ end
 	   	# end
 	end
 
+	ev.status = 1
+
 	finish(ev)
 
 	return ev
@@ -104,7 +106,6 @@ end
 
 # single test run of objective
 function runObj()
-
 	# create MProb
 
 	indir, outdir = mig.setPaths()
