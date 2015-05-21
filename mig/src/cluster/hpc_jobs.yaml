@@ -64,7 +64,7 @@ irid_estim:
   nnodes:   3
   ppnodes:   12
   hours: 00
-  mins: 45
+  mins: 10
   logout:   estim.log
   logerr:   estim.err
   template: PBS.qsub

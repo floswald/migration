@@ -10,11 +10,8 @@ bind_iridis_procs(8)
 
 require("nodes.jl")
 
-mig_slice = slices(mprob,72)
-writetable(joinpath(outdir,"migslice1.csv"),mig_slice[1])
-writetable(joinpath(outdir,"migslice2.csv"),mig_slice[2])
+	sl = MOpt.slices(mprob,30);
 
-println("done after $(round((time()-t0)/60)) minutes")
-println("done. quitting cluster.")
+	MOpt.write(sl,"slices.h5")
 
 quit()
