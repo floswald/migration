@@ -1,8 +1,8 @@
 
 
 function mydf2dict(df::DataFrame)
-	if names(df) != [:moment,:model_value,:model_sd]
-		throw(ArgumentError("need columns :moment,:model_value,:model_sd"))
+	if names(df) != [:moment,:model_value]
+		throw(ArgumentError("need columns :moment,:model_value"))
 	end
 	d = Dict()
 	for e in eachrow(df)

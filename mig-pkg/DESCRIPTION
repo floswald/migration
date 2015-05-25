@@ -12,6 +12,7 @@ Imports:
     splines
 Depends:
     zoo,
+    copula,
     grid,
     quantmod,
     stringr,

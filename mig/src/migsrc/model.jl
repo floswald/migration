@@ -247,8 +247,8 @@ type Model
 			inc_shocks[j,1] = inc_coefs[j,:Lresid]  
 			inc_shocks[j,2] = inc_coefs[j,:sigma_resid]
 			ybar = log(VAR_reg[j,:mean_y])
-			inc_shocks[j,3] = log(inc_coefs[j,:qlow]) - ybar
-			inc_shocks[j,4] = log(inc_coefs[j,:qhigh]) - ybar
+			inc_shocks[j,3] = log(inc_coefs[j,:q05]) - ybar
+			inc_shocks[j,4] = log(inc_coefs[j,:q95]) - ybar
 		end
 
 
@@ -612,8 +612,8 @@ function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
 		P = xp
 		# scale z into bounds
 		ybar = log(ygrid[j])
-		zlow = log(df[j,:qlow]) - ybar
-		zhigh = log(df[j,:qhigh]) - ybar
+		zlow = log(df[j,:q05]) - ybar
+		zhigh = log(df[j,:q95]) - ybar
 		# z[:,j] = linspace(zlow,zhigh,p.nz)
 		z[:,j] = xz
 	end

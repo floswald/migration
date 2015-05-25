@@ -778,12 +778,6 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	fullw = WeightVec(array(df[:density]))
 
 
-	# create a dataframe to push moments on to
-	mom1 = DataFrame(moment="", model_value = 0.0, model_sd = 0.0)
-
-	moms = Dict()
-
-
 	# grouped dfs
 	g_div = groupby(df, :Division)
 	g_kids = groupby(df, :kids)
@@ -811,14 +805,14 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	xx = @> begin
 		   df 
 		   @where(:age.==31) 
-		   @select(moment="mean_sell_50",model_value=mean(:sell),model_sd=std(:sell)/sqrt(size(df,1)))
+		   @select(moment="mean_sell_50",model_value=mean(:sell))
 		end
-	append!(mom1,xx)
+	mom1 = deepcopy(xx)
 
 	# unconditional mean of owning
 	# ----------------------------
 
-	push!(mom1,["mean_own",mean(convert(Array{Float64},df[:h]),fullw),std(convert(Array{Float64},df[:h]),fullw)])
+	push!(mom1,["mean_own",mean(convert(Array{Float64},df[:h]),fullw)])
 	covar = mean(convert(Array{Float64},df[:h]),fullw)
 
 	# own ~ Division
@@ -826,7 +820,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	for div in g_div
 		w = WeightVec(array(div[:density]))
-		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w),std(convert(Array{Float64},div[:h]),w)/sqrt(size(div,1))])
+		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w)])
 	end
 
 	# own ~ kids
@@ -835,11 +829,11 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	for div in g_kids
 		kk = "$(div[1,:kids])"
 		w = WeightVec(array(div[:density]))
-		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w),std(convert(Array{Float64},div[:h]),w)/sqrt(size(div,1))])
+		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w)])
 	end
 	# TODO std error
 	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:kids]),fullw)
-	push!(mom1,["cov_own_kids",covar[1,2],1.0])
+	push!(mom1,["cov_own_kids",covar[1,2]])
 
 
 	# moments relating to mobility
@@ -870,15 +864,15 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	moved2plus = mean(movecount[:x1].>=2)
 
 	# TODO std error
-	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw),std(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean
-	push!(mom1,["moved0",moved0,1.0])
-	push!(mom1,["moved1",moved1,1.0])
-	push!(mom1,["moved2plus",moved2plus,1.0])
+	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean
+	push!(mom1,["moved0",moved0])
+	push!(mom1,["moved1",moved1])
+	push!(mom1,["moved2plus",moved2plus])
 
 	xx = @> begin
 		   df 
 		   @where(:age.==31) 
-		   @select(moment="mean_move_50",model_value=mean(:move),model_sd=std(:move)/sqrt(size(df,1)))
+		   @select(moment="mean_move_50",model_value=mean(:move))
 		end
 	append!(mom1,xx)
 
@@ -886,22 +880,22 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# ----------
 
 	if noown
-		push!(mom1,["mean_move_ownTRUE",0.0,1.0])
-		push!(mom1,["mean_move_ownFALSE",1.0,1.0])
+		push!(mom1,["mean_move_ownTRUE",0.0])
+		push!(mom1,["mean_move_ownFALSE",1.0])
 	elseif mean(df[:own]) == 1.0
-		push!(mom1,["mean_move_ownTRUE",1.0,1.0])
-		push!(mom1,["mean_move_ownFALSE",0.0,1.0])
+		push!(mom1,["mean_move_ownTRUE",1.0])
+		push!(mom1,["mean_move_ownFALSE",0.0])
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
 			w = WeightVec(array(idf[:density]))
-			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w),std(convert(Array{Float64},idf[:move]),w)/sqrt(size(idf,1))])
+			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 		end
 
 	end
 	# TODO std error
 	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:move]),fullw)
-	push!(mom1,["cov_move_h",covar[1,2],1.0])
+	push!(mom1,["cov_move_h",covar[1,2]])
 
 
 	# move ~ kids
@@ -910,31 +904,31 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	for idf in g_kids
 		kk = "$(idf[1,:kids])"
 		w = WeightVec(array(idf[:density]))
-		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w),std(convert(Array{Float64},idf[:move]),w)/sqrt(size(idf,1))])
+		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 	end
 	# TODO std error
 	covar = cov(hcat(convert(Array{Float64},df[:move]),df[:kids]),fullw)
-	push!(mom1,["cov_move_kids",covar[1,2],1.0])
+	push!(mom1,["cov_move_kids",covar[1,2]])
 
 	# move ~ distance 
 	# ---------------
 
 	if nomove
-		push!(mom1,["q25_move_distance",0.0,1.0])
-		push!(mom1,["q50_move_distance",0.0,1.0])
-		push!(mom1,["q75_move_distance",0.0,1.0])
+		push!(mom1,["q25_move_distance",0.0])
+		push!(mom1,["q50_move_distance",0.0])
+		push!(mom1,["q75_move_distance",0.0])
 	else
 		qts = quantile(df[df[:move].==true,:km_distance],[0.25,0.5,0.75])
-		push!(mom1,["q25_move_distance",qts[1],1.0])
-		push!(mom1,["q50_move_distance",qts[2],1.0])
-		push!(mom1,["q75_move_distance",qts[3],1.0])
+		push!(mom1,["q25_move_distance",qts[1]])
+		push!(mom1,["q50_move_distance",qts[2]])
+		push!(mom1,["q75_move_distance",qts[3]])
 	end
 
 	# move | negative equity
 	# ----------------------
 
 	# if noown || nomove
-		push!(mom1,["move_neg_equity",0.0,1.0])
+		push!(mom1,["move_neg_equity",0.0])
 	# else
 	# 	neq = df[(df[:move].==true) & (df[:own].==true),:equity] .< 0.0
 	# 	push!(mom1,["move_neg_equity",0.0,1.0])
@@ -961,7 +955,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# wealth ~ age
 	# ------------
 	for idf in g_abin
-		push!(mom1,["mean_wealth_$(idf[1,:agebin])",mean(idf[:wealth]),std(idf[:wealth])/sqrt(size(idf,1))])
+		push!(mom1,["mean_wealth_$(idf[1,:agebin])",mean(idf[:wealth])])
 	end
 
 	# wealth ~ division
@@ -969,7 +963,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	for idf in g_div
 		w = WeightVec(array(idf[:density]))
-		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(array(idf[:wealth]),w),std(array(idf[:wealth]),w)/sqrt(size(idf,1))])
+		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(array(idf[:wealth]),w)])
 	end
 
 	# wealth ~ own
@@ -978,12 +972,12 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	if noown
 
 		push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
-		push!(mom1,["mean_wealth_ownFALSE",mean(array(df[:wealth]),fullw),std(array(df[:wealth]),fullw) / sqrt(size(df,1))])
+		push!(mom1,["mean_wealth_ownFALSE",mean(array(df[:wealth]),fullw)])
 	else
 		for idf in g_own
 			w = WeightVec(array(idf[:density]))
 			kk = "$(idf[1,:own])"
-			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(array(idf[:wealth]),w),std(array(idf[:wealth]),w) / sqrt(size(idf,1))])
+			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(array(idf[:wealth]),w)])
 		end
 	end
 
@@ -997,19 +991,34 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# get rid of parens and hyphens
 	# TODO get R to export consitent names with julia output - i'm doing this side here often, not the other one
+	# for i in 1:length(nms)
+	# 	ss = replace(nms[i]," - ","")
+	# 	ss = replace(ss,")","")
+	# 	ss = replace(ss,"(","")
+	# 	ss = replace(ss,",","_")
+	# 	# ss = replace(ss,"kidstrue","kidsTRUE")
+	# 	ss = replace(ss,"owntrue","ownTRUE")
+	# 	nms[i] = ss
+	# end
+
+	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h])
+
+	dfout = vcat(mom1,mom2)
+	nms = dfout[:moment]
+
 	for i in 1:length(nms)
 		ss = replace(nms[i]," - ","")
+		ss = replace(ss,"]","")
+		ss = replace(ss,"[","")
 		ss = replace(ss,")","")
 		ss = replace(ss,"(","")
+		ss = replace(ss,",","_")
 		# ss = replace(ss,"kidstrue","kidsTRUE")
 		ss = replace(ss,"owntrue","ownTRUE")
 		nms[i] = ss
 	end
-
-	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h], model_sd = [std_mv,std_h])
-
-	dfout = vcat(mom1,mom2)
-
+	dfout[:moment] = nms
+	
 	# 	push!(dfs,vcat(mom1,mom2))
 
 	# end
