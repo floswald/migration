@@ -30,12 +30,12 @@ moms_use = moms[findin(moms[:name],use_names) ,:]
 # initial value
 p0 = mig.Param(2)
 pb = Dict{ASCIIString,Array{Float64}}()
-pb["xi1"] = [p0.xi1, 0.0,0.1]
+pb["xi1"] = [p0.xi1, 0.0,0.02]
 pb["xi2"] = [p0.xi2, 0.0,0.1]
-pb["omega2"] = [p0.omega2, 4.0,6.1]
-pb["MC0"] = [p0.MC0, 1.0,4.0]
+pb["omega2"] = [p0.omega2, 2.0,4.1]
+pb["MC0"] = [p0.MC0, 2.0,4.0]
 pb["MC1"] = [p0.MC1, 0.0,0.04]
-pb["MC2"] = [p0.MC2, 0.0,0.05]
+pb["MC2"] = [p0.MC2, 0.0,0.01]
 pb["MC3"] = [p0.MC3, 0.0,1]
 pb["MC4"] = [p0.MC4, 0.0,1]
 pb["taudist"] = [p0.taudist, 0.0,1]

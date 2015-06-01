@@ -502,6 +502,25 @@ end
 
 
 
+function plotSlices(s::Slice)
+
+	kk = sort(collect(keys(s.res)))
+
+	fig, axes = plt.subplots(3,3,figsize=(15,11))
+	currfig = 0
+
+	for k in kk
+		currfig += 1
+		ax = axes[currfig]
+		r = get(s,k,:value)
+		ax[:plot](r[:x],r[:y],"b-",lw=2)
+		ax[:set_xlabel]("$k")
+		ax[:set_ylabel]("Value")
+		ax[:grid]()
+	end
+
+	return fig
+end
 
 
 
