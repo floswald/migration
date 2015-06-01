@@ -61,10 +61,10 @@ irid_slices6:
 irid_estim:
   name:   mig-slices  
   desc:   SMM of mig
-  nnodes:   3
+  nnodes:   4
   ppnodes:   12
-  hours: 00
-  mins: 10
+  hours: 08
+  mins: 00
   logout:   estim.log
   logerr:   estim.err
   template: PBS.qsub
