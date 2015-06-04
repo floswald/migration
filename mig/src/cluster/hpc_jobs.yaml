@@ -24,8 +24,8 @@ irid_slices8:
   desc:   slices on 3 nodes using 8 cores each 
   nnodes:   3
   ppnodes:   12
-  hours: 00
-  mins: 10
+  hours: 01
+  mins: 30
   logout:   migslices.log
   logerr:   migslices.err
   template: PBS.qsub
@@ -63,7 +63,7 @@ irid_estim:
   desc:   SMM of mig
   nnodes:   4
   ppnodes:   12
-  hours: 08
+  hours: 16
   mins: 00
   logout:   estim.log
   logerr:   estim.err
