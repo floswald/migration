@@ -115,11 +115,11 @@ vspace{1cm}
 
 \end_inset
 
-Job Talk at the Toulouse School of Economics
+Job Talk at Sciences Po
 \end_layout
 
 \begin_layout Date
-6th of February 2015
+11th of February 2015
 \end_layout
 
 \begin_layout BeginFrame
@@ -1060,7 +1060,7 @@ Static spatial equilibrium models of migration, and local labor markets:
  
 \size footnotesize
 Notowidigdo (2011), Moretti (2011), Diamond (2012), Piyapromdee (2013),
- Gobillon, Magnac and Selod (2011)
+ Monras (2013)
 \begin_inset ERT
 status open
 
@@ -1134,51 +1134,21 @@ vspace{3mm}
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Housing and Labor reallocation: 
-\size footnotesize
-Davis, Fisher and Veracierto (2010, 2013)
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{3mm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Itemize
-Housing demand over the lifecycle:
-\size footnotesize
- 
+Housing and Labor reallocation: 
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
-Bracke, Hilber and Silva (2014)
+Davis, Fisher and Veracierto (2010, 2013)
 \end_layout
 
 \begin_layout Itemize
 
 \size footnotesize
-Li, Meghir and Oswald (2014)
+Wasmer (2009)
 \begin_inset ERT
 status open
 
@@ -1195,6 +1165,40 @@ vspace{3mm}
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+Housing demand over the lifecycle and mortgage default:
+\size footnotesize
+ Li, Meghir and Oswald (2014)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{3mm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Dynamic Discrete Choice Models: 
+\size footnotesize
+Rust (1987), Magnac and Thesmar (2002)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 
 \size footnotesize

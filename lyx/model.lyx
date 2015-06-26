@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass article
@@ -29,13 +29,13 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -55,15 +55,24 @@
 \pdf_pdfusetitle true
 \papersize a4paper
 \use_geometry true
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 0
 \boxbgcolor #dbdbdb
 \branch answer
@@ -97,7 +106,7 @@
 \begin_layout Title
 Regional Shocks, Migration and Homeownership
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
@@ -108,6 +117,11 @@ I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
  and suggestions.
  I would like to acknowledge financial support from cemmap under ESRC grant
  ES/I034021/1 and ESRC transformative grant ES/M000486/1.
+ The author would like to acknowledge that the work presented here made
+ use of the IRIDIS High Performance Computing Facility provided by the Science
+ & Engineering South (SES) Centre for Innovation.
+ The Centre is formed by the universities of Oxford, Southampton, Bristol
+ and University College London.
 \end_layout
 
 \end_inset
@@ -156,19 +170,6 @@ status open
 today
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-
-\family typewriter
-\size large
-JOB MARKET PAPER
-\begin_inset Newline newline
 \end_inset
 
 
@@ -903,10 +904,10 @@ status collapsed
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
@@ -1118,7 +1119,7 @@ region
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Migration rates at different levels of geographic aggreagation and over
@@ -1472,7 +1473,7 @@ Dropbox/data/sipp/move_rates_edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Annual moving rate in percent of the population.
@@ -1542,7 +1543,7 @@ Dropbox/data/sipp/num_moves.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Distribution of the number of moves per mover by homeownership status.
@@ -1606,7 +1607,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 SIPP sample proportion moving across Census Division boundaries by age (upper
@@ -1657,7 +1658,7 @@ Dropbox/data/sipp/own_p2y-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Census Division housing characteristics.
@@ -1717,7 +1718,7 @@ Dropbox/data/cps/main-reason.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -1790,7 +1791,7 @@ Dropbox/data/sipp/D2D-probit-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Determinants of cross census division moves in SIPP data.
@@ -3779,7 +3780,7 @@ end{centering}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Estimates for Aggregate VAR process
@@ -3886,7 +3887,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 This figure shows the observed and predicted time series for mean income
@@ -3970,7 +3971,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 This figure shows the observed and predicted time series for house prices
@@ -4376,7 +4377,7 @@ Dropbox/model/fit/preset.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Preset parameter values
@@ -4988,7 +4989,7 @@ Dropbox/model/fit/moms.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Empirical targets and corresponding model moments.
@@ -5043,7 +5044,7 @@ Dropbox/model/fit/moms-nontarget.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Non-targeted model and data moments.
@@ -5096,7 +5097,7 @@ Dropbox/model/fit/params-pres.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Parameter estimates.
@@ -5231,7 +5232,7 @@ Dropbox/model/fit/ccp-plot.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Illustration of conditional choice probabilities for 2 discrete choices
@@ -5300,7 +5301,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Simulated probability of moving by wealth.
@@ -5348,7 +5349,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Average probability of moving by income quantiles.
@@ -5395,7 +5396,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Probability of moving by income shock 
@@ -5568,7 +5569,7 @@ Dropbox/model/experiments/moneyMC/moneyMC.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
@@ -5704,7 +5705,7 @@ Dropbox/model/experiments/HC_friction/HC_friction.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Decomposing owner's moving costs.
@@ -6075,7 +6076,7 @@ Dropbox/model/experiments/highMC/mig_value.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Removing the migration option from residents of West North Central.
@@ -6135,7 +6136,7 @@ Dropbox/model/experiments/highMC/mig_value_detail.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 This table compares individuals who move away from West North Central in
@@ -6375,7 +6376,7 @@ Dropbox/model/data_repo/out_data_jl/sinai.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Average annual tax savings in dollars implied by the mortgage interest rate
@@ -6673,7 +6674,7 @@ Dropbox/model/experiments/MortgageSubsidy/mortgage-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Abolishing the mortgage interest deduction.
@@ -6714,7 +6715,7 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 mortgage deduction
@@ -6763,7 +6764,7 @@ Dropbox/model/experiments/exp_yp/WNCpshock.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Shocking the house price series for West North Central from 2000 onwards.
@@ -6821,7 +6822,7 @@ Dropbox/model/experiments/exp_yp/WNCyshock.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Shocking the level of average labor productivity in region West North Central
@@ -6864,7 +6865,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 The effect of a permanent 10% reduction in productivity 
@@ -6912,7 +6913,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Changes in inflow patterns to WNC after the mean productivity level is permanent
@@ -6955,7 +6956,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 The effect of a 30% decrease of the house price level in 2000 in the West
@@ -6998,7 +6999,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 The effect of a 30% decrease of the house price level in 2000 in the West
@@ -7040,7 +7041,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Removing the option to leave WNC.
@@ -7194,7 +7195,7 @@ Dropbox/model/experiments/exp_MC/halfMC.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Welfare implications of halfing the moving cost.
@@ -7244,7 +7245,7 @@ Dropbox/model/experiments/exp_MC/doubleMC.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Welfare implications of doubling the moving cost.
@@ -7754,7 +7755,7 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Census Division Map, taken from 
@@ -7826,7 +7827,7 @@ Dropbox/model/fit/copulas.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Normal Copula estimates for the rank of wage residuals 
@@ -7915,7 +7916,7 @@ Dropbox/data/sipp/VAR2-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Aggregate to Regional price mappings.
@@ -7982,7 +7983,7 @@ Dropbox/model/fit/region_2_indi_y.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Regional Mean Income to Individual level income mapping.
@@ -8048,7 +8049,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 input{
 \backslash
@@ -8061,7 +8062,19 @@ Dropbox/model/fit/income_profiles.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/income_profiles.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Age profiles as predicted by the empirical implementation of individual
@@ -8134,7 +8147,7 @@ Dropbox/data/sipp/wagetab.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 movers with zero wage in month they are moving 
@@ -8187,7 +8200,7 @@ Dropbox/data/sipp/emptab.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 movers employed in month they are moving 
@@ -8239,7 +8252,7 @@ Dropbox/data/sipp/owntab.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 ownership status in month households are moving 
@@ -8291,7 +8304,7 @@ Dropbox/data/sipp/owntab_nomove.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 ownership status in month 
