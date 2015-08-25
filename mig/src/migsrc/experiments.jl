@@ -52,6 +52,35 @@ function runExperiment(which::String,region::Int,year::Int)
 
 end
 
+function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
+
+	# shocks p at shockAge for ever after
+	if which=="pshock"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
+	elseif which=="pshock3"
+		opts = ["policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="yshock3"
+		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+	elseif which=="yshock"
+		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1])]
+
+	elseif which=="highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]
+	elseif which=="pshock_highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="yshock_highMC"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1])]
+	elseif which=="pshock_noBuying"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	elseif which=="pshock_noSaving"
+		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+	else 
+		throw(ArgumentError("invalid policy $which selected"))
+	end
+	return opts
+
+end
 function plotShockRegions2(printp=false)
 
 	# download experiments
@@ -749,35 +778,6 @@ end
 
 
 
-function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
-
-	# shocks p at shockAge for ever after
-	if which=="pshock"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
-	elseif which=="pshock3"
-		opts = ["policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
-	elseif which=="yshock3"
-		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
-	elseif which=="yshock"
-		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1])]
-
-	elseif which=="highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]
-	elseif which=="pshock_highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	elseif which=="yshock_highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1])]
-	elseif which=="pshock_noBuying"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	elseif which=="pshock_noSaving"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
-	else 
-		throw(ArgumentError("invalid policy $which selected"))
-	end
-	return opts
-
-end
 
 function valdiff_pshock_highMC(ctax::Float64,v0::Float64,opts::Dict,pmv_id::DataFrame)
 
@@ -1461,47 +1461,47 @@ function exp_shockRegion(opts::Dict)
 	elas["rent"] = Dict()
 
 	if which == "yshock"
-		elas["all"]["in"] = 100*ela2[:mean_din][1] 
-		elas["all"]["out"]= 100*ela2[:mean_dout][1]
-		elas["all"]["net"]= 100*ela2[:mean_dnet][1]
-		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.1
-		elas["all"]["e_out"]= ela2[:mean_dout][1] / -0.1
-		elas["all"]["e_net"] = ela2[:mean_dnet][1]  / -0.1
+		elas["all"]["in"]     = 100*ela2[:mean_din][1]
+		elas["all"]["out"]    = 100*ela2[:mean_dout][1]
+		elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
+		elas["all"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal"]) )	# % change in pop / % change in income
+		elas["all"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal"]) )
+		elas["all"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal"]) )
 
-		elas["own"]["in"] = 100*ela2[:mean_d_own_in][1] 
-		elas["own"]["out"] = 100*ela2[:mean_d_own_out][1] 
-		elas["own"]["net"]= 100*ela2[:mean_dnet_own][1]
-		elas["own"]["e_in"] = ela2[:mean_d_own_in][1]    / -0.1
-		elas["own"]["e_out"] = ela2[:mean_d_own_out][1]  / -0.1
-		elas["own"]["e_net"]= ela2[:mean_dnet_own][1] / -0.1
+		elas["own"]["in"]     = 100*ela2[:mean_d_own_in][1]
+		elas["own"]["out"]    = 100*ela2[:mean_d_own_out][1]
+		elas["own"]["net"]    = 100*ela2[:mean_dnet_own][1]
+		elas["own"]["e_in"]   = ela2[:mean_d_own_in][1]   / (1-mean(opts["shockVal"]) )
+		elas["own"]["e_out"]  = ela2[:mean_d_own_out][1]  / (1-mean(opts["shockVal"]) )
+		elas["own"]["e_net"]  = ela2[:mean_dnet_own][1]   / (1-mean(opts["shockVal"]) )
 
-		elas["rent"]["in"] = 100*ela2[:mean_d_rent_in][1] 
-		elas["rent"]["out"] =100* ela2[:mean_d_rent_out][1] 
-		elas["rent"]["net"]= 100*ela2[:mean_dnet_rent][1]
-		elas["rent"]["e_in"] = ela2[:mean_d_rent_in][1]    / -0.1
-		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1]  / -0.1
-		elas["rent"]["e_net"]= ela2[:mean_dnet_rent][1] / -0.1
+		elas["rent"]["in"]    = 100*ela2[:mean_d_rent_in][1]
+		elas["rent"]["out"]   = 100* ela2[:mean_d_rent_out][1]
+		elas["rent"]["net"]   = 100*ela2[:mean_dnet_rent][1]
+		elas["rent"]["e_in"]  = ela2[:mean_d_rent_in][1]  / (1-mean(opts["shockVal"]) )
+		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]) )
+		elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]) )
 	else
-		elas["all"]["in"] = 100*ela2[:mean_din][1] 
-		elas["all"]["out"]= 100*ela2[:mean_dout][1]
-		elas["all"]["net"]= 100*ela2[:mean_dnet][1]
-		elas["all"]["e_in"] = ela2[:mean_din][1]  / -0.3
-		elas["all"]["e_out"]= ela2[:mean_dout][1] / -0.3
-		elas["all"]["e_net"] = ela2[:mean_dnet][1]  / -0.3
+		elas["all"]["in"]     = 100*ela2[:mean_din][1]
+		elas["all"]["out"]    = 100*ela2[:mean_dout][1]
+		elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
+		elas["all"]["e_in"]   = ela2[:mean_din][1]        / (1-mean(opts["shockVal"]))
+		elas["all"]["e_out"]  = ela2[:mean_dout][1]       / (1-mean(opts["shockVal"]))
+		elas["all"]["e_net"]  = ela2[:mean_dnet][1]       / (1-mean(opts["shockVal"]))
 
-		elas["own"]["in"] = 100*ela2[:mean_d_own_in][1] 
-		elas["own"]["out"] = 100*ela2[:mean_d_own_out][1] 
-		elas["own"]["net"]= 100*ela2[:mean_dnet_own][1]
-		elas["own"]["e_in"] = ela2[:mean_d_own_in][1]    / -0.3
-		elas["own"]["e_out"] = ela2[:mean_d_own_out][1]  / -0.3
-		elas["own"]["e_net"]= ela2[:mean_dnet_own][1]    / -0.3
+		elas["own"]["in"]     = 100*ela2[:mean_d_own_in][1]
+		elas["own"]["out"]    = 100*ela2[:mean_d_own_out][1]
+		elas["own"]["net"]    = 100*ela2[:mean_dnet_own][1]
+		elas["own"]["e_in"]   = ela2[:mean_d_own_in][1]   / (1-mean(opts["shockVal"]))
+		elas["own"]["e_out"]  = ela2[:mean_d_own_out][1]  / (1-mean(opts["shockVal"]))
+		elas["own"]["e_net"]  = ela2[:mean_dnet_own][1]   / (1-mean(opts["shockVal"]))
 
-		elas["rent"]["in"] = 100*ela2[:mean_d_rent_in][1] 
-		elas["rent"]["out"] = 100*ela2[:mean_d_rent_out][1] 
-		elas["rent"]["net"]= 100*ela2[:mean_dnet_rent][1]
-		elas["rent"]["e_in"] = ela2[:mean_d_rent_in][1]    / -0.3
-		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1]  / -0.3
-		elas["rent"]["e_net"]= ela2[:mean_dnet_rent][1]    / -0.3
+		elas["rent"]["in"]    = 100*ela2[:mean_d_rent_in][1]
+		elas["rent"]["out"]   = 100*ela2[:mean_d_rent_out][1]
+		elas["rent"]["net"]   = 100*ela2[:mean_dnet_rent][1]
+		elas["rent"]["e_in"]  = ela2[:mean_d_rent_in][1]  / (1-mean(opts["shockVal"]))
+		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]))
+		elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]))
 	end
 
 
