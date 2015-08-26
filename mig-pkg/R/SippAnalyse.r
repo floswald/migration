@@ -143,6 +143,7 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	# mean wealth by age group
 	# ------------------------
 	r$w_age <- d[,list(data_value=weighted.mean(wealth,HHweight,na.rm=T),data_sd=sqrt(wtd.var(wealth,HHweight,na.rm=T) / nrow(.SD))),by=cut_interval(age,3)][order(cut_interval)]
+	r$w_age[,cut_interval := gsub(",","_",gsub("\\[|\\(|\\]","",cut_interval))]
 	r$w_age[,moment := paste0("mean_wealth_",cut_interval)]
 	r$w_age[,cut_interval := NULL]
 	setcolorder(r$w_age,c("moment","data_value","data_sd"))

@@ -52,7 +52,7 @@ function runExperiment(which::String,region::Int,year::Int)
 
 end
 
-function selectPolicy(which::ASCIIString,j::Int,shockYear::Int,p::Param)
+function selectPolicy(which::String,j::Int,shockYear::Int,p::Param)
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"

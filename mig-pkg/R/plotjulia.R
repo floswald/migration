@@ -613,13 +613,13 @@ par.tables <- function(){
 }
 
 
-df2hdf5 <- function(ff,df,path){
-	nm = names(df)
-	for (i in nm){
-		tmpnm = file.path(path,i)
-		h5write(df[,i],ff,tmpnm)
-	}
-}
+# df2hdf5 <- function(ff,df,path){
+# 	nm = names(df)
+# 	for (i in nm){
+# 		tmpnm = file.path(path,i)
+# 		h5write(df[,i],ff,tmpnm)
+# 	}
+# }
 
 
 
@@ -726,7 +726,11 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	setkey(prop,Division)
 
 	# add rent 2 price ratio
-	r2p = merged[age>19&age<51, list(p = .SD[hvalue>0,median(hvalue,na.rm=T)], y = .SD[HHincome>0,median(HHincome,na.rm=T)],rent=.SD[own==FALSE,median(mortg.rent,na.rm=T)]),by=list(year,Division)]
+	r2p = merged[age>19&age<51, list(p = .SD[hvalue>0,median(hvalue,na.rm=T)], y = .SD[HHincome>0,median(HHincome,na.rm=T)]),by=list(year,Division)]
+	setkey(r2p,year,Division)
+	rent = merged[age>19&age<51&own==FALSE, list(rent=median(mortg.rent,na.rm=T)),by=list(year,Division)]
+	setkey(rent,year,Division)
+	r2p = rent[r2p]
 	r2p[ , r2p := rent / p]
 	r2p = r2p[year>1997,list(r2p=mean(r2p)),by=Division]
 	setkey(r2p,Division)
