@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 506
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \begin_preamble
 \usepackage{natbib}
@@ -17,7 +19,7 @@
     colorlinks, linkcolor={dark-red},
     citecolor={dark-blue}, urlcolor={medium-blue}
 }
-\newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
+\newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
 \usepackage{tikz}
 \end_preamble
 \use_default_options true
@@ -26,16 +28,16 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -156,7 +158,7 @@ florian.oswald@gmail.com
 \begin_inset Newline newline
 \end_inset
 
-University College London
+Sciences Po
 \end_layout
 
 \begin_layout Date
@@ -168,27 +170,6 @@ status open
 
 \backslash
 today
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-To obtain the most recent version of the paper, please go to
-\begin_inset Newline newline
-\end_inset
-
- 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://floswald.github.io/
 \end_layout
 
 \end_inset
@@ -743,7 +724,7 @@ key "karahan2011housing"
  mismatch in order to understand how a fall in house prices affects unemployment
  and migration rates.
  The last paper, in particular, formalizes the negative equity lock-in notion
- in a model with two locations and finds only a moderate effect of lock--in
+ in a model with two locations and finds only a moderate effect of lock–in
  on the increase in unemployment.
  The present paper differs from this group of contributions by assuming
  multiple locations and by adopting a life-cycle framework.
@@ -904,7 +885,7 @@ status collapsed
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -1174,7 +1155,7 @@ status collapsed
 It is possible to construct a panel dataset from the CPS, but only with
  postal address as unit identifier.
  If an individual moves out, this can be inferred from the data, however,
- the destination of the move cannot -- in particular it is unknown whether
+ the destination of the move cannot – in particular it is unknown whether
  they relocated withing the city, or somewhere else.
 \end_layout
 
@@ -1248,7 +1229,7 @@ The aggregation of states into this particular grouping is but one of many
  In many respects the ideal concept of a region is what economists would
  refer to as a local labor market, and metropolitan statistical areas (MSA)
  or commuting zones (CZ) come close to this.
- Unfortunately, for the purpose of the model in this paper, the so--defined
+ Unfortunately, for the purpose of the model in this paper, the so–defined
  number of regions would be far too large to be computationally feasible.
  Hence the choice of census divisions.
 \begin_inset Foot
@@ -1296,7 +1277,7 @@ reference "tab:Migration-rates-Molloy"
 \end_inset
 
  because I set up the SIPP data in terms of household heads, thereby missing
- some moves of non--reference persons, and potentially because of sample
+ some moves of non–reference persons, and potentially because of sample
  attrition.
  It is quite clear from table 
 \begin_inset CommandInset ref
@@ -1347,12 +1328,12 @@ reference "fig:SIPP-sample-proportion-1"
 \end_inset
 
  firstly that renters are more likely to move at all ages, and secondly
- that there is a strongly declining age effect -- younger individuals move
+ that there is a strongly declining age effect – younger individuals move
  more.
  Both of those are highly salient features of the data, and they are the
  main dimension along which my model's performance is going to be evaluated.
  Finally, a summary regarding homeownership rates and median price to income
- ratios by Census division is presented as an average over the years 1997--2011
+ ratios by Census division is presented as an average over the years 1997–2011
  in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1598,7 +1579,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D.pdf
 	scale 85
 
 \end_inset
@@ -1662,7 +1643,7 @@ Dropbox/data/sipp/own_p2y-edit.tex}
 
 \begin_layout Plain Layout
 Census Division housing characteristics.
- Shows average ownership rates over 1997--2011 and median price to income
+ Shows average ownership rates over 1997–2011 and median price to income
  ratios for the same period.
  The (unobserved) house price for renters is computed assuming an implied
  user cost of owning of 5%, i.e.
@@ -1950,7 +1931,7 @@ Individuals are subject to uncertainty at both the aggregate and individual
  enters the individual wage equation as a level shifter.
  At the individual level uncertainty enters the model through an idiosyncratic
  component of income risk, a Markovian process that models changes in household
- size over the lifecycle, and a location--specific preference shock, which
+ size over the lifecycle, and a location–specific preference shock, which
  is assumed identically and independently distributed across agents, regions
  and time.
 \end_layout
@@ -1983,7 +1964,7 @@ key "kennan2003effect"
 Individual Labor Income
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Individual-Labor-Income"
+name "subsec:Individual-Labor-Income"
 
 \end_inset
 
@@ -2054,7 +2035,7 @@ Here
 status collapsed
 
 \begin_layout Plain Layout
- Underlying this is an assumption about non--equalizing factor prices across
+ Underlying this is an assumption about non–equalizing factor prices across
  regions.
  It is plausible to think that within a single country, wages should tend
  to converge to a common level, particularly in the presence of large migratory
@@ -2134,7 +2115,7 @@ When moving from region
 \end_inset
 
 .
- For a mover, this individual--specific idiosyncratic component is drawn
+ For a mover, this individual–specific idiosyncratic component is drawn
  from a different conditional distribution than for non-movers.
  Let us denote the different conditional distributions of 
 \begin_inset Formula $z_{it+1}$
@@ -2328,7 +2309,7 @@ I provide some illustration regarding the fit this model provides to the
  data in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Aggregate-to-regional"
+reference "subsec:Aggregate-to-regional"
 
 \end_inset
 
@@ -2354,7 +2335,7 @@ reference "sub:Aggregate-to-regional"
 Home Ownership Choice
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Home-Ownership-Choice"
+name "subsec:Home-Ownership-Choice"
 
 \end_inset
 
@@ -2485,14 +2466,14 @@ This setup implies that owners will choose a savings path contingent on
  The setup is formally defined in subsections 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Budget-stayers"
+reference "subsec:Budget-stayers"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Budget-movers"
+reference "subsec:Budget-movers"
 
 \end_inset
 
@@ -2589,8 +2570,8 @@ The unobserved moving cost type
 
  indexes the high type, is a parsimonious way to account for the fact that
  in the data, some individuals never move.
- This is of particular relevance when thinking about owners, who may self--selec
-t into ownership because they know they are unlikely to ever move.
+ This is of particular relevance when thinking about owners, who may self–select
+ into ownership because they know they are unlikely to ever move.
  In the model this selection mechanism, together with any other factor that
  implies a high unobservable location preference, is collapsed into a type
  of person that has prohibitively high moving costs (
@@ -2619,7 +2600,7 @@ I rule out the possibility of owning a home in region
 \end_inset
 
 , rent it out on the rental market, and purchase housing services either
- in rental or owner--occupied sector in the new region 
+ in rental or owner–occupied sector in the new region 
 \begin_inset Formula $d'$
 \end_inset
 
@@ -2737,7 +2718,7 @@ The period
  in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Recursive-Formulation"
+reference "subsec:Recursive-Formulation"
 
 \end_inset
 
@@ -2818,6 +2799,10 @@ given the state, compute optimal behaviour in all
 \end_inset
 
  regions, i.e.
+\begin_inset Separator parbreak
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2861,7 +2846,7 @@ dence of one choice on another.
 Recursive Formulation
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Recursive-Formulation"
+name "subsec:Recursive-Formulation"
 
 \end_inset
 
@@ -3147,7 +3132,7 @@ Budget constraint for stayers, i.e.
 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Budget-stayers"
+name "subsec:Budget-stayers"
 
 \end_inset
 
@@ -3227,7 +3212,7 @@ reference "eq:budget-labor-income"
  as introduced in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Individual-Labor-Income"
+reference "subsec:Individual-Labor-Income"
 
 \end_inset
 
@@ -3297,7 +3282,7 @@ For individuals entering the period as owners
 
 , the budget constraint is similar except for two differences which relate
  to the borrowing constraint and transfers in case they sell the house.
- Owners are not required to make a scheduled mortgage payment -- a gradual
+ Owners are not required to make a scheduled mortgage payment – a gradual
  reduction of debt, i.e.
  an increase in 
 \begin_inset Formula $a$
@@ -3368,7 +3353,7 @@ Budget constraint for movers, i.e.
 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Budget-movers"
+name "subsec:Budget-movers"
 
 \end_inset
 
@@ -3503,8 +3488,8 @@ Solving and Simulating the Model
 \end_layout
 
 \begin_layout Standard
-The model described above is a typical application of a mixed discrete--continuo
-us choice problem.
+The model described above is a typical application of a mixed discrete–continuou
+s choice problem.
  In the next section I will introduce a nested fixed point estimator, which
  requires repeated evaluation of the model solution at each parameter guess,
  thus placing a binding time-contraint on time each solution may take.
@@ -3514,8 +3499,8 @@ us choice problem.
 The consumption/savings problem to be solved at each state, and its combination
  with multiple discrete choices and borrowing constraints, introduces several
  non-differentiabilities in the asset dimension of the value function.
- This makes using fast first order condition--based approaches to solve
- the consumption problem more difficult.
+ This makes using fast first order condition–based approaches to solve the
+ consumption problem more difficult.
 \begin_inset Foot
 status collapsed
 
@@ -3807,7 +3792,7 @@ name "tab:Estimates-VAR-agg"
 Aggregate to regional price mappings
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Aggregate-to-regional"
+name "subsec:Aggregate-to-regional"
 
 \end_inset
 
@@ -3878,7 +3863,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_y.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_y.pdf
 	scale 80
 
 \end_inset
@@ -3962,7 +3947,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_p.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p.pdf
 	scale 80
 
 \end_inset
@@ -4009,7 +3994,7 @@ name "fig:Mapping-P-p"
 Individual Income Process
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Individual-Income-Process"
+name "subsec:Individual-Income-Process"
 
 \end_inset
 
@@ -4326,8 +4311,8 @@ key "sommer2013implications"
 
 , who use the constant maturity Federal Funds rate, adjusted by headline
  inflation as mesured by the year on year change in the CPI.
- They obtain an average value of 4% for the period of 1977--2008, and I
- thus set 
+ They obtain an average value of 4% for the period of 1977–2008, and I thus
+ set 
 \begin_inset Formula $r=0.04$
 \end_inset
 
@@ -4339,7 +4324,7 @@ key "sommer2013implications"
  of mortgage interest over the risk-free rate they use the average spread
  between nominal interest on a thirty year constant maturity Treasury bond
  and the average nominal interest rate on 30 year mortgages.
- This spread equals 1.5% over 1977--2008, therefore 
+ This spread equals 1.5% over 1977–2008, therefore 
 \begin_inset Formula $\hat{r}=0.015$
 \end_inset
 
@@ -4404,7 +4389,7 @@ name "tab:Preset-parameter-values"
 Estimation of Preference Parameters
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Estimation-of-Preference"
+name "subsec:Estimation-of-Preference"
 
 \end_inset
 
@@ -4516,7 +4501,7 @@ key "chernozhukov2003mcmc"
 
 \end_inset
 
---MCMC chains, which are differently 
+–MCMC chains, which are differently 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4575,7 +4560,7 @@ Estimation Sample
 
 \begin_layout Standard
 My estimation sample is formed mainly out of averages over SIPP data moments
- covering the period 1997--2012.
+ covering the period 1997–2012.
  All moments are constructed using SIPP cross-sectional survey weights,
  and all dollar values have been inflated to base year 2012 using the BLS
  CPI for all urban consumers.
@@ -4605,7 +4590,7 @@ http://research.stlouisfed.org/fred2/series/CPIAUCSL
 t over their lifecycle than a similar 30-year-old in 2012 would have.
  The challenge is to construct an artificial dataset from simulated data,
  which has the same time and age structure as the sample taken from the
- data -- in particular, agents in the model should have faced the same sequence
+ data – in particular, agents in the model should have faced the same sequence
  of aggregate shocks as their data counterparts from the estimation sample.
  This requires to simulate individuals starting in different calendar years,
  taking into account the actual observed time series for regional house
@@ -4769,7 +4754,7 @@ Regarding parameters of the moving cost function, parameters
 \begin_inset Formula $\alpha_{1},\alpha_{2}$
 \end_inset
 
- are related to the age--coefficients of the auxiliary model for moving,
+ are related to the age–coefficients of the auxiliary model for moving,
  defined in expression 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -4833,7 +4818,7 @@ Given that the house price processes in each region are exogenous to the
 
  are related to a relatively large number of moments: ownership rates by
  region and by household size, the covariance of owning with household size,
- and the age--profile parameters from the auxiliary model of ownership in
+ and the age–profile parameters from the auxiliary model of ownership in
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -5286,13 +5271,13 @@ name "fig:Illustration-of-conditional"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth2.pdf
+	filename ../../../Dropbox/Research/mobility/output/model/properties/mp_wealth2.pdf
 	scale 80
 
 \end_inset
@@ -5340,7 +5325,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_income.pdf
+	filename ../../../Dropbox/research/mobility/output/model/properties/mp_income.pdf
 	height 45theight%
 
 \end_inset
@@ -5387,7 +5372,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_pz.pdf
+	filename ../../../Dropbox/research/mobility/output/model/properties/mp_pz.pdf
 	height 45theight%
 
 \end_inset
@@ -5914,7 +5899,7 @@ reference "fig:yshock-inflows"
  more attractive to renters.
  The increase in renter immigration towards 2005 is large, however, it needs
  to be looked at together with the corresponding ouflows at the time.
- Over the period 1998--2012, WNC experiences average annual population growth
+ Over the period 1998–2012, WNC experiences average annual population growth
  of 1.08% in the baseline model.
 \end_layout
 
@@ -6195,7 +6180,7 @@ In this section I investigate the impact of abolishing the mortgage interest
  In the United States, homeowners are allowed to deduct the interest paid
  on the mortgage for their primary residence from taxable income.
  This reduces the user cost of owning because it exempts one of the largest
- component of an owner's housing cost -- mortgage interest -- from taxation.
+ component of an owner's housing cost – mortgage interest – from taxation.
  This is different for renters, whose housing expenditures are not tax deductibl
 e.
 \begin_inset Foot
@@ -6320,7 +6305,7 @@ The experiment is implemented as follows.
  restriction on assets, as explained in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Home-Ownership-Choice"
+reference "subsec:Home-Ownership-Choice"
 
 \end_inset
 
@@ -6471,7 +6456,7 @@ The choice probabilities do change after the policy is implemented.
  probabilities of moving.
  Removing the mortgage deduction affects the price vector.
  Furthermore, by redistributing tax receipts we increase disposable income
- of a set of the population that was not able to buy before -- not in their
+ of a set of the population that was not able to buy before – not in their
  current region, and possibly not in another region.
  The overall effect on the migration rate will therefore be composed of
  a composition effect (shifting individuals from renter to owner status
@@ -6681,7 +6666,7 @@ Abolishing the mortgage interest deduction.
  Depending on whether or not a GE correction to house prices is applied
  (house prices are 5% reduced), the migration rate increases slightly.
  Cheaper housing everywhere and higher disposable income from redistribution
- enables more previously liquidity constraint households to buy -- in their
+ enables more previously liquidity constraint households to buy – in their
  home region, but crucially also in other regions.
  This leads to a very small increase in the migration rate.
  
@@ -6851,13 +6836,13 @@ name "fig:Shocked-income-series"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
 
 \end_inset
 
@@ -6899,13 +6884,13 @@ name "fig:yshock-outflow"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_in.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/yshock8_in.pdf
 
 \end_inset
 
@@ -6942,13 +6927,13 @@ name "fig:yshock-inflows"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
 
 \end_inset
 
@@ -6991,7 +6976,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
 
 \end_inset
 
@@ -7027,13 +7012,13 @@ name "fig:pshock-in"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/values.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/highMC/values.pdf
 
 \end_inset
 
@@ -7495,13 +7480,13 @@ The SIPP estimation sample runs from 1998 through 2012.
 
 \begin_layout Standard
 The data is subset to the ages allowed for in the model, i.e.
- 20--50.
+ 20–50.
  I compute data moments, for example the average homeownership rate in region
  
 \begin_inset Formula $d$
 \end_inset
 
-, or the average total wealth of age group 40--45 in 
+, or the average total wealth of age group 40–45 in 
 \begin_inset Formula $d$
 \end_inset
 
@@ -7746,7 +7731,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/papers/us_divisions.pdf
+	filename ../../../Dropbox/research/mobility/papers/us_divisions.pdf
 	scale 60
 
 \end_inset
@@ -7997,7 +7982,7 @@ reference "eq:income-process"
 , as explained in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Individual-Income-Process"
+reference "subsec:Individual-Income-Process"
 
 \end_inset
 
@@ -8065,7 +8050,7 @@ Dropbox/model/fit/income_profiles.tex}
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/income_profiles.pdf
+	filename ../../../Dropbox/research/mobility/output/model/fit/income_profiles.pdf
 	scale 80
 
 \end_inset
@@ -8352,7 +8337,7 @@ newpage
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "/Users/florianoswald/Dropbox/mybib"
+bibfiles "~/Dropbox/mybib"
 options "ecta"
 
 \end_inset
