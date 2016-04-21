@@ -18,7 +18,7 @@ end
 # objective function to work with mopt
 function objfunc(ev::Eval)
 
-	start(ev)
+	MOpt.start(ev)
 	info("in objective function")
 
 	p = Param(2)	# create a default param type
@@ -121,7 +121,9 @@ function runObj()
 	use_names = setdiff(moms[:name],dont_use)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
 
-	mprob = @> MOpt.MProb() MOpt.addMoment!(moms_use) MOpt.addEvalFunc!(mig.objfunc)
+	mprob = MOpt.MProb() 
+	MOpt.addMoment!(mprob,moms_use) 
+	MOpt.addEvalFunc!(mprob,mig.objfunc)
 
 	# create Eval
 
@@ -149,7 +151,7 @@ function runObj(printmoms::Bool,p2::Dict)
 	end
 	submom = setdiff(moms[:moment],dont_use)
 
- 	objfunc_opts = ["printlevel" => 1,"printmoms"=>printmoms]
+ 	objfunc_opts = Dict("printlevel" => 1,"printmoms"=>printmoms)
 	@time x = mig.objfunc(p2,moms,submom,objfunc_opts)
 
 	return x
@@ -209,8 +211,8 @@ myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)
 function setPaths()
 # get moments from dropbox:
 	if Sys.OS_NAME == :Darwin
-		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
-		outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/out_data_jl")
+		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
+		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
 	elseif Sys.OS_NAME == :Windows
 		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
 		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
@@ -224,8 +226,8 @@ end
 # set outpath rel to dropbox/mobility/output/model
 function setPaths(p::ASCIIString)
 	if Sys.OS_NAME == :Darwin
-		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
-		outdir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model",p)
+		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
+		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model",p)
 	else
 		warn("no dropbox on this system")
 	end
@@ -283,26 +285,20 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
 		for j in 1:9 
 
 			# population of j over time
-			a = @> begin
-				v
-				@where((:year.>1997) & (:j.==j))
-				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own))
+			a = @linq v |>
+				@where((:year.>1997) & (:j.==j)) |>
+				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own)) |>
 				@transform(popgrowth = [diff(:All),0.0]./:All)
-			end
 
 			# movers to j over time
-			m_in = @> begin
-				v
-				@where((:year.>1997) & (:j.!=j))
+			m_in = @linq v |>
+				@where((:year.>1997) & (:j.!=j)) |>
 				@by(:year, Total_in=sum(:moveto.==j), Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)))
-			end
 
 			# movers from j over time
-			m_out = @> begin
-				v
-				@where((:year.>1997) & (:j.==j))
+			m_out = @linq v |>
+				@where((:year.>1997) & (:j.==j)) |>
 				@by(:year, Total_out=sum(:move), Owners_out=sum((:move).*(:h.==1)), Renters_out=sum((:move).*(:h.==0)))
-			end
 
 			# merge
 			ma = join(a,m_in,on=:year)
@@ -345,8 +341,8 @@ function growthExample(pcf::Float64, wnc::Float64)
 
 	chi = 0.8
 	d = Dict()
-	d["pcf"] = ["p1" => P1*pcf, "m1" => P1*pcf*chi, "eq1" => P1*pcf*(1-chi), "p2" => P2*pcf, "m2" => P1*pcf*chi, "eq2" => P2*pcf-P1*pcf*chi]
-	d["wnc"] = ["p1" => P1*wnc, "m1" => P1*wnc*chi, "eq1" => P1*wnc*(1-chi), "p2" => P2*wnc, "m2" => P1*wnc*chi, "eq2" => P2*wnc-P1*wnc*chi]
+	d["pcf"] = Dict("p1" => P1*pcf, "m1" => P1*pcf*chi, "eq1" => P1*pcf*(1-chi), "p2" => P2*pcf, "m2" => P1*pcf*chi, "eq2" => P2*pcf-P1*pcf*chi)
+	d["wnc"] = Dict("p1" => P1*wnc, "m1" => P1*wnc*chi, "eq1" => P1*wnc*(1-chi), "p2" => P2*wnc, "m2" => P1*wnc*chi, "eq2" => P2*wnc-P1*wnc*chi)
 	d["pcf"]["deq"] = (d["pcf"]["eq2"] - d["pcf"]["eq1"]) / d["pcf"]["eq1"]
 	d["wnc"]["deq"] = (d["wnc"]["eq2"] - d["wnc"]["eq1"]) / d["wnc"]["eq1"]
 

@@ -56,25 +56,25 @@ function selectPolicy(which::String,j::Int,shockYear::Int,p::Param)
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
-		opts = ["policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock3"
-		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])]]
+		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock"
-		opts = ["policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1]))
 
 	elseif which=="highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1)]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1))
 	elseif which=="pshock_highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="yshock_highMC"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
 	elseif which=="pshock_noBuying"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="pshock_noSaving"
-		opts = ["policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1])]
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	else 
 		throw(ArgumentError("invalid policy $which selected"))
 	end
@@ -329,14 +329,12 @@ end
 
 function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 
-	w = @> begin
-		df
-		@transform(beta=p.beta .^ :age)
-		@where(!isna(:cohort))
-		@transform(vbeta = :v .* :beta)
-		@by(:id, meanv = mean(:vbeta.data,WeightVec(:density.data)))
+	w = @linq df |>
+		@transform(beta=p.beta .^ :age) |>
+		@where(!isna(:cohort)) |>
+		@transform(vbeta = :v .* :beta) |>
+		@by(:id, meanv = mean(:vbeta.data,WeightVec(:density.data))) |>
 		@select(meanv = mean(:meanv))
-	end
 	return w
 end
 
@@ -344,26 +342,22 @@ function getDiscountedValue(df::DataFrame,p::Param,m::Model,noMove::Bool)
 
 	if noMove
 
-		w = @> begin
-			df
-			@transform(beta=p.beta .^ :age)
-			@where((!isna(:cohort)) & (!:move))
-			@transform(vbeta = :v .* :beta)
-			@by(:id, meanv = mean(:vbeta))
+		w = @linq df |>
+			@transform(beta=p.beta .^ :age) |>
+			@where((!isna(:cohort)) & (!:move))|>
+			@transform(vbeta = :v .* :beta) |>
+			@by(:id, meanv = mean(:vbeta)) |>
 			@select(meanv = mean(:meanv))
-		end
 		return w
 
 	else
 
-		w = @> begin
-			df
-			@transform(beta=p.beta .^ :age)
-			@where(!isna(:cohort))
-			@transform(vbeta = :v .* :beta)
-			@by(:id, meanv = mean(:vbeta))
+		w = @linq df |>
+			@transform(beta=p.beta .^ :age) |>
+			@where(!isna(:cohort))  |>
+			@transform(vbeta = :v .* :beta) |>
+			@by(:id, meanv = mean(:vbeta)) |>
 			@select(meanv = mean(:meanv))
-		end
 		return w
 	end
 end
@@ -394,23 +388,16 @@ function policyOutput(df::DataFrame,pol::ASCIIString)
 
 	inc_qt = quantile(sim_sample[:income])
 
-	own_move = @> begin
-		sim_sample
-		@select(own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw),assets=mean(:a.data,fullw),q10=quantile(:income,0.1),q50=quantile(:income,0.5))
-	end
-	own_inc = @> begin
-		sim_sample
-		@transform(ybin = cut(:income,[0.0,20.0,40.0,60.0]))
-		@by(:ybin, own = mean(:h.data,WeightVec(:density.data)), value=mean(:v.data,WeightVec(:density.data)))
-	end
+	own_move = @select(sim_sample,own=mean(:h.data,fullw),move=mean(:move.data,fullw),income=mean(:income.data,fullw),assets=mean(:a.data,fullw),q10=quantile(:income,0.1),q50=quantile(:income,0.5))
 
-	own_move_age = @> begin
-		sim_sample
-		@by(:realage,own=mean(:h),move=mean(:move),income=mean(:income),assets=mean(:a),policy=pol)
-	end
+	own_inc = @linq sim_sample |>
+		@transform(ybin = cut(:income,[0.0,20.0,40.0,60.0])) |>
+		@by(:ybin, own = mean(:h.data,WeightVec(:density.data)), value=mean(:v.data,WeightVec(:density.data)))
+
+	own_move_age = @by(sim_sample,:realage,own=mean(:h),move=mean(:move),income=mean(:income),assets=mean(:a),policy=pol)
 	move_own_age = @by(sim_sample,[:own,:realage],move=mean(:move),income=mean(:income),assets=mean(:a),policy=pol)
 
-	out = ["own_move" => own_move, "own_inc" => own_inc, "own_move_age" => own_move_age, "move_own_age"=> move_own_age, "inc_qt" => inc_qt]
+	out = Dict("own_move" => own_move, "own_inc" => own_inc, "own_move_age" => own_move_age, "move_own_age"=> move_own_age, "inc_qt" => inc_qt)
 	return out
 end
 
@@ -503,19 +490,15 @@ function exp_Mortgage(ctax=false)
 	@assert all(abs(array(@select(Tot_tax_age,s1 = sum(N_T.*:redist1),s2=sum(N_T.*:redist2),s3 = sum(N_T.*:redist3))) .- Tot_tax) .< 1e-8)
 
 	# get expected net present value of subsidy conditional on age.
-	x = @> begin
-		sim_T
-		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage)
+	x = @linq sim_T |>
+		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage)|>
 		@by(:realage, npv_at_age = mean(:npv_at_age))
-	end
 	Tot_tax_age = join(Tot_tax_age,x,on=:realage)
 
-	npv_age_income = @> begin
-		sim_T
-		@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
-		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)
+	npv_age_income = @linq sim_T |>
+		@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))|>
+		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)|>
 		@by([:realage,:ybin], npv_at_age = mean(:npv_at_age))
-	end
 
 	Redist2 = array(Tot_tax_age[:redist2])
 
@@ -648,6 +631,7 @@ function exp_Mortgage(ctax=false)
 		ctax4 = 0
 	end
 
+
 	# some output form this policy:
 	p4 = Param(2,opts)
 	m4 = Model(p4)	# 1.5 secs
@@ -669,24 +653,17 @@ function exp_Mortgage(ctax=false)
 	bp[bp[:wealth].!=0.0,:dwealth] = 100.*(bp[bp[:wealth].!=0.0,:wealth_pol] .- bp[bp[:wealth].!=0.0,:wealth])./ bp[bp[:wealth].!=0.0,:wealth] 
 	bp[bp[:a].!=0.0,:da] = 100.*(bp[bp[:a].!=0.0,:a_pol] .- bp[bp[:a].!=0.0,:a])./ bp[bp[:a].!=0.0,:a] 
 
-	welf_age = @> begin
-		bp
-		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
-		@by(:age,mean_dinc = mean(:dinc),q50_dinc= median(:dinc),q10_dinc = quantile(:dinc,0.1),q90_dinc = quantile(:dinc,0.9),mean_pinc = mean(:pinc),mean_dwealth = mean(:dwealth),mean_dh=100*mean(:dh),mean_dassets= mean(:da),q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
-	end
+	welf_age = @linq bp|>
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))|>
 
 
-	welf_age_ybin = @> begin
-		bp
-		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
+	welf_age_ybin = @linq bp|>
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))|>
 		@by([:age,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
-	end
 
-	welf_h = @> begin
-		bp
-		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
+	welf_h = @linq bp |>
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01))) |>
 		@by([:h,:ybin],q50pv = median(:pv),q10pv = quantile(:pv,0.1),q90pv = quantile(:pv,0.9))
-	end
 
 	# @transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))
 
@@ -702,23 +679,17 @@ function exp_Mortgage(ctax=false)
 	# want to show:
 	# different buying behaviour of movers in sim3 and sim4:
 	# people move to buy more in 4
-	mv_buy0 = @> begin
-		sim
-		@where((:year.>1997)&(:move))
+	mv_buy0 = @linq sim |>
+		@where((:year.>1997)&(:move)) |>
 		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
-	end
 
-	mv_buy3 = @> begin
-		sim3
-		@where((:year.>1997)&(:move))
+	mv_buy3 = @linq sim3 |>
+		@where((:year.>1997)&(:move))|>
 		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
-	end
 
-	mv_buy4 = @> begin
-		sim4
-		@where((:year.>1997)&(:move))
+	mv_buy4 = @linq sim4|>
+		@where((:year.>1997)&(:move))|>
 		@by(:own,buy=mean(:hh.==1),rent=mean(:hh.==0),buy_s=sum(:hh.==1),rent_s=sum(:hh.==0))
-	end
 
 	# create a dataframe with all pol results by age stacked
 	own_move = vcat(base_out["own_move"],pol0_out["own_move"],pol1_out["own_move"],pol2_out["own_move"],pol3_out["own_move"],pol4_out["own_move"])
@@ -728,22 +699,23 @@ function exp_Mortgage(ctax=false)
 
 	# out dict
 	d = Dict()
-	d["move_rent"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:rent][1],"redist3" => mv_buy3[mv_buy3[:own],:rent][1],"redist4" => mv_buy4[mv_buy4[:own],:rent][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:rent][1],"redist3" => mv_buy3[!mv_buy3[:own],:rent][1],"redist4" => mv_buy4[!mv_buy4[:own],:rent][1] ] ]
-	d["move_buy"] = ["own" => ["base" => mv_buy0[mv_buy0[:own],:buy][1],"redist3" => mv_buy3[mv_buy3[:own],:buy][1],"redist4" => mv_buy4[mv_buy4[:own],:buy][1] ],"rent" => ["base" => mv_buy0[!mv_buy0[:own],:buy][1],"redist3" => mv_buy3[!mv_buy3[:own],:buy][1],"redist4" => mv_buy4[!mv_buy4[:own],:buy][1] ] ]
+	d["move_rent" ] = Dict( "own" => Dict("base" => mv_buy0[mv_buy0[:own],:rent][1],"redist3" => mv_buy3[mv_buy3[:own],:rent][1],"redist4" => mv_buy4[mv_buy4[:own],:rent][1] ),"rent" => Dict("base" => mv_buy0[!mv_buy0[:own],:rent][1],"redist3" => mv_buy3[!mv_buy3[:own],:rent][1],"redist4" => mv_buy4[!mv_buy4[:own],:rent][1] ) )
+	d["move_buy"  ] = Dict( "own" => Dict("base" => mv_buy0[mv_buy0[:own],:buy][1],"redist3" => mv_buy3[mv_buy3[:own],:buy][1],"redist4" => mv_buy4[mv_buy4[:own],:buy][1] ,"rent" => Dict("base" => mv_buy0[!mv_buy0[:own],:buy][1],"redist3" => mv_buy3[!mv_buy3[:own],:buy][1],"redist4" => mv_buy4[!mv_buy4[:own],:buy][1] ) ) )
 
-	d["own"] = ["base" => base_out["own_move"][:own][1], "burn" => pol0_out["own_move"][:own][1], "redist1" => pol1_out["own_move"][:own][1], "redist2" => pol2_out["own_move"][:own][1],"redist3" => pol3_out["own_move"][:own][1],"redist4" => pol4_out["own_move"][:own][1]]
-	d["move"] = ["base" => base_out["own_move"][:move][1], "burn" => pol0_out["own_move"][:move][1], "redist1" => pol1_out["own_move"][:move][1], "redist2" => pol2_out["own_move"][:move][1],"redist3" => pol3_out["own_move"][:move][1],"redist4" => pol4_out["own_move"][:move][1]]
-	d["income"] = ["base" => base_out["own_move"][:income][1], "burn" => pol0_out["own_move"][:income][1], "redist1" => pol1_out["own_move"][:income][1], "redist2" => pol2_out["own_move"][:income][1],"redist3" => pol3_out["own_move"][:income][1],"redist4" => pol4_out["own_move"][:income][1]]
-	d["q10"] = ["base" => base_out["own_move"][:q10][1], "burn" => pol0_out["own_move"][:q10][1], "redist1" => pol1_out["own_move"][:q10][1], "redist2" => pol2_out["own_move"][:q10][1],"redist3" => pol3_out["own_move"][:q10][1],"redist4" => pol4_out["own_move"][:q10][1]]
-	d["q50"] = ["base" => base_out["own_move"][:q50][1], "burn" => pol0_out["own_move"][:q50][1], "redist1" => pol1_out["own_move"][:q50][1], "redist2" => pol2_out["own_move"][:q50][1],"redist3" => pol3_out["own_move"][:q50][1],"redist4" => pol4_out["own_move"][:q50][1]]
-	d["own_inc1"] = ["base" => base_out["own_inc"][1,:own], "burn" => pol0_out["own_inc"][1,:own], "redist1" => pol1_out["own_inc"][1,:own], "redist2" => pol2_out["own_inc"][1,:own],"redist3" => pol3_out["own_inc"][1,:own],"redist4" => pol4_out["own_inc"][1,:own]]
-	d["val_inc1"] = ["base" => base_out["own_inc"][1,:value], "burn" => pol0_out["own_inc"][1,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][1,:value],"redist4" => pol4_out["own_inc"][1,:value]]
-	d["own_inc2"] = ["base" => base_out["own_inc"][2,:own], "burn" => pol0_out["own_inc"][2,:own], "redist1" => pol1_out["own_inc"][2,:own], "redist2" => pol2_out["own_inc"][2,:own],"redist3" => pol3_out["own_inc"][2,:own],"redist4" => pol4_out["own_inc"][2,:own]]
-	d["val_inc2"] = ["base" => base_out["own_inc"][2,:value], "burn" => pol0_out["own_inc"][2,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][2,:value],"redist4" => pol4_out["own_inc"][2,:value]]
-	d["own_inc3"] = ["base" => base_out["own_inc"][3,:own], "burn" => pol0_out["own_inc"][3,:own], "redist1" => pol1_out["own_inc"][3,:own], "redist2" => pol2_out["own_inc"][3,:own],"redist3" => pol3_out["own_inc"][3,:own],"redist4" => pol4_out["own_inc"][3,:own]]
-	d["val_inc3"] = ["base" => base_out["own_inc"][3,:value], "burn" => pol0_out["own_inc"][3,:value], "redist1" => pol1_out["own_inc"][1,:value], "redist2" => pol2_out["own_inc"][1,:value],"redist3" => pol3_out["own_inc"][3,:value],"redist4" => pol4_out["own_inc"][3,:value]]
-	d["assets"] = ["base" => base_out["own_move"][:assets][1], "burn" => pol0_out["own_move"][:assets][1], "redist1" => pol1_out["own_move"][:assets][1], "redist2" => pol2_out["own_move"][:assets][1],"redist3" => pol3_out["own_move"][:assets][1],"redist4" => pol4_out["own_move"][:assets][1]]
-	d["inc_qt"] = ["base" => base_out["inc_qt"], "burn" => pol0_out["inc_qt"], "redist1" => pol1_out["inc_qt"], "redist2" => pol2_out["inc_qt"],"redist3" => pol3_out["inc_qt"],"redist4" => pol4_out["inc_qt"]]
+
+	d["own"       ] = Dict( "base" => base_out["own_move"][:own][1], "burn"    => pol0_out["own_move"][:own][1], "redist1"    => pol1_out["own_move"][:own][1], "redist2"    => pol2_out["own_move"][:own][1],"redist3"    => pol3_out["own_move"][:own][1],"redist4"    => pol4_out["own_move"][:own][1])
+	d["move"      ] = Dict( "base" => base_out["own_move"][:move][1], "burn"   => pol0_out["own_move"][:move][1], "redist1"   => pol1_out["own_move"][:move][1], "redist2"   => pol2_out["own_move"][:move][1],"redist3"   => pol3_out["own_move"][:move][1],"redist4"   => pol4_out["own_move"][:move][1])
+	d["income"    ] = Dict( "base" => base_out["own_move"][:income][1], "burn" => pol0_out["own_move"][:income][1], "redist1" => pol1_out["own_move"][:income][1], "redist2" => pol2_out["own_move"][:income][1],"redist3" => pol3_out["own_move"][:income][1],"redist4" => pol4_out["own_move"][:income][1])
+	d["q10"       ] = Dict( "base" => base_out["own_move"][:q10][1], "burn"    => pol0_out["own_move"][:q10][1], "redist1"    => pol1_out["own_move"][:q10][1], "redist2"    => pol2_out["own_move"][:q10][1],"redist3"    => pol3_out["own_move"][:q10][1],"redist4"    => pol4_out["own_move"][:q10][1])
+	d["q50"       ] = Dict( "base" => base_out["own_move"][:q50][1], "burn"    => pol0_out["own_move"][:q50][1], "redist1"    => pol1_out["own_move"][:q50][1], "redist2"    => pol2_out["own_move"][:q50][1],"redist3"    => pol3_out["own_move"][:q50][1],"redist4"    => pol4_out["own_move"][:q50][1])
+	d["own_inc1"  ] = Dict( "base" => base_out["own_inc"][1,:own], "burn"      => pol0_out["own_inc"][1,:own], "redist1"      => pol1_out["own_inc"][1,:own], "redist2"      => pol2_out["own_inc"][1,:own],"redist3"      => pol3_out["own_inc"][1,:own],"redist4"      => pol4_out["own_inc"][1,:own])
+	d["val_inc1"  ] = Dict( "base" => base_out["own_inc"][1,:value], "burn"    => pol0_out["own_inc"][1,:value], "redist1"    => pol1_out["own_inc"][1,:value], "redist2"    => pol2_out["own_inc"][1,:value],"redist3"    => pol3_out["own_inc"][1,:value],"redist4"    => pol4_out["own_inc"][1,:value])
+	d["own_inc2"  ] = Dict( "base" => base_out["own_inc"][2,:own], "burn"      => pol0_out["own_inc"][2,:own], "redist1"      => pol1_out["own_inc"][2,:own], "redist2"      => pol2_out["own_inc"][2,:own],"redist3"      => pol3_out["own_inc"][2,:own],"redist4"      => pol4_out["own_inc"][2,:own])
+	d["val_inc2"  ] = Dict( "base" => base_out["own_inc"][2,:value], "burn"    => pol0_out["own_inc"][2,:value], "redist1"    => pol1_out["own_inc"][1,:value], "redist2"    => pol2_out["own_inc"][1,:value],"redist3"    => pol3_out["own_inc"][2,:value],"redist4"    => pol4_out["own_inc"][2,:value])
+	d["own_inc3"  ] = Dict( "base" => base_out["own_inc"][3,:own], "burn"      => pol0_out["own_inc"][3,:own], "redist1"      => pol1_out["own_inc"][3,:own], "redist2"      => pol2_out["own_inc"][3,:own],"redist3"      => pol3_out["own_inc"][3,:own],"redist4"      => pol4_out["own_inc"][3,:own])
+	d["val_inc3"  ] = Dict( "base" => base_out["own_inc"][3,:value], "burn"    => pol0_out["own_inc"][3,:value], "redist1"    => pol1_out["own_inc"][1,:value], "redist2"    => pol2_out["own_inc"][1,:value],"redist3"    => pol3_out["own_inc"][3,:value],"redist4"    => pol4_out["own_inc"][3,:value])
+	d["assets"    ] = Dict( "base" => base_out["own_move"][:assets][1], "burn" => pol0_out["own_move"][:assets][1], "redist1" => pol1_out["own_move"][:assets][1], "redist2" => pol2_out["own_move"][:assets][1],"redist3" => pol3_out["own_move"][:assets][1],"redist4" => pol4_out["own_move"][:assets][1])
+	d["inc_qt"    ] = Dict( "base" => base_out["inc_qt"], "burn"               => pol0_out["inc_qt"], "redist1"               => pol1_out["inc_qt"], "redist2"               => pol2_out["inc_qt"],"redist3"               => pol3_out["inc_qt"],"redist4"               => pol4_out["inc_qt"])
 	d["p_own"] = Dict()
 	d["p_move"] = Dict()
 	for (k,v) in d["own"] 
@@ -770,11 +742,12 @@ function exp_Mortgage(ctax=false)
 	writetable(joinpath(outdir,"exp_Mortgage","welfare_h.csv"),welf_h)
 
 	# return
-	out = ["Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => ["R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3], "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age, "summary" => d]
+	out = Dict("Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => Dict("R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3), "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age, "summary" => d)
 
 	return out
 
 end
+
 
 
 
@@ -792,7 +765,9 @@ function valdiff_pshock_highMC(ctax::Float64,v0::Float64,opts::Dict,pmv_id::Data
 	gc()
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 
-	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	pmv2 = @linq pmv |>
+		@where((:year.>2006)&(!:move))
+	    @select(v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
 
 	# baseline value
 	v1 = pmv2[:v][1]
@@ -815,10 +790,14 @@ function pshock_highMC_cdiff()
 	p0 = 0
 	gc()
 	# people who moved away from j=6 after shock hits in 2007
-	pmv_id = @select(@where(p,(:year.>2006)&(:move)&(:j.==6)),id=unique(:id))
+	pmv_id = @linq p |>
+		@where((:year.>2006)&(:move)&(:j.==6)) |>
+		@select(id=unique(:id))
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 
-	pmv2 = @select(@where(pmv,(:year.>2006)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	pmv2 = @linq pmv |>
+		@where((:year.>2006)&(!:move))|>
+		@select(v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
 
 	# baseline value
 	v0 = pmv2[:v][1]
@@ -957,51 +936,44 @@ function exp_value_mig_base(j::Int,allj=false)
 	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
 
 	# get values by age and for different regions
-	v0   = @> begin
-		base
-		@where((:j.!=j)&(:year.>cutyr)&(!:move))
-		@by(:realage,v=mean(:v))
+	v0 = @linq base |>
+		@where((:j.!=j)&(:year.>cutyr)&(!:move)) |>
+		@by(:realage,v=mean(:v)) |>
 		@transform(region="outside of $regname",regime="baseline")
-	end
-	v1   = @> begin
-		pol
-		@where((:j.!=j)&(:year.>cutyr)&(!:move))
-		@by(:realage,v=mean(:v))
+	
+	v1   = @linq pol |>
+		@where((:j.!=j)&(:year.>cutyr)&(!:move))  |>
+		@by(:realage,v=mean(:v))  |>
 		@transform(region="outside of $regname",regime="noMove")
-	end
 	v01 = vcat(v0,v1)
-	v0j   = @> begin
-		base
-		@where((:j.==j)&(:year.>cutyr)&(!:move))
-		@by(:realage,v=mean(:v))
+	v0j   = @linq base |>
+		@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
+		@by(:realage,v=mean(:v)) |>
 		@transform(region="inside of $regname",regime="baseline")
-	end
-	v1j   = @> begin
-		pol
-		@where((:j.==j)&(:year.>cutyr)&(!:move))
-		@by(:realage,v=mean(:v))
+	v1j   = @linq pol |>
+		@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
+		@by(:realage,v=mean(:v)) |>
 		@transform(region="inside of $regname",regime="noMove")
-	end
 	v01j = vcat(v0,v1,v0j,v1j)
 
 
     # total flows across regims
     flows = getFlowStats(["base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)],"null")
-    f2 = [ k => flows[k][j] for k in keys(flows)]
+    f2 = Dict( k => flows[k][j] for k in keys(flows))
 
     flows = Dict()
-    flows["inmig"] = ["base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all])]
+    flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
     flows["inmig"]["pct"] = 100*(flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
 
-    flows["inmig_own"] = ["base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all])]
+    flows["inmig_own"]        = Dict("base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all]))
     flows["inmig_own"]["pct"] = 100*(flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
 
-    flows["inmig_rent"] = ["base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all])]
+    flows["inmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all]))
     flows["inmig_rent"]["pct"] = 100*(flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
 
-    flows["outmig"]      = ["base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all])]
-    flows["outmig_own"]  = ["base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all])]
-    flows["outmig_rent"] = ["base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all])]
+    flows["outmig"]      = Dict("base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all]))
+    flows["outmig_own"]  = Dict("base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all]))
+    flows["outmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all]))
 
 
 	# compare the ones who did move with their virtual counterparts
@@ -1053,16 +1025,12 @@ function exp_value_mig_base(j::Int,allj=false)
 	pmv3 = pmv2[setdiff(1:size(pmv2,1),drops),:]
 	bmv3 = bmv2[setdiff(1:size(bmv2,1),drops),:]
 
-	 x0 =  @> begin
-              bmv3
-              @where((!:move)&(:moveto.!=j))
+	 x0 =  @linq bmv3|>
+              @where((!:move)&(:moveto.!=j))|>
               @by(:j,v=mean(:v),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-              end
-	 x1 =  @> begin
-              pmv3
-              @where(!:move)
+	 x1 =  @linq pmv3|>
+              @where(!:move)|>
               @by(:j,v=mean(:v),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-              end
 
 
 
@@ -1219,63 +1187,51 @@ function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 
 	# get immigration rates for after cutyr
 	# uses data on everybody outside of j
-	b_in = @> begin
-			base
-			@where((:year.>cutyr)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+	b_in = @linq base |>
+			@where((:year.>cutyr)&(:j.!=j)) |>
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own)) |>
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
-	p_in = @> begin
-			p
-			@where((:year.>cutyr)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+	p_in = @linq p |>
+			@where((:year.>cutyr)&(:j.!=j)) |>
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own)) |>
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
-	h_in = @> begin
-			h
-			@where((:year.>cutyr)&(:j.!=j))
-			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own))
+	h_in = @linq h  |>
+			@where((:year.>cutyr)&(:j.!=j)) |>
+			@transform(mig = (:moveto.==j),mig_own = (:moveto.==j).*(:own),mig_rent = (:moveto.==j).*(!:own)) |>
 			@select(mig = 100 .* mean(:mig.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
 	# get outmigration rates for after cutyr
 	# uses data on those who would have migrated after pshock
-	b_out = @> begin
-			base
-			@where((:year.>cutyr)&(:j.==j))
-			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+	b_out = @linq base  |>
+			@where((:year.>cutyr)&(:j.==j)) |>
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own)) |>
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
-	p_out = @> begin
-			p
-			@where((:year.>cutyr)&(:j.==j))
-			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+	p_out = @linq p |>
+			@where((:year.>cutyr)&(:j.==j)) |>
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own)) |>
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
-	h_out = @> begin
-			h
-			@where((:year.>cutyr)&(:j.==j))
-			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own))
+	h_out = @linq h  |>
+			@where((:year.>cutyr)&(:j.==j)) |>
+			@transform(mig_own = (:move).*(:own),mig_rent = (:move).*(!:own)) |>
 			@select(mig = 100 .* mean(:move.data,WeightVec(:density.data)), mig_own = 100 .* mean(:mig_own.data,WeightVec(:density.data)), mig_rent = 100 .* mean(:mig_rent.data,WeightVec(:density.data)))
-		end
 
 	d=Dict()
-	d["inmig"]  = ["base" => b_in[:mig][1], ss =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] ]
-	d["inmig_own"]   = ["base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] ]
-	d["inmig_rent"]  = ["base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] ]
-	d["outmig"] = ["base" => b_out[:mig][1], ss =>p_out[:mig][1], "nomove"=> h_out[:mig][1]]
-	d["outmig_own"] = ["base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1]]
-	d["outmig_rent"] = ["base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] ]
+	d["inmig"]  =      Dict("base" => b_in[:mig][1], ss =>p_in[:mig][1], "nomove"=> h_in[:mig][1], "pct" => 100*(p_in[:mig][1] - h_in[:mig][1])/h_in[:mig][1] )
+	d["inmig_own"]   = Dict("base" => b_in[:mig_own][1], ss =>p_in[:mig_own][1], "nomove"=> h_in[:mig_own][1], "pct" => 100*(p_in[:mig_own][1] - h_in[:mig_own][1])/h_in[:mig_own][1] )
+	d["inmig_rent"]  = Dict("base" => b_in[:mig_rent][1], ss =>p_in[:mig_rent][1], "nomove"=> h_in[:mig_rent][1], "pct" => 100*(p_in[:mig_rent][1] - h_in[:mig_rent][1])/h_in[:mig_rent][1] )
+	d["outmig"] =      Dict("base" => b_out[:mig][1], ss =>p_out[:mig][1], "nomove"=> h_out[:mig][1])
+	d["outmig_own"] =  Dict("base" => b_out[:mig_own][1], ss =>p_out[:mig_own][1], "nomove"=> h_out[:mig_own][1])
+	d["outmig_rent"] = Dict("base" => b_out[:mig_rent][1], ss =>p_out[:mig_rent][1], "nomove"=> h_out[:mig_rent][1] )
 
-	d["v"] = ["base" => bmv4[:v][1],    ss => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] ]
-	d["a"] = ["base" => bmv4[:a][1],    ss => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] ]
-	d["w"] = ["base" => bmv4[:w][1],    ss => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] ]
-	d["c"] = ["base" => bmv4[:cons][1], ss => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] ]
-	d["h"] = ["base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] ]
+	d["v"] = Dict("base" => bmv4[:v][1],    ss => pmv4[:v][1],    "nomove"=>hmv4[:v][1], "pct" => 100*(pmv4[:v][1] - hmv4[:v][1])/hmv4[:v][1] )
+	d["a"] = Dict("base" => bmv4[:a][1],    ss => pmv4[:a][1],    "nomove"=>hmv4[:a][1], "pct" => 100*(pmv4[:a][1] - hmv4[:a][1])/hmv4[:a][1] )
+	d["w"] = Dict("base" => bmv4[:w][1],    ss => pmv4[:w][1],    "nomove"=>hmv4[:w][1], "pct" => 100*(pmv4[:w][1] - hmv4[:w][1])/hmv4[:w][1] )
+	d["c"] = Dict("base" => bmv4[:cons][1], ss => pmv4[:cons][1], "nomove"=>hmv4[:cons][1], "pct" => 100*(pmv4[:cons][1] - hmv4[:cons][1])/hmv4[:cons][1] )
+	d["h"] = Dict("base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] )
 
 
 	indir, outdir = mig.setPaths()
@@ -1283,7 +1239,7 @@ function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
 	JSON.print(f,d)
 	close(f)
 
-	d = ["p"=>pmv3,"h"=>hmv3,"summary"=>d]
+	d = Dict("p"=>pmv3,"h"=>hmv3,"summary"=>d)
 	return d
 
 	# compare
@@ -1447,13 +1403,11 @@ function exp_shockRegion(opts::Dict)
 	# -------------------------------------------
 
 	ela = join(flows["base"][j][[:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],flows[which][j][[:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],on=:year)
-	ela2 = @> begin
-		ela
-		@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent)
-		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all)
-		@where(:year.>=shockYear)
+	ela2 = @linq ela |>
+		@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent) |>
+		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all) |>
+		@where(:year.>=shockYear) |>
 		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
-	end
 
 	elas = Dict()
 	elas["all"] = Dict()
@@ -1506,14 +1460,14 @@ function exp_shockRegion(opts::Dict)
 
 
 
-	out = ["which" => which,
+	out = Dict("which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
 	       "flows" => flows,
 	       "elasticity" => elas,
-	       "values" => ["base" => w0, which => w1],
-	       "moments" => ["base" => mms0, which => mms1]]
+	       "values" => Dict("base" => w0, which => w1),
+	       "moments" => Dict("base" => mms0, which => mms1))
 
 	return (out,sim0,sim1)
 end
@@ -1685,7 +1639,7 @@ function moneyMC()
 
 	zs = m.gridsXD["zsupp"][:,1]
 	# make an out dict
-	d =[ "low_type" => [ "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum], "high_type" => [ "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum] ] 
+	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum], "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"moneyMC.json"),"w")
@@ -1727,82 +1681,82 @@ end
 
 
 # run Model with only small deviations from aggregate
-function smallShocks()
+# function smallShocks()
 
-	p = Param(2)
-	m = Model(p)
-	solve!(m,p)
-	s = simulate(m,p)
-	s = @where(s,(!isna(:cohort) & (:year.>1996)))
-	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
+# 	p = Param(2)
+# 	m = Model(p)
+# 	solve!(m,p)
+# 	s = simulate(m,p)
+# 	s = @where(s,(!isna(:cohort) & (:year.>1996)))
+# 	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-	opts=Dict()
-	opts["policy"] = "smallShocks"
+# 	opts=Dict()
+# 	opts["policy"] = "smallShocks"
 
-	p1 = Param(2,opts)
-	m1 = Model(p1)
-	solve!(m1,p1)
-	s1 = simulate(m1,p1)
-	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
-	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
+# 	p1 = Param(2,opts)
+# 	m1 = Model(p1)
+# 	solve!(m1,p1)
+# 	s1 = simulate(m1,p1)
+# 	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
+# 	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-	# make several out dicts
-	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
-	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
-	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
-	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
-	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
-	y_s = @by(s1,:Division,p2y=mean(:p2y))
+# 	# make several out dicts
+# 	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
+# 	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
+# 	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
+# 	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
+# 	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
+# 	y_s = @by(s1,:Division,p2y=mean(:p2y))
 
-	# get percent difference in moveto distribution
-	out = Dict()
-	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
+# 	# get percent difference in moveto distribution
+# 	out = Dict()
+# 	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
 
-	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
+# 	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
 
-	# summaries
-	summa = Dict()
+# 	# summaries
+# 	summa = Dict()
 
-	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
-	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
-	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
+# 	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
+# 	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
+# 	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
 
-	out["summary"] = summa
+# 	out["summary"] = summa
 
-	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
-	JSON.print(f,out)
-	close(f)
+# 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
+# 	JSON.print(f,out)
+# 	close(f)
 
-	return (s,s1,out)
+# 	return (s,s1,out)
 
-end
-
-
+# end
 
 
-# run model without the ability to save!
-function exp_noSavings()
 
-	p = Param(2)
-	m = Model(p)
-	solve!(m,p)
-	s = simulate(m,p)
-	w0 = getDiscountedValue(s,p,m,false)
-	mms = computeMoments(s,p,m)	
 
-	opts=Dict()
-	opts["policy"] = "noSaving"
+# # run model without the ability to save!
+# function exp_noSavings()
 
-	p1 = Param(2,opts)
-	m1 = Model(p1)
-	solve!(m1,p1)
-	s1 = simulate(m1,p1)
-	w1 = getDiscountedValue(s1,p1,m1,false)
-	mms1 = computeMoments(s1,p1,m1)	
+# 	p = Param(2)
+# 	m = Model(p)
+# 	solve!(m,p)
+# 	s = simulate(m,p)
+# 	w0 = getDiscountedValue(s,p,m,false)
+# 	mms = computeMoments(s,p,m)	
 
-	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+# 	opts=Dict()
+# 	opts["policy"] = "noSaving"
 
-	return d
-end
+# 	p1 = Param(2,opts)
+# 	m1 = Model(p1)
+# 	solve!(m1,p1)
+# 	s1 = simulate(m1,p1)
+# 	w1 = getDiscountedValue(s1,p1,m1,false)
+# 	mms1 = computeMoments(s1,p1,m1)	
+
+# 	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+
+# 	return d
+# end
 
 

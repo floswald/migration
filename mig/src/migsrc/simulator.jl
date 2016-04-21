@@ -57,8 +57,8 @@ end
 # function draw_yp(m::Model,Ly::Float64,Lp::Float64,j::Int)
 
 
-# 	ycoef = array(m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
-# 	pcoef = array(m.VAR_coefs[j,[:p_Intercept, :p_Lp, :p_Ly]])
+# 	ycoef = convert(Array,m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
+# 	pcoef = convert(Array,m.VAR_coefs[j,[:p_Intercept, :p_Lp, :p_Ly]])
 
 # 	x = vcat(1.0,Lp,Ly)
 
@@ -188,7 +188,7 @@ function simulate(m::Model,p::Param)
 	cumGz = cumsum(m.gridsXD["Gz"],2)
 	cumGs = cumsum(m.gridsXD["Gs"],2)
 	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
-	G0j   = Categorical(array(m.regnames[:prop]))	
+	G0j   = Categorical(m.regnames[:prop].data)	
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 
@@ -229,9 +229,9 @@ function simulate(m::Model,p::Param)
 	DP       = zeros(nsim*T)
 	DM       = falses(nsim*T)
 	Dcanbuy  = falses(nsim*T)
-	Di       = repeat([1:nsim],inner = [T],outer = [1])
-	Dage     = repeat([1:T],inner = [1],outer = [nsim])
-	Drealage = repeat([p.ages[1:T]],inner = [1],outer = [nsim])
+	Di       = repeat(collect(1:nsim),inner = [T],outer = [1])
+	Dage     = repeat(collect(1:T),inner = [1],outer = [nsim])
+	Drealage = repeat(collect(p.ages[1:T]),inner = [1],outer = [nsim])
 	Dyear    = DataArray(Int,nsim*T)
 	Dcohort  = DataArray(Int,nsim*T) # allocates as NA
 	Dhh      = zeros(Int,nsim*T)
@@ -584,17 +584,20 @@ function simulate(m::Model,p::Param)
 
 	# pack into a dataframe
 	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool,1},Dis.-ones(length(Dis)))),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool,1},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+
+	# note: some individuals will not get simulated at certain ages because they fall out of the sampling frame
+	# i.e. if you are the last cohort, i will only observe you at age 1
+	# therefore, for all other ages, that cohort will have garbage values in the arrays.
+
+	# convert children indicator into a boolean:
+	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
 
 	df = join(df,m.agedist,on=:realage)
-	df = @> begin
-		df
-		@transform(p2y = :p ./ :y, p2w = :p ./ :wealth)
-	end
-
+	df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
 	return df
 end
 
@@ -712,7 +715,7 @@ end
 function get_rho_ktmp(l::Lininterp,azYP::Vector{Float64},p::Param)
 	out = zeros(p.nJ)
 
-	getValue!(out,l,azYP,[1:p.nJ])
+	getValue!(out,l,azYP,collect(1:p.nJ))
 	return out
 end
 
@@ -723,7 +726,7 @@ function get_vcs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 	out = zeros(3)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	getValue!(out,l,azYP,[1+l_idx,2+l_idx,3+l_idx])
+	getValue!(out,l,azYP,[1+l_idx;2+l_idx;3+l_idx])
 	# out[2] = getValue(l,azYP,2+l_idx)
 	# out[3] = getValue(l,azYP,3+l_idx)
 	return out
@@ -737,7 +740,7 @@ function get_v1v2(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
 	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
 
-	getValue!(out,l,azYP,[1+l_idx1,1+l_idx2])
+	getValue!(out,l,azYP,[1+l_idx1;1+l_idx2])
 	return out
 end
 
@@ -748,7 +751,7 @@ function get_cs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 	out = zeros(2)
 	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	getValue!(out,l,azYP,[2+l_idx,3+l_idx])	# 2 is index for cons, 3 is index for save
+	getValue!(out,l,azYP,[2+l_idx;3+l_idx])	# 2 is index for cons, 3 is index for save
 	return out
 end
 
@@ -775,7 +778,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
-	fullw = WeightVec(array(df[:density]))
+	fullw = WeightVec(convert(Array,df[:density]))
 
 
 	# grouped dfs
@@ -795,18 +798,16 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		coef_h = DataArray(Float64,3)
 		std_h =  DataArray(Float64,3)
 	else
-		lm_h = fit(LinearModel, h ~ age + age2 ,df)
+		lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
 		cc_h  = coeftable(lm_h)
 		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
 		coef_h = @data(coef(lm_h))
 		std_h = @data(stderr(lm_h))
 	end
 	
-	xx = @> begin
-		   df 
-		   @where(:age.==31) 
+	xx = @linq df |>
+		   @where(:age.==31) |>
 		   @select(moment="mean_sell_50",model_value=mean(:sell))
-		end
 	mom1 = deepcopy(xx)
 
 	# unconditional mean of owning
@@ -819,7 +820,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# ----------
 
 	for div in g_div
-		w = WeightVec(array(div[:density]))
+		w = WeightVec(convert(Array,div[:density]))
 		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w)])
 	end
 
@@ -828,7 +829,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	for div in g_kids
 		kk = "$(div[1,:kids])"
-		w = WeightVec(array(div[:density]))
+		w = WeightVec(convert(Array,div[:density]))
 		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w)])
 	end
 	# TODO std error
@@ -848,7 +849,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		coef_mv = @data(zeros(3))
 		std_mv =  @data(ones(3))
 	else
-		lm_mv = fit(LinearModel, move ~ age + age2 ,df)
+		lm_mv = glm( move ~ age + age2 ,df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
 		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
 		coef_mv = @data(coef(lm_mv))
@@ -869,11 +870,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	push!(mom1,["moved1",moved1])
 	push!(mom1,["moved2plus",moved2plus])
 
-	xx = @> begin
-		   df 
-		   @where(:age.==31) 
+	xx = @linq df |>
+		   @where(:age.==31) |>
 		   @select(moment="mean_move_50",model_value=mean(:move))
-		end
 	append!(mom1,xx)
 
 	# move ~ own
@@ -888,7 +887,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
-			w = WeightVec(array(idf[:density]))
+			w = WeightVec(convert(Array,idf[:density]))
 			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 		end
 
@@ -903,7 +902,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	for idf in g_kids
 		kk = "$(idf[1,:kids])"
-		w = WeightVec(array(idf[:density]))
+		w = WeightVec(convert(Array,idf[:density]))
 		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 	end
 	# TODO std error
@@ -962,8 +961,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# -----------------
 
 	for idf in g_div
-		w = WeightVec(array(idf[:density]))
-		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(array(idf[:wealth]),w)])
+		w = WeightVec(convert(Array,idf[:density]))
+		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(convert(Array,idf[:wealth]),w)])
 	end
 
 	# wealth ~ own
@@ -972,12 +971,12 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	if noown
 
 		push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
-		push!(mom1,["mean_wealth_ownFALSE",mean(array(df[:wealth]),fullw)])
+		push!(mom1,["mean_wealth_ownFALSE",mean(convert(Array,df[:wealth]),fullw)])
 	else
 		for idf in g_own
-			w = WeightVec(array(idf[:density]))
+			w = WeightVec(convert(Array,idf[:density]))
 			kk = "$(idf[1,:own])"
-			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(array(idf[:wealth]),w)])
+			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(convert(Array,idf[:wealth]),w)])
 		end
 	end
 

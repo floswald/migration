@@ -127,7 +127,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	movecost = m.gridsXD["movecost"]
 
 	Gz = m.gridsXD["Gz"]
-	Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
+	Gs = m.gridsXD["Gs"][:,:,age]
 	Gyp = m.gridsXD["Gyp"]
 
 	vtmp = zeros(p.nJ) 
@@ -719,7 +719,7 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		x = 0.0
 		# grid for next period assets
 		ub = noSaving ?  0.0 : cash-0.01 
-		s = linspace(lb,ub,p.namax)	# this implies you can save a lot if you have a lot of cash
+		s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
 		# however in the interpolation you don't allow s > a[end]
 		cons = zeros(p.namax)
 		# fix upper bound of search grid

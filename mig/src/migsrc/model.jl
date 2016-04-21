@@ -31,11 +31,11 @@ type Model
 
 	# grids
 	grids   :: Dict{ASCIIString,Array{Float64,1}}
-	gridsXD :: Dict{ASCIIString,Array{Float64}}
+	gridsXD :: Dict
 
-	dimvec  ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # total number of dimensions
-	dimvecH ::(Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int) # dimvec conditional on H choice
-	dimvec2::(Int,Int,Int,Int,Int,Int,Int,Int,Int) # total - housing
+	dimvec  ::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int,Int} # total number of dimensions
+	dimvecH ::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int} # dimvec conditional on H choice
+	dimvec2::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int} # total - housing
 	# dimnames::Array{ASCIIString}
 	proportion::DataFrame
 	dimnames::DataFrame
@@ -104,7 +104,7 @@ type Model
 		EV = fill(p.myNA,dimvec2)
 		vbar = fill(p.myNA,dimvec2)
 
-		bounds = Dict{ASCIIString,(Float64,Float64)}()
+		bounds = Dict{ASCIIString,Tuple{Float64,Float64}}()
 		# bounds["Y"]          = (0.5,1.5)
 
 
@@ -113,7 +113,7 @@ type Model
 
 		# if on my machine
 		if Sys.OS_NAME == :Darwin
-			indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
+			indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		# if on IFS windows
 		elseif Sys.OS_NAME == :Windows
 			indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
@@ -131,7 +131,7 @@ type Model
 
 		# distance matrix
 		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["dist"])
-		dist = array(distdf)
+		dist = convert(Array,distdf)
 
 		# population weights
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
@@ -153,7 +153,7 @@ type Model
 			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
-				Regmods_YP[j] = vcat(mig.array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),mig.array(VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
+				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
 			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
 			regY = DataFrame(read_rda(joinpath(indir,"regY.rda"))["regY"])
@@ -165,7 +165,7 @@ type Model
 			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg_small.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
-				Regmods_YP[j] = vcat(mig.array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),mig.array(VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
+				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
 			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
 			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
@@ -181,7 +181,7 @@ type Model
 			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
-				Regmods_YP[j] = vcat(mig.array(VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),mig.array(VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
+				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
 			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
 			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
@@ -201,8 +201,8 @@ type Model
 
 		# P,Y data series.
 
-		pred_y = array(pred_ydf[:,2:end])
-		pred_p = array(pred_pdf[:,2:end])
+		pred_y = convert(Array,pred_ydf[:,2:end])
+		pred_p = convert(Array,pred_pdf[:,2:end])
 
 
 
@@ -370,7 +370,7 @@ type Model
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero
 		# x = [linspace(bounds["assets"][1],50.0,p.na-6),linspace(100.0,bounds["assets"][2],5), 1000.0]
-		x = [linspace(bounds["assets"][1],50.0,p.na-5),linspace(100.0,1000.0,5)]
+		x = [linspace(bounds["assets"][1],50.0,p.na-5);linspace(100.0,1000.0,5)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
 		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
 		x = x .- x[ indmin(abs(x)) ] 
@@ -447,7 +447,7 @@ type Model
 		end
 
 		zlength = [zsupp[end,1]-zsupp[1,1]]
-        gridsXD = (ASCIIString => Array{Float64})["Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai, "zlength" => zlength ]
+        gridsXD = Dict("Gyp" => Gyp, "Gz"=> Gz,"p" => pgrid, "y" => ygrid, "z" => zgrid, "zsupp" => zsupp, "movecost" => mc ,"Gs" => kmat, "Poterba" => poterba_sinai, "zlength" => zlength )
 
 		dimnames = DataFrame(dimension=["k", "s", "z", "y", "p", "tau", "a", "h", "j", "age" ],
 			                  points = [p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh, p.nJ, p.nt-1 ])
@@ -543,7 +543,7 @@ function cohortIdx(p::Param)
 	end
 
 	nc = length(cdict)
-	ppc = iround(p.nsim / (nc-1))
+	ppc = round(Integer,p.nsim / (nc-1))
 	pp = ppc
 	breaks = Int[]
 	push!(breaks,ppc)
@@ -643,8 +643,8 @@ end
 
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = zeros(p.ny*p.np, p.ny*p.np)
-	ycoef = array( @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
-	pcoef = array( @where(df,(:param.=="P_Intercept") | (:param.== "P_LY")| (:param.== "P_LP"))[:value]) 
+	ycoef = convert(Array, @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
+	pcoef = convert(Array, @where(df,(:param.=="P_Intercept") | (:param.== "P_LY")| (:param.== "P_LP"))[:value]) 
 	for ip in 1:p.np
 		for iy in 1:p.ny
 
@@ -665,7 +665,7 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 					# println("iy=$iy,ip=$ip,iy1=$iy1,ip1=$ip1")
 					# println("y=$(ygrid[iy]),p=$(pgrid[ip])")
 					# println("new_y = $(round(new_y,2)), new_p = $(round(new_p,2))")
-					Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1)] = pdf(mvn,[new_y,new_p])
+					Gyp[iy + p.ny*(ip-1),iy1 + p.ny*(ip1-1)] = pdf(mvn,[new_y;new_p])
 				end
 			end
 		end

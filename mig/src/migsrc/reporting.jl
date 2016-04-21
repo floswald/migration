@@ -27,16 +27,8 @@ end
 function simReport(s::DataFrame)
 
 	s = @where(s,(!isna(:cohort) & (:year.>1997)));
-
-	mp = @> begin
-       s
-       @select(prob=mean(:cumprob),)
-    end
-
-	mp_own = @> begin
-       s
-       @by(:own,prob=mean(:cumprob))
-    end
+	mp = @select(s,prob=mean(:cumprob),)
+	mp_own = @by(s,:own,prob=mean(:cumprob))
 
     # mp_ass = transform(s,assets = 0.0)
     # qt_a = quantile(s[:a],(0:20)./20)
@@ -44,83 +36,58 @@ function simReport(s::DataFrame)
     #     mp_ass[i,:assets] = searchsortedfirst(qt_a,mp_ass[i,:a])
     # end
     cut_ass = (0:20)./20
-    mp_ass = @> begin
-    	s
-    	@transform(assets=cut(:a,round(quantile(:a,^(cut_ass)),1)))
+    mp_ass = @linq s |>
+    	@transform(assets=cut(:a,round(quantile(:a,^(cut_ass)),1))) |>
         # @transform(assets=searchsortedlast(:a.data,quantile(:a,(0:20)./20)))
-        @by([:assets,:own],prob=mean(:cumprob))
+        @by([:assets,:own],prob=mean(:cumprob)) |>
         @transform(Type="Owner")
-    end
     mp_ass[!mp_ass[:own],:Type] = "Renter"
     mp_ass[:quantile] = 0
     mp_ass[mp_ass[:own],:quantile] = 1:size(mp_ass[mp_ass[:own],:],1)
 
 
-    mp_ass_age = @> begin
-        s
-        @transform(assets=cut(:a,round(quantile(:a,(0:20)./20),1)))
+    mp_ass_age = @linq s |>
+        @transform(assets=cut(:a,round(quantile(:a,(0:20)./20),1))) |>
         @by([:assets,:own,:age],prob=mean(:cumprob))
-    end
 
-    mp_wealth = @> begin
-        s
-        @where(:wealth.>-100)
-        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))
-        @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
+    mp_wealth = @linq s |>
+        @where(:wealth.>-100)|>
+        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))|>
+        @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))|>
         @transform(Type="Owner")
-    end
+
     mp_wealth[!mp_wealth[:own],:Type] = "Renter"
     writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth.csv",mp_wealth)
 
+    mp_wealth2 = @linq s |>
+        @where(:wealth.>-100)|>
+        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))|>
+        @by(:wealth,prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move),n_own=mean(:h.data,WeightVec(:density.data)))
 
-    mp_wealth2 = @> begin
-        s
-        @where(:wealth.>-100)
-        @transform(wealth=cut(:wealth,round(quantile(:wealth,(0:100)./100),1)))
-        # @transform(qwealth=quantile(:wealth,(1:100)./100))
-        # @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
-        @by([:wealth],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move),n_own=mean(:h.data,WeightVec(:density.data)))
-        # @transform(Type="Owner")
-    end
     writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth2.csv",mp_wealth)
-    # mp_wealth[!mp_wealth[:own],:Type] = "Renter"
+    mp_wealth[!mp_wealth[:own],:Type] = "Renter"
 
-    # mp_wealth = @> begin
-    #     s
-    #     @where(:wealth2.>-100)
-    #     @transform(wealth=cut(:wealth2,round(quantile(:wealth2,(0:100)./100),1)))
-    #     # @transform(qwealth=quantile(:wealth,(1:100)./100))
-    #     @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move))
-    #     @transform(Type="Owner")
-    # end
-    # mp_wealth[!mp_wealth[:own],:Type] = "Renter"
+    mp_wealth = @linq s |>
+        @where(:wealth2.>-100) |>
+        @transform(wealth=cut(:wealth2,round(quantile(:wealth2,(0:100)./100),1))) |>
+        @by([:wealth,:own],prob=mean(:cumprob.data,WeightVec(:density.data)),m_prob=mean(:move.data,WeightVec(:density.data)),m_sum=sum(:move),n_all=length(:move)) |>
+        @transform(Type="Owner")
+    mp_wealth[!mp_wealth[:own],:Type] = "Renter"
 
-    mp_inc = @> begin
-    	s
-    	@transform(inc_bin=cut(:income,round(quantile(:income,(0:20)./20),1)))
+    mp_inc = @linq s |>
+    	@transform(inc_bin=cut(:income,round(quantile(:income,(0:20)./20),1))) |>
     	@by([:inc_bin,:own],prob=mean(:cumprob))
-    end
 
-	mp_z = @> begin
-    	s
-    	@transform(z_bin=cut(:z,round(quantile(:z,(0:20)./20),1)))
+	mp_z = @linq s |>
+    	@transform(z_bin=cut(:z,round(quantile(:z,(0:20)./20),1))) |>
     	@by([:z_bin,:own],prob=mean(:cumprob))
-    end
 
-	mp_p = @> begin
-    	s
-    	@transform(p_bin=cut(:p,round(quantile(:p,(0:20)./20),1)))
+	mp_p = @linq s |>
+    	@transform(p_bin=cut(:p,round(quantile(:p,(0:20)./20),1))) |>
     	@by([:p_bin,:own],prob=mean(:cumprob))
-    end
 
-    mp_age = @> begin
-    	s
-    	@by(:age,prob=mean(:cumprob))
-    end
-    m_age = @> begin
-    	s
-    	@by(:age,prob=mean(:move))
-    end
+    mp_age = @by(s,:age,prob=mean(:cumprob))
+    m_age = @by(s,:age,prob=mean(:move))
 
     mp_ass = mp_ass[2:end,:]
     mp_inc = mp_inc[2:end,:]
