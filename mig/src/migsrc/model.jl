@@ -418,7 +418,7 @@ type Model
 
 		# scale age into [0,3]
 
-		mc = zeros(p.nt-1,p.nJ,p.nJ,p.ntau,p.nh,p.ns)
+		mc = zeros(p.nt,p.nJ,p.nJ,p.ntau,p.nh,p.ns)
 		for it in 1:p.nt-1
 			for ij in 1:p.nJ
 				for ik in 1:p.nJ

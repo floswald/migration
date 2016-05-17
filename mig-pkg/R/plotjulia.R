@@ -1700,9 +1700,7 @@ getFHFA_realPrices <- function(){
 	fhfa[Division=="DV_WSC",Division := "WSC"]
 
 
-
-	fhfa[,index2012 := index_nsa / .SD[year==2012,index_nsa],by=Division]
-
+	fhfa[,index2012 := index_sa / .SD[year==2012,index_sa],by=Division]
 	setkey(fhfa,Division,year)
 	
 	# get 2012 mean house value in sipp

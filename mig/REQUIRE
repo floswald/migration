@@ -5,10 +5,10 @@ Distributions
 DataFrames
 DataFramesMeta
 ApproXD
-Lazy
 Optim
 HDF5
 JLD
+PyPlot
 JSON
 Copulas
 Debug

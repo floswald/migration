@@ -775,7 +775,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 3 bins, and add age squared
 	ngroups = 3
-	df = @transform(df, agebin = cut(:realage,int(quantile(:realage,[1 : ngroups - 1] / ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
+	df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
 	fullw = WeightVec(convert(Array,df[:density]))
@@ -1000,7 +1000,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# 	nms[i] = ss
 	# end
 
-	mom2 = DataFrame(moment = nms, model_value = [coef_mv,coef_h])
+	mom2 = DataFrame(moment = nms, model_value = [coef_mv;coef_h])
 
 	dfout = vcat(mom1,mom2)
 	nms = dfout[:moment]

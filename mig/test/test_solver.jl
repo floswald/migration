@@ -115,6 +115,20 @@ facts("test linear index functions") do
 		end
 	end
 
+	context("moving cost indexer") do
+
+		for itest in 1:10
+			# choose a random state
+			it   = rand(1:(p.nt-1))
+			ij   = rand(1:p.nJ)
+			ik   = rand(1:p.nJ)
+			itau   = rand(1:p.ntau)
+			ih   = rand(1:p.nh)
+			is   = rand(1:p.ns)
+			@fact m.gridsXD["movecost"][it,ij,ik,itau,ih,is] --> m.gridsXD["movecost"][mig.idxMC(it,ij,ik,itau,ih,is,p)]
+		end
+	end
+
 end
 
 facts("testing utility function") do
@@ -271,7 +285,7 @@ facts("testing vsavings!()") do
     cash = rand()
     mc = rand()
     lb = 0
-    s = linspace(lb,cash-0.01,p.namax)
+    s = collect(linspace(lb,cash-0.01,p.namax))
 	for is = 1:p.ns
 	for ih = 0:1
 
@@ -323,7 +337,7 @@ facts("testing vsavings!() if ctax is on") do
     cash = rand()
     mc = rand()
     lb = 0
-    s = linspace(lb,cash-0.01,p.namax)
+    s = collect(linspace(lb,cash-0.01,p.namax))
 	for is = 1:p.ns
 	for ih = 0:1
 
@@ -354,85 +368,85 @@ facts("testing vsavings!() if ctax is on") do
 	end
 end
 
-facts("testing bilinear approx") do
+# facts("testing bilinear approx") do
 	
-	xgrid = linspace(-1.5,3,10)
-	ygrid = linspace(1.5,3.8,12)
+# 	xgrid = linspace(-1.5,3,10)
+# 	ygrid = linspace(1.5,3.8,12)
 
-	myfun(i1,i2) = ((i1-0.1)+(i2*5.1))*3.4
+# 	myfun(i1,i2) = ((i1-0.1)+(i2*5.1))*3.4
 
-	zmat = Float64[ myfun(i,j) for i in xgrid, j in ygrid ]
+# 	zmat = Float64[ myfun(i,j) for i in xgrid, j in ygrid ]
 
-	@fact zmat[1,1] => mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)
-	@fact zmat[3,6] => mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat)
-	@fact zmat[10,12] =>  mig.bilinearapprox(xgrid[10],ygrid[12],xgrid,ygrid,zmat) 
+# 	@fact zmat[1,1] => mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)
+# 	@fact zmat[3,6] => mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat)
+# 	@fact zmat[10,12] =>  mig.bilinearapprox(xgrid[10],ygrid[12],xgrid,ygrid,zmat) 
 
-	x = xgrid[5]+rand()
-	y = ygrid[5]+rand()*0.1
-	z = myfun(x,y)
-	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+# 	x = xgrid[5]+rand()
+# 	y = ygrid[5]+rand()*0.1
+# 	z = myfun(x,y)
+# 	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
-	x = xgrid[end]-0.01
-	y = ygrid[end]-0.02
-	z = myfun(x,y)
-	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+# 	x = xgrid[end]-0.01
+# 	y = ygrid[end]-0.02
+# 	z = myfun(x,y)
+# 	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
-	for i in 1:100
-		x = rand() * (3+1.5) - 1.5
-		y = rand() * (3.8-1.5) + 1.5
-		z = myfun(x,y)
-		@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
-	end
+# 	for i in 1:100
+# 		x = rand() * (3+1.5) - 1.5
+# 		y = rand() * (3.8-1.5) + 1.5
+# 		z = myfun(x,y)
+# 		@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+# 	end
 
-	x = xgrid[]+rand()
-	y = ygrid[5]+rand()*0.1
-	z = myfun(x,y)
-	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
+# 	x = xgrid[]+rand()
+# 	y = ygrid[5]+rand()*0.1
+# 	z = myfun(x,y)
+# 	@fact z => roughly(mig.bilinearapprox(x,y,xgrid,ygrid,zmat),atol=1e-5)
 
-	# out of bounds
-	@fact zmat[1,1] => mig.bilinearapprox(-2.0,0.0,xgrid,ygrid,zmat)
-	@fact zmat[10,12] => mig.bilinearapprox(100.1,5.5,xgrid,ygrid,zmat)
+# 	# out of bounds
+# 	@fact zmat[1,1] => mig.bilinearapprox(-2.0,0.0,xgrid,ygrid,zmat)
+# 	@fact zmat[10,12] => mig.bilinearapprox(100.1,5.5,xgrid,ygrid,zmat)
 
-end
+# end
 
-facts("testing bilinear approx for mulitple values") do
+# facts("testing bilinear approx for mulitple values") do
 	
-	xgrid = linspace(-1.5,3,10)
-	ygrid = linspace(1.5,3.8,12)
+# 	xgrid = linspace(-1.5,3,10)
+# 	ygrid = linspace(1.5,3.8,12)
 
-	zmat = Float64[ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
-	zmat2= Float64[ (i-0.2)*(j+0.1)*0.4 for i in xgrid, j in ygrid ]
-	zmat3= Float64[ (i-0.1)*(j+0.3)*8.2 for i in xgrid, j in ygrid ]
+# 	zmat = Float64[ (i-0.1)*(j+0.1)*3.4 for i in xgrid, j in ygrid ]
+# 	zmat2= Float64[ (i-0.2)*(j+0.1)*0.4 for i in xgrid, j in ygrid ]
+# 	zmat3= Float64[ (i-0.1)*(j+0.3)*8.2 for i in xgrid, j in ygrid ]
 
-	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)) => 1
-	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat)) => 2
-	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat,zmat)) => 3
+# 	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat)) => 1
+# 	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat)) => 2
+# 	@fact length(mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat,zmat)) => 3
 
-	z = mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat2,zmat3)
+# 	z = mig.bilinearapprox(xgrid[1],ygrid[1],xgrid,ygrid,zmat,zmat2,zmat3)
 
-	@fact zmat[1,1] => z[1]
-	@fact zmat2[1,1] => z[2]
-	@fact zmat3[1,1] => z[3]
+# 	@fact zmat[1,1] => z[1]
+# 	@fact zmat2[1,1] => z[2]
+# 	@fact zmat3[1,1] => z[3]
 
-	z = mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat,zmat2,zmat3)
+# 	z = mig.bilinearapprox(xgrid[3],ygrid[6],xgrid,ygrid,zmat,zmat2,zmat3)
 
-	@fact zmat[3,6] => z[1]
-	@fact zmat2[3,6] => z[2]
-	@fact zmat3[3,6] => z[3]
+# 	@fact zmat[3,6] => z[1]
+# 	@fact zmat2[3,6] => z[2]
+# 	@fact zmat3[3,6] => z[3]
 
-	x = xgrid[5]+rand()
-	y = ygrid[5]+rand()*0.1
-	z = (x-0.1)*(y+0.1)*3.4
-	z2= (x-0.2)*(y+0.1)*0.4
-	z3= (x-0.1)*(y+0.3)*8.2
+# 	x = xgrid[5]+rand()
+# 	y = ygrid[5]+rand()*0.1
+# 	z = (x-0.1)*(y+0.1)*3.4
+# 	z2= (x-0.2)*(y+0.1)*0.4
+# 	z3= (x-0.1)*(y+0.3)*8.2
 
-	zout = mig.bilinearapprox(x,y,xgrid,ygrid,zmat,zmat2,zmat3)
+# 	zout = mig.bilinearapprox(x,y,xgrid,ygrid,zmat,zmat2,zmat3)
 
-	@fact z => roughly(zout[1],atol=1e-5)
-	@fact z2=> roughly(zout[2],atol=1e-5)
-	@fact z3=> roughly(zout[3],atol=1e-5)
+# 	@fact z => roughly(zout[1],atol=1e-5)
+# 	@fact z2=> roughly(zout[2],atol=1e-5)
+# 	@fact z3=> roughly(zout[3],atol=1e-5)
 
-end
+# end
 
 
 
@@ -536,7 +550,7 @@ facts("test integration of vbar: getting EV") do
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-2))
 
-			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
+			Gs = m.gridsXD["Gs"][:,:,it]
 
 			# calling integrateVbar must return vbar.
 			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,m,p)
@@ -575,7 +589,7 @@ facts("test integration of vbar: getting EV") do
 			ij   = rand(1:p.nJ)
 			it   = rand(1:(p.nt-2))
 
-			Gs = squeeze(m.gridsXD["Gs"][:,:,it],3)
+			Gs = m.gridsXD["Gs"][:,:,it]
 
 			# calling integrateVbar must return vbar.
 			mig.integrateVbar!(iz,iy,ip,is,it,Gz,Gyp,Gs,m,p)
@@ -597,7 +611,7 @@ facts("test integration of vbar: getting EV") do
 
 		Gz = m.gridsXD["Gz"]
 		Gyp = m.gridsXD["Gyp"]
-		Gs = squeeze(m.gridsXD["Gs"][:,:,age],3)
+		Gs = m.gridsXD["Gs"][:,:,age]
 
 		for ij=1:p.nJ				# current location
 		for ih=1:p.nh

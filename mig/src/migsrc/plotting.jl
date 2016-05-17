@@ -3,7 +3,6 @@
 
 # mig module plotting functions
 
-using PyPlot
 
 
 function vhplot(m::Model,p::Param,idx)
@@ -30,29 +29,29 @@ function vhplot(m::Model,p::Param,idx)
 	a22 = copy(m.grids["assets"])
 
 	# current renter
-	vh11   = m.vh  [1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	vh12   = m.vh  [2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	sh11   = m.sh  [1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	sh12   = m.sh  [2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	ch11   = m.ch  [1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	ch12   = m.ch  [2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	vh11   = m.vh[1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	vh12   = m.vh[2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	sh11   = m.sh[1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	sh12   = m.sh[2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	ch11   = m.ch[1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	ch12   = m.ch[2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
 	cash11 = m.cash[1,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
 	cash12 = m.cash[2,ik,is,iz,iy,ip,itau,:,1,ij,it][:]
 	# current owner
-	vh21   = m.vh  [1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	vh22   = m.vh  [2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	ch21   = m.ch  [1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	ch22   = m.ch  [2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	sh21   = m.sh  [1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	sh22   = m.sh  [2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	vh21   = m.vh[1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	vh22   = m.vh[2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	ch21   = m.ch[1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	ch22   = m.ch[2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	sh21   = m.sh[1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	sh22   = m.sh[2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
 	cash21 = m.cash[1,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
 	cash22 = m.cash[2,ik,is,iz,iy,ip,itau,:,2,ij,it][:]
 
 	# envelopes, i.e. v = max(vh[1],vh[2])
-	v1 = m.v    [ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	v2 = m.v    [ik,is,iz,iy,ip,itau,:,2,ij,it][:]
-	h1 = m.dh   [ik,is,iz,iy,ip,itau,:,1,ij,it][:]
-	h2 = m.dh   [ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	v1 = m.v[ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	v2 = m.v[ik,is,iz,iy,ip,itau,:,2,ij,it][:]
+	h1 = m.dh[ik,is,iz,iy,ip,itau,:,1,ij,it][:]
+	h2 = m.dh[ik,is,iz,iy,ip,itau,:,2,ij,it][:]
 	rho1 = m.rho[ik,is,iz,iy,ip,itau,:,1,ij,it][:]
 	rho2 = m.rho[ik,is,iz,iy,ip,itau,:,2,ij,it][:]
 
@@ -259,7 +258,7 @@ function simplot(sim::DataFrame,n::Int)
 
 	# choose n random individs
 	# get real random numbers
-	srand(int(time()))
+	srand(round(Integer,time()))
 
 	nr = sample(unique(sim[:id]),n)
 

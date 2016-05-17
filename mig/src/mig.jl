@@ -1,6 +1,6 @@
 module mig
 
-using GLM, MOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, HDF5
+using GLM, MOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, HDF5, PyPlot
 using JSON , Copulas, Debug
 import Base.show, Base.convert, Base.print, Base.get
 
@@ -19,10 +19,7 @@ include("migsrc/simulator.jl")
 # include("migsrc/experiments.jl")
 include("migsrc/reporting.jl")
 
-# if Sys.OS_NAME == :Darwin
-# 	include("migsrc/plotting.jl")
-# 	# using Gadfly
-# end
+include("migsrc/plotting.jl")
 
 end
 
