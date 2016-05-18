@@ -1,8 +1,7 @@
 module test_accelerator
 
 
-using mig
-using FactCheck
+using mig, FactCheck
 
 
 facts("testing searchsorted1step") do

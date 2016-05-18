@@ -16,7 +16,7 @@ include("migsrc/mig-incl.jl")
 # include("migsrc/E_tensors.jl")
 include("migsrc/solver.jl")
 include("migsrc/simulator.jl")
-# include("migsrc/experiments.jl")
+include("migsrc/experiments.jl")
 include("migsrc/reporting.jl")
 
 include("migsrc/plotting.jl")

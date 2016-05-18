@@ -16,11 +16,10 @@ facts("checking some properties of the solution") do
 
 	context("test the range of outputs from final value") do
 
-		mval = p.omega1 + p.omega2 * log(maximum(m.grids["assets"]) + maximum(m.gridsXD["p"]) )
+		mval = p.omega1 * p.imgamma * exp( p.mgamma * log(maximum(m.grids["assets"]) + maximum(m.gridsXD["p"]) ) ) + p.omega2
 		
 		@fact minimum(m.EVfinal) => p.myNA
 		@fact maximum(m.EVfinal) => roughly(mval)
-		@fact all(m.EVfinal[1:(m.aone-1),:,:,:] .== p.myNA) => true
 
 	end
 

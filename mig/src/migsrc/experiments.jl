@@ -6,7 +6,7 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which::String,region::Int,year::Int)
+function runExperiment(which::AbstractString,region::Int,year::Int)
 
 	# unneccesary?
 	# home = ENV["HOME"]
@@ -52,7 +52,7 @@ function runExperiment(which::String,region::Int,year::Int)
 
 end
 
-function selectPolicy(which::String,j::Int,shockYear::Int,p::Param)
+function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param)
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"
@@ -295,7 +295,7 @@ function exp_changeMC(which)
 
 	# find welfare
 	# measure welfare net of moving cost
-	opts = ["policy" => which, "noMove" => true]
+	opts = Dict("policy" => which, "noMove" => true)
 
 	println("finding ctax.")
 	ctax = findctax(w0[1][1],opts)
@@ -321,7 +321,7 @@ function exp_changeMC(which)
 	# writetable(joinpath(outdir,"exp_$which","own_mv.csv"),agg_own_age)
 
 
-	out = ["move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax]
+	out = Dict("move"=>agg_mv,"move_age"=>agg_own_age,"own"=>agg_own,"ctax" => ctax)
 	return out
 end
 
@@ -381,7 +381,7 @@ function findctax(v0::Float64,opts::Dict)
 end
 
 # collect some sim output from policies
-function policyOutput(df::DataFrame,pol::ASCIIString)
+function policyOutput(df::DataFrame,pol::AbstractString)
 	# subset to estimation sample: 1997 - 2012
 	sim_sample = @where(df,(:year.>1997) )
 	fullw = WeightVec(array(sim_sample[:density]))
@@ -490,14 +490,16 @@ function exp_Mortgage(ctax=false)
 	@assert all(abs(array(@select(Tot_tax_age,s1 = sum(N_T.*:redist1),s2=sum(N_T.*:redist2),s3 = sum(N_T.*:redist3))) .- Tot_tax) .< 1e-8)
 
 	# get expected net present value of subsidy conditional on age.
+	npv_at_age = 
 	x = @linq sim_T |>
-		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage)|>
-		@by(:realage, npv_at_age = mean(:npv_at_age))
+		by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage)|>
+		by(:realage, npv_at_age = mean(:npv_at_age))
+
 	Tot_tax_age = join(Tot_tax_age,x,on=:realage)
 
 	npv_age_income = @linq sim_T |>
 		@transform(ybin = cut(:income,round(quantile(:income,[1 : (5- 1)] / 5))))|>
-		@by(:id,npv_at_age = mig.npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)|>
+		@by(:id,npv_at_age = npv(:subsidy,p.R-1),realage=:realage,ybin=:ybin)|>
 		@by([:realage,:ybin], npv_at_age = mean(:npv_at_age))
 
 	Redist2 = array(Tot_tax_age[:redist2])
@@ -598,7 +600,7 @@ function exp_Mortgage(ctax=false)
 	# model under redistribution policy 3: per capita redistribution
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy","redistribute" => Redist3 ,"verbose"=>0]
+	opts = Dict("policy" => "mortgageSubsidy","redistribute" => Redist3 ,"verbose"=>0)
 
 	# utility equalizing consumption scaling:
 	if ctax
@@ -622,7 +624,7 @@ function exp_Mortgage(ctax=false)
 	# 5% comes from http://kamilasommer.net/Taxes.pdf
 	# -----------------------------------------------------------------
 
-	opts = ["policy" => "mortgageSubsidy_padjust","redistribute" => Redist3 ,"verbose"=>0,"shockVal"=>[0.95]]
+	opts = Dict("policy" => "mortgageSubsidy_padjust","redistribute" => Redist3 ,"verbose"=>0,"shockVal"=>[0.95])
 
 	# utility equalizing consumption scaling:
 	if ctax
@@ -654,7 +656,7 @@ function exp_Mortgage(ctax=false)
 	bp[bp[:a].!=0.0,:da] = 100.*(bp[bp[:a].!=0.0,:a_pol] .- bp[bp[:a].!=0.0,:a])./ bp[bp[:a].!=0.0,:a] 
 
 	welf_age = @linq bp|>
-		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))|>
+		@where((:pv .< quantile(:pv,0.95)) & (:pv .> quantile(:pv,0.01)))
 
 
 	welf_age_ybin = @linq bp|>
@@ -725,7 +727,7 @@ function exp_Mortgage(ctax=false)
 		d["p_move"][k] = 100 * (v - d["move"]["base"]) / d["move"]["base"]
 	end
 	if ctax
-		d["delta"] = ["base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum]
+		d["delta"] = Dict("base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum)
 	end
 
 	indir, outdir = mig.setPaths()
@@ -793,6 +795,7 @@ function pshock_highMC_cdiff()
 	pmv_id = @linq p |>
 		@where((:year.>2006)&(:move)&(:j.==6)) |>
 		@select(id=unique(:id))
+
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 
 	pmv2 = @linq pmv |>
@@ -820,7 +823,7 @@ function decompose_MC_owners()
 
 	# no owner MC
     # alpha_3 = 0
-	p1 = Dict{ASCIIString,Float64}()
+	p1 = Dict{AbstractString,Float64}()
 	p1["MC3"] = 0.0
 	s1 = runObj(false,p1)
 	s1 = s1["moments"]
@@ -839,13 +842,13 @@ function decompose_MC_owners()
     pfun(x,y) = 100 * (x-y) / y
 
     d = Dict()
-    d["own"] = ["base" => s0[:mean_own][1], "alpha" => s1[:mean_own][1], "phi" => s3[:mean_own][1], "alpha_phi" => s2[:mean_own][1]]
+    d["own"] = Dict("base" => s0[:mean_own][1], "alpha" => s1[:mean_own][1], "phi" => s3[:mean_own][1], "alpha_phi" => s2[:mean_own][1])
 
-    d["move"] = ["base" => pfun(s0[:mean_move][1],s0[:mean_move][1]), "alpha" => pfun(s1[:mean_move][1],s0[:mean_move][1]), "phi" => pfun(s3[:mean_move][1],s0[:mean_move][1]), "alpha_phi" => pfun(s2[:mean_move][1],s0[:mean_move][1])]
+    d["move"] = Dict("base" => pfun(s0[:mean_move][1],s0[:mean_move][1]), "alpha" => pfun(s1[:mean_move][1],s0[:mean_move][1]), "phi" => pfun(s3[:mean_move][1],s0[:mean_move][1]), "alpha_phi" => pfun(s2[:mean_move][1],s0[:mean_move][1]))
 
-    d["move_rent"] = ["base" => pfun(s0[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha" => pfun(s1[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "phi" => pfun(s3[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1])]
+    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha" => pfun(s1[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "phi" => pfun(s3[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]))
    
-    d["move_own"] = ["base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1])]
+    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]))
 
     indir, outdir = mig.setPaths()
     f = open(joinpath(outdir,"decompose_MC_owners.json"),"w")
@@ -884,7 +887,7 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
 	println("current ctax = $ctax")
 
 	# model where moving is shut down in region j
-	opts = ["policy" => "highMC", "shockRegion" => j]
+	opts = Dict("policy" => "highMC", "shockRegion" => j)
 	p2 = Param(2,opts)
 	setfield!(p2,:ctax,ctax)
 	m2 = Model(p2)
@@ -909,7 +912,7 @@ function exp_value_mig_base(j::Int,allj=false)
 	# baseline model
 
 	if allj
-		opts = ["policy" => "all_j", "shockRegion" => j]
+		opts = Dict("policy" => "all_j", "shockRegion" => j)
 		p = Param(2,opts)
 	else
 		p = Param(2)
@@ -925,7 +928,7 @@ function exp_value_mig_base(j::Int,allj=false)
 	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
 
 	# model where moving is shut down in region j
-	opts = ["policy" => "highMC", "shockRegion" => j]
+	opts = Dict("policy" => "highMC", "shockRegion" => j)
 	p2 = Param(2,opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
@@ -958,8 +961,8 @@ function exp_value_mig_base(j::Int,allj=false)
 
 
     # total flows across regims
-    flows = getFlowStats(["base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)],"null")
-    f2 = Dict( k => flows[k][j] for k in keys(flows))
+    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),"null")
+    f2 = [ k => flows[k][j]  for k in keys(flows) ]
 
     flows = Dict()
     flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
@@ -1081,7 +1084,7 @@ function exp_value_mig_base(j::Int,allj=false)
 	d=Dict()
 	ss = "noMove"
 	d["EV"] = Dict()
-	d["EV"] = ["base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] ]
+	d["EV"] = Dict("base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] )
 	d["flows"] = flows
 	d["movers"] = movers
 
@@ -1109,7 +1112,7 @@ end
 
 # compares pshock with pshcock_highMC
 # ss = {"pshock","yshock"}
-function exp_value_mig(ss::ASCIIString,j::Int,yr::Int)
+function exp_value_mig(ss::AbstractString,j::Int,yr::Int)
 
 	par = Param(2)
 	opts = selectPolicy(ss,j,yr,par)
@@ -1249,7 +1252,7 @@ end
 # get the consumption subsidy that makes
 # you indifferent from living through the shock 
 # in j with a policy applied (i.e. no moving, no saving, no)
-function exp_shockRegion_vdiff(which_base::ASCIIString,which_pol::ASCIIString)
+function exp_shockRegion_vdiff(which_base::AbstractString,which_pol::AbstractString)
 
 	# w0 = value of living in shock region from shockYear forward
 	# w1 = value of living in shock region from shockYear forward UNDER POLICY
@@ -1394,7 +1397,7 @@ function exp_shockRegion(opts::Dict)
 
 
 	# get flows for each region
-	d = Dict{ASCIIString,DataFrame}()
+	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
 	flows = getFlowStats(d,string(which,j))
@@ -1472,7 +1475,7 @@ function exp_shockRegion(opts::Dict)
 	return (out,sim0,sim1)
 end
 
-function read_exp_shockRegion(f::ASCIIString)
+function read_exp_shockRegion(f::AbstractString)
 	d = JSON.parsefile(f)
 
 	pth = replace(f,".json","")
@@ -1639,7 +1642,7 @@ function moneyMC()
 
 	zs = m.gridsXD["zsupp"][:,1]
 	# make an out dict
-	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum], "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
+	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum, "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
 
 	indir, outdir = mig.setPaths()
 	f = open(joinpath(outdir,"moneyMC.json"),"w")
@@ -1680,83 +1683,90 @@ function noShocks()
 end
 
 
-# run Model with only small deviations from aggregate
-# function smallShocks()
-
-# 	p = Param(2)
-# 	m = Model(p)
-# 	solve!(m,p)
-# 	s = simulate(m,p)
-# 	s = @where(s,(!isna(:cohort) & (:year.>1996)))
-# 	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
-
-# 	opts=Dict()
-# 	opts["policy"] = "smallShocks"
-
-# 	p1 = Param(2,opts)
-# 	m1 = Model(p1)
-# 	solve!(m1,p1)
-# 	s1 = simulate(m1,p1)
-# 	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
-# 	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
-
-# 	# make several out dicts
-# 	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
-# 	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
-# 	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
-# 	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
-# 	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
-# 	y_s = @by(s1,:Division,p2y=mean(:p2y))
-
-# 	# get percent difference in moveto distribution
-# 	out = Dict()
-# 	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
-
-# 	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
-
-# 	# summaries
-# 	summa = Dict()
-
-# 	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
-# 	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
-# 	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
-
-# 	out["summary"] = summa
-
-# 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
-# 	JSON.print(f,out)
-# 	close(f)
-
-# 	return (s,s1,out)
-
-# end
 
 
 
 
-# # run model without the ability to save!
-# function exp_noSavings()
+# # archive
 
-# 	p = Param(2)
-# 	m = Model(p)
-# 	solve!(m,p)
-# 	s = simulate(m,p)
-# 	w0 = getDiscountedValue(s,p,m,false)
-# 	mms = computeMoments(s,p,m)	
 
-# 	opts=Dict()
-# 	opts["policy"] = "noSaving"
+# # run Model with only small deviations from aggregate
+# # function smallShocks()
 
-# 	p1 = Param(2,opts)
-# 	m1 = Model(p1)
-# 	solve!(m1,p1)
-# 	s1 = simulate(m1,p1)
-# 	w1 = getDiscountedValue(s1,p1,m1,false)
-# 	mms1 = computeMoments(s1,p1,m1)	
+# # 	p = Param(2)
+# # 	m = Model(p)
+# # 	solve!(m,p)
+# # 	s = simulate(m,p)
+# # 	s = @where(s,(!isna(:cohort) & (:year.>1996)))
+# # 	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-# 	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+# # 	opts=Dict()
+# # 	opts["policy"] = "smallShocks"
 
-# 	return d
-# end
+# # 	p1 = Param(2,opts)
+# # 	m1 = Model(p1)
+# # 	solve!(m1,p1)
+# # 	s1 = simulate(m1,p1)
+# # 	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
+# # 	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
+
+# # 	# make several out dicts
+# # 	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
+# # 	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
+# # 	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
+# # 	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
+# # 	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
+# # 	y_s = @by(s1,:Division,p2y=mean(:p2y))
+
+# # 	# get percent difference in moveto distribution
+# # 	out = Dict()
+# # 	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
+
+# # 	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
+
+# # 	# summaries
+# # 	summa = Dict()
+
+# # 	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
+# # 	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
+# # 	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
+
+# # 	out["summary"] = summa
+
+# # 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
+# # 	JSON.print(f,out)
+# # 	close(f)
+
+# # 	return (s,s1,out)
+
+# # end
+
+
+
+
+# # # run model without the ability to save!
+# # function exp_noSavings()
+
+# # 	p = Param(2)
+# # 	m = Model(p)
+# # 	solve!(m,p)
+# # 	s = simulate(m,p)
+# # 	w0 = getDiscountedValue(s,p,m,false)
+# # 	mms = computeMoments(s,p,m)	
+
+# # 	opts=Dict()
+# # 	opts["policy"] = "noSaving"
+
+# # 	p1 = Param(2,opts)
+# # 	m1 = Model(p1)
+# # 	solve!(m1,p1)
+# # 	s1 = simulate(m1,p1)
+# # 	w1 = getDiscountedValue(s1,p1,m1,false)
+# # 	mms1 = computeMoments(s1,p1,m1)	
+
+# # 	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+
+# # 	return d
+# # end
 
 

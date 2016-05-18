@@ -8,13 +8,21 @@ using FactCheck, mig
 
 facts("test updating of param vector") do
 
-	p = mig.Param(1);
+	context("standard") do
+		p = mig.Param(1);
 
-	di = ["beta" => 1.4, "omega2" => 34.2]
-	mig.update!(p,di)
+		di = Dict("beta" => 1.4, "omega2" => 34.2)
+		mig.update!(p,di)
 
-	@fact p.beta => di["beta"]
-	@fact p.omega2 => di["omega2"]
+		@fact p.beta => di["beta"]
+		@fact p.omega2 => di["omega2"]
+	end
+
+	context("size 2") do
+		p = mig.Param(2);
+		@fact p.omega2 --> not(0)
+
+	end
 
 
 end

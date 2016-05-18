@@ -37,9 +37,9 @@ facts("testing fill_interp_arrays") do
 			end
 		end
 	end
-	L = Dict{ASCIIString,mig.lininterp}()
-	L["l_vcs"] = mig.lininterp(vcs_arr,gs)
-	L["l_rho"] = mig.lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,mig.Lininterp}()
+	L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
+	L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
 	# random discrete state
 	is = rand(1:p.ns)
@@ -108,9 +108,9 @@ facts("testing get_rho_ktmp") do
 			end
 		end
 	end
-	L = Dict{ASCIIString,mig.lininterp}()
-	L["l_vcs"] = mig.lininterp(vcs_arr,gs)
-	L["l_rho"] = mig.lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,mig.Lininterp}()
+	L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
+	L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
 	# random discrete state
 	is = rand(1:p.ns)
@@ -173,9 +173,9 @@ facts("testing get_vcs") do
 			end
 		end
 	end
-	L = Dict{ASCIIString,mig.lininterp}()
-	L["l_vcs"] = mig.lininterp(vcs_arr,gs)
-	L["l_rho"] = mig.lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,mig.Lininterp}()
+	L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
+	L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
 	# random discrete state
 	is = rand(1:p.ns)
@@ -333,9 +333,9 @@ facts("testing get_v1v2") do
 			end
 		end
 	end
-	L = Dict{ASCIIString,mig.lininterp}()
-	L["l_vcs"] = mig.lininterp(vcs_arr,gs)
-	L["l_rho"] = mig.lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,mig.Lininterp}()
+	L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
+	L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
 	# random discrete state
 	is = rand(1:p.ns)
@@ -395,9 +395,9 @@ facts("testing get_cs") do
 			end
 		end
 	end
-	L = Dict{ASCIIString,mig.lininterp}()
-	L["l_vcs"] = mig.lininterp(vcs_arr,gs)
-	L["l_rho"] = mig.lininterp(rho_arr,gs)
+	L = Dict{ASCIIString,mig.Lininterp}()
+	L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
+	L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
 	# random discrete state
 	is = rand(1:p.ns)
