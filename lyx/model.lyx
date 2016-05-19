@@ -1,5 +1,5 @@
 #LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 506
+\lyxformat 508
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -2463,7 +2463,7 @@ This setup implies that owners will choose a savings path contingent on
 \end_inset
 
 , such that they can satisfy the final period constraint.
- The setup is formally defined in subsections 
+ Subsections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:Budget-stayers"
@@ -2477,7 +2477,7 @@ reference "subsec:Budget-movers"
 
 \end_inset
 
- which describe the budget constraints.
+ below describe the budget constraints in greater detail.
 \end_layout
 
 \begin_layout Subsection
@@ -2556,7 +2556,6 @@ reference "eq:moving-cost"
 \end_inset
 
 .
- 
 \end_layout
 
 \begin_layout Standard
@@ -2799,7 +2798,7 @@ given the state, compute optimal behaviour in all
 \end_inset
 
  regions, i.e.
-\begin_inset Separator parbreak
+\begin_inset Separator latexpar
 \end_inset
 
 
