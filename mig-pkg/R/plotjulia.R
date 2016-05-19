@@ -688,17 +688,11 @@ plot.simulation <- function(){
 
 
 # export data to julia
-Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
+Export.Julia <- function(writedisk=TRUE){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
 	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
 
-	if (!is.null(print.tabs)){
-		cat(sprintf("printing tables to %s",print.tabs))
-	}
-	if (!is.null(print.plots)){
-		cat(sprintf("printing tables to %s",print.plots))
-	}
 
 	# subset age
 	sub = merged[,age>=20 & age <= 53]
@@ -708,12 +702,13 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	agedist = data.frame(realage=20:52,density=hi$density)
 
 	# regional processes for p and y
-	reg <- Export.VAR()
+	reg <- Export.VAR(writedisk=writedisk)
 
 	# individual income processes by region
-	ind <- Export.IncomeProcess(merged)
+	ind <- Export.IncomeProcess(merged,writedisk)
 	
 	# stayer's copula
+	# commented out because takes some time
 	# cops <- Sipp.wage_residual_copulas()
 
 	# mover's copula
@@ -769,16 +764,6 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	rm(merged,des)
 	gc()
 
-
-	# write to disk
-    # save(mcoppars,file=file.path(path,"mcopula.rda"))	
-	save(par_df,file=file.path(path,"par_df.rda"))
-	save(agedist,file=file.path(path,"agedist.rda"))
-	save(dist,file=file.path(path,"distance.rda"))
-	save(m,file=file.path(path,"moments.rda"))
-	save(kids_trans,file=file.path(path,"kidstrans.rda"))
-	save(prop,file=file.path(path,"prop.rda"))
-
 	VAR_agg   <- as.data.frame(reg$Agg_coefs)
 	VAR_reg   <- reg$Agg2Region_coefs
 	z         <- ind$ztab
@@ -789,13 +774,26 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 	sigma_agg$row <- rownames(sigma_agg)
 	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
 	z         <- z[order(z$Division), ]
-	save(sigma_agg,file=file.path(path,"sigma_agg.rda"))
-	save(VAR_agg,file=file.path(path,"VAR_agg.rda"))
-	save(PYdata,file=file.path(path,"PYdata.rda"))
-	save(pred_y,file=file.path(path,"pred_y.rda"))
-	save(pred_p,file=file.path(path,"pred_p.rda"))
-	save(VAR_reg,file=file.path(path,"VAR_reg.rda"))
-	save(z,file=file.path(path,"ztable.rda"))
+
+	if (writedisk) {
+		# write to disk
+	    # save(mcoppars,file=file.path(path,"mcopula.rda"))	
+		save(par_df,file=file.path(path,"par_df.rda"))
+		save(agedist,file=file.path(path,"agedist.rda"))
+		save(dist,file=file.path(path,"distance.rda"))
+		save(m,file=file.path(path,"moments.rda"))
+		save(kids_trans,file=file.path(path,"kidstrans.rda"))
+		save(prop,file=file.path(path,"prop.rda"))
+
+		save(sigma_agg,file=file.path(path,"sigma_agg.rda"))
+		save(VAR_agg,file=file.path(path,"VAR_agg.rda"))
+		save(PYdata,file=file.path(path,"PYdata.rda"))
+		save(pred_y,file=file.path(path,"pred_y.rda"))
+		save(pred_p,file=file.path(path,"pred_p.rda"))
+		save(VAR_reg,file=file.path(path,"VAR_reg.rda"))
+		save(z,file=file.path(path,"ztable.rda"))
+
+	}
 
 	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg,pred_y=pred_y,pred_p=pred_p))
 
@@ -803,7 +801,7 @@ Export.Julia <- function(print.tabs=NULL,print.plots=NULL){
 
 
 
-Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
+Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",writedisk){
 
 	# data(sipp_psid,envir=environment())
 	data(BEA_fhfa,envir=environment())
@@ -836,7 +834,9 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
 
 	# print model
-	texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE,custom.model.names=c("$Y_t$","$P_t$"),custom.coef.names=c("Intercept","$Y_{t-1}$","$P_{t-1}$"))
+	if (writedisk){
+		texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE,custom.model.names=c("$Y_t$","$P_t$"),custom.coef.names=c("Intercept","$Y_{t-1}$","$P_{t-1}$"))
+	}
 
 	# export coefficients as table
 	aggcoefs <- as.data.frame(coef(aggmod))
@@ -896,8 +896,10 @@ Export.VAR <- function(plotpath="~/Dropbox/mobility/output/data/sipp"){
 	names(mods) = divs
 
 	# pritn models
-	texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
-	texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+	if (writedisk){
+		texreg(mods[1:4],custom.model.names=paste(rep(divs[1:4],each=2),rep(c("Y","P"),4)),file=file.path(plotpath,"VAR1.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+		texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
+	}
 
 	# predict 
 	pyagg[,yhat := 0]
@@ -1215,7 +1217,7 @@ plot.PriceVAR <- function(){
 	py_pred = melt(py_pred[,list(year,Division,p,predicted_p)],c("year","Division"))
 	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 	pl = ggplot(py_pred,aes(x=year,y=value,color=Division)) + geom_line(size=0.9) + facet_wrap(~variable) + theme_bw() + scale_y_continuous("2012 dollars (1000s)") + ggtitle("Regional Price Time Series: Model vs Data") + scale_color_manual(values=cbPalette)
-	ggsave(pl,file="~/Dropbox/mobility/output/model/fit/VAR_data_model.pdf",width=8,height=6)
+	ggsave(pl,file="~/Dropbox/research/mobility/output/model/fit/VAR_data_model.pdf",width=8,height=6)
 
 	# same with income
 	predy = melt(x$pred_y,c("year"))
@@ -1226,7 +1228,7 @@ plot.PriceVAR <- function(){
 	py_pred = py[predy]
 	py_pred = melt(py_pred[,list(year,Division,y,predicted_y)],c("year","Division"))
 	pl = ggplot(py_pred,aes(x=year,y=value,color=Division)) + geom_line(size=0.9) + facet_wrap(~variable) + theme_bw() + scale_y_continuous("2012 dollars (1000s)") + ggtitle("Regional Per Capita GDP Time Series: Model vs Data") + scale_color_manual(values=cbPalette)
-	ggsave(pl,file="~/Dropbox/mobility/output/model/fit/VAR_data_model_y.pdf",width=8,height=6)
+	ggsave(pl,file="~/Dropbox/research/mobility/output/model/fit/VAR_data_model_y.pdf",width=8,height=6)
 
 }
 
@@ -1235,7 +1237,7 @@ plot.dataP2Y <- function(){
 	data(BEA_fhfa,envir=environment())
 	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 	ggplot(py,aes(x=year,y=p/y,color=Division)) + geom_line(size=0.9) + theme_bw() + ggtitle("Price to Income Ratios") + scale_color_manual(values=cbPalette)
-	ggsave(pl,file="~/Dropbox/mobility/output/data/census/P2Y.pdf",width=6,height=5)
+	ggsave(pl,file="~/Dropbox/research/mobility/output/data/census/P2Y.pdf",width=6,height=5)
 
 }
 
@@ -1252,7 +1254,7 @@ plot.dataP2Y <- function(){
 #' by census division. 
 #'
 #' exports coefficients to julia
-Export.IncomeProcess <- function(dat){
+Export.IncomeProcess <- function(dat,writedisk){
 
 	
 	# cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
@@ -1275,14 +1277,16 @@ Export.IncomeProcess <- function(dat){
 	# TODO change this!!!!
 	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
 	cnames = coef(lmod)
-	texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+	if (writedisk){
+		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+	}
 
 	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
 	x=cbind(newdat,exp(predict(lmod,newdat)))
 	x$meany = paste0("$\\overline{y}_{dt}=",x$CensusMedinc,"$")
 	names(x)[4] = "predict"
 
-	tikz("~/Dropbox/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
+	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
 	ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
 	dev.off()
 

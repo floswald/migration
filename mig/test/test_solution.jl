@@ -6,7 +6,7 @@ using FactCheck, mig
 
 
 
-facts("checking some properties of the solution") do
+facts("checking some properties of the solution.") do
 
 	p = Param(2)
 	m = Model(p)

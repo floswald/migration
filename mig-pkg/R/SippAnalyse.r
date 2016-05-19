@@ -74,6 +74,24 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	# moments relating to mobility
 	# ============================
 
+	# transition matrix
+	# unconditional disritubiont point estimate of proportions
+	tra = d[D2D==TRUE,table(fromD,toD)]
+	tra_cond = prop.table(tra) 
+	tra_alpha = 0.05
+	tra_ci = multinomialCI(tra,tra_alpha)
+	tra_sd = matrix(0,nrow=nrow(tra),ncol=ncol(tra))
+	for (i in 1:length(tra)){
+	  tra_sd[i] =  (tra_cond[i] - tra_ci[i,1]) / qnorm(1-tra_alpha/2)
+	}
+	
+	# get fraction of all movers that go to each region on average
+	tracond = rowSums(prop.table(tra))
+	tracond_sd = rowSums(tra_sd)
+	stopifnot(sum(tracond)==1)
+	r$proportion_movers <- data.table(moment = paste0("flow_move_to_",names(tracond)), data_value = tracond,data_sd=tracond_sd)
+
+
 	# linear prob model move ~ age
 	# ----------------------------
 
@@ -547,6 +565,14 @@ ownership_rates_macro_data <- function(){
 	d[,p2y := p / y]
 	
 
+}
+
+# joint distribution of bilateral moves
+# unconditional
+Sipp.TransitionMatrix <- function(path = "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"){
+	data(Sipp_age,envir=environment())
+	tra = merged[D2D==TRUE,prop.table(table(fromD,toD))]
+	write.table(tra,file.path(path,"transmat."))
 }
 
 

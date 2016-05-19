@@ -59,9 +59,9 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param)
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
-		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])])
+		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock3"
-		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7,0.8,0.9,repeat([1.0],inner=[1],outer=[p.nt-3])])
+		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock"
 		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1]))
 
