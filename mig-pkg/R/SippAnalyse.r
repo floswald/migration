@@ -98,7 +98,9 @@ Sipp.moments <- function(d,svy,ages=c(20,50)){
 	mv_reg = summary(svyglm(D2D ~ age + age2 ,svy))
 	nms = paste0("lm_mv_",rownames(mv_reg$coefficients))
 	nms = gsub("\\(|\\)","",nms)
+	print(nms)
 	r$mv_rate_reg = data.table(moment=nms,data_value=mv_reg$coefficients[,"Estimate"],data_sd=mv_reg$coefficients[,"Std. Error"])
+	print(r$mv_rate_reg)
 
 	# number of moves per household as percentage of population
 	nmoves = d[,list(moves=sum(D2D,na.rm=T),HHweight),by=upid]

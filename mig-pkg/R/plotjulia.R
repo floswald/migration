@@ -1278,7 +1278,7 @@ Export.IncomeProcess <- function(dat,writedisk){
 	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
 	cnames = coef(lmod)
 	if (writedisk){
-		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
 	}
 
 	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
