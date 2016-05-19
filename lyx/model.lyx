@@ -2491,11 +2491,11 @@ Moving Costs.
 \begin_layout Standard
 Moving across locations is assumed to be costly in terms of utility.
  Denote 
-\begin_inset Formula $\Delta(d,x)$
+\begin_inset Formula $\Delta(d',x)$
 \end_inset
 
- the utility costs of moving from 
-\begin_inset Formula $d$
+ the utility costs of moving to 
+\begin_inset Formula $d'$
 \end_inset
 
  at a current value of the state vector 
@@ -2515,7 +2515,7 @@ Moving across locations is assumed to be costly in terms of utility.
 :
 \begin_inset Formula 
 \begin{equation}
-\Delta(d,x)=\alpha_{0,\tau}+\alpha_{1}t_{it}+\alpha_{2}t_{it}^{2}+\alpha_{3}h_{it-1}+\alpha_{4}s_{it}\label{eq:moving-cost}
+\Delta(d',x)=\alpha_{0,\tau}+\alpha_{1}t_{it}+\alpha_{2}t_{it}^{2}+\alpha_{3}h_{it-1}+\alpha_{4}s_{it}+\alpha_{5}\text{dist}(d,d')\label{eq:moving-cost}
 \end{equation}
 
 \end_inset
@@ -2547,7 +2547,7 @@ reference "eq:moving-cost"
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
- measures the additional moving cost for owners, and 
+ measures the additional moving cost for owners, 
 \begin_inset Formula $\alpha_{4}$
 \end_inset
 
@@ -2555,7 +2555,12 @@ reference "eq:moving-cost"
 \begin_inset Formula $s_{it}$
 \end_inset
 
-.
+, and 
+\begin_inset Formula $\alpha_{5}$
+\end_inset
+
+ is the marginal effect of distance moved (km).
+ 
 \end_layout
 
 \begin_layout Standard
