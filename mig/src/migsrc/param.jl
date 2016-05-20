@@ -33,6 +33,7 @@ type Param
 	beta   :: Float64			# discount factor
 	kappa  :: Array{Float64,1} # rent to price ratio in each region
 	phi    :: Float64		  # fixed cost of selling
+	iota   :: Float64		# default penalty: proportion of income lost when defaulting on mortgage
 
 	R      :: Float64 	# gross interest rate savings: 1+r
 	Rm     :: Float64 	# gross interest rate mortgage: 1+rm
@@ -40,7 +41,7 @@ type Param
 	myNA   :: Float64
 	maxAge :: Int 	# maximal age in model
 	minAge :: Int 	# maximal age in model
-	ages   :: UnitRange{Int} 	# maximal age in model
+	ages   :: UnitRange{Int} 	# ages in model
 	euler  :: Float64
 	sscale :: Float64
 
@@ -61,6 +62,7 @@ type Param
 	namax :: Int 	# number of asset points
 	nz    :: Int 	# number of inidividual income states
 	nh    :: Int 	# number of housing states
+	nhh   :: Int 	# number of next period housing states (rent, own, default)
 	nt    :: Int 	# number of periods
 	ntau  :: Int 	# number of types
 	nJ    :: Int 	# number of locations
@@ -82,6 +84,7 @@ type Param
 			namax  = 10
 			nz    = 3
 			nh    = 2
+			nhh   = nh + 1
 			ntau  = 2
 			np    = 2
 			ny    = 2
@@ -95,6 +98,7 @@ type Param
 			namax = 21
 			nz    = 4
 			nh    = 2
+			nhh   = nh + 1
 			ntau  = 2
 			np    = 3
 			ny    = 3
@@ -127,6 +131,7 @@ type Param
 
 		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
 		phi    = 0.06		  # fixed cost of selling
+		iota   = 0.25		  # default wage penalty
 
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.055 	# gross interest rate mortgage: 1+rm   sommer + sullivan. 
@@ -167,7 +172,7 @@ type Param
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,iota,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nhh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 

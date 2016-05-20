@@ -110,7 +110,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 	# initialise some objects
 
-	vstay = zeros(2)
+	vown = zeros(p.nhh)
 
 	w = zeros(p.namax)
 	EV = zeros(p.na)
@@ -283,12 +283,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 								for ia=first:p.na
 									a_0 = agrid[ia]
 
+									candefault = -a_0 > price_j * (1-p.phi) * ih ? true : false
+
 
 									jidx = idx9(is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 
 									# notice the ih-1+1 here!
 									offset_1 = is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih + p.nh * (ij-1 + p.nJ * (age-1))))))))
-									@assert jidx == offset_1 + 1
+									# @assert jidx == offset_1 + 1
 
 									# =================
 									# loop over choices
@@ -297,8 +299,21 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									fill!(feasible_k,false)
 										
 									for ik=1:p.nJ
+
 									
 										move = ij != ik
+										mc = 0.0
+										if move
+											# find moving cost
+											mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,p)]
+											if p.noMC 
+												mc = 0.0
+											end
+										end
+										# if shut down moving from region ij
+										if highMC && (p.shockReg==ij) && (move)
+											mc = 10000.0
+										end
 
 										offset_k = ik-1 + p.nJ * offset_1
 
@@ -341,17 +356,16 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										m.canbuy[kidx] = canbuy
 
-
 										# you have a housing choice
 										# if
 										# 1) you are current owner who stays, or 
 										# 2) you are current owner who moves and can buy, or
 										# 3) you are current renter who can buy
 
-										if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy))
+										fill!(vown,p.myNA)
+										if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy)) || candefault
 
-											fill!(vstay,p.myNA)
-
+											# next period own or rent
 											for ihh in 0:1
 
 												hidx = ihh+1 + p.nh * offset_k
@@ -371,31 +385,16 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-
 												cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ik,p)
 												m.cash[hidx] = cash
-
-												# find moving cost
-												mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,p)]
-												if p.noMC 
-													mc = 0.0
-												end
-
-												# if shut down moving from region ij
-												if highMC && (p.shockReg==ij) && (ij!=ik)
-													mc = 10000.0
-												end
 
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
-												# # assign to interpolator
-												# setVals
-
 												# optimal savings choice
 												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
 
-												vstay[ihh+1] = rh[1]
+												vown[ihh+1] = rh[1]
 
 												# store save and cons in h-conditional arrays
 												if rh[1] > p.myNA
@@ -415,8 +414,41 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												end
 											end
 
-											# find optimal housing choice
-											r = findmax(vstay)
+											# value of default
+											# ================
+
+											if candefault
+
+												ihh = 0		# next period renter
+												hidx = ihh+3 + p.nh * offset_k   # +3 here to index default
+												fill!(EV,p.myNA)
+												fill!(w,p.myNA)
+												cash = cashFunction(0.0,newz*(1-p.iota),ih,ihh,price_j,price_k,ij!=ik,ik,p)   # CAUTION: zero assets!
+												m.cash[hidx] = cash
+												if highMC && (p.shockReg==ij) && (ij!=ik)
+													mc = 10000.0
+												end
+
+												# find relevant future value:
+												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
+
+												# optimal savings choice
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,0.0,age,acc,noSaving)
+												vown[p.nhh] = rh[1]
+												if rh[1] > p.myNA
+													# m.vfeas[hidx] = true
+													m.vh[hidx] = rh[1] 
+													m.sh[hidx] = rh[2] 
+													m.ch[hidx] = rh[3]
+												else
+													m.sh[hidx] = 0.0
+													m.ch[hidx] = 0.0
+												end
+
+											end
+
+											# max housing choice
+											r = findmax(vown)
 											# and store value, discrete choice idx, savings idx and consumption
 
 											# checking for feasible choices
@@ -429,7 +461,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-										else # you cannot buy
+										else # you have no housing choice: you rent next period
 
 											ihh = 0
 
@@ -446,23 +478,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ij,p)
 											m.cash[hidx] = cash
 
-											# find moving cost
-											mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,	p)]
-											if p.noMC 
-												mc = 0.0
-											end
-
-											# if shut down moving from region ij
-											if highMC && (p.shockReg==ij) && (ij!=ik)
-												mc = 10000.0
-											end
-
 											# find relevant future value:
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
 											# optimal savings choice
 											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
-
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -489,6 +509,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											end
 
 										end # end if stay and houseing choice
+
+
 										# store optimal value in tmp vector
 										# used in vbar calculation
 										if r[1] > p.myNA
@@ -725,9 +747,11 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		x = 0.0
 		# grid for next period assets
 		ub = noSaving ?  0.0 : cash-0.01 
-		s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
-		# however in the interpolation you don't allow s > a[end]
 		cons = zeros(p.namax)
+		s = zeros(p.namax)
+		# s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
+		mylinspace!(s,lb,ub)	# this implies you can save a lot if you have a lot of cash
+		# however in the interpolation you don't allow s > a[end]
 		# fix upper bound of search grid
 		# ub = minimum([cash-0.0001,a[end]])
 		# ub = cash-0.0001 < a[end] ? cash-0.0001 : a[end]
@@ -748,6 +772,16 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		return (r[1],s[r[2]],cons[r[2]])	# (value,saving,consumption)
 	end
 end
+
+function mylinspace!(s::Vector{Float64},lb::Float64,ub::Float64)
+	n = length(s)
+	r = (ub-lb) / (n-1)
+	for i in 0:(n-1)
+		s[i+1] = lb + i * r
+	end
+end
+
+	
 
 
 function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator)

@@ -473,7 +473,7 @@ function simulate(m::Model,p::Param)
 				# 2) you are current owner who moves and can buy
 				# 3) you are current renter who can buy
 
-				if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy))
+				if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy)) # || candefault
 
 					# get housing choice
 					v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
@@ -743,6 +743,16 @@ function get_v1v2(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 	getValue!(out,l,azYP,[1+l_idx1;1+l_idx2])
 	return out
 end
+function get_v1v2v3(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
+
+	out = zeros(3)
+	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
+	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
+	l_idx3  = 3*(ik-1 + p.nJ*(3-1))
+
+	getValue!(out,l,azYP,[1+l_idx1;1+l_idx2;1+l_idx3])
+	return out
+end
 
 #' ..py:function:: get_vcs(l,azYP,ihh,ik,is,itau,ih,ij,age,p,m)
 #' gets vcs (value, consumption, savings) at discrete state (ihh,ik,is,itau,ih,ij,age)
@@ -786,6 +796,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	g_kids = groupby(df, :kids)
 	g_own = groupby(df, :h)
 	g_abin = groupby(df,:agebin)
+	g_id = groupby(df, :id)
 
 	# moments relating to homeownership
 	# =================================
@@ -859,10 +870,11 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# move count
 	# ----------
 
-	movecount=by(df,:id,x -> sum(x[:move]))
-	moved0 = mean(movecount[:x1].==0)
-	moved1 = mean(movecount[:x1].==1)
-	moved2plus = mean(movecount[:x1].>=2)
+	# movecount=by(df,:id,x -> sum(x[:move]))
+	movecount=@based_on(g_id,moves = sum(:move))
+	moved0 = mean(movecount[:moves].==0)
+	moved1 = mean(movecount[:moves].==1)
+	moved2plus = mean(movecount[:moves].>=2)
 
 	# TODO std error
 	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean

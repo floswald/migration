@@ -6,9 +6,9 @@ using FactCheck, mig
 
 
 
-facts("test updating of param vector") do
+facts("Param type.") do
 
-	context("standard") do
+	context("test updating") do
 		p = mig.Param(1);
 
 		di = Dict("beta" => 1.4, "omega2" => 34.2)
@@ -24,10 +24,15 @@ facts("test updating of param vector") do
 
 	end
 
+	context("housing states and sizes") do
+
+		p = mig.Param(2)
+		@fact p.nh --> not(p.nhh)
+		@fact p.nhh --> p.nh + 1
+	end
+
 
 end
-
-
 
 
 end

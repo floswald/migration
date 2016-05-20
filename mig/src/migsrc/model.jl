@@ -8,7 +8,7 @@ type Model
 	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
 	# dimvec  = (nhh, nJ, na, nh, nJ, ntau, ns, np, ny, nz, nt-1 )
 	v     :: Array{Float64,10}
-	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nh, nJ, ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
+	vh    :: Array{Float64,11}	# v of stay cond on hh choice: (nhh, nJ, ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	vfeas :: Array{Bool,1}	# feasibility map
 	sh    :: Array{Float64,11}
 	ch    :: Array{Float64,11}
@@ -84,7 +84,7 @@ type Model
 
 		# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh, nJ, nt-1 )
 		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
-		dimvecH = (p.nh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+		dimvecH = (p.nhh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
 		dimvec2 = (p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1)
 
 		v = fill(p.myNA,dimvec)
@@ -92,8 +92,8 @@ type Model
 		vh= fill(p.myNA,dimvecH)
 		sh= fill(0.0,dimvecH)
 		ch= fill(0.0,dimvecH)
-		cash= falses(dimvecH)
-		canbuy= fill(0.0,dimvec)
+		cash= fill(0.0,dimvecH)
+		canbuy= falses(dimvec)
 		rho = fill(0.0,dimvec)
 
 		EVfinal = fill(p.myNA,(p.na,p.nh,p.np,p.ny,p.nJ))

@@ -7,7 +7,7 @@ using FactCheck
 
 include("../src/mig.jl")
 
-facts("testing the model module") do
+facts("model.jl") do
 
 	p = mig.Param(2)
 	m = mig.Model(p)
@@ -38,6 +38,13 @@ facts("testing the model module") do
 				end
 			end
 		end
+
+	end
+
+	context("dimensions") do
+
+		@fact size(m.vh) --> (p.nhh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+		@fact size(m.v) --> (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
 
 	end
 

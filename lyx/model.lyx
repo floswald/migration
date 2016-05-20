@@ -2465,7 +2465,7 @@ This setup implies that owners will choose a savings path contingent on
 , such that they can satisfy the final period constraint.
  That said, if the house price falls enough, the household may end up with
  negative equity, which is defined as 
-\begin_inset Formula $-a_{t}>p_{t}$
+\begin_inset Formula $-a_{t}>p_{t}(1-\phi)$
 \end_inset
 
 .
