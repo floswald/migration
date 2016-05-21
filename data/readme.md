@@ -1,6 +1,7 @@
 
 # data folder of migration
 
-scripts to build SIPP are in ~/datasets/SIPP/2008/do
+use the Makefile to build different datasets used in this project.
+
 
 
