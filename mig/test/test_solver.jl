@@ -20,7 +20,7 @@ facts("solver: linear index functions") do
 		for itest in 1:10
 
 			# choose a random state
-			ihh  = rand(1:p.nh)
+			ihh  = rand(1:p.nhh)
 			ik   = rand(1:p.nJ)
 			is   = rand(1:p.ns)
 			ia   = rand(1:p.na)

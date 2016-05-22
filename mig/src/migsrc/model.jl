@@ -82,7 +82,8 @@ type Model
 	# constructor
     function Model(p::Param)
 
-		# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh, nJ, nt-1 )
+    	# should be:
+		# dimvec  = (p.nJ, p.na, p.nh, p.nJ, p.ntau, p.ns,  p.np, p.ny,p.nz, p.nt-1 )
 		dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
 		dimvecH = (p.nhh, p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
 		dimvec2 = (p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1)
@@ -728,5 +729,5 @@ function show(io::IO, M::Model)
 	print(io, "               in Mb: $(mb)\n")
 	print(io, "               in Gb: $(gb)\n")
 	print(io, "objects in model:\n")
-	print(io, names(M))
+	print(io, fieldnames(M))
 end

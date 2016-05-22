@@ -356,14 +356,66 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										m.canbuy[kidx] = canbuy
 
+
+										# you have no housing choice (i.e. forced to rent)
+										# if
+										# 1) you are a renter and cannot make the downpayment
+										# 2) you are an owner, move, and cannot make new downpayment
+										if (ih==0 & !canbuy) || (ih==1 & move & !canbuy) 
+
+											ihh = 0
+
+											# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+											# @assert hidx == ihh+1 + p.nh * offset_k
+											hidx = ihh+1 + p.nh * offset_k
+
+											blim = 0.0
+
+											# reset w vector
+											fill!(EV,p.myNA)	
+											fill!(w,p.myNA)
+
+											cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ij,p)
+											m.cash[hidx] = cash
+
+											# find relevant future value:
+											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
+
+											# optimal savings choice
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
+
+											# checking for infeasible choices
+											if r[1] > p.myNA
+												# m.vfeas[hidx] = true
+												m.vh[hidx]   = r[1]
+												m.sh[hidx]   = r[2] 
+												m.ch[hidx]   = r[3] 
+												m.v[kidx]    = r[1] 	# for renter optimal housing choice is easy: value of renting.
+												m.dh[kidx] = 0
+											else
+												m.vh[hidx]   = p.myNA
+												m.sh[hidx]   = 0.0
+												m.ch[hidx]   = 0.0
+												m.v[kidx]  = p.myNA
+												m.dh[kidx] = 0
+											end
+
+											if cash < 0 && ih==0 && ip<p.np
+												# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
+												# println("aggregate: P=$ip,Y=$iy")
+												# println("cash at ihh=$ihh is $cash")
+												# println("maxvalue = $(r[1])")
+												# println("maxindex = $(r[2])")
+											end
+
+										else   
 										# you have a housing choice
 										# if
 										# 1) you are current owner who stays, or 
 										# 2) you are current owner who moves and can buy, or
 										# 3) you are current renter who can buy
-
-										fill!(vown,p.myNA)
-										if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy)) || candefault
+	
+											fill!(vown,p.myNA)
 
 											# next period own or rent
 											for ihh in 0:1
@@ -417,17 +469,18 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# value of default
 											# ================
 
+											# for states where you can default, compute this value
+
 											if candefault
+
+												# p.nhh = p.nh + 1 to account for default choice
 
 												ihh = 0		# next period renter
 												hidx = ihh+3 + p.nh * offset_k   # +3 here to index default
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
-												cash = cashFunction(0.0,newz*(1-p.iota),ih,ihh,price_j,price_k,ij!=ik,ik,p)   # CAUTION: zero assets!
+												cash = 0.0 + newz*(1-p.iota) - price_k * p.kappa[ik]   # CAUTION: zero assets. 0 + y - rent
 												m.cash[hidx] = cash
-												if highMC && (p.shockReg==ij) && (ij!=ik)
-													mc = 10000.0
-												end
 
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
@@ -461,55 +514,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.dh[kidx] = 0
 											end
 
-										else # you have no housing choice: you rent next period
-
-											ihh = 0
-
-											# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
-											# @assert hidx == ihh+1 + p.nh * offset_k
-											hidx = ihh+1 + p.nh * offset_k
-
-											blim = 0.0
-
-											# reset w vector
-											fill!(EV,p.myNA)	
-											fill!(w,p.myNA)
-
-											cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ij,p)
-											m.cash[hidx] = cash
-
-											# find relevant future value:
-											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
-
-											# optimal savings choice
-											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
-
-											# checking for infeasible choices
-											if r[1] > p.myNA
-												# m.vfeas[hidx] = true
-												m.vh[hidx]   = r[1]
-												m.sh[hidx]   = r[2] 
-												m.ch[hidx]   = r[3] 
-												m.v[kidx]    = r[1] 	# for renter optimal housing choice is easy: value of renting.
-												m.dh[kidx] = 0
-											else
-												m.vh[hidx]   = p.myNA
-												m.sh[hidx]   = 0.0
-												m.ch[hidx]   = 0.0
-												m.v[kidx]  = p.myNA
-												m.dh[kidx] = 0
-											end
-
-											if cash < 0 && ih==0 && ip<p.np
-												# println("state: j=$ij,tau=$itau,h=$ih,a=$(round(a)),z=$(round(z)),p=$price,s=$is,k=$ik")
-												# println("aggregate: P=$ip,Y=$iy")
-												# println("cash at ihh=$ihh is $cash")
-												# println("maxvalue = $(r[1])")
-												# println("maxindex = $(r[2])")
-											end
-
-										end # end if stay and houseing choice
-
+										end # end if housing choice
 
 										# store optimal value in tmp vector
 										# used in vbar calculation
@@ -598,6 +603,8 @@ function integrateVbar!(iz::Int,iy::Int,ip::Int,is::Int,age::Int,Gz::Array{Float
 	# 	end
 	# end
 
+	# if ordering was
+	# dimvec  = (p.nJ, p.na, p.nh, p.nJ, p.ntau, p.ns, p.np, p.ny, p.nz, p.nt-1 )
 
 
 	# looping over states which do not influence integration
@@ -667,7 +674,7 @@ end
 # dimvecH  = (nh, nJ, ns, nz, ny, np, ntau,  nJ, nt-1 )
 function idx11(ihh::Int,ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
 
-	 r = ihh + p.nh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
+	 r = ihh + p.nhh * (ik + p.nJ * (is + p.ns * (iz + p.nz * (iy + p.ny * (ip + p.np * (itau + p.ntau * (ia + p.na * (ih + p.nh * (ij + p.nJ * (age-1)-1)-1)-1)-1)-1)-1)-1)-1)-1)
 	return r
 end
 
