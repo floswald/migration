@@ -41,6 +41,11 @@ facts("testing the model module") do
 
 	end
 
+	context("initial value for amenity vector") do
+		@fact p.amenity --> m.proportion[:proportion]
+	end
+		
+
 
 
 end

@@ -118,6 +118,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# return value for findmax: tuple (value,index)
 	r = (0.0,0.0,0.0)
 	rh = (0.0,0.0,0.0)
+	consta = 0.0	# utility shifter
 
 	first = 1
 
@@ -127,6 +128,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	movecost = m.gridsXD["movecost"]
 
 	Gz = m.gridsXD["Gz"]
+	Gs = zeros(p.ns,p.ns)
 	Gs = m.gridsXD["Gs"][:,:,age]
 	Gyp = m.gridsXD["Gyp"]
 
@@ -300,6 +302,17 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									
 										move = ij != ik
 
+										# find moving cost
+										mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,p)]
+										if p.noMC 
+											mc = 0.0
+										end
+
+										# if shut down moving from region ij
+										if highMC && (p.shockReg==ij) && (ij!=ik)
+											mc = 10000.0
+										end
+
 										offset_k = ik-1 + p.nJ * offset_1
 
 										if pshock && (p.shockReg == ik)
@@ -339,6 +352,14 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											canbuy = false
 										end
 
+										## constant utility shifter
+										if is==1
+											consta = ih*p.xi2 - mc + p.A[ik]
+										else
+											consta = ih*p.xi1 - mc + p.A[ik]
+										end
+
+
 										m.canbuy[kidx] = canbuy
 
 
@@ -375,16 +396,6 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ik,p)
 												m.cash[hidx] = cash
 
-												# find moving cost
-												mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,p)]
-												if p.noMC 
-													mc = 0.0
-												end
-
-												# if shut down moving from region ij
-												if highMC && (p.shockReg==ij) && (ij!=ik)
-													mc = 10000.0
-												end
 
 												# find relevant future value:
 												EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
@@ -393,7 +404,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# setVals
 
 												# optimal savings choice
-												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta)
 
 												vstay[ihh+1] = rh[1]
 
@@ -446,23 +457,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ij,p)
 											m.cash[hidx] = cash
 
-											# find moving cost
-											mc = movecost[idxMC(age,ij,ik,itau,ih+1,is,	p)]
-											if p.noMC 
-												mc = 0.0
-											end
-
-											# if shut down moving from region ij
-											if highMC && (p.shockReg==ij) && (ij!=ik)
-												mc = 10000.0
-											end
-
 											# find relevant future value:
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
 											# optimal savings choice
-											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving)
-
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta)
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -713,7 +712,7 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator,noSaving::Bool)
+function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator,noSaving::Bool,constant::Float64)
 
 	# if your current cash debt is lower than 
 	# maximum borrowing, infeasible
@@ -725,7 +724,9 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		x = 0.0
 		# grid for next period assets
 		ub = noSaving ?  0.0 : cash-0.01 
-		s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
+		s = zeros(p.namax)
+		# s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
+		mylinspace!(s,lb,ub)	# this implies you can save a lot if you have a lot of cash
 		# however in the interpolation you don't allow s > a[end]
 		cons = zeros(p.namax)
 		# fix upper bound of search grid
@@ -734,9 +735,9 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 
 		# w[i] = u(cash - s[i]/(1+r)) + beta EV(s[i],h=1,j,t+1)
 		if p.ctax == 1.0
-			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc)	
+			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc,constant)	
 		else
-			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc,true)	
+			vsavings!(w,a,EV,s,cons,cash,is,own,mc,p,acc,true,constant)	
 		end
 
 		r = findmax(w)
@@ -750,23 +751,22 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 end
 
 
-function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator)
+function mylinspace!(s::Vector{Float64},lb::Float64,ub::Float64)
+	n = length(s)
+	r = (ub-lb) / (n-1)
+	for i in 0:(n-1)
+		s[i+1] = lb + i * r
+	end
+end
+
+
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator,constant::Float64)
 	n = p.namax
 	x = 0.0
 	cons = 0.0
 	# jinf = 1
 	# jsup = p.na
 	
-	# check which hh size
-	size2 = is == 1 ? false : true
-
-	if size2
-		consta =  own*p.xi2 - mc 
-	else
-		consta =  own*p.xi1 - mc 
-	end
-
-
 	# compute consumption at each potential savings choice
 	# consumption is cash - x, where x is s/(1+interest)
 	# and interest depends on whether borrow or save
@@ -788,17 +788,13 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 
 		# w[i] = ufun(cash-x,is,own,itau,mc,def,p) + p.beta * lin[1]
 		# note: cons^(1-gamma) = exp( (1-gamma)*log(cons) )
-		if size2
-			cons = (cash-x)*p.sscale
-		else
-			cons = cash-x
-		end
+		cons = (cash-x)*p.sscale[is]
 		if cons < 0
 			w[i] = p.myNA				
 		else
 			w[i] = ufun(cons,lin,p)
 			# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
-			w[i] += consta
+			w[i] += constant
 		end
 		# jinf = lin[2]
 
@@ -810,23 +806,13 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 	return 
 end
 
-function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator,ctax_adjust::Bool)
+function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},s::Array{Float64,1},cons_arr::Array{Float64,1},cash::Float64,is::Int,own::Int,mc::Float64,p::Param,acc::Accelerator,ctax_adjust::Bool,constant::Float64)
 	n = p.namax
 	x = 0.0
 	cons = 0.0
 	# jinf = 1
 	# jsup = p.na
 	
-	# check which hh size
-	size2 = is == 1 ? false : true
-
-	if size2
-		consta =  own*p.xi2 - mc 
-	else
-		consta =  own*p.xi1 - mc 
-	end
-
-
 	# compute consumption at each potential savings choice
 	# consumption is cash - x, where x is s/(1+interest)
 	# and interest depends on whether borrow or save
@@ -836,7 +822,7 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 
 	setAccel!(acc,1)
 
-	 for i=1:n
+	for i=1:n
 		lin = linearapprox(a,EV,s[i],p.na,acc)
 		# println("s=$(s[i]), i=$i")
 		# println("lin = $lin")
@@ -848,20 +834,16 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 
 		# w[i] = ufun(cash-x,is,own,itau,mc,def,p) + p.beta * lin[1]
 		# note: cons^(1-gamma) = exp( (1-gamma)*log(cons) )
-		if size2
-			cons = (cash-x)*p.sscale
-		else
-			cons = cash-x
-		end
+		cons = (cash-x)*p.sscale[is]
 		if cons < 0
-			w[i] = p.myNA				
+			w[i] = p.myNA		
 		else
 			if ctax_adjust
 			# adjust consumption with scale factor tau. tau = 1 in baseline
 				cons *= p.ctax
 				w[i] = ufun(cons,lin,p)
 				# w[i] = p.imgamma * myexp(p.mgamma * mylog(cons) ) + p.beta * lin[1]
-				w[i] += consta
+				w[i] += constant
 			else
 				error("you are running the ctax-method of vsavings without doing the adjustment")
 			end

@@ -137,6 +137,9 @@ type Model
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
+		# set amenity to popweights initially
+		p.amenity = convert(Array,popweights[:proportion])
+
 		# age distribution
 		agedist = DataFrame(read_rda(joinpath(indir,"agedist.rda"))["agedist"])
 
@@ -728,5 +731,5 @@ function show(io::IO, M::Model)
 	print(io, "               in Mb: $(mb)\n")
 	print(io, "               in Gb: $(gb)\n")
 	print(io, "objects in model:\n")
-	print(io, names(M))
+	print(io, fieldnames(M))
 end

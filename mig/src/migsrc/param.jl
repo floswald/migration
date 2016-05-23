@@ -19,6 +19,7 @@ type Param
 	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
+	amenity :: Vector{Float64}  # amenity value of living in j
 
 	# moving cost parameters
 	MC0    :: Float64 # parameters in moving cost: alpha0, intercept
@@ -42,7 +43,7 @@ type Param
 	minAge :: Int 	# maximal age in model
 	ages   :: UnitRange{Int} 	# maximal age in model
 	euler  :: Float64
-	sscale :: Float64
+	sscale :: Vector{Float64}
 
 	# policy parameters
 	# =================
@@ -116,6 +117,7 @@ type Param
 		omega1   = 1.0
 		omega2   = 5.1
 		# omega2   = 6.1
+		amenity  = zeros(nJ)
 
 		MC0    = 2.77  	 	# intercept
 		MC1    = 0.017  	 	# age
@@ -167,7 +169,7 @@ type Param
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,sscale,pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 
