@@ -21,7 +21,7 @@ facts("experiment.jl tests") do
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [0.7 for i=1:p.nt-1]
+		@fact po["shockVal"] --> [po["shockVal"] for i=1:p.nt-1]
 
 		po = mig.selectPolicy("pshock3",j,yr,p)
 		@fact po["policy"] --> "pshock"
@@ -35,7 +35,7 @@ facts("experiment.jl tests") do
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [0.7 for i=1:p.nt-1]
+		@fact po["shockVal"] --> [po["shockVal"] for i=1:p.nt-1]
 
 		po = mig.selectPolicy("yshock3",j,yr,p)
 		@fact po["policy"] --> "yshock"
