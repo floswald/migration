@@ -257,6 +257,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							end
 
 							for ih=0:1
+
+								candefault = false
 	
 								newz = 0.0
 
@@ -365,7 +367,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 											ihh = 0
 
-											# hidx = idx11(ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
+											# hidx = ihh+1,ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p)
 											# @assert hidx == ihh+1 + p.nh * offset_k
 											hidx = ihh+1 + p.nh * offset_k
 

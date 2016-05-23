@@ -167,7 +167,7 @@ function simulate(m::Model,p::Param)
 	vcs_arr = Array{Float64}[]
 	for vcs in 1:3  # value, cons and savings
 		for j in 1:p.nJ  # at each loc choice
-			for ihh in 1:p.nh 	# at each housing choice
+			for ihh in 1:p.nhh 	# at each housing choice
 				push!(vcs_arr,zeros(p.na,p.nz,p.ny,p.np))
 			end
 		end
@@ -229,6 +229,8 @@ function simulate(m::Model,p::Param)
 	DP       = zeros(nsim*T)
 	DM       = falses(nsim*T)
 	Dcanbuy  = falses(nsim*T)
+	Dcandefault  = falses(nsim*T)
+	Ddefault = falses(nsim*T)
 	Di       = repeat(collect(1:nsim),inner = [T],outer = [1])
 	Dage     = repeat(collect(1:T),inner = [1],outer = [nsim])
 	Drealage = repeat(collect(p.ages[1:T]),inner = [1],outer = [nsim])
@@ -455,10 +457,12 @@ function simulate(m::Model,p::Param)
 
 
 				# flag for downpayment constraint
+				candefault = false
 				if ih==0
 					canbuy = a + yy > p.chi * price_k
 				else
 					canbuy = a + yy + (1-p.phi)*price_j > p.chi * price_k
+					candefault = -a > price_j * (1-p.phi) * ih ? true : false
 				end
 
 				if noBuying
@@ -468,26 +472,11 @@ function simulate(m::Model,p::Param)
 				# get value, consumption and savings given moving choice
 				# ======================================================
 
+				# you have no housing choice (i.e. forced to rent)
 				# if
-				# 1) you are current owner who stays or 
-				# 2) you are current owner who moves and can buy
-				# 3) you are current renter who can buy
-
-				if ((ih==1 && (!move)) || (ih==1 && move && canbuy) || (ih==0 && canbuy)) # || candefault
-
-					# get housing choice
-					v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
-
-					ihh = v1v2[1] > v1v2[2] ? 0 : 1
-					val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
-
-					# find corresponding consumption and savings
-					cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
-					cons       = cs[1]
-					ss         = cs[2]
-
-				# else you cannot buy
-				else
+				# 1) you are a renter and cannot make the downpayment
+				# 2) you are an owner, move, and cannot make new downpayment
+				if (ih==0 & !canbuy) || (ih==1 & move & !canbuy) 
 					ihh = 0
 					# for iia in aone:p.na
 					# 	for iz in 1:p.nz
@@ -501,6 +490,37 @@ function simulate(m::Model,p::Param)
 					val  = vcs[1]
 					cons = vcs[2]
 					ss   = vcs[3]
+
+				else
+
+					# 1) you are current owner who stays or 
+					# 2) you are current owner who moves and can buy
+					# 3) you are current renter who can buy
+					# get housing choice
+					if candefault
+						v1v2v3 = get_v123(L["l_vcs"],azYP,moveto,p)
+
+						val,ihh = findmax(v1v2v3)
+						ihh = ihh -1
+
+						# find corresponding consumption and savings
+						cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
+						cons       = cs[1]
+						ss         = cs[2]
+
+					else
+						v1v2 = get_v1v2(L["l_vcs"],azYP,moveto,p)
+
+						ihh = v1v2[1] > v1v2[2] ? 0 : 1
+						val = v1v2[1] > v1v2[2] ? v1v2[1] : v1v2[2]
+
+						# find corresponding consumption and savings
+						cs = get_cs(L["l_vcs"],azYP,ihh+1,moveto,p)
+						cons       = cs[1]
+						ss         = cs[2]
+
+					end
+
 
 				end
 
@@ -543,16 +563,24 @@ function simulate(m::Model,p::Param)
 				DMt[i_idx]      = moveto
 				Dregname[i_idx] = regnames[ij]
 				Dcanbuy[i_idx]  = canbuy
+				Dcandefault[i_idx]  = candefault
+				Ddefault[i_idx] = ihh == 2 ? true : false
 				Dwealth[i_idx]  = (price_k * ih) + a
-				Dwealth2[i_idx]  = (price_j * ih) + a 	# TODO
+				Dwealth2[i_idx] = (price_j * ih) + a 	# TODO
 				Ddist[i_idx]    = m.distance[ij,moveto]
-				Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price_k,move,ij,p)
-				Drent[i_idx]    = pifun(ih,ihh,price_j,price_k,move,ij,p)
+				if ihh < 2
+					Dcash[i_idx]    = cashFunction(a,yy,ih,ihh,price_j,price_k,move,ij,p)
+					Drent[i_idx]    = pifun(ih,ihh,price_j,price_k,move,ij,p)
+				else
+					Dcash[i_idx]    = 0.0 + yy*(1-p.iota) - price_k*p.kappa[moveto]
+					Drent[i_idx]    = price_k*p.kappa[moveto]
+				end
+
 
 
 				# storing transition
 				if age < T
-					Dh[i_idx_next] = ihh
+					Dh[i_idx_next] = ihh < 2 ? ihh : 0	# if ihh==2, you default
 					Da[i_idx_next] = ss
 					Dj[i_idx_next] = moveto
 					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
@@ -591,7 +619,7 @@ function simulate(m::Model,p::Param)
 
 	# convert children indicator into a boolean:
 	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,candefault=Dcandefault,default=Ddefault,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
@@ -632,6 +660,21 @@ function findSubsidy(y::Float64,age::Int,p::Param,m::Model)
 end
 
 
+"""
+	idx_vcs(vcs::Int,Int::ihh,Int::ik,p::Param)
+
+Get index of functions stored in `Lininterp` objects.
+
+# Details
+
+Ordering of `vsc` is:
+1. value (v)
+1. consumption (c)
+1. saving (s)
+
+
+"""
+idx_vcs(vcs::Int,ihh::Int,ik::Int,p::Param) = vcs + 3 * (ihh-1 + p.nhh * (ik-1))
 
 
 # fills arrays with corresponding values at 
@@ -661,14 +704,17 @@ function fill_interp_arrays!(L::Dict{ASCIIString,Lininterp},is::Int,ih::Int,itau
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
 						@inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
 
-						for ihh in 1:p.nh
+						for ihh in 1:p.nhh
 
-							vh_idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+							vh_idx = ihh + p.nhh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
+							# @assert vh_idx == idx11(ihh,ik,is,iz,iY,iP,itau,iia,ih,ij,age,p)
 							# index to get i in {(v,c,s) x (1,2,3,...,9) x (1,2)}
-							l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
-							@inbounds L["l_vcs"].vals[1+l_idx][arr_idx] = m.vh[vh_idx] 	
-							@inbounds L["l_vcs"].vals[2+l_idx][arr_idx] = m.ch[vh_idx] 	
-							@inbounds L["l_vcs"].vals[3+l_idx][arr_idx] = m.sh[vh_idx] 	
+							# l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
+
+							# function indices
+							@inbounds L["l_vcs"].vals[idx_vcs(1,ihh,ik,p)][arr_idx] = m.vh[vh_idx] 	
+							@inbounds L["l_vcs"].vals[idx_vcs(2,ihh,ik,p)][arr_idx] = m.ch[vh_idx] 	
+							@inbounds L["l_vcs"].vals[idx_vcs(3,ihh,ik,p)][arr_idx] = m.sh[vh_idx] 	
 
 
 						end
@@ -724,11 +770,12 @@ end
 function get_vcs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
 	out = zeros(3)
-	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
+	l_idx1 = ihh + p.nhh * (ik-1 + p.nJ * (0))
+	l_idx2 = ihh + p.nhh * (ik-1 + p.nJ * (1))
+	l_idx3 = ihh + p.nhh * (ik-1 + p.nJ * (2))
+	# l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	getValue!(out,l,azYP,[1+l_idx;2+l_idx;3+l_idx])
-	# out[2] = getValue(l,azYP,2+l_idx)
-	# out[3] = getValue(l,azYP,3+l_idx)
+	getValue!(out,l,azYP,[idx_vcs(1,ihh,ik,p);idx_vcs(2,ihh,ik,p);idx_vcs(3,ihh,ik,p)])
 	return out
 end
 
@@ -737,20 +784,25 @@ end
 function get_v1v2(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 
 	out = zeros(2)
-	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
-	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
+	# l_idx1 = ihh + p.nhh * (ik-1 + p.nJ * (0))
+	# l_idx2 = ihh + p.nhh * (ik-1 + p.nJ * (1))
+	# l_idx1  = 3*(ik-1 + p.nJ*(1-1))
+	# l_idx2  = 3*(ik-1 + p.nJ*(2-1))
 
-	getValue!(out,l,azYP,[1+l_idx1;1+l_idx2])
+	getValue!(out,l,azYP,[idx_vcs(1,1,ik,p);idx_vcs(1,2,ik,p)])
 	return out
 end
-function get_v1v2v3(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
+function get_v123(l::Lininterp,azYP::Vector{Float64},ik::Int,p::Param)
 
 	out = zeros(3)
-	l_idx1  = 3*(ik-1 + p.nJ*(1-1))
-	l_idx2  = 3*(ik-1 + p.nJ*(2-1))
-	l_idx3  = 3*(ik-1 + p.nJ*(3-1))
+	# l_idx1 = ihh + p.nhh * (ik-1 + p.nJ * (0))
+	# l_idx2 = ihh + p.nhh * (ik-1 + p.nJ * (1))
+	# l_idx3 = ihh + p.nhh * (ik-1 + p.nJ * (2))
+	# l_idx1  = 3*(ik-1 + p.nJ*(1-1))
+	# l_idx2  = 3*(ik-1 + p.nJ*(2-1))
+	# l_idx3  = 3*(ik-1 + p.nJ*(3-1))
 
-	getValue!(out,l,azYP,[1+l_idx1;1+l_idx2;1+l_idx3])
+	getValue!(out,l,azYP,[idx_vcs(1,1,ik,p);idx_vcs(1,2,ik,p);idx_vcs(1,3,ik,p)])
 	return out
 end
 
@@ -759,9 +811,11 @@ end
 function get_cs(l::Lininterp,azYP::Vector{Float64},ihh::Int,ik::Int,p::Param)
 
 	out = zeros(2)
-	l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
+	# l_idx2 = ihh + p.nhh * (ik-1 + p.nJ * (1))
+	# l_idx3 = ihh + p.nhh * (ik-1 + p.nJ * (2))
+	# l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 
-	getValue!(out,l,azYP,[2+l_idx;3+l_idx])	# 2 is index for cons, 3 is index for save
+	getValue!(out,l,azYP,[idx_vcs(2,ihh,ik,p);idx_vcs(3,ihh,ik,p)])	# 2 is index for cons, 3 is index for save
 	return out
 end
 
@@ -992,6 +1046,10 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		end
 	end
 
+
+	# mortgage default
+	# ----------------
+	push!(mom1, ["default_rate",mean(convert(Array,df[:default]),fullw)] )
 
 	# collect estimates
 	# =================
