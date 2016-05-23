@@ -2661,7 +2661,7 @@ Period utility
 
 \begin_inset Formula 
 \begin{equation}
-u\left(c_{it},h_{it},d',x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(d',x_{it}\right)+\varepsilon_{ikt}\label{eq:utility}
+u\left(c_{it},h_{it},d',x_{it}\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(d',x_{it}\right)+A_{d'}+\varepsilon_{ikt}\label{eq:utility}
 \end{equation}
 
 \end_inset
@@ -2719,6 +2719,15 @@ The period
 LatexCommand ref
 reference "subsec:Recursive-Formulation"
 
+\end_inset
+
+.
+ Finally, amenities in region 
+\begin_inset Formula $d'$
+\end_inset
+
+ are given by the fixed effect 
+\begin_inset Formula $A_{d'}$
 \end_inset
 
 .
