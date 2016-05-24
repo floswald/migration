@@ -319,7 +319,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
 											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal[age-p.shockAge+1]
 										else
-											price_k = m.gridsXD["p"][iy,ip,ik]
+											price_k = m.gridsXD["p"][iy + p.ny * (ip-1 + p.np * (ik-1))]
 										end
 
 										if all_j
@@ -354,9 +354,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										## constant utility shifter
 										if is==1
-											consta = ih*p.xi2 - mc + p.A[ik]
+											consta = ih*p.xi2 - mc + p.amenity[ik]
 										else
-											consta = ih*p.xi1 - mc + p.A[ik]
+											consta = ih*p.xi1 - mc + p.amenity[ik]
 										end
 
 

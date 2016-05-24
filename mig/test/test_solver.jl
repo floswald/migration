@@ -240,11 +240,9 @@ facts("Solver. other parts.") do
 		acc = mig.Accelerator(1)
 
 	    w = zeros(p.namax)
-	    cons = zeros(p.namax)
 	    a = m.grids["assets"]
 
-	    w_t = 0.0
-	    cons_t = 0.0
+	    ih = 0
 
 	    fac = 2
 	    EV = a.^fac  	# just take a straight line with slope fac
@@ -252,15 +250,17 @@ facts("Solver. other parts.") do
 	    mc = rand()
 	    lb = 0.0
 
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
+
 	    noSaving = false
-	    v1 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving)
+	    v1 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta)
 	    println(v1)
 	    @fact v1[2] > 0.0 --> true
 
 	    noSaving = true
 		acc = mig.Accelerator(1)
 	    w = zeros(p.namax)
-	    v2 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving)
+	    v2 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta)
 		    println(v2)
 	    @fact v2[2] == 0.0 --> true
 	end
@@ -292,7 +292,7 @@ facts("Solver. other parts.") do
 		for ih = 0:1
 
 			# compute values at each savings grid
-			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.A[1]
+			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
 
 			# compute vsavings!()
 			mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,consta)
@@ -303,7 +303,7 @@ facts("Solver. other parts.") do
 				x = s[i] / p.R
 
 				# get cons at that choice
-				cc = (is==1)*(cash-x) + (is==2)*(cash-x)*p.sscale
+				cc = (cash-x)*p.sscale[is]
 				if cc < 0
 					w_t = p.myNA
 				else
@@ -344,18 +344,18 @@ facts("Solver. other parts.") do
 		for is = 1:p.ns
 		for ih = 0:1
 
-			# compute vsavings!()
-			mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,true)
+			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
 
-			# compute values at each savings grid
-			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc
+			# compute vsavings!()
+			mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,true,consta)
+
 
 			for i = 1:p.namax
 				# get savings vector
 				x = s[i] / p.R
 
 				# get cons at that choice
-				cc = (is==1)*(cash-x) + (is==2)*(cash-x)*p.sscale
+				cc = (cash-x)*p.sscale[is]
 				if cc < 0
 					w_t = p.myNA
 				else
