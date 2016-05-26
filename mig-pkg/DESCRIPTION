@@ -33,7 +33,8 @@ Depends:
     rhdf5,
     psidR,
     erer,
-    tikzDevice
+    tikzDevice,
+    MultinomialCI
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

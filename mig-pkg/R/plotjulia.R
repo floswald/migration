@@ -6,13 +6,13 @@ plot_sipp_r2p <- function(){
 	r2p[ , r2p := rent / p]
 	cbPalette <- c("#000000", "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 	p = ggplot(r2p,aes(x=year,y=r2p,color=Division)) + geom_line(size=1) + ggtitle("Rent to price ratio") + scale_color_manual(values=cbPalette) + scale_y_continuous("median rent / median price") + theme_bw()
-	ggsave(p,file="/Users/florianoswald/Dropbox/mobility/output/data/sipp/r2p.pdf")
+	ggsave(p,file="/Users/florianoswald/Dropbox/research/mobility/output/data/sipp/r2p.pdf")
 }
 
 
 
 plot_mortgage_welfare = function(){
-	w = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age.csv"))
+	w = data.table(read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age.csv"))
 	w[,age := age+19]
 
 	m = melt(w[,list(age,median=q50pv,percentile_10=q10pv,percentile_90=q90pv)],"age")
@@ -23,7 +23,7 @@ plot_mortgage_welfare = function(){
 
 	p$age = ggplot(m,aes(x=age,y=value,color=variable)) + geom_line(size=1) +theme_bw() + scale_y_continuous(name="% change in utility") + myth + ggtitle("% Change in Utility after Abolishing")
 
-	wh = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_h.csv"))
+	wh = data.table(read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_h.csv"))
 	x = gsub("\\(","",wh$ybin)
 	x = gsub("\\]","",x)
 	x = gsub("\\[","",x)
@@ -33,7 +33,7 @@ plot_mortgage_welfare = function(){
 
 	p$h_y = ggplot(mh,aes(x=income,y=value,color=variable)) + geom_line(size=1) + facet_wrap(~type) +theme_bw() + scale_y_continuous(name="% change in utility")+ myth + ggtitle("% Change in Utility after Abolishing")
 
-	wy = data.table(read.csv("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age_y.csv"))
+	wy = data.table(read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/welfare_age_y.csv"))
 	x = gsub("\\(","",wy$ybin)
 	x = gsub("\\]","",x)
 	x = gsub("\\[","",x)
@@ -43,15 +43,15 @@ plot_mortgage_welfare = function(){
 
 	p$wy = ggplot(wy,aes(age,y=q50pv,color=income)) + geom_line(size=1) +theme_bw() + scale_y_continuous(name="% change in utility")+ myth + ggtitle("% Change in Utility after Abolishing")
 	
-	ggsave(p$age,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf",width=7,height=5)
-	ggsave(p$h_y,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf",width=7,height=5)
-	ggsave(p$wy,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf",width=7,height=5)
+	ggsave(p$age,file="/Users/florianoswald/Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf",width=7,height=5)
+	ggsave(p$h_y,file="/Users/florianoswald/Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf",width=7,height=5)
+	ggsave(p$wy,file="/Users/florianoswald/Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf",width=7,height=5)
 
 }
 
 
 plot_probMove = function(){
-	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
+	ass = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_ass.csv")
 	for (i in unique(ass$assets)){
 		ass[ass$assets==i&ass$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
 	}
@@ -65,11 +65,11 @@ plot_probMove = function(){
 
 	pass = ggplot(ass,aes(x=quantile,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous(name="Financial Assets (a) in 1000 dollars",breaks=brks,labels=paste(labs))
 	# pass = ggplot(ass,aes(x=mid,y=prob,color=Type)) + geom_line(size=1) + scale_color_manual(values=c("blue","red")) + theme_bw() + ggtitle("Probability of moving by assets") + scale_x_continuous("Financial Assets (a) in 1000 dollars")
-	ggsave(pass,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_assets.pdf",width=7,height=4)
+	ggsave(pass,file="/Users/florianoswald/Dropbox/research/mobility/output/model/properties/mp_assets.pdf",width=7,height=4)
 
 	# not aggregating over own/rent
 
-	w = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth.csv")
+	w = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_wealth.csv")
 	# for (i in unique(w$wealth)){
 	# 	w[w$wealth==i&w$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
 	# }
@@ -83,12 +83,12 @@ plot_probMove = function(){
 	w1 = subset(w,n_all>100)
 	p1=ggplot(w1,aes(x=mid,y=m_prob,color=Type)) + geom_point() + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
 
-	ggsave(p1,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth.pdf",width=7,height=4)
+	ggsave(p1,file="/Users/florianoswald/Dropbox/research/mobility/output/model/properties/mp_wealth.pdf",width=7,height=4)
 
 
 	# aggregating over own/rent
 
-	w = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_wealth2.csv")
+	w = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_wealth2.csv")
 	# for (i in unique(w$wealth)){
 	# 	w[w$wealth==i&w$Type=="Renter","quantile"]=ass[ass$assets==i&ass$Type=="Owner","quantile"]
 	# }
@@ -101,13 +101,13 @@ plot_probMove = function(){
 	p1=ggplot(w1,aes(x=mid,y=m_prob)) + geom_point() + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
 	p2=ggplot(w1,aes(x=mid,y=m_prob,color=n_own)) + geom_point() + scale_color_gradient(name="Ownership\nrate",low="red",high="blue") + theme_bw() + ggtitle("Probability of moving by wealth") + scale_x_continuous(name="Wealth (1000 dollars)") + scale_y_continuous("Probability of moving")
 
-	ggsave(p1,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth3.pdf",width=7,height=4)
-	ggsave(p2,file="/Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth4.pdf",width=7,height=4)
+	ggsave(p1,file="/Users/florianoswald/Dropbox/research/mobility/output/model/properties/mp_wealth3.pdf",width=7,height=4)
+	ggsave(p2,file="/Users/florianoswald/Dropbox/research/mobility/output/model/properties/mp_wealth4.pdf",width=7,height=4)
 }
 
 
 plot_npv_age_income = function(){
-	d = read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/npv_age_income.csv")
+	d = read.csv("~/Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/npv_age_income.csv")
 	lower = strsplit(as.character(d$ybin),"\\,")
 	lower= unlist(lapply(lower,function(x) x[1]))
 	lower= gsub("\\[","",lower)
@@ -118,7 +118,7 @@ plot_npv_age_income = function(){
 
 	p = ggplot(d,aes(x=Age,y=npv_at_age,color=income_pct)) + geom_line(size=1) + theme_bw() + scale_y_continuous("Net present value (1000 dollars)")
 
-	ggsave(p,file="/Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf",width=7,height=5)
+	ggsave(p,file="/Users/florianoswald/Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/npv.pdf",width=7,height=5)
 }
 
 
@@ -175,8 +175,8 @@ get_growth <- function(){
 	gp = ggplot(m[type=="pgrowth"&year>1996],aes(x=year,y=value,color=Division)) + geom_line(size=1) + ggtitle("expected price growth") + scale_y_continuous(name="percent") + scale_color_manual(values=cbPalette) + theme_bw() 
 	gy = ggplot(m[type=="ygrowth"&year>1996],aes(x=year,y=value,color=Division)) + geom_line(size=1) + ggtitle("expected income growth")+ scale_y_continuous(name="percent")+ scale_color_manual(values=cbPalette) + theme_bw() 
 
-	ggsave(gp,file="~/Dropbox/mobility/output/model/properties/pgrowth.pdf")
-	ggsave(gy,file="~/Dropbox/mobility/output/model/properties/ygrowth.pdf")
+	ggsave(gp,file="~/Dropbox/research/mobility/output/model/properties/pgrowth.pdf")
+	ggsave(gy,file="~/Dropbox/research/mobility/output/model/properties/ygrowth.pdf")
 
 
 
@@ -193,7 +193,7 @@ plot_age_effect_KW <- function(k_w=0.055,my=0.017,my2=0.0013){
 
 	m = melt(df,id.vars="age")
 	p = ggplot(m,aes(x=age,y=value,color=variable)) + geom_line() + theme_bw()
-	ggsave(p,width=7,height=3,file="~/Dropbox/mobility/output/model/fit/fit_ageeffect.pdf")
+	ggsave(p,width=7,height=3,file="~/Dropbox/research/mobility/output/model/fit/fit_ageeffect.pdf")
 
 	return(m)
 }
@@ -201,7 +201,7 @@ plot_age_effect_KW <- function(k_w=0.055,my=0.017,my2=0.0013){
 
 # plot moments 
 plot_moment_fit <- function(){
-	j=fromJSON(file="~/Dropbox/mobility/output/model/fit/moms.json")
+	j=fromJSON(file="~/Dropbox/research/mobility/output/model/fit/moms.json")
 	d = data.frame(moment=names(j))
 	d$m = 0.0
 	d$mod = 0.0
@@ -246,11 +246,11 @@ plot_moment_fit <- function(){
 	l3[!nm %in% c("E[wealth | NwE]","E[wealth | (30,40]]")][["nm"]] = NA_character_
 	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")+ mytheme
 
-	ggsave(plm,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods.pdf")
-	ggsave(plm2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_auxmods2.pdf")
-	ggsave(p3,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_wealth.pdf")
-	ggsave(p2,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_ownership.pdf")
-	ggsave(p1,width=5,height=5,file="~/Dropbox/mobility/output/model/fit/fit_mobility.pdf")
+	ggsave(plm,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods.pdf")
+	ggsave(plm2,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf")
+	ggsave(p3,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_wealth.pdf")
+	ggsave(p2,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_ownership.pdf")
+	ggsave(p1,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_mobility.pdf")
 
 
 	return(list(p1=p1,p2=p2))
@@ -266,7 +266,7 @@ plot_probMove_assets_sipp <- function(){
 	mmv = mmv[1:9]
 	mmv[,idx := 1:9]
 	p = ggplot(mmv,aes(x=idx,y=V1)) + geom_line(size=1) + scale_x_continuous(name="wealth quantile in 1000 dollars",breaks=1:9,label=mmv$wbin) + theme_bw()  + scale_y_continuous(name="probability of moving") + ggtitle("SIPP Proportion of movers by wealth") + theme(axis.text.x = element_text(angle=45,vjust=0.7))
-	ggsave(p,file=file.path("~/Dropbox/mobility/output/data/sipp/mv_prob_wealth.pdf"),height=5.0,width=7)
+	ggsave(p,file=file.path("~/Dropbox/research/mobility/output/data/sipp/mv_prob_wealth.pdf"),height=5.0,width=7)
 	return(p)
 }
 
@@ -274,7 +274,7 @@ plot_probMove_assets_sipp <- function(){
 
 plot_noMove <- function(reg){
 
-	ipth = paste0("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/noMove",reg)
+	ipth = paste0("/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl/noMove",reg)
 	b = read.csv(file.path(ipth,"values.csv"))
 
 	d = list()
@@ -289,11 +289,11 @@ plot_noMove <- function(reg){
 	p = ggplot(b,aes(x=realage,y=v,linetype=regime)) + geom_line() + facet_wrap(~region) + theme_bw() + scale_x_continuous("Age") + scale_y_continuous("E[v|Age]") + ggtitle("Average Utility by Age")
 	dp = ggplot(d,aes(x=realage,y=dv)) + geom_line() + facet_wrap(~region) + theme_bw() + scale_x_continuous("Age") + scale_y_continuous("Value difference") + ggtitle("Differences in Average Utility by Age")
 
-	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values.pdf"),height=3.0,width=7)
-	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues.pdf"),height=3.0,width=7)
+	ggsave(p,file=file.path("~/Dropbox/research/mobility/output/model/experiments/highMC","values.pdf"),height=3.0,width=7)
+	ggsave(dp,file=file.path("~/Dropbox/research/mobility/output/model/experiments/highMC","dvalues.pdf"),height=3.0,width=7)
 
-	ggsave(p,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","values_pres.pdf"),height=3.5,width=6)
-	ggsave(dp,file=file.path("~/Dropbox/mobility/output/model/experiments/highMC","dvalues_pres.pdf"),height=4.0,width=6)
+	ggsave(p,file=file.path("~/Dropbox/research/mobility/output/model/experiments/highMC","values_pres.pdf"),height=3.5,width=6)
+	ggsave(dp,file=file.path("~/Dropbox/research/mobility/output/model/experiments/highMC","dvalues_pres.pdf"),height=4.0,width=6)
 }
 
 
@@ -302,7 +302,7 @@ plot_shockyp <- function(reg,which){
 
 	# read outmig data
 	# data stored in
-	ipth = "/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl"
+	ipth = "/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl"
 
 	# file locations
 	b_file = file.path(ipth,paste0(which,reg),paste0("base_flows",reg,".csv"))
@@ -342,8 +342,8 @@ plot_shockyp <- function(reg,which){
 	pl$emi = ggplot(m[variable %like% "_out_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of total population") + ggtitle(ostr)
 
 	# save
-	ggsave(pl$emi,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)
-	ggsave(pl$imm,file=file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
+	ggsave(pl$emi,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)
+	ggsave(pl$imm,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
 	
 }
 
@@ -401,20 +401,20 @@ plot_experiment <- function(where,wherelong,when){
 	p2_pres = ggplot(subset(yp,variable %in% c("y","p","p_shock")), aes(x=year,y=value,linetype=variable)) + geom_line(size=0.9) + facet_wrap(~type,ncol=2,scales="free_y") + guides(linetype=FALSE)+ scale_linetype_manual(values=c("solid","solid","dashed")) + theme_bw() + scale_y_continuous("1000s of Dollars") + geom_vline(data=vline.data2,aes(xintercept=z),color="grey") + scale_x_continuous(breaks=yscale_pres) 
 	
 	# for paper
-	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_y),width=6.5,height=3.0)
+	tikz(file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",ostr_y),width=6.5,height=3.0)
 	print(p1)
 	dev.off()
 
 	# for presentation
-	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_y_pres),width=4.7,height=2.5)
+	tikz(file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",ostr_y_pres),width=4.7,height=2.5)
 	print(p1_pres)
 	dev.off()
 
-	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_p),width=6.5,height=3.0)
+	tikz(file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",ostr_p),width=6.5,height=3.0)
 	print(p2)
 	dev.off()
 
-	tikz(file.path("~/Dropbox/mobility/output/model/experiments/exp_yp",ostr_p_pres),width=4.7,height=2.5)
+	tikz(file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",ostr_p_pres),width=4.7,height=2.5)
 	print(p2_pres)
 	dev.off()
 
@@ -431,26 +431,26 @@ plot.CCP <- function(){
 	}
 	df = data.frame(x=seq(-3,4,le=100),P=f(seq(-3,4,le=100)))
 	p = ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw() + ggtitle("$\\Pr(v_1|v_2 = 1) = e^{v_1 - \\log(\\exp(v_1) + \\exp(v_2)) )}$\n") + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
-	tikz("~/Dropbox/mobility/output/model/fit/ccp-plot.tex",width=6,height=4)
+	tikz("~/Dropbox/research/mobility/output/model/fit/ccp-plot.tex",width=6,height=4)
 	print(p)
 	dev.off()
 	p = ggplot(df,aes(x=x,y=P)) + geom_line() + geom_vline(xintercept=1.0,color="grey",linetype="dashed") + scale_x_continuous(name="$v_1$",breaks=c(-2,0,1,2,4)) + theme_bw()  + scale_y_continuous("$\\Pr(v_1|v_2 = 1)$\n") + geom_hline(yintercept=0.5,linetype="dashed",color="grey")
-	tikz("~/Dropbox/mobility/output/model/fit/ccp-plotsmall.tex",width=4,height=3)
+	tikz("~/Dropbox/research/mobility/output/model/fit/ccp-plotsmall.tex",width=4,height=3)
 	print(p)
 	dev.off()
 }
 
 plot.CCP2 <- function(){
-	ass = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_ass.csv")
-	inc = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_inc.csv")
-	z   = read.csv("/Users/florianoswald/Dropbox/mobility/output/model/fit/mp_z.csv")
+	ass = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_ass.csv")
+	inc = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_inc.csv")
+	z   = read.csv("/Users/florianoswald/Dropbox/research/mobility/output/model/fit/mp_z.csv")
 }
 
 
 # plot julia data
 
 plot.simReports <- function(){
-	d <- data.table(read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim_year.csv"))
+	d <- data.table(read.csv("~/Dropbox/research/mobility/output/model/data_repo/out_data_jl/sim_year.csv"))
 	setkey(d,year)
 	data(Sipp_age,envir=environment())
 	d0=merged[age>19&age<51,list(data_mig=weighted.mean(D2D,HHweight,na.rm=T),data_own=weighted.mean(own,HHweight,na.rm=T)),by=year]
@@ -463,21 +463,21 @@ plot.simReports <- function(){
 	# migration rates over time
 
 	pl$mig <- ggplot(subset(m,variable %in% c("model_mig","data_mig")),aes(x=year,y=value,color=variable)) + geom_point()  + theme_bw() + scale_y_continuous("annual moving rate") + ggtitle("Cross Division mobility in SIPP and model")
-	ggsave(pl$mig,file="~/Dropbox/mobility/output/model/fit/mig_year2.pdf")
+	ggsave(pl$mig,file="~/Dropbox/research/mobility/output/model/fit/mig_year2.pdf")
 
 	# ownership rates over time
 	pl$own <- ggplot(subset(m,variable %in% c("data_own","model_own")),aes(x=year,y=value,linetype=variable)) + geom_line() + theme_bw() + scale_y_continuous("Home Ownership rate") + ggtitle("Ownership rates in SIPP and model")
-	ggsave(pl$own,file="~/Dropbox/mobility/output/model/fit/own_year.pdf")
+	ggsave(pl$own,file="~/Dropbox/research/mobility/output/model/fit/own_year.pdf")
 
 	# ownership by region over time
-	d_reg <- data.table(read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim_year_reg.csv"))
+	d_reg <- data.table(read.csv("~/Dropbox/research/mobility/output/model/data_repo/out_data_jl/sim_year_reg.csv"))
 	d1=merged[age>19&age<51,list(data_own=weighted.mean(own,HHweight,na.rm=T)),by=list(year,Division)]
 	setkey(d_reg,year,Division)
 	setkey(d1,year,Division)
 	d1 = d1[d_reg]
 	m1 = melt(d1,c("year","Division"))
 	pl$own_reg <- ggplot(m1,aes(year,y=value,linetype=variable)) + geom_line() + facet_wrap(~Division) + ggtitle("Home Ownership rates by Division") + theme_bw()
-	ggsave(pl$own_reg,file="~/Dropbox/mobility/output/model/fit/own_year_reg.pdf")
+	ggsave(pl$own_reg,file="~/Dropbox/research/mobility/output/model/fit/own_year_reg.pdf")
 
 }
 
@@ -487,9 +487,9 @@ plot.simReports <- function(){
 # 3. what is the focus of this paper? -> model decreasing cross division migration and ownership over the lifecycle.
 
 analyze.sim <- function(newdata=FALSE){
-	fitpath <- "~/Dropbox/mobility/output/model/fit"
+	fitpath <- "~/Dropbox/research/mobility/output/model/fit"
 	if (newdata){
-		s = fread("~/Dropbox/mobility/output/model/data_repo/out_data_jl/sim.csv")
+		s = fread("~/Dropbox/research/mobility/output/model/data_repo/out_data_jl/sim.csv")
 		save(s,file="~/git/migration/mig-pkg/data/simdata.rda")
 	} else {
 		load("~/git/migration/mig-pkg/data/simdata.rda")
@@ -556,7 +556,7 @@ analyze.sim <- function(newdata=FALSE){
 
 	# interact owners/renters 
 
-	texreg(svyl[c("ME_age","ME_age2","ME_age_OR")],digits=4,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/mobility/output/model/fit/move_in_sim.tex",custom.model.names=c("Pr(move)","Pr(move|Division)","Pr(move|Division,Own)"),omit.coef="Division")
+	texreg(svyl[c("ME_age","ME_age2","ME_age_OR")],digits=4,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/research/mobility/output/model/fit/move_in_sim.tex",custom.model.names=c("Pr(move)","Pr(move|Division)","Pr(move|Division,Own)"),omit.coef="Division")
 
 
 	# determinants of owning
@@ -569,7 +569,7 @@ analyze.sim <- function(newdata=FALSE){
 	merged[,p2y := hvalue / CensusMedinc]
 	svyl$own_sipp <- merged[year>1997 & realage>19 & realage<51,lm(own ~ p2y + Division + p2w + income +realage)]
 
-	texreg(svyl[c("own","own_sipp")],digits=3,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/mobility/output/model/fit/p2y_data_model.tex",custom.model.names=c("Model","Data"),omit.coef="Division")
+	texreg(svyl[c("own","own_sipp")],digits=3,table=FALSE,use.packages=FALSE,dcolumn=TRUE,booktabs=TRUE,file="~/Dropbox/research/mobility/output/model/fit/p2y_data_model.tex",custom.model.names=c("Model","Data"),omit.coef="Division")
 
 	return(tabs)
 
@@ -582,7 +582,7 @@ analyze.sim <- function(newdata=FALSE){
 
 
 mom.table <- function(){
-	d <- data.table(read.csv("~/Dropbox/mobility/output/model/fit/moms.csv"))
+	d <- data.table(read.csv("~/Dropbox/research/mobility/output/model/fit/moms.csv"))
 	d[,moment := as.character(moment)]
 	neword = c(10,11:15,1,2,7,8,9,43,44,45,16:27,4,5,6,3,39,28:38,40,41)
 	dd = d[neword,list(moment,data=data_value,model=model_value)]
@@ -591,14 +591,14 @@ mom.table <- function(){
 	nontarget = dd[31:44]
 	digtarget = matrix(c(rep(4,11),rep(2,15),rep(4,4)),nrow=30,ncol=4)
 	dignontarget = matrix(c(rep(2,14)),nrow=14,ncol=4)
-	print(xtable(target,digits=digtarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/mobility/output/model/fit/moms.tex")
-	print(xtable(nontarget,digits=dignontarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/mobility/output/model/fit/moms_nontarget.tex")
+	print(xtable(target,digits=digtarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/research/mobility/output/model/fit/moms.tex")
+	print(xtable(nontarget,digits=dignontarget),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,use.packages=FALSE,file="~/Dropbox/research/mobility/output/model/fit/moms_nontarget.tex")
 
 }
 
 par.tables <- function(){
-	p = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/mobility/output/model/fit/param.json")))
-	f = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/mobility/output/model/fit/fixed.json")))
+	p = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/research/mobility/output/model/fit/param.json")))
+	f = t(data.frame(fromJSON(file="/Users/florianoswald/Dropbox/research/mobility/output/model/fit/fixed.json")))
 	p = as.data.frame(p[order(rownames(p)),])
 	f = as.data.frame(f[order(rownames(f)),])
 	names(p) = "value"
@@ -607,8 +607,8 @@ par.tables <- function(){
 	rownames(p) <- c("$\\gamma$","$\\alpha_0$","$\\alpha_1$","$\\alpha_2$","$\\alpha_3$","$\\alpha_4$","$\\omega_1$","$\\omega_2$","$\\tau$","$\\pi_{\\tau}$","$\\xi_1$","$\\xi_2$")
 	rownames(f) <- c("$\\beta$","$\\chi$","$\\phi$","$1+r$","$\\rho$","$1+r^m$","$\\sigma_u$")
 
-	print(xtable(p,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/mobility/output/model/fit/param.tex")
-	print(xtable(f,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/mobility/output/model/fit/fixed.tex")
+	print(xtable(p,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/research/mobility/output/model/fit/param.tex")
+	print(xtable(f,digits=3),sanitize.rownames.function=function(x){x},floating=FALSE,dcolumn=TRUE,booktabs=TRUE,file="/Users/florianoswald/Dropbox/research/mobility/output/model/fit/fixed.tex")
 
 }
 
@@ -625,8 +625,8 @@ par.tables <- function(){
 
 plot.simulation <- function(){
 
-	fi <- "~/Dropbox/mobility/output/model/data_repo/out_graphs_jl"
-	d <- read.csv("~/Dropbox/mobility/output/model/data_repo/out_data_jl/simdata.csv")
+	fi <- "~/Dropbox/research/mobility/output/model/data_repo/out_graphs_jl"
+	d <- read.csv("~/Dropbox/research/mobility/output/model/data_repo/out_data_jl/simdata.csv")
 
 	d <- as.data.table(d)
 
@@ -691,7 +691,7 @@ plot.simulation <- function(){
 Export.Julia <- function(writedisk=TRUE){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
-	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
 
 
 	# subset age
@@ -963,7 +963,7 @@ compareVars <- function(){
 
 	pl = ggplot(dall,aes(x=year,y=p,color=Division)) + geom_line(size=0.8) + facet_wrap(~regime) + theme_bw() + scale_color_manual(values=cbPalette) + scale_y_continuous("2012 Dollars (1000)")
 
-	ggsave(plot=pl,file="~/Dropbox/mobility/output/model/experiments/smallShocks/prices.pdf",width=7,height=4.5)
+	ggsave(plot=pl,file="~/Dropbox/research/mobility/output/model/experiments/smallShocks/prices.pdf",width=7,height=4.5)
 
 }
 
@@ -971,7 +971,7 @@ compareVars <- function(){
 # small shocks
 Export.VAR_smallShocks <- function(){
 
-	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
 
 	data(BEA_fhfa,envir=environment())
 
@@ -1056,7 +1056,7 @@ Export.VAR_smallShocks <- function(){
 # constant series
 Export.VAR4 <- function(){
 
-	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
 
 	data(BEA_fhfa,envir=environment())
 
@@ -1129,7 +1129,7 @@ Export.VAR4 <- function(){
 # all series are contant and equal to the most recent observation
 Export.VAR2 <- function(){
 
-	path <- "~/Dropbox/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
 
 	data(BEA_fhfa,envir=environment())
 
@@ -1276,18 +1276,24 @@ Export.IncomeProcess <- function(dat,writedisk){
 
 	# TODO change this!!!!
 	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
-	cnames = coef(lmod)
+	names = coef(lmod)
+
+
+
 	if (writedisk){
 		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
 	}
 
 	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
+	newdat2 = expand.grid(age=20:50,CensusMedinc=c(30,45,60))
 	x=cbind(newdat,exp(predict(lmod,newdat)))
+	cbind(exp(predict(lmod,newdat)),exp(predict(lmods$ENC,newdat2)))
+	x2=cbind(newdat2,exp(predict(lmods$ENC,newdat2)))
 	x$meany = paste0("$\\overline{y}_{dt}=",x$CensusMedinc,"$")
 	names(x)[4] = "predict"
 
 	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
-	ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	p = ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
 	dev.off()
 
 	# new version
@@ -1629,10 +1635,10 @@ get_BEA_persincome <- function(){
 	data(PersonalIncome,package="EconData",envir=environment())
 	data(Population,package="EconData",envir=environment())
 
+	# this is personal income for an entire state!
 	setkey(pers_income_current,state,year)
 	setkey(population,state,year)
 	population[pers_income_current]
-	pers_income_current[population]
 	py = pers_income_current[population]
 	py[,pcy := income / population]
 
@@ -1653,10 +1659,11 @@ get_BEA_persincome <- function(){
 	setkey(py,state)
 	py = US_states[py]
 	py[,Division := abbreviate(Division,minlength=3)]
-	py[,wgt := population / .SD[,sum(population)],by=list(Division,year)]
-	py[,state := NULL]
 
+	# average by division
+	py[,wgt := population / .SD[,sum(population)],by=list(Division,year)]
 	py = py[,list(y = weighted.mean(rpcy,wgt)),by=list(Division,year)]
+
 	return(py)
 
 }
@@ -1774,7 +1781,7 @@ getFHFA_realPrices <- function(){
 
 
 # plot model slices
-plotModelSlices <- function(who="mac",path="~/Dropbox/mobility/output/model/data_repo",outpath="~/Dropbox/mobility/output/model/data_repo"){
+plotModelSlices <- function(who="mac",path="~/Dropbox/research/mobility/output/model/data_repo",outpath="~/Dropbox/research/mobility/output/model/data_repo"){
 	# load data
 	if (who=="iridis"){
 		cmd <- paste0("scp -r iridis:~/data_repo/mig/out_data_jl/ ",path)

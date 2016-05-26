@@ -288,7 +288,7 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
 			a = @linq v |>
 				@where((:year.>1997) & (:j.==j)) |>
 				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own)) |>
-				@transform(popgrowth = [diff(:All),0.0]./:All)
+				@transform(popgrowth = [diff(:All);0.0]./:All)
 
 			# movers to j over time
 			m_in = @linq v |>
@@ -319,9 +319,10 @@ end
 
 
 # get flows plot
-function FlowsPlot(s::DataFrame)
+function FlowsPlot(s::DataFrame,m::Model)
 
        flows = map(x-> proportionmap(@where(s,(:year.==x)&(:j.!=:moveto))[:moveto]),1997:2012)
+       nms = m.regnames[:Division]
 
        fmat = zeros(9,length(flows))
        for i in 1:length(flows)
@@ -329,8 +330,9 @@ function FlowsPlot(s::DataFrame)
        fmat[k,i] = v
        end
        end
+       df=names!(convert(DataFrame,fmat'),map(symbol,convert(Array,m.regnames[:Division])))
        PyPlot.plot(fmat')
-       return fmat
+       return df
    end
 
 	

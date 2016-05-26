@@ -1,4 +1,5 @@
-
+exportData:
+	Rscript -e "library(migration); Export.Julia(writedisk=TRUE)"
 
 CMDinstall:
 	R CMD INSTALL --no-multiarch ../mig-pkg

@@ -10,7 +10,8 @@ cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
-x=mig.runObj()
+i# build vector of weights
+@profile x=mig.runObj()
 					
 # run simulation
 # plot 5 guys
@@ -20,7 +21,7 @@ x=mig.runObj()
 p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
-@profile mig.solve!(m,p)	
+@time mig.solve!(m,p)	
 @profile s = mig.simulate(m,p);	
 @profile x=mig.computeMoments(s,p,m)
 @time s = mig.simulate(m,p);	
