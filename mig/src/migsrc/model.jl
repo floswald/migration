@@ -48,6 +48,7 @@ type Model
 	Init_asset::LogNormal
 
 	Regmods_YP::Dict{Int,Matrix{Float64}}   # regional VAR models. row 1 is Y, row 2 is P
+	sigma_reg::Dict   # covariance matrices of residuals form regional VAR models.
 	PYdata::DataFrame
 	pred_ydf::DataFrame
 	pred_pdf::DataFrame
@@ -188,6 +189,7 @@ type Model
 			end
 			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
 			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
+			sigma_reg_df = DataFrame(read_rda(joinpath(indir,"sigma_reg.rda"))["sigma_reg"])
 			YPsigma = zeros(2,2)
 			YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
 			YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
@@ -197,6 +199,15 @@ type Model
 			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y.rda"))["pred_y"])
 			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p.rda"))["pred_p"])
 		end
+
+		# get region names
+		nms = convert(Array,popweights[:Division])
+		# get regional cov matrics
+		# and convert to correlation
+		sigma_reg = [k => cov2corr(reshape(convert(Array,sigma_reg_df[symbol(k)]),2,2)) for k in nms]
+		# convert to correlation matrices
+
+
 
 		# fill into a matrix
 		# Var(Y),cov(Y,P),cov(P,Y),Var(P)
@@ -211,6 +222,8 @@ type Model
 
 		# population weights
 		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
+
+
 
 		# individual income process parameters
 		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
@@ -483,7 +496,7 @@ type Model
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
 
 	end
 end

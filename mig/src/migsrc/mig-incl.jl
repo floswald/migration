@@ -15,6 +15,19 @@ end
 
 # miscellaneous includes
 
+function cov2corr(x::Matrix)
+	if size(x) != (2,2)
+		error("x must be a 2 by 2 matrix")
+	end
+	y = similar(x)
+	f = prod(sqrt(diag(x)))
+	y[1,1] = 1.0
+	y[2,2] = 1.0
+	y[1,2] = x[1,2] / f
+	y[2,1] = y[1,2]
+	return y
+end
+
 # objective function to work with mopt
 function objfunc(ev::Eval)
 
