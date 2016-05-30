@@ -52,11 +52,14 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 
 end
 
-function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param)
+function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Model)
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+	elseif which == "ypshock"
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]) )
+		opts["shockVal_p"] = opts["shockVal_y"] * m.sigma_reg[j][1,2]
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
 		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])

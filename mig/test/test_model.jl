@@ -44,10 +44,18 @@ facts("testing the model module") do
 	context("initial value for amenity vector") do
 		@fact p.amenity --> m.proportion[:proportion]
 	end
-		
 
+	context("covariance matrices of regional VARS") do
+		@fact isa(m.sigma_reg["WNC"],Matrix) --> true
+		@fact length(m.sigma_reg) --> 9 
+		for (k,v) in m.sigma_reg
+			@fact issym(v) --> true
+			e = extrema(v)
+			@fact e[1] >= -1.0 --> true
+			@fact e[2] <=  1.0 --> true
+		end
 
-
+	end
 end
 
 

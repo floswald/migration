@@ -771,6 +771,7 @@ Export.Julia <- function(writedisk=TRUE){
 	pred_y    <- reg$pred_y
 	pred_p    <- reg$pred_p
 	sigma_agg <- reg$agg_sigma
+	sigma_reg <- reg$sigma_region
 	sigma_agg$row <- rownames(sigma_agg)
 	VAR_reg   <- VAR_reg[order(VAR_reg$Division), ]
 	z         <- z[order(z$Division), ]
@@ -786,6 +787,7 @@ Export.Julia <- function(writedisk=TRUE){
 		save(prop,file=file.path(path,"prop.rda"))
 
 		save(sigma_agg,file=file.path(path,"sigma_agg.rda"))
+		save(sigma_reg,file=file.path(path,"sigma_reg.rda"))
 		save(VAR_agg,file=file.path(path,"VAR_agg.rda"))
 		save(PYdata,file=file.path(path,"PYdata.rda"))
 		save(pred_y,file=file.path(path,"pred_y.rda"))
@@ -795,7 +797,7 @@ Export.Julia <- function(writedisk=TRUE){
 
 	}
 
-	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg,pred_y=pred_y,pred_p=pred_p))
+	return(list(par_df=par_df,dist=dist,m=m,kids_trans=kids_trans,prop=prop,VAR_agg=VAR_agg,VAR_reg=VAR_reg,z=z,aggmod=reg$Agg_mod,sigma_agg=sigma_agg,sigma_reg=sigma_reg,pred_y=pred_y,pred_p=pred_p))
 
 }
 
@@ -901,6 +903,9 @@ Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",w
 		texreg(mods[5:9],custom.model.names=paste(rep(divs[5:9],each=2),rep(c("Y","P"),5)),file=file.path(plotpath,"VAR2.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE)
 	}
 
+	# get var-cov matrix for each regional process
+	sigma_region <- data.frame(lapply(mods, function(x) as.vector(x$residCov)))
+
 	# predict 
 	pyagg[,yhat := 0]
 	pyagg[,phat := 0]
@@ -945,7 +950,7 @@ Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",w
 	ggsave(pl$pred_p,file=file.path(plotpath,"VAR_reg_p.pdf"),width=9,height=7)
 
 
-	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg,pyagg=pyagg))
+	return(list(Agg_mod=aggmod,Agg2Region_mods=mods,agg_sigma=sigma,Agg_coefs=aggcoefs,Agg2Region_coefs=coefs,plots=pl,PYdata=PYseries,pred_y=pred_y_out,pred_p=pred_p_out,agg_price=agg,pyagg=pyagg,sigma_region=sigma_region))
 
 }
 

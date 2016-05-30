@@ -10,8 +10,7 @@ cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
 include("src/mig.jl")
-i# build vector of weights
-@profile x=mig.runObj()
+x=mig.runObj()
 					
 # run simulation
 # plot 5 guys

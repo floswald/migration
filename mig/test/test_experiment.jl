@@ -13,6 +13,7 @@ facts("experiment.jl tests") do
 	context("testing selectPolicy") do
 
 		p = Param(2)
+		m = Model(p)
 		
 		j = 8
 		yr = 2005 
@@ -43,6 +44,14 @@ facts("experiment.jl tests") do
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
 		@fact po["shockVal"] --> [0.7; 0.8; 0.9; [1.0 for i=1:p.nt-3]]
+
+		po = mig.selectPolicy("ypshock",j,yr,p)
+		@fact po["policy"] --> "ypshock"
+		@fact po["shockRegion"] --> j
+		@fact po["shockYear"] --> yr
+		@fact po["shockAge"] --> 1
+		@fact po["shockVal_y"] --> [po["shockVal"] for i=1:p.nt-1]
+		@fact po["shockVal_p"] --> po["shockVal_y"]*m.sigma_reg[j][1,2]]
 
 	end
 

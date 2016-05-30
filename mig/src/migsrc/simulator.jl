@@ -241,7 +241,7 @@ function simulate(m::Model,p::Param)
 	Dis      = zeros(Int,nsim*T)
 	Dtau     = zeros(Int,nsim*T)
 	Dregname = ASCIIString["" for i = 1:(nsim*T)]
-	# Dtoname  = ASCIIString["" for i = 1:(nsim*T)]
+	Dtoname  = ASCIIString["" for i = 1:(nsim*T)]
 	Dsubsidy = zeros(nsim*T)
 
 	# fill in aggregate prices faced by each cohort
@@ -543,7 +543,7 @@ function simulate(m::Model,p::Param)
 				DM[i_idx]       = move
 				DMt[i_idx]      = moveto
 				Dregname[i_idx] = regnames[ij]
-				# Dtoname[i_idx] = regnames[moveto]
+				Dtoname[i_idx] = regnames[moveto]
 				Dcanbuy[i_idx]  = canbuy
 				Dwealth[i_idx]  = (price_k * ih) + a
 				Dwealth2[i_idx]  = (price_j * ih) + a 	# TODO
@@ -593,8 +593,7 @@ function simulate(m::Model,p::Param)
 
 	# convert children indicator into a boolean:
 	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
-	# df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
@@ -881,11 +880,8 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 
 	# flows of moves: where do moves go to?
 	# -------------------------------------
-	xx = @linq df |>
-		@where(:move) |>
-		proportionmap(:Division_to)
-	zz = DataFrame(moment=collect(keys(xx)), model_value = collect(values(xx)))
-	zz[:moment] = map(x->"flow_move_to$x",zz[:moment])
+	xx = proportionmap(df[ df[:move],:Division_to] )
+	zz = DataFrame(moment=map(string,map(x->"flow_move_to_$x",collect(keys(xx)))), model_value = collect(values(xx)))
 	append!(mom1,zz)
 
 
