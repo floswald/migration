@@ -113,15 +113,7 @@ type Model
 		# ==================
 
 		# if on my machine
-		if Sys.OS_NAME == :Darwin
-			indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
-		# if on IFS windows
-		elseif Sys.OS_NAME == :Windows
-			indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
-		# if on UNIX hpc systems
-		else
-			indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
-		end
+		indir,outdir = setPaths()
 
 		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
 		# rhoy = h52df(joinpath(indir,"mig_db_in.h5"),"rhoy/")	# function makes a dataframe from all cols in rhoy
@@ -137,9 +129,6 @@ type Model
 		# population weights
 		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
-
-		# set amenity to popweights initially
-		p.amenity = convert(Array,popweights[:proportion])
 
 		# age distribution
 		agedist = DataFrame(read_rda(joinpath(indir,"agedist.rda"))["agedist"])

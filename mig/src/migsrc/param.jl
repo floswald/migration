@@ -117,7 +117,6 @@ type Param
 		omega1   = 1.0
 		omega2   = 5.1
 		# omega2   = 6.1
-		amenity  = zeros(nJ)
 
 		MC0    = 2.77  	 	# intercept
 		MC1    = 0.017  	 	# age
@@ -139,6 +138,24 @@ type Param
 		ages   = minAge:maxAge
 		euler  = 0.5772	# http://en.wikipedia.org/wiki/Gumbel_distribution
 		sscale = 1.0 	# with kids your consumption goes down 20%
+
+		# get data
+		# --------
+
+		indir,outdir = setPaths()
+		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
+		sort!(popweights,cols=1)
+
+		# set amenity to popweights initially
+		amenity = convert(Array,popweights[:proportion])
+		amenity[1] -= 0.03
+		amenity[3] -= 0.01
+		amenity[4] += 0.04
+		amenity[5] += 0.01
+		amenity[6] += 0.035
+		amenity[7] -= 0.01
+		amenity[8] -= 0.01
+
 
 		# policy and shock setup
 		if length(opts) > 0 

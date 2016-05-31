@@ -11,6 +11,7 @@ include("examples/slices.jl")
 
 include("src/mig.jl")
 x=mig.runObj()
+MOpt.check_moments(x)
 					
 # run simulation
 # plot 5 guys
@@ -113,3 +114,30 @@ include("test/test_solution.jl")
 include("test/test_experiment.jl")
 include("test/test_sim.jl")    
 include("test/test_accelerator.jl")    
+
+
+│ 4   │ flow_move_to_ENC    │ 0.140377     │ 0.187767    │    0.163865    
+│ 5   │ flow_move_to_ESC    │ 0.0600198    │ 0.0597757   │    0.06869     
+│ 6   │ flow_move_to_MdA    │ 0.104663     │ 0.106255    │    0.122539    
+│ 7   │ flow_move_to_Mnt    │ 0.116071     │ 0.0700659   │    0.0674558   
+│ 8   │ flow_move_to_NwE    │ 0.0644841    │ 0.0721471   │    0.0518369   
+│ 9   │ flow_move_to_Pcf    │ 0.136905     │ 0.088912    │    0.141682    
+│ 10  │ flow_move_to_StA    │ 0.160714     │ 0.188345    │    0.19012     
+│ 11  │ flow_move_to_WNC    │ 0.115575     │ 0.122442    │    0.0872338   
+│ 12  │ flow_move_to_WSC    │ 0.10119      │ 0.10429     │    0.106578    
+
+
+ 0.163865 
+ 0.06869  
+ 0.122539 
+ 0.0674558
+ 0.0518369
+ 0.141682 
+ 0.19012  
+ 0.0872338
+ 0.106578 
+
+
+
+
+
