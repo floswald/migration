@@ -354,9 +354,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										## constant utility shifter
 										if is==1
-											consta = ih*p.xi2 - mc + p.amenity[ik]
+											consta = ih*p.xi2 - mc + m.amenities[ik]
 										else
-											consta = ih*p.xi1 - mc + p.amenity[ik]
+											consta = ih*p.xi1 - mc + m.amenities[ik]
 										end
 
 

@@ -29,6 +29,8 @@ type Model
 	# index of the first asset element > 0
 	aone :: Int
 
+	amenities::Vector{Float64}
+
 	# grids
 	grids   :: Dict{ASCIIString,Array{Float64,1}}
 	gridsXD :: Dict
@@ -132,6 +134,19 @@ type Model
 
 		# age distribution
 		agedist = DataFrame(read_rda(joinpath(indir,"agedist.rda"))["agedist"])
+
+
+		# put all amenities into amenity vector
+		amenities = vcat(p.amenity_ENC,
+						p.amenity_ESC,
+						p.amenity_MdA,
+						p.amenity_Mnt,
+						p.amenity_NwE,
+						p.amenity_Pcf,
+						p.amenity_StA,
+						p.amenity_WNC,
+						p.amenity_WSC)
+
 
 		# Aggregate and Regional price and income dynamic
 		# ===============================================
@@ -485,7 +500,7 @@ type Model
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
 
 	end
 end

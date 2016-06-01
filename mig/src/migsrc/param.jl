@@ -19,7 +19,15 @@ type Param
 	xi2     :: Float64          # utility of housing
 	omega1  :: Float64 			# final period utility parameters
 	omega2  :: Float64			# final period utility parameters
-	amenity :: Vector{Float64}  # amenity value of living in j
+	amenity_ENC :: Float64  # amenity value of living in ENC
+	amenity_ESC :: Float64  # amenity value of living in ESC
+	amenity_MdA :: Float64  # amenity value of living in MdA
+	amenity_Mnt :: Float64  # amenity value of living in Mnt
+	amenity_NwE :: Float64  # amenity value of living in NwE
+	amenity_Pcf :: Float64  # amenity value of living in Pcf
+	amenity_StA :: Float64  # amenity value of living in StA
+	amenity_WNC :: Float64  # amenity value of living in WNC
+	amenity_WSC :: Float64  # amenity value of living in WSC
 
 	# moving cost parameters
 	MC0    :: Float64 # parameters in moving cost: alpha0, intercept
@@ -148,6 +156,8 @@ type Param
 
 		# set amenity to popweights initially
 		amenity = convert(Array,popweights[:proportion])
+
+		# change initial value a bit
 		amenity[1] -= 0.03
 		amenity[3] -= 0.01
 		amenity[4] += 0.04
@@ -156,6 +166,16 @@ type Param
 		amenity[7] -= 0.01
 		amenity[8] -= 0.01
 
+		# plug into members
+		amenity_ENC = amenity[1]
+		amenity_ESC = amenity[2]
+		amenity_MdA = amenity[3]
+		amenity_Mnt = amenity[4]
+		amenity_NwE = amenity[5]
+		amenity_Pcf = amenity[6]
+		amenity_StA = amenity[7]
+		amenity_WNC = amenity[8]
+		amenity_WSC = amenity[9]
 
 		# policy and shock setup
 		if length(opts) > 0 
@@ -186,7 +206,7 @@ type Param
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 
