@@ -1,16 +1,6 @@
 
 # sets up an MProb on each node
 
-
-if ENV["USER"] == "florian_o"
-	push!(DL_LOAD_PATH, "/home/florian_o/local/lib")
-elseif ENV["USER"] == "eisuc151"
-	push!(DL_LOAD_PATH, "/home/eisuc151/local/lib")
-elseif ENV["USER"] == "uctpfos"
-	push!(DL_LOAD_PATH, "/home/eisuc151/local/hdf5/lib")
-end
-
-
 using mig, MOpt
 
 
@@ -18,7 +8,7 @@ indir, outdir = mig.setPaths()
 moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 mig.names!(moms,[:name,:value,:weight])
 # subsetting moments
-dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+dont_use= ["lm_w_intercept","move_neg_equity"]
 for iw in moms[:name]
 	if contains(iw,"wealth") 
 		push!(dont_use,iw)

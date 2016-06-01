@@ -7,10 +7,9 @@ t0 = time()
 
 require("../nodes.jl")
 
+sl = MOpt.slices(mprob,length(workers()));
+MOpt.write(sl,"slices.h5")
 
-mig_slice = MOpt.slices(mprob,32)
-writetable(joinpath(outdir,"migslice1.csv"),mig_slice[1])
-writetable(joinpath(outdir,"migslice2.csv"),mig_slice[2])
 
 println("done after $(round((time()-t0)/60)) minutes")
 # savePlots(tdir,"png")
