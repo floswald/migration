@@ -5,7 +5,7 @@
 
 t0 = time()
 
-require("../nodes.jl")
+@everywhere include("../nodes.jl")
 
 sl = MOpt.slices(mprob,length(workers()));
 MOpt.write(sl,"slices.h5")
