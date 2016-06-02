@@ -277,13 +277,12 @@ end
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
+function getFlowStats(dfs::Dict{ASCIIString,DataFrame},writedisk=true)
 
 	# s is a simulation output
 	d = Dict()
 
-
-	if pth != "null"
+	if writedisk
 		indir, outdir = mig.setPaths()
 		fi = readdir(outdir)
 		if !in(pth,fi)
@@ -321,7 +320,7 @@ function getFlowStats(dfs::Dict{ASCIIString,DataFrame},pth="null")
 
 			d[k][j] = ma
 
-			if pth != "null"
+			if writedisk
 				writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
 			end
 

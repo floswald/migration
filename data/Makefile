@@ -15,7 +15,7 @@ setup_ucl: put_ucl
 	ssh ucl "cd ${db_remote} && tar -xzf data.tar.gz"
 
 setup_sherlock: put_sherlock
-	ssh cs "cd ${db_remote} && tar -xzf data.tar.gz"
+	ssh sherlock "cd ${db_remote} && tar -xzf data.tar.gz"
 
 put: put_sherlock put_cs put_ucl
 

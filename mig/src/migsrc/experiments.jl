@@ -14,6 +14,7 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 	indir, outdir = mig.setPaths()
 
 	p = Param(2)
+	m = Model(p)
 
 	if which=="mortgage_deduct"
 		e = mig.exp_Mortgage(true)
@@ -37,8 +38,8 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 	elseif which=="smallShocks"
 		e = mig.smallShocks()
 
-	elseif in(which,["pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
-		opts = selectPolicy(which,region,year,p)
+	elseif in(which,["ypshock","pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
+		opts = selectPolicy(which,region,year,p,m)
 		e = mig.exp_shockRegion(opts)
 		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
 		JSON.print(f,e[1])
@@ -59,7 +60,7 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Mo
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which == "ypshock"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]) )
-		opts["shockVal_p"] = opts["shockVal_y"] * m.sigma_reg[j][1,2]
+		opts["shockVal_p"] = opts["shockVal_y"] * m.sigma_reg[m.proportion[j,:Division]][1,2]
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
 		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
@@ -964,7 +965,7 @@ function exp_value_mig_base(j::Int,allj=false)
 
 
     # total flows across regims
-    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),"null")
+    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false)
     f2 = [ k => flows[k][j]  for k in keys(flows) ]
 
     flows = Dict()
@@ -1403,7 +1404,7 @@ function exp_shockRegion(opts::Dict)
 	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
-	flows = getFlowStats(d,string(which,j))
+	flows = getFlowStats(d,true)
 
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
