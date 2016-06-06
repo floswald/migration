@@ -1404,7 +1404,7 @@ function exp_shockRegion(opts::Dict)
 	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
-	flows = getFlowStats(d,true,"$which_$j")
+	flows = getFlowStats(d,true,"$(which)_$j")
 
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
