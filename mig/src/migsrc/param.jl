@@ -119,13 +119,14 @@ type Param
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
 		tau      = 100
-		taudist  = 0.68
-		xi1      = 0.012
+		taudist  = 0.65
+		xi1      = 0.008
 		xi2      = 0.052
 		omega1   = 1.0
 		omega2   = 5.1
 		# omega2   = 6.1
 
+		# MC0    = 2.71  	 	# intercept
 		MC0    = 2.77  	 	# intercept
 		MC1    = 0.017  	 	# age
 		MC2    = 0.0013 		# age2

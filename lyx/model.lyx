@@ -450,6 +450,10 @@ Migration is a low probability event in both data and model.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Government policies might help to increase labor market efficiency, housing
  market inefficiency or both.
  The main inefficiencies any policy might target are incomplete asset markets,
@@ -462,7 +466,7 @@ Government policies might help to increase labor market efficiency, housing
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 I find that abolishing the mortgage interest deduction would have a only
  a negligible impact on the aggregate migration rate.
  At first sight one might be tempted to think that removing the deduction
@@ -496,6 +500,11 @@ key "sommer2013implications"
  In terms of welfare, households prefer removing the deduction and would
  agree to giving up 2.4% of period consumption before being indifferent to
  the status quo.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -729,7 +738,7 @@ key "karahan2011housing"
  The present paper differs from this group of contributions by assuming
  multiple locations and by adopting a life-cycle framework.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 In general, the relationship between homeownership and labor market mobility
@@ -778,6 +787,10 @@ key "halket2014saving"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Finally, the paper relates to the literature on tax treatment of housing
  and ownership.
  The federal tax code in the United States allows households to deduct mortgage
@@ -815,6 +828,11 @@ key "sommer2013implications"
  is a recent contribution that analyses the policy in a GE framework.
  I evaluate the effect of removing the deduction on both homeownership and
  mobility.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2807,10 +2825,6 @@ given the state, compute optimal behaviour in all
 \end_inset
 
  regions, i.e.
-\begin_inset Separator latexpar
-\end_inset
-
-
 \end_layout
 
 \begin_deeper
@@ -5132,11 +5146,15 @@ key "kennan2003effect"
  
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Subsection
 Probability of Migrating
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In figures 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5196,7 +5214,7 @@ reference "fig:CS-assets"
  owners, and at the same time decreases the probability of moving.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status collapsed
 
@@ -5275,7 +5293,7 @@ name "fig:Illustration-of-conditional"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -5314,16 +5332,12 @@ name "fig:CS-assets"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -5361,16 +5375,12 @@ name "fig:CS-prob-income"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -5411,7 +5421,8 @@ name "fig:CS-prob-z"
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
 
@@ -5736,7 +5747,200 @@ name "tab:Decomposing-owner's-moving"
 \end_layout
 
 \begin_layout Subsection
-The effects on migration of a regional shock
+The value of Migration
+\end_layout
+
+\begin_layout Standard
+In this section I investigate the value of the migration option.
+ The experiment assumes that the situation of West North Central changes
+ in the sense that immigration is allowed, but emigrating is prohibited.
+ First we will discuss changes in migration flows, and the ex-ante welfare
+ effects for residents of WNC under both scenarios.
+ Finally, we will analyze the experience of individuals who would have moved
+ in the baseline environment, but are now prevented from doing so.
+ 
+\end_layout
+
+\begin_layout Standard
+Migration flows and are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:value-of-migration-flows"
+
+\end_inset
+
+.
+ The top panel shows changes in immigration flows to the region for both
+ scenarios, and the respective percentage change.
+ Comparing the first two columns as percentage changes in column three,
+ we see that inflows into the region fall dramatically in a world where
+ moving away from WNC is not an option.
+ This shows that agents outside of the region perceive WNC as a much inferior
+ option to the baseline.
+ In the lower panel of the table I show baseline emmigration flows for compariso
+n.
+ The bottom row of the table gives an estimate of average lifetime utility
+ across both regimes, and we see that removing the option to leave the region
+ carries a very large penalty.
+ Across both regimes, average expected lifetime utility falls by 5.1%, which
+ implies that individuals would demand a 4.4% increase in per period consumption
+ in a world without the moving option before they would be indifferent to
+ the baseline.
+ 
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Average-utility-levels"
+
+\end_inset
+
+ shows the average levels of utility conditional on age inside of WNC and
+ in all other regions.
+ We can see in the right panel, that reducing the value of WNC for potential
+ immigrants affects utility only marginally.
+ This comes from the fact that movers can easily avoid the region by moving
+ somewhere else.
+ For individuals inside the region, however, the changes are substantial
+ and they vary by age.
+ We can see that it is particularly younger individuals who suffer from
+ the removed option to move.
+ This makes intuitive sense, since the forgone expected gains from moving
+ are larger if we consider a longer time horizon.
+\end_layout
+
+\begin_layout Standard
+To summarize this subsection, restricting the ability to move implies large
+ losses in welfare.
+ This effect stems from the inability of residents to respond to changes
+ in their economic environment over time, as well as their inability to
+ accomodate location preference shocks.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/highMC/mig_value.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Removing the migration option from residents of West North Central.
+ The top panel shows immigration flows to West North Central as a percentage
+ of the resident population.
+ The same holds for the second panel shows outflows in the baseline.
+ The final two rows show the average expected lifetime utility across scenarios,
+ and the required consumption compensation in order to make agents indifferent.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:value-of-migration-flows"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/highMC/mig_value_detail.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+This table compares individuals who move away from West North Central in
+ the baseline scenario and compares them to their hypothetical counterparts
+ in a world where moving from the region is impossible.
+ The large difference in lifetime utility is a result from the big house
+ price increases experienced in other regions.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:value-of-migration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Labor Supply Elasticity
 \end_layout
 
 \begin_layout Standard
@@ -5969,199 +6173,6 @@ Turning finally to the effects of a reduction in house prices on inflows
  Both owners and renters move to the region to enjoy cheaper housing.
 \end_layout
 
-\begin_layout Subsection
-The value of Migration
-\end_layout
-
-\begin_layout Standard
-In this section I investigate the value of the migration option.
- The experiment assumes that the situation of West North Central changes
- in the sense that immigration is allowed, but emigrating is prohibited.
- First we will discuss changes in migration flows, and the ex-ante welfare
- effects for residents of WNC under both scenarios.
- Finally, we will analyze the experience of individuals who would have moved
- in the baseline environment, but are now prevented from doing so.
- 
-\end_layout
-
-\begin_layout Standard
-Migration flows and are displayed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration-flows"
-
-\end_inset
-
-.
- The top panel shows changes in immigration flows to the region for both
- scenarios, and the respective percentage change.
- Comparing the first two columns as percentage changes in column three,
- we see that inflows into the region fall dramatically in a world where
- moving away from WNC is not an option.
- This shows that agents outside of the region perceive WNC as a much inferior
- option to the baseline.
- In the lower panel of the table I show baseline emmigration flows for compariso
-n.
- The bottom row of the table gives an estimate of average lifetime utility
- across both regimes, and we see that removing the option to leave the region
- carries a very large penalty.
- Across both regimes, average expected lifetime utility falls by 5.1%, which
- implies that individuals would demand a 4.4% increase in per period consumption
- in a world without the moving option before they would be indifferent to
- the baseline.
- 
-\end_layout
-
-\begin_layout Standard
-Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Average-utility-levels"
-
-\end_inset
-
- shows the average levels of utility conditional on age inside of WNC and
- in all other regions.
- We can see in the right panel, that reducing the value of WNC for potential
- immigrants affects utility only marginally.
- This comes from the fact that movers can easily avoid the region by moving
- somewhere else.
- For individuals inside the region, however, the changes are substantial
- and they vary by age.
- We can see that it is particularly younger individuals who suffer from
- the removed option to move.
- This makes intuitive sense, since the forgone expected gains from moving
- are larger if we consider a longer time horizon.
-\end_layout
-
-\begin_layout Standard
-To summarize this subsection, restricting the ability to move implies large
- losses in welfare.
- This effect stems from the inability of residents to respond to changes
- in their economic environment over time, as well as their inability to
- accomodate location preference shocks.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/highMC/mig_value.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Removing the migration option from residents of West North Central.
- The top panel shows immigration flows to West North Central as a percentage
- of the resident population.
- The same holds for the second panel shows outflows in the baseline.
- The final two rows show the average expected lifetime utility across scenarios,
- and the required consumption compensation in order to make agents indifferent.
-  
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:value-of-migration-flows"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/highMC/mig_value_detail.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-This table compares individuals who move away from West North Central in
- the baseline scenario and compares them to their hypothetical counterparts
- in a world where moving from the region is impossible.
- The large difference in lifetime utility is a result from the big house
- price increases experienced in other regions.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:value-of-migration"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -6178,11 +6189,15 @@ newpage
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
 \begin_layout Section
 Abolishing the Mortgage Interest Deduction
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In this section I investigate the impact of abolishing the mortgage interest
  deduction on migration and ownership rates.
  In the United States, homeowners are allowed to deduct the interest paid
@@ -6213,7 +6228,7 @@ key "JCT2012"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The mortgage interest deduction has been widely critized on grounds of equity
  and distortionary effects in the housing market, see for example 
 \begin_inset CommandInset citation
@@ -6256,7 +6271,7 @@ key "Bourassa:2010fk"
  market by fostering greater mobility, or not.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 At this point it is important to emphasize that depending on the elasticity
  of housing supply in a given market, we expect to see a general equilibrium
  effect of house prices in response to the policy change.
@@ -6304,7 +6319,7 @@ The mechanism is as follows: removing the subsidy lowers the equilibrium
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The experiment is implemented as follows.
  The model being in after tax terms, it does not feature a formal tax system
  which could be changed in an experiment.
@@ -6341,7 +6356,7 @@ reference "tab:sinai-data"
  shows my version of their table.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 placement h
 wide false
@@ -6401,7 +6416,7 @@ name "tab:sinai-data"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 To provide some guidance, it is useful to start with a simple calculation
  to gauge the likely effect of the policy change on migration rates under
  the assumption that the conditional choice probabilities (i.e.
@@ -6450,7 +6465,7 @@ To provide some guidance, it is useful to start with a simple calculation
  a 35% reduction of the rate).
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The choice probabilities do change after the policy is implemented.
  In fact, it is easy to show that the only case under which the relative
  moving probabilities would remain constant is the one where the relative
@@ -6473,7 +6488,7 @@ The choice probabilities do change after the policy is implemented.
  of tax receipts from previous owners to the entire population.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The results are listed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6510,7 +6525,7 @@ show the results of the experiment with and without the GE correction.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In the column without the GE correction, we see that ownership decreases
  by roughly 0.8%.
  This is a result of some marginal buyers being unable to satisfy the downpaymen
@@ -6546,7 +6561,7 @@ reference "sec:Welfare-Measure"
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The final column shows the results with the GE correction, which lowers
  house prices by 5% in all regions, while keeping rents at a constant level.
  Keeping rents constant is achieved by changing the price to rent ratios
@@ -6568,7 +6583,7 @@ The final column shows the results with the GE correction, which lowers
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In concluding this section, it is instructive to note the importance of
  the general equilibrium effect in this case.
  Under the assumption of constant prices, the effect of removing the deduction
@@ -6580,6 +6595,11 @@ In concluding this section, it is instructive to note the importance of
  into account, however, shows that ownership would increase.
  This would affect the migration rate only marginally, but have a significant
  impact on welfare.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -6629,15 +6649,6 @@ key "sommer2013implications"
  The welfare implications depend greatly on whether or not prices are adjusted,
  with average welfare gains 1% in the former, and of the order of 2.4% of
  period consumption in the latter case.
-\end_layout
-
-\begin_layout Standard
-In its current state, the model is silent with regards to location amenities.
- Dissentangling the effects of price changes on the consumer's budget constraint
- from its effects on local amenities, and therefore utility, is clearly
- important to understand migration decisions better.
- I view the current implementation as a first step in this direction, and
- more work is necessary to incorporate amenities.
 \end_layout
 
 \begin_layout Standard

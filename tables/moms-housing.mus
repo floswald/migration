@@ -1,0 +1,29 @@
+{% macro showmom(mom,dd,dec) %}
+    {{mom}} & {{ dd.data | prettyNum(dec) }} & {{ dd.model | prettyNum(dec) }}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+  \toprule
+    \multicolumn{3}{c}{Moments related to homeownership} \\
+  \midrule
+  {{  showmom("$E[h_{t-1} ]$", mean_own ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{ENC}]$", mean_own_ENC ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{ESC}]$", mean_own_ESC ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{MdA}]$", mean_own_MdA ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{Mnt}]$", mean_own_Mnt ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{NwE}]$", mean_own_NwE ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{Pcf}]$", mean_own_Pcf ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{StA}]$", mean_own_StA ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{WNC}]$", mean_own_WNC ,2 ) }}
+  {{  showmom("$E[h_{t-1} | \\text{WSC}]$", mean_own_WSC ,2 ) }}
+  {{  showmom("$E[h_{t-1} | s = 0]$", mean_own_kidsFALSE ,2 ) }}
+  {{  showmom("$E[h_{t-1} | s = 1]$", mean_own_kidsTRUE,2 ) }}
+  {{  showmom("$E[h_{t-1}=1,h_{t}=0 | T]$", mean_sell_50 ,2 ) }}
+  {{  showmom("$Cov(h_{t-1},s)$", cov_own_kids,2 ) }}
+  \midrule
+  \multicolumn{3}{c}{Auxiliary model \eqref{eq:auxmod-h}: $h_{it-1} = \beta_{0,h} + \beta_{1,h} t_{it} + \beta_{2,h} t_{it}^2 +u_{it}$ } \\[6pt]
+  {{  showmom("$\\beta_{0,h}$", lm_h_Intercept, 3) }}
+  {{  showmom("$\\beta_{1,h}$", lm_h_age, 3) }}
+  {{  showmom("$\\beta_{2,h}$", lm_h_age2, 4) }}
+  \bottomrule
+\end{tabular}
+

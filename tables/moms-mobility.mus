@@ -1,0 +1,39 @@
+{% macro showmom(mom,dd,dec) %}
+    {{mom}} & {{ dd.data | prettyNum(dec) }} & {{ dd.model | prettyNum(dec) }}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+  \toprule 
+    \multicolumn{3}{c}{Moments related to mobility} \\
+  \midrule
+    \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Model}\\ 
+  \midrule
+  {{  showmom("$E[\\text{move}]$", mean_move ,3 ) }}
+  {{  showmom("$E[\\text{move}|T]$", mean_move_50 , 3) }}
+  {{  showmom("$E[\\text{move}|s=0]$", mean_move_kidsFALSE , 3) }}
+  {{  showmom("$E[\\text{move}|s=1]$", mean_move_kidsTRUE,3 ) }}
+  {{  showmom("$E[\\text{move}|h_{t-1}=0]$", mean_move_ownFALSE, 3) }}
+  {{  showmom("$E[\\text{move}|h_{t-1}=1]$", mean_move_ownTRUE,3 ) }}
+  {{  showmom("$Cov(\\text{move},h)$", cov_move_h,3 ) }}
+  {{  showmom("$Cov(\\text{move},s)$", cov_move_kids, 3)}}
+  {{  showmom("$E[\\text{moved never}]$", moved0, 2) }}
+  {{  showmom("$E[\\text{moved once}]$", moved1, 2)  }}
+  {{  showmom("$E[\\text{moved twice+}]$", moved2plus,2 ) }}
+  \midrule
+    \multicolumn{3}{c}{Proportion of moves with destination $d$} \\
+  {{  showmom("$E[\\text{move to ENC}]$", flow_move_to_ENC ,3 ) }}
+  {{  showmom("$E[\\text{move to ESC}]$", flow_move_to_ESC ,3 ) }}
+  {{  showmom("$E[\\text{move to MdA}]$", flow_move_to_MdA ,3 ) }}
+  {{  showmom("$E[\\text{move to Mnt}]$", flow_move_to_Mnt ,3 ) }}
+  {{  showmom("$E[\\text{move to NwE}]$", flow_move_to_NwE ,3 ) }}
+  {{  showmom("$E[\\text{move to Pcf}]$", flow_move_to_Pcf ,3 ) }}
+  {{  showmom("$E[\\text{move to StA}]$", flow_move_to_StA ,3 ) }}
+  {{  showmom("$E[\\text{move to WNC}]$", flow_move_to_WNC ,3 ) }}
+  {{  showmom("$E[\\text{move to WSC}]$", flow_move_to_WSC ,3 ) }}
+  \midrule
+  \multicolumn{3}{c}{Auxiliary model \eqref{eq:auxmod-move}: $\text{move}_{it} = \beta_{0,m} + \beta_{1,m} t_{it} + \beta_{2,m} t_{it}^2 +u_{it}$ } \\[6pt]
+  {{  showmom("$\\beta_{0,m}$", lm_mv_Intercept, 2) }}
+  {{  showmom("$\\beta_{1,m}$", lm_mv_age, 3) }}
+  {{  showmom("$\\beta_{2,m}$", lm_mv_age2, 5) }}
+  \toprule
+\end{tabular}
+

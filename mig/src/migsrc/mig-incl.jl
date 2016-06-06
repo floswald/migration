@@ -57,28 +57,19 @@ function objfunc(ev::Eval)
 
 	setMoment(ev,simMoments)
 
-    if Sys.OS_NAME == :Darwin
-    	# ToDO nicer printing
-	    # if get(opts[1],"printmoms",false) 
-	    # 	d = Dict()
-	    # 	for ea in eachrow(mom2)
-	    # 		ea[:moment] = replace(ea[:moment],"[","")
-	    # 		ea[:moment] = replace(ea[:moment],"]","")
-	    # 		ea[:moment] = replace(ea[:moment],"(","")
-	    # 		ea[:moment] = replace(ea[:moment],",","_")
-	    # 		d[ea[:moment]] = ["data" => ea[:data_value], "data_sd" => ea[:data_sd], "model" => ea[:model_value], "model_sd" => ea[:model_sd], "perc"=>ea[:perc]]
+    if get(ev.options,"printm",false) 
+    	mms = MOpt.check_moments(ev)
+    	d = Dict()
+    	for e in eachrow(mms)
+       		d[e[:moment]] = Dict("data"=>e[:data],"model"=>e[:simulation])
+       	end
+    	# change age brackets
+    	inp,outp = setPaths()
 
-	    # 	end
-	    # 	# change age brackets
-
-	    # 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.json","w")
-	    # 	JSON.print(f,d)
-	    # 	close(f)
-    	# 	# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
-	    # end
-	    # if get(opts[1],"plotsim",false) 
-	   	# 	simplot(s[!isna(s[:cohort]),:],5)
-	   	# end
+    	f = open(joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/fit/moms.json"),"w")
+    	JSON.print(f,d)
+    	close(f)
+		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
 	end
 
 	ev.status = 1
@@ -118,18 +109,21 @@ end
 
 
 # single test run of objective
-function runObj()
+function runObj(printm::Bool=false,subset=true)
 	# create MProb
 
 	indir, outdir = mig.setPaths()
 	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity"]
-	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
-	for iw in moms[:name]
-		if contains(iw,"wealth") 
-			push!(dont_use,iw)
+	dont_use = ""
+	if subset
+		dont_use= ["lm_w_intercept","move_neg_equity"]
+		# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+		for iw in moms[:name]
+			if contains(iw,"wealth") 
+				push!(dont_use,iw)
+			end
 		end
 	end
 	use_names = setdiff(moms[:name],dont_use)
@@ -142,34 +136,15 @@ function runObj()
 	# create Eval
 
 	ev = MOpt.Eval(Dict(),moms_use)
+	if printm
+		ev.options["printm"] = printm
+	end
+
 	x = objfunc(ev)
 	return x
 end
 
-function runObj(printmoms::Bool,p2::Dict)
-	# run objective
-	if Sys.OS_NAME == :Darwin
-		indir = joinpath(ENV["HOME"],"Dropbox/mobility/output/model/data_repo/in_data_jl")
-	elseif Sys.OS_NAME == :Windows
-		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
-	else
-		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
-	end
-	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
-	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
-	for iw in moms[:moment]
-		if contains(iw,"wealth") 
-			push!(dont_use,iw)
-		end
-	end
-	submom = setdiff(moms[:moment],dont_use)
 
- 	objfunc_opts = Dict("printlevel" => 1,"printmoms"=>printmoms)
-	@time x = mig.objfunc(p2,moms,submom,objfunc_opts)
-
-	return x
-end
 		
 # asset grid scaling
 function scaleGrid(lb::Float64,ub::Float64,n::Int,order::Int,cutoff::Float64,partition=0.5) 
@@ -277,7 +252,7 @@ end
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict{ASCIIString,DataFrame},writedisk=true)
+function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="null")
 
 	# s is a simulation output
 	d = Dict()
@@ -344,7 +319,14 @@ function FlowsPlot(s::DataFrame,m::Model)
        end
        end
        df=names!(convert(DataFrame,fmat'),map(symbol,convert(Array,m.regnames[:Division])))
-       PyPlot.plot(fmat')
+       df[:year] = collect(1997:2012)
+       mdf = melt(df,:year)
+       names!(mdf,[:Destination,:v,:year])
+       # Plots.gadfly()
+       # pl = Plots.plot(mdf,:year,:v,group=:Destination,linewidth=2,ylabel="proportion of moves",title="Destination of Moves")
+       pl = Gadfly.plot(mdf,x="year",y="v",color="Destination",ylabel="proportion of moves",title="Destination of Moves",Geom.line)
+       inp, outp = setPaths("data_repo/out_graphs_jl")
+       Gadfly.draw(Gadfly.PDF(joinpath(outp,"flows.pdf"),10cm,8cm),pl)
        return df
    end
 
