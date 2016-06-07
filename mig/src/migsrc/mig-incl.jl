@@ -13,6 +13,27 @@ function mydf2dict(df::DataFrame)
 	return d
 end
 
+"""
+	convert(df::DataFrame,::Dict,id::Symbol)
+
+Convert a dataframe to a dict with `id` as `keys`, and all other columns as a new dict for each key in `id`.
+
+# Examples
+```julia
+julia> df = DataFrame(a=collect(1:5),c = rand(5), d=collect(linspace(5,1,5)))
+julia> convert(df,Dict,:a)
+```
+
+"""
+function convert(::Type{Dict},df::DataFrame,id::Symbol)
+	d = Dict{AbstractString,Any}()
+	cnames = names(df)[names(df) .!= id]
+	for e in eachrow(df)
+		d[string(e[id])] = [k => e[k] for k in cnames]
+	end
+	return d
+end
+
 # miscellaneous includes
 
 function cov2corr(x::Matrix)

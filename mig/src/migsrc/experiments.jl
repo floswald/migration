@@ -42,7 +42,7 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 		opts = selectPolicy(which,region,year,p,m)
 		e = mig.exp_shockRegion(opts)
 		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
-		JSON.print(f,e[1])
+		JSON.print(f,e[1])	# print first elt with is dict of out matrial
 		close(f)
 	else
 		throw(ArgumentError("no valid experiment chosen"))
@@ -1409,19 +1409,24 @@ function exp_shockRegion(opts::Dict)
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
 
-	ela = join(flows["base"][j][[:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],flows[which][j][[:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],on=:year)
+	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],on=:year)
 	ela2 = @linq ela |>
 		@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent) |>
 		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all) |>
 		@where(:year.>=shockYear) |>
 		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
 
-	elas = Dict()
-	elas["all"] = Dict()
-	elas["own"] = Dict()
-	elas["rent"] = Dict()
+		# for kennan figure 1
+	dyn_adjust = @linq ela |>
+			@transform(d_all = (:All - :All_1) ./ :All, d_own = (:Owners - :Owners_1)./:Owners, d_rent = (:Renters - :Renters_1)./:Renters,	year=:year)
 
+	elas = Dict()
+
+	# computes average elasticities over entire samplign period shockYear -> 2012
 	if which == "yshock"
+		elas["all"] = Dict()
+		elas["own"] = Dict()
+		elas["rent"] = Dict()
 		elas["all"]["in"]     = 100*ela2[:mean_din][1]
 		elas["all"]["out"]    = 100*ela2[:mean_dout][1]
 		elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
@@ -1442,7 +1447,31 @@ function exp_shockRegion(opts::Dict)
 		elas["rent"]["e_in"]  = ela2[:mean_d_rent_in][1]  / (1-mean(opts["shockVal"]) )
 		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]) )
 		elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]) )
+
+	elseif which == "ypshock"
+		elas["wrt_y"] = Dict()
+		elas["wrt_p"] = Dict()
+		elas["own"] = Dict()
+		elas["rent"] = Dict()
+
+		elas["wrt_y"]["in"]     = 100*ela2[:mean_din][1]
+		elas["wrt_y"]["out"]    = 100*ela2[:mean_dout][1]
+		elas["wrt_y"]["net"]    = 100*ela2[:mean_dnet][1]
+		elas["wrt_y"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_y"]) )	# % change in pop / % change in income
+		elas["wrt_y"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_y"]) )
+		elas["wrt_y"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_y"]) )
+
+		elas["wrt_p"]["in"]     = 100*ela2[:mean_din][1]
+		elas["wrt_p"]["out"]    = 100*ela2[:mean_dout][1]
+		elas["wrt_p"]["net"]    = 100*ela2[:mean_dnet][1]
+		elas["wrt_p"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_p"]) )	# % change in pop / % change in prices 
+		elas["wrt_p"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_p"]) )
+		elas["wrt_p"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_p"]) )
+   
 	else
+		elas["all"] = Dict()
+		elas["own"] = Dict()
+		elas["rent"] = Dict()
 		elas["all"]["in"]     = 100*ela2[:mean_din][1]
 		elas["all"]["out"]    = 100*ela2[:mean_dout][1]
 		elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
@@ -1473,6 +1502,7 @@ function exp_shockRegion(opts::Dict)
 	       # "dfs" => dfs,
 	       "flows" => flows,
 	       "elasticity" => elas,
+	       "dyn_adjust" => convert(Dict,dyn_adjust,:year),
 	       "values" => Dict("base" => w0, which => w1),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
