@@ -62,6 +62,8 @@ type Param
 	shockReg     :: Int
 	shockAge     :: Int
 	shockVal     :: Vector{Float64}
+	shockVal_y     :: Vector{Float64}
+	shockVal_p     :: Vector{Float64}
 	noMC         :: Bool
 
 	# numerical setup
@@ -186,6 +188,8 @@ type Param
 			shockReg = get(opts,"shockRegion",0)
 			shockAge = get(opts,"shockAge",100)
 			shockVal = get(opts,"shockVal",ones(nt-1))	# multiplicative factor
+			shockVal_y = get(opts,"shockVal_y",ones(nt-1))	# multiplicative factor
+			shockVal_p = get(opts,"shockVal_p",ones(nt-1))	# multiplicative factor
 
 			# check policy name is valid
 			if pname != "NULL"
@@ -201,13 +205,15 @@ type Param
 			shockReg = 0
 			shockAge = 100
 			shockVal = ones(nt-1)
+			shockVal_y = ones(nt-1)
+			shockVal_p = ones(nt-1)
 		end
 		noMC = false	# default: there IS a moving cost. experiments switch this off in certain periods.
 		ctax = 1.0 
 
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 	end
 end
 

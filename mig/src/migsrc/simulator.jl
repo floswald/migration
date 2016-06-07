@@ -309,6 +309,11 @@ function simulate(m::Model,p::Param)
 		highMC = true
 	end
 
+	if p.policy == "ypshock"
+		pshock = true
+		yshock = true
+	end
+
 
 	for age = 1:T
 
@@ -373,12 +378,12 @@ function simulate(m::Model,p::Param)
 
 				# apply price policy adjustment here
 				if pshock && ((age >= p.shockAge) && (ij == p.shockReg))
-					price_j *= p.shockVal[age-p.shockAge+1]
+					price_j *= p.shockVal_p[age-p.shockAge+1]
 				end
 
 				# apply price policy adjustment here
 				if yshock && ((age >= p.shockAge) && (ij == p.shockReg))
-					y *= p.shockVal[age-p.shockAge+1]
+					y *= p.shockVal_y[age-p.shockAge+1]
 				end
 
 				# record regional prices
@@ -428,7 +433,7 @@ function simulate(m::Model,p::Param)
 				price_k = m.pred_p[m.coh_idx[coh][age],moveto]
 				# apply price policy adjustment here
 				if pshock && ((age >= p.shockAge) && (moveto == p.shockReg))
-					price_k *= p.shockVal[age-p.shockAge+1]
+					price_k *= p.shockVal_p[age-p.shockAge+1]
 				end
 
 

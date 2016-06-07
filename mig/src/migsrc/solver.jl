@@ -160,6 +160,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	highMC      = false
 	all_j       =  false
 	pshock      = false
+	ypshock      = false
 
 	Poterba = m.gridsXD["Poterba"]
 	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
@@ -230,6 +231,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
+	if p.policy == "ypshock"
+		ypshock = true
+	end
+
 	# state dependent stochastic states 
 	for iz=1:p.nz
 		for iy=1:p.ny
@@ -249,7 +254,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 							# for owner-mover case: get current region price
 							if pshock && (p.shockReg == ij)
 								# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
-								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal[age-p.shockAge+1]
+								price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal_p[age-p.shockAge+1]
 							else
 								price_j = m.gridsXD["p"][iy,ip,ij]
 							end
@@ -317,7 +322,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										if pshock && (p.shockReg == ik)
 											# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
-											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal[age-p.shockAge+1]
+											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal_p[age-p.shockAge+1]
 										else
 											price_k = m.gridsXD["p"][iy + p.ny * (ip-1 + p.np * (ik-1))]
 										end

@@ -57,28 +57,28 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Mo
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which == "ypshock"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]) )
-		opts["shockVal_p"] = opts["shockVal_y"] * m.sigma_reg[m.proportion[j,:Division]][1,2]
+		opts["shockVal_p"] = (1- (1-opts["shockVal_y"]) * m.sigma_reg[m.proportion[j,:Division]][1,2] )
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
-		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
+		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock3"
-		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
+		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock"
-		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.69],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.69],inner=[1],outer=[p.nt-1]))
 
 	elseif which=="highMC"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1))
 	elseif which=="pshock_highMC"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="yshock_highMC"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
 	elseif which=="pshock_noBuying"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="pshock_noSaving"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	else 
 		throw(ArgumentError("invalid policy $which selected"))
 	end
