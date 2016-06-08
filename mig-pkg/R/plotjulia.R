@@ -298,15 +298,17 @@ plot_noMove <- function(reg){
 
 
 
-plot_shockyp <- function(reg,which){
+plot_shockyp <- function(reg,which,writedisk=FALSE){
 
 	# read outmig data
 	# data stored in
-	ipth = "/Users/florianoswald/Dropbox/research/mobility/output/model/data_repo/out_data_jl"
+
+	home = Sys.getenv("HOME")
+	ipth = file.path(home,"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
 
 	# file locations
-	b_file = file.path(ipth,paste0(which,reg),paste0("base_flows",reg,".csv"))
-	p_file = file.path(ipth,paste0(which,reg),paste0(which,"_flows",reg,".csv"))
+	b_file = file.path(ipth,paste(which,reg,sep="_"),paste0("base_flows",reg,".csv"))
+	p_file = file.path(ipth,paste(which,reg,sep="_"),paste0(which,"_flows",reg,".csv"))
 
 	# load data
 	b = read.csv(b_file)
@@ -336,14 +338,28 @@ plot_shockyp <- function(reg,which){
 		istr = "Inflows after permanent reduction in house price (30%) "
 	}
 
+	# overall elasticity of change wrt shock
+	bp = merge(subset(b,select=c(year,All)),subset(p,select=c(year,All)),"year")
+	names(bp)[2:3] = c("base","shock")
+	bp$perc = (bp$base-bp$shock)/bp$base
+
+	bp$perc = (bp$shock-bp$base)/bp$base
+	bp$elas = bp$perc / 0.1
+
 	# plot
 	pl = list()
 	pl$imm = ggplot(m[variable %like% "_in_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of total population") + ggtitle(istr)
 	pl$emi = ggplot(m[variable %like% "_out_"],aes(x=year,y=100*value,linetype=Regime)) + geom_line() + facet_wrap(~type) + theme_bw() + scale_y_continuous(name="% of total population") + ggtitle(ostr)
+	pl$all = ggplot(bp,aes(x=year,y=elas)) + geom_line() + theme_bw()
 
-	# save
-	ggsave(pl$emi,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)
-	ggsave(pl$imm,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
+	if (writedisk){
+		ggsave(pl$emi,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_out.pdf")),height=3.0,width=7)
+		ggsave(pl$imm,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
+		ggsave(pl$all,file=file.path("~/Dropbox/research/mobility/output/model/experiments/exp_yp",paste0(which,reg,"_in.pdf")),height=3.0,width=7)
+	}
+
+	return(pl)
+
 	
 }
 

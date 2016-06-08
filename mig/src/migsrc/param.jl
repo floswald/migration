@@ -193,7 +193,7 @@ type Param
 
 			# check policy name is valid
 			if pname != "NULL"
-				if !in(pname,["noShocks","smallShocks","mortgageSubsidy_padjust","halfMC","doubleMC","tripleMC","mortgageSubsidy","moneyMC","ypshock","yshock","pshock","noSaving","noBuying","highMC","pshock_noBuying","pshock_highMC","yshock_highMC","pshock_noSaving"])
+				if !in(pname,["noShocks","smallShocks","mortgageSubsidy_padjust","halfMC","doubleMC","tripleMC","mortgageSubsidy","moneyMC","ypshock","ypshock3","yshock","pshock","noSaving","noBuying","highMC","pshock_noBuying","pshock_highMC","yshock_highMC","pshock_noSaving"])
 					warn("your policy $pname is not in the set of admissible policies")
 				end
 			end

@@ -38,7 +38,7 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 	elseif which=="smallShocks"
 		e = mig.smallShocks()
 
-	elseif in(which,["ypshock","pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
+	elseif in(which,["ypshock","ypshock3","pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,p,m)
 		e = mig.exp_shockRegion(opts)
 		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
@@ -60,6 +60,9 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Mo
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which == "ypshock"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]) )
+		opts["shockVal_p"] = (1- (1-opts["shockVal_y"]) * m.sigma_reg[m.proportion[j,:Division]][1,2] )
+	elseif which == "ypshock3"
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [collect(linspace(0.9,1,4))[1:3];repeat([1.0],inner=[1],outer=[p.nt-3])] )
 		opts["shockVal_p"] = (1- (1-opts["shockVal_y"]) * m.sigma_reg[m.proportion[j,:Division]][1,2] )
 	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
 	elseif which=="pshock3"
@@ -223,66 +226,6 @@ function plotShockRegions2(printp=false)
 
 end
 
-function plotShockRegions(print=false)
-
-	# download experiments
-	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
-
-	# load all experiments
-	pth = "/Users/florianoswald/git/migration/data/shockReg/"
-	opth = "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp"
-	fi = readdir(pth)
-
-	out = Dict()
-
-	for i in fi
-		x = load(joinpath(pth,i))
-		df = x["dfs"]
-		# writetable(joinpath(pth,"toj_own_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_buy"])
-		# writetable(joinpath(pth,"fromj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj"])
-		# writetable(joinpath(pth,"fromj_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_rent"])
-		# writetable(joinpath(pth,"fromj_own_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_own"])
-		# writetable(joinpath(pth,"toj_own_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_rent"])
-		# writetable(joinpath(pth,"toj_rent_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_rent"])
-		# writetable(joinpath(pth,"toj_rent_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_buy"])
-		# writetable(joinpath(pth,"toj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj"])
-
-		# make plots
-		exp_typ = contains(x["which"],"3") ? "3-year" : "permanent"
-		exp_var = contains(x["which"],"y") ? "y" : "p"
-		dd = Dict()
-		data = Dict()
-		# fill in data dict with data
-		for (k,v) in df
-			data[k] = melt(v,:year)
-		end
-
-		# fill in dd dict with plots
-		dd["fromj_own"] = plot(@where(data["fromj_own"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["fromj_rent"] = melt(df["fromj_rent"],:year)
-		dd["fromj_rent"] = plot(@where(data["fromj_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_own_buy"] = melt(df["toj_own_buy"],:year)
-		dd["toj_own_buy"] = plot(@where(data["toj_own_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_own_rent"] = melt(df["toj_own_rent"],:year)
-		dd["toj_own_rent"] = plot(@where(data["toj_own_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_rent_rent"] = melt(df["toj_rent_rent"],:year)
-		dd["toj_rent_rent"] = plot(@where(data["toj_rent_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_rent_buy"] = melt(df["toj_rent_buy"],:year)
-		dd["toj_rent_buy"] = plot(@where(data["toj_rent_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-
-		kkey = "$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"
-		plotkey = "plots_"*kkey
-		out[plotkey] = dd
-		if print
-			for (k,v) in dd
-				draw(PDF(joinpath(opth,string(kkey,"_",k,".pdf")),6inch,5inch),v)
-			end
-		end
-		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
-	end
-	return out
-
-end
 
 
 function exp_changeMC(which)
@@ -1417,8 +1360,8 @@ function exp_shockRegion(opts::Dict)
 		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
 
 		# for kennan figure 1
-	dyn_adjust = @linq ela |>
-			@transform(d_all = (:All - :All_1) ./ :All, d_own = (:Owners - :Owners_1)./:Owners, d_rent = (:Renters - :Renters_1)./:Renters,	year=:year)
+	ela1 = @linq ela |>
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = p.shockVal_y[1:nrow(ela)], pshock = p.shockVal_p[1:nrow(ela)])
 
 	elas = Dict()
 
@@ -1467,6 +1410,9 @@ function exp_shockRegion(opts::Dict)
 		elas["wrt_p"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_p"]) )	# % change in pop / % change in prices 
 		elas["wrt_p"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_p"]) )
 		elas["wrt_p"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_p"]) )
+
+	elseif which == "ypshock3"
+		
    
 	else
 		elas["all"] = Dict()
@@ -1501,8 +1447,8 @@ function exp_shockRegion(opts::Dict)
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
 	       "flows" => flows,
-	       "elasticity" => elas,
-	       "dyn_adjust" => convert(Dict,dyn_adjust,:year),
+	       "elasticity_net" => elas,
+	       "elasticity" => ela1,
 	       "values" => Dict("base" => w0, which => w1),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
@@ -1511,22 +1457,93 @@ end
 
 function read_exp_shockRegion(f::AbstractString)
 	d = JSON.parsefile(f)
-
-	pth = replace(f,".json","")
-	di = Dict()
 	# out and in
 	for (k,v) in d
-		for (kk,vv) in v
-			str = string(pth,k,kk,".csv")
-			df = DataFrame(vv["columns"])
-			names!(df,Symbol[symbol(vv["colindex"]["names"][i]) for i in 1:length(vv["columns"])])
-			writetable(str,df)
-			di[string(k,kk)] = df
+		if isa(v,Dict)
+		println(collect(keys(v)))
+			if all(["colindex","columns"] .== collect(keys(v)))
+				# this is a dataframe
+				d[k] = DataFrame(v["columns"],Symbol[symbol(v["colindex"]["names"][i]) for i in 1:length(v["colindex"]["names"])])
+			end
 		end
 	end
-	return di
+	return d
 end
 
+function 
+
+function plotShockRegion(file::AbstractString,remote::AbstractString="home")
+
+	# get the data
+	git = joinpath(ENV["HOME"],"git/migration/data")
+	if remote != "home"
+		run(`make -C $git )
+
+
+
+end
+
+
+function plotShockRegions(print=false)
+
+	# download experiments
+	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
+
+	# load all experiments
+	pth = "/Users/florianoswald/git/migration/data/shockReg/"
+	opth = "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp"
+	fi = readdir(pth)
+
+	out = Dict()
+
+	for i in fi
+		x = load(joinpath(pth,i))
+		df = x["dfs"]
+		# writetable(joinpath(pth,"toj_own_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_buy"])
+		# writetable(joinpath(pth,"fromj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj"])
+		# writetable(joinpath(pth,"fromj_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_rent"])
+		# writetable(joinpath(pth,"fromj_own_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_own"])
+		# writetable(joinpath(pth,"toj_own_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_rent"])
+		# writetable(joinpath(pth,"toj_rent_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_rent"])
+		# writetable(joinpath(pth,"toj_rent_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_buy"])
+		# writetable(joinpath(pth,"toj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj"])
+
+		# make plots
+		exp_typ = contains(x["which"],"3") ? "3-year" : "permanent"
+		exp_var = contains(x["which"],"y") ? "y" : "p"
+		dd = Dict()
+		data = Dict()
+		# fill in data dict with data
+		for (k,v) in df
+			data[k] = melt(v,:year)
+		end
+
+		# fill in dd dict with plots
+		dd["fromj_own"] = plot(@where(data["fromj_own"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# data["fromj_rent"] = melt(df["fromj_rent"],:year)
+		dd["fromj_rent"] = plot(@where(data["fromj_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# data["toj_own_buy"] = melt(df["toj_own_buy"],:year)
+		dd["toj_own_buy"] = plot(@where(data["toj_own_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# data["toj_own_rent"] = melt(df["toj_own_rent"],:year)
+		dd["toj_own_rent"] = plot(@where(data["toj_own_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# data["toj_rent_rent"] = melt(df["toj_rent_rent"],:year)
+		dd["toj_rent_rent"] = plot(@where(data["toj_rent_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+		# data["toj_rent_buy"] = melt(df["toj_rent_buy"],:year)
+		dd["toj_rent_buy"] = plot(@where(data["toj_rent_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
+
+		kkey = "$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"
+		plotkey = "plots_"*kkey
+		out[plotkey] = dd
+		if print
+			for (k,v) in dd
+				draw(PDF(joinpath(opth,string(kkey,"_",k,".pdf")),6inch,5inch),v)
+			end
+		end
+		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
+	end
+	return out
+
+end
 
 
 function adjustVShocks!(mm::Model,m::Model,p::Param)

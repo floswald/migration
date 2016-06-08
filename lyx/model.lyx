@@ -96,11 +96,12 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\tracking_changes false
+\tracking_changes true
 \output_changes false
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
+\author 143970970 "Florian Oswald"
 \end_header
 
 \begin_body
@@ -115,13 +116,14 @@ I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
  for their continued support and advice throughout this project.
  I also thank Uta Schönberg, Jeremy Lise, Marco Bassetto, Suphanit Piyapromdee,
  Richard Blundell, Jose-Victor Rios Rull, Morten Ravn, Fabien Postel-Vinay
- and seminar participants at UCL, IFS and Royal Holloway for helpful comments
- and suggestions.
+ and seminar participants at UCL, IFS, Royal Holloway, Chicago Fed, Boston
+ College, Stockholm School of Economics, DIW Berlin, Cambridge, Toulouse,
+ Sciences Po and Bank of England for helpful comments and suggestions.
  I would like to acknowledge financial support from cemmap under ESRC grant
  ES/I034021/1 and ESRC transformative grant ES/M000486/1.
- The author would like to acknowledge that the work presented here made
- use of the IRIDIS High Performance Computing Facility provided by the Science
- & Engineering South (SES) Centre for Innovation.
+ I also acknowledge that the work presented here made use of the IRIDIS
+ High Performance Computing Facility provided by the Science & Engineering
+ South (SES) Centre for Innovation.
  The Centre is formed by the universities of Oxford, Southampton, Bristol
  and University College London.
 \end_layout
@@ -263,14 +265,29 @@ Homeownership and the likelihood of moving across regions are negatively
 \end_layout
 
 \begin_layout Standard
+
+\change_inserted 143970970 1465396525
+The aims of this paper are to assess the value of this self insurance mechanism
+ and to provide new estimates for spatial labour supply elasticities.
+ The innovation in here stems from the fact that in contrast to previous
+ papers, I embed the household in a dynamic model with a stochastic regional
+ house price and income processes, as opposed to a static economic environment.
+ 
+\change_deleted 143970970 1465396537
 The aims of this paper are first to investigate the value of this self insurance
  mechanism, second to analyse the reaction of regional mobility to regional
  shocks and third to establish how important government policies such as
  the mortgage interest tax deduction, which encourages ownership, interact
  with regional migration.
- To address those issues, I propose a lifecycle model of consumption and
- savings, housing tenure and location choice, with aggregate uncertainty
- which affects prices in regions differentially.
+
+\change_unchanged
+ 
+\change_deleted 143970970 1465396563
+To address those issues, 
+\change_unchanged
+I propose a lifecycle model of consumption and savings, housing tenure and
+ location choice, with aggregate uncertainty which affects prices in regions
+ differentially.
  Migration serves as a partial insurance device because regions are exposed
  to aggregate shocks to a different degree, consistent with the observed
  data.
@@ -412,9 +429,15 @@ I estimate the model using a simulated method of moments estimator.
  After fitting the model to the data, I first illustrate how adding ownership
  and assets to a dynamic migration model affects behaviour.
  I then show how the model reacts to large regional shocks, before I move
- on to compute a measure of the value of the migration option.
+ on to compute a measure of the value of the migration option
+\change_deleted 143970970 1465396655
+.
  Finally, the model is used to perform counterfactual policy simulations.
  
+\change_inserted 143970970 1465396684
+ and an estimation of spatial labor supply elasticities.
+\change_unchanged
+
 \end_layout
 
 \begin_layout Standard
@@ -447,6 +470,12 @@ Migration is a low probability event in both data and model.
  Conditioning on age when computing expected utility reveals that the cost
  of not being able to move is largest for younger individuals, and it gradually
  fades out as agents grow older.
+\change_inserted 143970970 1465396696
+
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
