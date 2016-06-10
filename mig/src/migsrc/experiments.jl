@@ -6,12 +6,12 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which::AbstractString,region::Int,year::Int)
+function runExperiment(which::AbstractString,region::Int,year::Int,revert::Int=0)
 
 	# unneccesary?
 	# home = ENV["HOME"]
 	# require(joinpath(home,"git/
-	indir, outdir = mig.setPaths()
+	io = mig.setPaths()
 
 	p = Param(2)
 	m = Model(p)
@@ -20,13 +20,13 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 		e = mig.exp_Mortgage(true)
 	elseif which=="pshock_highMC"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_highMC")
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
+		save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="pshock_noBuying"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_noBuying")
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
+		save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="pshock_noSaving"
 		e = mig.exp_shockRegion_vdiff("pshock","pshock_noSaving")
-		save(joinpath(outdir,"shockReg","exp_region$(region)_$which.JLD"),e)
+		save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$which.JLD"),e)
 	elseif which=="halfMC"
 		e = mig.exp_changeMC("halfMC")
 	elseif which=="doubleMC"
@@ -39,11 +39,12 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 		e = mig.smallShocks()
 
 	elseif in(which,["ypshock","ypshock3","pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
-		opts = selectPolicy(which,region,year,p,m)
+		opts = selectPolicy(which,region,year,revert,p,m)
 		e = mig.exp_shockRegion(opts)
-		f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
-		JSON.print(f,e[1])	# print first elt with is dict of out matrial
-		close(f)
+		JLD.save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$(which).jld"),e[1])
+		# f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
+		# JSON.print(f,e[1])	# print first elt with is dict of out matrial
+		# close(f)
 	else
 		throw(ArgumentError("no valid experiment chosen"))
 	end
@@ -53,25 +54,31 @@ function runExperiment(which::AbstractString,region::Int,year::Int)
 
 end
 
-function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Model)
+function selectPolicy(which::AbstractString,j::Int,shockYear::Int,revert::Int,p::Param,m::Model)
 
 	# shocks p at shockAge for ever after
 	if which=="pshock"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
+		if revert > 0
+			which = "pshock$(revert)"
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> [collect(linspace(0.9,1,revert))[1:revert];repeat([1.0],inner=[1],outer=[p.nt-revert])])
+		else
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
+		end
 	elseif which == "ypshock"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]) )
+		if revert > 0
+			which = "ypshock$(revert)"
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [collect(linspace(0.9,1,revert))[1:revert];repeat([1.0],inner=[1],outer=[p.nt-revert])])
+		else
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
+		end
 		opts["shockVal_p"] = (1- (1-opts["shockVal_y"]) * m.sigma_reg[m.proportion[j,:Division]][1,2] )
-	elseif which == "ypshock3"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [collect(linspace(0.9,1,4))[1:3];repeat([1.0],inner=[1],outer=[p.nt-3])] )
-		opts["shockVal_p"] = (1- (1-opts["shockVal_y"]) * m.sigma_reg[m.proportion[j,:Division]][1,2] )
-	# shocks p at shockAge for the next 3 periods reverting back to trend afterwards
-	elseif which=="pshock3"
-		opts = Dict("policy" => "pshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
-	elseif which=="yshock3"
-		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [0.7;0.8;0.9;repeat([1.0],inner=[1],outer=[p.nt-3])])
 	elseif which=="yshock"
-		opts = Dict("policy" => "yshock","shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.69],inner=[1],outer=[p.nt-1]))
-
+		if revert > 0
+			which = "yshock$(revert)"
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> [collect(linspace(0.9,1,revert))[1:revert];repeat([1.0],inner=[1],outer=[p.nt-revert])])
+		else
+			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
+		end
 	elseif which=="highMC"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1))
 	elseif which=="pshock_highMC"
@@ -82,8 +89,6 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,p::Param,m::Mo
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="pshock_noSaving"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
-	else 
-		throw(ArgumentError("invalid policy $which selected"))
 	end
 	return opts
 
@@ -261,7 +266,7 @@ function exp_changeMC(which)
 	agg_mv = hcat(@by(sim0,:own,move_baseline=mean(:move)),@by(sim1,:own,move_policy=mean(:move)))
 	agg_own_age = hcat(@by(sim0,[:own,:realage],move_baseline=mean(:move)),@by(sim1,[:own,:realage],move_policy=mean(:move)))
 
-	indir, outdir = mig.setPaths()
+	io = mig.setPaths()
 
 	# writetable(joinpath(outdir,"exp_$which","mv.csv"),agg_mv)
 	# writetable(joinpath(outdir,"exp_$which","own.csv"),agg_own)
@@ -677,18 +682,18 @@ function exp_Mortgage(ctax=false)
 		d["delta"] = Dict("base" => 0.0, "burn" => ctax0.minimum, "redist1" => ctax1.minimum, "redist2" => ctax2.minimum,"redist3" => ctax3.minimum,"redist4" => ctax4.minimum)
 	end
 
-	indir, outdir = mig.setPaths()
-	f = open(joinpath(outdir,"exp_Mortgage","mortgage.json"),"w")
+	io = mig.setPaths()
+	f = open(joinpath(io["outdir"],"exp_Mortgage","mortgage.json"),"w")
 	JSON.print(f,d)
 	close(f)
 
 	# write npv_age_income
-	writetable(joinpath(outdir,"exp_Mortgage","npv_age_income.csv"),npv_age_income)
+	writetable(joinpath(io["outdir"],"exp_Mortgage","npv_age_income.csv"),npv_age_income)
 
 	# write welfare effects
-	writetable(joinpath(outdir,"exp_Mortgage","welfare_age.csv"),welf_age)
-	writetable(joinpath(outdir,"exp_Mortgage","welfare_age_y.csv"),welf_age_ybin)
-	writetable(joinpath(outdir,"exp_Mortgage","welfare_h.csv"),welf_h)
+	writetable(joinpath(io["outdir"],"exp_Mortgage","welfare_age.csv"),welf_age)
+	writetable(joinpath(io["outdir"],"exp_Mortgage","welfare_age_y.csv"),welf_age_ybin)
+	writetable(joinpath(io["outdir"],"exp_Mortgage","welfare_h.csv"),welf_h)
 
 	# return
 	out = Dict("Receipts" => Tot_tax, "base_out" => base_out, "pol0_out" => pol0_out, "Redistributions" => Dict("R0" => Redist0,"R1" => Redist1,"R2" => Redist2,"R3" => Redist3), "Receipts_age"=>Tot_tax_age, "npv_age_income"=>npv_age_income,"pol2_out"=> pol2_out, "pol3_out"=> pol3_out, "pol4_out"=> pol4_out, "move_own" => own_move, "move_own_age" => move_own_age, "summary" => d)
@@ -797,8 +802,8 @@ function decompose_MC_owners()
    
     d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]))
 
-    indir, outdir = mig.setPaths()
-    f = open(joinpath(outdir,"decompose_MC_owners.json"),"w")
+    io = mig.setPaths()
+    f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
     JSON.print(f,d)
     close(f)
 
@@ -1036,18 +1041,18 @@ function exp_value_mig_base(j::Int,allj=false)
 	d["movers"] = movers
 
 
-	indir, outdir = mig.setPaths()
+	io = mig.setPaths()
 	ostr = string("noMove",j,"mig_value_baseline.json")
-	f = open(joinpath(outdir,ostr),"w")
+	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
 
 	# save csvs
-	fi = readdir(outdir)
+	fi = readdir(io["outdir"])
 	if !in(string("noMove",j),fi)
-		mkpath(string(joinpath(outdir,string("noMove",j))))
+		mkpath(string(joinpath(io["outdir"],string("noMove",j))))
 	end
-	writetable(joinpath(outdir,string("noMove",j),"values.csv"),v01j)
+	writetable(joinpath(io["outdir"],string("noMove",j),"values.csv"),v01j)
 
 	return d
 
@@ -1184,8 +1189,8 @@ function exp_value_mig(ss::AbstractString,j::Int,yr::Int)
 	d["h"] = Dict("base" => bmv4[:h][1],    ss => pmv4[:h][1],    "nomove"=>hmv4[:h][1], "pct" => 100*(pmv4[:h][1] - hmv4[:h][1])/hmv4[:h][1] )
 
 
-	indir, outdir = mig.setPaths()
-	f = open(joinpath(outdir,ostr),"w")
+	io = mig.setPaths()
+	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
 
@@ -1284,6 +1289,11 @@ function exp_shockRegion(opts::Dict)
 	# that the shock hits you in a given year.
 	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 
+	# remove worker processes now.
+	if length(workers()) > 1
+		rmprocs(workers())
+	end
+
 	# stack dataframes
 	# 
 	df1 = ss[1]
@@ -1307,7 +1317,7 @@ function exp_shockRegion(opts::Dict)
 		println("computing behaviour for post shock cohorts")
 	end
 
-	if which=="p3" || which == "y3"
+	if which=="p3" || which == "y3"|| which == "ypshock3"
 		# assume shock goes away immediately and all behave as in baseline
 		sim2 = @where(sim0,:cohort.>maxc)
 	else
@@ -1347,7 +1357,7 @@ function exp_shockRegion(opts::Dict)
 	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
-	flows = getFlowStats(d,true,"$(which)_$j")
+	flows = getFlowStats(d,false,"$(which)_$j")
 
 	# calculate an elasticity of out and inflows
 	# -------------------------------------------
@@ -1361,7 +1371,16 @@ function exp_shockRegion(opts::Dict)
 
 		# for kennan figure 1
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = p.shockVal_y[1:nrow(ela)], pshock = p.shockVal_p[1:nrow(ela)])
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = (1-opts["shockVal_y"][1:nrow(ela)]), pshock = (1-opts["shockVal_p"][1:nrow(ela)])) |>
+	ela1[[:pshock,:yshock]] = 0.0
+	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
+	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
+	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
+
+
+	ela1 = @linq ela1 |>
+			@transform(d_all_p = :d_all ./ :pshock, d_all_y = :d_all./:yshock, d_own_p = :d_own ./ :pshock, d_own_y = :d_own ./ :yshock, d_rent_p = :d_rent ./ :pshock, d_rent_y = :d_rent ./ :yshock)
+
 
 	elas = Dict()
 
@@ -1447,6 +1466,7 @@ function exp_shockRegion(opts::Dict)
 	       "shockYear" => shockYear, 
 	       # "dfs" => dfs,
 	       "flows" => flows,
+	       "opts" => opts,
 	       "elasticity_net" => elas,
 	       "elasticity" => ela1,
 	       "values" => Dict("base" => w0, which => w1),
@@ -1470,18 +1490,7 @@ function read_exp_shockRegion(f::AbstractString)
 	return d
 end
 
-function 
 
-function plotShockRegion(file::AbstractString,remote::AbstractString="home")
-
-	# get the data
-	git = joinpath(ENV["HOME"],"git/migration/data")
-	if remote != "home"
-		run(`make -C $git )
-
-
-
-end
 
 
 function plotShockRegions(print=false)
@@ -1695,8 +1704,8 @@ function moneyMC()
 	# make an out dict
 	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum, "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
 
-	indir, outdir = mig.setPaths()
-	f = open(joinpath(outdir,"moneyMC.json"),"w")
+	io = mig.setPaths()
+	f = open(joinpath(io["outdir"],"moneyMC.json"),"w")
 	JSON.print(f,d)
 	close(f)
 

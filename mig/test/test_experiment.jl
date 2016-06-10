@@ -17,41 +17,47 @@ facts("experiment.jl tests") do
 		
 		j = 8
 		yr = 2005 
-		po = mig.selectPolicy("pshock",j,yr,p)
+		po = mig.selectPolicy("pshock",j,yr,0,p,m)
 		@fact po["policy"] --> "pshock"
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [po["shockVal"] for i=1:p.nt-1]
 
-		po = mig.selectPolicy("pshock3",j,yr,p)
-		@fact po["policy"] --> "pshock"
+		po = mig.selectPolicy("pshock",j,yr,3,p,m)
+		@fact po["policy"] --> "pshock3"
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [0.7; 0.8; 0.9; [1.0 for i=1:p.nt-3]]
+		@fact po["shockVal_p"] --> [collect(linspace(0.9,1,3))[1:3];repeat([1.0],inner=[1],outer=[p.nt-3])]
 
-		po = mig.selectPolicy("yshock",j,yr,p)
+		po = mig.selectPolicy("yshock",j,yr,0,p,m)
 		@fact po["policy"] --> "yshock"
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [po["shockVal"] for i=1:p.nt-1]
 
-		po = mig.selectPolicy("yshock3",j,yr,p)
-		@fact po["policy"] --> "yshock"
+		po = mig.selectPolicy("yshock",j,yr,3,p,m)
+		@fact po["policy"] --> "yshock3"
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal"] --> [0.7; 0.8; 0.9; [1.0 for i=1:p.nt-3]]
+		@fact po["shockVal_y"] --> [collect(linspace(0.9,1,3))[1:3];repeat([1.0],inner=[1],outer=[p.nt-3])]
 
-		po = mig.selectPolicy("ypshock",j,yr,p)
+
+		po = mig.selectPolicy("ypshock",j,yr,0,p,m)
 		@fact po["policy"] --> "ypshock"
 		@fact po["shockRegion"] --> j
 		@fact po["shockYear"] --> yr
 		@fact po["shockAge"] --> 1
-		@fact po["shockVal_y"] --> [po["shockVal"] for i=1:p.nt-1]
-		@fact po["shockVal_p"] --> po["shockVal_y"]*m.sigma_reg[j][1,2]]
+		@fact po["shockVal_y"] --> not([1.0 for i=1:p.nt-1])
+		@fact po["shockVal_p"] --> (1- (1- po["shockVal_y"])*m.sigma_reg["WNC"][1,2])
+
+		po = mig.selectPolicy("ypshock",j,yr,5,p,m)
+		@fact po["policy"] --> "ypshock5"
+		@fact po["shockRegion"] --> j
+		@fact po["shockYear"] --> yr
+		@fact po["shockAge"] --> 1
+		@fact po["shockVal_p"] --> (1- (1- po["shockVal_y"])*m.sigma_reg["WNC"][1,2])
 
 	end
 
@@ -59,6 +65,7 @@ facts("experiment.jl tests") do
 	context("test param with policy") do
 
 		p = Param(2)
+		m = Model(p)
 		@fact p.policy --> "NULL"
 		@fact p.redistribute --> [0.0]
 		@fact p.verbose --> 0
@@ -94,19 +101,19 @@ facts("experiment.jl tests") do
 
 
 		p0 = mig.Param(2,opts);
-		opts = mig.selectPolicy("yshock3",5,1997,p0)
+		opts = mig.selectPolicy("yshock",5,1997,3,p0,m)
 		p = mig.Param(2,opts);
 
-		@fact p.policy --> "yshock"
+		@fact p.policy --> "yshock3"
 		@fact p.ctax --> 1.0
 		@fact p.redistribute --> [0.0]
 		@fact p.shockAge --> 1
-		@fact p.shockVal --> [0.7; 0.8; 0.9; ones(p.nt-3)]
+		@fact p.shockVal_y --> [collect(linspace(0.9,1,3))[1:3];repeat([1.0],inner=[1],outer=[p.nt-3])]
 		@fact p.shockReg --> 5
 
 
 		p0 = mig.Param(2);
-		opts = mig.selectPolicy("yshock",5,1997,p0)
+		opts = mig.selectPolicy("yshock",5,1997,0,p0,m)
 		p = mig.Param(2,opts);
 
 		@fact p.policy --> "yshock"
@@ -227,7 +234,7 @@ facts("experiment.jl tests") do
 		sim0 = simulate(m,p)
 		sim0 = sim0[!mig.isna(sim0[:cohort]),:]
 
-		opts = mig.selectPolicy("pshock",5,2007,p)
+		opts = mig.selectPolicy("pshock",5,2007,0,p)
 
 		s10 = mig.computeShockAge(m,opts,10);
 		coh = unique(s10[:cohort])

@@ -153,8 +153,8 @@ type Param
 		# get data
 		# --------
 
-		indir,outdir = setPaths()
-		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
+		io = setPaths()
+		popweights = DataFrame(read_rda(joinpath(io["indir"],"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
 		# set amenity to popweights initially

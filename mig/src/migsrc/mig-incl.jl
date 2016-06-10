@@ -63,7 +63,7 @@ function objfunc(ev::Eval)
 	s   = simulate(m,p)
 	smm = computeMoments(s,p,m)	
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
-	simMoments = mydf2dict(smm)
+	simMoments = mydf2dict(smm["moments"])
 
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in dataMomentd(ev)
@@ -124,7 +124,8 @@ function runSim()
 	# figure()
 	simplot(s,5)
 	x=computeMoments(s,p,m)
-	showall(x)
+	showall(x["moments"])
+	showall(x["yearly"])
 	return s
 end
 
@@ -133,8 +134,8 @@ end
 function runObj(printm::Bool=false,subset=true)
 	# create MProb
 
-	indir, outdir = mig.setPaths()
-	moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
+	io = mig.setPaths()
+	moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
 	dont_use = ""
@@ -230,7 +231,9 @@ function setPaths()
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
 	end
-	return (indir,outdir)
+	rem_in = "~/data_repo/mig/in_data_jl"
+	rem_out = "~/data_repo/mig/out_data_jl"
+	return Dict("indir"=>indir, "outdir" => outdir, "remote_in" => rem_in, "remote_out"=> rem_out)
 end
 
 # set outpath rel to dropbox/mobility/output/model
@@ -279,12 +282,12 @@ function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="nu
 	d = Dict()
 
 	if writedisk
-		indir, outdir = mig.setPaths()
-		fi = readdir(outdir)
+		io = mig.setPaths()
+		fi = readdir(io["outdir"])
 		if !in(pth,fi)
-			mkpath(string(joinpath(outdir,pth)))
+			mkpath(string(joinpath(io["outdir"],pth)))
 		end
-		opth = string(joinpath(outdir,pth))
+		opth = string(joinpath(io["outdir"],pth))
 	end
 
 	for (k,v) in dfs

@@ -1,5 +1,130 @@
 using PyPlot
+using PyCall
 
+function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractString="null")
+
+	file = string("exp_region$(region)_$(shock).jld")
+	pa = setPaths()
+	outdir = joinpath(pa["outdir"],"shockReg")
+	if remote != "null"
+		remote_in = joinpath(pa["remote_out"],"shockReg",file)
+		info("downloading data from $remote")
+		run(`scp $(remote):$(remote_out) $outdir`)
+	end
+
+	# load data
+	d = JLD.load(joinpath(outdir,file))
+
+	# recreate model
+	p = Param(2,d["opts"])
+	m = Model(p)
+
+	# experiment data
+	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:yshock,:pshock)
+
+	shockreg = m.regnames[d["opts"]["shockRegion"],:Division]
+	# average income data
+	base_y = @where(d["moments"]["base"]["yearly"][[:year,:meany,:Division]],:Division .== shockreg)
+	names!(base_y,[:year;symbol("y_$(shockreg)");:Division])
+	shock_y = @where(d["moments"][shock]["yearly"][[:year,:meany,:Division]],:Division .== shockreg)
+	names!(shock_y,[:year;symbol("y_$(shockreg)_shock");:Division])
+
+	# prepare py-data
+	# y_j = m.pred_ydf[[:year,symbol(shockreg)]]
+	# names!(y_j,[:year;symbol("y_$shockreg")])
+	p_j = m.pred_pdf[[:year,symbol(shockreg)]]
+	names!(p_j,[:year;symbol("p_$(shockreg)")])
+	# println("dd = $(dd)")
+	# println("base_y = $(base_y)")
+
+	dp = join(dd,base_y,on=:year)
+	println("dp = $(dp)")
+	dp = join(dp,shock_y,on=:year)
+	dp = join(dp,p_j,on=:year)
+
+	# dp[symbol("y_$(shockreg)_shock")] = dp[symbol("y_$(shockreg)")] .* (1-dp[:yshock])a
+	dp[:pshock][1:3] = 0.0
+
+	dp[symbol("p_$(shockreg)_shock")] = dp[symbol("p_$(shockreg)")] .* (1-dp[:pshock])
+	println("dp = $(dp)")
+
+	# plots
+
+	# different grids on a plot
+	# fig = plt.figure()
+	# gs1 = gspec.GridSpec(1, 1)
+	# gs1[:update](top=1.0, bottom=0.84)
+	# ax1 = plt.subplot(get(gs1, (0, 0)))
+
+	# gs2 = gspec.GridSpec(2, 1)
+	# gs2[:update](top=0.77, bottom=0.44, hspace=0.0)
+	# ax2 = plt.subplot(get(gs2, (0, 0)))
+	# ax3 = plt.subplot(get(gs2, (1, 0)))
+
+	# gs3 = gspec.GridSpec(2, 1)
+	# gs3[:update](top=0.38, bottom=0.0, hspace=0.4)
+	# ax4 = plt.subplot(get(gs3, (0, 0)))
+	# ax5 = plt.subplot(get(gs3, (1, 0)))
+
+
+	fig = figure("elasticity",figsize=(10,10))
+	@pyimport matplotlib.gridspec as gspec 
+	g1 = gspec.GridSpec(1,1)
+	g1[:update](top=0.95,bottom = 0.53)
+	ax1 = subplot(get(g1,(0,0)))
+	ax1[:grid]()
+	ax1[:plot](dp[:year],dp[:d_all_p],linestyle="-",color="black",linewidth=1.5,label="elasticity")
+	# ax1[:set_ylim]([-0.6;0.05])
+	ax1[:legend](loc="upper right")
+
+	g2 = gspec.GridSpec(2,1)
+	g2[:update](top=0.47,bottom = 0.05,hspace=0.05)
+
+	ax2 = subplot(get(g2,(0,0)),sharex=ax1)
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
+	ax2[:grid]()
+	ax2[:legend](loc="upper right")
+
+	ax3 = subplot(get(g2,(1,0)),sharex=ax1)
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
+	ax3[:legend](loc="upper right")
+	ax3[:grid]()
+	fig[:canvas][:draw]() # Update the figure
+
+
+	# subplots_adjust(hspace=0.0) # Set the vertical spacing between axes
+	# fig,axes = PyPlot.subplots(1,2, gridspec_kw = Dict("width_ratios"=>[3; 1]))
+	# subplot(211) # Create the 1st axis of a 3x1 array of axes
+	# ax1 = gca()
+	# ax1[:set_xscale]("log") # Set the x axis to a logarithmic scale
+	# setp(ax1[:get_xticklabels](),visible=false) # Disable x tick labels
+	# grid("on")
+	# title("Title")
+	# yticks(0.1:0.2:0.9) # Set the y-tick range and step size, 0.1 to 0.9 in increments of 0.2
+	# ylim(0.0,1.0) # Set the y-limits from 0.0 to 1.0
+	# subplot(212,sharex=ax1) # Create the 2nd axis of a 3x1 array of axes
+	# ax2 = gca()
+	# ax2[:set_xscale]("log") # Set the x axis to a logarithmic scale
+	# setp(ax2[:get_xticklabels](),visible=false) # Disable x tick labels
+	# grid("on")
+	# ylabel("Log Scale")
+	# yticks(0.1:0.2:0.9)
+	# ylim(0.0,1.0)
+	# fig[:canvas][:draw]() # Update the figure
+	# suptitle("2x1 Shared Axis")
+	# fig,axes = subplots(2,1)
+	# ax = axes[1]
+	# ax[:plot]()
+
+
+
+	# save plots
+
+
+
+end
 
 # mig module plotting functions
 

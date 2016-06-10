@@ -26,7 +26,7 @@ type Model
 	# dimensions: a,h,j,pj,py
 	EVfinal :: Array{Float64,5}
 
-	# index of the first asset element > 0
+	# index of the first asset element > 699
 	aone :: Int
 
 	amenities::Vector{Float64}
@@ -115,25 +115,25 @@ type Model
 		# ==================
 
 		# if on my machine
-		indir,outdir = setPaths()
+		io = setPaths()
 
-		# dbase = h5read(joinpath(indir,"mig_db_in.h5"))
-		# rhoy = h52df(joinpath(indir,"mig_db_in.h5"),"rhoy/")	# function makes a dataframe from all cols in rhoy
+		# dbase = h5read(joinpath(io["indir"],"mig_db_in.h5"))
+		# rhoy = h52df(joinpath(io["indir"],"mig_db_in.h5"),"rhoy/")	# function makes a dataframe from all cols in rhoy
 
 		# scalar params
-		par_df = DataFrame(read_rda(joinpath(indir,"par_df.rda"))["par_df"])
+		par_df = DataFrame(read_rda(joinpath(io["indir"],"par_df.rda"))["par_df"])
 		init_asset = LogNormal(par_df[par_df[:param].=="meanlog",:value][1],par_df[par_df[:param].=="sdlog",:value][1])
 
 		# distance matrix
-		distdf = DataFrame(read_rda(joinpath(indir,"distance.rda"))["dist"])
+		distdf = DataFrame(read_rda(joinpath(io["indir"],"distance.rda"))["dist"])
 		dist = convert(Array,distdf)
 
 		# population weights
-		popweights = DataFrame(read_rda(joinpath(indir,"prop.rda"))["prop"])
+		popweights = DataFrame(read_rda(joinpath(io["indir"],"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
 		# age distribution
-		agedist = DataFrame(read_rda(joinpath(indir,"agedist.rda"))["agedist"])
+		agedist = DataFrame(read_rda(joinpath(io["indir"],"agedist.rda"))["agedist"])
 
 
 		# put all amenities into amenity vector
@@ -158,50 +158,50 @@ type Model
 		# VAR P ~ LY + LP
 		# VAR Y ~ LY + LP
 		if p.policy == "noShocks"
-			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
+			VAR_reg = DataFrame(read_rda(joinpath(io["indir"],"VAR_reg.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
 				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
-			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
-			regY = DataFrame(read_rda(joinpath(indir,"regY.rda"))["regY"])
-			regP = DataFrame(read_rda(joinpath(indir,"regP.rda"))["regP"])
-			PYdata = DataFrame(read_rda(joinpath(indir,"PYdata_noShock.rda"))["PYdata"])
-			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y_noShock.rda"))["pred_y"])
-			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p_noShock.rda"))["pred_p"])
+			VAR_agg = DataFrame(read_rda(joinpath(io["indir"],"VAR_agg.rda"))["VAR_agg"])
+			regY = DataFrame(read_rda(joinpath(io["indir"],"regY.rda"))["regY"])
+			regP = DataFrame(read_rda(joinpath(io["indir"],"regP.rda"))["regP"])
+			PYdata = DataFrame(read_rda(joinpath(io["indir"],"PYdata_noShock.rda"))["PYdata"])
+			pred_ydf = DataFrame(read_rda(joinpath(io["indir"],"pred_y_noShock.rda"))["pred_y"])
+			pred_pdf = DataFrame(read_rda(joinpath(io["indir"],"pred_p_noShock.rda"))["pred_p"])
 		elseif p.policy=="smallShocks"
-			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg_small.rda"))["VAR_reg"])
+			VAR_reg = DataFrame(read_rda(joinpath(io["indir"],"VAR_reg_small.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
 				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
-			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
-			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
+			VAR_agg = DataFrame(read_rda(joinpath(io["indir"],"VAR_agg.rda"))["VAR_agg"])
+			sigma_agg = DataFrame(read_rda(joinpath(io["indir"],"sigma_agg.rda"))["sigma_agg"])
 			YPsigma = zeros(2,2)
 			YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
 			YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
 			YPsigma[2,1] = @where(sigma_agg,:row.=="P")[:Y][1]
 			YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
-			PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
-			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y_small.rda"))["pred_y"])
-			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p_small.rda"))["pred_p"])
+			PYdata = DataFrame(read_rda(joinpath(io["indir"],"PYdata.rda"))["PYdata"])
+			pred_ydf = DataFrame(read_rda(joinpath(io["indir"],"pred_y_small.rda"))["pred_y"])
+			pred_pdf = DataFrame(read_rda(joinpath(io["indir"],"pred_p_small.rda"))["pred_p"])
 		else
-			VAR_reg = DataFrame(read_rda(joinpath(indir,"VAR_reg.rda"))["VAR_reg"])
+			VAR_reg = DataFrame(read_rda(joinpath(io["indir"],"VAR_reg.rda"))["VAR_reg"])
 			Regmods_YP = Dict{Int,Matrix{Float64}}()
 			for j in 1:p.nJ
 				Regmods_YP[j] = vcat(convert(Array,VAR_reg[j,[:y_Intercept,:y_Y,:y_P]]),convert(Array,VAR_reg[j,[:p_Intercept,:p_Y,:p_P]]))
 			end
-			VAR_agg = DataFrame(read_rda(joinpath(indir,"VAR_agg.rda"))["VAR_agg"])
-			sigma_agg = DataFrame(read_rda(joinpath(indir,"sigma_agg.rda"))["sigma_agg"])
-			sigma_reg_df = DataFrame(read_rda(joinpath(indir,"sigma_reg.rda"))["sigma_reg"])
+			VAR_agg = DataFrame(read_rda(joinpath(io["indir"],"VAR_agg.rda"))["VAR_agg"])
+			sigma_agg = DataFrame(read_rda(joinpath(io["indir"],"sigma_agg.rda"))["sigma_agg"])
+			sigma_reg_df = DataFrame(read_rda(joinpath(io["indir"],"sigma_reg.rda"))["sigma_reg"])
 			YPsigma = zeros(2,2)
 			YPsigma[1,1] = @where(sigma_agg,:row.=="Y")[:Y][1]
 			YPsigma[1,2] = @where(sigma_agg,:row.=="Y")[:P][1]
 			YPsigma[2,1] = @where(sigma_agg,:row.=="P")[:Y][1]
 			YPsigma[2,2] = @where(sigma_agg,:row.=="P")[:P][1]
-			PYdata = DataFrame(read_rda(joinpath(indir,"PYdata.rda"))["PYdata"])
-			pred_ydf = DataFrame(read_rda(joinpath(indir,"pred_y.rda"))["pred_y"])
-			pred_pdf = DataFrame(read_rda(joinpath(indir,"pred_p.rda"))["pred_p"])
+			PYdata = DataFrame(read_rda(joinpath(io["indir"],"PYdata.rda"))["PYdata"])
+			pred_ydf = DataFrame(read_rda(joinpath(io["indir"],"pred_y.rda"))["pred_y"])
+			pred_pdf = DataFrame(read_rda(joinpath(io["indir"],"pred_p.rda"))["pred_p"])
 		end
 
 		# get region names
@@ -230,7 +230,7 @@ type Model
 
 
 		# individual income process parameters
-		inc_coefs = DataFrame(read_rda(joinpath(indir,"ztable.rda"))["z"])
+		inc_coefs = DataFrame(read_rda(joinpath(io["indir"],"ztable.rda"))["z"])
 
 		# manually override AR1 coefs
 		# using numbers from french(2005)
@@ -238,7 +238,7 @@ type Model
 		inc_coefs[:,:sigma_resid] = 0.118
 
 		# kids transition matrix
-		ktrans = DataFrame(read_rda(joinpath(indir,"kidstrans.rda"))["kids_trans"])
+		ktrans = DataFrame(read_rda(joinpath(io["indir"],"kidstrans.rda"))["kids_trans"])
 
 		kmat = zeros(p.ns,p.ns,p.nt)
 		for ir in eachrow(ktrans)
@@ -331,16 +331,14 @@ type Model
 
 		# zgrid holds ln(y) for all states of Y,P,age and region
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
-		for j in 1:p.nJ
-			for iy in 1:p.ny
-				for ip in 1:p.np
-					for it in 1:p.nt-1
+		for it in 1:p.nt-1
+			for j in 1:p.nJ
+				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
+				for iy in 1:p.ny
+					for ip in 1:p.np
 						for iz in 1:p.nz
-							if (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3") && ((it >= p.shockAge) && (j==p.shockReg))
-								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]*p.shockVal_y[it-p.shockAge+1]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
-							else
-								zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
-							end
+							
+							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + yshock + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 						end
 					end
 				end
@@ -694,11 +692,6 @@ function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = Gyp ./ sum(Gyp,2)
 	return Gyp
 end
-
-
-# function(ff::HDF5File,path)
-# 	fid = h5open(ff,"r")
-# 	for obj in fid[path] 
 
 function Gyp_indices(p::Param,show=false)
 

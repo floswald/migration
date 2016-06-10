@@ -287,6 +287,7 @@ function simulate(m::Model,p::Param)
 
 	pshock = false
 	yshock = false
+	shockmyy = false
 	if p.policy == "pshock" 
 		pshock = true
 	end
@@ -309,7 +310,7 @@ function simulate(m::Model,p::Param)
 		highMC = true
 	end
 
-	if p.policy == "ypshock"
+	if p.policy == "ypshock" || p.policy == "ypshock3"
 		pshock = true
 		yshock = true
 	end
@@ -382,9 +383,10 @@ function simulate(m::Model,p::Param)
 				end
 
 				# apply price policy adjustment here
-				if yshock && ((age >= p.shockAge) && (ij == p.shockReg))
-					y *= p.shockVal_y[age-p.shockAge+1]
-				end
+				shockmyy = yshock && ((age >= p.shockAge) && (ij == p.shockReg))
+				# if yshock && ((age >= p.shockAge) && (ij == p.shockReg))
+				# 	y *= p.shockVal_y[age-p.shockAge+1]
+				# end
 
 				# record regional prices
 				Dy[i_idx] = y
@@ -392,7 +394,7 @@ function simulate(m::Model,p::Param)
 
 				# get individual specific income at current state
 				# this is baseline income, i.e. before any policy induced adjustments
-				yy = getIncome(m,y,z,age,ij) 
+				yy = shockmyy ? getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]) ,age,ij) : getIncome(m,y,z,age,ij)
 
 				# if moving is not allowed from your region...
 				if highMC && (p.shockReg==ij)
@@ -1033,6 +1035,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		nms[i] = ss
 	end
 	dfout[:moment] = nms
+
+	# compute estimates by year
+	yearly = @by(df,[:year; :Division],meany = mean(:income), meanc = mean(:cons), means = mean(:save),meanw = mean(:wealth))
 	
 	# 	push!(dfs,vcat(mom1,mom2))
 
@@ -1052,7 +1057,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# end
 
 
-	return dfout
+	return Dict("moments" => dfout, "yearly" => yearly)
 end
 
 

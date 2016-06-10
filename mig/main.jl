@@ -20,7 +20,6 @@ MOpt.check_moments(x)
 
 p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
-@time m = mig.Model(p,policy="mortgageSubsidy")	# 1.5 secs
 @time mig.solve!(m,p)	
 @profile s = mig.simulate(m,p);	
 @profile x=mig.computeMoments(s,p,m)
