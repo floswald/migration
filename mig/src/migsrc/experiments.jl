@@ -1371,7 +1371,8 @@ function exp_shockRegion(opts::Dict)
 
 		# for kennan figure 1
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = (1-opts["shockVal_y"][1:nrow(ela)]), pshock = (1-opts["shockVal_p"][1:nrow(ela)])) |>
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = (1-opts["shockVal_y"][1:nrow(ela)]), pshock = (1-opts["shockVal_p"][1:nrow(ela)])) 
+			
 	ela1[[:pshock,:yshock]] = 0.0
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
