@@ -21,9 +21,8 @@
 
 #$ -S /bin/bash
 #$ -j y
-#$ -e /home/uctpfos/git/migration/src/cluster/examples/slices.err
-#$ -o /home/uctpfos/git/migration/src/cluster/examples/slices.out
-#$ -j y
+#$ -e /home/uctpfos/git/migration/mig/src/cluster/examples/slices.err
+#$ -o /home/uctpfos/git/migration/mig/src/cluster/examples/slices.out
 #$ -N migslice
 #$ -cwd
 
