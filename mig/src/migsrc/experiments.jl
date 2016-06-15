@@ -1411,27 +1411,26 @@ function exp_shockRegion(opts::Dict)
 		elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]) )
 		elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]) )
 
-	elseif which == "ypshock"
-		elas["wrt_y"] = Dict()
-		elas["wrt_p"] = Dict()
-		elas["own"] = Dict()
-		elas["rent"] = Dict()
+	elseif (length(which) >= 7) && (which[1:7] == "ypshock")
+		# elas["wrt_y"] = Dict()
+		# elas["wrt_p"] = Dict()
+		# elas["own"] = Dict()
+		# elas["rent"] = Dict()
 
-		elas["wrt_y"]["in"]     = 100*ela2[:mean_din][1]
-		elas["wrt_y"]["out"]    = 100*ela2[:mean_dout][1]
-		elas["wrt_y"]["net"]    = 100*ela2[:mean_dnet][1]
-		elas["wrt_y"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_y"]) )	# % change in pop / % change in income
-		elas["wrt_y"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_y"]) )
-		elas["wrt_y"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_y"]) )
+		# elas["wrt_y"]["in"]     = 100*ela2[:mean_din][1]
+		# elas["wrt_y"]["out"]    = 100*ela2[:mean_dout][1]
+		# elas["wrt_y"]["net"]    = 100*ela2[:mean_dnet][1]
+		# elas["wrt_y"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_y"]) )	# % change in pop / % change in income
+		# elas["wrt_y"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_y"]) )
+		# elas["wrt_y"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_y"]) )
 
-		elas["wrt_p"]["in"]     = 100*ela2[:mean_din][1]
-		elas["wrt_p"]["out"]    = 100*ela2[:mean_dout][1]
-		elas["wrt_p"]["net"]    = 100*ela2[:mean_dnet][1]
-		elas["wrt_p"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_p"]) )	# % change in pop / % change in prices 
-		elas["wrt_p"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_p"]) )
-		elas["wrt_p"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_p"]) )
+		# elas["wrt_p"]["in"]     = 100*ela2[:mean_din][1]
+		# elas["wrt_p"]["out"]    = 100*ela2[:mean_dout][1]
+		# elas["wrt_p"]["net"]    = 100*ela2[:mean_dnet][1]
+		# elas["wrt_p"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_p"]) )	# % change in pop / % change in prices 
+		# elas["wrt_p"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_p"]) )
+		# elas["wrt_p"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_p"]) )
 
-	elseif which == "ypshock3"
 		
    
 	else

@@ -5,10 +5,10 @@
 
 t0 = time()
 
-@everywhere include("../nodes.jl")
+@everywhere include("nodes.jl")
 
-sl = MOpt.slices(mprob,30);
-MOpt.write(sl,"slices.h5")
+sl = MOpt.slices(mprob,length(workers()));
+MOpt.write(sl,joinpath(io["outdir"],"slices.h5"))
 
 
 println("done after $(round((time()-t0)/60)) minutes")

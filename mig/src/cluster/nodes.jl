@@ -4,8 +4,8 @@
 using mig, MOpt
 
 
-indir, outdir = mig.setPaths()
-moms = mig.DataFrame(mig.read_rda(joinpath(indir,"moments.rda"))["m"])
+io = mig.setPaths()
+moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
 mig.names!(moms,[:name,:value,:weight])
 # subsetting moments
 dont_use= ["lm_w_intercept","move_neg_equity"]
