@@ -41,7 +41,7 @@ function runExperiment(which::AbstractString,region::Int,year::Int,revert::Int=0
 	elseif in(which,["ypshock","ypshock3","pshock","pshock3","yshock","yshock3","noBuying","highMC","noSaving"])
 		opts = selectPolicy(which,region,year,revert,p,m)
 		e = mig.exp_shockRegion(opts)
-		JLD.save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$(which).jld"),e[1])
+		JLD.save(joinpath(io["outdir"],"shockReg","exp_region$(region)_$(opts["policy"]).jld"),e[1])
 		# f = open(joinpath(outdir,"shockReg","exp_region$(region)_$(which)_all.json"),"w")
 		# JSON.print(f,e[1])	# print first elt with is dict of out matrial
 		# close(f)
