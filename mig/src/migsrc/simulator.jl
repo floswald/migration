@@ -310,11 +310,12 @@ function simulate(m::Model,p::Param)
 		highMC = true
 	end
 
-	if p.policy == "ypshock" || p.policy == "ypshock3"
+	if (p.policy == "ypshock") || (p.policy == "ypshock3") || (p.policy == "ypshock4") || (p.policy == "ypshock5")
 		pshock = true
 		yshock = true
 	end
 
+	println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
 
 	for age = 1:T
 
@@ -394,6 +395,10 @@ function simulate(m::Model,p::Param)
 
 				# get individual specific income at current state
 				# this is baseline income, i.e. before any policy induced adjustments
+				# if shockmyy
+					# println("income = $(getIncome(m,y,z,age,ij))")
+					# println("shockincome = $(getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]),age,ij))")
+				# end
 				yy = shockmyy ? getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]) ,age,ij) : getIncome(m,y,z,age,ij)
 
 				# if moving is not allowed from your region...

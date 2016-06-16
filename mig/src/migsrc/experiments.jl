@@ -1371,17 +1371,20 @@ function exp_shockRegion(opts::Dict)
 
 		# for kennan figure 1
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year, yshock = (1-opts["shockVal_y"][1:nrow(ela)]), pshock = (1-opts["shockVal_p"][1:nrow(ela)])) 
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year) 
 			
 	ela1[[:pshock,:yshock]] = 0.0
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
 	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
+	println(ela1)
 
 	ela1 = @linq ela1 |>
-			@transform(d_all_p = :d_all ./ :pshock, d_all_y = :d_all./:yshock, d_own_p = :d_own ./ :pshock, d_own_y = :d_own ./ :yshock, d_rent_p = :d_rent ./ :pshock, d_rent_y = :d_rent ./ :yshock)
+			@where(:pshock .!= 0.0,d_all_p = :d_all ./ :pshock, d_own_p = :d_own ./ :pshock, d_rent_p = :d_rent ./ :pshock )
 
+	ela1 = @linq ela1 |>
+			@where(:yshock .!= 0.0,d_all_y = :d_all./:yshock,d_own_y = :d_own ./ :yshock, d_rent_y = :d_rent ./ :yshock )
 
 	elas = Dict()
 

@@ -333,7 +333,7 @@ type Model
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
-				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
+				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
 				for iy in 1:p.ny
 					for ip in 1:p.np
 						for iz in 1:p.nz

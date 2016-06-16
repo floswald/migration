@@ -230,8 +230,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	if (p.policy == "ypshock" || p.policy == "ypshock3") && (age >= p.shockAge)
-		pshock = true
+	if ((length(p.policy)>=7) && (p.policy[1:7] == "ypshock"))
+		if age >= p.shockAge
+			pshock = true
+		end
 	end
 
 	# state dependent stochastic states 
@@ -321,9 +323,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										if pshock && (p.shockReg == ik)
 											# price_j = m.gridsXD["p"][iy,ip,ij]*p.shockVal
-											if ((age-p.shockAge+1 ==0) || ((age-p.shockAge+1)>length(p.shockVal_p)))
+											if ((age-p.shockAge+1 ==0) )
+											# if ((age-p.shockAge+1 ==0) || ((age-p.shockAge+1)>length(p.shockVal_p)))
 												println("requiresting index = $(age-p.shockAge+1)")
+												println("age = $(age)")
+												println("p.shockAge = $(p.shockAge)")
 												println("of length $(length(p.shockVal_p))) array")
+												error("stop")
 											end
 											price_k = m.gridsXD["p"][iy,ip,ik]*p.shockVal_p[age-p.shockAge+1]
 										else
