@@ -43,7 +43,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	dp = join(dp,p_j,on=:year)
 
 	# dp[symbol("y_$(shockreg)_shock")] = dp[symbol("y_$(shockreg)")] .* (1-dp[:yshock])a
-	dp[:pshock][1:3] = 0.0
+	# dp[:pshock][1:3] = 0.0
 
 	dp[symbol("p_$(shockreg)_shock")] = dp[symbol("p_$(shockreg)")] .* (1-dp[:pshock])
 	println("dp = $(dp)")
