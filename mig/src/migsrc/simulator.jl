@@ -315,7 +315,7 @@ function simulate(m::Model,p::Param)
 		yshock = true
 	end
 
-	println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
+	# println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
 
 	for age = 1:T
 
