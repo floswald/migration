@@ -1382,7 +1382,7 @@ function exp_shockRegion(opts::Dict)
 	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
 	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
-	println(ela1)
+	println(ela1[[:year,:yshock,:pshock]])
 	ela1[[:d_all_p,:d_own_p,:d_rent_p,:d_all_y,:d_own_y,:d_rent_y]] = 0.0
 
 	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
