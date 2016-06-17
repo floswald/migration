@@ -1380,12 +1380,14 @@ function exp_shockRegion(opts::Dict)
 
 	println(ela1)
 
-	ela1 = @linq ela1 |>
-			@where(:pshock .!= 0.0,d_all_p = :d_all ./ :pshock, d_own_p = :d_own ./ :pshock, d_rent_p = :d_rent ./ :pshock )
+	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 
-	ela1 = @linq ela1 |>
-			@where(:yshock .!= 0.0,d_all_y = :d_all./:yshock,d_own_y = :d_own ./ :yshock, d_rent_y = :d_rent ./ :yshock )
-
+	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	
 	elas = Dict()
 
 	# computes average elasticities over entire samplign period shockYear -> 2012
