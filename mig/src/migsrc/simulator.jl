@@ -310,7 +310,7 @@ function simulate(m::Model,p::Param)
 		highMC = true
 	end
 
-	if (p.policy == "ypshock") || (p.policy == "ypshock3") || (p.policy == "ypshock4") || (p.policy == "ypshock5")
+	if ((length(p.policy)>=7) && (p.policy[1:7] == "ypshock"))
 		pshock = true
 		yshock = true
 	end
