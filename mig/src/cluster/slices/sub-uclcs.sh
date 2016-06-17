@@ -21,8 +21,6 @@
 
 #$ -S /bin/bash
 #$ -j y
-#$ -e /home/uctpfos/git/migration/mig/src/cluster/examples/slices.err
-#$ -o /home/uctpfos/git/migration/mig/src/cluster/examples/slices.out
 #$ -N migslice
 #$ -cwd
 
@@ -34,5 +32,5 @@ awk '{ for (i=0; i < $2; ++i) { print $1} }' $PE_HOSTFILE > hosts
 
 echo "your hosts"
 cat hosts
-/home/uctpfos/thirdparty/juliabin-0.4.6/bin/julia --machinefile hosts examples/slices.jl
+/home/uctpfos/thirdparty/juliabin-0.4.6/bin/julia --machinefile hosts slices.jl
 
