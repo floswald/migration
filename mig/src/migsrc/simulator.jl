@@ -815,7 +815,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	else
 		lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
 		cc_h  = coeftable(lm_h)
-		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:size(cc_h.mat,1)] 
+		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
 		coef_h = @data(coef(lm_h))
 		std_h = @data(stderr(lm_h))
 	end
@@ -866,7 +866,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	else
 		lm_mv = glm( move ~ age + age2 ,df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
-		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:size(cc_mv.mat,1)] 
+		nm_mv = ASCIIString["lm_mv_" * convert(ASCIIString,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)] 
 		coef_mv = @data(coef(lm_mv))
 		std_mv = @data(stderr(lm_mv))
 	end
@@ -969,7 +969,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# else
 	# 	lm_w = fit(LinearModel, wealth ~ age + age2,df )
 	# 	cc_w  = coeftable(lm_w)
-	# 	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.mat,1)] 
+	# 	nm_w  = ASCIIString["lm_w_" *  convert(ASCIIString,cc_w.rownms[i]) for i=1:size(cc_w.rownms,1)] 
 	# 	coef_w = @data(coef(lm_w))
 	# 	std_w = @data(stderr(lm_w))
 	# end
