@@ -813,11 +813,17 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 		coef_h = DataArray(Float64,3)
 		std_h =  DataArray(Float64,3)
 	else
-		lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
-		cc_h  = coeftable(lm_h)
-		nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
-		coef_h = @data(coef(lm_h))
-		std_h = @data(stderr(lm_h))
+		try 
+			lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
+			cc_h  = coeftable(lm_h)
+			nm_h  = ASCIIString["lm_h_" *  convert(ASCIIString,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
+			coef_h = @data(coef(lm_h))
+			std_h = @data(stderr(lm_h))
+		catch
+			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
+			coef_h = DataArray(Float64,3)
+			std_h =  DataArray(Float64,3)
+		end
 	end
 	
 	xx = @linq df |>
