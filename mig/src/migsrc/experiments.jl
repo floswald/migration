@@ -1375,10 +1375,15 @@ function exp_shockRegion(opts::Dict)
 			
 	ela1[[:pshock,:yshock]] = 0.0
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
+
+	println("shockVal_y = $(opts["shockVal_y"])")
+	println("shockVal_p = $(opts["shockVal_p"])")
+
 	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
 	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
 	println(ela1)
+	ela1[[:d_all_p,:d_own_p,:d_rent_p,:d_all_y,:d_own_y,:d_rent_y]] = 0.0
 
 	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
@@ -1387,7 +1392,7 @@ function exp_shockRegion(opts::Dict)
 	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	
+
 	elas = Dict()
 
 	# computes average elasticities over entire samplign period shockYear -> 2012
