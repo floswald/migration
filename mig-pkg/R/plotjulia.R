@@ -245,7 +245,7 @@ plot_moment_fit <- function(){
 	s$`Wealth Moments`$lab = s$`Wealth Moments`$moment
 	s$`Wealth Moments`[s$`Wealth Moments`$moment == "mean_wealth_NwE"]$lab = "E[wealth | NwE]"
 	s$`Wealth Moments`[s$`Wealth Moments`$moment == "mean_wealth_30_40"]$lab = "E[wealth | (30,40]]"
-	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + geom_abline(intercept=0,slope=1)+ geom_text(data=subset(s$`Wealth Moments` ,lab %in% c("E[wealth | NwE]","E[wealth | (30,40]]")),aes(x=m,y=mod,label=lab),hjust=0.3,vjust=1.5,size=3) + ggtitle("Wealth") + mytheme
+	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + geom_abline(intercept=0,slope=1)+ geom_text(data=subset(s$`Wealth Moments` ,lab %in% c("E[wealth | NwE]","E[wealth | (30,40]]")),aes(x=m,y=mod,label=lab),hjust=0.3,vjust=1.5,size=3) + ggtitle("Wealth") + mytheme + theme_bw()
 
 	ggsave(plm,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods.pdf")
 	ggsave(plm2,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf")

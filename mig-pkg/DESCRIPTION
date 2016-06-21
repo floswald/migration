@@ -24,6 +24,7 @@ Depends:
     DBI,
     data.table,
     reshape2,
+    rjson,
     xtable,
     devtools,
     ggplot2,

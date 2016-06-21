@@ -1,7 +1,9 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass beamer
 \begin_preamble
 \usepackage{natbib}
@@ -10,7 +12,7 @@
 \usepackage{dcolumn}
 \usepackage{booktabs}
 \usepackage{multicol}
-\newcommand{\Dropbox}{/Users/florianoswald/Dropbox/mobility/output}
+\newcommand{\Dropbox}{/Users/florian.oswald/Dropbox/research/mobility/output}
 \usepackage{tikz}
 \end_preamble
 \use_default_options true
@@ -19,16 +21,16 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
-
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -39,15 +41,24 @@
 \use_hyperref false
 \papersize a4paper
 \use_geometry true
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 0
 \boxbgcolor #dbdbdb
 \branch 90mins
@@ -122,10 +133,24 @@ Job Talk at Sciences Po
 11th of February 2015
 \end_layout
 
-\begin_layout BeginFrame
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Housing and Mobility
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Regional migration is a key adjustment mechanism in housing and labor markets.
 \end_layout
@@ -146,7 +171,7 @@ Shocks to house price and labor productivity have large welfare implications.
 \begin_layout Standard
 \noindent
 \align center
-\begin_inset Box Shaded
+\begin_inset Box Doublebox
 position "t"
 hor_pos "c"
 has_inner_box 1
@@ -157,6 +182,11 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
@@ -195,10 +225,31 @@ How does government housing policy interact with mobility?
 \begin_inset Note Note
 status collapsed
 
-\begin_layout BeginFrame
+\begin_layout Plain Layout
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Detroit, Michigan
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Plain Layout
 \begin_inset ERT
 status open
@@ -339,10 +390,32 @@ end{columns}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Plain Layout
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Detroit, Michigan
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Plain Layout
 \begin_inset ERT
 status open
@@ -531,10 +604,32 @@ end{columns}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Plain Layout
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Palo Alto, California
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Plain Layout
 \begin_inset ERT
 status open
@@ -705,17 +800,48 @@ end{columns}
 
 \end_layout
 
+\end_deeper
+\begin_layout Plain Layout
+\begin_inset Separator parbreak
 \end_inset
 
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Regional Shocks: large, and varied.
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Shocks to labor income / productivity in a region:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -723,6 +849,7 @@ Shocks to labor income / productivity in a region:
 The decline of the auto industry in Michigan reduced employment.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Detroit lost over 60% of its population since the 1950s.
 \end_layout
@@ -742,6 +869,10 @@ New South
 \end_deeper
 \begin_layout Itemize
 Shocks to house prices:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -751,12 +882,39 @@ Since the 2007 crisis, declines in the FHFA house price index ranged from
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Outline
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 In this paper, I build a lifecycle model that allows for
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -764,6 +922,7 @@ In this paper, I build a lifecycle model that allows for
 Regional risk in house prices and labor income,
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Migration, 
 \end_layout
@@ -865,12 +1024,39 @@ why do you have shocks that are persistent and correlated? because that
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 What we will learn
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Enumerate
 What do we learn from adding 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -890,6 +1076,7 @@ i can show how behaviour reacts as one region is shocked.
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 assets and 
 \begin_inset Note Note
@@ -986,10 +1173,37 @@ What would happen to migration, homeownership and welfare if we abolished
  the mortgage interest deduction (taking into account potential price changes)?
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Roadmap
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
@@ -999,14 +1213,33 @@ LatexCommand tableofcontents
 
 \end_layout
 
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Section
 Literature
 \end_layout
 
-\begin_layout BeginFrame
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Related literature
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -1095,13 +1328,36 @@ Regional Fluctuations:
 Blanchard and Katz (1992)
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Related literature 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 On the effects of 2007 housing bust on unemployment and mobility, and mismatch:
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1113,6 +1369,7 @@ empirical: Ferreira et al.
  (2013)
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 
 \size footnotesize
@@ -1134,8 +1391,13 @@ vspace{3mm}
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Itemize
 Housing and Labor reallocation: 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1184,6 +1446,7 @@ vspace{3mm}
 
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -1214,6 +1477,12 @@ Savings, retirement, tax reforms, human capital formation over the life
 
 \size footnotesize
 French, De Nardi and Jones (2010)
+\size default
+
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1229,14 +1498,30 @@ Magnac, Pistolesi and Roux (2013)
 
 \end_layout
 
+\end_deeper
+\end_deeper
 \begin_layout Section
 Empirical Facts
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -1248,6 +1533,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -1263,7 +1552,12 @@ vspace{1cm}
 Empirical Facts
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Definition of 
 \emph on
 Region
@@ -1284,6 +1578,16 @@ hypertarget{Divisions}{}
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 I assume regions correspond to Census Divisions (9 in total).
 \end_layout
@@ -1301,11 +1605,12 @@ Moves within a region are not counted as migration.
 70% of interstate moves are cross Division moves.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \noindent
 \align right
 \begin_inset Branch 25min
-status open
+status collapsed
 
 \begin_layout Standard
 \noindent
@@ -1401,10 +1706,33 @@ there is a tradeoff between level of geographic detail and other features
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
 
 \end_layout
 
+\end_deeper
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -1427,7 +1755,7 @@ linewidth][c]{%
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapNOtext.pdf
+	filename ../../../Dropbox/research/mobility/output/maps/divisions.pdf
 	width 110page%
 
 \end_inset
@@ -1449,13 +1777,35 @@ status open
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_p.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
 	height 95pheight%
 
 \end_inset
@@ -1463,13 +1813,35 @@ status open
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_y.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
 	height 95pheight%
 
 \end_inset
@@ -1477,14 +1849,37 @@ status open
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Annual Migration Rates
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Owners move less than renters.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -1512,11 +1907,11 @@ Dropbox/data/sipp/move_rates_edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Percent of households.
- SIPP data, average for 1997--2012, subset to 20--50 year olds.
+ SIPP data, average for 1997–2012, subset to 20–50 year olds.
 \end_layout
 
 \end_inset
@@ -1529,10 +1924,33 @@ Percent of households.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Reasons for Moving: CPS Data
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 placement p
@@ -1561,7 +1979,7 @@ Dropbox/data/CPS/main-reason-pres1.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
@@ -1578,7 +1996,7 @@ status open
 
  
 \begin_inset Branch US
-status open
+status collapsed
 
 \begin_layout Standard
 837 miles.
@@ -1599,10 +2017,32 @@ status open
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Reasons for Moving: CPS Data
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 placement p
@@ -1645,7 +2085,7 @@ Dropbox/data/CPS/main-reason-presKM.tex}
 \noindent
 \align center
 \begin_inset Branch US
-status open
+status collapsed
 
 \begin_layout Standard
 \noindent
@@ -1673,7 +2113,7 @@ Dropbox/data/CPS/main-reason-pres.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 CPS 2013 data on main motivation of moving, conditional on a cross Division
@@ -1690,7 +2130,7 @@ status open
 
  
 \begin_inset Branch US
-status open
+status collapsed
 
 \begin_layout Standard
 837 miles.
@@ -1711,10 +2151,25 @@ status open
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \noindent
 \begin_inset ERT
@@ -1739,7 +2194,7 @@ linewidth][c]{%
 \begin_layout Standard
 \noindent
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D.pdf
 	height 100pheight%
 
 \end_inset
@@ -1761,10 +2216,25 @@ status open
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Summary of empirical facts
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -1799,9 +2269,10 @@ Renters move at more than double the rate of owners.
 \end_layout
 
 \begin_layout Enumerate
-Younger people move more, with the renter--owner gap shrinking with age.
+Younger people move more, with the renter–owner gap shrinking with age.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -1820,14 +2291,30 @@ beamergotobutton{Probit}}
 
 \end_layout
 
+\end_deeper
+\end_deeper
 \begin_layout Section
 Model
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -1839,6 +2326,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -1854,10 +2345,25 @@ vspace{1cm}
 Model
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Decision Process
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 In each period, household 
 \begin_inset Formula $i$
@@ -1890,10 +2396,32 @@ Budget constraints, and
 Beliefs about the future.
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Decision Process
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 In each period, household 
 \begin_inset Formula $i$
@@ -1954,10 +2482,32 @@ Beliefs about the future:
 .
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Location Choice Problem
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Defining value function 
 \emph on
@@ -1974,6 +2524,7 @@ conditional
 ,
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -1996,8 +2547,8 @@ V_{t}\left(x_{it}\right) & = & \max_{d'\in D}\left\{ v_{t}\left(x_{it},d'\right)
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
 <row>
 <cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
@@ -2252,10 +2803,33 @@ age
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Housing and Savings Problem
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 The housing and savings problem solves:
 \begin_inset Formula 
@@ -2270,6 +2844,7 @@ s.t. &  & \text{budget constraints}
 
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 
 \family roman
@@ -2293,7 +2868,20 @@ s.t. &  & \text{budget constraints}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Preferences: 
 \begin_inset Formula $u(c_{it},h_{it},d_{it},d')$
 \end_inset
@@ -2301,8 +2889,22 @@ Preferences:
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 The within-period payoff depends on 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2358,11 +2960,10 @@ idiosyncratic location shock
 
 \end_layout
 
-\end_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \[
-u\left(c_{it},h_{it},d,d'\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
 \]
 
 \end_inset
@@ -2412,6 +3013,10 @@ explain what
 \end_inset
 
  is: 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2419,6 +3024,10 @@ explain what
 catch all variable that contains unobserved and idiosyncratic motives that
  would make a person intrinsically less likely to move.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2447,10 +3056,33 @@ logit shock captures moves made for other reasons than income or housing.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Homeownership Choice
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $h_{t}=1$
 \end_inset
@@ -2491,6 +3123,7 @@ Proportional cost of selling the house:
 .
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -2534,6 +3167,10 @@ bankruptcy / default:
 \begin_layout Itemize
 another insurance device tht differs from migration.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2557,10 +3194,33 @@ it would be interesting to have both in a model.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Labor Income
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -2589,6 +3249,7 @@ Define the price of human capital by
 Individual income is defined by:
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -2602,6 +3263,7 @@ e & \sim & N(0,\sigma^{2})
 
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 \begin_inset Formula $f(t)$
 \end_inset
@@ -2616,10 +3278,32 @@ e & \sim & N(0,\sigma^{2})
  is an idiosyncratic productivity shock.
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Job Search: Labor income of movers
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 People have to move to 
 \begin_inset Formula $d'$
@@ -2702,6 +3386,7 @@ Movers get a new draw
 Rules out selection on offers.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -2732,10 +3417,33 @@ I am aware that this is potentially a problem.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Budget Constraint: Renters who decide to stay
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Enumerate
 Choose to remain renters: pay rent 
 \begin_inset Formula $\kappa_{d}p_{dt}$
@@ -2769,6 +3477,7 @@ onslide+<2->
 Choose to buy:
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -2786,19 +3495,45 @@ p_{T}h_{iT-1}+a_{iT} & \geq & 0
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Budget Constraint: Owners who decide to stay
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 No fixed mortgage payment: implied schedule.
 \end_layout
 
 \begin_layout Itemize
 Continue as owners:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -2812,7 +3547,6 @@ p_{T}h_{iT-1}+a_{iT} & \geq & 0
 
 \end_layout
 
-\end_deeper
 \begin_layout Itemize
 \begin_inset ERT
 status open
@@ -2831,9 +3565,12 @@ Owners can choose to sell, incurring proportional fixed cost
 \end_inset
 
 :
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -2847,10 +3584,31 @@ a_{it+1} & \geq & 0
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Budget Constraint: Movers
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 When moving from 
 \begin_inset Formula $d$
@@ -2867,12 +3625,17 @@ When moving from
 .
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Renters in 
 \begin_inset Formula $d$
 \end_inset
 
 :
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2931,6 +3694,10 @@ Owners in
 \end_inset
 
 :
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2979,14 +3746,30 @@ a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)
 \end_layout
 
 \end_deeper
+\end_deeper
+\end_deeper
 \begin_layout Section
 Estimation
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -2998,6 +3781,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -3013,10 +3800,25 @@ vspace{1cm}
 Estimation
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Identification
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 I use observed variation in regional prices and productivity levels to identify
  the model.
@@ -3024,6 +3826,10 @@ I use observed variation in regional prices and productivity levels to identify
 
 \begin_layout Itemize
 Identifying assumptions: 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3039,6 +3845,10 @@ Preferences are identical across regions (could be relaxed via regional
 \end_deeper
 \begin_layout Itemize
 Implications:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3067,12 +3877,38 @@ I implicitly assume that
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Data: Micro (SIPP) and Macro (BEA, FHFA)
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Micro data:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3080,12 +3916,13 @@ Micro data:
 Use the 1996, 2001, 2004 and 2008 SIPP panels.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 102,529 unique individuals, 2684 cross-Division moves.
 \end_layout
 
 \begin_layout Itemize
-construct moments as averages over 1997--2012 to obtain reasonable sample
+construct moments as averages over 1997–2012 to obtain reasonable sample
  size in conditioning cells.
 \end_layout
 
@@ -3096,8 +3933,13 @@ Use a cohort estimator: accounts for fact that different cohorts faced different
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Itemize
 Macro data:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3110,7 +3952,19 @@ FHFA for regional house price indeces.
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Estimation Outline
 \begin_inset ERT
 status open
@@ -3127,12 +3981,26 @@ hypertarget{CurseDim}{}
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 Estimation proceeds in two steps:
 \end_layout
 
 \begin_layout Enumerate
 Reduce dimensionality of stochastic processes: 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3164,6 +4032,10 @@ I will employ a low-dimensional factor model to approximate this space.
 \end_deeper
 \begin_layout Enumerate
 Estimate the decision model:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3176,10 +4048,32 @@ Estimate the remaining behavioural parameters with SMM.
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Step 1: Factor Model of Aggregate and Regional Prices 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 I assume that agents use a 2-dimensional factor model to forecast prices.
 \end_layout
@@ -3246,6 +4140,10 @@ Factor model
 
 \begin_layout Itemize
 different regions are affected to different extent by aggregate shocks.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3264,15 +4162,30 @@ given a value
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_p.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p.pdf
 	height 91pheight%
 
 \end_inset
@@ -3280,10 +4193,32 @@ given a value
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status collapsed
@@ -3299,13 +4234,17 @@ shows that processes are correlated across regions, but not perfectly
 \end_inset
 
 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/VAR_reg_y.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_y.pdf
 	height 91pheight%
 
 \end_inset
@@ -3313,10 +4252,25 @@ shows that processes are correlated across regions, but not perfectly
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Step 2: Preset Parameters
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status collapsed
@@ -3377,10 +4331,32 @@ Dropbox/model/fit/preset.tex}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Step 2: Key Moment Relationships
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -3415,9 +4391,9 @@ arraystretch}{1.2}
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
 <row>
 <cell alignment="center" valignment="top" bottomline="true" usebox="none">
 \begin_inset Text
@@ -3725,10 +4701,32 @@ status open
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Step 2: Estimation method
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Structural parameter vector
 \begin_inset Formula 
@@ -3801,15 +4799,40 @@ Standard errors are computed using simulation methods (requires adjustment
 ).
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Step 2: Full List of Moments
 \end_layout
 
-\begin_layout Itemize
-Moments relating to mobility:
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
+\begin_layout Itemize
+Moments relating to mobility:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
 \begin_layout Itemize
 \begin_inset Formula $E[\text{move}]$
 \end_inset
@@ -3849,6 +4872,7 @@ Moments relating to mobility:
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Auxiliary model
 \begin_inset Formula 
@@ -3864,6 +4888,10 @@ Auxiliary model
 \end_deeper
 \begin_layout Itemize
 Moments relating to homeownership:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3902,7 +4930,6 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 
 \end_layout
 
-\end_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -3957,10 +4984,33 @@ explain MCMC
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Model Fit
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -3983,14 +5033,14 @@ linewidth][c]{%
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_mobility.pdf
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_mobility.pdf
 	scale 50
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_ownership.pdf
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_ownership.pdf
 	scale 50
 
 \end_inset
@@ -4049,10 +5099,32 @@ it is possible to estimate the moving cost for an actual mover.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Model Fit 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status collapsed
@@ -4061,9 +5133,9 @@ status collapsed
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -4186,14 +5258,14 @@ linewidth][c]{%
 \begin_layout Standard
 \noindent
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_auxmods2.pdf
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf
 	scale 50
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/fit/fit_wealth.pdf
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_wealth.pdf
 	scale 50
 
 \end_inset
@@ -4215,14 +5287,29 @@ status open
 
 \end_layout
 
+\end_deeper
 \begin_layout Section
 Properties of the model
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4234,6 +5321,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -4249,10 +5340,25 @@ vspace{1cm}
 Properties of the model
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Properties of the model
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4287,6 +5393,7 @@ beamergotobutton{Probability of Moving.}}
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 \begin_inset ERT
 status open
@@ -4341,14 +5448,30 @@ beamergotobutton{Comparative Statics: Effect of large shocks.}}
 
 \end_layout
 
+\end_deeper
+\end_deeper
 \begin_layout Section
 Value of migration 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4360,6 +5483,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -4375,10 +5502,25 @@ vspace{1cm}
 Value of the migration option
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Value of the migration option
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Migration flows are small, regional shocks are big.
 \end_layout
@@ -4389,6 +5531,10 @@ Is migration important?
 
 \begin_layout Itemize
 Compare two scenarios:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -4401,10 +5547,25 @@ Cannot move away from West North Central
 \end_layout
 
 \end_deeper
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -4446,7 +5607,7 @@ Dropbox/model/experiments/highMC/mig_value1.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Value of migration option in WNC.
@@ -4462,10 +5623,32 @@ Value of migration option in WNC.
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -4507,7 +5690,7 @@ Dropbox/model/experiments/highMC/mig_value2.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Value of migration option in WNC.
@@ -4523,10 +5706,32 @@ Value of migration option in WNC.
 
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -4568,7 +5773,7 @@ Dropbox/model/experiments/highMC/mig_value-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Value of migration option in WNC.
@@ -4584,10 +5789,25 @@ Value of migration option in WNC.
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Value of migration by age
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4611,7 +5831,7 @@ linewidth][c]{%
 \begin_layout Standard
 \noindent
 \begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/highMC/values_pres.pdf
+	filename ../../../Dropbox/research/mobility/output/model/experiments/highMC/values_pres.pdf
 	scale 85
 
 \end_inset
@@ -4633,14 +5853,29 @@ status open
 
 \end_layout
 
+\end_deeper
 \begin_layout Section
 Policy Experiments
 \end_layout
 
-\begin_layout BeginPlainFrame
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4655,6 +5890,10 @@ vspace{1cm}
 \end_inset
 
 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4664,173 +5903,23 @@ vspace{1cm}
 \series bold
 \size largest
 \color blue
-Abolishing the Mortgage Interest Deduction
-\end_layout
-
-\begin_layout BeginFrame
-Mortgage Interest Deduction
-\end_layout
-
-\begin_layout Itemize
-Owner-occupiers in the USA can deduct the interest paid on the mortgage
- from taxable income.
-\end_layout
-
-\begin_layout Itemize
-The mortgage insterest deduction has been discussed many times in the tax
- policy literature:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-
-\size small
-Poterba (1974, 1992), Poterba and Sinai (2008), Gervais (2002), Glaeser
- (2011), Glaeser and Shapiro (2002), Gervais and Pandey (2008).
+Labour Supply Elasticity after a 10% permanent shock
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
-Big tax expenditure: $72 billion in 2014.
-\end_layout
-
-\begin_layout Itemize
-Economic rationale for the deduction is not clear.
-\end_layout
-
-\begin_layout BeginFrame
-Abolishing the Mortgage Interest Deduction
-\end_layout
-
-\begin_layout Itemize
-What is the impact of abolishing the deduction on welfare, ownership and
- mobility?
-\end_layout
-
-\begin_layout Itemize
-Would abolishing it lead to an increase in mobility?
-\end_layout
-
-\begin_layout Itemize
-Difficult question, because such a large tax policy change will have GE
- effects.
-\end_layout
-
-\begin_layout Itemize
-Use results from GE model by Sommer and Sullivan (2013): 5% reduction in
- eqm.
- prices.
-\end_layout
-
-\begin_layout BeginFrame
-Sommer and Sullivan (2013)
-\end_layout
-
-\begin_layout Itemize
-With inelastic housing supply, deduction is capitalized into house prices.
-\end_layout
-
-\begin_layout Itemize
-Removing deduction lowers equilibrium prices by 5%.
-\end_layout
-
-\begin_layout Itemize
-Lower prices allow more low-wealth households to buy (lower downpayment).
-\end_layout
-
-\begin_layout Itemize
-Rents stay constant.
-\end_layout
-
-\begin_layout BeginFrame
-Abolishing the Mortgage Interest Deduction
-\end_layout
-
-\begin_layout Itemize
-Use estimates of average tax savings from Poterba and Sinai (2007).
-\end_layout
-
-\begin_layout Itemize
-Raise taxes for owners by amount equal to average deduction in income-age
- band.
-\end_layout
-
-\begin_layout Itemize
-Redistribute the collected proceeds on a per-capita, per-period basis.
-\end_layout
-
-\begin_layout Itemize
-Adjust rent-to-price ratios 
-\begin_inset Formula $\kappa_{d}$
-\end_inset
-
- so that rent stays constant.
-\end_layout
-
-\begin_layout BeginFrame
-Net Present Value of Deduction
-\end_layout
-
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/npv.pdf
-	scale 60
-
+\begin_inset Separator plain
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout BeginFrame
-Abolishing the Mortgage Interest Deduction
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
+\begin_layout Frame
+\begin_inset Argument 4
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/MortgageSubsidy/mortgage_pres-edit.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{MortgageExp}{}
+aasdfasdf
 \end_layout
 
 \end_inset
@@ -4838,107 +5927,7 @@ hypertarget{MortgageExp}{}
 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{columns}[T]
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}{.5
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{MoveToBuy}{
-\backslash
-beamergotobutton{Change in Behaviour.}}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}{.5
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{GainsAge}{
-\backslash
-beamergotobutton{Welfare gains by age.}}
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{GainsIncomeHousing}{
-\backslash
-beamergotobutton{Welfare gains by income and housing.}}
-\backslash
-
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{GainsIncomeAge}{
-\backslash
-beamergotobutton{Welfare gains by income and age.}}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{columns}
-\end_layout
-
-\end_inset
-
+\begin_layout Frame
 
 \end_layout
 
@@ -4946,21 +5935,40 @@ end{columns}
 Conclusion
 \end_layout
 
-\begin_layout BeginFrame
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Conclusion
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Constructed a model of migration over the lifecycle capable of dealing with
  aggregate shocks.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 The migration option has a large value.
 \end_layout
 
 \begin_layout Itemize
 Homeownership: important.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -4975,6 +5983,10 @@ Affects response to shocks.
 \end_deeper
 \begin_layout Itemize
 Abolishing the mortgage interest deduction:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -4987,14 +5999,38 @@ But large welfare impacts.
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 To do
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Add amenities (regional fixed effect).
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 relax restrictions of factor model (trends?, three agg.
  factors?)
@@ -5008,10 +6044,26 @@ Default?
 Move income model into structural model?
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\end_deeper
+\begin_layout PlainFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -5023,6 +6075,10 @@ status open
 vspace{1cm}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -5038,317 +6094,32 @@ vspace{1cm}
 Appendix
 \end_layout
 
-\begin_layout BeginFrame
-Welfare Gains by Age 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{MortgageExp}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
+\end_deeper
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
 status open
 
 \begin_layout Plain Layout
-
-
-\backslash
-hypertarget{GainsAge}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_age.pdf
-	scale 65
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Welfare Gains by Income and Housing Status 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{MortgageExp}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{GainsIncomeHousing}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_hy.pdf
-	scale 65
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Welfare Gains by Age and Income Quartile 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{MortgageExp}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{GainsIncomeAge}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/MortgageSubsidy/change_wy.pdf
-	scale 65
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-The Proportion of 
-\series bold
-\size largest
-\emph on
-\color blue
-Move to Buy 
-\emph default
-Changes 
-\series default
-\size default
-\color inherit
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{MortgageExp}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{MoveToBuy}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/MortgageSubsidy/mortgage_change_mv.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Properties: Probability of migrating by wealth 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Properties}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{PropProbMove}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{1pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align left
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/properties/mp_wealth2.pdf
-	scale 75
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
 Properties: Moving Costs
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -5360,6 +6131,10 @@ status open
 hypertarget{PropMovingCosts}{}
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
 \end_inset
 
 
@@ -5402,6 +6177,7 @@ Dropbox/model/experiments/moneyMC/moneyMC2.tex}
 Moving cost for young mover in Kennan and Walker (2011): $384,000
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -5420,10 +6196,33 @@ beamergotobutton{back}}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Properties: Decomposing moving costs for owners
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -5471,6 +6270,10 @@ Pr( own | low type ) = 60%
 
 \begin_layout Itemize
 Why do owners move less?
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -5482,6 +6285,7 @@ because of utility cost (
 )?
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 or because of transaction costs 
 \begin_inset Formula $(\phi)$
@@ -5552,497 +6356,43 @@ beamergotobutton{back}}
 
 \end_layout
 
-\begin_layout BeginFrame
-Effect of large regional shocks
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{PropCS}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Reduce observed house price or mean income in West North Central in 2000
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-reduce regional labor productivity 
-\begin_inset Formula $q_{dt}$
-\end_inset
-
- by 10%
-\end_layout
-
-\begin_layout Itemize
-reduce regional house price 
-\begin_inset Formula $p_{dt}$
-\end_inset
-
- by 30%
-\end_layout
-
 \end_deeper
-\begin_layout Itemize
-Leaving the other series unchanged
-\end_layout
-
-\begin_layout Itemize
-Look at changes in in/outflow
-\end_layout
-
-\begin_layout BeginFrame
-Sudden change in regional labor productivity in WNC
-\end_layout
-
+\end_deeper
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
 status open
 
 \begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/WNCyshock_pres.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Labor productivity shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{10pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_in.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Labor productivity shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{10pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Labor productivity shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/yelast.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Elasticity of net migration.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Properties}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Sudden change in price level
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/WNCpshock_pres.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Price shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{10pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Price shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{10pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
-Price shock in WNC
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/pelast.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Elasticity of net migration.
- Average over 2000--2012.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Properties}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginFrame
 Solving the Model
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 for each location 
 \begin_inset Formula $d=1,\dots,9$
 \end_inset
 
 , 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -6054,6 +6404,7 @@ compute the value of moving to
  
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 becoming either 
 \color blue
@@ -6121,10 +6472,33 @@ unconditional value
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Solving the Model
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Formula 
 \[
@@ -6181,6 +6555,7 @@ there are 1,410,000 points in the state space
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 \begin_inset ERT
 status open
@@ -6201,263 +6576,37 @@ there are 18 optimization problems at point
 : Solving the model once requires solving 25,380,000 maximization problems.
 \end_layout
 
-\begin_layout BeginPlainFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
 
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
 status open
 
 \begin_layout Plain Layout
-
-
-\backslash
-hypertarget{DivisionMaps}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{1pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapNOtext.pdf
-	width 110page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Divisions}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{1pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapText1.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Divisions}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{1pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/giulia/usa-maps/USAmapText2.pdf
-	width 100page%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Divisions}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hypertarget{DivisionPrices}{}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_p.pdf
-	height 90pheight%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout BeginPlainFrame
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florianoswald/Dropbox/mobility/output/data/sipp/agg_reg_y.pdf
-	height 90pheight%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hyperlink{Divisions}{
-\backslash
-beamergotobutton{back}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout BeginFrame
 Parameter estimates
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \noindent
 \align center
@@ -6496,59 +6645,19 @@ beamergotobutton{back}}
 
 \end_layout
 
-\begin_layout BeginFrame
-Raising Tax for Owners
-\end_layout
-
+\end_deeper
 \begin_layout Standard
-\begin_inset Float table
-placement h
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{-2pt}
-\backslash
-makebox[
-\backslash
-linewidth][c]{%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/data_repo/out_data_jl/sinai-pres.tex}
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
+\begin_inset Separator parbreak
 \end_inset
 
 
 \end_layout
 
-\end_inset
+\begin_layout Frame
+\begin_inset Argument 4
+status open
 
-
-\end_layout
-
-\begin_layout BeginFrame
+\begin_layout Plain Layout
 The Curse of Dimensionality: Regional Prices.
 \begin_inset ERT
 status open
@@ -6565,6 +6674,16 @@ hypertarget{CurseDimDetail}{}
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 If 
 \begin_inset Formula $q_{dt}$
@@ -6585,6 +6704,7 @@ If
 ).
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Assuming 3 points for each grid 
 \begin_inset Formula $q_{d}$
@@ -6623,6 +6743,10 @@ In current version of the model,
 \end_inset
 
 , thus we would have
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -6657,7 +6781,24 @@ beamergotobutton{back}}
 
 \end_layout
 
-\begin_layout BeginFrame
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
 Reasons for Moving: SIPP Data
 \begin_inset ERT
 status open
@@ -6689,6 +6830,16 @@ beamergotobutton{back}}
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -6716,7 +6867,7 @@ Dropbox/data/sipp/D2D-probit-edit-slides.tex}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Probit model, regressing binary moving indicator on household characteristics.
@@ -6735,9 +6886,6 @@ Probit model, regressing binary moving indicator on household characteristics.
 
 \end_layout
 
-\begin_layout EndFrame
-
-\end_layout
-
+\end_deeper
 \end_body
 \end_document

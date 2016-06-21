@@ -3,13 +3,13 @@
 # main programme
 home = ENV["HOME"]
 cd("$home/git/migration/mig")
+include("src/mig.jl")
 
 
 # include("src/estimation.jl")
 cd("$home/git/migration/mig.jl/src/sge")
 include("examples/slices.jl")
 
-include("src/mig.jl")
 x=mig.runObj()
 MOpt.check_moments(x)
 					

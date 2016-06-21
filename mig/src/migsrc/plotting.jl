@@ -20,7 +20,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	m = Model(p)
 
 	# experiment data
-	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:yshock,:pshock)
+	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:d_out_buy_y,:d_in_buy_y,:d_out_rent_y,:d_in_rent_y,:yshock,:pshock)
 
 	shockreg = m.regnames[d["opts"]["shockRegion"],:Division]
 	# average income data
@@ -49,7 +49,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	println("dp = $(dp)")
 
 	figs = Any[]
-	figsi = (8,10)
+	figsi = (10,7)
 
 	push!(figs, figure("elasticity",figsize=figsi))
 	@pyimport matplotlib.gridspec as gspec 
@@ -58,7 +58,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax1 = subplot(get(g1,(0,0)))
 	ax1[:grid]()
 	ax1[:plot](dp[:year],dp[:d_all_y],linestyle="-",color="black",linewidth=1.5,label="elasticity")
-	ax1[:legend](loc="upper right")
+	ax1[:legend](loc="upper right",prop=Dict("size"=>10))
 
 	g2 = gspec.GridSpec(2,1)
 	g2[:update](top=0.5,bottom = 0.05,hspace=0.03)
@@ -67,12 +67,12 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
 	ax2[:grid]()
-	ax2[:legend](loc="upper right")
+	ax2[:legend](loc="upper right",prop=Dict("size"=>10))
 
 	ax3 = subplot(get(g2,(1,0)),sharex=ax1)
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
-	ax3[:legend](loc="upper right")
+	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
@@ -97,12 +97,12 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
 	ax2[:grid]()
-	ax2[:legend](loc="upper right")
+	ax2[:legend](loc="upper right",prop=Dict("size"=>10))
 
 	ax3 = subplot(get(g4,(1,0)),sharex=ax1)
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
-	ax3[:legend](loc="upper right")
+	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
@@ -110,38 +110,26 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 
 	# net migration elasticity
 
-	push!(figs, figure("elasticity of net migration",figsize=(10,10)))
-	g5 = gspec.GridSpec(1,1)
-	g5[:update](top=0.95,bottom = 0.53)
-	ax1 = subplot(get(g5,(0,0)))
-	ax1[:grid]()
-	ax1[:plot](dp[:year],dp[:d_net_own_y],color="red",linewidth=1.5,label="owner")
-	ax1[:plot](dp[:year],dp[:d_net_rent_y],color="blue",linewidth=1.5,label="renter")
+	push!(figs, figure("elasticity of in/out migration",figsize=figsi))
+	ax4 = subplot(211)
+	ax4[:grid]()
+	ax4[:plot](dp[:year],dp[:d_in_buy_y],color="red",linewidth=1.5,label="in and buy")
+	ax4[:plot](dp[:year],dp[:d_in_rent_y],color="blue",linewidth=1.5,label="in and rent")
 	# ax1[:set_ylim]([-0.6;0.05])
-	ax1[:legend](loc="upper right")
+	ax4[:legend](loc="upper right",prop=Dict("size"=>10))
 
-	g6 = gspec.GridSpec(2,1)
-	g6[:update](top=0.5,bottom = 0.05,hspace=0.03)
-
-	ax2 = subplot(get(g6,(0,0)),sharex=ax1)
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
-	ax2[:grid]()
-	ax2[:legend](loc="upper right")
-
-	ax3 = subplot(get(g6,(1,0)),sharex=ax1)
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
-	ax3[:legend](loc="upper right")
-	ax3[:grid]()
-	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
-	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
+	ax5 = subplot(212,sharex=ax1)
+	ax5[:plot](dp[:year],dp[:d_out_buy_y],color="red",linewidth=1.5,label="out and buy")
+	ax5[:plot](dp[:year],dp[:d_out_rent_y],color="blue",linewidth=1.5,label="out and rent")
+	ax5[:grid]()
+	ax5[:legend](loc="upper right",prop=Dict("size"=>10))
+	PyPlot.setp(ax4[:get_xticklabels](),visible=false)
 	figs[3][:canvas][:draw]() # Update the figure
 
 	# save
-	fnames = ["elasticity","elasticity-ownrent","elasticity-netmig"] 
+	fnames = ["elasticity","elasticity-ownrent","elasticity-in-out-rent-buy"] 
 	for f in 1:3
-		fi = open(joinpath(pa["outg"],string(fnames[f],".pdf")),"w")
+		fi = open(joinpath(pa["out_graphs"],string(fnames[f],".pdf")),"w")
 		writemime(fi,"application/pdf",figs[f])
 		close(fi)
 	end

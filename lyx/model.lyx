@@ -101,6 +101,7 @@
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
+\author -1209358678 "florian" florian.oswald@gmail.com
 \author 143970970 "Florian Oswald"
 \end_header
 
@@ -186,12 +187,16 @@ This paper estimates a lifecycle model of consumption, housing choice and
  Using the model I estimate the value of the migration option and the welfare
  impact of policies that may restrict mobility.
  The option to move is equivalent to 4.4% of lifetime consumption.
- I also find that, were the mortgage interest-rate deduction to be eliminated,
+ 
+\change_deleted -1209358678 1466520965
+I also find that, were the mortgage interest-rate deduction to be eliminated,
  the aggregate migration rate would increase only marginally by 0.1%.
  Following a general equilibrium correction, house prices are reduced by
  5%, which results in a 1% increase in home ownership.
  In a new steady state the elimination of the deduction is equivalent to
  an increase of 2.4% of lifecycle consumption.
+\change_unchanged
+
 \end_layout
 
 \begin_layout Abstract
