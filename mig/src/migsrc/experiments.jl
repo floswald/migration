@@ -1363,15 +1363,15 @@ function exp_shockRegion(opts::Dict)
 	# -------------------------------------------
 
 	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:year]],on=:year)
-	ela2 = @linq ela |>
-		@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent) |>
-		@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all) |>
-		@where(:year.>=shockYear) |>
-		@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
+	# ela2 = @linq ela |>
+	# 	@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent) |>
+	# 	@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all) |>
+	# 	@where(:year.>=shockYear) |>
+	# 	@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
 
 		# for kennan figure 1
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,	year=:year) 
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,year=:year) 
 			
 	ela1[:pshock] = 0.0
 	ela1[:yshock] = 0.0
@@ -1387,18 +1387,26 @@ function exp_shockRegion(opts::Dict)
 	# println(ela1[[:year,:yshock,:pshock]])
 	ela1[:d_all_p] = 0.0
 	ela1[:d_own_p] = 0.0
+	ela1[:d_net_own_p] = 0.0
 	ela1[:d_rent_p] = 0.0
+	ela1[:d_net_rent_p] = 0.0
 	ela1[:d_all_y] = 0.0
 	ela1[:d_own_y] = 0.0
+	ela1[:d_net_own_y] = 0.0
 	ela1[:d_rent_y] = 0.0
+	ela1[:d_net_rent_y] = 0.0
 
 	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 	ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_net_own_p] = ela1[ela1[:pshock].!= 0.0, :d_net_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 
 	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 
 	# elas = Dict()
 

@@ -224,16 +224,19 @@ function setPaths()
 	if Sys.OS_NAME == :Darwin
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
+		outg   = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_graphs_jl")
 	elseif Sys.OS_NAME == :Windows
 		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
 		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
+		outg   = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_graphs_jl"
 	else
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
+		outg   = joinpath(ENV["HOME"],"data_repo/mig/out_graphs_jl")
 	end
 	rem_in = "~/data_repo/mig/in_data_jl"
 	rem_out = "~/data_repo/mig/out_data_jl"
-	return Dict("indir"=>indir, "outdir" => outdir, "remote_in" => rem_in, "remote_out"=> rem_out)
+	return Dict("indir"=>indir, "outdir" => outdir, "out_graphs"=>outg, "remote_in" => rem_in, "remote_out"=> rem_out)
 end
 
 # set outpath rel to dropbox/mobility/output/model
@@ -315,7 +318,7 @@ function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="nu
 			# merge
 			ma = join(a,m_in,on=:year)
 			ma = join(ma,m_out,on=:year)
-			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out)./:All,Net_own = (:Owners_in - :Owners_out)./:All,Net_rent = (:Renters_in - :Renters_out)./:All)
+			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out),Net_own = (:Owners_in - :Owners_out),Net_rent = (:Renters_in - :Renters_out))
 
 			d[k][j] = ma
 

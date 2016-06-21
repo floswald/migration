@@ -20,7 +20,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	m = Model(p)
 
 	# experiment data
-	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:yshock,:pshock)
+	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:yshock,:pshock)
 
 	shockreg = m.regnames[d["opts"]["shockRegion"],:Division]
 	# average income data
@@ -48,37 +48,20 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	dp[symbol("p_$(shockreg)_shock")] = dp[symbol("p_$(shockreg)")] .* (1-dp[:pshock])
 	println("dp = $(dp)")
 
-	# plots
+	figs = Any[]
+	figsi = (8,10)
 
-	# different grids on a plot
-	# fig = plt.figure()
-	# gs1 = gspec.GridSpec(1, 1)
-	# gs1[:update](top=1.0, bottom=0.84)
-	# ax1 = plt.subplot(get(gs1, (0, 0)))
-
-	# gs2 = gspec.GridSpec(2, 1)
-	# gs2[:update](top=0.77, bottom=0.44, hspace=0.0)
-	# ax2 = plt.subplot(get(gs2, (0, 0)))
-	# ax3 = plt.subplot(get(gs2, (1, 0)))
-
-	# gs3 = gspec.GridSpec(2, 1)
-	# gs3[:update](top=0.38, bottom=0.0, hspace=0.4)
-	# ax4 = plt.subplot(get(gs3, (0, 0)))
-	# ax5 = plt.subplot(get(gs3, (1, 0)))
-
-
-	fig = figure("elasticity",figsize=(10,10))
+	figs[1] = figure("elasticity",figsize=figsi)
 	@pyimport matplotlib.gridspec as gspec 
 	g1 = gspec.GridSpec(1,1)
 	g1[:update](top=0.95,bottom = 0.53)
 	ax1 = subplot(get(g1,(0,0)))
 	ax1[:grid]()
-	ax1[:plot](dp[:year],dp[:d_all_p],linestyle="-",color="black",linewidth=1.5,label="elasticity")
-	# ax1[:set_ylim]([-0.6;0.05])
+	ax1[:plot](dp[:year],dp[:d_all_y],linestyle="-",color="black",linewidth=1.5,label="elasticity")
 	ax1[:legend](loc="upper right")
 
 	g2 = gspec.GridSpec(2,1)
-	g2[:update](top=0.47,bottom = 0.05,hspace=0.05)
+	g2[:update](top=0.5,bottom = 0.05,hspace=0.03)
 
 	ax2 = subplot(get(g2,(0,0)),sharex=ax1)
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
@@ -91,7 +74,79 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
 	ax3[:legend](loc="upper right")
 	ax3[:grid]()
-	fig[:canvas][:draw]() # Update the figure
+	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
+	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
+	figs[1][:canvas][:draw]() # Update the figure
+
+	# split by renter/owner
+
+	figs[2] = figure("elasticity own/rent",figsize=figsi)
+	g3 = gspec.GridSpec(1,1)
+	g3[:update](top=0.95,bottom = 0.53)
+	ax1 = subplot(get(g3,(0,0)))
+	ax1[:grid]()
+	ax1[:plot](dp[:year],dp[:d_own_y],color="red",linewidth=1.5,label="owner")
+	ax1[:plot](dp[:year],dp[:d_rent_y],color="blue",linewidth=1.5,label="renter")
+	# ax1[:set_ylim]([-0.6;0.05])
+	ax1[:legend](loc="upper right")
+
+	g4 = gspec.GridSpec(2,1)
+	g4[:update](top=0.5,bottom = 0.05,hspace=0.03)
+
+	ax2 = subplot(get(g4,(0,0)),sharex=ax1)
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
+	ax2[:grid]()
+	ax2[:legend](loc="upper right")
+
+	ax3 = subplot(get(g4,(1,0)),sharex=ax1)
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
+	ax3[:legend](loc="upper right")
+	ax3[:grid]()
+	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
+	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
+	figs[2][:canvas][:draw]() # Update the figure
+
+	# net migration elasticity
+
+	figs[3] = figure("elasticity of net migration",figsize=(10,10))
+	g5 = gspec.GridSpec(1,1)
+	g5[:update](top=0.95,bottom = 0.53)
+	ax1 = subplot(get(g5,(0,0)))
+	ax1[:grid]()
+	ax1[:plot](dp[:year],dp[:d_net_own_y],color="red",linewidth=1.5,label="owner")
+	ax1[:plot](dp[:year],dp[:d_net_rent_y],color="blue",linewidth=1.5,label="renter")
+	# ax1[:set_ylim]([-0.6;0.05])
+	ax1[:legend](loc="upper right")
+
+	g6 = gspec.GridSpec(2,1)
+	g6[:update](top=0.5,bottom = 0.05,hspace=0.03)
+
+	ax2 = subplot(get(g6,(0,0)),sharex=ax1)
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
+	ax2[:grid]()
+	ax2[:legend](loc="upper right")
+
+	ax3 = subplot(get(g6,(1,0)),sharex=ax1)
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
+	ax3[:legend](loc="upper right")
+	ax3[:grid]()
+	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
+	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
+	figs[3][:canvas][:draw]() # Update the figure
+
+	# save
+	fnames = ["elasticity","elasticity-ownrent","elasticity-netmig"] 
+	for f in 1:3
+		fi = open(joinpath(io["outg"],string(fnames[f],".pdf")),"w")
+		writemime(fi,"application/pdf",figs[f])
+		close(fi)
+	end
+
+	return figs
 
 
 	# subplots_adjust(hspace=0.0) # Set the vertical spacing between axes
