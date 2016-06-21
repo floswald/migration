@@ -1371,7 +1371,7 @@ function exp_shockRegion(opts::Dict)
 
 		# for kennan figure 1
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent - :in_rent1)./:in_rent,d_in_buy = (:in_buy - :in_buy1)./:in_buy,d_out_rent = (:out_rent - :out_rent1)./:out_rent,d_out_buy = (:out_buy - :out_buy1)./:out_buy,year=:year) 
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,year=:year) 
 			
 	ela1[:pshock] = 0.0
 	ela1[:yshock] = 0.0
