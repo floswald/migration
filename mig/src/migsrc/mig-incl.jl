@@ -308,7 +308,7 @@ function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="nu
 			# movers to j over time
 			m_in = @linq v |>
 				@where((:year.>1997) & (:j.!=j)) |>
-				@by(:year, Total_in=sum(:moveto.==j), Owners_in=sum((:moveto.==j).*(:h.==1)), in_buy =sum((:moveto.==j).*(:hh.==1)), in_rent =sum((:moveto.==j).*(:hh.==0)))
+				@by(:year, Total_in=sum(:moveto.==j), Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)), in_buy =sum((:moveto.==j).*(:hh.==1)), in_rent =sum((:moveto.==j).*(:hh.==0)))
 
 			# movers from j over time
 			m_out = @linq v |>
