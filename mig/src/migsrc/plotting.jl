@@ -51,7 +51,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	figs = Any[]
 	figsi = (8,10)
 
-	figs[1] = figure("elasticity",figsize=figsi)
+	push!(figs, figure("elasticity",figsize=figsi))
 	@pyimport matplotlib.gridspec as gspec 
 	g1 = gspec.GridSpec(1,1)
 	g1[:update](top=0.95,bottom = 0.53)
@@ -80,7 +80,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 
 	# split by renter/owner
 
-	figs[2] = figure("elasticity own/rent",figsize=figsi)
+	push!(figs, figure("elasticity own/rent",figsize=figsi))
 	g3 = gspec.GridSpec(1,1)
 	g3[:update](top=0.95,bottom = 0.53)
 	ax1 = subplot(get(g3,(0,0)))
@@ -110,7 +110,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 
 	# net migration elasticity
 
-	figs[3] = figure("elasticity of net migration",figsize=(10,10))
+	push!(figs, figure("elasticity of net migration",figsize=(10,10)))
 	g5 = gspec.GridSpec(1,1)
 	g5[:update](top=0.95,bottom = 0.53)
 	ax1 = subplot(get(g5,(0,0)))
@@ -141,7 +141,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	# save
 	fnames = ["elasticity","elasticity-ownrent","elasticity-netmig"] 
 	for f in 1:3
-		fi = open(joinpath(io["outg"],string(fnames[f],".pdf")),"w")
+		fi = open(joinpath(pa["outg"],string(fnames[f],".pdf")),"w")
 		writemime(fi,"application/pdf",figs[f])
 		close(fi)
 	end
