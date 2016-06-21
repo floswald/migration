@@ -225,26 +225,27 @@ plot_moment_fit <- function(){
 
 	s = split(d,d$type)
 
-	l1 = data.table(nm = s$`Mobility Rates`$moment)
-	l1[nm == "moved2plus"][["nm"]] = "moved twice+"
-	l1[nm == "moved1"][["nm"]] = "moved once"
-	l1[nm == "cov_own_kids"][["nm"]] = "Cov(own,s)"
-	l1[!nm %in% c("moved once","moved twice+","Cov(own,s)")][["nm"]] = NA_character_
+	s$`Mobility Rates`$lab = s$`Mobility Rates`$moment
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved twice+"
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved1"]$lab = "moved once"
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "cov_own_kids"]$lab = "Cov(own,s)"
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "flow_move_to_Mnt"]$lab = "move to Mountain"
 
-	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod,label=l1$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.1))+ scale_x_continuous(name="data",limits=c(-0.01,0.1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3) + ggtitle("Mobility and Covariances") + mytheme
+	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.17))+ scale_x_continuous(name="data",limits=c(-0.01,0.17)) + theme_bw() + geom_abline(intercept=0,slope=1)  + ggtitle("Mobility and Covariances") + mytheme + geom_text(data=subset(s$`Mobility Rates` ,lab %in% c("moved once","moved twice+","Cov(own,s)","move to Mountain")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
 
-	l2 = data.table(nm = s$`Ownership Rates`$moment)
-	l2[nm == "moved0"][["nm"]] = "moved never"
-	l2[nm == "mean_own_NwE"][["nm"]] = "E[own|NwE]"
-	l2[nm == "mean_own_WSC"][["nm"]] = "E[own|WSC]"
-	l2[!nm %in% c("moved never","E[own|NwE]","E[own|WSC]")][["nm"]] = NA_character_
-	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod,label=l2$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + geom_text(hjust=0.5,vjust=-0.5,size=3)+ ggtitle("Homeownership Rates and Non-movers")+ mytheme
 
-	l3 = data.table(nm = s$`Wealth Moments`$moment)
-	l3[nm == "mean_wealth_NwE"][["nm"]] = "E[wealth | NwE]"
-	l3[nm == "mean_wealth_30_40"][["nm"]] = "E[wealth | (30,40]]"
-	l3[!nm %in% c("E[wealth | NwE]","E[wealth | (30,40]]")][["nm"]] = NA_character_
-	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod,label=l3$nm)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + theme_bw() + geom_abline(intercept=0,slope=1)+ geom_text(hjust=0.3,vjust=1.5,size=3)+ ggtitle("Wealth")+ mytheme
+	s$`Ownership Rates`$lab = s$`Ownership Rates`$moment
+	s$`Ownership Rates`[s$`Ownership Rates`$moment == "moved0"]$lab = "moved never"
+	s$`Ownership Rates`[s$`Ownership Rates`$moment == "mean_own_NwE"]$lab = "E[own|NwE]"
+	s$`Ownership Rates`[s$`Ownership Rates`$moment == "mean_own_WSC"]$lab = "E[own|WSC]"
+
+	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + ggtitle("Homeownership Rates and Non-movers")+ mytheme + geom_text(data=subset(s$`Ownership Rates` ,lab %in% c("moved never","E[own|NwE]","E[own|WSC]")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
+
+
+	s$`Wealth Moments`$lab = s$`Wealth Moments`$moment
+	s$`Wealth Moments`[s$`Wealth Moments`$moment == "mean_wealth_NwE"]$lab = "E[wealth | NwE]"
+	s$`Wealth Moments`[s$`Wealth Moments`$moment == "mean_wealth_30_40"]$lab = "E[wealth | (30,40]]"
+	p3 = ggplot(s$`Wealth Moments`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(40,235))+ scale_x_continuous(name="data",limits=c(40,235)) + geom_abline(intercept=0,slope=1)+ geom_text(data=subset(s$`Wealth Moments` ,lab %in% c("E[wealth | NwE]","E[wealth | (30,40]]")),aes(x=m,y=mod,label=lab),hjust=0.3,vjust=1.5,size=3) + ggtitle("Wealth") + mytheme
 
 	ggsave(plm,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods.pdf")
 	ggsave(plm2,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf")
