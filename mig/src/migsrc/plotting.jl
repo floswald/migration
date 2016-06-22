@@ -19,8 +19,11 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	p = Param(2,d["opts"])
 	m = Model(p)
 
+	dd = @select(d["elasticity"],:year,:Total_out_all,:Total_out_all_1, p_out_own=(:Own_out_all_1.-:Own_out_all)./abs(:Own_out_all),p_out_rent=(:Rent_out_all_1 .- :Rent_out_all)./abs(:Rent_out_all),:d_in_buy,:d_in_rent,:d_out_buy,:d_out_rent,:yshock,:pshock)
+
 	# experiment data
-	dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:d_out_buy_y,:d_in_buy_y,:d_out_rent_y,:d_in_rent_y,:yshock,:pshock)
+	# dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:d_out_buy_y,:d_in_buy_y,:d_out_rent_y,:d_in_rent_y,:d_net_rent,:d_own,:d_rent,:d_net_own,:Net_rent,:Net_rent_1,:Net_own,:Net_own_1,:Net,:Net_1,:yshock,:pshock,:Rent_out_all,:Own_out_all,:Rent_out_all_1,:Own_out_all_1)
+	# dd = @transform(dd, d_net = :Net_1 .- :Net, p_net = (:Net_1 .- :Net)./abs(:Net), p_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./  abs(:Rent_out_all), p_own_out = (:Own_out_all_1 - :Own_out_all) ./  abs(:Own_out_all))
 
 	shockreg = m.regnames[d["opts"]["shockRegion"],:Division]
 	# average income data
@@ -38,7 +41,6 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	# println("base_y = $(base_y)")
 
 	dp = join(dd,base_y,on=:year)
-	println("dp = $(dp)")
 	dp = join(dp,shock_y,on=:year)
 	dp = join(dp,p_j,on=:year)
 
@@ -46,89 +48,115 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	# dp[:pshock][1:3] = 0.0
 
 	dp[symbol("p_$(shockreg)_shock")] = dp[symbol("p_$(shockreg)")] .* (1-dp[:pshock])
-	println("dp = $(dp)")
+
+
+	# plot parameters
+	# ---------------
 
 	figs = Any[]
 	figsi = (10,7)
+	lw = 1.5
 
-	push!(figs, figure("elasticity",figsize=figsi))
+	# print data
+	# -----------
+	# println(dp[[:year,:p_net,:Rent_out_all,:Rent_out_all_1,:Own_out_all,:Own_out_all_1,:d_net,:d_net_own,:d_net_own_y,:d_net_rent,:d_net_rent_y,:d_own,:d_rent]])
+
+	push!(figs, figure("Total outflows",figsize=figsi))
 	@pyimport matplotlib.gridspec as gspec 
 	g1 = gspec.GridSpec(1,1)
 	g1[:update](top=0.95,bottom = 0.53)
 	ax1 = subplot(get(g1,(0,0)))
 	ax1[:grid]()
-	ax1[:plot](dp[:year],dp[:d_all_y],linestyle="-",color="black",linewidth=1.5,label="elasticity")
+	ax1[:set_ylabel]("proportion of pop. leaving")
+	ax1[:plot](dp[:year],dp[:Total_out_all],linestyle="-",color="black",linewidth=lw,label="Baseline")
+	ax1[:plot](dp[:year],dp[:Total_out_all_1],linestyle="--",color="black",linewidth=lw,label="Shock")
 	ax1[:legend](loc="upper right",prop=Dict("size"=>10))
 
 	g2 = gspec.GridSpec(2,1)
 	g2[:update](top=0.5,bottom = 0.05,hspace=0.03)
 
 	ax2 = subplot(get(g2,(0,0)),sharex=ax1)
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linewidth=lw,linestyle="--")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linewidth=lw,linestyle="-")
 	ax2[:grid]()
-	ax2[:legend](loc="upper right",prop=Dict("size"=>10))
+	ax2[:set_ylabel]("1000 USD")
+	ax2[:legend](loc="center right",prop=Dict("size"=>10))
 
 	ax3 = subplot(get(g2,(1,0)),sharex=ax1)
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linewidth=lw,linestyle="--")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linewidth=lw,linestyle="-")
 	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
+	ax3[:set_ylabel]("1000 USD")
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
 	figs[1][:canvas][:draw]() # Update the figure
 
 	# split by renter/owner
 
-	push!(figs, figure("elasticity own/rent",figsize=figsi))
+	push!(figs, figure("outflows own/rent",figsize=figsi))
 	g3 = gspec.GridSpec(1,1)
 	g3[:update](top=0.95,bottom = 0.53)
 	ax1 = subplot(get(g3,(0,0)))
 	ax1[:grid]()
-	ax1[:plot](dp[:year],dp[:d_own_y],color="red",linewidth=1.5,label="owner")
-	ax1[:plot](dp[:year],dp[:d_rent_y],color="blue",linewidth=1.5,label="renter")
+	ax1[:set_ylabel](L"%$\Delta$ in proportion of leavers")
+	ax1[:plot](dp[:year],dp[:p_out_own],color="red",linewidth=lw,label="owner")
+	ax1[:plot](dp[:year],dp[:p_out_rent],color="blue",linewidth=lw,label="renter")
 	# ax1[:set_ylim]([-0.6;0.05])
-	ax1[:legend](loc="upper right")
+	ax1[:legend](loc="upper right",prop=Dict("size"=>10))
 
 	g4 = gspec.GridSpec(2,1)
 	g4[:update](top=0.5,bottom = 0.05,hspace=0.03)
 
 	ax2 = subplot(get(g4,(0,0)),sharex=ax1)
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linestyle="--")
-	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linestyle="-")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linewidth=lw,linestyle="--")
+	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linewidth=lw,linestyle="-")
 	ax2[:grid]()
-	ax2[:legend](loc="upper right",prop=Dict("size"=>10))
+	ax2[:set_ylabel]("1000 USD")
+	ax2[:legend](loc="center right",prop=Dict("size"=>10))
 
 	ax3 = subplot(get(g4,(1,0)),sharex=ax1)
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linestyle="--")
-	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linestyle="-")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linewidth=lw,linestyle="--")
+	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linewidth=lw,linestyle="-")
 	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
+	ax3[:set_ylabel]("1000 USD")
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
 	figs[2][:canvas][:draw]() # Update the figure
 
-	# net migration elasticity
+	# changes in in-buy, in-rent, out-buy, out-rent
 
-	push!(figs, figure("elasticity of in/out migration",figsize=figsi))
+	push!(figs, figure("changes in behaviour of movers",figsize=figsi))
 	ax4 = subplot(211)
 	ax4[:grid]()
-	ax4[:plot](dp[:year],dp[:d_in_buy_y],color="red",linewidth=1.5,label="in and buy")
-	ax4[:plot](dp[:year],dp[:d_in_rent_y],color="blue",linewidth=1.5,label="in and rent")
+	ax4[:plot](dp[:year],dp[:d_in_buy],color="red",linewidth=lw,label="in and buy")
+	ax4[:plot](dp[:year],dp[:d_in_rent],color="blue",linewidth=lw,label="in and rent")
 	# ax1[:set_ylim]([-0.6;0.05])
 	ax4[:legend](loc="upper right",prop=Dict("size"=>10))
+	ax4[:set_ylabel](L"%$\Delta$ in proportion")
+	PyPlot.setp(ax4[:get_xticklabels](),visible=false)
 
 	ax5 = subplot(212,sharex=ax1)
-	ax5[:plot](dp[:year],dp[:d_out_buy_y],color="red",linewidth=1.5,label="out and buy")
-	ax5[:plot](dp[:year],dp[:d_out_rent_y],color="blue",linewidth=1.5,label="out and rent")
+	ax5[:plot](dp[:year],dp[:d_out_buy],color="red",linewidth=lw,label="out and buy")
+	ax5[:plot](dp[:year],dp[:d_out_rent],color="blue",linewidth=lw,label="out and rent")
 	ax5[:grid]()
 	ax5[:legend](loc="upper right",prop=Dict("size"=>10))
-	PyPlot.setp(ax4[:get_xticklabels](),visible=false)
+	ax5[:set_ylabel](L"%$\Delta$ in proportion")
 	figs[3][:canvas][:draw]() # Update the figure
 
-	# save
-	fnames = ["elasticity","elasticity-ownrent","elasticity-in-out-rent-buy"] 
-	for f in 1:3
+	e = @linq dp |>
+		@where(:yshock.!= 0.0) |>
+		@select(erent = mean(:p_out_rent ./ :yshock), eown = mean(:p_out_own ./ :yshock))
+
+	# save dataframe
+	f = open(joinpath(pa["outdir"],"elasticities.json"),"w")
+	JSON.print(f,e)
+	close(f)
+
+	# save figs
+	fnames = ["outflow","outflow-ownrent","in-out-rent-buy"] 
+	for f in 1:length(fnames)
 		fi = open(joinpath(pa["out_graphs"],string(fnames[f],".pdf")),"w")
 		writemime(fi,"application/pdf",figs[f])
 		close(fi)

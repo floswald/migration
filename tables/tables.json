@@ -73,6 +73,11 @@
     "template" : "params.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/params.tex",
     "data"     : "Dropbox/research/mobility/output/model/fit/params.json"
+  },    
+  "elasticities":{
+    "template" : "elast.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockReg8/elasticity.tex",
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/elasticities.json"
   }    
 
 }
