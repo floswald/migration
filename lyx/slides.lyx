@@ -4985,10 +4985,6 @@ it is possible to estimate the moving cost for an actual mover.
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -5007,7 +5003,7 @@ Model Fit
 \end_layout
 
 \begin_deeper
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset Note Note
 status collapsed
 
@@ -5117,7 +5113,7 @@ age > 35
 
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -5137,7 +5133,7 @@ linewidth][c]{%
 
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \noindent
 \begin_inset Graphics
 	filename ../../../Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf
@@ -5155,7 +5151,7 @@ linewidth][c]{%
 
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -5170,11 +5166,6 @@ status open
 \end_layout
 
 \end_deeper
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Note Note
 status open
