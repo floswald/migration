@@ -15,6 +15,10 @@
 \newcommand{\Dropbox}{/Users/florian.oswald/Dropbox/research/mobility/output}
 \usepackage{tikz}
 \usepackage{adjustbox}
+%\usetheme{Singapore}
+
+% set template
+\setbeamertemplate{frametitle}[default][center]
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -122,7 +126,7 @@ status open
 
 
 \backslash
-vspace{1cm}
+vspace{0.2cm}
 \end_layout
 
 \end_inset
@@ -1191,10 +1195,6 @@ What is the labor supply elasticity in a migration model with regional shocks?
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -1213,7 +1213,7 @@ Roadmap
 \end_layout
 
 \begin_deeper
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
 
@@ -1223,11 +1223,6 @@ LatexCommand tableofcontents
 \end_layout
 
 \end_deeper
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Literature
 \end_layout
@@ -3063,7 +3058,7 @@ strong family ties, etc
 \end_deeper
 \begin_layout Enumerate
 people with high type are more likley to buy, because they anticipate that
- they will never move and by subject to high moving costs.
+ they will never move and be subject to high moving costs.
 \end_layout
 
 \end_deeper
@@ -3085,6 +3080,10 @@ logit shock captures moves made for other reasons than income or housing.
 
 
 \end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout Frame
 \begin_inset Argument 4
@@ -3144,7 +3143,12 @@ Proportional cost of selling the house:
 .
 \end_layout
 
-\begin_deeper
+\end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -3215,8 +3219,6 @@ it would be interesting to have both in a model.
 
 \end_layout
 
-\end_deeper
-\end_deeper
 \begin_layout Standard
 \begin_inset Separator parbreak
 \end_inset
@@ -3616,6 +3618,10 @@ Estimation
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -3692,6 +3698,11 @@ I implicitly assume that
 
 \end_deeper
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Separator parbreak
 \end_inset
@@ -4563,6 +4574,10 @@ status open
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -4654,6 +4669,11 @@ Standard errors are computed using simulation methods (requires adjustment
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Separator parbreak
 \end_inset
@@ -4965,6 +4985,10 @@ it is possible to estimate the moving cost for an actual mover.
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -4983,7 +5007,7 @@ Model Fit
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status collapsed
 
@@ -5093,7 +5117,7 @@ age > 35
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -5113,7 +5137,7 @@ linewidth][c]{%
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \begin_inset Graphics
 	filename ../../../Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf
@@ -5131,7 +5155,7 @@ linewidth][c]{%
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -5146,6 +5170,11 @@ status open
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -5702,7 +5731,7 @@ status open
 
 \end_deeper
 \begin_layout Section
-Policy Experiments
+Elasticity Estimates
 \end_layout
 
 \begin_layout PlainFrame
