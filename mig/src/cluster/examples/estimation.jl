@@ -7,11 +7,10 @@ require("../nodes.jl")
 opts =[
 	"N"=>nprocs(),
 	"printlevel"=> 3,
-	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster","MA.h5"),	
+	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster",string("estim_",Dates.today(),".h5"),	
 	"save_frequency"=> 2,
 	"print_level"=> 2,
 	"user"=> ENV["USER"],
-	"date"=> readall(`date`),
 	"maxiter"=> 5,
 	"maxtemp"=>10,
 	"min_shock_sd"=>0.1,
@@ -24,6 +23,14 @@ opts =[
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
+
+# compute point estimates and SD on coldest chain
+p = parameters(MA.MChains,1:MA.MChains[1].i)
+means = colwise(mean,@select(@where(p, :id .==1 ), MA.params2s_nms)
+sds = colwise(sd,@select(@where(p, :id .==1 ), MA.params2s_nms)
+
+out = DataFrame(estimate=means,sd=sds)
+println(out)
 
 println("quitting cluster")
 quit()

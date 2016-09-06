@@ -19,7 +19,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	p = Param(2,d["opts"])
 	m = Model(p)
 
-	dd = @select(d["elasticity"],:year,:Total_out_all,:Total_out_all_1, p_out_own=(:Own_out_all_1.-:Own_out_all)./abs(:Own_out_all),p_out_rent=(:Rent_out_all_1 .- :Rent_out_all)./abs(:Rent_out_all),:d_in_buy,:d_in_rent,:d_out_buy,:d_out_rent,:yshock,:pshock)
+	dd = @select(d["elasticity"],:year,:Total_out_all,:Total_out_all_1, p_out_all=(:Total_out_all_1.-:Total_out_all)./abs(:Total_out_all), p_out_own=(:Own_out_all_1.-:Own_out_all)./abs(:Own_out_all),p_out_rent=(:Rent_out_all_1 .- :Rent_out_all)./abs(:Rent_out_all),:d_in_buy,:d_in_rent,:d_out_buy,:d_out_rent,:yshock,:pshock)
 
 	# experiment data
 	# dd = @select(d["elasticity"],:year,:d_all_y,:d_all_p,:d_own_y,:d_own_p,:d_rent_y,:d_rent_p,:d_net_rent_p,:d_net_rent_y,:d_net_own_y,:d_net_own_p,:d_out_buy_y,:d_in_buy_y,:d_out_rent_y,:d_in_rent_y,:d_net_rent,:d_own,:d_rent,:d_net_own,:Net_rent,:Net_rent_1,:Net_own,:Net_own_1,:Net,:Net_1,:yshock,:pshock,:Rent_out_all,:Own_out_all,:Rent_out_all_1,:Own_out_all_1)
@@ -61,6 +61,12 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	# -----------
 	# println(dp[[:year,:p_net,:Rent_out_all,:Rent_out_all_1,:Own_out_all,:Own_out_all_1,:d_net,:d_net_own,:d_net_own_y,:d_net_rent,:d_net_rent_y,:d_own,:d_rent]])
 
+	# get a tick formatter
+	tick20 = matplotlib[:ticker][:MultipleLocator](20)
+	tick20[:tick_values](140,55)
+
+
+
 	push!(figs, figure("Total outflows",figsize=figsi))
 	@pyimport matplotlib.gridspec as gspec 
 	g1 = gspec.GridSpec(1,1)
@@ -81,6 +87,11 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax2[:grid]()
 	ax2[:set_ylabel]("1000 USD")
 	ax2[:legend](loc="center right",prop=Dict("size"=>10))
+	# set ticks
+	vrange = (minimum(dp[symbol("y_$(shockreg)_shock")]),maximum(dp[symbol("y_$(shockreg)_shock")]))
+	tick2 = matplotlib[:ticker][:MultipleLocator](2)
+	tick2[:tick_values](vrange[1]+1,vrange[2]-1)
+	ax2[:yaxis][:set_major_locator](tick2)
 
 	ax3 = subplot(get(g2,(1,0)),sharex=ax1)
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)_shock")],label="p_$(shockreg)_shock",linewidth=lw,linestyle="--")
@@ -88,6 +99,11 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
 	ax3[:set_ylabel]("1000 USD")
+	vrange = (minimum(dp[symbol("p_$(shockreg)_shock")]),maximum(dp[symbol("p_$(shockreg)_shock")]))
+	tick20 = matplotlib[:ticker][:MultipleLocator](20)
+	tick20[:tick_values](vrange[1]+10,vrange[2]-10)
+	ax3[:yaxis][:set_major_locator](tick20)
+
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
 	figs[1][:canvas][:draw]() # Update the figure
@@ -111,6 +127,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax2 = subplot(get(g4,(0,0)),sharex=ax1)
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)_shock")],label="y_$(shockreg)_shock",linewidth=lw,linestyle="--")
 	ax2[:plot](dp[:year],dp[symbol("y_$(shockreg)")],label="y_$(shockreg)",linewidth=lw,linestyle="-")
+	ax2[:yaxis][:set_major_locator](tick2)
 	ax2[:grid]()
 	ax2[:set_ylabel]("1000 USD")
 	ax2[:legend](loc="center right",prop=Dict("size"=>10))
@@ -120,6 +137,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 	ax3[:plot](dp[:year],dp[symbol("p_$(shockreg)")],label="p_$(shockreg)",linewidth=lw,linestyle="-")
 	ax3[:legend](loc="upper right",prop=Dict("size"=>10))
 	ax3[:grid]()
+	ax3[:yaxis][:set_major_locator](tick20)
 	ax3[:set_ylabel]("1000 USD")
 	PyPlot.setp(ax2[:get_xticklabels](),visible=false)
 	PyPlot.setp(ax1[:get_xticklabels](),visible=false)
@@ -147,7 +165,7 @@ function plotShockRegion(shock::AbstractString,region::Int,remote::AbstractStrin
 
 	e = @linq dp |>
 		@where(:yshock.!= 0.0) |>
-		@select(erent = mean(:p_out_rent ./ :yshock), eown = mean(:p_out_own ./ :yshock))
+		@select(eall = mean(:p_out_all ./ :yshock), erent = mean(:p_out_rent ./ :yshock), eown = mean(:p_out_own ./ :yshock))
 
 	# save dataframe
 	f = open(joinpath(pa["outdir"],"elasticities.json"),"w")
