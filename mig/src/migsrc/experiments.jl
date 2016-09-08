@@ -720,7 +720,7 @@ function valdiff_pshock_highMC(ctax::Float64,v0::Float64,opts::Dict,pmv_id::Data
 	pmv = p[findin(p[:id],pmv_id[:id]),:]
 
 	pmv2 = @linq pmv |>
-		@where((:year.>2006)&(!:move))
+		@where((:year.>2006)&(!:move)) |>
 	    @select(v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
 
 	# baseline value
@@ -1788,86 +1788,86 @@ end
 
 
 
-# # archive
+# archive
 
 
-# # run Model with only small deviations from aggregate
-# # function smallShocks()
+# run Model with only small deviations from aggregate
+# function smallShocks()
 
-# # 	p = Param(2)
-# # 	m = Model(p)
-# # 	solve!(m,p)
-# # 	s = simulate(m,p)
-# # 	s = @where(s,(!isna(:cohort) & (:year.>1996)))
-# # 	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
+# 	p = Param(2)
+# 	m = Model(p)
+# 	solve!(m,p)
+# 	s = simulate(m,p)
+# 	s = @where(s,(!isna(:cohort) & (:year.>1996)))
+# 	s = @transform(s,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-# # 	opts=Dict()
-# # 	opts["policy"] = "smallShocks"
+# 	opts=Dict()
+# 	opts["policy"] = "smallShocks"
 
-# # 	p1 = Param(2,opts)
-# # 	m1 = Model(p1)
-# # 	solve!(m1,p1)
-# # 	s1 = simulate(m1,p1)
-# # 	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
-# # 	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
+# 	p1 = Param(2,opts)
+# 	m1 = Model(p1)
+# 	solve!(m1,p1)
+# 	s1 = simulate(m1,p1)
+# 	s1 = @where(s1,(!isna(:cohort) & (:year.>1996)))
+# 	s1 = @transform(s1,movetoReg = ^(m.regnames[:Division])[:moveto])
 
-# # 	# make several out dicts
-# # 	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
-# # 	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
-# # 	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
-# # 	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
-# # 	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
-# # 	y_s = @by(s1,:Division,p2y=mean(:p2y))
+# 	# make several out dicts
+# 	mv_rent  = proportionmap(@where(s,(:move.==true)&(:h.==0))[:movetoReg])
+# 	mv_own   = proportionmap(@where(s,(:move.==true)&(:h.==1))[:movetoReg])
+# 	mv_rent_small = proportionmap(@where(s1,(:move.==true)&(:h.==0))[:movetoReg])
+# 	mv_own_small = proportionmap(@where(s1,(:move.==true)&(:h.==1))[:movetoReg])
+# 	y = @by(s,:Division,y=mean(:y),p2y = mean(:p2y))
+# 	y_s = @by(s1,:Division,p2y=mean(:p2y))
 
-# # 	# get percent difference in moveto distribution
-# # 	out = Dict()
-# # 	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
+# 	# get percent difference in moveto distribution
+# 	out = Dict()
+# 	out["moveto"] = [  r => [ "own" => 100*(mv_own_small[r]-mv_own[r])/mv_own[r], "rent" => 100*(mv_rent_small[r]-mv_rent[r])/mv_rent[r] , "y" => @where(y,:Division.== r)[:y][1], "p2y" => @where(y,:Division.== r)[:p2y][1],"p2y_small" => @where(y_s,:Division.== r)[:p2y][1]] for r in keys(mv_own) ] 
 
-# # 	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
+# 	# out["moveto"] = [ "own" =>  [ r => (mv_own_small[r]-mv_own[r])/mv_own[r] for r in keys(mv_own) ], "rent" =>  [ r => (mv_rent_small[r]-mv_rent[r])/mv_rent[r] for r in keys(mv_rent) ] ]
 
-# # 	# summaries
-# # 	summa = Dict()
+# 	# summaries
+# 	summa = Dict()
 
-# # 	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
-# # 	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
-# # 	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
+# 	summa["move_by_own"] = ["own" => ["baseline" => @with(@where(s,:h.==1),mean(:move)), "smallShocks" => @with(@where(s1,:h.==1),mean(:move))], "rent" => ["baseline" => @with(@where(s,:h.==0),mean(:move)), "smallShocks" => @with(@where(s1,:h.==0),mean(:move))] ]
+# 	summa["move"] = ["baseline" => @with(s,mean(:move)), "smallShocks" => @with(s1,mean(:move))] 
+# 	summa["own"] = ["baseline" => @with(s,mean(:own)), "smallShocks" => @with(s1,mean(:own))] 
 
-# # 	out["summary"] = summa
+# 	out["summary"] = summa
 
-# # 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
-# # 	JSON.print(f,out)
-# # 	close(f)
+# 	f = open("/Users/florianoswald/Dropbox/mobility/output/model/data_repo/out_data_jl/smallShocks.json","w")
+# 	JSON.print(f,out)
+# 	close(f)
 
-# # 	return (s,s1,out)
+# 	return (s,s1,out)
 
-# # end
-
-
+# end
 
 
-# # # run model without the ability to save!
-# # function exp_noSavings()
 
-# # 	p = Param(2)
-# # 	m = Model(p)
-# # 	solve!(m,p)
-# # 	s = simulate(m,p)
-# # 	w0 = getDiscountedValue(s,p,m,false)
-# # 	mms = computeMoments(s,p,m)	
 
-# # 	opts=Dict()
-# # 	opts["policy"] = "noSaving"
+# # run model without the ability to save!
+# function exp_noSavings()
 
-# # 	p1 = Param(2,opts)
-# # 	m1 = Model(p1)
-# # 	solve!(m1,p1)
-# # 	s1 = simulate(m1,p1)
-# # 	w1 = getDiscountedValue(s1,p1,m1,false)
-# # 	mms1 = computeMoments(s1,p1,m1)	
+# 	p = Param(2)
+# 	m = Model(p)
+# 	solve!(m,p)
+# 	s = simulate(m,p)
+# 	w0 = getDiscountedValue(s,p,m,false)
+# 	mms = computeMoments(s,p,m)	
 
-# # 	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+# 	opts=Dict()
+# 	opts["policy"] = "noSaving"
 
-# # 	return d
-# # end
+# 	p1 = Param(2,opts)
+# 	m1 = Model(p1)
+# 	solve!(m1,p1)
+# 	s1 = simulate(m1,p1)
+# 	w1 = getDiscountedValue(s1,p1,m1,false)
+# 	mms1 = computeMoments(s1,p1,m1)	
+
+# 	d = ["moms" => ["base" => mms, "noSave" => mms1], "vals" => ["base" => w0, "noSave" => w1]]
+
+# 	return d
+# end
 
 
