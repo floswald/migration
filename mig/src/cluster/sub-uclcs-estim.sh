@@ -12,7 +12,7 @@
 
 #$ -l tmem=6G
 #$ -l h_vmem=6G
-#$ -l h_rt=23:0:0
+#$ -l h_rt=0:23:0
 
 #$ -pe mpich 40
 #$ -R y

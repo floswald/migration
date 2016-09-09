@@ -1,8 +1,10 @@
 
 
 
+t0 = time()
 # run serial estimation
-require("../nodes.jl")
+# called from ../
+require("nodes.jl")
 
 opts =[
 	"N"=>nprocs(),
@@ -31,6 +33,8 @@ sds = colwise(sd,@select(@where(p, :id .==1 ), MA.params2s_nms)
 
 out = DataFrame(estimate=means,sd=sds)
 println(out)
+
+println("done after $(round((time()-t0)/60)) minutes")
 
 println("quitting cluster")
 quit()
