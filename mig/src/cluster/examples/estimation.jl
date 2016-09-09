@@ -4,7 +4,7 @@
 t0 = time()
 # run serial estimation
 # called from ../
-include("nodes.jl")
+include("../nodes.jl")
 
 opts =Dict(
 	"N"=>nprocs(),
