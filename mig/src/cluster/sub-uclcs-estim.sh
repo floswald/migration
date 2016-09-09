@@ -21,8 +21,8 @@
 
 #$ -S /bin/bash
 #$ -j y
-#$ -e /home/uctpfos/git/migration/src/cluster/examples/estim.err
-#$ -o /home/uctpfos/git/migration/src/cluster/examples/estim.out
+#$ -e /home/uctpfos/git/migration/mig/src/cluster/examples/estim.err
+#$ -o /home/uctpfos/git/migration/mig/src/cluster/examples/estim.out
 #$ -N migestim
 #$ -cwd
 
