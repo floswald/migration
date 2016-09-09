@@ -4,7 +4,7 @@
 t0 = time()
 # run serial estimation
 # called from ../
-require("nodes.jl")
+include("nodes.jl")
 
 opts =[
 	"N"=>nprocs(),
