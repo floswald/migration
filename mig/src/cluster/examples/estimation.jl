@@ -6,7 +6,7 @@ t0 = time()
 # called from ../
 include("nodes.jl")
 
-opts =[
+opts =Dict(
 	"N"=>nprocs(),
 	"printlevel"=> 3,
 	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster",string("estim_",Dates.today(),".h5"),	
@@ -21,7 +21,7 @@ opts =[
 	"min_disttol"=>0.05,	# if other chain is within 10% of my value, i consider jumping
 	"max_disttol"=>0.1,
 	"min_jump_prob"=>0.1,
-	"max_jump_prob"=>0.1] 
+	"max_jump_prob"=>0.1)
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)

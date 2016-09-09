@@ -14,7 +14,7 @@
 #$ -l h_vmem=6G
 #$ -l h_rt=0:23:0
 
-#$ -pe mpich 40
+#$ -pe orte 10
 #$ -R y
 
 #These are optional flags but you problably want them in all jobs
