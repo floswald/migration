@@ -8,7 +8,7 @@ else
 	maxiter = parse(Int,ARGS[1])
 	nworkers = parse(Int,ARGS[2])
 	using ClusterManagers
-	addprocs_sge(nworkers,res_list="h_vmem=5G,tmem=5G")
+	addprocs_sge(nworkers,res_list="h_vmem=5.5G,tmem=5.5G")
 end
 
 # setup cluster
