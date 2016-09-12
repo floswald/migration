@@ -926,6 +926,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	push!(mom1,["cov_move_h",covar[1,2]])
 
 
+
 	# move ~ kids
 	# ----------
 
@@ -1067,6 +1068,9 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	# 	dfout[irow,:model_sd] = sdx / length(dfs)
 	# end
 
+	println("worker id = $(myid())")
+	println("moments = ")
+	println(dfout)
 
 	return Dict("moments" => dfout, "yearly" => yearly)
 end
