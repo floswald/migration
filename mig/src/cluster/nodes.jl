@@ -1,9 +1,11 @@
 
 # sets up an MProb on each node
 
+# this is loaded on all nodes
 using mig, MOpt
 
 
+# this is loaded only on the master
 io = mig.setPaths()
 moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
 mig.names!(moms,[:name,:value,:weight])

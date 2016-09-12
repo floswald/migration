@@ -74,7 +74,8 @@ function objfunc(ev::Eval)
 		end
 		v[k] = v[k] / 1000
 	end
-	setValue(ev, mean(collect(values(v))))
+	vv = mean(collect(values(v)))
+	setValue(ev, isna(vv) ? NaN : vv )
 
 	setMoment(ev,simMoments)
 
