@@ -19,3 +19,8 @@ obj:
 plot-elas: $(out)/shockReg/exp_region8_ypshock.jld
 	julia -e 'using mig; mig.plotShockRegion("ypshock",8)'
 
+estim:
+	julia5 --depwarn=no ~/git/migration/mig/src/cluster/examples/estimation.jl 500 30
+
+estim-test:
+	julia5 --depwarn=no ~/git/migration/mig/src/cluster/examples/estimation.jl 4 3

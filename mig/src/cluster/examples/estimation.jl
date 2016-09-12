@@ -1,22 +1,27 @@
 
-t0 = time()
 
-
-if isdefined ARGS
+if is_apple()
+	maxiter=3
+	nworkers=1
+	addprocs(nworkers)
+else 
 	maxiter = parse(Int,ARGS[1])
 	nworkers = parse(Int,ARGS[2])
-else 
-	maxiter = 3
-	nworkers = 5
+	using ClusterManagers
+	addprocs_sge(nworkers,res_list="h_vmem=5G,tmem=5G")
 end
 
-# MOpt options
+# setup cluster
 
+# load compute code on all nodes with `using`
+include("../nodes.jl")
+
+# MOpt options
 opts =Dict(
-	"N"=>nworkers,
+	"N"=>length(workers()),
 	"printlevel"=> 3,
 	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster",string("estim_",Dates.today(),".h5")),	
-	"save_frequency"=> 2,
+	"save_frequency"=> maxiter < 10 ? 2 : 20,
 	"print_level"=> 2,
 	"user"=> ENV["USER"],
 	"maxiter"=> maxiter,
@@ -29,14 +34,6 @@ opts =Dict(
 	"min_jump_prob"=>0.1,
 	"max_jump_prob"=>0.1)
 
-
-# setup cluster
-using ClusterManagers
-addprocs_sge(nworkers,res_list="h_vmem=5G,tmem=5G")
-
-# load compute code on all nodes with `using`
-include("../nodes.jl")
-
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 
@@ -47,8 +44,6 @@ runMOpt!(MA)
 
 # out = DataFrame(estimate=means,sd=sds)
 # println(out)
-
-println("done after $(round((time()-t0)/60)) minutes")
 
 println("quitting cluster")
 quit()
