@@ -121,6 +121,7 @@ end
 
 function simulate(m::Model,p::Param)
 
+	pdebug("entered simulation")
 
 	T     = p.nt-1
 	nsim  = m.coh_breaks[end]	# total number of individuals
@@ -181,6 +182,8 @@ function simulate(m::Model,p::Param)
 	L["l_vcs"] = Lininterp(vcs_arr,gs)
 	L["l_rho"] = Lininterp(rho_arr,gs)
 	# L_EV  = Lininterp(EV_arr,gs)
+
+	pdebug("setup Lininterps")
 
 	srand(54321)
 
@@ -243,6 +246,8 @@ function simulate(m::Model,p::Param)
 	Dregname = ASCIIString["" for i = 1:(nsim*T)]
 	Dtoname  = ASCIIString["" for i = 1:(nsim*T)]
 	Dsubsidy = zeros(nsim*T)
+
+	pdebug("initialized sim arrays")
 
 	# fill in aggregate prices faced by each cohort
 	# also draw invariant type tau here
@@ -315,9 +320,12 @@ function simulate(m::Model,p::Param)
 		yshock = true
 	end
 
+	pdebug("set policy switches")
 	# println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
 
 	for age = 1:T
+
+		pdebug("simulating age=$age")
 
 		# who is around at this age?
 		maxcohort = N_coh - (age-1)   # all cohorts > maxcohort don't have to be simulated at that age
@@ -332,7 +340,7 @@ function simulate(m::Model,p::Param)
 		gg = groupby(g,[:j,:is,:h,:tau])
 
 		for ig in gg
-
+	
 			g_count += 1
 
 			# get group-specific discrete vars
@@ -781,6 +789,8 @@ end
 # takes df: simulation output
 function computeMoments(df::DataFrame,p::Param,m::Model)
 
+	pdebug("entered computeMoments")
+
 	# keep only relevant years
 	# and drop NAs
 	df = @where(df,(:year.>1996) & (!isna(:cohort)))
@@ -801,6 +811,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	g_own = groupby(df, :h)
 	g_abin = groupby(df,:agebin)
 
+	pdebug("defined groups")
 
 	# moments relating to homeownership
 	# =================================

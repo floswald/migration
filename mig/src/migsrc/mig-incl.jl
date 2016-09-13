@@ -1,4 +1,9 @@
 
+pinfo(msg::String) = Lumberjack.info(msg,on_worker=myid())
+pwarn(msg::String) = Lumberjack.warn(msg,on_worker=myid())
+pdebug(msg::String) = Lumberjack.debug(msg,on_worker=myid())
+
+
 
 function mydf2dict(df::DataFrame)
 	if names(df) != [:moment,:model_value]
