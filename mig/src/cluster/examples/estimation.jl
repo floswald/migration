@@ -16,11 +16,14 @@ end
 # load compute code on all nodes with `using`
 include("../nodes.jl")
 
+path = dirname(@__FILE__)
+# println(path)
+
 # MOpt options
 opts =Dict(
 	"N"=>length(workers()),
 	"printlevel"=> 3,
-	"filename" => joinpath(ENV["HOME"],"git/migration/mig/src/cluster",string("estim_",Dates.today(),".h5")),	
+	"filename" => joinpath(path,string("estim_",Dates.today(),".h5")),	
 	"save_frequency"=> maxiter < 10 ? 2 : 20,
 	"print_level"=> 2,
 	"user"=> ENV["USER"],
@@ -34,8 +37,22 @@ opts =Dict(
 	"min_jump_prob"=>0.1,
 	"max_jump_prob"=>0.1)
 
+mig.add_truck(mig.LumberjackTruck(STDOUT, "info"), "info-logger")
+
+if !is_apple()
+	# logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
+	logfile = string(splitext(basename(opts["filename"]))[1],".log")
+	io = open(logfile,"w")
+	redirect_stdout(io)
+end
+
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
+println("quitting cluster")
+
+@static is_apple() ? println("") : close(io)
+
+
 
 # compute point estimates and SD on coldest chain
 # p = MOpt.parameters_ID(MA.MChains,MA.MChains[1].i)
@@ -45,7 +62,6 @@ runMOpt!(MA)
 # out = DataFrame(estimate=means,sd=sds)
 # println(out)
 
-println("quitting cluster")
 quit()
 
 

@@ -17,9 +17,7 @@ function solve!(m::Model, p::Param)
 	# loop over time
 	for age=(p.nt-1):-1:1
 
-		if p.verbose > 0 
-			info("solving period $age")
-		end
+		# pdebug("solving period $age")
 
 		# 	# compute current period values
 		solvePeriod!(age,m,p)

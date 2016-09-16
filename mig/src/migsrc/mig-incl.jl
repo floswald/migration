@@ -1,7 +1,7 @@
 
-pinfo(msg::String) = Lumberjack.info(msg,on_worker=myid())
-pwarn(msg::String) = Lumberjack.warn(msg,on_worker=myid())
-pdebug(msg::String) = Lumberjack.debug(msg,on_worker=myid())
+pinfo(msg::String)  = Lumberjack.info(msg,on_worker  = myid())
+pwarn(msg::String)  = Lumberjack.warn(msg,on_worker  = myid())
+pdebug(msg::String) = Lumberjack.debug(msg,on_worker = myid())
 
 
 
@@ -58,7 +58,7 @@ end
 function objfunc(ev::Eval)
 
 	MOpt.start(ev)
-	info("in objective function")
+	pinfo("in objective function")
 
 	p = Param(2)	# create a default param type
 	MOpt.fill(p,ev)      # fill p with current values on eval object
