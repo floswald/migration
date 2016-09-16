@@ -39,19 +39,16 @@ opts =Dict(
 
 mig.add_truck(mig.LumberjackTruck(STDOUT, "info"), "info-logger")
 
-if !is_apple()
-	# logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
-	logfile = string(splitext(basename(opts["filename"]))[1],".log")
-	io = open(logfile,"w")
-	redirect_stdout(io)
-end
+# logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
+logfile = string(splitext(basename(opts["filename"]))[1],".log")
+io = open(logfile,"w")
+redirect_stdout(io)
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 println("quitting cluster")
 
-@static is_apple() ? println("") : close(io)
-
+close(io)
 
 
 # compute point estimates and SD on coldest chain
