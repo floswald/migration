@@ -17,7 +17,7 @@ function solve!(m::Model, p::Param)
 	# loop over time
 	for age=(p.nt-1):-1:1
 
-			# pdebug("solving period $age")
+			# info("solving period $age")
 
 		# 	# compute current period values
 		solvePeriod!(age,m,p)
