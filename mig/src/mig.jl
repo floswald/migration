@@ -1,7 +1,7 @@
 module mig
 
 using GLM, MOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
-using JSON , Copulas, FileIO, Lumberjack
+using JSON , Copulas, FileIO
 import Base.show, Base.convert, Base.print, Base.get
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
