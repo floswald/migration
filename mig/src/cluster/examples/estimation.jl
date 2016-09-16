@@ -8,6 +8,7 @@ else
 	maxiter = parse(Int,ARGS[1])
 	nworkers = parse(Int,ARGS[2])
 	using ClusterManagers
+	addprocs(SGEManager(nworkers,""),qsub_env="")
 	addprocs_sge(nworkers,res_list="h_vmem=5.5G,tmem=5.5G")
 end
 
@@ -37,18 +38,18 @@ opts =Dict(
 	"min_jump_prob"=>0.1,
 	"max_jump_prob"=>0.1)
 
-mig.add_truck(mig.LumberjackTruck(STDOUT, "info"), "info-logger")
 
 # logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
 logfile = string(splitext(basename(opts["filename"]))[1],".log")
-io = open(logfile,"w")
-redirect_stdout(io)
+mig.add_truck(mig.LumberjackTruck(logfile, "info"), "info-logger")
+# io = open(logfile,"w")
+# redirect_stdout(io)
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 println("quitting cluster")
 
-close(io)
+# close(io)
 
 
 # compute point estimates and SD on coldest chain
