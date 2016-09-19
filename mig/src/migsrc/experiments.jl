@@ -150,7 +150,7 @@ function plotShockRegions2(printp=false)
 
 	pp_sum = @select(@where(pp,:year.>2006),d_move=mean(:d_move),d_move_own=mean(:d_move_own),d_move_rent=mean(:d_move_rent),p_move=mean(:p_move),p_move_own=mean(:p_move_own),p_move_rent=mean(:p_move_rent))
 
-	pp_sum =  [ i => pp_sum[i][1] for i in names(pp_sum)]
+	pp_sum =  Dict( i => pp_sum[i][1] for i in names(pp_sum))
 
 	f = open(joinpath(opth,string(j,"pshock.json")),"w")
 	JSON.print(f,pp_sum)
@@ -201,7 +201,7 @@ function plotShockRegions2(printp=false)
 
 	yy_sum = @select(@where(yy,:year.>2006),d_move=mean(:d_move),d_move_own=mean(:d_move_own),d_move_rent=mean(:d_move_rent),p_move=mean(:p_move),p_move_own=mean(:p_move_own),p_move_rent=mean(:p_move_rent))
 
-	yy_sum =  [ i => yy_sum[i][1] for i in names(yy_sum)]
+	yy_sum =  Dict( i => yy_sum[i][1] for i in names(yy_sum))
 	f = open(joinpath(opth,"yshock.json"),"w")
 	JSON.print(f,yy_sum)
 	close(f)
@@ -914,7 +914,7 @@ function exp_value_mig_base(j::Int,allj=false)
 
     # total flows across regims
     flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false)
-    f2 = [ k => flows[k][j]  for k in keys(flows) ]
+    f2 = Dict( k => flows[k][j]  for k in keys(flows) )
 
     flows = Dict()
     flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
@@ -1006,7 +1006,7 @@ function exp_value_mig_base(j::Int,allj=false)
 
     movers = Dict()
     for k in x00[:j]
-    	movers[k] = [string(n) => x00[x00[:j].==k,n][1] for n in n0]
+    	movers[k] = Dict(string(n) => x00[x00[:j].==k,n][1] for n in n0)
     end
 
 

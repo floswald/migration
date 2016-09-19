@@ -1,7 +1,7 @@
 
-# pinfo(msg::String)  = Lumberjack.info(msg,on_worker  = myid())
+pinfo(msg::String)  = Lumberjack.info(msg,on_worker  = myid())
 # pwarn(msg::String)  = Lumberjack.warn(msg,on_worker  = myid())
-# pdebug(msg::String) = info(msg)
+pdebug(msg::String) = Lumberjack.debug(msg,on_worker = myid())
 
 
 
@@ -11,9 +11,9 @@ function mydf2dict(df::DataFrame)
 	end
 	d = Dict()
 	for e in eachrow(df)
-		# d[symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
+		# d[Symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
 		# does not make sense to return model_sd!
-		d[symbol(e[:moment])] = e[:model_value]
+		d[Symbol(e[:moment])] = e[:model_value]
 	end
 	return d
 end
@@ -34,7 +34,7 @@ function convert(::Type{Dict},df::DataFrame,id::Symbol)
 	d = Dict{AbstractString,Any}()
 	cnames = names(df)[names(df) .!= id]
 	for e in eachrow(df)
-		d[string(e[id])] = [k => e[k] for k in cnames]
+		d[string(e[id])] = Dict(k => e[k] for k in cnames)
 	end
 	return d
 end
@@ -58,7 +58,7 @@ end
 function objfunc(ev::Eval)
 
 	MOpt.start(ev)
-	info("in objective function")
+	Base.info("in objective function")
 
 	p = Param(2)	# create a default param type
 	MOpt.fill(p,ev)      # fill p with current values on eval object
@@ -141,7 +141,7 @@ function runObj(printm::Bool=false,subset=true)
 	# create MProb
 
 	io = mig.setPaths()
-	moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
+	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
 	dont_use = ""
@@ -227,15 +227,15 @@ myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)
 
 function setPaths()
 # get moments from dropbox:
-	if Sys.OS_NAME == :Darwin
+	if is_apple()
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
 		outg   = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_graphs_jl")
-	elseif Sys.OS_NAME == :Windows
+	elseif is_windows()
 		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
 		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
 		outg   = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_graphs_jl"
-	else
+	elseif is_linux()
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
 		outg   = joinpath(ENV["HOME"],"data_repo/mig/out_graphs_jl")
@@ -246,8 +246,8 @@ function setPaths()
 end
 
 # set outpath rel to dropbox/mobility/output/model
-function setPaths(p::ASCIIString)
-	if Sys.OS_NAME == :Darwin
+function setPaths(p::String)
+	if is_apple()
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model",p)
 	else
@@ -351,7 +351,7 @@ function FlowsPlot(s::DataFrame,m::Model)
        fmat[k,i] = v
        end
        end
-       df=names!(convert(DataFrame,fmat'),map(symbol,convert(Array,m.regnames[:Division])))
+       df=names!(convert(DataFrame,fmat'),map(Symbol,convert(Array,m.regnames[:Division])))
        df[:year] = collect(1997:2012)
        mdf = melt(df,:year)
        names!(mdf,[:Destination,:v,:year])
