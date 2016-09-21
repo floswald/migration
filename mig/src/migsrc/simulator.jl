@@ -868,6 +868,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:kids]),fullw)
 	push!(mom1,["cov_own_kids",covar[1,2]])
 
+	gc()
 
 	# moments relating to mobility
 	# ============================
@@ -913,7 +914,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	zz = DataFrame(moment=map(string,map(x->"flow_move_to_$x",collect(keys(xx)))), model_value = collect(values(xx)))
 	append!(mom1,zz)
 
-
+	gc()
 
 	# move ~ own
 	# ----------
@@ -950,6 +951,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 	covar = cov(hcat(convert(Array{Float64},df[:move]),df[:kids]),fullw)
 	push!(mom1,["cov_move_kids",covar[1,2]])
 
+	gc()
 	# move ~ distance 
 	# ---------------
 
@@ -1020,6 +1022,7 @@ function computeMoments(df::DataFrame,p::Param,m::Model)
 			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(convert(Array,idf[:wealth]),w)])
 		end
 	end
+	gc()
 
 	pdebug("finisehd moments")
 

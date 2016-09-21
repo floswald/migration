@@ -109,9 +109,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	# initialise some objects
 
 	vstay = zeros(2)
-
 	w = zeros(p.namax)
 	EV = zeros(p.na)
+	savings = zeros(p.namax)
+	cons = zeros(p.namax)
 
 	# return value for findmax: tuple (value,index)
 	r = (0.0,0.0,0.0)
@@ -416,7 +417,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												# setVals
 
 												# optimal savings choice
-												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta)
+												rh = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta,savings,cons)
 
 												vstay[ihh+1] = rh[1]
 
@@ -473,7 +474,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											EVfunChooser!(EV,is,iz,ihh+1,itau,ip,iy,ij,ik,age,m,p)
 
 											# optimal savings choice
-											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta)
+											r = maxvalue(cash,is,p,agrid,w,ihh,mc,EV,blim,age,acc,noSaving,consta,savings,cons)
 
 											# checking for infeasible choices
 											if r[1] > p.myNA
@@ -724,7 +725,7 @@ end
 # index of optimal savings choice
 # on a given state
 # discrete maximization
-function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator,noSaving::Bool,constant::Float64)
+function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Float64,1},own::Int,mc::Float64,EV::Array{Float64,1},lb::Float64,age::Int,acc::Accelerator,noSaving::Bool,constant::Float64,s::Array{Float64,1},cons::Array{Float64,1})
 
 	# if your current cash debt is lower than 
 	# maximum borrowing, infeasible
@@ -736,11 +737,14 @@ function maxvalue(cash::Float64,is::Int,p::Param,a::Array{Float64,1},w::Array{Fl
 		x = 0.0
 		# grid for next period assets
 		ub = noSaving ?  0.0 : cash-0.01 
-		s = zeros(p.namax)
 		# s = collect(linspace(lb,ub,p.namax))	# this implies you can save a lot if you have a lot of cash
+
+		# fill s and cons with new values
+		# s[:] = linspace(lb,ub,length(s))
 		mylinspace!(s,lb,ub)	# this implies you can save a lot if you have a lot of cash
+		fill!(cons,zero(Float64))
+
 		# however in the interpolation you don't allow s > a[end]
-		cons = zeros(p.namax)
 		# fix upper bound of search grid
 		# ub = minimum([cash-0.0001,a[end]])
 		# ub = cash-0.0001 < a[end] ? cash-0.0001 : a[end]
