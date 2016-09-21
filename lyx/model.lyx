@@ -187,9 +187,11 @@ This paper estimates a lifecycle model of consumption, housing choice and
  The option to move is equivalent to 4.4% of lifetime consumption.
  While I obtain an estimate of the elasticity of local population size with
  respect to a large regional shock which is close to estimates from the
- previous literature, I am able to show that the elasticity of outflows
- from that region are orders of magnitude apart for renters and owners.
- This has important policy implications.
+ previous literature, I am able to show that the respective elasticities
+ of outflows for renters and owners from that region are orders of magnitude
+ apart.
+ This has important implications for the design of housing and labour market
+ policies.
 \end_layout
 
 \begin_layout Abstract
@@ -6662,29 +6664,13 @@ n.
 \end_layout
 
 \begin_layout Standard
-In a policy experiment where I remove the mortgage interest deduction for
- owners, I find that accounting for a likely general equilibrium effect
- is crucial for the resulting effects.
- Assuming that house prices would not change as a result of removing the
- deduction implies that migration rates would increase slightly, mainly
- due to a shift in composition towards more renters.
- Correcting prices with an external estimate of the likely GE effect (a
- 5% reduction as reported in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-
-\end_inset
-
-) results in a different conclusion: lower prices after the removal of the
- deduction allow more people to buy, resulting in an increase of ownership.
- The net effect on migration is only marginally positive, however, since
- part of the shift in composition towards more owners is offset by changes
- in migration behaviour brought about by lower prices in all regions and
- redistribution of income to the poor.
- The welfare implications depend greatly on whether or not prices are adjusted,
- with average welfare gains 1% in the former, and of the order of 2.4% of
- period consumption in the latter case.
+The model delivers an estimate of the elasticity of local population size
+ with respect to a large regional income shock that is in line with the
+ previous literature.
+ The new finding here, however, is that the elasticity of outflows differs
+ greatly between owners and renters.
+ It is important for policy makers to keep in mind the very low mobility
+ of owners when thinking about how households could offset large shocks.
 \end_layout
 
 \begin_layout Standard
