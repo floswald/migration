@@ -240,6 +240,8 @@ facts("Solver. other parts.") do
 		acc = mig.Accelerator(1)
 
 	    w = zeros(p.namax)
+	    savings = zeros(p.namax)
+	    cons = zeros(p.namax)
 	    a = m.grids["assets"]
 
 	    ih = 0
@@ -250,17 +252,17 @@ facts("Solver. other parts.") do
 	    mc = rand()
 	    lb = 0.0
 
-		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
+		consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity_ENC
 
 	    noSaving = false
-	    v1 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta)
+	    v1 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta,savings,cons)
 	    println(v1)
 	    @fact v1[2] > 0.0 --> true
 
 	    noSaving = true
 		acc = mig.Accelerator(1)
 	    w = zeros(p.namax)
-	    v2 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta)
+	    v2 = mig.maxvalue(cash,1,p,a,w,0,mc,EV,lb,1,acc,noSaving,consta,savings,cons)
 		    println(v2)
 	    @fact v2[2] == 0.0 --> true
 	end
@@ -292,7 +294,7 @@ facts("Solver. other parts.") do
 		for ih = 0:1
 
 			# compute values at each savings grid
-			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
+			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity_WSC
 
 			# compute vsavings!()
 			mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,consta)
@@ -344,7 +346,7 @@ facts("Solver. other parts.") do
 		for is = 1:p.ns
 		for ih = 0:1
 
-			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity[1]
+			consta =  ih*((is==1)*p.xi1 + (is==2)*p.xi2) - mc + p.amenity_WSC
 
 			# compute vsavings!()
 			mig.vsavings!(w,a,EV,s,cons,cash,is,ih,mc,p,acc,true,consta)

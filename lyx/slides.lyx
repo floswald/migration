@@ -135,7 +135,7 @@ Sciences Po
 \end_layout
 
 \begin_layout Date
-EIEF Rome Applied Micro Conference, 24/06/2016
+URBAN workshop, U Copenhagen, 22/9/2016
 \end_layout
 
 \begin_layout Frame
@@ -5906,40 +5906,28 @@ West North Central Shock
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/outflow-ownrent.pdf
-	height 90theight%
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-\begin_inset Separator plain
-\end_inset
-
-
-\end_layout
-
-\begin_layout Frame
-\begin_inset Argument 4
-status open
-
-\begin_layout Plain Layout
-West North Central Shock
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
 \begin_layout Itemize
-In terms of an average elasticity, the previous graph translates to
+1 % reduction in regional income 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 0.4 % reduction of population
+\end_layout
+
+\begin_layout Itemize
+Kennan and Walker (2011) report elasticity of 
+\begin_inset Formula $\approx0.5$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But how do outflows change? Who leaves?
+\end_layout
+
+\begin_layout Pause
+
 \end_layout
 
 \begin_layout Standard
@@ -5962,14 +5950,6 @@ Dropbox/model/experiments/shockReg8/elasticities.tex}
 
 \end_layout
 
-\begin_layout Itemize
-Kennan and Walker (2011) report elasticity of 
-\begin_inset Formula $\approx0.5$
-\end_inset
-
-
-\end_layout
-
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -5978,57 +5958,6 @@ Kennan and Walker (2011) report elasticity of
 
 \end_layout
 
-\begin_layout Frame
-\begin_inset Argument 4
-status open
-
-\begin_layout Plain Layout
-West North Central Shock - Behaviour
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{adjustbox}{center}
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/in-out-rent-buy.pdf
-	height 85theight%
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{adjustbox}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
 \begin_layout Section
 Conclusion
 \end_layout
