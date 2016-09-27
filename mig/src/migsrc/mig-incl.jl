@@ -73,6 +73,7 @@ function objfunc(ev::Eval)
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 	simMoments = mydf2dict(smm["moments"])
+	println(simMoments)
 
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in dataMomentd(ev)
