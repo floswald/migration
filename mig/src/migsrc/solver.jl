@@ -542,6 +542,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 			end 	#p
 		end 	#y
 	end 	#z
+	gc()
 	return nothing
 
 end

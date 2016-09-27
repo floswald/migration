@@ -67,8 +67,9 @@ function objfunc(ev::Eval)
 	mig.solve!(m,p)
 	gc()
 	s   = simulate(m,p)
+	m = 0
 	gc()
-	smm = computeMoments(s,p,m)	
+	smm = computeMoments(s,p)	
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 	simMoments = mydf2dict(smm["moments"])

@@ -620,6 +620,7 @@ function simulate(m::Model,p::Param)
 
 	df = join(df,m.agedist,on=:realage)
 	df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
+	gc()
 	return df
 end
 
@@ -787,7 +788,7 @@ end
 
 # computing moments from simulation
 # takes df: simulation output
-function computeMoments(df::DataFrame,p::Param,m::Model)
+function computeMoments(df::DataFrame,p::Param)
 
 	# pdebug("entered computeMoments")
 
