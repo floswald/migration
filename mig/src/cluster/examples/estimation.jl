@@ -4,6 +4,16 @@ if is_apple()
 	maxiter=3
 	nworkers=1
 	addprocs(nworkers)
+elseif gethostname() == "hpc-a"
+	if isinteractive()
+	maxiter = 4
+	nworkers = 3
+	else
+	maxiter = parse(Int,ARGS[1])
+	nworkers = parse(Int,ARGS[2])
+	end
+	using ClusterManagers
+	addprocs_sge(nworkers)
 else 
 	maxiter = parse(Int,ARGS[1])
 	nworkers = parse(Int,ARGS[2])
