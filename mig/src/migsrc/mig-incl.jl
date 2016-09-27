@@ -134,7 +134,7 @@ function runSim()
 	# mig.plot(own[:realage],own[:m])
 	# figure()
 	simplot(s,5)
-	x=computeMoments(s,p,m)
+	x=computeMoments(s,p)
 	showall(x["moments"])
 	showall(x["yearly"])
 	return s

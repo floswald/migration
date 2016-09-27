@@ -52,14 +52,19 @@ opts =Dict(
 # logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
 logfile = string(splitext(basename(opts["filename"]))[1],".log")
 # mig.add_truck(mig.LumberjackTruck(logfile, "info"), "info-logger")
-io = open(logfile,"w")
-redirect_stdout(io)
+
+if !isinteractive()
+	io = open(logfile,"w")
+	redirect_stdout(io)
+end
 
 MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 println("quitting cluster")
 
-close(io)
+if !isinteractive()
+	close(io)
+end
 
 
 # compute point estimates and SD on coldest chain
