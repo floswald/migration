@@ -25,7 +25,7 @@ else
 		end
 	else
 		# else we started a cluster with --machinefile
-		cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt")
+		cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt",remove_destination=true)
 		maxiter = parse(Int,ARGS[1])
 	end
 end
