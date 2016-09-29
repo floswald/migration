@@ -10,12 +10,18 @@ function mydf2dict(df::DataFrame)
 		throw(ArgumentError("need columns :moment,:model_value"))
 	end
 	d = Dict()
+	status = 0
 	for e in eachrow(df)
 		# d[Symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
 		# does not make sense to return model_sd!
-		d[Symbol(e[:moment])] = e[:model_value]
+		if (isna(e[:model_value]) | !isfinite(e[:model_value]))
+			d[Symbol(e[:moment])] = NaN
+			status = -1
+		else
+			d[Symbol(e[:moment])] = e[:model_value]
+		end
 	end
-	return d
+	return (d,status)
 end
 
 """
@@ -72,8 +78,7 @@ function objfunc(ev::Eval)
 	smm = computeMoments(s,p)	
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
-	simMoments = mydf2dict(smm["moments"])
-	println(simMoments)
+	simMoments,status = mydf2dict(smm["moments"])
 
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in dataMomentd(ev)
@@ -85,9 +90,10 @@ function objfunc(ev::Eval)
 		v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
-	setValue(ev, isna(vv) ? NaN : vv )
-
+	setValue(ev, (isna(vv) | !isfinite(vv)) ? NaN : vv )
 	setMoment(ev,simMoments)
+
+	status = (isna(vv) | !isfinite(vv)) ? -1 : status
 
     if get(ev.options,"printm",false) 
     	mms = MOpt.check_moments(ev)
@@ -104,7 +110,7 @@ function objfunc(ev::Eval)
 		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
 	end
 
-	ev.status = 1
+	ev.status = status
 
 	finish(ev)
 
@@ -173,8 +179,8 @@ function runObj(printm::Bool=false,subset=true)
 		ev.options["printm"] = printm
 	end
 
-	x = objfunc(ev)
-	return x
+	ev = objfunc(ev)
+	return ev
 end
 
 
