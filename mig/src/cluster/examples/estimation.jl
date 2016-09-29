@@ -58,11 +58,11 @@ opts =Dict(
 
 
 # logdir = isdir(joinpath(path,"logs")) ? joinpath(path,"logs") : mkdir(joinpath(path,"logs"))
-logfile = string(splitext(basename(opts["filename"]))[1],".log")
-if isfile(logfile)
-	rm(logfile)
-end
-mig.add_truck(mig.LumberjackTruck(logfile, "info"), "info-logger")
+# logfile = string(splitext(basename(opts["filename"]))[1],".log")
+# if isfile(logfile)
+# 	rm(logfile)
+# end
+# mig.add_truck(mig.LumberjackTruck(logfile, "info"), "info-logger")
 
 # if !isinteractive()
 # 	io = open(logfile,"w")
