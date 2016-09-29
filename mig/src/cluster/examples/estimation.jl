@@ -66,7 +66,7 @@ mig.add_truck(mig.LumberjackTruck(logfile, "info"), "info-logger")
 
 # if !isinteractive()
 # 	io = open(logfile,"w")
-# 	redirect_stdout(io)
+# 	redirect_stdout(w)
 # end
 
 MA = MAlgoBGP(mprob,opts)

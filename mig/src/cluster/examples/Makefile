@@ -1,6 +1,6 @@
 
 estim:
-	julia5 --color=yes --optimize=3 --machinefile zeppos.txt estimation.jl 500
+	julia5 --color=yes --optimize=3 --machinefile zeppos.txt estimation.jl 500 
 
 estim-t:
 	julia5 --color=yes --optimize=3 --machinefile zeppos.txt estimation.jl 4
