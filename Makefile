@@ -21,7 +21,6 @@ plot-elas: $(out)/shockReg/exp_region8_ypshock.jld
 
 estim:
 	make -C ~/git/migration/mig/src/cluster/examples estim
-	julia5 --depwarn=no ~/git/migration/mig/src/cluster/examples/estimation.jl 500 30
 
 estim-test:
 	make -C ~/git/migration/mig/src/cluster/examples estim-t
