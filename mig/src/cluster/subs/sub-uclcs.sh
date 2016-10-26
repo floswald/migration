@@ -23,7 +23,6 @@
 #$ -j y
 #$ -e /home/uctpfos/git/migration/src/cluster/examples/slices.err
 #$ -o /home/uctpfos/git/migration/src/cluster/examples/slices.out
-#$ -j y
 #$ -N migslice
 #$ -cwd
 

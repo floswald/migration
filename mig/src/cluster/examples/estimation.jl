@@ -73,6 +73,11 @@ MA = MAlgoBGP(mprob,opts)
 runMOpt!(MA)
 println("quitting cluster")
 
+# send message to slack channel
+txt = "Estimation finished"
+TKN = "https://hooks.slack.com/services/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"
+run(`curl -X POST --data-urlencode 'payload={"text": $txt}' $TKN`) 
+
 # if !isinteractive()
 # 	close(io)
 # end
