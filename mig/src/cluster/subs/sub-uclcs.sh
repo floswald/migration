@@ -12,19 +12,16 @@
 
 #$ -l tmem=4G
 #$ -l h_vmem=4G
-#$ -l h_rt=300
+#$ -l h_rt=30:0:0
 
-#$ -pe mpich 40
+#$ -pe orte 40
 #$ -R y
 
 #These are optional flags but you problably want them in all jobs
 
 #$ -S /bin/bash
 #$ -j y
-#$ -e /home/uctpfos/git/migration/src/cluster/examples/slices.err
-#$ -o /home/uctpfos/git/migration/src/cluster/examples/slices.out
-#$ -j y
-#$ -N migslice
+#$ -N MCMC
 #$ -cwd
 
 #The code you want to run now goes here.
@@ -34,9 +31,9 @@
 
 hostname
 date
-awk '{ for (i=0; i < $2; ++i) { print $1} }' $PE_HOSTFILE > hosts
+awk '{ for (i=0; i < $2; ++i) { print $1} }' $PE_HOSTFILE > hosts.txt
 
 echo "your hosts"
-cat hosts
-/home/uctpfos/thirdparty/juliabin-0.4.6/bin/julia --machinefile hosts examples/slices.jl
+watch tail hosts.txt
+# /home/uctpfos/thirdparty/juliabin-0.4.6/bin/julia --machinefile hosts examples/slices.jl
 

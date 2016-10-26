@@ -1,0 +1,21 @@
+{% macro showmom(mom,dd,dec) %}
+    {{mom}} & {{ dd.data | prettyNum(dec) }} & {{ dd.model | prettyNum(dec) }}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}}
+  \toprule 
+    \multicolumn{3}{c}{Moments of Population Flows} \\
+  \midrule
+    \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Model}\\ 
+  \midrule
+  {{  showmom("$E[\\text{flow to ENC}]$", flow_move_to_ENC, 3 ) }}
+  {{  showmom("$E[\\text{flow to ESC}]$", flow_move_to_ESC, 3 ) }}
+  {{  showmom("$E[\\text{flow to MdA}]$", flow_move_to_MdA, 3 ) }}
+  {{  showmom("$E[\\text{flow to Mnt}]$", flow_move_to_Mnt, 3 ) }}
+  {{  showmom("$E[\\text{flow to NwE}]$", flow_move_to_NwE, 3 ) }}
+  {{  showmom("$E[\\text{flow to Pcf}]$", flow_move_to_Pcf, 3 ) }}
+  {{  showmom("$E[\\text{flow to StA}]$", flow_move_to_StA, 3 ) }}
+  {{  showmom("$E[\\text{flow to WNC}]$", flow_move_to_WNC, 3 ) }}
+  {{  showmom("$E[\\text{flow to WSC}]$", flow_move_to_WSC, 3 ) }}
+  \bottomrule
+\end{tabular}
+
