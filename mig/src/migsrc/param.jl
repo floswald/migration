@@ -126,6 +126,7 @@ type Param
 		xi2      = 0.052
 		omega1   = 1.0
 		omega2   = 5.1
+		# omega2   = 3.26721
 		# omega2   = 6.1
 
 		# MC0    = 2.71  	 	# intercept

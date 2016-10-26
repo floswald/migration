@@ -82,12 +82,13 @@ function objfunc(ev::Eval)
 
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in dataMomentd(ev)
-		if haskey(dataMomentWd(ev),k)
-			v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
-		else
-			v[k] = ((simMoments[k] .- mom) ) .^2
-		end
-		v[k] = v[k] / 1000
+		# if haskey(dataMomentWd(ev),k)
+		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+		# else
+		# 	v[k] = ((simMoments[k] .- mom) ) .^2
+		# end
+		v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
+		# v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
 	setValue(ev, (isna(vv) | !isfinite(vv)) ? NaN : vv )
