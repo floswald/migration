@@ -586,7 +586,7 @@ function simplot(sim::DataFrame,n::Int)
 		push!(ids,sdf[1,:id])
 		idcount += 1
 	end
-	legend(plts,["indiv $(ids[i])" for i=1:n],"lower right")
+	legend(plts,["indiv $(ids[i])" for i=1:n],loc="lower right")
 	title("legend")
 	suptitle("ids: $nr")
 end
@@ -708,7 +708,7 @@ function simplot(sim::DataFrame,id::Array{Int,1})
 		push!(ids,sdf[1,:id])
 		idcount += 1
 	end
-	legend(plts,["indiv $(ids[i])" for i=1:n],"lower right")
+	legend(plts,["indiv $(ids[i])" for i=1:n],loc="lower right")
 	title("legend")
 	suptitle("ids: $nr")
 end

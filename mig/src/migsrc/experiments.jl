@@ -80,7 +80,7 @@ function selectPolicy(which::AbstractString,j::Int,shockYear::Int,revert::Int,p:
 			opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> repeat([0.9],inner=[1],outer=[p.nt-1]))
 		end
 	elseif which=="highMC"
-		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal"=> ones(p.nt-1))
+		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_y"=> ones(p.nt-1), "shockVal_p"=> ones(p.nt-1))
 	elseif which=="pshock_highMC"
 		opts = Dict("policy" => which,"shockRegion" => j,"shockYear"=>shockYear,"shockAge"=>1, "shockVal_p"=> repeat([0.7],inner=[1],outer=[p.nt-1]))
 	elseif which=="yshock_highMC"
@@ -278,6 +278,17 @@ function exp_changeMC(which)
 end
 
 
+
+# get ex-ante value: EV[initial_state | age=1 ]
+
+# get ex-post value: realized values of utility in each period
+function getExPostValue(df::DataFrame)
+
+	w = @linq df |>
+		@where(!isna(:cohort)) |>
+		@select(meanu = mean(:utility[isfinite(:utility)]))
+	return w
+end
 
 function getDiscountedValue(df::DataFrame,p::Param,m::Model)
 
@@ -878,6 +889,14 @@ function exp_value_mig_base(j::Int,allj=false)
 	regname = m.regnames[j,:Division]
 
 	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
+	println("no moving = $w0")
+	w00   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,false)
+	println("moving cost = $w00")
+
+	# utility for all periods that have been spent in j
+	w02 = getExPostValue(@where(base,(:j.==j)&(:year.>cutyr)))
+
+	# may be more interested in utility of all those guys who end up getting stuck in policy only (so as to not confound with people who moved to j from outside)
 
 	# model where moving is shut down in region j
 	opts = Dict("policy" => "highMC", "shockRegion" => j)
@@ -889,6 +908,12 @@ function exp_value_mig_base(j::Int,allj=false)
 	pol = pol[!isna(pol[:cohort]),:];
 
 	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
+	println("no moving = $w1")
+	w10   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,false)
+	println("no moving = $w10")
+
+	# utility for all periods that have been spent in j
+	w02 = getExPostValue(@where(pol,(:j.==j)&(:year.>cutyr)))
 
 	# get values by age and for different regions
 	v0 = @linq base |>
@@ -913,7 +938,7 @@ function exp_value_mig_base(j::Int,allj=false)
 
 
     # total flows across regims
-    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false)
+    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false,"null")
     f2 = Dict( k => flows[k][j]  for k in keys(flows) )
 
     flows = Dict()
@@ -936,6 +961,7 @@ function exp_value_mig_base(j::Int,allj=false)
 
 	# people who moved away from j in the baseline
 	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	# these people are "treated"
 
 	bmv = base[findin(base[:id],mv_id[:id]),:]
 	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
@@ -948,6 +974,35 @@ function exp_value_mig_base(j::Int,allj=false)
 	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
 	pmv2 = @where(pmv,:year.>cutyr);
 	pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
+
+	# mean difference on treated (ATT)
+	att_0 = @select(bmv2,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_1 = @select(bmv2,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att = att_1 .- att_0 
+	att_perc = 100.* att ./ abs(att_0)
+
+
+
+	# how did life change for owners and renters?
+	# ===========================================
+
+	# ownership profile in j in both regimes
+	own_rate_base = @linq base |>
+		@where((:j.==j)&(:year.>cutyr)) |>
+		@select(own_rate = mean(:own))
+	own_rate_pol = @linq pol |>
+		@where((:j.==j)&(:year.>cutyr)) |>
+		@select(own_rate = mean(:own))
+	own_profile_base = @linq base |>
+		@where((:j.==j)&(:year.>cutyr)) |>
+		@by(:age,own_rate = mean(:own))
+	own_profile_pol = @linq pol |>
+		@where((:j.==j)&(:year.>cutyr)) |>
+		@by(:age,own_rate = mean(:own))
+
+
+
+
 
 
 
@@ -977,15 +1032,15 @@ function exp_value_mig_base(j::Int,allj=false)
 		end
 	end
 
-	pmv3 = pmv2[setdiff(1:size(pmv2,1),drops),:]
-	bmv3 = bmv2[setdiff(1:size(bmv2,1),drops),:]
+	pmv3 = pmv2[setdiff(:row_idx,drops),:]
+	bmv3 = bmv2[setdiff(:row_idx,drops),:]
 
-	 x0 =  @linq bmv3|>
+	x0 =  @linq bmv3|>
               @where((!:move)&(:moveto.!=j))|>
-              @by(:j,v=mean(:v),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	 x1 =  @linq pmv3|>
+              @by(:j,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	x1 =  @linq pmv3|>
               @where(!:move)|>
-              @by(:j,v=mean(:v),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+              @by(:j,v=mean(:v),u = mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 
 
 
@@ -1347,10 +1402,10 @@ function exp_shockRegion(opts::Dict)
 	# get discounted lifetime utility of people in j from shockYear forward
 	# ----------------------------------------------
 	w0   = getDiscountedValue(@where(sim0,(:j.==j)&(:year.>=shockYear)),p,m,true)
-	mms0 = computeMoments(sim0,p,m)	
+	mms0 = computeMoments(sim0,p)	
 
 	w1 = getDiscountedValue(@where(sim1,(:j.==j)&(:year.>=shockYear)),p,m,true)
-	mms1 = computeMoments(sim1,p,m)	
+	mms1 = computeMoments(sim1,p)	
 
 
 	# get flows for each region

@@ -1,7 +1,4 @@
 
-pinfo(msg::String)  = Lumberjack.info(msg,on_worker  = myid())
-# pwarn(msg::String)  = Lumberjack.warn(msg,on_worker  = myid())
-pdebug(msg::String) = Lumberjack.debug(msg,on_worker = myid())
 
 
 
@@ -292,12 +289,40 @@ function setupMC(autoload::Bool)
 	return moms
 end
 
+# """
+#     DataFrame arithmetic.
+# """
+for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
+    @eval begin
+        function ($op)(d1::DataFrame,d2::DataFrame)
+            if !(nrow(d1)==nrow(d2))
+                error("need same num of rows")
+            end
+            if !(all(names(d1).==names(d2)))
+                error("need same colnames")
+            end
+            df = DataFrame(d1)
+            for n in names(d1)
+                df[n] = $op(d1[n],d2[n])
+            end
+            return df
+        end
+    end
+end
+function abs(d1::DataFrame)
+    df = DataFrame(d1)
+    for n in names(d1)
+        df[n] = abs(d1[n].data)
+    end
+    return df
+end
+
 
 #' computes flow statistics of 
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="null")
+function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 
 	# s is a simulation output
 	d = Dict()

@@ -141,6 +141,8 @@ function simulate(m::Model,p::Param)
 	v1tmp = 0.0
 	v2tmp = 0.0
 
+	movecost = m.gridsXD["movecost"]
+
 	# z shock supports for each region
 	zsupps = Dict{Int,Array{Float64,1}}()
 	for j in 1:p.nJ
@@ -195,6 +197,9 @@ function simulate(m::Model,p::Param)
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 
+	# Distribution of idiosyncratic utility shocks is Gumbel(0,1)
+	G_eps = Gumbel()
+
 	# individual specific variables
 	a      = 0.0
 	z      = 0.0
@@ -211,13 +216,19 @@ function simulate(m::Model,p::Param)
 	prob   = 0.0
 	Y      = 0.0
 	P      = 0.0
+	cum_moveprob = 0.0
+	eps_shock = 0.0   # "winning" idiosyncratic utility shock
+	consta = 0.0  # utility shifter
+	utility = 0.0 # utuility
 
 	# Storage Arrays: all of size nsim*T
 	Dv       = zeros(nsim*T)
+	Dutility = zeros(nsim*T)
 	Dcons    = zeros(nsim*T)
 	Dsave    = zeros(nsim*T)
 	Dincome  = zeros(nsim*T)
 	Dprob    = zeros(nsim*T)
+	Dshock   = zeros(nsim*T)	# value of idiosyncratic shock of the chosen discrete choice, eps_shock
 	Dcumprob = zeros(nsim*T)
 	Dwealth  = zeros(nsim*T)
 	Dwealth2  = zeros(nsim*T)
@@ -349,6 +360,13 @@ function simulate(m::Model,p::Param)
 			itau = ig[1,:tau]	# {1,2}
 			ij   = ig[1,:j]    # {1,...,9}
 
+			# start to build utility
+			if is==1
+				consta = ih*p.xi1
+			else
+				consta = ih*p.xi2
+			end
+
 
 			# setup the interpolators on this function space
 			# ----------------------------------------------
@@ -414,7 +432,9 @@ function simulate(m::Model,p::Param)
 
 					moveto = ij
 					move = false
-					prob = 1.0
+					prob = 0.0
+					cum_moveprob = 0.0
+					eps_shock = quantile(G_eps,m.mshock[i_idx])
 
 				else
 
@@ -430,11 +450,12 @@ function simulate(m::Model,p::Param)
 					# get cumulative prob
 					cumsum!(ktmp2,ktmp,1)
 					# throw a k-sided dice 
-					cum_moveprob = sum(ktmp[setdiff(1:9,ij)])
+					cum_moveprob = sum(ktmp[setdiff(1:p.nJ,ij)])
 					stayprob = 1.0 - cum_moveprob
 					moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
 					move   = ij != moveto
 					prob   = ktmp[moveto]
+					eps_shock = quantile(G_eps,prob)
 
 					if moveto>p.nJ || moveto < 1
 						println(ktmp2)
@@ -525,6 +546,11 @@ function simulate(m::Model,p::Param)
 
 				end
 
+				# get utility
+				mc = movecost[idxMC(age,ij,moveto,itau,ih+1,is,p)]
+				consta = consta - mc + m.amenities[moveto]
+				utility = ufun(cons,0.0,p) + consta + eps_shock
+
 				# make sure savings is inside grid
 				# (although interpolator forces that anyway)
 				ss = forceBounds(ss,agrid[1],agrid[end])
@@ -553,12 +579,14 @@ function simulate(m::Model,p::Param)
 
 
 				# storing choices and values
+				Dutility[i_idx] = utility
 				Dv[i_idx]       = val
 				Dcons[i_idx]    = cons
 				Dsave[i_idx]    = ss
 				Dincome[i_idx]  = yy
 				Dhh[i_idx]      = ihh
 				Dprob[i_idx]    = prob
+				Dshock[i_idx]   = eps_shock 
 				Dcumprob[i_idx] = cum_moveprob
 				DM[i_idx]       = move
 				DMt[i_idx]      = moveto
@@ -613,7 +641,7 @@ function simulate(m::Model,p::Param)
 
 	# convert children indicator into a boolean:
 	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,prob=Dprob,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------

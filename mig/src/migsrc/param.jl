@@ -102,6 +102,8 @@ type Param
 			nsim  = 100
 
 		elseif size==2
+			# na    = 21
+			# namax = 50
 			na    = 17
 			namax = 21
 			nz    = 4
