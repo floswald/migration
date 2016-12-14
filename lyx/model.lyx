@@ -96,13 +96,11 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\tracking_changes true
+\tracking_changes false
 \output_changes false
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
-\author -1209358678 "florian" florian.oswald@gmail.com
-\author 143970970 "Florian Oswald"
 \end_header
 
 \begin_body
@@ -187,19 +185,13 @@ This paper estimates a lifecycle model of consumption, housing choice and
  Using the model I estimate the value of the migration option and the welfare
  impact of policies that may restrict mobility.
  The option to move is equivalent to 4.4% of lifetime consumption.
- 
-\change_deleted -1209358678 1466520965
-I also find that, were the mortgage interest-rate deduction to be eliminated,
- the aggregate migration rate would increase only marginally by 0.1%.
- Following a general equilibrium correction, house prices are reduced by
- 5%, which results in a 1% increase in home ownership.
- In a new steady state the elimination of the deduction is equivalent to
- an increase of 2.4% of lifecycle consumption.
-\change_inserted 143970970 1473167594
-I also find that the elasticity of labor supply with respect to region-level
- income shocks is 1.19, larger than in previous studies.
-\change_unchanged
-
+ While I obtain an estimate of the elasticity of local population size with
+ respect to a large regional shock which is close to estimates from the
+ previous literature, I am able to show that the respective elasticities
+ of outflows for renters and owners from that region are orders of magnitude
+ apart.
+ This has important implications for the design of housing and labour market
+ policies.
 \end_layout
 
 \begin_layout Abstract
@@ -273,29 +265,14 @@ Homeownership and the likelihood of moving across regions are negatively
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 143970970 1465396525
 The aims of this paper are to assess the value of this self insurance mechanism
  and to provide new estimates for spatial labour supply elasticities.
  The innovation in here stems from the fact that in contrast to previous
  papers, I embed the household in a dynamic model with a stochastic regional
  house price and income processes, as opposed to a static economic environment.
- 
-\change_deleted 143970970 1465396537
-The aims of this paper are first to investigate the value of this self insurance
- mechanism, second to analyse the reaction of regional mobility to regional
- shocks and third to establish how important government policies such as
- the mortgage interest tax deduction, which encourages ownership, interact
- with regional migration.
-
-\change_unchanged
- 
-\change_deleted 143970970 1465396563
-To address those issues, 
-\change_unchanged
-I propose a lifecycle model of consumption and savings, housing tenure and
- location choice, with aggregate uncertainty which affects prices in regions
- differentially.
+ I propose a lifecycle model of consumption and savings, housing tenure
+ and location choice, with aggregate uncertainty which affects prices in
+ regions differentially.
  Migration serves as a partial insurance device because regions are exposed
  to aggregate shocks to a different degree, consistent with the observed
  data.
@@ -437,15 +414,8 @@ I estimate the model using a simulated method of moments estimator.
  After fitting the model to the data, I first illustrate how adding ownership
  and assets to a dynamic migration model affects behaviour.
  I then show how the model reacts to large regional shocks, before I move
- on to compute a measure of the value of the migration option
-\change_deleted 143970970 1465396655
-.
- Finally, the model is used to perform counterfactual policy simulations.
- 
-\change_inserted 143970970 1465396684
- and an estimation of spatial labor supply elasticities.
-\change_unchanged
-
+ on to compute a measure of the value of the migration option and an estimation
+ of spatial labor supply elasticities.
 \end_layout
 
 \begin_layout Standard
@@ -478,17 +448,11 @@ Migration is a low probability event in both data and model.
  Conditioning on age when computing expected utility reveals that the cost
  of not being able to move is largest for younger individuals, and it gradually
  fades out as agents grow older.
-
-\change_inserted 143970970 1473169129
  Finally, this paper provides new estimates for the elasticity of labor
  supply with respect to a region-level income shock.
  The estimates vary significantly for renters and owners, the elasticity
  is 1.5 for renters and 0.18 for owners.
  
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
@@ -785,7 +749,7 @@ status collapsed
 \begin_layout Plain Layout
 In general, the relationship between homeownership and labor market mobility
  or unemployment has been discussed in many other places, and an incomplete
- list might include  
+ list might include 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "oswald1996conjecture,blanchflower2013does"
@@ -1184,10 +1148,6 @@ name "tab:Migration-rates-Molloy"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4899,16 +4859,30 @@ Parameter Estimates and Moments (Preliminary)
 
 \begin_layout Standard
 The model fits the data moments fairly well overall.
- The fit is displayed in table 
+ The fit is displayed in tables 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:fit-model-and-data"
 
 \end_inset
 
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data-flows"
+
+\end_inset
+
 .
- The upper panel shows moments related to mobility, the lower panel shows
- moments related to homeownership.
+ The upper panel of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+ shows moments related to mobility, the lower panel shows moments related
+ to homeownership.
  Regarding mobility, the fit is very good.
  The only statistic slightly out of line is the frequency distribution of
  moves per mover.
@@ -4925,6 +4899,15 @@ reference "eq:auxmod-move"
 
  representing the age profile in ownership also provide a good fit to the
  data.
+ Looking at table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data-flows"
+
+\end_inset
+
+ we see that the average flows into each region are reasonably close to
+ the data.
 \end_layout
 
 \begin_layout Standard
@@ -5015,7 +4998,7 @@ reference "tab:Parameter-estimates"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5056,7 +5039,51 @@ name "tab:fit-model-and-data"
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status open
+
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms-flows.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Empirical targets and corresponding model moments for population flows.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit-model-and-data-flows"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -5070,7 +5097,7 @@ name "tab:fit-model-and-data"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5988,32 +6015,16 @@ Labor Supply Elasticity
 \begin_layout Standard
 In this section I illustrate how the model reacts to large economic shocks
  at the regional level.
-
-\change_inserted 143970970 1473166468
  The overall aim is to provide an estimate for the elasticity of labor supply
  when individuals have the choice between renting and owning, and regional
  prices are risky.
- 
-\change_deleted 143970970 1473156527
- The presentation focuses on changes in migratory in and outflows to and
- from a region, when the regional price or income level is reduced unexpectedly
- at a certain point in time.
- The implementation of the shock is symmetric for both the case of house
- price and mean income, and I will use the case of the regional productivity
- shock to explain the details.
- 
-\end_layout
-
-\begin_layout Standard
-The regional shock consists of reducing the level of the observed mean income
- series by 10% in the West North Central division only (West North Central
- (WNC) has region index 
+ The regional shock consists of reducing the level of the observed mean
+ income series by 10% in the West North Central division only (West North
+ Central (WNC) has region index 
 \begin_inset Formula $d=8$
 \end_inset
 
-)
-\change_inserted 143970970 1473156510
-.
+).
  Regional income and house price shocks are correlated, and I measure this
  correlation with an estimate of 
 \begin_inset Formula $\Omega_{d}$
@@ -6029,43 +6040,17 @@ reference "eq:VAR-process-1"
 .
  This correlation translates the income shock into a -6% shock for house
  prices.
-\change_deleted 143970970 1473156197
-.
-
-\change_unchanged
  
-\change_inserted 143970970 1473156523
-
 \end_layout
 
 \begin_layout Standard
-Th
-\change_inserted 143970970 1473156516
-e
-\change_deleted 143970970 1473155946
-e
-\change_unchanged
- experiment is conducted under the assumption that agents did not foresee
+The experiment is conducted under the assumption that agents did not foresee
  the shock and therefore are surprised in the year 2000 to find that the
- mapping f
-\change_deleted 143970970 1473166505
-o
-\change_inserted 143970970 1473166506
-o
-\change_unchanged
-rm aggregate factors 
+ mapping form aggregate factors 
 \begin_inset Formula $\left(Q,P\right)$
 \end_inset
 
  into 
-\change_deleted 143970970 1473155959
-
-\begin_inset Formula $ $
-\end_inset
-
-
-\change_unchanged
-
 \begin_inset Formula $\left(q_{8},p_{8}\right)$
 \end_inset
 
@@ -6128,45 +6113,11 @@ status collapsed
 
 \end_inset
 
- Notice that
-\change_inserted 143970970 1473156019
- this is a pure level shift, i.e.
-
-\change_unchanged
- 
-\change_deleted 143970970 1473156000
-none of the time series properties of the regional price series other than
- the level are changed.
- In particular, 
-\change_unchanged
-the growth rate and implied variance remain the same.
-
-\change_deleted 143970970 1473166550
- The other regional series (house price in this instance) is held constant
- in each experiment, as well as both series in all other regions.
- Illustrations of the shocked price and income series are shown in figures
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Shocked-price-series."
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Shocked-income-series"
-
-\end_inset
-
-, respectively.
-\change_inserted 143970970 1473156552
-
+ Notice that this is a pure level shift, i.e.
+ the growth rate and implied variance remain the same.
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 143970970 1473162557
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6192,8 +6143,6 @@ reference "fig:ypshock-experiment"
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 143970970 1473166031
 Under the current parameterization of the model, the reduction in labor
  income has a larger effect than the cheaper price of rent, resulting in
  an overall increase in outflows from the region, as can be seen in the
@@ -6204,8 +6153,9 @@ reference "fig:ypshock-experiment"
 
 \end_inset
 
-, which shifts outflows up by 0.2 percentage points on average.
- It is interesting to contrast this result to the elasticity obtained in
+, which depicts outflows as a proportion of local population, and the shock
+ shifts outflows up by 0.2 percentage points on average.
+ It is interesting to compare this result to the elasticity obtained in
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -6214,15 +6164,18 @@ key "kennan2003effect"
 \end_inset
 
 , where a similar 10% shock is applied to income in a region, resulting
- in an overall elasticity of 0.5.
- I find in the present model an overall elasticity of 1.19, which is conditionall
-y 1.53 for renters, and 0.18 for owners.
+ in an elasticity of total poluation of 0.5.
+ I find in the present model an elasticity of total population which is
+ 0.4.
+ Looking at the elasticity of the outflow rate, however, I find 1.53 for
+ renters, and 0.18 for owners.
+ This large difference in outflow elasticities illustrates the important
+ difference between renters and owners when thinking about mobility as a
+ reponse to shocks.
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-
-\change_inserted 143970970 1473167419
 It is important to note that this comparison is not ideal.
  There is a conceptual difference, and a practical one.
  Conceptually, 
@@ -6251,144 +6204,10 @@ in each period
 \emph default
 , while they focus on the new equilibrium after convergence (roughly 15
  years).
-\change_unchanged
-
 \end_layout
 
 \end_inset
 
-
-\change_unchanged
-
-\end_layout
-
-\begin_layout Paragraph
-
-\change_deleted 143970970 1473166327
-Shock to average labor productivity.
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473166327
-Reducing mean labor productivity 
-\begin_inset Formula $q$
-\end_inset
-
- in a given region translates directly into lower disposable income and
- therefore less utility.
- The effect of an unexpected reduction in the observed mean income level
- for WNC by 10% on migration outflows are shown in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:yshock-outflow"
-
-\end_inset
-
-.
- The solid lines trace out the migration flows in the baseline scenario,
- while the dashed lines correspond to the shock scenario.
- In the right panel, showing renter emigration, we see clearly that the
- income reduction leads to a sustained increase in emigrants.
- The left panel shows owner outflows, and we also see a slight increase
- in emigration owners.
- In terms of the above discussion about moving costs and preference shocks,
- both results come from the fact that smaller payoff shocks are sufficient
- to trigger a move in the shock scenario than was the case in the baseline.
- 
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473166327
-Looking at the opposite flow of migration, figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ypshock-experiment"
-
-\end_inset
-
- shows the corresponding pictures for immigration from the rest of the economy
- into WNC.
- Starting with owners moving to WNC in the left panel, lower mean income
- makes the region is less attractive as a destination relative to other
- regions, thus we see a slight decrease in arrivals.
- The effect is much more pronounced for renters in the right hand panel.
- It is interesting to note the shape of the solid line tracing out the baseline
- inflows: As prices in the rest of the economy start to increase towards
- the peak in 2008, WNC, with it's relatively low level of house prices becomes
- more attractive to renters.
- The increase in renter immigration towards 2005 is large, however, it needs
- to be looked at together with the corresponding ouflows at the time.
- Over the period 1998–2012, WNC experiences average annual population growth
- of 1.08% in the baseline model.
-\change_unchanged
-
-\end_layout
-
-\begin_layout Paragraph
-
-\change_deleted 143970970 1473166333
-Shock to house prices.
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473166333
-The pictures in figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:pshock-out"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:pshock-in"
-
-\end_inset
-
- show the changes to outflows and inflows as a result of a 30% reduction
- in the level of house prices in WNC in the year 2000.
- Starting with outflows in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:pshock-out"
-
-\end_inset
-
-, the left panel shows that fewer owners are leaving the region than before.
- Owners experience a loss in net wealth, but this results in only small
- changes to migration behaviour.
- From the perspective of owners, the losses are sunk costs, and to the extent
- that lower current wealth makes it harder to afford a downpayment in other
- regions, the benefits of moving are reduced.
- For renters, we also see a clear reduction in ouflows.
- Given that rent in the region has fallen to lower levels than before, fewer
- renters decide to leave.
- It is interesting at this point to remember the result in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "notowidigdo2011incidence"
-
-\end_inset
-
-, where low skilled individuals are less likely to move away from a depressed
- region because they want to take advantage of cheap housing.
- The same mechanism operates here.
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473166333
-Turning finally to the effects of a reduction in house prices on inflows
- to WNC, we see in both panels that lower prices attract slightly more owners,
- and significantly more renters, particularly as aggregate prices rise and
- therefore the cost of living in other regions increases disproportionately
- for renters.
- Both owners and renters move to the region to enjoy cheaper housing.
-\change_unchanged
 
 \end_layout
 
@@ -6845,242 +6664,13 @@ n.
 \end_layout
 
 \begin_layout Standard
-In a policy experiment where I remove the mortgage interest deduction for
- owners, I find that accounting for a likely general equilibrium effect
- is crucial for the resulting effects.
- Assuming that house prices would not change as a result of removing the
- deduction implies that migration rates would increase slightly, mainly
- due to a shift in composition towards more renters.
- Correcting prices with an external estimate of the likely GE effect (a
- 5% reduction as reported in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-
-\end_inset
-
-) results in a different conclusion: lower prices after the removal of the
- deduction allow more people to buy, resulting in an increase of ownership.
- The net effect on migration is only marginally positive, however, since
- part of the shift in composition towards more owners is offset by changes
- in migration behaviour brought about by lower prices in all regions and
- redistribution of income to the poor.
- The welfare implications depend greatly on whether or not prices are adjusted,
- with average welfare gains 1% in the former, and of the order of 2.4% of
- period consumption in the latter case.
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473161045
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/MortgageSubsidy/mortgage-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Abolishing the mortgage interest deduction.
- Depending on whether or not a GE correction to house prices is applied
- (house prices are 5% reduced), the migration rate increases slightly.
- Cheaper housing everywhere and higher disposable income from redistribution
- enables more previously liquidity constraint households to buy – in their
- home region, but crucially also in other regions.
- This leads to a very small increase in the migration rate.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Abolishing-the-mortgage"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\change_unchanged
-
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473161040
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-mortgage deduction
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\change_unchanged
-
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473161033
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/WNCpshock.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Shocking the house price series for West North Central from 2000 onwards.
- The shock multiplies the data series with the factor 
-\begin_inset Formula $\iota=0.7$
-\end_inset
-
-, i.e reduces the level by 30%.
- The dashed line in the right panel is the path of house prices after the
- shock.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Shocked-price-series."
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\change_deleted 143970970 1473161033
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_yp/WNCyshock.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Shocking the level of average labor productivity in region West North Central
- by 10% in 2000.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Shocked-income-series"
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\change_unchanged
-
+The model delivers an estimate of the elasticity of local population size
+ with respect to a large regional income shock that is in line with the
+ previous literature.
+ The new finding here, however, is that the elasticity of outflows differs
+ greatly between owners and renters.
+ It is important for policy makers to keep in mind the very low mobility
+ of owners when thinking about how households could offset large shocks.
 \end_layout
 
 \begin_layout Standard
@@ -7154,20 +6744,13 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-
-\change_inserted 143970970 1473156810
 Changes in outflows from WNC after a 10% shock is applied to average income
  in the region.
  The top panel shows the proportion of the population that is leaving in
  each period in both baseline and shock scenario.
  The bottom two panels illustrate how the regional price and income series
  are changed in the course of the experiment.
- 
-\change_deleted 143970970 1473156676
-Changes in inflow patterns to WNC after the mean productivity level is permanent
-ly reduced by 10% in 2000
-\change_unchanged
-.
+ .
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:ypshock-experiment"
@@ -7308,10 +6891,6 @@ name "fig:Average-utility-levels"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -8037,10 +7616,6 @@ name "fig:Census-Division-Map"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -8276,10 +7851,6 @@ name "tab:Regional-2-indiv-income"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -8353,10 +7924,6 @@ name "fig:age-profiles"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 

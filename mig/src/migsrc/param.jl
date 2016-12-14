@@ -56,7 +56,7 @@ type Param
 	# policy parameters
 	# =================
 
-	policy       :: ASCIIString    # name of policy
+	policy       :: String    # name of policy
 	redistribute :: Vector{Float64}  # redestributing amounts
 	ctax         :: Float64    # proportional consumption scale. used to find equalizing utility
 	shockReg     :: Int
@@ -102,6 +102,8 @@ type Param
 			nsim  = 100
 
 		elseif size==2
+			# na    = 21
+			# namax = 50
 			na    = 17
 			namax = 21
 			nz    = 4
@@ -126,6 +128,7 @@ type Param
 		xi2      = 0.052
 		omega1   = 1.0
 		omega2   = 5.1
+		# omega2   = 3.26721
 		# omega2   = 6.1
 
 		# MC0    = 2.71  	 	# intercept
@@ -154,7 +157,7 @@ type Param
 		# --------
 
 		io = setPaths()
-		popweights = DataFrame(read_rda(joinpath(io["indir"],"prop.rda"))["prop"])
+		popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
 		sort!(popweights,cols=1)
 
 		# set amenity to popweights initially
@@ -228,18 +231,18 @@ function update!(p::Param,pd::Dict)
 end
 
 
-function print(p::Param,file_est::ASCIIString,file_set::ASCIIString)
+function print(p::Param,file_est::String,file_set::String)
 	est = [:gamma,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
 	set = [:beta,:phi,:R,:Rm,:chi]
 	f_estimate = open(file_est,"w")
 	f_set      = open(file_set,"w")
 
-	pest = Dict{ASCIIString,Float64}()
+	pest = Dict{String,Float64}()
 	for i in est
 		pest[string(i)] = getfield(p,i)
 	end
 
-	pset = Dict{ASCIIString,Float64}()
+	pset = Dict{String,Float64}()
 	for i in set
 		pset[string(i)] = getfield(p,i)
 	end

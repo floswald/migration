@@ -32,13 +32,13 @@ type Model
 	amenities::Vector{Float64}
 
 	# grids
-	grids   :: Dict{ASCIIString,Array{Float64,1}}
+	grids   :: Dict{String,Array{Float64,1}}
 	gridsXD :: Dict
 
 	dimvec  ::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int,Int} # total number of dimensions
 	dimvecH ::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int,Int,Int} # dimvec conditional on H choice
 	dimvec2::Tuple{Int,Int,Int,Int,Int,Int,Int,Int,Int} # total - housing
-	# dimnames::Array{ASCIIString}
+	# dimnames::Array{String}
 	proportion::DataFrame
 	dimnames::DataFrame
 	regnames::DataFrame
@@ -107,7 +107,7 @@ type Model
 		EV = fill(p.myNA,dimvec2)
 		vbar = fill(p.myNA,dimvec2)
 
-		bounds = Dict{ASCIIString,Tuple{Float64,Float64}}()
+		bounds = Dict{String,Tuple{Float64,Float64}}()
 		# bounds["Y"]          = (0.5,1.5)
 
 
@@ -208,7 +208,7 @@ type Model
 		nms = convert(Array,popweights[:Division])
 		# get regional cov matrics
 		# and convert to correlation
-		sigma_reg = [k => cov2corr(reshape(convert(Array,sigma_reg_df[symbol(k)]),2,2)) for k in nms]
+		sigma_reg = Dict(k => cov2corr(reshape(convert(Array,sigma_reg_df[Symbol(k)]),2,2)) for k in nms)
 		# convert to correlation matrices
 
 
@@ -383,7 +383,7 @@ type Model
 		# =========
 
 		bounds["assets"] = (-maximum(pgrid)*0.9,0.9*maximum(pgrid))
-		grids = Dict{ASCIIString,Array{Float64,1}}()
+		grids = Dict{String,Array{Float64,1}}()
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,3,50.0,0.7)
 		# x = grids["assets"] = scaleGrid(bounds["assets"][1],bounds["assets"][2],p.na,2,0.5)
 		# center on zero

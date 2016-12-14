@@ -7,7 +7,7 @@ using mig, MOpt
 
 # this is loaded only on the master
 io = mig.setPaths()
-moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
+moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 mig.names!(moms,[:name,:value,:weight])
 # subsetting moments
 dont_use= ["lm_w_intercept","move_neg_equity"]
@@ -21,7 +21,7 @@ moms_use = moms[findin(moms[:name],use_names) ,:]
 
 # initial value
 p0 = mig.Param(2)
-pb = Dict{ASCIIString,Array{Float64}}()
+pb = Dict{String,Array{Float64}}()
 pb["xi1"] = [p0.xi1, 0.0,0.02]
 pb["xi2"] = [p0.xi2, 0.0,0.1]
 pb["omega2"] = [p0.omega2, 2.0,4.1]

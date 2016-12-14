@@ -491,7 +491,7 @@ end
 
 # select n individuals from simulation to export
 # data to ggplot for plotting
-function simexport(sim::DataFrame,n::Int,file::ASCIIString)
+function simexport(sim::DataFrame,n::Int,file::String)
 
 	# choose n random individs
 	nr = rand(1:maximum(sim[:id]),n)
@@ -500,7 +500,7 @@ function simexport(sim::DataFrame,n::Int,file::ASCIIString)
 	writetable(file,sim)
 end
 
-function simexport(sim::DataFrame,id::Array{Int,1},file::ASCIIString)
+function simexport(sim::DataFrame,id::Array{Int,1},file::String)
 
 	sim  =  getID(sim,id)
 
@@ -628,7 +628,7 @@ function simplot(sim::DataFrame,n::Int)
 		push!(ids,sdf[1,:id])
 		idcount += 1
 	end
-	legend(plts,["indiv $(ids[i])" for i=1:n],"lower right")
+	legend(plts,["indiv $(ids[i])" for i=1:n],loc="lower right")
 	title("legend")
 	suptitle("ids: $nr")
 end
@@ -750,7 +750,7 @@ function simplot(sim::DataFrame,id::Array{Int,1})
 		push!(ids,sdf[1,:id])
 		idcount += 1
 	end
-	legend(plts,["indiv $(ids[i])" for i=1:n],"lower right")
+	legend(plts,["indiv $(ids[i])" for i=1:n],loc="lower right")
 	title("legend")
 	suptitle("ids: $nr")
 end

@@ -1,7 +1,4 @@
 
-# pinfo(msg::String)  = Lumberjack.info(msg,on_worker  = myid())
-# pwarn(msg::String)  = Lumberjack.warn(msg,on_worker  = myid())
-# pdebug(msg::String) = info(msg)
 
 
 
@@ -10,12 +7,18 @@ function mydf2dict(df::DataFrame)
 		throw(ArgumentError("need columns :moment,:model_value"))
 	end
 	d = Dict()
+	status = 0
 	for e in eachrow(df)
-		# d[symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
+		# d[Symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
 		# does not make sense to return model_sd!
-		d[symbol(e[:moment])] = e[:model_value]
+		if (isna(e[:model_value]) | !isfinite(e[:model_value]))
+			d[Symbol(e[:moment])] = NaN
+			status = -1
+		else
+			d[Symbol(e[:moment])] = e[:model_value]
+		end
 	end
-	return d
+	return (d,status)
 end
 
 """
@@ -34,7 +37,7 @@ function convert(::Type{Dict},df::DataFrame,id::Symbol)
 	d = Dict{AbstractString,Any}()
 	cnames = names(df)[names(df) .!= id]
 	for e in eachrow(df)
-		d[string(e[id])] = [k => e[k] for k in cnames]
+		d[string(e[id])] = Dict(k => e[k] for k in cnames)
 	end
 	return d
 end
@@ -58,31 +61,37 @@ end
 function objfunc(ev::Eval)
 
 	MOpt.start(ev)
-	info("in objective function")
+	Base.info("in objective function")
 
 	p = Param(2)	# create a default param type
 	MOpt.fill(p,ev)      # fill p with current values on eval object
 
 	m = Model(p)
 	mig.solve!(m,p)
+	gc()
 	s   = simulate(m,p)
-	smm = computeMoments(s,p,m)	
+	m = 0
+	gc()
+	smm = computeMoments(s,p)	
+	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
-	simMoments = mydf2dict(smm["moments"])
+	simMoments,status = mydf2dict(smm["moments"])
 
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in dataMomentd(ev)
-		if haskey(dataMomentWd(ev),k)
-			v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
-		else
-			v[k] = ((simMoments[k] .- mom) ) .^2
-		end
-		v[k] = v[k] / 1000
+		# if haskey(dataMomentWd(ev),k)
+		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+		# else
+		# 	v[k] = ((simMoments[k] .- mom) ) .^2
+		# end
+		v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
+		# v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
-	setValue(ev, isna(vv) ? NaN : vv )
-
+	setValue(ev, (isna(vv) | !isfinite(vv)) ? NaN : vv )
 	setMoment(ev,simMoments)
+
+	status = (isna(vv) | !isfinite(vv)) ? -1 : status
 
     if get(ev.options,"printm",false) 
     	mms = MOpt.check_moments(ev)
@@ -99,7 +108,7 @@ function objfunc(ev::Eval)
 		# writetable("/Users/florianoswald/Dropbox/mobility/output/model/fit/moms.csv",mom2)
 	end
 
-	ev.status = 1
+	ev.status = status
 
 	finish(ev)
 
@@ -129,7 +138,7 @@ function runSim()
 	# mig.plot(own[:realage],own[:m])
 	# figure()
 	simplot(s,5)
-	x=computeMoments(s,p,m)
+	x=computeMoments(s,p)
 	showall(x["moments"])
 	showall(x["yearly"])
 	return s
@@ -141,7 +150,7 @@ function runObj(printm::Bool=false,subset=true)
 	# create MProb
 
 	io = mig.setPaths()
-	moms = mig.DataFrame(mig.read_rda(joinpath(io["indir"],"moments.rda"))["m"])
+	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
 	dont_use = ""
@@ -168,8 +177,8 @@ function runObj(printm::Bool=false,subset=true)
 		ev.options["printm"] = printm
 	end
 
-	x = objfunc(ev)
-	return x
+	ev = objfunc(ev)
+	return ev
 end
 
 
@@ -227,15 +236,15 @@ myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)
 
 function setPaths()
 # get moments from dropbox:
-	if Sys.OS_NAME == :Darwin
+	if is_apple()
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
 		outg   = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_graphs_jl")
-	elseif Sys.OS_NAME == :Windows
+	elseif is_windows()
 		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
 		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
 		outg   = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_graphs_jl"
-	else
+	elseif is_linux()
 		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
 		outg   = joinpath(ENV["HOME"],"data_repo/mig/out_graphs_jl")
@@ -246,8 +255,8 @@ function setPaths()
 end
 
 # set outpath rel to dropbox/mobility/output/model
-function setPaths(p::ASCIIString)
-	if Sys.OS_NAME == :Darwin
+function setPaths(p::String)
+	if is_apple()
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model",p)
 	else
@@ -280,12 +289,40 @@ function setupMC(autoload::Bool)
 	return moms
 end
 
+# """
+#     DataFrame arithmetic.
+# """
+for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
+    @eval begin
+        function ($op)(d1::DataFrame,d2::DataFrame)
+            if !(nrow(d1)==nrow(d2))
+                error("need same num of rows")
+            end
+            if !(all(names(d1).==names(d2)))
+                error("need same colnames")
+            end
+            df = DataFrame(d1)
+            for n in names(d1)
+                df[n] = $op(d1[n],d2[n])
+            end
+            return df
+        end
+    end
+end
+function abs(d1::DataFrame)
+    df = DataFrame(d1)
+    for n in names(d1)
+        df[n] = abs(d1[n].data)
+    end
+    return df
+end
+
 
 #' computes flow statistics of 
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict{AbstractString,DataFrame},writedisk=true,pth="null")
+function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 
 	# s is a simulation output
 	d = Dict()
@@ -351,7 +388,7 @@ function FlowsPlot(s::DataFrame,m::Model)
        fmat[k,i] = v
        end
        end
-       df=names!(convert(DataFrame,fmat'),map(symbol,convert(Array,m.regnames[:Division])))
+       df=names!(convert(DataFrame,fmat'),map(Symbol,convert(Array,m.regnames[:Division])))
        df[:year] = collect(1997:2012)
        mdf = melt(df,:year)
        names!(mdf,[:Destination,:v,:year])

@@ -3,6 +3,7 @@ module mig
 using GLM, MOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
 using JSON , Copulas, FileIO
 import Base.show, Base.convert, Base.print, Base.get
+import Base: .+, .-, .*, ./, abs
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 
@@ -19,7 +20,7 @@ include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
 include("migsrc/reporting.jl")
 
-if Sys.OS_NAME==:Darwin
+if is_apple()
 	include("migsrc/plotting.jl")
 end
 
