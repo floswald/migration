@@ -339,7 +339,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function findctax(v0::Float64,opts::Dict)
-	ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,show_trace=true,method=:brent)
+	ctax = optimize((x)->welfare(x,v0,opts),0.5,1.5,show_trace=true,method=Brent())
 	return ctax
 end
 
@@ -770,7 +770,7 @@ function pshock_highMC_cdiff()
 
 	opts["policy"] = "pshock_highMC"
 
-	ctax = optimize((x)->valdiff_pshock_highMC(x,v0,opts,pmv_id),1.0,2.0,show_trace=true,method=:brent,iterations=10)
+	ctax = optimize((x)->valdiff_pshock_highMC(x,v0,opts,pmv_id),1.0,2.0,show_trace=true,method=Brent(),iterations=10)
 	return ctax
 
 end
@@ -838,7 +838,7 @@ function find_ctax_value_mig_base(j::Int)
 	base = base[!isna(base[:cohort]),:];
 	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
 
-	ctax = optimize((x)->vdiff_value_mig_base(x,w0[1,1],j),0.5,1.5,show_trace=true,method=:brent)
+	ctax = optimize((x)->vdiff_value_mig_base(x,w0[1,1],j),0.5,1.5,show_trace=true,method=Brent())
 
 end
 
@@ -861,7 +861,53 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
 	(w1[1,1] - w0)^2
 end
 
+function exp_highMC(j::Int)
 
+	# look at results after full cohorts available
+	cutyr = 1997 - 1
+
+	# baseline model
+
+	p = Param(2)
+
+	m = Model(p)
+	solve!(m,p)
+	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
+	EV0 = m.EV[1,2,2,2,1,m.aone,1,j,2]
+	base = simulate(m,p);
+	base = base[!isna(base[:cohort]),:];
+
+	
+	# model where moving is shut down in region j
+	opts = Dict("policy" => "highMC", "shockRegion" => j)
+	p2 = Param(2,opts)
+	m2 = Model(p2)
+	solve!(m2,p2)
+	EV1 = m2.EV[1,2,2,2,1,m.aone,1,j,2]
+
+	pol = simulate(m2,p2);
+	pol = pol[!isna(pol[:cohort]),:];
+
+	# b1 = @linq base |>
+	# 	@where(:j.==j&(:year.>cutyr)) |>
+	# 	@by([:age,:move],u=mean(:utility),maxv=mean(:maxv))
+
+	# p1 = @linq pol |>
+	# 	@where(:j.==j&(:year.>cutyr)) |>
+	# 	@by([:age,:move],u=mean(:utility),maxv=mean(:maxv))
+
+	# pl = Plots.plot(b1,:age,:u,group=:move,layout=Plots.grid(1,2))
+	# plot!(pl[1],p1,:age,:u,group=:move)
+	# title!(pl[1],"mean utility in $j")
+
+	# plot!(pl[2],b1,:age,:maxv,group=:move)
+	# plot!(pl[2],p1,:age,:maxv,group=:move)
+	# title!(pl[2],"mean maxvalue in $j")
+	
+
+	return Dict(:base=>base,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>(EV1.-EV0)./abs(EV0))
+
+end
 
 
 # compares baesline with highMC
@@ -869,72 +915,97 @@ end
 # is shut down.
 function exp_value_mig_base(j::Int,allj=false)
 
+	bp = exp_highMC(j)
+	base = bp[:base]
+	pol = bp[:pol]
+
+
+
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
-	# baseline model
+	# utility/value difference across regimes
+	# u0 = @linq base |>
+	# 	 @where((:j.==j)&(:year.>cutyr)) |>
+	# 	 @select(utility=mean(:utility[isfinite(:utility)]))
+	# u1 = @linq pol |>
+	# 	 @where((:j.==j)&(:year.>cutyr)) |>
+	# 	 @select(utility=mean(:utility[isfinite(:utility)]))
+	# effect of policy on everybody who ever lived in j in baseline, and who got stuck in j in policy
+	# this confounds compositional with policy effects.
+	ate_0 = @linq base |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	ate_1 = @linq pol |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	ate = copy(ate_1 .- ate_0 )
+	ate_perc = 100.0 * (ate ./ abs(ate_0))
 
-	if allj
-		opts = Dict("policy" => "all_j", "shockRegion" => j)
-		p = Param(2,opts)
-	else
-		p = Param(2)
-	end
 
-	m = Model(p)
-	solve!(m,p)
-	base = simulate(m,p);
-	base = base[!isna(base[:cohort]),:];
+	# # baseline model
 
-	regname = m.regnames[j,:Division]
+	# if allj
+	# 	opts = Dict("policy" => "all_j", "shockRegion" => j)
+	# 	p = Param(2,opts)
+	# else
+	# 	p = Param(2)
+	# end
 
-	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
-	println("no moving = $w0")
-	w00   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,false)
-	println("moving cost = $w00")
+	# m = Model(p)
+	# solve!(m,p)
+	# base = simulate(m,p);
+	# base = base[!isna(base[:cohort]),:];
 
-	# utility for all periods that have been spent in j
-	w02 = getExPostValue(@where(base,(:j.==j)&(:year.>cutyr)))
+	# regname = m.regnames[j,:Division]
 
-	# may be more interested in utility of all those guys who end up getting stuck in policy only (so as to not confound with people who moved to j from outside)
+	# w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
+	# println("no moving = $w0")
+	# w00   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,false)
+	# println("moving cost = $w00")
 
-	# model where moving is shut down in region j
-	opts = Dict("policy" => "highMC", "shockRegion" => j)
-	p2 = Param(2,opts)
-	m2 = Model(p2)
-	solve!(m2,p2)
+	# # utility for all periods that have been spent in j
+	# w02 = getExPostValue(@where(base,(:j.==j)&(:year.>cutyr)))
 
-	pol = simulate(m2,p2);
-	pol = pol[!isna(pol[:cohort]),:];
+	# # may be more interested in utility of all those guys who end up getting stuck in policy only (so as to not confound with people who moved to j from outside)
 
-	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
-	println("no moving = $w1")
-	w10   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,false)
-	println("no moving = $w10")
+	# # model where moving is shut down in region j
+	# opts = Dict("policy" => "highMC", "shockRegion" => j)
+	# p2 = Param(2,opts)
+	# m2 = Model(p2)
+	# solve!(m2,p2)
 
-	# utility for all periods that have been spent in j
-	w02 = getExPostValue(@where(pol,(:j.==j)&(:year.>cutyr)))
+	# pol = simulate(m2,p2);
+	# pol = pol[!isna(pol[:cohort]),:];
 
-	# get values by age and for different regions
-	v0 = @linq base |>
-		@where((:j.!=j)&(:year.>cutyr)&(!:move)) |>
-		@by(:realage,v=mean(:v)) |>
-		@transform(region="outside of $regname",regime="baseline")
+	# w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
+	# println("no moving = $w1")
+	# w10   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,false)
+	# println("no moving = $w10")
+
+	# # utility for all periods that have been spent in j
+	# w02 = getExPostValue(@where(pol,(:j.==j)&(:year.>cutyr)))
+
+	# # get values by age and for different regions
+	# v0 = @linq base |>
+	# 	@where((:j.!=j)&(:year.>cutyr)&(!:move)) |>
+	# 	@by(:realage,v=mean(:v)) |>
+	# 	@transform(region="outside of $regname",regime="baseline")
 	
-	v1   = @linq pol |>
-		@where((:j.!=j)&(:year.>cutyr)&(!:move))  |>
-		@by(:realage,v=mean(:v))  |>
-		@transform(region="outside of $regname",regime="noMove")
-	v01 = vcat(v0,v1)
-	v0j   = @linq base |>
-		@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
-		@by(:realage,v=mean(:v)) |>
-		@transform(region="inside of $regname",regime="baseline")
-	v1j   = @linq pol |>
-		@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
-		@by(:realage,v=mean(:v)) |>
-		@transform(region="inside of $regname",regime="noMove")
-	v01j = vcat(v0,v1,v0j,v1j)
+	# v1   = @linq pol |>
+	# 	@where((:j.!=j)&(:year.>cutyr)&(!:move))  |>
+	# 	@by(:realage,v=mean(:v))  |>
+	# 	@transform(region="outside of $regname",regime="noMove")
+	# v01 = vcat(v0,v1)
+	# v0j   = @linq base |>
+	# 	@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
+	# 	@by(:realage,v=mean(:v)) |>
+	# 	@transform(region="inside of $regname",regime="baseline")
+	# v1j   = @linq pol |>
+	# 	@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
+	# 	@by(:realage,v=mean(:v)) |>
+	# 	@transform(region="inside of $regname",regime="noMove")
+	# v01j = vcat(v0,v1,v0j,v1j)
 
 
     # total flows across regims
@@ -976,23 +1047,16 @@ function exp_value_mig_base(j::Int,allj=false)
 	pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
 
 	# mean difference on treated (ATT)
-	att_0 = @select(bmv2,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	att_1 = @select(bmv2,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
-	att_perc = 100.* att ./ abs(att_0)
+	att_perc = 100.0 * (att ./ abs(att_0))
 
 
 
 	# how did life change for owners and renters?
 	# ===========================================
 
-	# ownership profile in j in both regimes
-	own_rate_base = @linq base |>
-		@where((:j.==j)&(:year.>cutyr)) |>
-		@select(own_rate = mean(:own))
-	own_rate_pol = @linq pol |>
-		@where((:j.==j)&(:year.>cutyr)) |>
-		@select(own_rate = mean(:own))
 	own_profile_base = @linq base |>
 		@where((:j.==j)&(:year.>cutyr)) |>
 		@by(:age,own_rate = mean(:own))
@@ -1000,7 +1064,22 @@ function exp_value_mig_base(j::Int,allj=false)
 		@where((:j.==j)&(:year.>cutyr)) |>
 		@by(:age,own_rate = mean(:own))
 
+	d = Dict(
+		"EV_perc" => bp[:perc][1],
+		"ate" => convert(Dict,ate),
+		"ate_perc" => convert(Dict,ate_perc),
+		"att" => convert(Dict,att),
+		"att_perc" => convert(Dict,att_perc),
+		"own_profile_0" => convert(Dict,own_profile_base),
+		"own_profile_1" => convert(Dict,own_profile_pol))
 
+	io = mig.setPaths()
+	ostr = string("noMove",j,"mig_value_baseline.json")
+	f = open(joinpath(io["outdir"],ostr),"w")
+	JSON.print(f,d)
+	close(f)
+
+	return d
 
 
 
@@ -1011,58 +1090,58 @@ function exp_value_mig_base(j::Int,allj=false)
 
 	
 
-	# what's the first observationin j?
-	# drop all periods before first in j
-	drops = Int[]
-	for i in unique(pmv2[:id])
-		goon = true
-		ti = minimum(@where(pmv2,:id.==i)[:age])
-		maxage = maximum(@where(pmv2,:id.==i)[:age])
-		while goon
-			if pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:j][1] != j
-				push!(drops,pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:row_idx][1])
-				if ti == maxage
-					goon=false
-				else
-					ti+=1
-				end
-			else
-				goon = false
-			end
-		end
-	end
+	# # what's the first observationin j?
+	# # drop all periods before first in j
+	# drops = Int[]
+	# for i in unique(pmv2[:id])
+	# 	goon = true
+	# 	ti = minimum(@where(pmv2,:id.==i)[:age])
+	# 	maxage = maximum(@where(pmv2,:id.==i)[:age])
+	# 	while goon
+	# 		if pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:j][1] != j
+	# 			push!(drops,pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:row_idx][1])
+	# 			if ti == maxage
+	# 				goon=false
+	# 			else
+	# 				ti+=1
+	# 			end
+	# 		else
+	# 			goon = false
+	# 		end
+	# 	end
+	# end
 
-	pmv3 = pmv2[setdiff(:row_idx,drops),:]
-	bmv3 = bmv2[setdiff(:row_idx,drops),:]
+	# pmv3 = pmv2[setdiff(:row_idx,drops),:]
+	# bmv3 = bmv2[setdiff(:row_idx,drops),:]
 
-	x0 =  @linq bmv3|>
-              @where((!:move)&(:moveto.!=j))|>
-              @by(:j,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	x1 =  @linq pmv3|>
-              @where(!:move)|>
-              @by(:j,v=mean(:v),u = mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	# x0 =  @linq bmv3|>
+ #              @where((!:move)&(:moveto.!=j))|>
+ #              @by(:j,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	# x1 =  @linq pmv3|>
+ #              @where(!:move)|>
+ #              @by(:j,v=mean(:v),u = mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 
 
 
-    n0 = names(x0)[2:end]
-    x00 = deepcopy(x0)
-    for i in 1:nrow(x0)
-    	for n in n0
-    		x00[i,n] = 100*(x0[i,n] .-  x1[1,n]) ./ x1[1,n]
-    	end
-    end
+ #    n0 = names(x0)[2:end]
+ #    x00 = deepcopy(x0)
+ #    for i in 1:nrow(x0)
+ #    	for n in n0
+ #    		x00[i,n] = 100*(x0[i,n] .-  x1[1,n]) ./ x1[1,n]
+ #    	end
+ #    end
 
-	bmv3 = @transform(bmv3,stamp = (:move)&(:j.==j))
-    mmap = proportionmap(@where(bmv3,:stamp)[:moveto])
-    x00[:prop] = 0.0
-    for i in x00[:j]
-       x00[x00[:j].==i,:prop] = mmap[i]
-    end
+	# bmv3 = @transform(bmv3,stamp = (:move)&(:j.==j))
+ #    mmap = proportionmap(@where(bmv3,:stamp)[:moveto])
+ #    x00[:prop] = 0.0
+ #    for i in x00[:j]
+ #       x00[x00[:j].==i,:prop] = mmap[i]
+ #    end
 
-    movers = Dict()
-    for k in x00[:j]
-    	movers[k] = Dict(string(n) => x00[x00[:j].==k,n][1] for n in n0)
-    end
+ #    movers = Dict()
+ #    for k in x00[:j]
+ #    	movers[k] = Dict(string(n) => x00[x00[:j].==k,n][1] for n in n0)
+ #    end
 
 
 
@@ -1078,9 +1157,9 @@ function exp_value_mig_base(j::Int,allj=false)
 
 
 
-	bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
-	# bmv4 = @by(@where(bmv3,(:year.>cutyr)&(!:move)),:own,v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
-	pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	# bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
+	# # bmv4 = @by(@where(bmv3,(:year.>cutyr)&(!:move)),:own,v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
+	# pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
 
 
 
@@ -1088,28 +1167,28 @@ function exp_value_mig_base(j::Int,allj=false)
     # output dict
     # ===========
 
-	d=Dict()
-	ss = "noMove"
-	d["EV"] = Dict()
-	d["EV"] = Dict("base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] )
-	d["flows"] = flows
-	d["movers"] = movers
+	# d=Dict()
+	# ss = "noMove"
+	# d["EV"] = Dict()
+	# d["EV"] = Dict("base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] )
+	# d["flows"] = flows
+	# d["movers"] = movers
 
 
-	io = mig.setPaths()
-	ostr = string("noMove",j,"mig_value_baseline.json")
-	f = open(joinpath(io["outdir"],ostr),"w")
-	JSON.print(f,d)
-	close(f)
+	# io = mig.setPaths()
+	# ostr = string("noMove",j,"mig_value_baseline.json")
+	# f = open(joinpath(io["outdir"],ostr),"w")
+	# JSON.print(f,d)
+	# close(f)
 
-	# save csvs
-	fi = readdir(io["outdir"])
-	if !in(string("noMove",j),fi)
-		mkpath(string(joinpath(io["outdir"],string("noMove",j))))
-	end
-	writetable(joinpath(io["outdir"],string("noMove",j),"values.csv"),v01j)
+	# # save csvs
+	# fi = readdir(io["outdir"])
+	# if !in(string("noMove",j),fi)
+	# 	mkpath(string(joinpath(io["outdir"],string("noMove",j))))
+	# end
+	# writetable(joinpath(io["outdir"],string("noMove",j),"values.csv"),v01j)
 
-	return d
+	# return d
 
 end
 
@@ -1278,7 +1357,7 @@ function exp_shockRegion_vdiff(which_base::AbstractString,which_pol::AbstractStr
 
 	# the policy
 	opts["policy"] = which_pol
-	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=:brent,iterations=10)
+	ctax = optimize((x)->valdiff_shockRegion(x,w0,opts),0.5,2.0,show_trace=true,method=Brent(),iterations=10)
 	return ctax
 
 end
@@ -1756,7 +1835,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=true,method=:brent,iterations=40,abs_tol=0.1)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-6)
 	return ctax
 end
 
@@ -1768,6 +1847,7 @@ function moneyMC()
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
+	println("baseline without MC done.")
 
 	whichasset = m.aone
 
@@ -1801,7 +1881,7 @@ function moneyMC()
 	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum, "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
 
 	io = mig.setPaths()
-	f = open(joinpath(io["outdir"],"moneyMC.json"),"w")
+	f = open(joinpath(io["outdir"],"moneyMC2.json"),"w")
 	JSON.print(f,d)
 	close(f)
 

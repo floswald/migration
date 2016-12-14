@@ -585,9 +585,9 @@ function simplot(sim::DataFrame,n::Int)
 
 	subplot(4,4,10)
 	for sdf in gdf
-		plot(sdf[:age],sdf[:v])
+		plot(sdf[:age],sdf[:utility])
 	end
-	title("lifetime utility(v)")
+	title("lifetime utility(v+eps)")
 
 	subplot(4,4,11)
 	ylim((-0.1,1.1))

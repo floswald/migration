@@ -301,7 +301,7 @@ for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
             if !(all(names(d1).==names(d2)))
                 error("need same colnames")
             end
-            df = DataFrame(d1)
+            df = deepcopy(DataFrame(d1))
             for n in names(d1)
                 df[n] = $op(d1[n],d2[n])
             end
@@ -310,11 +310,29 @@ for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
     end
 end
 function abs(d1::DataFrame)
-    df = DataFrame(d1)
+    df = deepcopy(DataFrame(d1))
     for n in names(d1)
         df[n] = abs(d1[n].data)
     end
     return df
+end
+for op = (:+,:-,:*,:/)
+    @eval begin
+        function ($op)(x::Number,d1::DataFrame)
+            df = deepcopy(DataFrame(d1))
+            for n in names(d1)
+                df[n] = $op(x,d1[n])
+            end
+            return df
+        end
+    end
+end
+function convert(::Type{Dict},x::DataFrame)
+	if nrow(x) > 1
+		Dict(k=>x[k] for k in names(x))
+	else
+		Dict(k=>x[k][1] for k in names(x))
+	end
 end
 
 

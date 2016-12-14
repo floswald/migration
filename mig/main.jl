@@ -26,7 +26,7 @@ p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	
 s = mig.simulate(m,p);	
-@profile x=mig.computeMoments(s,p,m)
+@profile x=mig.computeMoments(s,p)
 @time s = mig.simulate(m,p);	
 
 
