@@ -1077,7 +1077,7 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		"own_profile_0" => convert(Dict,own_profile_base),
 		"own_profile_1" => convert(Dict,own_profile_pol))
 
-	f = open(joinpath(io["outdir"],ostr),"w")
+	f = open(joinpath(io["outdir"],ostr),"	w")
 	JSON.print(f,d)
 	close(f)
 
