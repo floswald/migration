@@ -825,27 +825,59 @@ end
 # VALUE OF MIGRATION
 # ==================
 
-# find ctax of baseline vs highMC
-function find_ctax_value_mig_base(j::Int)
-
+function sim_expost_value(m::Model,p::Param,j::Int,base_move::Bool)
 	cutyr = 1997 - 1
+	solve!(m,p)
+	base = simulate(m,p);
+	base = base[!isna(base[:cohort]),:];
+	if base_move
+		mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+		base = base[findin(base[:id],mv_id[:id]),:]
+		# do NOT condition on their tenure in j only, but entire lifecycle
+		w0   = @linq base|>
+			   @where((:j.==j)&(:year.>cutyr)) |>
+			   @select(v = mean(:maxv),u=mean(:utility))
+		return (w0,mv_id)
+	else
+		w0   = @linq base|>
+			   @where((:j.==j)&(:year.>cutyr)) |>
+			   @select(v = mean(:maxv),u=mean(:utility))
+		return (w0,DataFrame())
+    end
+end
+function sim_expost_value_pol(m::Model,p::Param,j::Int,mv_id::DataFrame)
+	cutyr = 1997 - 1
+	solve!(m,p)
+	base = simulate(m,p);
+	base = base[!isna(base[:cohort]),:];
+	if nrow(mv_id)>0
+		base = base[findin(base[:id],mv_id[:id]),:]
+		# do NOT condition on their tenure in j only, but entire lifecycle
+		w0   = @linq base|>
+			   @where((:j.==j)&(:year.>cutyr)) |>
+			   @select(v = mean(:maxv),u=mean(:utility))
+	else
+		w0   = @linq base|>
+			   @where((:j.==j)&(:year.>cutyr)) |>
+			   @select(v = mean(:maxv),u=mean(:utility))
+    end
+    return w0
+end
+
+# find ctax of baseline vs highMC
+function find_ctax_value_mig_base(j::Int,base_move::Bool=false)
 
 	# baseline model
 	p = Param(2)
 	m = Model(p)
-	solve!(m,p)
-	base = simulate(m,p);
-	base = base[!isna(base[:cohort]),:];
-	w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
 
-	ctax = optimize((x)->vdiff_value_mig_base(x,w0[1,1],j),0.5,1.5,show_trace=true,method=Brent())
+	w0,mv_id = sim_expost_value(m,p,j,base_move)
+
+	ctax = optimize((x)->vdiff_value_mig_base(x,w0[:v][1],j,mv_id),0.5,1.5,show_trace=true,method=Brent(),abs_tol=1e-10)
 
 end
 
-function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
-
-	# look at results after full cohorts available
-	cutyr = 1997 - 1
+function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::DataFrame)
 
 	println("current ctax = $ctax")
 
@@ -854,11 +886,10 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int)
 	p2 = Param(2,opts)
 	setfield!(p2,:ctax,ctax)
 	m2 = Model(p2)
-	solve!(m2,p2)
-	pol = simulate(m2,p2);
-	pol = pol[!isna(pol[:cohort]),:];
-	w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p2,m2,true)
-	(w1[1,1] - w0)^2
+
+	w1 = sim_expost_value_pol(m2,p2,j,mv_id)
+
+	(w1[:v][1] - w0)^2
 end
 
 function exp_highMC(j::Int)
@@ -905,7 +936,7 @@ function exp_highMC(j::Int)
 	# title!(pl[2],"mean maxvalue in $j")
 	
 
-	return Dict(:base=>base,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>(EV1.-EV0)./abs(EV0))
+	return Dict(:base=>base,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
 
 end
 
@@ -913,7 +944,8 @@ end
 # compares baesline with highMC
 # differences in utility if moving in region j
 # is shut down.
-function exp_value_mig_base(j::Int,allj=false)
+# function exp_value_mig_base(j::Int,allj=false)
+function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	bp = exp_highMC(j)
 	base = bp[:base]
@@ -940,72 +972,7 @@ function exp_value_mig_base(j::Int,allj=false)
 		    @where((:j.==j)&(:year.>cutyr)) |>
 			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	ate = copy(ate_1 .- ate_0 )
-	ate_perc = 100.0 * (ate ./ abs(ate_0))
-
-
-	# # baseline model
-
-	# if allj
-	# 	opts = Dict("policy" => "all_j", "shockRegion" => j)
-	# 	p = Param(2,opts)
-	# else
-	# 	p = Param(2)
-	# end
-
-	# m = Model(p)
-	# solve!(m,p)
-	# base = simulate(m,p);
-	# base = base[!isna(base[:cohort]),:];
-
-	# regname = m.regnames[j,:Division]
-
-	# w0   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,true)
-	# println("no moving = $w0")
-	# w00   = getDiscountedValue(@where(base,(:j.==j)&(:year.>cutyr)),p,m,false)
-	# println("moving cost = $w00")
-
-	# # utility for all periods that have been spent in j
-	# w02 = getExPostValue(@where(base,(:j.==j)&(:year.>cutyr)))
-
-	# # may be more interested in utility of all those guys who end up getting stuck in policy only (so as to not confound with people who moved to j from outside)
-
-	# # model where moving is shut down in region j
-	# opts = Dict("policy" => "highMC", "shockRegion" => j)
-	# p2 = Param(2,opts)
-	# m2 = Model(p2)
-	# solve!(m2,p2)
-
-	# pol = simulate(m2,p2);
-	# pol = pol[!isna(pol[:cohort]),:];
-
-	# w1   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,true)
-	# println("no moving = $w1")
-	# w10   = getDiscountedValue(@where(pol,(:j.==j)&(:year.>cutyr)),p,m,false)
-	# println("no moving = $w10")
-
-	# # utility for all periods that have been spent in j
-	# w02 = getExPostValue(@where(pol,(:j.==j)&(:year.>cutyr)))
-
-	# # get values by age and for different regions
-	# v0 = @linq base |>
-	# 	@where((:j.!=j)&(:year.>cutyr)&(!:move)) |>
-	# 	@by(:realage,v=mean(:v)) |>
-	# 	@transform(region="outside of $regname",regime="baseline")
-	
-	# v1   = @linq pol |>
-	# 	@where((:j.!=j)&(:year.>cutyr)&(!:move))  |>
-	# 	@by(:realage,v=mean(:v))  |>
-	# 	@transform(region="outside of $regname",regime="noMove")
-	# v01 = vcat(v0,v1)
-	# v0j   = @linq base |>
-	# 	@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
-	# 	@by(:realage,v=mean(:v)) |>
-	# 	@transform(region="inside of $regname",regime="baseline")
-	# v1j   = @linq pol |>
-	# 	@where((:j.==j)&(:year.>cutyr)&(!:move)) |>
-	# 	@by(:realage,v=mean(:v)) |>
-	# 	@transform(region="inside of $regname",regime="noMove")
-	# v01j = vcat(v0,v1,v0j,v1j)
+	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
 
     # total flows across regims
@@ -1050,7 +1017,8 @@ function exp_value_mig_base(j::Int,allj=false)
 	att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
-	att_perc = 100.0 * (att ./ abs(att_0))
+	att_perc = convert(Dict,100.0 * (att ./ abs(att_0)))
+
 
 
 
@@ -1064,17 +1032,51 @@ function exp_value_mig_base(j::Int,allj=false)
 		@where((:j.==j)&(:year.>cutyr)) |>
 		@by(:age,own_rate = mean(:own))
 
+
+	# preparing io.
+	io = mig.setPaths()
+	ostr = string("noMove",j,"mig_value_baseline.json")
+	f = open(joinpath(io["outdir"],ostr),"r")
+
+	# recompute compensation tax?
+	if ctax 
+		x=find_ctax_value_mig_base(j)	# compensation for all in j
+		ctax_ate=x.minimum	
+		x=find_ctax_value_mig_base(j,true)	# for those who were movers in j before policy 
+		ctax_att=x.minimum
+	else
+		# read from file
+		json_dat = JSON.parse(f)
+		ctax_ate = json_dat["ctax_ate"]
+		ctax_att = json_dat["ctax_att"]
+	end
+	close(f)
+
+	# merge both perc dicts
+	ate_att = Dict()
+	for (k,v) in ate_perc
+		ate_att[k] = Dict(:ate=>v,:att=>att_perc[k])
+	end
+	# add constaxes
+	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att)
+
+
+	# output
+	# ======
+
 	d = Dict(
 		"EV_perc" => bp[:perc][1],
 		"ate" => convert(Dict,ate),
 		"ate_perc" => convert(Dict,ate_perc),
 		"att" => convert(Dict,att),
 		"att_perc" => convert(Dict,att_perc),
+		"ate_att" => ate_att,
+		"flows" => flows,
+		"ctax_ate" => ctax_ate,
+		"ctax_att" => ctax_att,
 		"own_profile_0" => convert(Dict,own_profile_base),
 		"own_profile_1" => convert(Dict,own_profile_pol))
 
-	io = mig.setPaths()
-	ostr = string("noMove",j,"mig_value_baseline.json")
 	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
@@ -1086,7 +1088,6 @@ function exp_value_mig_base(j::Int,allj=false)
 
 
 	# out string
-	ostr = string("noMove",j,"mig_value_baseline.json")
 
 	
 

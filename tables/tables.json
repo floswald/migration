@@ -19,6 +19,11 @@
     "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
     "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
   },
+  "mig_value_utilities":{
+    "template" : "mig_value_utilities.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
+  },
   "mig_value":{
     "template" : "mig_value.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value.tex",

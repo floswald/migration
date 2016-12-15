@@ -1,0 +1,15 @@
+{% macro show(param,dd) %}
+    {{param}} & {{ dd.ate | prettyPerc(3) }} & {{ dd.att | prettyPerc(3) }} \\
+{%- endmacro %}
+
+\begin{tabular}{l D{.}{.}{3.6}@{} D{.}{.}{4.5}@{} }
+  \toprule 
+     & \multicolumn{1}{c}{All residents} & \multicolumn{1}{c}{Moved in baseline} \\ 
+  \cmidrule{2-3}
+  {{  show("$\Delta v$", ate_att.v) }}
+  {{  show("$\Delta u$", ate_att.u) }}
+  {{  show("$\Delta h$", ate_att.h) }}
+  {{  show("$\Delta a$", ate_att.a) }}
+  {{  show("$\Delta c^*$", ate_att.ctax) }}
+  \bottomrule
+\end{tabular}

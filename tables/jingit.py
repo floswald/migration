@@ -29,7 +29,7 @@ def prettyPerc(value, dec=4):
   if (value==0):
     return "0"
   value = round(value,dec)
-  return "%g \\%%" % value
+  return "%g \phantom{,}\\%%" % value
 
 def getJson(filename):
   with open(filename) as data_file:    

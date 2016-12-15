@@ -5892,7 +5892,7 @@ To summarize this subsection, restricting the ability to move implies large
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5936,6 +5936,85 @@ name "tab:value-of-migration-flows"
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/highMC/mig_value_utility.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Differences in lifetime utility (
+\begin_inset Formula $v$
+\end_inset
+
+), flow payoff (
+\begin_inset Formula $u$
+\end_inset
+
+), ownership rate (
+\begin_inset Formula $h$
+\end_inset
+
+), assets (
+\begin_inset Formula $a$
+\end_inset
+
+) between the non-migration scenario and the baseline expressed in percent
+ of the baseline value, e.g.
+ 
+\begin_inset Formula $\Delta v=100\frac{v'-v}{v}$
+\end_inset
+
+ where 
+\begin_inset Formula $v'$
+\end_inset
+
+ is the value under the policy.
+ The last column (
+\begin_inset Formula $\Delta c^{*}$
+\end_inset
+
+) shows the required consumption compensation that would make agents indifferent
+ between both scenarios.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 
