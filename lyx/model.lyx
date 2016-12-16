@@ -6000,13 +6000,22 @@ Differences in lifetime utility (
 \begin_inset Formula $v'$
 \end_inset
 
- is the value under the policy.
- The last column (
+ is the value under the no-moving policy.
+ The last row (
 \begin_inset Formula $\Delta c^{*}$
 \end_inset
 
 ) shows the required consumption compensation that would make agents indifferent
  between both scenarios.
+ A value of 
+\begin_inset Formula $\Delta c^{*}=2.2\%$
+\end_inset
+
+ thus means that consumption would have to be increased by 2.2% 
+\emph on
+per period over the entire lifecycle 
+\emph default
+in order to be indifferent between both scenarios.
 \end_layout
 
 \end_inset

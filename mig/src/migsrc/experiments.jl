@@ -6,7 +6,7 @@
 # 4) moving voucher: moving is too costly
 
 
-function runExperiment(which::AbstractString,region::Int,year::Int,revert::Int=0)
+function runExperiment(which::AbstractString,region::Int=8,year::Int=2000,revert::Int=0)
 
 	# unneccesary?
 	# home = ENV["HOME"]
@@ -825,33 +825,33 @@ end
 # VALUE OF MIGRATION
 # ==================
 
-function sim_expost_value(m::Model,p::Param,j::Int,base_move::Bool)
+# function sim_expost_value(m::Model,p::Param,j::Int,base_move::Bool)
+# 	cutyr = 1997 - 1
+# 	solve!(m,p)
+# 	base = simulate(m,p);
+# 	base = base[!isna(base[:cohort]),:];
+# 	if base_move
+# 		mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+# 		base = base[findin(base[:id],mv_id[:id]),:]
+# 		# do NOT condition on their tenure in j only, but entire lifecycle
+# 		w0   = @linq base|>
+# 			   @where((:j.==j)&(:year.>cutyr)) |>
+# 			   @select(v = mean(:maxv),u=mean(:utility))
+# 		return (w0,mv_id)
+# 	else
+# 		w0   = @linq base|>
+# 			   @where((:j.==j)&(:year.>cutyr)) |>
+# 			   @select(v = mean(:maxv),u=mean(:utility))
+# 		return (w0,DataFrame())
+#     end
+# end
+function sim_expost_value(m::Model,p::Param,j::Int,mv_id::Vector{Int})
 	cutyr = 1997 - 1
 	solve!(m,p)
 	base = simulate(m,p);
 	base = base[!isna(base[:cohort]),:];
-	if base_move
-		mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
-		base = base[findin(base[:id],mv_id[:id]),:]
-		# do NOT condition on their tenure in j only, but entire lifecycle
-		w0   = @linq base|>
-			   @where((:j.==j)&(:year.>cutyr)) |>
-			   @select(v = mean(:maxv),u=mean(:utility))
-		return (w0,mv_id)
-	else
-		w0   = @linq base|>
-			   @where((:j.==j)&(:year.>cutyr)) |>
-			   @select(v = mean(:maxv),u=mean(:utility))
-		return (w0,DataFrame())
-    end
-end
-function sim_expost_value_pol(m::Model,p::Param,j::Int,mv_id::DataFrame)
-	cutyr = 1997 - 1
-	solve!(m,p)
-	base = simulate(m,p);
-	base = base[!isna(base[:cohort]),:];
-	if nrow(mv_id)>0
-		base = base[findin(base[:id],mv_id[:id]),:]
+	if length(mv_id)>0
+		base = base[findin(base[:id],mv_id),:]
 		# do NOT condition on their tenure in j only, but entire lifecycle
 		w0   = @linq base|>
 			   @where((:j.==j)&(:year.>cutyr)) |>
@@ -865,19 +865,19 @@ function sim_expost_value_pol(m::Model,p::Param,j::Int,mv_id::DataFrame)
 end
 
 # find ctax of baseline vs highMC
-function find_ctax_value_mig_base(j::Int,base_move::Bool=false)
+function find_ctax_value_mig_base(j::Int,mv_id::Vector{Int})
 
 	# baseline model
 	p = Param(2)
 	m = Model(p)
 
-	w0,mv_id = sim_expost_value(m,p,j,base_move)
+	w0 = sim_expost_value(m,p,j,mv_id)
 
 	ctax = optimize((x)->vdiff_value_mig_base(x,w0[:v][1],j,mv_id),0.5,1.5,show_trace=true,method=Brent(),abs_tol=1e-10)
 
 end
 
-function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::DataFrame)
+function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::Vector{Int})
 
 	println("current ctax = $ctax")
 
@@ -887,7 +887,7 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::DataFrame)
 	setfield!(p2,:ctax,ctax)
 	m2 = Model(p2)
 
-	w1 = sim_expost_value_pol(m2,p2,j,mv_id)
+	w1 = sim_expost_value(m2,p2,j,mv_id)
 
 	(w1[:v][1] - w0)^2
 end
@@ -999,25 +999,44 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# people who moved away from j in the baseline
 	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
+	mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(!(:own))),id=unique(:id))
 	# these people are "treated"
 
-	bmv = base[findin(base[:id],mv_id[:id]),:]
-	bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
+	# get a dict with percentage changes for movers, movers|rent and movers|own
+	atts = Dict()
+	for (k,v) in zip(("att","att_own","att_rent"),(mv_id,mv_id_owners,mv_id_renters))
+		# subsetting
+		bmv = base[findin(base[:id],v[:id]),:]
+		bmv2 = @where(bmv,:year.>cutyr)
+		pmv = pol[findin(pol[:id],v[:id]),:]
+		pmv2 = @where(pmv,:year.>cutyr)
+		# computing effects
+		att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		att = att_1 .- att_0 
+		atts[k] = convert(Dict,100.0 * (att ./ abs(att_0)))
+	end
 
-	bmv2 = @where(bmv,:year.>cutyr)
-	bmv2 = @transform(bmv2,row_idx=1:size(bmv2,1))
 
-	# find those guys in the policy environment
-	pmv = pol[findin(pol[:id],mv_id[:id]),:];
-	pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
-	pmv2 = @where(pmv,:year.>cutyr);
-	pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
 
-	# mean difference on treated (ATT)
-	att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	att = att_1 .- att_0 
-	att_perc = convert(Dict,100.0 * (att ./ abs(att_0)))
+	# bmv = base[findin(base[:id],mv_id[:id]),:]
+	# bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
+
+	# bmv2 = @where(bmv,:year.>cutyr)
+	# bmv2 = @transform(bmv2,row_idx=1:size(bmv2,1))
+
+	# # find those guys in the policy environment
+	# pmv = pol[findin(pol[:id],mv_id[:id]),:];
+	# pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
+	# pmv2 = @where(pmv,:year.>cutyr);
+	# pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
+
+	# # mean difference on treated (ATT)
+	# att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	# att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	# att = att_1 .- att_0 
+	# att_perc = convert(Dict,100.0 * (att ./ abs(att_0)))
 
 
 
@@ -1040,25 +1059,31 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# recompute compensation tax?
 	if ctax 
-		x=find_ctax_value_mig_base(j)	# compensation for all in j
+		x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
 		ctax_ate=x.minimum	
-		x=find_ctax_value_mig_base(j,true)	# for those who were movers in j before policy 
+		x=find_ctax_value_mig_base(j,convert(Vector,mv_id[:id]))	# for those who were movers in j before policy 
 		ctax_att=x.minimum
+		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_owners[:id]))	# for those who were movers in j before policy 
+		ctax_att_own=x.minimum
+		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_renters[:id]))	# for those who were movers in j before policy 
+		ctax_att_rent=x.minimum
 	else
 		# read from file
 		json_dat = JSON.parse(f)
 		ctax_ate = json_dat["ctax_ate"]
 		ctax_att = json_dat["ctax_att"]
+		ctax_att_own = json_dat["ctax_att_own"]
+		ctax_att_rent = json_dat["ctax_att_rent"]
 	end
 	close(f)
 
-	# merge both perc dicts
+	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
 	for (k,v) in ate_perc
-		ate_att[k] = Dict(:ate=>v,:att=>att_perc[k])
+		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_own=>atts["att_own"]att_perc[k],:att_rent=>atts["att_rent"][k])
 	end
 	# add constaxes
-	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att)
+	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:att_own=>ctax_att_own,:att_rent=>ctax_att_rent)
 
 
 	# output
@@ -1068,8 +1093,9 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		"EV_perc" => bp[:perc][1],
 		"ate" => convert(Dict,ate),
 		"ate_perc" => convert(Dict,ate_perc),
-		"att" => convert(Dict,att),
-		"att_perc" => convert(Dict,att_perc),
+		"att_perc" => convert(Dict,atts["att"]),
+		"att_own_perc" => convert(Dict,atts["att_own"]),
+		"att_rent_perc" => convert(Dict,atts["att_rent"]),
 		"ate_att" => ate_att,
 		"flows" => flows,
 		"ctax_ate" => ctax_ate,
@@ -1819,6 +1845,7 @@ end
 # adds xtra_ass dollars to each asset grid point at age t
 function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
 	p = Param(2,opts)
+	println("extra assets=$xtra_ass")
 	setfield!(p,:shockVal,[xtra_ass])
 	setfield!(p,:shockAge,opts["it"])
 	m = Model(p)
@@ -1836,7 +1863,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,10000.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-6)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,100000.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-6)
 	return ctax
 end
 
@@ -1862,7 +1889,7 @@ function moneyMC()
 		if ih==0
 			opts["asset"] = whichasset
 		else
-			opts["asset"] = 8 
+			opts["asset"] = whichasset-1 
 		end
 		opts["ih"] = ih+1
 		for itau in 1:p.ntau
@@ -1872,14 +1899,14 @@ function moneyMC()
 				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,itau] = find_xtra_ass(v0,opts)
 				println("done with MC ih=$ih, itau=$itau")
-				println("moving cost: $(MC[ih+1,itau].minimum)")
+				println("moving cost: $(MC[ih+1,itau].minimizer)")
 
 		end
 	end
 
 	zs = m.gridsXD["zsupp"][:,1]
 	# make an out dict
-	d =Dict( "low_type" => Dict( "rent" => MC[1,1].minimum, "own" => MC[2,1].minimum, "high_type" => Dict( "rent" => MC[1,2].minimum, "own" => MC[2,2].minimum)) )
+	d =Dict( "low_type" => Dict( "rent" => Optim.minimizer(MC[1,1]), "own" => Optim.minimizer(MC[2,1]), "high_type" => Dict( "rent" => Optim.minimizer(MC[1,2]), "own" => Optim.minimizer(MC[2,2]))) )
 
 	io = mig.setPaths()
 	f = open(joinpath(io["outdir"],"moneyMC2.json"),"w")
