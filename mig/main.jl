@@ -21,7 +21,7 @@ MOpt.check_moments(x)
 # experiments
 e = mig.runExperiment("highMC",8,2000)
 e = mig.exp_value_mig_base(8,true)
-e = mig.exp_value_mig_base_debug(8)
+# e = mig.exp_value_mig_base_debug(8)
 mig.moneyMC()
 
 p = mig.Param(2)

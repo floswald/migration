@@ -1,0 +1,9 @@
+{% macro showparam(dd) %}
+     {{ dd.age_1.rent | prettyNum(3) }}  && {{ dd.age_1.own| prettyNum(3) }}  \\
+{%- endmacro %}
+\begin{tabular}{D{.}{.}{6.7}@{}  c D{.}{.}{6.7}@{}}
+  \toprule 
+      \multicolumn{1}{c}{Renter} && \multicolumn{1}{c}{Owner}\\ 
+  {{  showparam( z1 ) }}
+  \bottomrule
+\end{tabular}

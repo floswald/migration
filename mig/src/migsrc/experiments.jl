@@ -1060,13 +1060,13 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# recompute compensation tax?
 	if ctax 
 		x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
-		ctax_ate=x.minimum	
+		ctax_ate=x.minimizer	
 		x=find_ctax_value_mig_base(j,convert(Vector,mv_id[:id]))	# for those who were movers in j before policy 
-		ctax_att=x.minimum
+		ctax_att=x.minimizer
 		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_owners[:id]))	# for those who were movers in j before policy 
-		ctax_att_own=x.minimum
+		ctax_att_own=x.minimizer
 		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_renters[:id]))	# for those who were movers in j before policy 
-		ctax_att_rent=x.minimum
+		ctax_att_rent=x.minimizer
 	else
 		# read from file
 		json_dat = JSON.parse(f)
@@ -1080,7 +1080,7 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
 	for (k,v) in ate_perc
-		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_own=>atts["att_own"]att_perc[k],:att_rent=>atts["att_rent"][k])
+		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_own=>atts["att_own"][k],:att_rent=>atts["att_rent"][k])
 	end
 	# add constaxes
 	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:att_own=>ctax_att_own,:att_rent=>ctax_att_rent)
@@ -1103,7 +1103,8 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		"own_profile_0" => convert(Dict,own_profile_base),
 		"own_profile_1" => convert(Dict,own_profile_pol))
 
-	f = open(joinpath(io["outdir"],ostr),"	w")
+	rm(joinpath(io["outdir"],ostr),force=true)
+	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
 

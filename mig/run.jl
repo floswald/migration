@@ -9,7 +9,7 @@ function main()
         Usage:
            run.jl -h | --help 
            run.jl [--test=<test>]
-           run.jl [--estim=<estimation>]
+           run.jl [--estim=<estimation>] [--nchains=<num_chains>]
            run.jl [--exper=<experiment>] [--reg=<region>] [--year=<year>]
 
         Options:
@@ -25,6 +25,8 @@ function main()
                                     <estimation>
                                         BGP         estimate model via BGP algorithm
                                         slices      compute model slices along parameters
+
+            --nchains=<num_chains>  run <estimation> on <num_chains> [default:1]
 
             --exper=<experiment>    run experiment <experiment> [default: noMove]
                                     <experiment>:
