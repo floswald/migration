@@ -4854,7 +4854,7 @@ reference "eq:auxmod-h"
 \end_layout
 
 \begin_layout Subsection
-Parameter Estimates and Moments (Preliminary)
+Parameter Estimates and Moments 
 \end_layout
 
 \begin_layout Standard
@@ -5150,7 +5150,7 @@ name "tab:fit-model-nontarget"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5177,7 +5177,7 @@ Dropbox/model/fit/params-pres.tex}
 
 \begin_layout Plain Layout
 Parameter estimates.
- Standard errors are still work in progress at this point.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Parameter-estimates"

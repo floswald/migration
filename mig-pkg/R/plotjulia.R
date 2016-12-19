@@ -820,6 +820,128 @@ Export.Julia <- function(writedisk=TRUE){
 
 
 
+
+
+VAR.impulse <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",writedisk){
+
+	# data(sipp_psid,envir=environment())
+	data(BEA_fhfa,envir=environment())
+	# py = combine_sipp_psid()
+	py = BEA_fhfa_agg$py
+	setkey(py,year,Division)
+
+	# aggregates house price is mean over regions
+	# agg <- py[,list(P=mean(p,na.rm=T),Y=mean(y,na.rm=T)),by=year]
+	# setkey(agg,year)
+
+	# computing agg here as mean of regions
+	# agg <- py[,list(P=mean(p,na.rm=T)),by=year]
+	# fhfa = getFHFA_realPrices()
+	# setkey(fhfa,year)
+	# agg <- fhfa[Division=="USA",list(year,P=p)]
+	# setkey(agg,year)
+	# gdp = getFRED_gdp()
+	# agg = gdp[agg]
+	# setnames(agg,"gdp","Y")
+	# agg[,LY := agg[list(year-1)][["Y"]]]
+	# agg[,LP := agg[list(year-1)][["P"]]]
+
+	agg = BEA_fhfa_agg$agg
+	setkey(agg,year)
+
+	# aggregate income is GDP per capita
+
+
+	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
+
+	# print model
+	if (writedisk){
+		texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE,custom.model.names=c("$Y_t$","$P_t$"),custom.coef.names=c("Intercept","$Y_{t-1}$","$P_{t-1}$"))
+	}
+
+	# export coefficients as table
+	aggcoefs <- as.data.frame(coef(aggmod))
+	aggcoefs$param <- names(coef(aggmod))
+	names(aggcoefs)[1] <- "value"
+	aggcoefs$param <- gsub("\\(|\\)","",aggcoefs$param)
+
+	# add bounds on P and Y
+	aggcoefs <- rbind(aggcoefs,agg[,list(value=min(Y),param="min_Y")],agg[,list(value=max(Y),param="max_Y")],agg[,list(value=min(P),param="min_P")],agg[,list(value=max(P),param="max_P")])
+
+	# covariance matrix 
+	sigma <- data.frame(aggmod$residCov)
+
+	# setkey(py,Division)
+	# coefs <- cbind(coefs,py[,list(mean_y = mean(y),lb_y=min(y),ub_y=max(y),mean_p=mean(p),lb_p=min(p),ub_p=max(p)),by=Division])
+	# coefs <- coefs[, !names(coefs) %in% "Division_1"]
+
+	# merge aggregate into regional data
+	pyagg = agg[py]
+
+	# plot region and agg overlaid
+	# ----------------------------
+
+	# get full division name back
+	data(US_states,package="EconData",envir=environment())
+	US = US_states[,list(Div=unique(Division),Division=abbreviate(unique(Division),minlength=3))]
+	US = US[complete.cases(US)]
+	setkey(US,Division)
+	setkey(pyagg,Division)
+	pyagg = US[pyagg]
+
+
+	pp=dcast(pyagg[,list(Division,year,p)],year ~ Division)
+	yy=dcast(pyagg[,list(Division,year,y)],year ~ Division)
+	y_cor = cor(yy[,-1])
+	p_cor = cor(pp[,-1])
+
+	price_correlation =  mean(p_cor[p_cor!=1])
+	income_correlation =  mean(y_cor[y_cor!=1])
+
+
+	my = melt(pyagg[,list(year,Division=Div,Regional=y,National=Y)],c("year","Division"))
+
+
+	pl = list()
+	
+	# estimate regional models: what is relationship y ~ P + Y
+	ep <- p ~ Y + P
+	ey <- y ~ Y + P
+	divs = py[,unique(Division)]
+	mods <- lapply(divs,function(x) systemfit:::systemfit(list(y=ey,p=ep),data=pyagg[Division==x]))
+	names(mods) = divs
+
+	# predict 
+	pyagg[,yhat := 0]
+	pyagg[,phat := 0]
+
+	# 10% shock to income 
+	# 6% shock to price
+	pyagg[,P := mean(P)]
+	pyagg[,Y := mean(Y)]
+	pyagg[year==2000,Y := 0.9*Y]
+
+
+	for (d in divs){
+		pyagg[Division==d,c("yhat","phat") := predict(mods[[d]],newdata=.SD),.SDcols=c("Y","P")]
+		pyagg[Division==d,yhat := 100*(yhat-yhat[1]) / yhat[1]]
+	}
+
+
+	mdy = pyagg[,list(year,Division=Div,prediction=yhat)]
+	
+	mytheme <- theme_bw() + theme(plot.title=element_text(hjust=0.5,size=21),legend.text=element_text(size=12),legend.key.size=unit(0.6, "cm"))
+
+	pl$pred_y <- ggplot(mdy,aes(x=year,y=prediction)) + geom_line()  + facet_wrap(~Division)+ ggtitle("10% shock to Y",subtitle="P and Y at their means otherwise.") + scale_y_continuous(name="percent deviation of regional y")  + mytheme
+
+
+	ggsave(pl$pred_y,file=file.path(plotpath,"impulse_y.pdf"),width=9,height=7)
+
+	return(pl)
+
+
+}
+
 Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",writedisk){
 
 	# data(sipp_psid,envir=environment())

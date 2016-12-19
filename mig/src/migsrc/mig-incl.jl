@@ -57,6 +57,12 @@ function cov2corr(x::Matrix)
 	return y
 end
 
+function runSol()
+	p = Param(2)	# create a default param type
+	m = Model(p)
+	mig.solve!(m,p)
+end
+
 # objective function to work with mopt
 function objfunc(ev::Eval)
 
@@ -166,17 +172,38 @@ function runObj(printm::Bool=false,subset=true)
 	use_names = setdiff(moms[:name],dont_use)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
 
-	mprob = MOpt.MProb() 
-	MOpt.addMoment!(mprob,moms_use) 
-	MOpt.addEvalFunc!(mprob,mig.objfunc)
+	# mprob = MOpt.MProb() 
+	# MOpt.addMoment!(mprob,moms_use) 
+	# MOpt.addEvalFunc!(mprob,mig.objfunc)
 
 	# create Eval
-
 	ev = MOpt.Eval(Dict(),moms_use)
 	if printm
 		ev.options["printm"] = printm
 	end
 
+	ev = objfunc(ev)
+	return ev
+end
+function runObj(p::Dict)
+	# create MProb
+
+	io = mig.setPaths()
+	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
+	mig.names!(moms,[:name,:value,:weight])
+	# subsetting moments
+	dont_use= ["lm_w_intercept","move_neg_equity"]
+	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+	for iw in moms[:name]
+		if contains(iw,"wealth") 
+			push!(dont_use,iw)
+		end
+	end
+	use_names = setdiff(moms[:name],dont_use)
+	moms_use = moms[findin(moms[:name],use_names) ,:]
+
+	# create Eval
+	ev = MOpt.Eval(p,moms_use)
 	ev = objfunc(ev)
 	return ev
 end

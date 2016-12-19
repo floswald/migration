@@ -12,7 +12,7 @@
   "moneyMC":{
     "template" : "moneyMC.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/moneyMC.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/moneyMC2.json"
   },
   "copulas":{
     "template" : "copulas.mus",

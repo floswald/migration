@@ -781,37 +781,36 @@ end
 
 function decompose_MC_owners()
 
-	s0 = runObj(false)
-	s0 = s0["moments"]
+	o = runObj()
+	s0 = o.simMoments
 
 	# no owner MC
     # alpha_3 = 0
-	p1 = Dict{AbstractString,Float64}()
-	p1["MC3"] = 0.0
-	s1 = runObj(false,p1)
-	s1 = s1["moments"]
+    p1 = Dict(:MC3 => 0.0)
+	o1 = runObj(p1)
+	s1 = o1.simMoments
 
 	# no owner MC and no transaction cost :
     # alpha_3 = 0, phi = 0
-	p1["phi"] = 0.0
-	s2 = runObj(false,p1)
-	s2 = s2["moments"]
+    p1[:phi] = 0.0
+	o2 = runObj(p1)
+	s2 = o2.simMoments
 
 	# no transaction cost: phi = 0
-	pop!(p1,"MC3")
-	s3 = runObj(false,p1)
-	s3 = s3["moments"]
+    p1 = Dict(:phi => 0.0)
+	o3 = runObj(p1)
+	s3 = o3.simMoments
 
     pfun(x,y) = 100 * (x-y) / y
 
     d = Dict()
-    d["own"] = Dict("base" => s0[:mean_own][1], "alpha" => s1[:mean_own][1], "phi" => s3[:mean_own][1], "alpha_phi" => s2[:mean_own][1])
+    d["own"] = Dict("base" => s0[:mean_own], "alpha" => s1[:mean_own], "phi" => s3[:mean_own], "alpha_phi" => s2[:mean_own])
 
-    d["move"] = Dict("base" => pfun(s0[:mean_move][1],s0[:mean_move][1]), "alpha" => pfun(s1[:mean_move][1],s0[:mean_move][1]), "phi" => pfun(s3[:mean_move][1],s0[:mean_move][1]), "alpha_phi" => pfun(s2[:mean_move][1],s0[:mean_move][1]))
+    d["move"] = Dict("base" => pfun(s0[:mean_move],s0[:mean_move]), "alpha" => pfun(s1[:mean_move],s0[:mean_move]), "phi" => pfun(s3[:mean_move],s0[:mean_move]), "alpha_phi" => pfun(s2[:mean_move],s0[:mean_move]))
 
-    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha" => pfun(s1[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "phi" => pfun(s3[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE][1],s0[:mean_move_ownFALSE][1]))
+    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "alpha" => pfun(s1[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "phi" => pfun(s3[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]))
    
-    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha" => pfun(s1[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "phi" => pfun(s3[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE][1],s0[:mean_move_ownTRUE][1]))
+    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "alpha" => pfun(s1[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "phi" => pfun(s3[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]))
 
     io = mig.setPaths()
     f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
@@ -950,21 +949,13 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	bp = exp_highMC(j)
 	base = bp[:base]
 	pol = bp[:pol]
+	p = Param(2)
 
 
 
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
-	# utility/value difference across regimes
-	# u0 = @linq base |>
-	# 	 @where((:j.==j)&(:year.>cutyr)) |>
-	# 	 @select(utility=mean(:utility[isfinite(:utility)]))
-	# u1 = @linq pol |>
-	# 	 @where((:j.==j)&(:year.>cutyr)) |>
-	# 	 @select(utility=mean(:utility[isfinite(:utility)]))
-	# effect of policy on everybody who ever lived in j in baseline, and who got stuck in j in policy
-	# this confounds compositional with policy effects.
 	ate_0 = @linq base |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
 			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
@@ -974,6 +965,13 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	ate = copy(ate_1 .- ate_0 )
 	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
+	age_ate_0 = @linq base |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	age_ate_1 = @linq pol |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
 
     # total flows across regims
     flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false,"null")
@@ -999,13 +997,15 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# people who moved away from j in the baseline
 	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
+	old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
 	mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
 	mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(!(:own))),id=unique(:id))
 	# these people are "treated"
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
-	for (k,v) in zip(("att","att_own","att_rent"),(mv_id,mv_id_owners,mv_id_renters))
+	for (k,v) in zip(("att","att_young","att_old"),(mv_id,young_id,old_id))
 		# subsetting
 		bmv = base[findin(base[:id],v[:id]),:]
 		bmv2 = @where(bmv,:year.>cutyr)
@@ -1019,38 +1019,22 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	end
 
 
+	# # how did life change for owners and renters?
+	# # ===========================================
 
-	# bmv = base[findin(base[:id],mv_id[:id]),:]
-	# bmv = @transform(bmv,buy = (:h.==0)&(:hh.==1))
+	# own_profile_base = @linq base |>
+	# 	@where((:j.==j)&(:year.>cutyr)) |>
+	# 	@by(:age,own_rate = mean(:own))
+	# own_profile_pol = @linq pol |>
+	# 	@where((:j.==j)&(:year.>cutyr)) |>
+	# 	@by(:age,own_rate = mean(:own))
 
-	# bmv2 = @where(bmv,:year.>cutyr)
-	# bmv2 = @transform(bmv2,row_idx=1:size(bmv2,1))
-
-	# # find those guys in the policy environment
-	# pmv = pol[findin(pol[:id],mv_id[:id]),:];
-	# pmv = @transform(pmv,buy = (:h.==0)&(:hh.==1))
-	# pmv2 = @where(pmv,:year.>cutyr);
-	# pmv2 = @transform(pmv2,row_idx=1:size(pmv2,1))
-
-	# # mean difference on treated (ATT)
-	# att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	# att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	# att = att_1 .- att_0 
-	# att_perc = convert(Dict,100.0 * (att ./ abs(att_0)))
-
-
-
-
-	# how did life change for owners and renters?
-	# ===========================================
-
-	own_profile_base = @linq base |>
+	v_profile_base = @linq base |>
 		@where((:j.==j)&(:year.>cutyr)) |>
 		@by(:age,own_rate = mean(:own))
-	own_profile_pol = @linq pol |>
+	v_profile_pol = @linq pol |>
 		@where((:j.==j)&(:year.>cutyr)) |>
 		@by(:age,own_rate = mean(:own))
-
 
 	# preparing io.
 	io = mig.setPaths()
@@ -1060,30 +1044,30 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# recompute compensation tax?
 	if ctax 
 		x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
-		ctax_ate=x.minimizer	
+		ctax_ate=Optim.minimizer(x)
 		x=find_ctax_value_mig_base(j,convert(Vector,mv_id[:id]))	# for those who were movers in j before policy 
-		ctax_att=x.minimizer
-		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_owners[:id]))	# for those who were movers in j before policy 
-		ctax_att_own=x.minimizer
-		x=find_ctax_value_mig_base(j,convert(Vector,mv_id_renters[:id]))	# for those who were movers in j before policy 
-		ctax_att_rent=x.minimizer
+		ctax_att=Optim.minimizer(x)
+		x=find_ctax_value_mig_base(j,convert(Vector,young_id[:id]))	
+		ctax_att_young=Optim.minimizer(x)
+		x=find_ctax_value_mig_base(j,convert(Vector,old_id[:id]))	
+		ctax_att_old=Optim.minimizer(x)
 	else
 		# read from file
 		json_dat = JSON.parse(f)
 		ctax_ate = json_dat["ctax_ate"]
 		ctax_att = json_dat["ctax_att"]
-		ctax_att_own = json_dat["ctax_att_own"]
-		ctax_att_rent = json_dat["ctax_att_rent"]
+		ctax_att_young = json_dat["ctax_att_young"]
+		ctax_att_old = json_dat["ctax_att_old"]
 	end
 	close(f)
 
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
 	for (k,v) in ate_perc
-		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_own=>atts["att_own"][k],:att_rent=>atts["att_rent"][k])
+		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_young=>atts["att_young"][k],:att_old=>atts["att_old"][k])
 	end
 	# add constaxes
-	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:att_own=>ctax_att_own,:att_rent=>ctax_att_rent)
+	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:att_young=>ctax_att_young,:att_old=>ctax_att_old)
 
 
 	# output
@@ -1092,16 +1076,15 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	d = Dict(
 		"EV_perc" => bp[:perc][1],
 		"ate" => convert(Dict,ate),
+		"age_ate_perc" => age_ate_perc,
 		"ate_perc" => convert(Dict,ate_perc),
 		"att_perc" => convert(Dict,atts["att"]),
-		"att_own_perc" => convert(Dict,atts["att_own"]),
-		"att_rent_perc" => convert(Dict,atts["att_rent"]),
 		"ate_att" => ate_att,
 		"flows" => flows,
 		"ctax_ate" => ctax_ate,
-		"ctax_att" => ctax_att,
-		"own_profile_0" => convert(Dict,own_profile_base),
-		"own_profile_1" => convert(Dict,own_profile_pol))
+		"ctax_att" => ctax_att)
+		# "own_profile_0" => convert(Dict,own_profile_base),
+		# "own_profile_1" => convert(Dict,own_profile_pol))
 
 	rm(joinpath(io["outdir"],ostr),force=true)
 	f = open(joinpath(io["outdir"],ostr),"w")
@@ -1109,115 +1092,6 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	close(f)
 
 	return d
-
-
-
-
-
-	# out string
-
-	
-
-	# # what's the first observationin j?
-	# # drop all periods before first in j
-	# drops = Int[]
-	# for i in unique(pmv2[:id])
-	# 	goon = true
-	# 	ti = minimum(@where(pmv2,:id.==i)[:age])
-	# 	maxage = maximum(@where(pmv2,:id.==i)[:age])
-	# 	while goon
-	# 		if pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:j][1] != j
-	# 			push!(drops,pmv2[(pmv2[:id].==i)&(pmv2[:age].==ti),:row_idx][1])
-	# 			if ti == maxage
-	# 				goon=false
-	# 			else
-	# 				ti+=1
-	# 			end
-	# 		else
-	# 			goon = false
-	# 		end
-	# 	end
-	# end
-
-	# pmv3 = pmv2[setdiff(:row_idx,drops),:]
-	# bmv3 = bmv2[setdiff(:row_idx,drops),:]
-
-	# x0 =  @linq bmv3|>
- #              @where((!:move)&(:moveto.!=j))|>
- #              @by(:j,v=mean(:v),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	# x1 =  @linq pmv3|>
- #              @where(!:move)|>
- #              @by(:j,v=mean(:v),u = mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-
-
-
- #    n0 = names(x0)[2:end]
- #    x00 = deepcopy(x0)
- #    for i in 1:nrow(x0)
- #    	for n in n0
- #    		x00[i,n] = 100*(x0[i,n] .-  x1[1,n]) ./ x1[1,n]
- #    	end
- #    end
-
-	# bmv3 = @transform(bmv3,stamp = (:move)&(:j.==j))
- #    mmap = proportionmap(@where(bmv3,:stamp)[:moveto])
- #    x00[:prop] = 0.0
- #    for i in x00[:j]
- #       x00[x00[:j].==i,:prop] = mmap[i]
- #    end
-
- #    movers = Dict()
- #    for k in x00[:j]
- #    	movers[k] = Dict(string(n) => x00[x00[:j].==k,n][1] for n in n0)
- #    end
-
-
-
-
-    # TODO
-	# want to separate people by ownership status in period of moving
-	# id of people who were owners when they left
-	# own_id = @select(@where(bmv3,(:move)&(:h.==1)&(:j.==j)),id=unique(:id))
-	# rent_id = @select(@where(bmv3,(:move)&(:h.==0)&(:j.==j)),id=unique(:id))
-
-	# own_bmv=@where(bmv3,findin(:id,^(own_id[:id])))
-	# rent_bmv=@where(bmv3,findin(:id,^(rent_id[:id])))
-
-
-
-	# bmv4 = @select(@where(bmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
-	# # bmv4 = @by(@where(bmv3,(:year.>cutyr)&(!:move)),:own,v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)),buy=mean(:buy.data,WeightVec(:density.data)))
-	# pmv4 = @select(@where(pmv3,(:year.>cutyr)&(!:move)),v=mean(:v),a=mean(:a.data,WeightVec(:density.data)),inc=mean(:income.data,WeightVec(:density.data)),w=mean(:wealth.data,WeightVec(:density.data)),cons=mean(:cons.data,WeightVec(:density.data)),p=mean(:p.data,WeightVec(:density.data)),y=mean(:y.data,WeightVec(:density.data)),h=mean(:h.data,WeightVec(:density.data)))
-
-
-
-
-    # output dict
-    # ===========
-
-	# d=Dict()
-	# ss = "noMove"
-	# d["EV"] = Dict()
-	# d["EV"] = Dict("base" => w0[1,1], ss => w1[1,1], "pct" => 100*(w1[1,1] - w0[1,1])/w0[1,1] )
-	# d["flows"] = flows
-	# d["movers"] = movers
-
-
-	# io = mig.setPaths()
-	# ostr = string("noMove",j,"mig_value_baseline.json")
-	# f = open(joinpath(io["outdir"],ostr),"w")
-	# JSON.print(f,d)
-	# close(f)
-
-	# # save csvs
-	# fi = readdir(io["outdir"])
-	# if !in(string("noMove",j),fi)
-	# 	mkpath(string(joinpath(io["outdir"],string("noMove",j))))
-	# end
-	# writetable(joinpath(io["outdir"],string("noMove",j),"values.csv"),v01j)
-
-	# return d
-
 end
 
 
@@ -1900,7 +1774,7 @@ function moneyMC()
 				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
 				MC[ih+1,itau] = find_xtra_ass(v0,opts)
 				println("done with MC ih=$ih, itau=$itau")
-				println("moving cost: $(MC[ih+1,itau].minimizer)")
+				println("moving cost: $(Optim.minimizer(MC[ih+1,itau]))")
 
 		end
 	end
