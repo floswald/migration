@@ -822,7 +822,7 @@ Export.Julia <- function(writedisk=TRUE){
 
 
 
-VAR.impulse <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",writedisk){
+VAR.impulse <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp"){
 
 	# data(sipp_psid,envir=environment())
 	data(BEA_fhfa,envir=environment())
@@ -853,11 +853,6 @@ VAR.impulse <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",
 
 
 	aggmod = systemfit:::systemfit(list(Y=Y~LY+LP,P= P~LY+LP),data=agg)
-
-	# print model
-	if (writedisk){
-		texreg(aggmod,file=file.path(plotpath,"VAR_agg.tex"),table=FALSE,booktabs=TRUE,dcolumn=TRUE,use.packages=FALSE,custom.model.names=c("$Y_t$","$P_t$"),custom.coef.names=c("Intercept","$Y_{t-1}$","$P_{t-1}$"))
-	}
 
 	# export coefficients as table
 	aggcoefs <- as.data.frame(coef(aggmod))

@@ -5602,7 +5602,7 @@ reference "tab:MC-money"
 \begin_inset Formula $(t=1)$
 \end_inset
 
- are $159,000 and $575,000 for owners.
+ are $147,111 and $547,473 for owners.
  The estimates in period one bracket the average cost of $312,000 reported
  in 
 \begin_inset CommandInset citation
@@ -5755,7 +5755,7 @@ reference "tab:Decomposing-owner's-moving"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5769,7 +5769,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/HC_friction/HC_friction.tex}
+Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
 \end_layout
 
 \end_inset

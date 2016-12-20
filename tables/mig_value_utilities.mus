@@ -1,14 +1,16 @@
 {% macro show(param,dd) %}
-    {{param}} & {{ dd.ate | prettyPerc(2) }} & {{ dd.att | prettyPerc(2) }} & {{ dd.att_stay | prettyPerc(2) }} \\
+    {{param}} & {{ dd.ate | prettyPerc(2) }} & {{ dd.att_young | prettyPerc(2) }}  & {{ dd.att_old| prettyPerc(2) }}& {{ dd.att | prettyPerc(2) }} \\
 {%- endmacro %}
 {% macro showp(param,dd) %}
-    {{param}} & {{ dd.ate | prettyPercLessOne(1) }} & {{ dd.att | prettyPercLessOne(1) }} & {{ dd.att_stay | prettyPercLessOne(1) }} \\
+    {{param}} & {{ dd.ate | prettyPercLessOne(1) }} & {{ dd.att_young | prettyPercLessOne(1) }}  & {{ dd.att_old | prettyPercLessOne(1) }} & {{ dd.att | prettyPercLessOne(1) }}\\
 {%- endmacro %}
 
-\begin{tabular}{l D{.}{.}{3.6}@{} D{.}{.}{4.5}@{}  D{.}{.}{4.5}@{}  }
+\begin{tabular}{l D{.}{.}{3.6}@{} D{.}{.}{4.5}@{}  D{.}{.}{4.5}@{} |  D{.}{.}{4.5}@{} }
   \toprule 
-     & \multicolumn{1}{c}{All residents} & \multicolumn{1}{c|}{Moved in baseline} & \multicolumn{1}{c}{Stayed in baseline}   \\ 
-  \cmidrule{2-4}
+     & \multicolumn{4}{c}{Residents of WNC}  \\ 
+  \cmidrule{2-5}
+     & \multicolumn{1}{c}{All} & \multicolumn{1}{c}{Young} & \multicolumn{1}{c |}{Old}  & \multicolumn{1}{c}{Baseline Movers} \\ 
+  \midrule
   {{  show("$\Delta v$", ate_att.v) }}
   {{  show("$\Delta u$", ate_att.u) }}
   {{  show("$\Delta h$", ate_att.h) }}

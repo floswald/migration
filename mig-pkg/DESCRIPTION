@@ -47,3 +47,4 @@ Collate:
     'plotExperiments.r'
     'RegionalPrices.r'
     'ACS.r'
+RoxygenNote: 5.0.1

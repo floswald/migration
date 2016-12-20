@@ -1,13 +1,8 @@
 {
-  "smallShocks_sum":{
-    "template" : "smallShocks_summary.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/smallShocks/smallShocks_sum.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
-  },
- "smallShocks_moveto":{
-    "template" : "smallShocks_moveto.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/smallShocks/smallShocks_moveto.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
+ "decompose":{
+    "template" : "decompose.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/decompose_MC/decompose_MC.tex",
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/decompose_MC_owners.json"
   },
   "moneyMC":{
     "template" : "moneyMC.mus",
