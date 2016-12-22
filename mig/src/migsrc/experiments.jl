@@ -997,6 +997,8 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# people who moved away from j in the baseline
 	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
+	st_id = @select(@where(base,(:year.>cutyr)&(!(:move))&(:j.==j)),id0=unique(:id))
+	stay_id = DataFrame(id = setdiff(st_id[:id0],mv_id[:id]))
 	young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
 	old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
 	mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
@@ -1005,7 +1007,7 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
-	for (k,v) in zip(("att","att_young","att_old"),(mv_id,young_id,old_id))
+	for (k,v) in zip(("att","atn","att_young","att_old"),(mv_id,stay_id,young_id,old_id))
 		# subsetting
 		bmv = base[findin(base[:id],v[:id]),:]
 		bmv2 = @where(bmv,:year.>cutyr)
@@ -1047,6 +1049,8 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		ctax_ate=Optim.minimizer(x)
 		x=find_ctax_value_mig_base(j,convert(Vector,mv_id[:id]))	# for those who were movers in j before policy 
 		ctax_att=Optim.minimizer(x)
+		x=find_ctax_value_mig_base(j,convert(Vector,stay_id[:id]))	# for those who were movers in j before policy 
+		ctax_atn=Optim.minimizer(x)
 		x=find_ctax_value_mig_base(j,convert(Vector,young_id[:id]))	
 		ctax_att_young=Optim.minimizer(x)
 		x=find_ctax_value_mig_base(j,convert(Vector,old_id[:id]))	
@@ -1056,6 +1060,7 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		json_dat = JSON.parse(f)
 		ctax_ate = json_dat["ctax_ate"]
 		ctax_att = json_dat["ctax_att"]
+		ctax_atn = json_dat["ctax_atn"]
 		ctax_att_young = json_dat["ctax_att_young"]
 		ctax_att_old = json_dat["ctax_att_old"]
 	end
@@ -1064,10 +1069,10 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
 	for (k,v) in ate_perc
-		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:att_young=>atts["att_young"][k],:att_old=>atts["att_old"][k])
+		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:atn=>atts["atn"][k],:att_young=>atts["att_young"][k],:att_old=>atts["att_old"][k])
 	end
 	# add constaxes
-	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:att_young=>ctax_att_young,:att_old=>ctax_att_old)
+	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:atn=>ctax_atn,:att_young=>ctax_att_young,:att_old=>ctax_att_old)
 
 
 	# output

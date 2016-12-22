@@ -11,7 +11,7 @@
   \cmidrule{2-5}
      & \multicolumn{1}{c}{All} & \multicolumn{1}{c}{Young} & \multicolumn{1}{c |}{Old}  & \multicolumn{1}{c}{Baseline Movers} \\ 
   \midrule
-  {{  show("$\Delta v$", ate_att.v) }}
+  {{  show("$\Delta V$", ate_att.v) }}
   {{  show("$\Delta u$", ate_att.u) }}
   {{  show("$\Delta h$", ate_att.h) }}
   {{  show("$\Delta a$", ate_att.a) }}
