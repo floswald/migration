@@ -995,10 +995,31 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# compare the ones who did move with their virtual counterparts
 	# =============================================================
 
-	# people who moved away from j in the baseline
-	mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
-	st_id = @select(@where(base,(:year.>cutyr)&(!(:move))&(:j.==j)),id0=unique(:id))
-	stay_id = DataFrame(id = setdiff(st_id[:id0],mv_id[:id]))
+
+	# number of moves 
+	mv_count = @linq base |>
+	        @where((:tau.==1)) |>
+	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
+
+	never_id = @linq mv_count |>
+	        @where(:n_moves.==0 ) |>
+	        @select(id=unique(:id))
+	once_id = @linq mv_count |>
+	        @where(:n_moves.>0 ) |>
+	        @select(id=unique(:id))
+
+	# people who where born in j, are mover type and stay till end of life. stayers.
+	stay_id = base[findin(base[:id],never_id[:id]),:]
+	stay_id = @linq stay_id |>
+			  @where(:j.==j)
+
+	# people who were born in j 
+	born_id = @linq base |>
+	          @where((:age .== 1) & (:j.==j)) |>
+	          @select(id=unique(:id))
+	# people who were born in j and move away
+	away_id = DataFrame(id = findin(findin(base[:id],born_id[:id]),once_id[:id]))
+
 	young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
 	old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
 	mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
@@ -1007,9 +1028,9 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
-	for (k,v) in zip(("att","atn","att_young","att_old"),(mv_id,stay_id,young_id,old_id))
+	for (k,v) in zip(("att","atn","att_young","att_old"),(away_id,stay_id,young_id,old_id))
 		# subsetting
-		bmv = base[findin(base[:id],v[:id]),:]
+		bmv = 	base[findin(base[:id],v[:id]),:]
 		bmv2 = @where(bmv,:year.>cutyr)
 		pmv = pol[findin(pol[:id],v[:id]),:]
 		pmv2 = @where(pmv,:year.>cutyr)
@@ -1047,7 +1068,7 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	if ctax 
 		x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
 		ctax_ate=Optim.minimizer(x)
-		x=find_ctax_value_mig_base(j,convert(Vector,mv_id[:id]))	# for those who were movers in j before policy 
+		x=find_ctax_value_mig_base(j,convert(Vector,away_id[:id]))	# for those who were movers in j before policy 
 		ctax_att=Optim.minimizer(x)
 		x=find_ctax_value_mig_base(j,convert(Vector,stay_id[:id]))	# for those who were movers in j before policy 
 		ctax_atn=Optim.minimizer(x)

@@ -17,7 +17,7 @@ from jinja2 import Environment, PackageLoader
 def prettyNum(value, dec=4):
   value = float(value)
   if (value==0):
-    return "0"
+    return "%.2f" % 0
   value = round(value,dec)
   if (abs(value) > 0.0001):
     return "%g" % value
@@ -27,7 +27,7 @@ def prettyNum(value, dec=4):
 def prettyDollar(value, dec=4):
   value = float(value)
   if (value==0):
-    return "\\$ 0"
+    return "\\$ %.2f" % 0
   value = round(value,dec)
   if (abs(value) > 0.0001):
     return "\\$ %g" % value
@@ -37,14 +37,14 @@ def prettyDollar(value, dec=4):
 def prettyPerc(value, dec=4):
   value = float(value)
   if (value==0):
-    return "0"
+    return "%.2f \phantom{,}\\%%" % 0
   value = round(value,dec)
   return "%g \phantom{,}\\%%" % value
 
 def prettyPercLessOne(value, dec=4):
   value = float(value)
   if (value==0):
-    return "0"
+    return "%.2f \phantom{,}\\%%" % 0
   value = round(100*(value-1),dec)
   return "%g \phantom{,}\\%%" % value
 

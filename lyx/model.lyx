@@ -185,7 +185,8 @@ This paper estimates a lifecycle model of consumption, housing choice and
  of Income and Program Participation (SIPP).
  Using the model I estimate the value of the migration option and the welfare
  impact of policies that may restrict mobility.
- The option to move is equivalent to 4.4% of lifetime consumption.
+ The value of the option to move ranges from 0% up to almost 10% of lifetime
+ consumption depending on the type of household considered.
  While I obtain an estimate of the elasticity of local population size with
  respect to a large regional shock which is close to estimates from the
  previous literature, I am able to show that the respective elasticities
@@ -274,7 +275,7 @@ Regional migration rates in the USA are relatively low despite the presence
  is of first order importance for answering this question, since they have
  very different elasticities of migration with respect to regional shocks.
  Providing new estimates for this elasticity by ownership status is a by-product
- of the main exercise which is important for public policy in its own right.
+ of the main exercise, which is important for public policy in its own right.
 \end_layout
 
 \begin_layout Standard
@@ -433,7 +434,7 @@ Migration is a low probability event in both data and model.
  I conduct an experiment whereby moving away from a certain region is prohibited.
  I compute the average lifetime utility of agents in the region under both
  scenarios, and I find that removing the option to move away from the region
- reduces utility by 1.22%.
+ reduces lifetime utility by 1.22% on average.
  Conditioning on young versus old household, one finds a reduction of 3.66%
  for the former and 0.74% for the latter.
  In terms of compensating consumption that would achieve indifference for
@@ -447,6 +448,10 @@ ley.
  Given that the ownership rate varies significantly by age, one can see
  that young, mobile renters are the group which incurs the greatest welfare
  loss from reduced mobility.
+ The results further show the prominent role of expectations about future
+ potential moves, which may not have to be realized in the end.
+ People who are born in the treated region and never actually move incur
+ the greatest loss of all from this curtailment of future actions.
 \end_layout
 
 \begin_layout Standard
@@ -6514,9 +6519,11 @@ I attempt to answer this question with a counterfactual experiment whereby
 no-move 
 \emph default
 policy.
- First we will discuss changes in migration flows, and the welfare effects
- for residents of WNC under both scenarios, and by whether they are classified
- as 
+ The question is: Who is most affected by this restriction, young, old,
+ people who did in fact move and cannot now or the ones who did not move
+ to start with? First we will discuss changes in migration flows, and the
+ welfare effects for residents of WNC under both scenarios, and by whether
+ they are classified as 
 \emph on
 young 
 \emph default
@@ -6527,7 +6534,8 @@ old
 .
  Finally, we will analyze the experience of individuals who would have moved
  in the baseline environment, but are now prevented from doing so.
- 
+ In all of the following experiments, individuals experience the same sequences
+ of random shocks in each simulation.
 \end_layout
 
 \begin_layout Standard
@@ -6563,13 +6571,16 @@ reference "tab:value-of-migration-utility"
 \emph on
 no-move 
 \emph default
-and the baseline equilibrium.
- Starting with the first column, we see that considering all residents of
- WNC together, average realized lifetime utility 
+and baseline.
+ The first three columns give a general overview of people who resided some
+ time in the region, whereas the last two columns focus on people born in
+ WNC.
+ Starting with the first column, we see that looking at all one-time residents,
+ average realized lifetime utility 
 \begin_inset Formula $V$
 \end_inset
 
- (that is 
+ (this is object 
 \begin_inset Formula $V$
 \end_inset
 
@@ -6580,17 +6591,38 @@ reference "eq:V"
 
 \end_inset
 
-) decreased by 1.22%.
- Considering only flow payoffs (no future value), we see that 
+) decreases by 1.22%.
+ Considering only flow payoffs (i.e.
+ object 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:utility"
+
+\end_inset
+
+), we see that 
 \begin_inset Formula $u$
 \end_inset
 
- decreases by almost 6%.
- Average homeownership increases by almost 8% in the region when borders
- are closed, while the value of savings and mortgages falls by 33%.
- Taken together, all of this implies that the average WNC resident would
- demand a 2.2% proportional increase in consumption in order to be indifferent
- between both scenarios.
+ decreases by almost 6% on average.
+ The difference between 
+\begin_inset Formula $\Delta V$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta u$
+\end_inset
+
+ is informative about the tradeoff between period utility and how the policy
+ is reflected in future values.
+ Given that in this instance the ownership rate rises by 8% as emigration
+ is shut down, given that owning gives extra utility and it occurs later
+ in life, it is easy to see why future expected values decrease less than
+ flow payoffs.
+ The value of savings and mortgages falls by roughly 33%.
+ Taken together, all of this implies that the average person who lived at
+ least some time in WNC would demand a 2.17% proportional increase in consumption
+ in order to be indifferent between both scenarios.
 \begin_inset Foot
 status collapsed
 
@@ -6608,7 +6640,10 @@ reference "sec:Welfare-Measure"
 
 \end_inset
 
-
+ These numbers clearly confound many things (the policy changes the composition
+ of residents who move to WNC), but they give a global overview of how individua
+ls in the entire economy are affected, who considered staying or moving
+ there an optimal choice in the baseline.
 \end_layout
 
 \begin_layout Standard
@@ -6624,12 +6659,14 @@ old
 respectively.
  The purpose of this is to see which part of the lifecycle is particularly
  affected by the policy.
- Unsurprisingly, the young section of the simulated lifes bears the brunt
- of the loss in utility, suffering a 3.66% reduction in average lifetime
- value for young ages vs a 0.74% reduction when older.
+ The young section of the simulated lifes bears the brunt of the loss in
+ utility, suffering a 3.66% reduction in average lifetime value for young
+ ages vs a 0.74% reduction when older.
+ This is an intuitive result, since it is the young population that has
+ to forgoe a greater number of profitable opportunities of moving away.
  Ownership increases again, which is largely a result of WNC being a region
  with relatively low house price level.
- The implied consumption subsidies are 5% for young and 1.5% for old.
+ The implied consumption subsidies are 5% for young and 1.45% for old.
 \begin_inset Foot
 status collapsed
 
@@ -6656,37 +6693,78 @@ as a young person already, and their choices will reflect this fact.
 \end_layout
 
 \begin_layout Standard
-Finally, the last column tells us 
+Finally, the last two columns show the experience of people who were born
+ in WNC as a mover type (
+\begin_inset Formula $\tau=0$
+\end_inset
+
+), and either moved away in the baseline, or not.
+ It turns out that in terms of lifetime utility 
+\begin_inset Formula $V$
+\end_inset
+
+ those who moved away are almost equally well off in both scenarios.
+ Among the explaining factors for this result is the avoidance of the moving
+ cost, and the potentially slower entry into homeownership after a move.
+ The average lifetime experience being slightly better when they cannot
+ move, the original movers would be happy to accept 1.3% lower consumption
+ to be able to participate in the 
+\emph on
+no-move 
+\emph default
+policy.
 \end_layout
 
 \begin_layout Standard
-Figure 
+Quite differently for people who were born in WNC and stayed there for their
+ entire life, see the final column of table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Average-utility-levels"
+reference "tab:value-of-migration-utility"
 
 \end_inset
 
- shows the average levels of utility conditional on age inside of WNC and
- in all other regions.
- We can see in the right panel, that reducing the value of WNC for potential
- immigrants affects utility only marginally.
- This comes from the fact that movers can easily avoid the region by moving
- somewhere else.
- For individuals inside the region, however, the changes are substantial
- and they vary by age.
- We can see that it is particularly younger individuals who suffer from
- the removed option to move.
- This makes intuitive sense, since the forgone expected gains from moving
- are larger if we consider a longer time horizon.
+.
+ Even though their arrangement of state variables and shocks never lead
+ to an 
+\emph on
+actual 
+\emph default
+move, they greatly suffer from the reduced prospect of potentially ever
+ being able to make such a move in the future.
+ This is clearly visible from the difference in 
+\begin_inset Formula $\Delta V$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta u$
+\end_inset
+
+ for this group.
+ They have slightly higher period utility because more of them decide to
+ become homeowners now that the future option of migration has been removed,
+ and this is reflected in larger mortgage debts and slightly greater wealth
+ averages.
+ Finally, in terms of compensating consumption, this group would demand
+ demand a close to 16% increase in consumption per period were they to be
+ made indifferent between their lifecycle histories in either scenario.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+I chose WNC as the region to implement this experiment because the price
+ and income series around the year 2000 are relatively stable.
+ For other regions, I expect the results to carry over except for the group
+ of movers born in the treated region; Their relative gains and losses depend
+ strongly on how the treated region compares with others in terms of amenities,
+ average price and incomes, which in turn will determine the asset position
+ with which they will migrate (and be able to buy a house in the new region,
+ etc).
 \end_layout
 
-\begin_layout Standard
-To summarize this subsection, restricting the ability to move implies large
- losses in welfare.
- This effect stems from the inability of residents to respond to changes
- in their economic environment over time, as well as their inability to
- accomodate location preference shocks.
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6791,6 +6869,18 @@ Differences in average lifetime utility (
 \begin_inset Formula $a$
 \end_inset
 
+), realized local house price (
+\begin_inset Formula $p$
+\end_inset
+
+) and regional income (
+\begin_inset Formula $y$
+\end_inset
+
+), and wealth (
+\begin_inset Formula $w=ph+a$
+\end_inset
+
 ) between the 
 \emph on
 no-move
@@ -6820,6 +6910,15 @@ no-move
 per period over the entire lifecycle 
 \emph default
 in order to be indifferent between both scenarios.
+ Notice that the first three columns confound treatment and composition
+ effect, since the set of people 
+\emph on
+immigrating
+\emph default
+ to WNC is different across scenarios.
+ The final two columns condition on being born in WNC and therefore identify
+ the average treatment on treated and non-treated invidivuals, respectively.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:value-of-migration-utility"
@@ -7346,8 +7445,8 @@ The main result of this paper is to show that despite average migration
  a location in a world with regional shocks to house prices and labor income
  is large.
  Removing the option to leave a certain region in the model implies an associate
-d reduction in expected lifetime utility of 5.1%, or 4.4% of per period consumptio
-n.
+d reduction in lifetime utility that ranges from 0% up to almost 10% depending
+ on the type of household one considers.
  To arrive at this result, I construct a lifecycle model which includes
  homeownership as a choice variable next to savings and location choices,
  which I then fit to SIPP data and use to make counterfactual experiments.
@@ -7367,6 +7466,7 @@ The model delivers an estimate of the elasticity of local population size
  greatly between owners and renters.
  It is important for policy makers to keep in mind the very low mobility
  of owners when thinking about how households could offset large shocks.
+ 
 \end_layout
 
 \begin_layout Standard
