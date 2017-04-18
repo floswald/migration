@@ -1,5 +1,8 @@
 
 
+getFHFA_max_peak2trough
+
+
 plot_sipp_r2p <- function(){
 	data(Sipp_age,envir=environment())
 	r2p = merged[age>19&age<51, list(p = .SD[hvalue>0,median(hvalue,na.rm=T)], y = .SD[HHincome>0,median(HHincome,na.rm=T)],rent=.SD[own==FALSE,median(mortg.rent,na.rm=T)]),by=list(year,Division)]
@@ -383,7 +386,14 @@ getFHFA_max_peak2trough <- function(){
 	dmin=ff6[,list(min_idx = min(dmax)),by=Metropolitan_Area_Name]
 	dmin[,range(min_idx)]
 	dmin[,list(max=Metropolitan_Area_Name[which.max(min_idx)],maxv=max(min_idx),min=Metropolitan_Area_Name[which.min(min_idx)],minv=min(min_idx))]
-	return(dmin)
+
+	# by division
+	data(FHFA_Div,package="EconData")
+	setkey(FHFA_Div,Division,yr)
+	div = FHFA_Div$yr[yr>2005 & yr<2012,list(peak_trough=100*(index_sa[.N]-index_sa[1])/index_sa[1]),by=Division][order(peak_trough)]
+
+
+	return(list(msa=dmin,div=div))
 }
 
 plot_experiment <- function(where,wherelong,when){

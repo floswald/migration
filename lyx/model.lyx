@@ -285,21 +285,23 @@ ng impacts, as we are still witnessing in the aftermath of the 2007 fall
  In this episode we have seen wide variation in the magnitude of local shocks
  despite underlying high national correlations.
  For example, the peak-to-trough decline in the Federal Housing Financing
- Agency (FHFA) house price index from 2007 to 2011 ranged from -2.3% in Pittsburg
-h, to -61% in Las Vegas.
+ Agency (FHFA) house price index from 2007 to 2011 ranged from -2.2% in the
+ West South Central Census Division, to -42% in the Pacific Division.
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
-This refers to FHFA expanded house price index data for the 50 largest MSAs
- in the USA.
+West South Central contains Arkansas, Louisiana, Oklahoma and Texas, Pacific
+ contains Alaska, California, Hawaii, Oregon and Washinton.
+ This price index refers to FHFA expanded house price index data at Census
+ Division level.
  Available at 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
-http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_EXP_metro.txt
+https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_us_and_census.txt
 \end_layout
 
 \end_inset
@@ -309,9 +311,6 @@ http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_EXP_metro.txt
 
 \end_inset
 
- The decline of the automobile industry in Detroit provides a vivid example
- of the effects of a permanent shock to labor income in a region: from the
- 1950 to the 2010 censuses, the population of Detroit declined by 61%.
  
 \end_layout
 
@@ -319,10 +318,10 @@ http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_EXP_metro.txt
 Shocks to regional labor demand affect renters and owners in a similar way,
  i.e.
  labor income of both falls.
- The effects of a fall in house prices is more nuanced, since renters stand
+ The effect of a fall in house prices is more nuanced, since renters stand
  to benefit from cheaper rent, if this is related to prices, and they may
- be able to purchase a now cheaper house, while owners may loose wealth
- invested in the house.
+ be able to purchase a now cheaper house, while owners may lose wealth invested
+ in the house.
  For those reasons, we should expect to see different reactions in the mobility
  of renters and owners in response to different shocks.
  Labor market shocks should make both types more likely to leave the region,
@@ -359,8 +358,12 @@ see American Community Survey 2013, table DP04.
  is subject to shocks as discussed above, is relatively illiquid, and in
  addition may have a location specific flow of utility.
  Consumers may have preferences for locations.
- These factors interact to shape the joint decision of housing tenure, location
- choice, and mortgage borrowing.
+ Finally, there is selection into homeownership based on unobservable moving
+ costs: Individuals with a particular distaste for moving will be more likely
+ to select into homeownership, because they anticipate that they are unlikely
+ to ever move in the future.
+ All of these factors interact to shape the joint decision of housing tenure,
+ location choice, and mortgage borrowing.
  What is more, they all interact to influence the decision to move in response
  to a shock.
 \end_layout
@@ -370,9 +373,11 @@ In the model I develop, there are several mechanisms which affect the home
  ownership choice of individuals.
  A downpayment requirement means that only individuals with sufficient cash
  on hand are able to buy a house at the current price.
- The model assumes a preference for owner-occupied accomodation and a local
- amenity, both of which influence the buying decision next to age, the probabili
-ty of moving, and beliefs about future shocks.
+ The model assumes a preference for owner-occupied accomodation, a local
+ amenity and a partially unobserved cost of moving, which influence the
+ buying decision in addition to age, the probability of moving, and beliefs
+ about future shocks.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1763,7 +1768,7 @@ name "tab:SIPP-divisions"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1797,6 +1802,12 @@ name "tab:CPS-reason-move"
 
 CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
+ The purpose of this table is to show that the distribution of responses
+ is stable conditional on quartiles of 
+\emph on
+distance moved.
+
+\emph default
  This selects a sample of 20-50 year-olds and aggregates the response to
  the question 
 \begin_inset Quotes eld
@@ -2886,7 +2897,15 @@ Moving Costs.
 \end_layout
 
 \begin_layout Standard
-Moving across locations is assumed to be costly in terms of utility.
+Moving is costly both in monetary terms (see the budget constraints below
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Recursive-Formulation"
+
+\end_inset
+
+) and in terms of utility.
  Denote 
 \begin_inset Formula $\Delta(d,x)$
 \end_inset
@@ -3141,9 +3160,14 @@ reference "subsec:Recursive-Formulation"
 \end_layout
 
 \begin_layout Standard
-At this point an small remark about identification may be helpful in order
+At this point a small remark about identification may be helpful in order
  to better understand some of the modelling choices so far.
- The moving cost function does not contain a term relating to distance of
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The moving cost function does not contain a term relating to distance of
  the move, which seems like a very intuitive thing to consider.
  This was not included because I could not find data moments that separately
  identify the cost of distance from the local amenity 
@@ -3155,13 +3179,17 @@ At this point an small remark about identification may be helpful in order
 \begin_inset Formula $A_{k}$
 \end_inset
 
- is isopmorphic to one with an additional distance term in 
+ is isomorphic to one with an additional distance term in 
 \begin_inset Formula $\Delta(d,x)$
 \end_inset
 
 .
- Similarly, a different way to formalize the idea of the high moving cost
- type 
+ Similarly,
+\end_layout
+
+\end_inset
+
+ A different way to formalize the idea of the high moving cost type 
 \begin_inset Formula $\tau$
 \end_inset
 
@@ -3390,8 +3418,8 @@ function in this model class), whereby
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
-V\left(x_{it}\right) & = & \max_{k\in D}\left\{ v\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \label{eq:V}\\
-v\left(x_{it},k\right) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u\left(c,h,k;x_{it}\right)+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(x_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]\label{eq:v}\\
+V\left(x_{it}\right) & = & \max_{k\in D}\left\{ v\left(x_{it},k\right)\right\} \label{eq:V}\\
+v\left(x_{it},k\right) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u\left(c,h,k;x_{it}\right)+\varepsilon_{ikt}+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(x_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]\label{eq:v}\\
 x_{it+1} & = & \left(a_{ij+1},z_{ij+1},s_{ij+1},\mathbf{F}_{t+1},h,k,j+1\right)\nonumber \\
 \overline{v}\left(x_{it+1}\right) & = & E_{\varepsilon}V\left(x_{it+1}\right)\nonumber \\
  & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{D}\exp\left(v\left(x_{it+1},k\right)\right)\right)\label{eq:vbar}
@@ -3597,6 +3625,12 @@ reference "eq:budget-interest"
  defines the interest rate function, which simply states that there is a
  different interest applicable to savings as opposed to borrowing, both
  of which are taken as exogenous parameters in the model.
+ 
+\begin_inset Formula $\hat{r}$
+\end_inset
+
+ stands for the exogenous risk premium of mortages charged over the risk
+ free rate.
  The terminal condition constraint is in expression 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -3616,7 +3650,7 @@ a_{ij+1} & \geq & -(1-\chi)p_{dt}h_{ij}\label{eq:budget-rent-downpay}\\
 r(a_{ij}) & = & \begin{cases}
 r & \text{if }a_{ij}\geq0\\
 r^{m} & \text{if }a_{ij}<0
-\end{cases},r^{m}=r+q\label{eq:budget-interest}\\
+\end{cases},r^{m}=r+\hat{r}\label{eq:budget-interest}\\
 a_{iJ}+p_{t}h_{iJ-1} & \geq & 0,\forall t\label{eq:terminal-condition}
 \end{eqnarray}
 
@@ -3856,7 +3890,7 @@ The consumption/savings problem to be solved at each state, and its combination
  This makes using fast first order condition–based approaches to solve the
  consumption problem more difficult.
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 There has recently been a lot of progress on this front.
@@ -3882,19 +3916,16 @@ key "fella2011generalized"
 
 \end_inset
 
- are promising avenues.
- I found my problem not easily amenable to their solution, and focused on
- a robust solution (i.e.
- one not subject to potential local minima to the savings problem).
- In particular, the method described in 
+ and 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "iskhakovRust2014"
 
 \end_inset
 
- looks like a very good alternative but was brought to my attention too
- late.
+ are promising avenues.
+ I found my problem not easily amenable to their solution, and focused on
+ a robust, but relatively slow, solution.
 \end_layout
 
 \end_inset
@@ -4828,7 +4859,7 @@ key "Li"
  
 \begin_inset CommandInset citation
 LatexCommand cite
-key "1987"
+key "rust-bus"
 
 \end_inset
 
