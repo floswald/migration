@@ -70,6 +70,8 @@ type Model
 	sshock  :: Vector{Float64}
 	mshock  :: Vector{Float64}
 	zshock0     :: Vector{Float64}
+	eps_dist :: Distributions.Gumbel{Float64}
+	eps_shock :: Array{Vec}
 
 	# policy settings 
 	# ---------------
@@ -481,11 +483,13 @@ type Model
 		# random generator setup
 		# ======================
 		srand(12345)
-		N = c_breaks[end]
+		N = c_breaks[end]	# modified version of p.nsim
 		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*(p.nt-1))
 		sshock = rand(N*(p.nt-1))
 		mshock = rand(N*(p.nt-1))
 		zshock0    = rand(Normal(0,0.1),N)
+		eps_dist = Gumbel()
+		eps_shock = reinterpret(Vec{p.nJ,Float64},rand(eps_dist,p.nJ,p.nt-1,N),(p.nt-1,N))
 
 
 		# copula settings
@@ -498,7 +502,7 @@ type Model
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,sinai,cop,cop_quants,cop_shock)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,eps_dist,eps_shock,sinai,cop,cop_quants,cop_shock)
 
 	end
 end

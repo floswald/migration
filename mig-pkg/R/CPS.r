@@ -2,6 +2,36 @@
 
 
 
+# other:
+# 15 .Attend/leave college
+# 16 .Change of climate
+# 17 .Health reasons
+# 18 .Natural disaster
+# 19 .Other reason
+
+# family
+# 1 .Change in marital status
+# 3 .Other family reason
+
+# work:
+# 4 .New job or job transfer
+# 5 .To look for work or lost job
+# 6 .To be closer to work/easier
+# .commute
+# 7 .Retired
+# 8 .Other job-related reason
+
+
+# Housing: 
+# 2 .To establish own household
+# 9 .Wanted to own home, not rent
+# 10 .Wanted new or better house/
+# .apartment
+# 11 .Wanted better neighborhood/
+# .Less Crime
+# 12 .Cheaper housing
+# 13 .Foreclosure/eviction
+# 14 .Other housing reason
 
 Clean.CPS <- function(dta="~/datasets/CPS/outdata/selected.dta") {
 

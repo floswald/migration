@@ -20,13 +20,15 @@ MOpt.check_moments(x)
 
 # experiments
 e = mig.runExperiment("highMC",8,2000)
-e = mig.exp_value_mig_base(8)
+e = mig.exp_value_mig_base(8,true)
+# e = mig.exp_value_mig_base_debug(8)
+mig.moneyMC()
 
 p = mig.Param(2)
 @time m = mig.Model(p)	# 1.5 secs
 @time mig.solve!(m,p)	
 s = mig.simulate(m,p);	
-@profile x=mig.computeMoments(s,p,m)
+@profile x=mig.computeMoments(s,p)
 @time s = mig.simulate(m,p);	
 
 

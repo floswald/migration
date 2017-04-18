@@ -1,0 +1,12 @@
+{% macro showparam(param,dd) %}
+   {{param}} & {{ dd.alpha| prettyPerc(2) }}  & {{ dd.phi| prettyPerc(2) }}   & {{ dd.alpha_phi| prettyPerc(2) }}\\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.5}@{}  D{.}{.}{3.5}@{} D{.}{.}{3.5}@{}}
+  \toprule 
+    &  \multicolumn{1}{c}{$\alpha_3=0$} & \multicolumn{1}{c}{$\phi=0$} & \multicolumn{1}{c}{$\alpha_3=\phi=0$}\\ 
+  \cmidrule{2-4}
+  {{  showparam("$\Delta$ Ownership Rate",own) }}
+  {{  showparam("$\Delta$ Migration Rate",move) }}
+  {{  showparam("$\Delta$ Migration | Own",move_own) }}
+  \bottomrule
+\end{tabular}

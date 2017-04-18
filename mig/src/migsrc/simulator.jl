@@ -137,11 +137,13 @@ function simulate(m::Model,p::Param)
 
 	# temporary objects
 	ktmp  = zeros(Float64,p.nJ)
+	# vtmp  = similar(ktmp)
 	ktmp2 = zeros(p.nJ)
 	v1tmp = 0.0
 	v2tmp = 0.0
 
 	movecost = m.gridsXD["movecost"]
+	realized_shock = 0.0
 
 	# z shock supports for each region
 	zsupps = Dict{Int,Array{Float64,1}}()
@@ -198,7 +200,6 @@ function simulate(m::Model,p::Param)
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 
 	# Distribution of idiosyncratic utility shocks is Gumbel(0,1)
-	G_eps = Gumbel()
 
 	# individual specific variables
 	a      = 0.0
@@ -223,6 +224,7 @@ function simulate(m::Model,p::Param)
 
 	# Storage Arrays: all of size nsim*T
 	Dv       = zeros(nsim*T)
+	Dmaxv    = zeros(nsim*T)
 	Dutility = zeros(nsim*T)
 	Dcons    = zeros(nsim*T)
 	Dsave    = zeros(nsim*T)
@@ -427,41 +429,44 @@ function simulate(m::Model,p::Param)
 				# end
 				yy = shockmyy ? getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]) ,age,ij) : getIncome(m,y,z,age,ij)
 
+				# CAUTION: this if-clause should not be necessary!
 				# if moving is not allowed from your region...
-				if highMC && (p.shockReg==ij)
+				# if highMC && (p.shockReg==ij)
 
-					moveto = ij
-					move = false
-					prob = 0.0
-					cum_moveprob = 0.0
-					eps_shock = quantile(G_eps,m.mshock[i_idx])
+				# 	moveto = ij
+				# 	move = false
 
-				else
+				# else
 
 					# get moving choice given current state
 					# =====================================
+
+					# V(state) = max_k {v(state,k) + eps(k)}	--> maximal discrete choice value
+					# D(state) = indmax_k {v(state,k) + eps(k)}	 --> maximal discrete choice (index)
+					# the solution computes v(state,k), i.e. the value net of eps(k)
+					# 1) interpolate v(state,k) ∀ k 
+					# 2) draw eps(k) ∀ k
+					# 3) find indmax_k {v(state,k) + eps(k)}
 			
-					# 4D interpolation on (a,z,Y,P)
+					# 1) interpolate v(state,k) ∀ k 
 					ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
-					# normalizing vector of moving probs: because of approximation error
-					# sometimes this is not *exactly* summing to 1
-					ktmp = ktmp ./ sum(ktmp)
-					
-					# get cumulative prob
-					cumsum!(ktmp2,ktmp,1)
-					# throw a k-sided dice 
-					cum_moveprob = sum(ktmp[setdiff(1:p.nJ,ij)])
-					stayprob = 1.0 - cum_moveprob
-					moveto = searchsortedfirst(ktmp2,m.mshock[i_idx])
+
+					# 2) draw eps(k) ∀ k
+					# eps = rand(G_eps,p.nJ)   done in model 
+					# vtmp[:] = ktmp .+ convert(Vector{Float64},m.eps_shock[i_idx])
+
+					# 3) find indmax_k {v(state,k) + eps(k)}
+					maxval, moveto = findmax(ktmp .+ m.eps_shock[i_idx])
+					realized_shock = m.eps_shock[i_idx][moveto]
+
 					move   = ij != moveto
-					prob   = ktmp[moveto]
-					eps_shock = quantile(G_eps,prob)
 
 					if moveto>p.nJ || moveto < 1
-						println(ktmp2)
+						println("ktmp=$ktmp")
+						println("eps=$eps")
 						error("problem in moveto = $moveto")
 					end
-				end
+				# end
 
 				# house price in new region "moveto"
 				# ==================================
@@ -546,11 +551,18 @@ function simulate(m::Model,p::Param)
 
 				end
 
-				# get utility
+				# get flow utility
+				# this is utility net of continuation value
 				mc = movecost[idxMC(age,ij,moveto,itau,ih+1,is,p)]
-				consta = consta - mc + m.amenities[moveto]
-				utility = ufun(cons,0.0,p) + consta + eps_shock
+				constant = consta - mc + m.amenities[moveto]
+				utility = ufun(cons,0.0,p) + constant + realized_shock
 
+				# println("")
+				# println("mc= $mc")
+				# println("iconsta = $constant")
+				# println("utility = $utility")
+				# println("maxval = $maxval")
+				# println("shock = $realized_shock")
 				# make sure savings is inside grid
 				# (although interpolator forces that anyway)
 				ss = forceBounds(ss,agrid[1],agrid[end])
@@ -579,14 +591,15 @@ function simulate(m::Model,p::Param)
 
 
 				# storing choices and values
+				Dshock[i_idx]   = realized_shock
 				Dutility[i_idx] = utility
+				Dmaxv[i_idx]    = maxval
 				Dv[i_idx]       = val
 				Dcons[i_idx]    = cons
 				Dsave[i_idx]    = ss
 				Dincome[i_idx]  = yy
 				Dhh[i_idx]      = ihh
 				Dprob[i_idx]    = prob
-				Dshock[i_idx]   = eps_shock 
 				Dcumprob[i_idx] = cum_moveprob
 				DM[i_idx]       = move
 				DMt[i_idx]      = moveto
@@ -641,7 +654,7 @@ function simulate(m::Model,p::Param)
 
 	# convert children indicator into a boolean:
 	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
@@ -710,7 +723,8 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 
 					for ik in 1:p.nJ
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
-						@inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
+						# @inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
+						@inbounds L["l_rho"].vals[ik][arr_idx] = m.v[rho_idx] 	
 
 						for ihh in 1:p.nh
 

@@ -1,0 +1,24 @@
+{% macro show(param,dd,dec) %}
+    {{param}} & {{ dd.ate | prettyPerc(dec) }} & {{ dd.att_young | prettyPerc(dec) }}  & {{ dd.att_old| prettyPerc(dec) }} && {{ dd.att | prettyPerc(dec) }} & {{ dd.atn | prettyPerc(dec) }} \\
+{%- endmacro %}
+{% macro showp(param,dd,dec) %}
+    {{param}} & {{ dd.ate | prettyPercLessOne(dec) }} & {{ dd.att_young | prettyPercLessOne(dec) }}  & {{ dd.att_old | prettyPercLessOne(dec) }} && {{ dd.att | prettyPercLessOne(dec) }}  & {{ dd.atn | prettyPercLessOne(dec)}}\\
+{%- endmacro %}
+
+\begin{tabular}{l D{.}{.}{3.6}@{} D{.}{.}{4.5}@{}  D{.}{.}{4.5}@{}  c D{.}{.}{4.5}@{}  D{.}{.}{4.5}@{}}
+  \toprule 
+     & \multicolumn{3}{c}{in WNC at least 1 year} && \multicolumn{2}{c}{Born in WNC} \\ 
+  \cmidrule{2-4} \cmidrule{6-7}
+     & \multicolumn{1}{c}{All} & \multicolumn{1}{c}{Young} & \multicolumn{1}{c}{Old} & \multicolumn{1}{c}{}& \multicolumn{1}{c}{Moved} & \multicolumn{1}{c}{Stayed} \\ 
+  \midrule
+  {{  show("$\Delta V$", ate_att.v, 2) }}
+  {{  show("$\Delta u$", ate_att.u, 2) }}
+  {{  show("$\Delta h$", ate_att.h, 2) }}
+  {{  show("$\Delta a$", ate_att.a, 2) }}
+  {{  show("$\Delta p$", ate_att.p, 2) }}
+  {{  show("$\Delta y$", ate_att.y, 3) }}
+  {{  show("$\Delta w$", ate_att.w, 2) }}
+  \midrule
+  {{  showp("$\Delta c^*$", ate_att.ctax,3) }}
+  \bottomrule
+\end{tabular}

@@ -1,23 +1,23 @@
 {
-  "smallShocks_sum":{
-    "template" : "smallShocks_summary.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/smallShocks/smallShocks_sum.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
-  },
- "smallShocks_moveto":{
-    "template" : "smallShocks_moveto.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/smallShocks/smallShocks_moveto.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/smallShocks.json"
+ "decompose":{
+    "template" : "decompose.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/decompose_MC/decompose_MC.tex",
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/decompose_MC_owners.json"
   },
   "moneyMC":{
     "template" : "moneyMC.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/moneyMC.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/moneyMC2.json"
   },
   "copulas":{
     "template" : "copulas.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
     "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
+  },
+  "mig_value_utilities":{
+    "template" : "mig_value_utilities.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
   },
   "mig_value":{
     "template" : "mig_value.mus",

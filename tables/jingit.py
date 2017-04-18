@@ -17,19 +17,36 @@ from jinja2 import Environment, PackageLoader
 def prettyNum(value, dec=4):
   value = float(value)
   if (value==0):
-    return "0"
+    return "%.2f" % 0
   value = round(value,dec)
   if (abs(value) > 0.0001):
     return "%g" % value
   elif (abs(value) >= 0.00001):
     return "%.5f" % value
 
+def prettyDollar(value, dec=4):
+  value = float(value)
+  if (value==0):
+    return "\\$ %.2f" % 0
+  value = round(value,dec)
+  if (abs(value) > 0.0001):
+    return "\\$ %g" % value
+  elif (abs(value) >= 0.00001):
+    return "\\$ %.5f" % value
+
 def prettyPerc(value, dec=4):
   value = float(value)
   if (value==0):
-    return "0"
+    return "%.2f \phantom{,}\\%%" % 0
   value = round(value,dec)
-  return "%g \\%%" % value
+  return "%g \phantom{,}\\%%" % value
+
+def prettyPercLessOne(value, dec=4):
+  value = float(value)
+  if (value==0):
+    return "%.2f \phantom{,}\\%%" % 0
+  value = round(100*(value-1),dec)
+  return "%g \phantom{,}\\%%" % value
 
 def getJson(filename):
   with open(filename) as data_file:    
@@ -41,6 +58,8 @@ def getJson(filename):
 env = Environment(loader=FileSystemLoader('./'))
 env.filters['prettyNum'] = prettyNum
 env.filters['prettyPerc'] = prettyPerc
+env.filters['prettyPercLessOne'] = prettyPercLessOne
+env.filters['prettyDollar'] = prettyDollar
 
 
 parser = argparse.ArgumentParser(description='Load a json file and apply on template file.')

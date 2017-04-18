@@ -132,6 +132,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	Gyp = m.gridsXD["Gyp"]
 
 	vtmp = zeros(p.nJ) 
+	expv = zeros(p.nJ) 
 	feasible_k = falses(p.nJ)
 	vbartmp = (0.0,0.0)
 
@@ -300,7 +301,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# =================
 									# loop over choices
 									# =================
-									expv = Float64[]
+									# expv = Float64[]
 									fill!(feasible_k,false)
 										
 									for ik=1:p.nJ
@@ -485,10 +486,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												m.v[kidx]    = r[1] 	# for renter optimal housing choice is easy: value of renting.
 												m.dh[kidx] = 0
 											else
-												m.vh[hidx]   = p.myNA
+												m.vh[hidx]   = r[1]
 												m.sh[hidx]   = 0.0
 												m.ch[hidx]   = 0.0
-												m.v[kidx]  = p.myNA
+												m.v[kidx]  = r[1]
 												m.dh[kidx] = 0
 											end
 
@@ -503,37 +504,37 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										end # end if stay and houseing choice
 										# store optimal value in tmp vector
 										# used in vbar calculation
-										if r[1] > p.myNA
+										# if r[1] > p.myNA
 											vtmp[ik] = r[1]
-											# expv[ik]  = exp(r[1])
-											push!(expv,exp(r[1]))
+											expv[ik]  = exp(r[1])
+											# push!(expv,exp(r[1]))
 											feasible_k[ik] = true
-										else
-											vtmp[ik] = r[1]
+										# else
+										# 	vtmp[ik] = r[1]
 											# expv[ik]  = 0.0
-										end
+										# end
 									end 	# end location choice
 
-									if any(feasible_k)
+									# if any(feasible_k)
 										logsum = log( sum(expv) )
 										m.vbar[jidx] = p.euler + logsum
-									else
-										m.vbar[jidx] = p.myNA
-									end
+									# else
+									# 	m.vbar[jidx] = p.myNA
+									# end
 
 									# compute rho: probability of moving to k given j
-									for ik in 1:p.nJ
-										if feasible_k[ik]
+									# for ik in 1:p.nJ
+										# if feasible_k[ik]
 											# this has numerical underflow problems
 											# need to make sure that vtmp[ik] - logsum is in a numerically stable range
 											# of the exp function!
 
 											# @assert idx10(ik,is,iz,iy,ip,itau,ia,ih+1,ij,age,p) == ik + p.nJ * offset_1
-											@inbounds m.rho[ik + p.nJ * offset_1] = exp( (p.myNA + vtmp[ik]) - (p.myNA + logsum))
-										else
-											m.rho[ik + p.nJ * offset_1] = 0.0
-										end
-									end
+											# @inbounds m.rho[ik + p.nJ * offset_1] = exp( (p.myNA + vtmp[ik]) - (p.myNA + logsum))
+										# else
+										# 	m.rho[ik + p.nJ * offset_1] = 0.0
+										# end
+									# end
 								end 	#assets
 							end 	# h
 						end 	# location

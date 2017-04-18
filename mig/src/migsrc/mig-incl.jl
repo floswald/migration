@@ -57,6 +57,12 @@ function cov2corr(x::Matrix)
 	return y
 end
 
+function runSol()
+	p = Param(2)	# create a default param type
+	m = Model(p)
+	mig.solve!(m,p)
+end
+
 # objective function to work with mopt
 function objfunc(ev::Eval)
 
@@ -166,17 +172,38 @@ function runObj(printm::Bool=false,subset=true)
 	use_names = setdiff(moms[:name],dont_use)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
 
-	mprob = MOpt.MProb() 
-	MOpt.addMoment!(mprob,moms_use) 
-	MOpt.addEvalFunc!(mprob,mig.objfunc)
+	# mprob = MOpt.MProb() 
+	# MOpt.addMoment!(mprob,moms_use) 
+	# MOpt.addEvalFunc!(mprob,mig.objfunc)
 
 	# create Eval
-
 	ev = MOpt.Eval(Dict(),moms_use)
 	if printm
 		ev.options["printm"] = printm
 	end
 
+	ev = objfunc(ev)
+	return ev
+end
+function runObj(p::Dict)
+	# create MProb
+
+	io = mig.setPaths()
+	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
+	mig.names!(moms,[:name,:value,:weight])
+	# subsetting moments
+	dont_use= ["lm_w_intercept","move_neg_equity"]
+	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+	for iw in moms[:name]
+		if contains(iw,"wealth") 
+			push!(dont_use,iw)
+		end
+	end
+	use_names = setdiff(moms[:name],dont_use)
+	moms_use = moms[findin(moms[:name],use_names) ,:]
+
+	# create Eval
+	ev = MOpt.Eval(p,moms_use)
 	ev = objfunc(ev)
 	return ev
 end
@@ -301,7 +328,7 @@ for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
             if !(all(names(d1).==names(d2)))
                 error("need same colnames")
             end
-            df = DataFrame(d1)
+            df = deepcopy(DataFrame(d1))
             for n in names(d1)
                 df[n] = $op(d1[n],d2[n])
             end
@@ -310,11 +337,29 @@ for op = map(x->Symbol(:.,x),(:+,:-,:*,:/))
     end
 end
 function abs(d1::DataFrame)
-    df = DataFrame(d1)
+    df = deepcopy(DataFrame(d1))
     for n in names(d1)
         df[n] = abs(d1[n].data)
     end
     return df
+end
+for op = (:+,:-,:*,:/)
+    @eval begin
+        function ($op)(x::Number,d1::DataFrame)
+            df = deepcopy(DataFrame(d1))
+            for n in names(d1)
+                df[n] = $op(x,d1[n])
+            end
+            return df
+        end
+    end
+end
+function convert(::Type{Dict},x::DataFrame)
+	if nrow(x) > 1
+		Dict(k=>x[k] for k in names(x))
+	else
+		Dict(k=>x[k][1] for k in names(x))
+	end
 end
 
 

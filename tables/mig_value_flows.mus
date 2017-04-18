@@ -2,7 +2,7 @@
     {{param}} & {{ dd.base | prettyNum(3) }} & {{ dd.noMove | prettyNum(3) }} &  {{ dd.pct | prettyPerc(1) }}  \\
 {%- endmacro %}
 {% macro show(param,dd) %}
-    {{param}} & {{ dd.base | prettyPerc(2) }} & {{ dd.noMove | prettyPerc(2) }} & {{ dd.pct | prettyPerc(2) }}\\
+    {{param}} & {{ dd.base | prettyPerc(2) }} & {{ dd.noMove | prettyPerc(2) }} & {{ dd.pct | prettyPerc(1) }}\\
 {%- endmacro %}
 {% macro show2(param,dd) %}
     {{param}} & {{ dd.base | prettyPerc(2) }} & {{ dd.noMove | prettyPerc(2) }} &  - \\
@@ -20,9 +20,5 @@
   \midrule
      & \multicolumn{3}{c}{Emigration per period} \\[-6pt]
      & \multicolumn{3}{c}{\scriptsize (percent of local population) } \\
-  \cmidrule{2-4}
-  {{  show2("Total", flows.outmig) }}
-  {{  show2("Owners", flows.outmig_own) }}
-  {{  show2("Renters", flows.outmig_rent) }}
   \bottomrule
 \end{tabular}
