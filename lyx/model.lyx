@@ -185,7 +185,7 @@ This paper estimates a lifecycle model of consumption, housing choice and
  of Income and Program Participation (SIPP).
  Using the model I estimate the value of the migration option and the welfare
  impact of policies that may restrict mobility.
- The value of the option to move ranges from 0% up to almost 10% of lifetime
+ The value of the option to move ranges from 0% up to almost 16% of lifetime
  consumption depending on the type of household considered.
  While I obtain an estimate of the elasticity of local population size with
  respect to a large regional shock which is close to estimates from the
@@ -671,7 +671,7 @@ key "rosen1979wage"
 , and 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Diamond:2012fk"
+key "diamond2016determinants"
 
 \end_inset
 
@@ -2043,8 +2043,11 @@ region
 \begin_inset Formula $i$
 \end_inset
 
- has to decide whether to move to a different region, whether to own or
- rent, and how much of his labor income to save.
+ has to decide whether to move to a different region 
+\begin_inset Formula $k$
+\end_inset
+
+, whether to own or rent, and how much of his labor income to save.
  Individuals derive utility from consumption 
 \begin_inset Formula $c$
 \end_inset
@@ -2126,8 +2129,8 @@ reference "fig:Regional-Income-data"
 \end_inset
 
  (i.e.
- correlated shocks across region and high persistence) and at the same time
- computationally feasible, as detailed below.
+ correlated shocks across region and high persistence) and is at the same
+ time computationally feasible, as detailed below.
 \begin_inset Foot
 status collapsed
 
@@ -2135,7 +2138,7 @@ status collapsed
 Let it suffice for now to state that taking into account 9 different house
  price and labour income processes would not be feasible, and therefore
  the solution will seek to reduce the number of relevant dimensions of these
- series.
+ series, similar to what a principal component analysis would try to do.
 \end_layout
 
 \end_inset
@@ -6635,7 +6638,7 @@ reference "sec:Welfare-Measure"
 
 \end_inset
 
-
+.
 \end_layout
 
 \end_inset
@@ -6745,7 +6748,68 @@ move, they greatly suffer from the reduced prospect of potentially ever
  become homeowners now that the future option of migration has been removed,
  and this is reflected in larger mortgage debts and slightly greater wealth
  averages.
- Finally, in terms of compensating consumption, this group would demand
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The distributional assumption 
+\begin_inset Formula $\varepsilon\sim\text{Gumbel}$
+\end_inset
+
+ plays a role here and it maps into a result concerning logit models: since
+ the expected value function w.r.t.
+ 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is the well-known 
+\emph on
+log-sum
+\emph default
+, i.e.
+ the log of the sum of the exponential of all constituting values as in
+ expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:vbar"
+
+\end_inset
+
+, removing an option deterministically reduces this expected value.
+ Numerically, this reduction may be indistinguishable from zero (e.g.
+ 
+\begin_inset Formula $\exp(-99)$
+\end_inset
+
+ is smaller than machine epsilon and therefore equal to 0.0 on my computer).
+ In practice it is very hard to relax 
+\begin_inset Formula $\varepsilon\sim\text{Gumbel}$
+\end_inset
+
+, since other distributions require 
+\begin_inset Formula $D$
+\end_inset
+
+-dimensional numerical integration of 
+\begin_inset Formula $EV_{\varepsilon}$
+\end_inset
+
+, which is clearly infeasible for this model formulation and the current
+ state of computing facilities.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ the Finally, in terms of compensating consumption, this group would demand
  demand a close to 16% increase in consumption per period were they to be
  made indifferent between their lifecycle histories in either scenario.
 \begin_inset Foot
@@ -7445,7 +7509,7 @@ The main result of this paper is to show that despite average migration
  a location in a world with regional shocks to house prices and labor income
  is large.
  Removing the option to leave a certain region in the model implies an associate
-d reduction in lifetime utility that ranges from 0% up to almost 10% depending
+d reduction in lifetime utility that ranges from 0% up to almost 16% depending
  on the type of household one considers.
  To arrive at this result, I construct a lifecycle model which includes
  homeownership as a choice variable next to savings and location choices,
@@ -7466,7 +7530,11 @@ The model delivers an estimate of the elasticity of local population size
  greatly between owners and renters.
  It is important for policy makers to keep in mind the very low mobility
  of owners when thinking about how households could offset large shocks.
- 
+ Subsidies to homeownership like the mortgage interest deduction are examples
+ of policies which greatly affect the aggregate elasticity of mobility w.r.t.
+ to regional shocks by increasing the share of owners.
+ A thorough investigation of issues like this requires an equilibrium model
+ for house prices, however, so is left for future research.
 \end_layout
 
 \begin_layout Standard
