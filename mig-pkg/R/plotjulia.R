@@ -1,6 +1,5 @@
 
 
-getFHFA_max_peak2trough
 
 
 plot_sipp_r2p <- function(){

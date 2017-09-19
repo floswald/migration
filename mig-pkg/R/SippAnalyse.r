@@ -356,6 +356,13 @@ Sipp.movers_wage_residual_plots <- function(path="~/Dropbox/mobility/output/data
 	mvs[,pR_u_plus1 := mvs[list(upid,timeid+1)][["pR_u"]] ]
 	mvs[,pR_u_minus1 := mvs[list(upid,timeid-1)][["pR_u"]] ]
 
+	# transition matrix of position in rank distribution
+	mvs[,cut_r := cut_number(n=20,x=R_u,labels=FALSE)]
+	mvs[,cut_r1 := cut_number(n=20,x=R_u_plus1,labels=FALSE)]
+	mvs[,table(cut_r,cut_r1)]
+	# or 
+	mvs[,list(.N),by=list(cut_r,cut_r1)]
+
 	# rank difference
 	mvs[,p_rankdiff := pR_u_plus1 - pR_u]
 	mvs[,rankdiff := R_u_plus1 - R_u]
