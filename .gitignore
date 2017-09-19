@@ -1,0 +1,9 @@
+.RData
+mig-pkg/data
+mig-pkg/.Rproj.user
+mig-pkg/mig-pkg.Rproj
+mig-pkg/.Rhistory
+mig-pkg/.Rbuildignore
+mig-pkg/man
+.Rproj.user
+*.DS_Store
