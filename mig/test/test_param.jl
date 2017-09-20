@@ -1,26 +1,21 @@
 
 
-module test_param
 
-using FactCheck, mig
+@testset "test updating of param vector" begin
 
-
-
-facts("test updating of param vector") do
-
-	context("standard") do
+	@testset "standard" begin
 		p = mig.Param(1);
 
 		di = Dict("beta" => 1.4, "omega2" => 34.2)
 		mig.update!(p,di)
 
-		@fact p.beta => di["beta"]
-		@fact p.omega2 => di["omega2"]
+		@test p.beta => di["beta"]
+		@test p.omega2 => di["omega2"]
 	end
 
-	context("size 2") do
+	@testset "size 2" begin
 		p = mig.Param(2);
-		@fact p.omega2 --> not(0)
+		@test p.omega2 != 0
 
 	end
 
@@ -30,4 +25,3 @@ end
 
 
 
-end

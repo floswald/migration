@@ -1,12 +1,8 @@
 
 
-module test_solution
-
-using FactCheck, mig
 
 
-
-facts("checking some properties of the solution.") do
+@testset "checking some properties of the solution." begin
 
 	p = Param(2)
 	m = Model(p)
@@ -14,16 +10,16 @@ facts("checking some properties of the solution.") do
 	mig.solve!(m,p)
 	println("done solving model. now testing.")
 
-	context("test the range of outputs from final value") do
+	@testset "test the range of outputs from final value" begin
 
 		mval = p.omega1 * p.imgamma * exp( p.mgamma * log(maximum(m.grids["assets"]) + maximum(m.gridsXD["p"]) ) ) + p.omega2
 		
-		@fact minimum(m.EVfinal) => p.myNA
-		@fact maximum(m.EVfinal) => roughly(mval)
+		@test minimum(m.EVfinal) == p.myNA
+		@test isapprox(maximum(m.EVfinal), mval)
 
 	end
 
-	context("value function of high cost type movers") do
+	@testset "value function of high cost type movers" begin
 
 		for itest in 1:50
 
@@ -42,28 +38,28 @@ facts("checking some properties of the solution.") do
 			tau2 = m.vh[1,ik,is,iz,iy,ip,2,m.aone,ih,ij,age]
 
 			if ij != ik
-				@fact tau1 > tau2 => true
+				@test tau1 > tau2
 			end
 
 		end
 
 	end
 
-	context("check conditional v is never decreasing in a") do
+	@testset "check conditional v is never decreasing in a" begin
 
 		tt = mapslices(x -> diff(x),m.vh,8)
-		@fact all(tt .>= 0.0) => true
+		@test all(tt .>= 0.0)
 
 	end
 
-	# context("check conditional v is never decreasing in z") do
+	# @testset "check conditional v is never decreasing in z" begin
 
 	# 	tt = mapslices(x -> diff(x),m.vh,4)
-	# 	@fact all(tt .>= 0.0) => true
+	# 	@test all(tt .>= 0.0) => true
 
 	# end
 
-	context("check prob of moving") do
+	@testset "check prob of moving" begin
 
 		for itest in 1:10000
 
@@ -80,9 +76,9 @@ facts("checking some properties of the solution.") do
 			if any(m.v[:,is,iz,iy,ip,itau,ia,ih,ij,age][:] .> p.myNA)
 				tt = m.rho[:,is,iz,iy,ip,itau,ia,ih,ij,age][:]
 
-				@fact sum(tt) => roughly(1.0,atol=1e-9)
-				@fact minimum(tt) >= 0.0 => true
-				@fact maximum(tt) <= 1.0 => true
+				@test isapprox(sum(tt) ,1.0,atol=1e-9)
+				@test minimum(tt) >= 0.0 
+				@test maximum(tt) <= 1.0 
 			end
 
 
@@ -91,15 +87,14 @@ facts("checking some properties of the solution.") do
 
 	end
 
-	context("check whether cons positive at feasible states") do
+	@testset "check whether cons positive at feasible states" begin
 
 		feas = m.vh .> p.myNA
 
-		@fact all(m.ch[feas] .> 0.0) => true
+		@test all(m.ch[feas] .> 0.0) 
 
 	end
 
 end
 
 
-end # module

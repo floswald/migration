@@ -709,6 +709,9 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 	# 1. l_vcs
 	# 2. l_rho  
 
+# dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
+	 r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 	# get part of index that does not change
 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
@@ -725,6 +728,7 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 
 					for ik in 1:p.nJ
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
+						# CAUTION: we are no longer interpolating the probability function rho but the underlying value function v
 						# @inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
 						@inbounds L["l_rho"].vals[ik][arr_idx] = m.v[rho_idx] 	
 

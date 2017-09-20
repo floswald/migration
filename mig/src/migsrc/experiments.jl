@@ -1724,7 +1724,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	mm = 0
 	gc()
 	# throw away NA cohorts
-	ss = ss[!isna(ss[:cohort]),:]
+	ss = ss[.!isna.(ss[:cohort]),:]
 	# keep only cohort that gets the shock at age shockAge in shockYear.
 	ss = @where(ss,:cohort .== keep)
 	return ss

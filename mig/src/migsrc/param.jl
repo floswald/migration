@@ -226,7 +226,7 @@ end
 # takes a dict of params_to_sample
 function update!(p::Param,pd::Dict)
 	for (k,v) in pd
-		setfield!(p,symbol(k),v)
+		setfield!(p,Symbol(k),v)
 	end
 end
 
