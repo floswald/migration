@@ -1,6 +1,6 @@
 module mig
 
-using GLM, MOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
+using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
 using JSON , Copulas, FileIO, FixedSizeArrays #, Plots, StatPlots
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./

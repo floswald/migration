@@ -345,7 +345,7 @@ function simulate(m::Model,p::Param)
 
 		# individuals to simulate at this age
 		inds   = 1:m.coh_breaks[maxcohort]
-		idxvec = (Dage.==age) & (Di .<= inds[end])
+		idxvec = (Dage.==age) .& (Di .<= inds[end])
 
 		# dataframe with discrete states for each id
 		g = DataFrame(id = inds,j = Dj[idxvec], is = Dis[idxvec], h=Dh[idxvec], tau=Dtau[idxvec])
@@ -456,7 +456,7 @@ function simulate(m::Model,p::Param)
 					# vtmp[:] = ktmp .+ convert(Vector{Float64},m.eps_shock[i_idx])
 
 					# 3) find indmax_k {v(state,k) + eps(k)}
-					maxval, moveto = findmax(ktmp .+ m.eps_shock[i_idx])
+					maxval, moveto = findmax(ktmp + m.eps_shock[i_idx])
 					realized_shock = m.eps_shock[i_idx][moveto]
 
 					move   = ij != moveto
@@ -660,7 +660,9 @@ function simulate(m::Model,p::Param)
 	# --------------------------------
 
 	df = join(df,m.agedist,on=:realage)
-	df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
+	df[:p2y] = df[:p] ./ df[:y]
+	df[:p2w] = df[:p] ./ df[:wealth]
+	# df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
 	gc()
 	return df
 end
@@ -836,16 +838,19 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# keep only relevant years
 	# and drop NAs
-	df = @where(df,(:year.>1996) & (!isna(:cohort)))
+	df = @where(df,(:year.>1996) .& (.!isna.(:cohort)))
 
 
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 3 bins, and add age squared
 	ngroups = 3
-	df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
+	# df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
+	df[:agebin] = cut(df[:realage],round.(Int64,quantile(df[:realage],collect(1 : ngroups - 1)/ ngroups)))
+	df[:age2] = df[:age].^2
+	df[:sell] = (df[:h].==1) .& (df[:hh].==0)   # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
-	fullw = WeightVec(convert(Array,df[:density]))
+	fullw = Weights(convert(Array,df[:density]))
 
 
 	# grouped dfs
@@ -868,7 +873,7 @@ function computeMoments(df::DataFrame,p::Param)
 		std_h =  DataArray(Float64,3)
 	else
 		try 
-			lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
+			lm_h = glm(@formula(h ~ age + age2) ,df,Normal(),IdentityLink())
 			cc_h  = coeftable(lm_h)
 			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
 			coef_h = @data(coef(lm_h))
@@ -895,7 +900,7 @@ function computeMoments(df::DataFrame,p::Param)
 	# ----------
 
 	for div in g_div
-		w = WeightVec(convert(Array,div[:density]))
+		w = Weights(convert(Array,div[:density]))
 		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w)])
 	end
 
@@ -904,7 +909,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for div in g_kids
 		kk = "$(div[1,:kids])"
-		w = WeightVec(convert(Array,div[:density]))
+		w = Weights(convert(Array,div[:density]))
 		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w)])
 	end
 	# TODO std error
@@ -925,7 +930,7 @@ function computeMoments(df::DataFrame,p::Param)
 		coef_mv = @data(zeros(3))
 		std_mv =  @data(ones(3))
 	else
-		lm_mv = glm( move ~ age + age2 ,df,Normal(),IdentityLink())
+		lm_mv = glm( @formula(move ~ age + age2),df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
 		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)] 
 		coef_mv = @data(coef(lm_mv))
@@ -971,7 +976,7 @@ function computeMoments(df::DataFrame,p::Param)
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
-			w = WeightVec(convert(Array,idf[:density]))
+			w = Weights(convert(Array,idf[:density]))
 			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 		end
 
@@ -987,7 +992,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for idf in g_kids
 		kk = "$(idf[1,:kids])"
-		w = WeightVec(convert(Array,idf[:density]))
+		w = Weights(convert(Array,idf[:density]))
 		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 	end
 	# TODO std error
@@ -1047,7 +1052,7 @@ function computeMoments(df::DataFrame,p::Param)
 	# -----------------
 
 	for idf in g_div
-		w = WeightVec(convert(Array,idf[:density]))
+		w = Weights(convert(Array,idf[:density]))
 		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(convert(Array,idf[:wealth]),w)])
 	end
 
@@ -1060,7 +1065,7 @@ function computeMoments(df::DataFrame,p::Param)
 		push!(mom1,["mean_wealth_ownFALSE",mean(convert(Array,df[:wealth]),fullw)])
 	else
 		for idf in g_own
-			w = WeightVec(convert(Array,idf[:density]))
+			w = Weights(convert(Array,idf[:density]))
 			kk = "$(idf[1,:own])"
 			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(convert(Array,idf[:wealth]),w)])
 		end

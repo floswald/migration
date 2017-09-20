@@ -49,7 +49,7 @@ function cov2corr(x::Matrix)
 		error("x must be a 2 by 2 matrix")
 	end
 	y = similar(x)
-	f = prod(sqrt(diag(x)))
+	f = prod(sqrt.(diag(x)))
 	y[1,1] = 1.0
 	y[2,2] = 1.0
 	y[1,2] = x[1,2] / f
@@ -63,14 +63,14 @@ function runSol()
 	mig.solve!(m,p)
 end
 
-# objective function to work with mopt
+# objective function to work with MomentOpt
 function objfunc(ev::Eval)
 
-	MOpt.start(ev)
+	start(ev)
 	Base.info("in objective function")
 
 	p = Param(2)	# create a default param type
-	MOpt.fill(p,ev)      # fill p with current values on eval object
+	MomentOpt.fill(p,ev)      # fill p with current values on eval object
 
 	m = Model(p)
 	mig.solve!(m,p)
@@ -84,7 +84,7 @@ function objfunc(ev::Eval)
 	simMoments,status = mydf2dict(smm["moments"])
 
 	v = Dict{Symbol,Float64}()
-	for (k,mom) in dataMomentd(ev)
+	for (k,mom) in MomentOpt.dataMomentd(ev)
 		# if haskey(dataMomentWd(ev),k)
 		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
 		# else
@@ -100,7 +100,7 @@ function objfunc(ev::Eval)
 	status = (isna(vv) | !isfinite(vv)) ? -1 : status
 
     if get(ev.options,"printm",false) 
-    	mms = MOpt.check_moments(ev)
+    	mms = MomentOpt.check_moments(ev)
     	d = Dict()
     	for e in eachrow(mms)
        		d[e[:moment]] = Dict("data"=>e[:data],"model"=>e[:simulation])
@@ -172,12 +172,12 @@ function runObj(printm::Bool=false,subset=true)
 	use_names = setdiff(moms[:name],dont_use)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
 
-	# mprob = MOpt.MProb() 
-	# MOpt.addMoment!(mprob,moms_use) 
-	# MOpt.addEvalFunc!(mprob,mig.objfunc)
+	# mprob = MomentOpt.MProb() 
+	# MomentOpt.addMoment!(mprob,moms_use) 
+	# MomentOpt.addEvalFunc!(mprob,mig.objfunc)
 
 	# create Eval
-	ev = MOpt.Eval(Dict(),moms_use)
+	ev = MomentOpt.Eval(Dict(),moms_use)
 	if printm
 		ev.options["printm"] = printm
 	end
@@ -203,7 +203,7 @@ function runObj(p::Dict)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
 
 	# create Eval
-	ev = MOpt.Eval(p,moms_use)
+	ev = MomentOpt.Eval(p,moms_use)
 	ev = objfunc(ev)
 	return ev
 end
