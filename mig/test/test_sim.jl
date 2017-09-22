@@ -248,7 +248,7 @@
 		end
 
 		info("done")
-		for itest in 1:100
+		for itest in 1:20
 			# pick some random discrete states
 			is = rand(1:p.ns)
 			itau = rand(1:p.ntau)

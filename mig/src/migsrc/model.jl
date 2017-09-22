@@ -462,6 +462,9 @@ type Model
 			mc = mc .* 0.5
 		elseif p.policy == "doubleMC"
 			mc = mc .* 2.0
+		elseif p.policy == "noMove"
+			# completely shutdown moving
+			mc = mc * p.tau
 		elseif p.policy == "tripleMC"
 			mc = mc .* 3.0
 		end

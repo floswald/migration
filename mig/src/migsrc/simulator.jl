@@ -628,18 +628,18 @@ function simulate(m::Model,p::Param)
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
 				if highMC && (p.shockReg==ij) && move
-					println("ind=$id, cohort = $coh moved even though it's ruled out.")
+					error("ind=$id, cohort = $coh moved even though it's ruled out.")
 				end
 			end # individual
 
 			if p.verbose>0
 				if mod(g_count,400) == 0
-					println("this is group $g_count")
-					println("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
-					println("interpolator l_vcs:")
-					println(L["l_vcs"])
-					println("interpolator l_rho:")
-					println(L["l_rho"])
+					info("this is group $g_count")
+					info("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
+					info("interpolator l_vcs:")
+					info(L["l_vcs"])
+					info("interpolator l_rho:")
+					info(L["l_rho"])
 				end
 			end
 		end # groups
@@ -709,9 +709,9 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 	# 1. l_vcs
 	# 2. l_rho  
 
-# dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
-function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
-	 r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
+# # dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+# function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
+# 	 r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 	# get part of index that does not change
 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 

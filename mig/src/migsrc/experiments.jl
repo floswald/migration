@@ -909,7 +909,12 @@ function exp_highMC(j::Int)
 
 	
 	# model where moving is shut down in region j
-	opts = Dict("policy" => "highMC", "shockRegion" => j)
+	if j==0
+		info("applying highMC in ALL regions")
+		opts = Dict("policy" => "noMove")
+	else
+		opts = Dict("policy" => "highMC", "shockRegion" => j)
+	end
 	p2 = Param(2,opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
@@ -917,23 +922,6 @@ function exp_highMC(j::Int)
 
 	pol = simulate(m2,p2);
 	pol = pol[!isna(pol[:cohort]),:];
-
-	# b1 = @linq base |>
-	# 	@where(:j.==j&(:year.>cutyr)) |>
-	# 	@by([:age,:move],u=mean(:utility),maxv=mean(:maxv))
-
-	# p1 = @linq pol |>
-	# 	@where(:j.==j&(:year.>cutyr)) |>
-	# 	@by([:age,:move],u=mean(:utility),maxv=mean(:maxv))
-
-	# pl = Plots.plot(b1,:age,:u,group=:move,layout=Plots.grid(1,2))
-	# plot!(pl[1],p1,:age,:u,group=:move)
-	# title!(pl[1],"mean utility in $j")
-
-	# plot!(pl[2],b1,:age,:maxv,group=:move)
-	# plot!(pl[2],p1,:age,:maxv,group=:move)
-	# title!(pl[2],"mean maxvalue in $j")
-	
 
 	return Dict(:base=>base,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
 
@@ -944,7 +932,8 @@ end
 # differences in utility if moving in region j
 # is shut down.
 # function exp_value_mig_base(j::Int,allj=false)
-function exp_value_mig_base(j::Int,ctax::Bool=false)
+# if called with j=0, shuts down moving everywhere.
+function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 
 	bp = exp_highMC(j)
 	base = bp[:base]
@@ -1062,30 +1051,32 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 	# preparing io.
 	io = mig.setPaths()
 	ostr = string("noMove",j,"mig_value_baseline.json")
-	f = open(joinpath(io["outdir"],ostr),"r")
 
 	# recompute compensation tax?
-	if ctax 
-		x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
-		ctax_ate=Optim.minimizer(x)
-		x=find_ctax_value_mig_base(j,convert(Vector,away_id[:id]))	# for those who were movers in j before policy 
-		ctax_att=Optim.minimizer(x)
-		x=find_ctax_value_mig_base(j,convert(Vector,stay_id[:id]))	# for those who were movers in j before policy 
-		ctax_atn=Optim.minimizer(x)
-		x=find_ctax_value_mig_base(j,convert(Vector,young_id[:id]))	
-		ctax_att_young=Optim.minimizer(x)
-		x=find_ctax_value_mig_base(j,convert(Vector,old_id[:id]))	
-		ctax_att_old=Optim.minimizer(x)
-	else
-		# read from file
-		json_dat = JSON.parse(f)
-		ctax_ate = json_dat["ctax_ate"]
-		ctax_att = json_dat["ctax_att"]
-		ctax_atn = json_dat["ctax_atn"]
-		ctax_att_young = json_dat["ctax_att_young"]
-		ctax_att_old = json_dat["ctax_att_old"]
+	if j>0
+		f = open(joinpath(io["outdir"],ostr),"r")
+		if ctax 
+			x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
+			ctax_ate=Optim.minimizer(x)
+			x=find_ctax_value_mig_base(j,convert(Vector,away_id[:id]))	# for those who were movers in j before policy 
+			ctax_att=Optim.minimizer(x)
+			x=find_ctax_value_mig_base(j,convert(Vector,stay_id[:id]))	# for those who were movers in j before policy 
+			ctax_atn=Optim.minimizer(x)
+			x=find_ctax_value_mig_base(j,convert(Vector,young_id[:id]))	
+			ctax_att_young=Optim.minimizer(x)
+			x=find_ctax_value_mig_base(j,convert(Vector,old_id[:id]))	
+			ctax_att_old=Optim.minimizer(x)
+		else
+			# read from file
+			json_dat = JSON.parse(f)
+			ctax_ate = json_dat["ctax_ate"]
+			ctax_att = json_dat["ctax_att"]
+			ctax_atn = json_dat["ctax_atn"]
+			ctax_att_young = json_dat["ctax_att_young"]
+			ctax_att_old = json_dat["ctax_att_old"]
+		end
+		close(f)
 	end
-	close(f)
 
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
@@ -1113,9 +1104,11 @@ function exp_value_mig_base(j::Int,ctax::Bool=false)
 		# "own_profile_1" => convert(Dict,own_profile_pol))
 
 	rm(joinpath(io["outdir"],ostr),force=true)
-	f = open(joinpath(io["outdir"],ostr),"w")
-	JSON.print(f,d)
-	close(f)
+	if save
+		f = open(joinpath(io["outdir"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
 
 	return d
 end

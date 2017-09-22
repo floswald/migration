@@ -14,9 +14,9 @@
 		ms = size(m.gridsXD["Gs"],2)
 		my = size(m.gridsXD["Gyp"],2)
 
-		@test isapprox(sum(m.gridsXD["Gz"],2)[:] ,ones(1.0,mz)  ,atol=0.00001)
-		@test isapprox(sum(m.gridsXD["Gs"],2)[:] ,ones(1.0,ms),atol=0.00001)
-		@test isapprox(sum(m.gridsXD["Gyp"],2)[:], ones(1.0,my) ,atol=0.00001)
+		@test isapprox(sum(m.gridsXD["Gz"],2)[:] ,ones(1.0,mz,1)  ,atol=0.00001)
+		@test isapprox(sum(m.gridsXD["Gs"],2)[:] ,ones(1.0,ms,1),atol=0.00001)
+		@test isapprox(sum(m.gridsXD["Gyp"],2)[:], ones(1.0,my,1) ,atol=0.00001)
  	end
 
 
