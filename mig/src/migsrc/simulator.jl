@@ -288,7 +288,7 @@ function simulate(m::Model,p::Param)
 	idxvec = Dage .== 1
 	Dis[idxvec]  = rand(G0k,nsim)
 	Dj[idxvec]   = rand(G0j,nsim)
-	Dz[idxvec]   = m.zshock0
+	Dz[idxvec]   = m.zshock0	# get initial z shock
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
@@ -458,6 +458,11 @@ function simulate(m::Model,p::Param)
 					# 3) find indmax_k {v(state,k) + eps(k)}
 					maxval, moveto = findmax(ktmp + m.eps_shock[i_idx])
 					realized_shock = m.eps_shock[i_idx][moveto]
+
+					# 4) find implied probabilities of stay and move
+					mmx = ktmp - maximum(ktmp)
+					stayprob = exp(mmx[ij]) / sum(exp.(mmx))
+					cum_moveprob = 1.0 - stayprob
 
 					move   = ij != moveto
 
