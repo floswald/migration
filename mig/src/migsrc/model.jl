@@ -71,7 +71,7 @@ type Model
 	mshock  :: Vector{Float64}
 	zshock0     :: Vector{Float64}
 	eps_dist :: Distributions.Gumbel{Float64}
-	eps_shock :: Array{Vec}
+	eps_shock :: Array{Vector{Float64}}
 
 	# policy settings 
 	# ---------------
@@ -347,7 +347,7 @@ type Model
 			end
 		end
 		# convert to levels
-		zgrid = exp(zgrid)
+		zgrid = exp.(zgrid)
 
 		# poterba & sinai average tax savings from mortgage subsidy
 		# 2004 SCF data. adjust by value of cpi2012 in 2004: 0.818304 * 1000
@@ -393,7 +393,7 @@ type Model
 		x = [linspace(bounds["assets"][1],50.0,p.na-5);linspace(100.0,1000.0,5)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
 		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
-		x = x .- x[ indmin(abs(x)) ] 
+		x = x .- x[ indmin(abs.(x)) ] 
 		# println("assets = $x")
 		grids["assets"]  = x
 		aone  = findfirst(grids["assets"].>=0)
@@ -462,6 +462,9 @@ type Model
 			mc = mc .* 0.5
 		elseif p.policy == "doubleMC"
 			mc = mc .* 2.0
+		elseif p.policy == "noMove"
+			# completely shutdown moving
+			mc = mc * p.tau
 		elseif p.policy == "tripleMC"
 			mc = mc .* 3.0
 		end
@@ -489,7 +492,7 @@ type Model
 		mshock = rand(N*(p.nt-1))
 		zshock0    = rand(Normal(0,0.1),N)
 		eps_dist = Gumbel()
-		eps_shock = reinterpret(Vec{p.nJ,Float64},rand(eps_dist,p.nJ,p.nt-1,N),(p.nt-1,N))
+		eps_shock = Vector{Float64}[rand(eps_dist,p.nJ) for i in 1:N, j in 1:p.nt-1]
 
 
 		# copula settings
@@ -665,8 +668,8 @@ end
 
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = zeros(p.ny*p.np, p.ny*p.np)
-	ycoef = convert(Array, @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
-	pcoef = convert(Array, @where(df,(:param.=="P_Intercept") | (:param.== "P_LY")| (:param.== "P_LP"))[:value]) 
+	ycoef = convert(Array, @where(df,(:param.=="Y_Intercept") .| (:param.== "Y_LY") .| (:param.== "Y_LP"))[:value]) 
+	pcoef = convert(Array, @where(df,(:param.=="P_Intercept") .| (:param.== "P_LY") .| (:param.== "P_LP"))[:value]) 
 	for ip in 1:p.np
 		for iy in 1:p.ny
 

@@ -522,6 +522,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# 	m.vbar[jidx] = p.myNA
 									# end
 
+									# in this version of the code i don't even 
+									# need m.rho anymore. it's never used.
+
 									# compute rho: probability of moving to k given j
 									# for ik in 1:p.nJ
 										# if feasible_k[ik]

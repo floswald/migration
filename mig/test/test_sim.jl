@@ -1,13 +1,8 @@
 
-module test_sim
+@testset "simulator." begin
 
 
-using FactCheck
-using mig
-
-facts("simulator.") do
-
-	context("testing fill_interp_arrays") do
+	@testset "testing fill_interp_arrays" begin
 
 		p = Param(2)
 		m = Model(p)
@@ -38,7 +33,7 @@ facts("simulator.") do
 				end
 			end
 		end
-		L = Dict{ASCIIString,mig.Lininterp}()
+		L = Dict{String,mig.Lininterp}()
 		L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
 		L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
@@ -56,18 +51,18 @@ facts("simulator.") do
 
 		for ia in 1:p.na
 			for iz in 1:p.nz
-				for ip in 1:p.np
-					for iy in 1:p.ny
+				for iy in 1:p.ny
+					for ip in 1:p.np
 
 						for ik in 1:p.nJ
-							@fact L["l_rho"].vals[ik][ia,iz,iy,ip] => m.rho[mig.idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,it,p)]
+							@test L["l_rho"].vals[ik][ia,iz,iy,ip] == m.v[mig.idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,it,p)]
 
 							for ihh in 1:p.nh
 								l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
 								idx = mig.idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it,p)
-								@fact L["l_vcs"].vals[1+l_idx][ia,iz,iy,ip] => m.vh[idx]
-								@fact L["l_vcs"].vals[2+l_idx][ia,iz,iy,ip] => m.ch[idx]
-								@fact L["l_vcs"].vals[3+l_idx][ia,iz,iy,ip] => m.sh[idx]
+								@test L["l_vcs"].vals[1+l_idx][ia,iz,iy,ip] == m.vh[idx]
+								@test L["l_vcs"].vals[2+l_idx][ia,iz,iy,ip] == m.ch[idx]
+								@test L["l_vcs"].vals[3+l_idx][ia,iz,iy,ip] == m.sh[idx]
 							end
 						end
 					end
@@ -77,7 +72,7 @@ facts("simulator.") do
 	end
 
 
-	context("testing get_rho_ktmp") do
+	@testset "testing get_rho_ktmp" begin
 
 
 		p = Param(2)
@@ -109,7 +104,7 @@ facts("simulator.") do
 				end
 			end
 		end
-		L = Dict{ASCIIString,mig.Lininterp}()
+		L = Dict{String,mig.Lininterp}()
 		L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
 		L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
@@ -136,13 +131,13 @@ facts("simulator.") do
 		ktmp = mig.get_rho_ktmp(L["l_rho"],azYP,p)
 
 		for ik in 1:p.nJ
-			@fact ktmp[ik] => m.rho[ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+			@test ktmp[ik] == m.v[ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 		end
 	end
 
 
 
-	context("testing get_vcs") do
+	@testset "testing get_vcs" begin
 
 
 		p = Param(2)
@@ -174,7 +169,7 @@ facts("simulator.") do
 				end
 			end
 		end
-		L = Dict{ASCIIString,mig.Lininterp}()
+		L = Dict{String,mig.Lininterp}()
 		L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
 		L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
@@ -202,17 +197,17 @@ facts("simulator.") do
 		ik = 4
 		vcs = mig.get_vcs(L["l_vcs"],azYP,ihh,ik,p)
 
-		@fact vcs[1] => m.vh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact vcs[2] => m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact vcs[3] => m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[1] == m.vh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[2] == m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[3] == m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 
 		ihh = 2
 		ik = 6
 		vcs = mig.get_vcs(L["l_vcs"],azYP,ihh,ik,p)
 
-		@fact vcs[1] => m.vh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact vcs[2] => m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact vcs[3] => m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[1] == m.vh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[2] == m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test vcs[3] == m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 
 		function vfun(xhh,xk,xs,xz,xy,xp,xtau,xa,xh,xj,xt)
 			188*xhh + 100*xk + 2*xs + 2.8*xz + 1.4*xy + 1.5*xp + 6*xtau + 7*xa + 80*xh + 10*xj + xt
@@ -224,7 +219,7 @@ facts("simulator.") do
 			18*xhh + 1*xk + 20*xs + 3.8*xz + 1*xy + 5*xp + 3*xtau + 4*xa + 0*xh + 11*xj + xt
 		end
 
-		println("filling m.vh, m.sh and m.ch with lincom. this takes a while.")
+		info("filling m.vh, m.sh and m.ch with lincom. this takes a while.")
 		for is=1:p.ns
 		for iz=1:p.nz
 		for iy=1:p.ny
@@ -252,8 +247,8 @@ facts("simulator.") do
 		end
 		end
 
-		println("done")
-		for itest in 1:100
+		info("done")
+		for itest in 1:20
 			# pick some random discrete states
 			is = rand(1:p.ns)
 			itau = rand(1:p.ntau)
@@ -288,21 +283,19 @@ facts("simulator.") do
 			# println("approx2=$(v[2])") 
 			# println("true2=$(vfun(2,ik,is,z,Y,P,itau,a,ih,ij,it))")
 
-			@fact v1v2[1] - vfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-			@fact v1v2[2] - vfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-
-			@fact vcs1[1] - vfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-			@fact vcs1[2] - cfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-			@fact vcs1[3] - sfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-
-			@fact vcs2[1] - vfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-			@fact vcs2[2] - cfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
-			@fact vcs2[3] - sfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) => roughly(0.0,atol=1e-6)
+			@test isapprox(v1v2[1], vfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(v1v2[2], vfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs1[1], vfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs1[2], cfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs1[3], sfun(1,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs2[1], vfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs2[2], cfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
+			@test isapprox(vcs2[3], sfun(2,ik,is,z,Y,P,itau,a,ih,ij,it) ,atol=1e-6)
 			mig.resetCache!(L["l_vcs"])
 		end
 	end
 
-	context("testing get_v1v2") do
+	@testset "testing get_v1v2" begin
 
 
 		p = Param(2)
@@ -334,7 +327,7 @@ facts("simulator.") do
 				end
 			end
 		end
-		L = Dict{ASCIIString,mig.Lininterp}()
+		L = Dict{String,mig.Lininterp}()
 		L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
 		L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
@@ -360,12 +353,12 @@ facts("simulator.") do
 		ik = 4
 		v1v2 = mig.get_v1v2(L["l_vcs"],azYP,ik,p)
 
-		@fact v1v2[1] => m.vh[1,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact v1v2[2] => m.vh[2,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test v1v2[1] == m.vh[1,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test v1v2[2] == m.vh[2,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 	end
 
 
-	context("testing get_cs") do
+	@testset "testing get_cs" begin
 
 		p = Param(2)
 		m = Model(p)
@@ -396,7 +389,7 @@ facts("simulator.") do
 				end
 			end
 		end
-		L = Dict{ASCIIString,mig.Lininterp}()
+		L = Dict{String,mig.Lininterp}()
 		L["l_vcs"] = mig.Lininterp(vcs_arr,gs)
 		L["l_rho"] = mig.Lininterp(rho_arr,gs)
 
@@ -422,13 +415,11 @@ facts("simulator.") do
 		ik = 4
 		v1v2 = mig.get_cs(L["l_vcs"],azYP,ihh,ik,p)
 
-		@fact v1v2[1] => m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
-		@fact v1v2[2] => m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test v1v2[1] == m.ch[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
+		@test v1v2[2] == m.sh[ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 	end
 
 end
 
 
-
-end	#module
 

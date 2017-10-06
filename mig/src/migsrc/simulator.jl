@@ -288,7 +288,7 @@ function simulate(m::Model,p::Param)
 	idxvec = Dage .== 1
 	Dis[idxvec]  = rand(G0k,nsim)
 	Dj[idxvec]   = rand(G0j,nsim)
-	Dz[idxvec]   = m.zshock0
+	Dz[idxvec]   = m.zshock0	# get initial z shock
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
@@ -345,7 +345,7 @@ function simulate(m::Model,p::Param)
 
 		# individuals to simulate at this age
 		inds   = 1:m.coh_breaks[maxcohort]
-		idxvec = (Dage.==age) & (Di .<= inds[end])
+		idxvec = (Dage.==age) .& (Di .<= inds[end])
 
 		# dataframe with discrete states for each id
 		g = DataFrame(id = inds,j = Dj[idxvec], is = Dis[idxvec], h=Dh[idxvec], tau=Dtau[idxvec])
@@ -456,8 +456,13 @@ function simulate(m::Model,p::Param)
 					# vtmp[:] = ktmp .+ convert(Vector{Float64},m.eps_shock[i_idx])
 
 					# 3) find indmax_k {v(state,k) + eps(k)}
-					maxval, moveto = findmax(ktmp .+ m.eps_shock[i_idx])
+					maxval, moveto = findmax(ktmp + m.eps_shock[i_idx])
 					realized_shock = m.eps_shock[i_idx][moveto]
+
+					# 4) find implied probabilities of stay and move
+					mmx = ktmp - maximum(ktmp)
+					stayprob = exp(mmx[ij]) / sum(exp.(mmx))
+					cum_moveprob = 1.0 - stayprob
 
 					move   = ij != moveto
 
@@ -628,18 +633,18 @@ function simulate(m::Model,p::Param)
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
 				if highMC && (p.shockReg==ij) && move
-					println("ind=$id, cohort = $coh moved even though it's ruled out.")
+					error("ind=$id, cohort = $coh moved even though it's ruled out.")
 				end
 			end # individual
 
 			if p.verbose>0
 				if mod(g_count,400) == 0
-					println("this is group $g_count")
-					println("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
-					println("interpolator l_vcs:")
-					println(L["l_vcs"])
-					println("interpolator l_rho:")
-					println(L["l_rho"])
+					info("this is group $g_count")
+					info("for group age=$age,is=$is,ih=$ih,itau=$itau,ij=$ij:")
+					info("interpolator l_vcs:")
+					info(L["l_vcs"])
+					info("interpolator l_rho:")
+					info(L["l_rho"])
 				end
 			end
 		end # groups
@@ -654,13 +659,15 @@ function simulate(m::Model,p::Param)
 
 	# convert children indicator into a boolean:
 	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=PooledDataArray(convert(Array{Bool},DM)),moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy)
 
 	# some transformations before exit
 	# --------------------------------
 
 	df = join(df,m.agedist,on=:realage)
-	df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
+	df[:p2y] = df[:p] ./ df[:y]
+	df[:p2w] = df[:p] ./ df[:wealth]
+	# df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
 	gc()
 	return df
 end
@@ -707,6 +714,9 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 	# 1. l_vcs
 	# 2. l_rho  
 
+# # dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
+# function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
+# 	 r = ik + p.nJ * (is-1 + p.ns * (iz-1 + p.nz * (iy-1 + p.ny * (ip-1 + p.np * (itau-1 + p.ntau * (ia-1 + p.na * (ih-1 + p.nh * (ij-1 + p.nJ * (age-1)))))))))
 	# get part of index that does not change
 	offset_h_age_j = ih-1 + p.nh * (ij-1 + p.nJ * (age-1))
 
@@ -723,6 +733,7 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 
 					for ik in 1:p.nJ
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
+						# CAUTION: we are no longer interpolating the probability function rho but the underlying value function v
 						# @inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
 						@inbounds L["l_rho"].vals[ik][arr_idx] = m.v[rho_idx] 	
 
@@ -836,16 +847,19 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# keep only relevant years
 	# and drop NAs
-	df = @where(df,(:year.>1996) & (!isna(:cohort)))
+	df = @where(df,(:year.>1996) .& (.!isna.(:cohort)))
 
 
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 3 bins, and add age squared
 	ngroups = 3
-	df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
+	# df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
+	df[:agebin] = cut(df[:realage],round.(Int64,quantile(df[:realage],collect(1 : ngroups - 1)/ ngroups)))
+	df[:age2] = df[:age].^2
+	df[:sell] = (df[:h].==1) .& (df[:hh].==0)   # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
-	fullw = WeightVec(convert(Array,df[:density]))
+	fullw = Weights(convert(Array,df[:density]))
 
 
 	# grouped dfs
@@ -868,7 +882,7 @@ function computeMoments(df::DataFrame,p::Param)
 		std_h =  DataArray(Float64,3)
 	else
 		try 
-			lm_h = glm(h ~ age + age2 ,df,Normal(),IdentityLink())
+			lm_h = glm(@formula(h ~ age + age2) ,df,Normal(),IdentityLink())
 			cc_h  = coeftable(lm_h)
 			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
 			coef_h = @data(coef(lm_h))
@@ -895,7 +909,7 @@ function computeMoments(df::DataFrame,p::Param)
 	# ----------
 
 	for div in g_div
-		w = WeightVec(convert(Array,div[:density]))
+		w = Weights(convert(Array,div[:density]))
 		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w)])
 	end
 
@@ -904,7 +918,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for div in g_kids
 		kk = "$(div[1,:kids])"
-		w = WeightVec(convert(Array,div[:density]))
+		w = Weights(convert(Array,div[:density]))
 		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w)])
 	end
 	# TODO std error
@@ -925,7 +939,7 @@ function computeMoments(df::DataFrame,p::Param)
 		coef_mv = @data(zeros(3))
 		std_mv =  @data(ones(3))
 	else
-		lm_mv = glm( move ~ age + age2 ,df,Normal(),IdentityLink())
+		lm_mv = glm( @formula(move ~ age + age2),df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
 		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)] 
 		coef_mv = @data(coef(lm_mv))
@@ -971,7 +985,7 @@ function computeMoments(df::DataFrame,p::Param)
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
-			w = WeightVec(convert(Array,idf[:density]))
+			w = Weights(convert(Array,idf[:density]))
 			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 		end
 
@@ -987,7 +1001,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for idf in g_kids
 		kk = "$(idf[1,:kids])"
-		w = WeightVec(convert(Array,idf[:density]))
+		w = Weights(convert(Array,idf[:density]))
 		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
 	end
 	# TODO std error
@@ -1047,7 +1061,7 @@ function computeMoments(df::DataFrame,p::Param)
 	# -----------------
 
 	for idf in g_div
-		w = WeightVec(convert(Array,idf[:density]))
+		w = Weights(convert(Array,idf[:density]))
 		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(convert(Array,idf[:wealth]),w)])
 	end
 
@@ -1060,7 +1074,7 @@ function computeMoments(df::DataFrame,p::Param)
 		push!(mom1,["mean_wealth_ownFALSE",mean(convert(Array,df[:wealth]),fullw)])
 	else
 		for idf in g_own
-			w = WeightVec(convert(Array,idf[:density]))
+			w = Weights(convert(Array,idf[:density]))
 			kk = "$(idf[1,:own])"
 			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(convert(Array,idf[:wealth]),w)])
 		end
