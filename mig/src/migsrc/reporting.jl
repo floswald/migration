@@ -90,14 +90,14 @@ function simReport(s::DataFrame)
     # qregs_age = Dict()
     # qregs_own_move = Dict()
     qregs = Dict()
-    qreg_coefs = DataFrame(τ=Float64[],own=Float64[],move=Float64[],age=Float64[])
+    qreg_coefs = DataFrame(τ=Float64[],own=Float64[],z=Float64[],age=Float64[])
     for tau in 0.1:0.1:0.9
         info("tau = $tau")
-        qregs["τ$tau"] = qreg(@formula(z ~ own + move + age),s,tau) 
+        qregs["τ$tau"] = qreg(@formula(cumprob ~ own + z + age),s,tau) 
         ct = coeftable(qregs["τ$tau"])
         est = coef(qregs["τ$tau"])
         nms = ct.rownms
-        push!(qreg_coefs,vcat(tau, [est[nms .== coef] for coef in ["own: true","move: true","age"]]...))
+        push!(qreg_coefs,vcat(tau, [est[nms .== coef] for coef in ["own: true","z","age"]]...))
     end
 
 	mp_p = @linq s |>
