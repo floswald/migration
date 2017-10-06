@@ -903,9 +903,9 @@ function exp_highMC(j::Int)
 	m = Model(p)
 	solve!(m,p)
 	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
-	EV0 = m.EV[1,2,2,2,1,m.aone,1,j,2]
-	base = simulate(m,p);
-	base = base[!isna(base[:cohort]),:];
+	EV0 = j==0 ? NaN : m.EV[1,2,2,2,1,m.aone,1,j,2]
+	basel = simulate(m,p);
+	basel = basel[!isna(basel[:cohort]),:];
 
 	
 	# model where moving is shut down in region j
@@ -918,12 +918,12 @@ function exp_highMC(j::Int)
 	p2 = Param(2,opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
-	EV1 = m2.EV[1,2,2,2,1,m.aone,1,j,2]
+	EV1 = j==0 ? NaN : m2.EV[1,2,2,2,1,m.aone,1,j,2]
 
 	pol = simulate(m2,p2);
 	pol = pol[!isna(pol[:cohort]),:];
 
-	return Dict(:base=>base,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
+	return Dict(:base=>basel,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
 
 end
 
