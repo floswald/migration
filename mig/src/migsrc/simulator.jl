@@ -292,6 +292,10 @@ function simulate(m::Model,p::Param)
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
+	# we want stable proportions within each cohort. i.e. each cohort should have the 
+	# the same amount of people in state j, type tau, etct
+	Dj[idxvec] = repeat(rand(G0j,m.coh_n[1]),inner=[1],outer=[N_coh])
+
 	# policies
 	# ========
 
@@ -322,6 +326,10 @@ function simulate(m::Model,p::Param)
 	if p.policy == "highMC" 
 		highMC = true
 	end
+	if p.policy == "noMove" 
+		highMC = true
+	end
+
 
 	if p.policy == "pshock_highMC"
 		pshock = true
@@ -470,6 +478,9 @@ function simulate(m::Model,p::Param)
 						println("ktmp=$ktmp")
 						println("eps=$eps")
 						error("problem in moveto = $moveto")
+					end
+					if move && highMC
+						error("indi $i is moving from $ij to $moveto")
 					end
 				# end
 

@@ -316,7 +316,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# if shut down moving from region ij
 										if highMC && (p.shockReg==ij) && (ij!=ik)
-											mc = 10000.0
+											mc = NOMOVE_PEN
 										end
 
 										offset_k = ik-1 + p.nJ * offset_1

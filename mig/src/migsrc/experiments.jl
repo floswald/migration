@@ -905,7 +905,7 @@ function exp_highMC(j::Int)
 	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	EV0 = j==0 ? NaN : m.EV[1,2,2,2,1,m.aone,1,j,2]
 	basel = simulate(m,p);
-	basel = basel[!isna(basel[:cohort]),:];
+	basel = basel[.!isna.(basel[:cohort]),:];
 
 	
 	# model where moving is shut down in region j
@@ -945,40 +945,61 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
-	ate_0 = @linq base |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	ate_1 = @linq pol |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	ate = copy(ate_1 .- ate_0 )
-	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
+	if j>0
+		ate_0 = @linq base |>
+			    @where((:j.==j)&(:year.>cutyr)) |>
+				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		ate_1 = @linq pol |>
+			    @where((:j.==j)&(:year.>cutyr)) |>
+				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		ate = copy(ate_1 .- ate_0 )
+		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
-	age_ate_0 = @linq base |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	age_ate_1 = @linq pol |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		age_ate_0 = @linq base |>
+			    @where((:j.==j)&(:year.>cutyr)) |>
+				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		age_ate_1 = @linq pol |>
+			    @where((:j.==j)&(:year.>cutyr)) |>
+				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	else
+		ate_0 = @linq base |>
+			    @where((:year.>cutyr)) |>
+				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		ate_1 = @linq pol |>
+			    @where((:year.>cutyr)) |>
+				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		ate = copy(ate_1 .- ate_0 )
+		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
+
+		age_ate_0 = @linq base |>
+			    @where((:year.>cutyr)) |>
+				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		age_ate_1 = @linq pol |>
+			    @where((:year.>cutyr)) |>
+				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	end
 	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
 
     # total flows across regims
     flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false,"null")
-    f2 = Dict( k => flows[k][j]  for k in keys(flows) )
 
-    flows = Dict()
-    flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
-    flows["inmig"]["pct"] = 100*(flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
+    if j > 0
+	    f2 = Dict( k => flows[k][j]  for k in keys(flows) )
 
-    flows["inmig_own"]        = Dict("base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all]))
-    flows["inmig_own"]["pct"] = 100*(flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
+	    flows = Dict()
+	    flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
+	    flows["inmig"]["pct"] = 100*(flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
 
-    flows["inmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all]))
-    flows["inmig_rent"]["pct"] = 100*(flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
+	    flows["inmig_own"]        = Dict("base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all]))
+	    flows["inmig_own"]["pct"] = 100*(flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
 
-    flows["outmig"]      = Dict("base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all]))
-    flows["outmig_own"]  = Dict("base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all]))
-    flows["outmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all]))
+	    flows["inmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all]))
+	    flows["inmig_rent"]["pct"] = 100*(flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
+
+	    flows["outmig"]      = Dict("base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all]))
+	    flows["outmig_own"]  = Dict("base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all]))
+	    flows["outmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all]))
+	end
 
 
 	# compare the ones who did move with their virtual counterparts
@@ -986,34 +1007,61 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 
 
 	# number of moves 
-	mv_count = @linq base |>
-	        @where((:tau.==1)) |>
-	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
+	if j>0
+		mv_count = @linq base |>
+		        @where((:tau.==1)) |>
+		        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
 
-	never_id = @linq mv_count |>
-	        @where(:n_moves.==0 ) |>
-	        @select(id=unique(:id))
-	once_id = @linq mv_count |>
-	        @where(:n_moves.>0 ) |>
-	        @select(id=unique(:id))
+		never_id = @linq mv_count |>
+		        @where(:n_moves.==0 ) |>
+		        @select(id=unique(:id))
+		once_id = @linq mv_count |>
+		        @where(:n_moves.>0 ) |>
+		        @select(id=unique(:id))
 
-	# people who where born in j, are mover type and stay till end of life. stayers.
-	stay_id = base[findin(base[:id],never_id[:id]),:]
-	stay_id = @linq stay_id |>
-			  @where(:j.==j)
+		# people who where born in j, are mover type and stay till end of life. stayers.
+		stay_id = base[findin(base[:id],never_id[:id]),:]
+		stay_id = @linq stay_id |>
+				  @where(:j.==j)
 
-	# people who were born in j 
-	born_id = @linq base |>
-	          @where((:age .== 1) & (:j.==j)) |>
-	          @select(id=unique(:id))
-	# people who were born in j and move away
-	away_id = DataFrame(id = findin(findin(base[:id],born_id[:id]),once_id[:id]))
+		# people who were born in j 
+		born_id = @linq base |>
+		          @where((:age .== 1) & (:j.==j)) |>
+		          @select(id=unique(:id))
+		# people who were born in j and move away
+		away_id = DataFrame(id = findin(findin(base[:id],born_id[:id]),once_id[:id]))
 
-	young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
-	old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
-	mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
-	mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(!(:own))),id=unique(:id))
-	# these people are "treated"
+		young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
+		old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
+		mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
+		mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(!(:own))),id=unique(:id))
+		# these people are "treated"
+
+	else
+		mv_count = @linq base |>
+		        @where((:tau.==1)) |>
+		        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
+
+		never_id = @linq mv_count |>
+		        @where(:n_moves.==0 ) |>
+		        @select(id=unique(:id))
+		once_id = @linq mv_count |>
+		        @where(:n_moves.>0 ) |>
+		        @select(id=unique(:id))
+
+		# people are mover type and stay till end of life. stayers.
+		stay_id = base[findin(base[:id],never_id[:id]),:]
+
+		# people who were born in j and move away
+		away_id = once_id
+
+		young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)),id=unique(:id))
+		old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)),id=unique(:id))
+		mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:own)),id=unique(:id))
+		mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(!(:own))),id=unique(:id))
+		# these people are "treated"
+
+	end
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
@@ -1041,12 +1089,21 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	# 	@where((:j.==j)&(:year.>cutyr)) |>
 	# 	@by(:age,own_rate = mean(:own))
 
-	v_profile_base = @linq base |>
-		@where((:j.==j)&(:year.>cutyr)) |>
-		@by(:age,own_rate = mean(:own))
-	v_profile_pol = @linq pol |>
-		@where((:j.==j)&(:year.>cutyr)) |>
-		@by(:age,own_rate = mean(:own))
+	if j>0
+		v_profile_base = @linq base |>
+			@where((:j.==j)&(:year.>cutyr)) |>
+			@by(:age,own_rate = mean(:own))
+		v_profile_pol = @linq pol |>
+			@where((:j.==j)&(:year.>cutyr)) |>
+			@by(:age,own_rate = mean(:own))
+	else
+		v_profile_base = @linq base |>
+			@where((:year.>cutyr)) |>
+			@by(:age,own_rate = mean(:own))
+		v_profile_pol = @linq pol |>
+			@where((:year.>cutyr)) |>
+			@by(:age,own_rate = mean(:own))
+	end
 
 	# preparing io.
 	io = mig.setPaths()
@@ -1076,6 +1133,12 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 			ctax_att_old = json_dat["ctax_att_old"]
 		end
 		close(f)
+	else
+		ctax_ate       = NaN
+		ctax_att       = NaN
+		ctax_atn       = NaN
+		ctax_att_young = NaN
+		ctax_att_old   = NaN
 	end
 
 	# merge all ATE/ATT perc dicts
