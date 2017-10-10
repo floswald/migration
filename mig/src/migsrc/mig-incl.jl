@@ -361,6 +361,23 @@ function convert(::Type{Dict},x::DataFrame)
 		Dict(k=>x[k][1] for k in names(x))
 	end
 end
+# same but with column pivot as the first key, then nested values under that
+function convert(::Type{Dict},x::DataFrame,pivot::Symbol)
+	vnames = setdiff(names(x),pivot)
+	r = Dict()
+	for ro in eachrow(x)
+		r[ro[:pivot]] = Dict(k=>ro[:k] for k in vnames)
+	end
+	return r
+end
+pdiff(x,y) = 100*(x-y) / abs(y)
+function pdiff(x::Dict,y::Dict)
+	r = Dict()
+	for k in keys(y)
+		r[k] = Dict(kk => pdiff(x[k][kk],y[k][kk] for kk in keys(x[k])))
+	end
+	return r
+end
 
 
 #' computes flow statistics of 
@@ -389,18 +406,18 @@ function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 
 			# population of j over time
 			a = @linq v |>
-				@where((:year.>1997) & (:j.==j)) |>
+				@where((:year.>1997) .& (:j.==j)) |>
 				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own)) |>
 				@transform(popgrowth = [diff(:All);0.0]./:All)
 
 			# movers to j over time
 			m_in = @linq v |>
-				@where((:year.>1997) & (:j.!=j)) |>
+				@where((:year.>1997) .& (:j.!=j)) |>
 				@by(:year, Total_in=sum(:moveto.==j), Owners_in=sum((:moveto.==j).*(:h.==1)), Renters_in=sum((:moveto.==j).*(:h.==0)), in_buy =sum((:moveto.==j).*(:hh.==1)), in_rent =sum((:moveto.==j).*(:hh.==0)))
 
 			# movers from j over time
 			m_out = @linq v |>
-				@where((:year.>1997) & (:j.==j)) |>
+				@where((:year.>1997) .& (:j.==j)) |>
 				@by(:year, Total_out=sum(:move), Owners_out=sum((:move).*(:h.==1)), Renters_out=sum((:move).*(:h.==0)), out_buy =sum((:move).*(:hh.==1)), out_rent =sum((:move).*(:hh.==0)))
 
 			# merge

@@ -903,7 +903,7 @@ function exp_highMC(j::Int)
 	m = Model(p)
 	solve!(m,p)
 	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
-	EV0 = j==0 ? NaN : m.EV[1,2,2,2,1,m.aone,1,j,2]
+	EV0 = j==0 ? mean(m.EV[1,2,2,2,1,m.aone,1,:,2]) : m.EV[1,2,2,2,1,m.aone,1,j,2]
 	basel = simulate(m,p);
 	basel = basel[.!isna.(basel[:cohort]),:];
 
@@ -918,7 +918,7 @@ function exp_highMC(j::Int)
 	p2 = Param(2,opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
-	EV1 = j==0 ? NaN : m2.EV[1,2,2,2,1,m.aone,1,j,2]
+	EV1 = j==0 ? mean(m.EV[1,2,2,2,1,m.aone,1,:,2]) : m2.EV[1,2,2,2,1,m.aone,1,j,2]
 
 	pol = simulate(m2,p2);
 	pol = pol[!isna(pol[:cohort]),:];
@@ -928,11 +928,12 @@ function exp_highMC(j::Int)
 end
 
 
-# compares baesline with highMC
-# differences in utility if moving in region j
-# is shut down.
-# function exp_value_mig_base(j::Int,allj=false)
-# if called with j=0, shuts down moving everywhere.
+"""
+	exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
+
+compares baesline with highMC scenario. returns differences in utility and other oucomes if moving in region j
+is shut down. if called with `j=0`, shuts down moving everywhere.
+"""
 function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 
 	bp = exp_highMC(j)
@@ -945,6 +946,7 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
+	# for region-j only results, condition on region j
 	if j>0
 		ate_0 = @linq base |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
@@ -961,7 +963,22 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		age_ate_1 = @linq pol |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
 				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		own30_0 = @linq base |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+		    @transform(own_30=:own.*(:realage==30)) |>
+			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		own30_1 = @linq pol |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+		    @transform(own_30=:own.*(:realage==30)) |>
+			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		year_0 = @linq base |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		year_1 = @linq pol |>
+		    @where((:j.==j)&(:year.>cutyr)) |>
+			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	else
+	# for aggregate results, don't
 		ate_0 = @linq base |>
 			    @where((:year.>cutyr)) |>
 				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
@@ -977,10 +994,38 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		age_ate_1 = @linq pol |>
 			    @where((:year.>cutyr)) |>
 				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		own30_0 = @linq base |>
+		    @where((:year.>cutyr)) |>
+		    @transform(own_30=:own.*(:realage==30)) |>
+			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		own30_1 = @linq pol |>
+		    @where((:year.>cutyr)) |>
+		    @transform(own_30=:own.*(:realage==30)) |>
+			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		year_0 = @linq base |>
+		    @where((:year.>cutyr)) |>
+			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		year_1 = @linq pol |>
+		    @where((:year.>cutyr)) |>
+			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	end
-	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
+	loc_0 = @linq base |>
+		    @where((:year.>cutyr)) |>
+			@by(:j,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	loc_1 = @linq pol |>
+		    @where((:year.>cutyr)) |>
+			@by(:j,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 
-    # total flows across regims
+	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
+	age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
+	loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
+	own30_perc   = pdiff(convert(Dict,own30_1,:own_30),convert(Dict,own30_0:own_30))
+	year_perc    = pdiff(convert(Dict,year_1,:year),convert(Dict,year_0,:year))
+
+
+
+    ## for single region j experiment
+    ## get total immigration flows across regimes
     flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false,"null")
 
     if j > 0
@@ -1157,8 +1202,11 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		"EV_perc" => bp[:perc][1],
 		"ate" => convert(Dict,ate),
 		"age_ate_perc" => age_ate_perc,
-		"ate_perc" => convert(Dict,ate_perc),
-		"att_perc" => convert(Dict,atts["att"]),
+		"loc_perc" => loc_perc,
+		"own30_perc" => own30_perc,
+		"year_perc" => year_perc,
+		"ate_perc" => ate_perc,
+		"att_perc" => atts["att"],
 		"ate_att" => ate_att,
 		"flows" => flows,
 		"ctax_ate" => ctax_ate,

@@ -54,9 +54,9 @@ function main()
                 elseif v=="sim"
                     mig.runSim()
                 elseif v=="runtests"
-                    include(joinpath("dir","test","runtests.jl"))
+                    include(joinpath(dir,"test","runtests.jl"))
                 elseif contains(v,"test_")
-                    include(joinpath("dir","test",v))
+                    include(joinpath(dir,"test",v))
                 end
             elseif k=="--estim"
                 Base.info("Running estimation: $v")
