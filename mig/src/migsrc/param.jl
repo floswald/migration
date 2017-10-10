@@ -122,7 +122,7 @@ type Param
 		gamma    = 1.4	
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
-		tau      = 100
+		tau      = 100.0
 		taudist  = 0.65
 		xi1      = 0.008
 		xi2      = 0.052
@@ -226,7 +226,7 @@ end
 # takes a dict of params_to_sample
 function update!(p::Param,pd::Dict)
 	for (k,v) in pd
-		setfield!(p,symbol(k),v)
+		setfield!(p,Symbol(k),v)
 	end
 end
 

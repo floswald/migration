@@ -1,19 +1,14 @@
 
 
-module migtests
+using mig 
+using Base.Test
+using TestSetExtensions
 
 
-using FactCheck
+@testset ExtendedTestSet "Running mig tests" begin
 
-include("test_accelerator.jl")
-include("test_experiment.jl")
-include("test_migincl.jl")
-include("test_model.jl")
-include("test_param.jl")
-include("test_sim.jl")
-include("test_solution.jl")
-include("test_solver.jl")
-
-FactCheck.exitstatus()
+    @includetests ARGS
 
 end
+    
+

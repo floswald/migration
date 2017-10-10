@@ -63,6 +63,7 @@ type Model
 	coh_idx    :: Dict{Int,Range{Int}}
 	coh_breaks :: Array{Int}
 	coh_n      :: Dict{Int,Int}
+	coh_members:: Dict{Int,Range{Int}}
 
 	# random generator setup
 	# ----------------------
@@ -71,7 +72,7 @@ type Model
 	mshock  :: Vector{Float64}
 	zshock0     :: Vector{Float64}
 	eps_dist :: Distributions.Gumbel{Float64}
-	eps_shock :: Array{Vec}
+	eps_shock :: Array{Vector{Float64}}
 
 	# policy settings 
 	# ---------------
@@ -347,7 +348,7 @@ type Model
 			end
 		end
 		# convert to levels
-		zgrid = exp(zgrid)
+		zgrid = exp.(zgrid)
 
 		# poterba & sinai average tax savings from mortgage subsidy
 		# 2004 SCF data. adjust by value of cpi2012 in 2004: 0.818304 * 1000
@@ -393,7 +394,7 @@ type Model
 		x = [linspace(bounds["assets"][1],50.0,p.na-5);linspace(100.0,1000.0,5)]
 		# x = [linspace(bounds["assets"][1],60.0,p.na-6),linspace(80.0,bounds["assets"][2],6)]
 		# x = linspace(bounds["assets"][1],bounds["assets"][2],p.na)
-		x = x .- x[ indmin(abs(x)) ] 
+		x = x .- x[ indmin(abs.(x)) ] 
 		# println("assets = $x")
 		grids["assets"]  = x
 		aone  = findfirst(grids["assets"].>=0)
@@ -462,6 +463,9 @@ type Model
 			mc = mc .* 0.5
 		elseif p.policy == "doubleMC"
 			mc = mc .* 2.0
+		elseif p.policy == "noMove"
+			# completely shutdown moving
+			mc[mc .> 0] = NOMOVE_PEN
 		elseif p.policy == "tripleMC"
 			mc = mc .* 3.0
 		end
@@ -478,7 +482,7 @@ type Model
 		# cohort settings
 		# ===============
 
-		c_yrs, c_idx, c_breaks, c_n = cohortIdx(p)
+		c_yrs, c_idx, c_breaks, c_n, c_mem = cohortIdx(p)
 
 		# random generator setup
 		# ======================
@@ -489,7 +493,7 @@ type Model
 		mshock = rand(N*(p.nt-1))
 		zshock0    = rand(Normal(0,0.1),N)
 		eps_dist = Gumbel()
-		eps_shock = reinterpret(Vec{p.nJ,Float64},rand(eps_dist,p.nJ,p.nt-1,N),(p.nt-1,N))
+		eps_shock = Vector{Float64}[rand(eps_dist,p.nJ) for i in 1:N, j in 1:p.nt-1]
 
 
 		# copula settings
@@ -502,7 +506,7 @@ type Model
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,zshock,sshock,mshock,zshock0,eps_dist,eps_shock,sinai,cop,cop_quants,cop_shock)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,c_mem,zshock,sshock,mshock,zshock0,eps_dist,eps_shock,sinai,cop,cop_quants,cop_shock)
 
 	end
 end
@@ -558,6 +562,7 @@ function cohortIdx(p::Param)
 	cdict = Dict{Int,Range{Int}}()
 	idict = Dict{Int,Range{Int}}()
 	ndict = Dict{Int,Int}()
+	mdict = Dict{Int,Range{Int}}()  # members
 	for yr in 1:length(years)
 		yr_born = years[yr]
 		cdict[yr] = yr_born:(min(yr_born + p.nt-2,2012))
@@ -570,12 +575,14 @@ function cohortIdx(p::Param)
 	breaks = Int[]
 	push!(breaks,ppc)
 	ndict[1]=ppc
+	mdict[1]=1:ppc
 	for i in 2:nc
 		pp += ppc
 		push!(breaks,pp)
 		ndict[i] = ppc
+		mdict[i] = mdict[i-1][end]+1:pp
 	end
-	return (cdict,idict,breaks,ndict)
+	return (cdict,idict,breaks,ndict,mdict)
 end
 
 # function logAssets(p::Param,x)
@@ -665,8 +672,8 @@ end
 
 function get_yp_transition(df::DataFrame,p::Param,sigs::Array,pgrid,ygrid)
 	Gyp = zeros(p.ny*p.np, p.ny*p.np)
-	ycoef = convert(Array, @where(df,(:param.=="Y_Intercept") | (:param.== "Y_LY")| (:param.== "Y_LP"))[:value]) 
-	pcoef = convert(Array, @where(df,(:param.=="P_Intercept") | (:param.== "P_LY")| (:param.== "P_LP"))[:value]) 
+	ycoef = convert(Array, @where(df,(:param.=="Y_Intercept") .| (:param.== "Y_LY") .| (:param.== "Y_LP"))[:value]) 
+	pcoef = convert(Array, @where(df,(:param.=="P_Intercept") .| (:param.== "P_LY") .| (:param.== "P_LP"))[:value]) 
 	for ip in 1:p.np
 		for iy in 1:p.ny
 

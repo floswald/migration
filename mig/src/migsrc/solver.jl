@@ -316,7 +316,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# if shut down moving from region ij
 										if highMC && (p.shockReg==ij) && (ij!=ik)
-											mc = 10000.0
+											mc = NOMOVE_PEN
 										end
 
 										offset_k = ik-1 + p.nJ * offset_1
@@ -521,6 +521,9 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 									# else
 									# 	m.vbar[jidx] = p.myNA
 									# end
+
+									# in this version of the code i don't even 
+									# need m.rho anymore. it's never used.
 
 									# compute rho: probability of moving to k given j
 									# for ik in 1:p.nJ

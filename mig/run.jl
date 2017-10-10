@@ -28,12 +28,14 @@ function main()
             --maxiter=<maxit>  run estimation for maxiter iterations [default: 500]
             --exper=<exper>    run experiment 
                                     experiments:
-                                        noMove        Perform noMove experiment      
+                                        highMC        Perform highMC experiment in <region>
+                                        noMove        Shutdown moving everywhere      
                                         moneyMC       Monetize moving cost      
                                         ypshock       shock y and p in region in year
                                         pshock        shock p in region in year
                                         yshock        shock y in region in year
                                         decomp        decompose owner's moving cost
+            --save=<true/false>  save the results? [default: false]
             --reg=<region>  run experiment in region region [default: 8]
             --year=<year>   run experiment in starting in year [default: 2000]
  
@@ -52,9 +54,9 @@ function main()
                 elseif v=="sim"
                     mig.runSim()
                 elseif v=="runtests"
-                    include(joinpath("dir","test","runtests.jl"))
+                    include(joinpath(dir,"test","runtests.jl"))
                 elseif contains(v,"test_")
-                    include(joinpath("dir","test",v))
+                    include(joinpath(dir,"test",v))
                 end
             elseif k=="--estim"
                 Base.info("Running estimation: $v")
@@ -67,10 +69,19 @@ function main()
                 end
             elseif k=="--exper"
                 Base.info("Running experiment: $v")
+                save = parse(Bool,args["--save"])
+                if save
+                    Base.info("will save results to disk")
+                else
+                    Base.info("will NOT save results to disk")
+                end
                 reg = parse(Int,args["--reg"])
-                if v=="noMove"
+                if v=="highMC"
                     Base.info("in region: $reg")
-                    e = mig.exp_value_mig_base(reg,true)   # true recomputes all cons taxes.
+                    e = mig.exp_value_mig_base(reg,save=true,ctax=false)   # true recomputes all cons taxes.
+                if v=="noMove"
+                    info("shutting down moving in all regions")
+                    e = mig.exp_value_mig_base(0,save=true,ctax=false)   # true recomputes all cons taxes.
                 elseif v=="moneyMC"
                     mig.moneyMC()
                 elseif (v=="ypshock") | (v=="yshock") | (v=="pshock")
