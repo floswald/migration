@@ -876,9 +876,11 @@ function find_ctax_value_mig_base(j::Int,mv_id::Vector{Int})
 
 end
 
+
+
 function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::Vector{Int})
 
-	println("current ctax = $ctax")
+	info("current ctax = $ctax")
 
 	# model where moving is shut down in region j
 	opts = Dict("policy" => "highMC", "shockRegion" => j)
@@ -921,7 +923,7 @@ function exp_highMC(j::Int)
 	EV1 = j==0 ? mean(m.EV[1,2,2,2,1,m.aone,1,:,2]) : m2.EV[1,2,2,2,1,m.aone,1,j,2]
 
 	pol = simulate(m2,p2);
-	pol = pol[!isna(pol[:cohort]),:];
+	pol = pol[.!isna.(pol[:cohort]),:];
 
 	return Dict(:base=>basel,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
 
@@ -949,27 +951,27 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	# for region-j only results, condition on region j
 	if j>0
 		ate_0 = @linq base |>
-			    @where((:j.==j)&(:year.>cutyr)) |>
+			    @where((:j.==j).&(:year.>cutyr)) |>
 				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		ate_1 = @linq pol |>
-			    @where((:j.==j)&(:year.>cutyr)) |>
+			    @where((:j.==j).&(:year.>cutyr)) |>
 				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		ate = copy(ate_1 .- ate_0 )
 		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
 		age_ate_0 = @linq base |>
-			    @where((:j.==j)&(:year.>cutyr)) |>
+			    @where((:j.==j).&(:year.>cutyr)) |>
 				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		age_ate_1 = @linq pol |>
-			    @where((:j.==j)&(:year.>cutyr)) |>
+			    @where((:j.==j).&(:year.>cutyr)) |>
 				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		own30_0 = @linq base |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
+		    @where((:j.==j).&(:year.>cutyr)) |>
+		    @transform(own_30=:own.*(:realage.==30)) |>
 			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		own30_1 = @linq pol |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
+		    @transform(own_30=:own.*(:realage.==30)) |>
 			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		year_0 = @linq base |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
@@ -996,11 +998,11 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		own30_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
+		    @transform(own_30=:own.*(:realage.==30)) |>
 			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		own30_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
+		    @transform(own_30=:own.*(:realage.==30)) |>
 			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 		year_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
@@ -1019,7 +1021,7 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
 	age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
 	loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
-	own30_perc   = pdiff(convert(Dict,own30_1,:own_30),convert(Dict,own30_0:own_30))
+	own30_perc   = pdiff(convert(Dict,own30_1,:own_30),convert(Dict,own30_0,:own_30))
 	year_perc    = pdiff(convert(Dict,year_1,:year),convert(Dict,year_0,:year))
 
 
@@ -1071,15 +1073,15 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 
 		# people who were born in j 
 		born_id = @linq base |>
-		          @where((:age .== 1) & (:j.==j)) |>
+		          @where((:age .== 1) .& (:j.==j)) |>
 		          @select(id=unique(:id))
 		# people who were born in j and move away
 		away_id = DataFrame(id = findin(findin(base[:id],born_id[:id]),once_id[:id]))
 
-		young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)&(:j.==j)),id=unique(:id))
-		old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)&(:j.==j)),id=unique(:id))
-		mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(:own)),id=unique(:id))
-		mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)&(!(:own))),id=unique(:id))
+		young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2).&(:j.==j)),id=unique(:id))
+		old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2).&(:j.==j)),id=unique(:id))
+		mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move)&(:j.==j).&(:own)),id=unique(:id))
+		mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move)&(:j.==j).&(!(:own))),id=unique(:id))
 		# these people are "treated"
 
 	else
@@ -1100,10 +1102,10 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		# people who were born in j and move away
 		away_id = once_id
 
-		young_id = @select(@where(base,(:year.>cutyr)&(:age.<p.nt/2)),id=unique(:id))
-		old_id = @select(@where(base,(:year.>cutyr)&(:age.>=p.nt/2)),id=unique(:id))
-		mv_id_owners = @select(@where(base,(:year.>cutyr)&(:move)&(:own)),id=unique(:id))
-		mv_id_renters= @select(@where(base,(:year.>cutyr)&(:move)&(!(:own))),id=unique(:id))
+		young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2)),id=unique(:id))
+		old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2)),id=unique(:id))
+		mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move).&(:own)),id=unique(:id))
+		mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(!(:own))),id=unique(:id))
 		# these people are "treated"
 
 	end
@@ -1136,10 +1138,10 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 
 	if j>0
 		v_profile_base = @linq base |>
-			@where((:j.==j)&(:year.>cutyr)) |>
+			@where((:j.==j).&(:year.>cutyr)) |>
 			@by(:age,own_rate = mean(:own))
 		v_profile_pol = @linq pol |>
-			@where((:j.==j)&(:year.>cutyr)) |>
+			@where((:j.==j).&(:year.>cutyr)) |>
 			@by(:age,own_rate = mean(:own))
 	else
 		v_profile_base = @linq base |>
@@ -1199,18 +1201,18 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	# ======
 
 	d = Dict(
-		"EV_perc" => bp[:perc][1],
-		"ate" => convert(Dict,ate),
-		"age_ate_perc" => age_ate_perc,
-		"loc_perc" => loc_perc,
-		"own30_perc" => own30_perc,
-		"year_perc" => year_perc,
-		"ate_perc" => ate_perc,
-		"att_perc" => atts["att"],
-		"ate_att" => ate_att,
-		"flows" => flows,
-		"ctax_ate" => ctax_ate,
-		"ctax_att" => ctax_att)
+		:EV_perc => bp[:perc][1],
+		:ate => convert(Dict,ate),
+		:age_ate_perc => age_ate_perc,
+		:loc_perc => loc_perc,
+		:own30_perc => own30_perc,
+		:year_perc => year_perc,
+		:ate_perc => ate_perc,
+		:att_perc => atts["att"],
+		:ate_att => ate_att,
+		:flows => flows,
+		:ctax_ate => ctax_ate,
+		:ctax_att => ctax_att)
 		# "own_profile_0" => convert(Dict,own_profile_base),
 		# "own_profile_1" => convert(Dict,own_profile_pol))
 
@@ -1364,6 +1366,51 @@ function exp_value_mig(ss::AbstractString,j::Int,yr::Int)
 	return d
 
 	# compare
+end
+
+
+"""
+	ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
+
+computes the implied consumption tax for a given policy from model solution. This is a number τ by which optimal consumption is changed at each state. That is, if `v0` is the value of the baseline scenario, and v1 that of `pol`, then τ is such that `v1(c(τ)) = v0`.
+
+### Keyword args
+
+* `sol`: true if measure value at a certain state of the DP solution. false if measured from average v of simulation
+* `ix`: states where to measure the value function.
+"""
+function ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
+	at_idx = (ik,is,iz,iy,ip,itau,ia,ih,ij,it)
+	# get baseline value 
+	if sol
+		val = runSol()
+		v0 = val.v[at_idx...]
+	else
+		# simulate
+		s = runSim()
+		val = @linq s |>
+			@where(:year.>1996) |>
+			@select(v=mean(:maxv),u=mean(:utility))
+		v0 = val[:v][1]
+	end
+
+	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
+
+	function ftau(ctau::Float64,v0::Float64,pol::String,at::Tuple,sol::Bool)
+		if sol
+			so = runSol(opt=Dict(:policy=>pol,:ctax=>ctau))
+			v1 = so.v[at...]
+		else
+			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
+			val = @linq si |>
+				@where(:year.>1996) |>
+				@select(v=mean(:maxv),u=mean(:utility))
+			v1 = val[:v][1]
+		end
+		return (v0 - v1)^2
+	end
+	ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
+	return ctax
 end
 
 

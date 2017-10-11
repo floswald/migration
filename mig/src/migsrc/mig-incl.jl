@@ -57,11 +57,6 @@ function cov2corr(x::Matrix)
 	return y
 end
 
-function runSol()
-	p = Param(2)	# create a default param type
-	m = Model(p)
-	mig.solve!(m,p)
-end
 
 # objective function to work with MomentOpt
 function objfunc(ev::Eval)
@@ -130,23 +125,37 @@ function mywrap()
     mig.solve!(m,p)
 end
 
-
-function runSim()
-	p = Param(2)
+function runSol(;opt=Dict())
+	if length(opt)>0
+		p = Param(2,opts=opt)	# 
+	else
+		p = Param(2)	# create a default param type
+	end
 	m = Model(p)
-    solve!(m,p)
+	mig.solve!(m,p)
+	return m
+end
+
+function runSim(;opt=Dict())
+	if length(opt)>0
+		p = Param(2,opts=opt)	# 
+	else
+		p = Param(2)	# create a default param type
+	end
+	m = Model(p)
+	mig.solve!(m,p)
 	s   = simulate(m,p)
-	s = s[!isna(s[:cohort]),:]
-	s2 = @where(s,:year.>1996)
-	showall(@by(s2,[:own,:realage],m=mean(:move)))
-	showall(@by(s2,[:realage],own=mean(:own),buy=mean((:h.==0).*(:hh.==1)),sell=mean((:h.==1).*(:hh.==0))))
-	own=@by(s2,[:realage],m=mean(:own))
-	# mig.plot(own[:realage],own[:m])
-	# figure()
-	simplot(s,5)
-	x=computeMoments(s,p)
-	showall(x["moments"])
-	showall(x["yearly"])
+	s = s[.!isna.(s[:cohort]),:]
+	# s2 = @where(s,:year.>1996)
+	# showall(@by(s2,[:own,:realage],m=mean(:move)))
+	# showall(@by(s2,[:realage],own=mean(:own),buy=mean((:h.==0).*(:hh.==1)),sell=mean((:h.==1).*(:hh.==0))))
+	# own=@by(s2,[:realage],m=mean(:own))
+	# # mig.plot(own[:realage],own[:m])
+	# # figure()
+	# simplot(s,5)
+	# x=computeMoments(s,p)
+	# showall(x["moments"])
+	# showall(x["yearly"])
 	return s
 end
 
@@ -339,7 +348,7 @@ end
 function abs(d1::DataFrame)
     df = deepcopy(DataFrame(d1))
     for n in names(d1)
-        df[n] = abs(d1[n].data)
+        df[n] = abs.(d1[n].data)
     end
     return df
 end
@@ -363,10 +372,10 @@ function convert(::Type{Dict},x::DataFrame)
 end
 # same but with column pivot as the first key, then nested values under that
 function convert(::Type{Dict},x::DataFrame,pivot::Symbol)
-	vnames = setdiff(names(x),pivot)
+	vnames = setdiff(names(x),[pivot])
 	r = Dict()
 	for ro in eachrow(x)
-		r[ro[:pivot]] = Dict(k=>ro[:k] for k in vnames)
+		r[ro[pivot]] = Dict(k=>ro[k] for k in vnames)
 	end
 	return r
 end
@@ -374,7 +383,7 @@ pdiff(x,y) = 100*(x-y) / abs(y)
 function pdiff(x::Dict,y::Dict)
 	r = Dict()
 	for k in keys(y)
-		r[k] = Dict(kk => pdiff(x[k][kk],y[k][kk] for kk in keys(x[k])))
+		r[k] = Dict(kk => pdiff(x[k][kk],y[k][kk]) for kk in keys(x[k]))
 	end
 	return r
 end

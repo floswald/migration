@@ -13,3 +13,4 @@ mig-pkg/.Rbuildignore
 mig-pkg/man
 .Rproj.user
 *.DS_Store
+*.pdf
