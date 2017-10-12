@@ -1,3 +1,5 @@
+julia 0.6
+
 GLM
 MomentOpt
 PDMats
@@ -13,3 +15,5 @@ JSON
 Copulas
 ClusterManagers
 QuantileRegression
+FileIO
+RData

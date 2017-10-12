@@ -85,7 +85,7 @@ type Param
 	verbose :: Int
 
 	# constructor assigning initial values
-	function Param(size::Int,opts=Dict())
+	function Param(size::Int;opts::Dict=Dict())
 
 		if size==1
 			# super small: use for tests
@@ -183,25 +183,28 @@ type Param
 		amenity_WNC = amenity[8]
 		amenity_WSC = amenity[9]
 
+		noMC = false	# default: there IS a moving cost. experiments switch this off in certain periods.
+		ctax = 1.0 
+
 		# policy and shock setup
-		if length(opts) > 0 
-			pname    = get(opts,"policy","NULL")
-			lumpsum  = get(opts,"redistribute",[0.0])
-			verbose  = get(opts,"verbose",0)
-			shockReg = get(opts,"shockRegion",0)
-			shockAge = get(opts,"shockAge",100)
-			shockVal = get(opts,"shockVal",ones(nt-1))	# multiplicative factor
-			shockVal_y = get(opts,"shockVal_y",ones(nt-1))	# multiplicative factor
-			shockVal_p = get(opts,"shockVal_p",ones(nt-1))	# multiplicative factor
+		# if length(opts) > 0 
+		# 	pname    = get(opts,"policy","NULL")
+		# 	lumpsum  = get(opts,"redistribute",[0.0])
+		# 	verbose  = get(opts,"verbose",0)
+		# 	shockReg = get(opts,"shockRegion",0)
+		# 	shockAge = get(opts,"shockAge",100)
+		# 	shockVal = get(opts,"shockVal",ones(nt-1))	# multiplicative factor
+		# 	shockVal_y = get(opts,"shockVal_y",ones(nt-1))	# multiplicative factor
+		# 	shockVal_p = get(opts,"shockVal_p",ones(nt-1))	# multiplicative factor
 
-			# check policy name is valid
-			# if pname != "NULL"
-			# 	if !in(pname,["noShocks","smallShocks","mortgageSubsidy_padjust","halfMC","doubleMC","tripleMC","mortgageSubsidy","moneyMC","ypshock","ypshock3","yshock","pshock","noSaving","noBuying","highMC","pshock_noBuying","pshock_highMC","yshock_highMC","pshock_noSaving"])
-			# 		warn("your policy $pname is not in the set of admissible policies")
-			# 	end
-			# end
+		# 	# check policy name is valid
+		# 	# if pname != "NULL"
+		# 	# 	if !in(pname,["noShocks","smallShocks","mortgageSubsidy_padjust","halfMC","doubleMC","tripleMC","mortgageSubsidy","moneyMC","ypshock","ypshock3","yshock","pshock","noSaving","noBuying","highMC","pshock_noBuying","pshock_highMC","yshock_highMC","pshock_noSaving"])
+		# 	# 		warn("your policy $pname is not in the set of admissible policies")
+		# 	# 	end
+		# 	# end
 
-		else
+		# else
 			pname    = "NULL"
 			lumpsum  = [0.0]
 			verbose  = 0
@@ -210,13 +213,19 @@ type Param
 			shockVal = ones(nt-1)
 			shockVal_y = ones(nt-1)
 			shockVal_p = ones(nt-1)
-		end
-		noMC = false	# default: there IS a moving cost. experiments switch this off in certain periods.
-		ctax = 1.0 
-
+		# end
 		# create object
 
-		return new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+
+		# override defaults
+		if length(opts) > 0
+            for (k,v) in opts
+                setfield!(out,k,v)
+            end
+        end
+
+        return out
 	end
 end
 
