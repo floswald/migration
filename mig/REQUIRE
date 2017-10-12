@@ -17,3 +17,4 @@ ClusterManagers
 QuantileRegression
 FileIO
 RData
+NLsolve
