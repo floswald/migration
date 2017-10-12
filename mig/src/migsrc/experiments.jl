@@ -950,33 +950,89 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	if j>0
 		ate_0 = @linq base |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
-				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@select(v=mean(:maxv),
+						u=mean(:utility[isfinite(:utility)]),
+						inc = mean(:income),
+						a=mean(:a),
+						h=mean(:h),
+						w=mean(:wealth),
+						y=mean(:y),
+						p=mean(:p))
 		ate_1 = @linq pol |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
-				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@select(v=mean(:maxv),
+						u=mean(:utility[isfinite(:utility)]),
+						inc = mean(:income),
+						a=mean(:a),
+						h=mean(:h),
+						w=mean(:wealth),
+						y=mean(:y),
+						p=mean(:p))
 		ate = copy(ate_1 .- ate_0 )
 		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
 		age_ate_0 = @linq base |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:realage,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 		age_ate_1 = @linq pol |>
 			    @where((:j.==j)&(:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:realage,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 		own30_0 = @linq base |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
 		    @transform(own_30=:own.*(:realage==30)) |>
-			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:own_30,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 		own30_1 = @linq pol |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
 		    @transform(own_30=:own.*(:realage==30)) |>
-			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:own_30,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 		year_0 = @linq base |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:year,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 		year_1 = @linq pol |>
 		    @where((:j.==j)&(:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+				@by(:year,v=mean(:maxv),
+							 u=mean(:utility[isfinite(:utility)]),
+							 inc = mean(:income),
+							 a=mean(:a),
+							 h=mean(:h),
+							 w=mean(:wealth),
+							 y=mean(:y),
+							 p=mean(:p))
 	else
 	# for aggregate results, don't
 		ate_0 = @linq base |>
@@ -997,24 +1053,66 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		own30_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
 		    @transform(own_30=:own.*(:realage==30)) |>
-			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:own_30,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 		own30_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
 		    @transform(own_30=:own.*(:realage==30)) |>
-			@by(:own_30,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:own_30,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 		year_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:year,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 		year_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:year,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 	end
 	loc_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-			@by(:j,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:j,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 	loc_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-			@by(:j,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:j,v=mean(:maxv),
+						 u=mean(:utility[isfinite(:utility)]),
+						 inc = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 y=mean(:y),
+						 p=mean(:p))
 
 	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
 	age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
