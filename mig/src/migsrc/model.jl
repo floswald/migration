@@ -317,13 +317,20 @@ type Model
 		end
 
 
+
+
 		# if adjusting prices for GE effect after
 		# mortgage subsidy is removed:
 		if p.policy == "mortgageSubsidy_padjust"
 			pgrid  = pgrid .* p.shockVal[1]
 			pred_p = pred_p .* p.shockVal[1]
 			# adjust price to rent ratio if doing GE adjustment
-			p.kappa = p.kappa ./ p.shockVal
+			p.kappa = p.kappa ./ p.shockVal[1]
+		elseif p.policy == "noMove"
+			pgrid  = pgrid .* p.shockVal[1]
+			pred_p = pred_p .* p.shockVal[1]
+			# adjust price to rent ratio if doing GE adjustment
+			p.kappa = p.kappa ./ p.shockVal[1]
 		end
 
 		# grid for individual income (based on ygrid(Y,P))
@@ -336,7 +343,7 @@ type Model
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
-				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
+				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5" || p.policy=="noMove") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
 				for iy in 1:p.ny
 					for ip in 1:p.np
 						for iz in 1:p.nz

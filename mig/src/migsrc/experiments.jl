@@ -118,7 +118,7 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::Vector{Int
 	(w1[:v][1] - w0)^2
 end
 
-function exp_highMC(j::Int)
+function exp_highMC(;pshock=0.0,yshock=0.0)
 
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
@@ -130,22 +130,26 @@ function exp_highMC(j::Int)
 	m = Model(p)
 	solve!(m,p)
 	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
-	EV0 = j==0 ? mean(m.EV[1,2,2,2,1,m.aone,1,:,2]) : m.EV[1,2,2,2,1,m.aone,1,j,2]
+	EV0 = mean(m.EV[1,2,2,2,1,m.aone,1,:,2])
 	basel = simulate(m,p);
 	basel = basel[.!isna.(basel[:cohort]),:];
 
-	
-	# model where moving is shut down in region j
-	if j==0
-		info("applying highMC in ALL regions")
+	if (pshock == 0) & (yshock == 0)
+		info("noMove in ALL regions")
 		opts = Dict("policy" => "noMove")
+	elseif (yshock == 0)
+		info("noMove in ALL regions with pshock=$(pshock)")
+		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1])
+
 	else
-		opts = Dict("policy" => "highMC", "shockRegion" => j)
+		info("noMove in ALL regions with pshock=$(pshock),yshock=$(yshock)")
+		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1]"shockVal_y" => [pshock for i in 1:p.nt-1])
+
 	end
-	p2 = Param(2,opts)
+	p2 = Param(2,opts=opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
-	EV1 = j==0 ? mean(m.EV[1,2,2,2,1,m.aone,1,:,2]) : m2.EV[1,2,2,2,1,m.aone,1,j,2]
+	EV1 = mean(m.EV[1,2,2,2,1,m.aone,1,:,2])
 
 	pol = simulate(m2,p2);
 	pol = pol[.!isna.(pol[:cohort]),:];
@@ -156,170 +160,75 @@ end
 
 
 """
-	exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
+	exp_value_mig_base(;ctax::Bool=false,save::Bool=false)
 
-compares baesline with highMC scenario. returns differences in utility and other oucomes if moving in region j
-is shut down. if called with `j=0`, shuts down moving everywhere.
+compares baesline with noMove scenario. returns differences in utility and other oucomes if moving is shut down everywhere.
 """
-function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
+function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys=0,ps=0)
 
-	bp = exp_highMC(j)
+	bp = exp_highMC(yshock=ys,pshock=ps)
 	base = bp[:base]
 	pol = bp[:pol]
 	p = Param(2)
 
-
-
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
+	
+	ate_0 = @linq base |>
+		    @where((:year.>cutyr)) |>
+			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	ate_1 = @linq pol |>
+		    @where((:year.>cutyr)) |>
+			@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	ate = copy(ate_1 .- ate_0 )
+	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
-	# for region-j only results, condition on region j
-	if j>0
-		ate_0 = @linq base |>
-			    @where((:j.==j).&(:year.>cutyr)) |>
-				@select(v=mean(:maxv),
-						u=mean(:utility[isfinite(:utility)]),
-						inc = mean(:income),
-						a=mean(:a),
-						h=mean(:h),
-						w=mean(:wealth),
-						y=mean(:y),
-						p=mean(:p))
-		ate_1 = @linq pol |>
-			    @where((:j.==j).&(:year.>cutyr)) |>
-				@select(v=mean(:maxv),
-						u=mean(:utility[isfinite(:utility)]),
-						inc = mean(:income),
-						a=mean(:a),
-						h=mean(:h),
-						w=mean(:wealth),
-						y=mean(:y),
-						p=mean(:p))
-		ate = copy(ate_1 .- ate_0 )
-		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
-
-		age_ate_0 = @linq base |>
-			    @where((:j.==j).&(:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-		age_ate_1 = @linq pol |>
-			    @where((:j.==j).&(:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-		own30_0 = @linq base |>
-		    @where((:j.==j).&(:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
-				@by(:own_30,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-		own30_1 = @linq pol |>
-		    @where((:j.==j).&(:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage==30)) |>
-				@by(:own_30,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-		year_0 = @linq base |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-				@by(:year,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-		year_1 = @linq pol |>
-		    @where((:j.==j)&(:year.>cutyr)) |>
-				@by(:year,v=mean(:maxv),
-							 u=mean(:utility[isfinite(:utility)]),
-							 inc = mean(:income),
-							 a=mean(:a),
-							 h=mean(:h),
-							 w=mean(:wealth),
-							 y=mean(:y),
-							 p=mean(:p))
-	else
-	# for aggregate results, don't
-		ate_0 = @linq base |>
-			    @where((:year.>cutyr)) |>
-				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-		ate_1 = @linq pol |>
-			    @where((:year.>cutyr)) |>
-				@select(v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-		ate = copy(ate_1 .- ate_0 )
-		ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
-
-		age_ate_0 = @linq base |>
-			    @where((:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-		age_ate_1 = @linq pol |>
-			    @where((:year.>cutyr)) |>
-				@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-		own30_0 = @linq base |>
+	age_ate_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage.==30)) |>
-			@by(:own_30,v=mean(:maxv),
-						 u=mean(:utility[isfinite(:utility)]),
-						 inc = mean(:income),
-						 a=mean(:a),
-						 h=mean(:h),
-						 w=mean(:wealth),
-						 y=mean(:y),
-						 p=mean(:p))
-		own30_1 = @linq pol |>
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	age_ate_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-		    @transform(own_30=:own.*(:realage.==30)) |>
-			@by(:own_30,v=mean(:maxv),
-						 u=mean(:utility[isfinite(:utility)]),
-						 inc = mean(:income),
-						 a=mean(:a),
-						 h=mean(:h),
-						 w=mean(:wealth),
-						 y=mean(:y),
-						 p=mean(:p))
-		year_0 = @linq base |>
-		    @where((:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),
-						 u=mean(:utility[isfinite(:utility)]),
-						 inc = mean(:income),
-						 a=mean(:a),
-						 h=mean(:h),
-						 w=mean(:wealth),
-						 y=mean(:y),
-						 p=mean(:p))
-		year_1 = @linq pol |>
-		    @where((:year.>cutyr)) |>
-			@by(:year,v=mean(:maxv),
-						 u=mean(:utility[isfinite(:utility)]),
-						 inc = mean(:income),
-						 a=mean(:a),
-						 h=mean(:h),
-						 w=mean(:wealth),
-						 y=mean(:y),
-						 p=mean(:p))
-	end
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	own30_0 = @linq base |>
+	    @where((:year.>cutyr)) |>
+		@by(:own_30,v=mean(:maxv),
+					 u=mean(:utility[isfinite(:utility)]),
+					 inc = mean(:income),
+					 a=mean(:a),
+					 h=mean(:h),
+					 w=mean(:wealth),
+					 y=mean(:y),
+					 p=mean(:p))
+	own30_1 = @linq pol |>
+	    @where((:year.>cutyr)) |>
+		@by(:own_30,v=mean(:maxv),
+					 u=mean(:utility[isfinite(:utility)]),
+					 inc = mean(:income),
+					 a=mean(:a),
+					 h=mean(:h),
+					 w=mean(:wealth),
+					 y=mean(:y),
+					 p=mean(:p))
+	year_0 = @linq base |>
+	    @where((:year.>cutyr)) |>
+		@by(:year,v=mean(:maxv),
+					 u=mean(:utility[isfinite(:utility)]),
+					 inc = mean(:income),
+					 a=mean(:a),
+					 h=mean(:h),
+					 w=mean(:wealth),
+					 y=mean(:y),
+					 p=mean(:p))
+	year_1 = @linq pol |>
+	    @where((:year.>cutyr)) |>
+		@by(:year,v=mean(:maxv),
+					 u=mean(:utility[isfinite(:utility)]),
+					 inc = mean(:income),
+					 a=mean(:a),
+					 h=mean(:h),
+					 w=mean(:wealth),
+					 y=mean(:y),
+					 p=mean(:p))
 	loc_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
 			@by(:j,v=mean(:maxv),
@@ -348,90 +257,34 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 	year_perc    = pdiff(convert(Dict,year_1,:year),convert(Dict,year_0,:year))
 
 
-
-    ## for single region j experiment
-    ## get total immigration flows across regimes
-    flows = getFlowStats(Dict("base" => @where(base,:year.>cutyr),"pol" => @where(pol,:year.>cutyr)),false,"null")
-
-    if j > 0
-	    f2 = Dict( k => flows[k][j]  for k in keys(flows) )
-
-	    flows = Dict()
-	    flows["inmig"] = Dict("base" => 100*mean(f2["base"][:Total_in_all]),"noMove" => 100*mean(f2["pol"][:Total_in_all]))
-	    flows["inmig"]["pct"] = 100*(flows["inmig"]["noMove"] - flows["inmig"]["base"])/flows["inmig"]["base"]
-
-	    flows["inmig_own"]        = Dict("base" => 100*mean(f2["base"][:Own_in_all]),"noMove" => 100*mean(f2["pol"][:Own_in_all]))
-	    flows["inmig_own"]["pct"] = 100*(flows["inmig_own"]["noMove"] - flows["inmig_own"]["base"])/flows["inmig_own"]["base"]
-
-	    flows["inmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_in_all]),"noMove" => 100*mean(f2["pol"][:Rent_in_all]))
-	    flows["inmig_rent"]["pct"] = 100*(flows["inmig_rent"]["noMove"] - flows["inmig_rent"]["base"])/flows["inmig_rent"]["base"]
-
-	    flows["outmig"]      = Dict("base" => 100*mean(f2["base"][:Total_out_all]),"noMove" => 100*mean(f2["pol"][:Total_out_all]))
-	    flows["outmig_own"]  = Dict("base" => 100*mean(f2["base"][:Own_out_all]),  "noMove" => 100*mean(f2["pol"][:Own_out_all]))
-	    flows["outmig_rent"] = Dict("base" => 100*mean(f2["base"][:Rent_out_all]), "noMove" => 100*mean(f2["pol"][:Rent_out_all]))
-	end
-
-
 	# compare the ones who did move with their virtual counterparts
 	# =============================================================
 
 
 	# number of moves 
-	if j>0
-		mv_count = @linq base |>
-		        @where((:tau.==1)) |>
-		        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
+	
+	mv_count = @linq base |>
+	        @where((:tau.==1)) |>
+	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=:j))
 
-		never_id = @linq mv_count |>
-		        @where(:n_moves.==0 ) |>
-		        @select(id=unique(:id))
-		once_id = @linq mv_count |>
-		        @where(:n_moves.>0 ) |>
-		        @select(id=unique(:id))
+	never_id = @linq mv_count |>
+	        @where(:n_moves.==0 ) |>
+	        @select(id=unique(:id))
+	once_id = @linq mv_count |>
+	        @where(:n_moves.>0 ) |>
+	        @select(id=unique(:id))
 
-		# people who where born in j, are mover type and stay till end of life. stayers.
-		stay_id = base[findin(base[:id],never_id[:id]),:]
-		stay_id = @linq stay_id |>
-				  @where(:j.==j)
+	# people are mover type and stay till end of life. stayers.
+	stay_id = base[findin(base[:id],never_id[:id]),:]
 
-		# people who were born in j 
-		born_id = @linq base |>
-		          @where((:age .== 1) .& (:j.==j)) |>
-		          @select(id=unique(:id))
-		# people who were born in j and move away
-		away_id = DataFrame(id = findin(findin(base[:id],born_id[:id]),once_id[:id]))
+	# people who were born in j and move away
+	away_id = once_id
 
-		young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2).&(:j.==j)),id=unique(:id))
-		old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2).&(:j.==j)),id=unique(:id))
-		mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move)&(:j.==j).&(:own)),id=unique(:id))
-		mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move)&(:j.==j).&(!(:own))),id=unique(:id))
-		# these people are "treated"
-
-	else
-		mv_count = @linq base |>
-		        @where((:tau.==1)) |>
-		        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=j))
-
-		never_id = @linq mv_count |>
-		        @where(:n_moves.==0 ) |>
-		        @select(id=unique(:id))
-		once_id = @linq mv_count |>
-		        @where(:n_moves.>0 ) |>
-		        @select(id=unique(:id))
-
-		# people are mover type and stay till end of life. stayers.
-		stay_id = base[findin(base[:id],never_id[:id]),:]
-
-		# people who were born in j and move away
-		away_id = once_id
-
-		young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2)),id=unique(:id))
-		old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2)),id=unique(:id))
-		mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move).&(:own)),id=unique(:id))
-		mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(!(:own))),id=unique(:id))
-		# these people are "treated"
-
-	end
+	young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2)),id=unique(:id))
+	old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2)),id=unique(:id))
+	mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move).&(:own)),id=unique(:id))
+	mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(!(:own))),id=unique(:id))
+	# these people are "treated"
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
@@ -448,67 +301,69 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		atts[k] = convert(Dict,100.0 * (att ./ abs(att_0)))
 	end
 
-
-	# # how did life change for owners and renters?
-	# # ===========================================
-
-	# own_profile_base = @linq base |>
-	# 	@where((:j.==j)&(:year.>cutyr)) |>
-	# 	@by(:age,own_rate = mean(:own))
-	# own_profile_pol = @linq pol |>
-	# 	@where((:j.==j)&(:year.>cutyr)) |>
-	# 	@by(:age,own_rate = mean(:own))
-
-	if j>0
-		v_profile_base = @linq base |>
-			@where((:j.==j).&(:year.>cutyr)) |>
-			@by(:age,own_rate = mean(:own))
-		v_profile_pol = @linq pol |>
-			@where((:j.==j).&(:year.>cutyr)) |>
-			@by(:age,own_rate = mean(:own))
-	else
-		v_profile_base = @linq base |>
-			@where((:year.>cutyr)) |>
-			@by(:age,own_rate = mean(:own))
-		v_profile_pol = @linq pol |>
-			@where((:year.>cutyr)) |>
-			@by(:age,own_rate = mean(:own))
-	end
-
 	# preparing io.
 	io = mig.setPaths()
-	ostr = string("noMove",j,"mig_value_baseline.json")
 
-	# recompute compensation tax?
-	if j>0
-		f = open(joinpath(io["outdir"],ostr),"r")
-		if ctax 
-			x=find_ctax_value_mig_base(j,Int[])	# compensation for all in j
-			ctax_ate=Optim.minimizer(x)
-			x=find_ctax_value_mig_base(j,convert(Vector,away_id[:id]))	# for those who were movers in j before policy 
-			ctax_att=Optim.minimizer(x)
-			x=find_ctax_value_mig_base(j,convert(Vector,stay_id[:id]))	# for those who were movers in j before policy 
-			ctax_atn=Optim.minimizer(x)
-			x=find_ctax_value_mig_base(j,convert(Vector,young_id[:id]))	
-			ctax_att_young=Optim.minimizer(x)
-			x=find_ctax_value_mig_base(j,convert(Vector,old_id[:id]))	
-			ctax_att_old=Optim.minimizer(x)
+	ystr=""
+	pstr=""
+	if ys > 1
+		ystr = "hi"
+	elseif ys<1
+		ystr = "lo"
+	end
+	if ps > 1
+		pstr = "hi"
+	elseif ps<1
+		pstr = "lo"
+	end
+	ostr = string("noMove_ys",ystr,"_ps",pstr,".json")
+	path = joinpath(io["outdir"],ostr)
+	f = open(joinpath(io["outdir"],ostr),"a+")
+	js = 0:p.nJ
+	ctax = Dict()
+	for ij in js
+		if doctax 
+			ctax[ij] = Dict()
+			if ij==0
+				# don't subset to any region: compute aggregate impact
+				# all
+				# x=mig.ctaxxer("noMove",:realage,t->t.==t)
+				# ctax[ij][:ate] = Optim.minimizer(x)
+				# # young
+				# x=mig.ctaxxer("noMove",:realage,t->t.<31)
+				# ctax[ij][:young]=Optim.minimizer(x)
+				# # young
+				x=mig.ctaxxer("noMove",:realage,t->t.>30)
+				ctax[ij][:old]=Optim.minimizer(x)
+				# for those who did not own a house when age == 30
+				x=mig.ctaxxer("noMove",:rent_30,t->t)
+				ctax[ij][:rent_30]=Optim.minimizer(x)
+				# for those who did own a house when age == 30
+				x=mig.ctaxxer("noMove",:own_30,t->t)
+				ctax[ij][:own_30]=Optim.minimizer(x)
+			else
+				# do subset to region j
+				# all
+				x=mig.ctaxxer("noMove",:j,t->t.==ij)
+				ctax[ij][:ate] = Optim.minimizer(x)
+				# young
+				x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
+				ctax[ij][:young]=Optim.minimizer(x)
+				# young
+				x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
+				ctax[ij][:old]=Optim.minimizer(x)
+				# for those who did not own a house when age == 30
+				x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
+				ctax[ij][:rent_30]=Optim.minimizer(x)
+				# for those who did own a house when age == 30
+				x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
+				ctax[ij][:own_30]=Optim.minimizer(x)
+			end
 		else
 			# read from file
-			json_dat = JSON.parse(f)
-			ctax_ate = json_dat["ctax_ate"]
-			ctax_att = json_dat["ctax_att"]
-			ctax_atn = json_dat["ctax_atn"]
-			ctax_att_young = json_dat["ctax_att_young"]
-			ctax_att_old = json_dat["ctax_att_old"]
+			ctax = JSON.parse(f)
 		end
 		close(f)
-	else
-		ctax_ate       = NaN
-		ctax_att       = NaN
-		ctax_atn       = NaN
-		ctax_att_young = NaN
-		ctax_att_old   = NaN
 	end
 
 	# merge all ATE/ATT perc dicts
@@ -517,7 +372,7 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:atn=>atts["atn"][k],:att_young=>atts["att_young"][k],:att_old=>atts["att_old"][k])
 	end
 	# add constaxes
-	ate_att[:ctax] = Dict(:ate=>ctax_ate,:att=>ctax_att,:atn=>ctax_atn,:att_young=>ctax_att_young,:att_old=>ctax_att_old)
+	ate_att[:ctax] = ctax
 
 
 	# output
@@ -545,56 +400,60 @@ function exp_value_mig_base(j::Int;ctax::Bool=false,save::Bool=false)
 		JSON.print(f,d)
 		close(f)
 	end
-
 	return d
 end
 
 
 # simulation with subsetting to a certain group
-# mig.ctaxxer("noMove",:y,t->t,by=:j)
-function ctaxxer(pol::String,var::Symbol,sel_func;kw...)
-	s = runSim()
-	if length(kw) > 0
-		# could add
-		# if any([x[1]==:by for x in kw])
-		val = @linq s |>
-			@where((:year.>1996) .& sel_func(_I_(var))) |>
-			@by(kw[1][1],v=mean(:maxv),u=mean(:utility))
-		v0 = val[:v]
+# mig.ctaxxer("noMove",:y,t->t.==t,by=:j) subsets nothing in addition to year=>1996 but 
+# this cannot work
+# function ctaxxer(pol::String,var::Symbol,sel_func;kw...)
+# 	s = runSim()
+# 	if length(kw) > 0
+# 		# could add
+# 		# if any([x[1]==:by for x in kw])
+# 		val = @linq s |>
+# 			@where((:year.>1996) .& sel_func(_I_(var))) |>
+# 			@by(kw[1][1],v=mean(:maxv),u=mean(:utility))
+# 		v0 = val[:v]
 
-		function ftau!(ctau::Vector{Float64},fvec,v0::Vector{Float64},pol::String)
-			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
-			val = @linq s |>
-				@where((:year.>1996) .& sel_func(_I_(var))) |>
-				@by(kw[1][1],v=mean(:maxv),u=mean(:utility))
-			v1 = val[:v]
-			fvec[:] = (v0 .- v1).^2
-		end
-		# ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
-		ctax = NLsolve.nlsolve((x,xvec)->ftau!(x,xvec,v0.data,pol),ones(2))
-		return ctax
+# 		function ftau!(ctau::Float64,fvec,v0::Vector{Float64},pol::String)
+# 			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
+# 			val = @linq s |>
+# 				@where((:year.>1996) .& sel_func(_I_(var))) |>
+# 				@by(kw[1][1],v=mean(:maxv),u=mean(:utility))
+# 			v1 = val[:v]
+# 			fvec[:] = (v0 .- v1).^2
+# 		end
+# 		# ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
+# 		ctax = NLsolve.nlsolve((x,xvec)->ftau!(x,xvec,v0.data,pol),1.0)
+# 		return ctax
 
-	else
-		val = @linq s |>
-			@where((:year.>1996) .& sel_func(_I_(var))) |>
-			@select(v=mean(:maxv),u=mean(:utility))
-		v0 = val[:v][1]
+# 	else
+# 		val = @linq s |>
+# 			@where((:year.>1996) .& sel_func(_I_(var))) |>
+# 			@select(v=mean(:maxv),u=mean(:utility))
+# 		v0 = val[:v][1]
 
-		function ftau(ctau::Float64,v0::Float64,pol::String)
-			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
-			val = @linq si |>
-				@where((:year.>1996) .& sel_func(_I_(var))) |>
-				@select(v=mean(:maxv),u=mean(:utility))
-			v1 = val[:v][1]
-			return (v0 - v1)^2
-		end
-		ctax = optimize((x) -> ftau(x,v0,pol),0.5,2.0, show_trace=true,iterations=10)
-		return ctax
-	end
-end
+# 		function ftau(ctau::Float64,v0::Float64,pol::String)
+# 			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
+# 			val = @linq si |>
+# 				@where((:year.>1996) .& sel_func(_I_(var))) |>
+# 				@select(v=mean(:maxv),u=mean(:utility))
+# 			v1 = val[:v][1]
+# 			return (v0 - v1)^2
+# 		end
+# 		ctax = optimize((x) -> ftau(x,v0,pol),0.5,2.0, show_trace=true,iterations=10)
+# 		return ctax
+# 	end
+# end
 
 # simulation with subsetting to a certain group
+# mig.ctaxxer("noMove",:y,t->t.==t) subsets nothing in addition to year=>1996 and finds ctax
+# mig.ctaxxer("noMove",:j,t->t.==4) subsets in addition to year=>1996 that :j==4
+# mig.ctaxxer("noMove",:own_30,t->t) subsets in addition to year=>1996 that :own_30 is true
 function ctaxxer(pol::String,var::Symbol,sel_func)
+	info("finding consumtion tax for $pol policy. subsetting $var")
 	s = runSim()
 	val = @linq s |>
 		@where((:year.>1996) .& sel_func(_I_(var))) |>
@@ -609,7 +468,26 @@ function ctaxxer(pol::String,var::Symbol,sel_func)
 		v1 = val[:v][1]
 		return (v0 - v1)^2
 	end
-	ctax = optimize((x) -> ftau(x,v0,pol),0.5,2.0, show_trace=true,iterations=10)
+	ctax = optimize((x) -> ftau(x,v0,pol),0.5,2.0, show_trace=true,iterations=12)
+	return ctax
+end
+function ctaxxer(pol::String,var1::Symbol,sel_func1,var2::Symbol,sel_func2)
+	info("finding consumtion tax for $pol policy. subsetting $var1 and $var2")
+	s = runSim()
+	val = @linq s |>
+		@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2))) |>
+		@select(v=mean(:maxv),u=mean(:utility))
+	v0 = val[:v][1]
+
+	function ftau(ctau::Float64,v0::Float64,pol::String)
+		si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
+		val = @linq si |>
+			@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2))) |>
+			@select(v=mean(:maxv),u=mean(:utility))
+		v1 = val[:v][1]
+		return (v0 - v1)^2
+	end
+	ctax = optimize((x) -> ftau(x,v0,pol),0.5,2.0, show_trace=true,iterations=12)
 	return ctax
 end
 
