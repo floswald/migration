@@ -15,7 +15,7 @@ function decompose_MC_owners()
 	o1 = runObj(p1)
 	s1 = o1.simMoments
 
-	# no owner MC and no transaction cost :
+	# no owner MgC and no transaction cost :
     # alpha_3 = 0, phi = 0
     p1[:phi] = 0.0
 	o2 = runObj(p1)
@@ -323,16 +323,17 @@ function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys=0,ps=0)
 	ctax = Dict()
 	for ij in js
 		if doctax 
+			Base.info("doing ctax for region $ij")
 			ctax[ij] = Dict()
 			if ij==0
 				# don't subset to any region: compute aggregate impact
 				# all
-				# x=mig.ctaxxer("noMove",:realage,t->t.==t)
-				# ctax[ij][:ate] = Optim.minimizer(x)
-				# # young
-				# x=mig.ctaxxer("noMove",:realage,t->t.<31)
-				# ctax[ij][:young]=Optim.minimizer(x)
-				# # young
+				x=mig.ctaxxer("noMove",:realage,t->t.==t)
+				ctax[ij][:ate] = Optim.minimizer(x)
+				# young
+				x=mig.ctaxxer("noMove",:realage,t->t.<31)
+				ctax[ij][:young]=Optim.minimizer(x)
+				# young
 				x=mig.ctaxxer("noMove",:realage,t->t.>30)
 				ctax[ij][:old]=Optim.minimizer(x)
 				# for those who did not own a house when age == 30
@@ -387,12 +388,7 @@ function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys=0,ps=0)
 		:year_perc => year_perc,
 		:ate_perc => ate_perc,
 		:att_perc => atts["att"],
-		:ate_att => ate_att,
-		:flows => flows,
-		:ctax_ate => ctax_ate,
-		:ctax_att => ctax_att)
-		# "own_profile_0" => convert(Dict,own_profile_base),
-		# "own_profile_1" => convert(Dict,own_profile_pol))
+		:ate_att => ate_att)
 
 	rm(joinpath(io["outdir"],ostr),force=true)
 	if save
@@ -746,13 +742,8 @@ function exp_shockRegion(opts::Dict)
 	# -------------------------------------------
 
 	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year)
-	# ela2 = @linq ela |>
-	# 	@transform(d_net = (:Net_1 - :Net)./ :Net,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent) |>
-	# 	@transform(d_in = (:Total_in_all_1 - :Total_in_all) ./ :Total_in_all, d_out = (:Total_out_all_1 - :Total_out_all) ./ :Total_out_all,d_own_in = (:Own_in_all_1 - :Own_in_all) ./ :Own_in_all, d_own_out = (:Own_out_all_1 - :Own_out_all) ./ :Own_out_all,d_rent_in = (:Rent_in_all_1 - :Rent_in_all) ./ :Rent_in_all, d_rent_out = (:Rent_out_all_1 - :Rent_out_all) ./ :Rent_out_all) |>
-	# 	@where(:year.>=shockYear) |>
-	# 	@select(mean_din = mean(:d_in),mean_dout = mean(:d_out),mean_dnet = mean(:d_net),mean_dnet_own = mean(:d_net_own),mean_dnet_rent = mean(:d_net_rent),mean_d_own_in=mean(:d_own_in),mean_d_own_out=mean(:d_own_out),mean_d_rent_in=mean(:d_rent_in),mean_d_rent_out=mean(:d_rent_out))
 
-		# for kennan figure 1
+	# for kennan figure 1
 	ela1 = @linq ela |>
 			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,year=:year) 
 			
@@ -807,84 +798,6 @@ function exp_shockRegion(opts::Dict)
 	ela1[ela1[:yshock].!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_in_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 
-	# elas = Dict()
-
-	# computes average elasticities over entire samplign period shockYear -> 2012
-	# if which == "yshock"
-	# 	elas["all"] = Dict()
-	# 	elas["own"] = Dict()
-	# 	elas["rent"] = Dict()
-	# 	elas["all"]["in"]     = 100*ela2[:mean_din][1]
-	# 	elas["all"]["out"]    = 100*ela2[:mean_dout][1]
-	# 	elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
-	# 	elas["all"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal"]) )	# % change in pop / % change in income
-	# 	elas["all"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal"]) )
-	# 	elas["all"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal"]) )
-
-	# 	elas["own"]["in"]     = 100*ela2[:mean_d_own_in][1]
-	# 	elas["own"]["out"]    = 100*ela2[:mean_d_own_out][1]
-	# 	elas["own"]["net"]    = 100*ela2[:mean_dnet_own][1]
-	# 	elas["own"]["e_in"]   = ela2[:mean_d_own_in][1]   / (1-mean(opts["shockVal"]) )
-	# 	elas["own"]["e_out"]  = ela2[:mean_d_own_out][1]  / (1-mean(opts["shockVal"]) )
-	# 	elas["own"]["e_net"]  = ela2[:mean_dnet_own][1]   / (1-mean(opts["shockVal"]) )
-
-	# 	elas["rent"]["in"]    = 100*ela2[:mean_d_rent_in][1]
-	# 	elas["rent"]["out"]   = 100* ela2[:mean_d_rent_out][1]
-	# 	elas["rent"]["net"]   = 100*ela2[:mean_dnet_rent][1]
-	# 	elas["rent"]["e_in"]  = ela2[:mean_d_rent_in][1]  / (1-mean(opts["shockVal"]) )
-	# 	elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]) )
-	# 	elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]) )
-
-	# elseif (length(which) >= 7) && (which[1:7] == "ypshock")
-	# 	# elas["wrt_y"] = Dict()
-	# 	# elas["wrt_p"] = Dict()
-	# 	# elas["own"] = Dict()
-	# 	# elas["rent"] = Dict()
-
-	# 	# elas["wrt_y"]["in"]     = 100*ela2[:mean_din][1]
-	# 	# elas["wrt_y"]["out"]    = 100*ela2[:mean_dout][1]
-	# 	# elas["wrt_y"]["net"]    = 100*ela2[:mean_dnet][1]
-	# 	# elas["wrt_y"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_y"]) )	# % change in pop / % change in income
-	# 	# elas["wrt_y"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_y"]) )
-	# 	# elas["wrt_y"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_y"]) )
-
-	# 	# elas["wrt_p"]["in"]     = 100*ela2[:mean_din][1]
-	# 	# elas["wrt_p"]["out"]    = 100*ela2[:mean_dout][1]
-	# 	# elas["wrt_p"]["net"]    = 100*ela2[:mean_dnet][1]
-	# 	# elas["wrt_p"]["e_in"]   = ela2[:mean_din][1]   / (1-mean(opts["shockVal_p"]) )	# % change in pop / % change in prices 
-	# 	# elas["wrt_p"]["e_out"]  = ela2[:mean_dout][1]  / (1-mean(opts["shockVal_p"]) )
-	# 	# elas["wrt_p"]["e_net"]  = ela2[:mean_dnet][1]  / (1-mean(opts["shockVal_p"]) )
-
-		
-   
-	# else
-	# 	elas["all"] = Dict()
-	# 	elas["own"] = Dict()
-	# 	elas["rent"] = Dict()
-	# 	elas["all"]["in"]     = 100*ela2[:mean_din][1]
-	# 	elas["all"]["out"]    = 100*ela2[:mean_dout][1]
-	# 	elas["all"]["net"]    = 100*ela2[:mean_dnet][1]
-	# 	elas["all"]["e_in"]   = ela2[:mean_din][1]        / (1-mean(opts["shockVal"]))
-	# 	elas["all"]["e_out"]  = ela2[:mean_dout][1]       / (1-mean(opts["shockVal"]))
-	# 	elas["all"]["e_net"]  = ela2[:mean_dnet][1]       / (1-mean(opts["shockVal"]))
-
-	# 	elas["own"]["in"]     = 100*ela2[:mean_d_own_in][1]
-	# 	elas["own"]["out"]    = 100*ela2[:mean_d_own_out][1]
-	# 	elas["own"]["net"]    = 100*ela2[:mean_dnet_own][1]
-	# 	elas["own"]["e_in"]   = ela2[:mean_d_own_in][1]   / (1-mean(opts["shockVal"]))
-	# 	elas["own"]["e_out"]  = ela2[:mean_d_own_out][1]  / (1-mean(opts["shockVal"]))
-	# 	elas["own"]["e_net"]  = ela2[:mean_dnet_own][1]   / (1-mean(opts["shockVal"]))
-
-	# 	elas["rent"]["in"]    = 100*ela2[:mean_d_rent_in][1]
-	# 	elas["rent"]["out"]   = 100*ela2[:mean_d_rent_out][1]
-	# 	elas["rent"]["net"]   = 100*ela2[:mean_dnet_rent][1]
-	# 	elas["rent"]["e_in"]  = ela2[:mean_d_rent_in][1]  / (1-mean(opts["shockVal"]))
-	# 	elas["rent"]["e_out"] = ela2[:mean_d_rent_out][1] / (1-mean(opts["shockVal"]))
-	# 	elas["rent"]["e_net"] = ela2[:mean_dnet_rent][1]  / (1-mean(opts["shockVal"]))
-	# end
-
-
-
 	out = Dict("which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
@@ -915,68 +828,171 @@ function read_exp_shockRegion(f::AbstractString)
 end
 
 
+"""
+	exp_shockRegion_impact(opts::Dict)
 
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role.
+"""
+function exp_shockRegion_impact(opts::Dict)
 
-function plotShockRegions(print=false)
+	j         = opts["shockRegion"]
+	which     = opts["policy"]
+	shockYear = opts["shockYear"]
 
-	# download experiments
-	# run(`scp -r sherlock:~/data_repo/mig/out_data_jl/shockReg   ~/git/migration/data/`)
-
-	# load all experiments
-	pth = "/Users/florianoswald/git/migration/data/shockReg/"
-	opth = "/Users/florianoswald/Dropbox/mobility/output/model/experiments/exp_yp"
-	fi = readdir(pth)
-
-	out = Dict()
-
-	for i in fi
-		x = load(joinpath(pth,i))
-		df = x["dfs"]
-		# writetable(joinpath(pth,"toj_own_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_buy"])
-		# writetable(joinpath(pth,"fromj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj"])
-		# writetable(joinpath(pth,"fromj_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_rent"])
-		# writetable(joinpath(pth,"fromj_own_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["fromj_own"])
-		# writetable(joinpath(pth,"toj_own_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_own_rent"])
-		# writetable(joinpath(pth,"toj_rent_rent_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_rent"])
-		# writetable(joinpath(pth,"toj_rent_buy_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj_rent_buy"])
-		# writetable(joinpath(pth,"toj_$(x["which"])_reg$(x["j"])_year$(x["shockYear"]).csv"),df["toj"])
-
-		# make plots
-		exp_typ = contains(x["which"],"3") ? "3-year" : "permanent"
-		exp_var = contains(x["which"],"y") ? "y" : "p"
-		dd = Dict()
-		data = Dict()
-		# fill in data dict with data
-		for (k,v) in df
-			data[k] = melt(v,:year)
-		end
-
-		# fill in dd dict with plots
-		dd["fromj_own"] = plot(@where(data["fromj_own"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["fromj_rent"] = melt(df["fromj_rent"],:year)
-		dd["fromj_rent"] = plot(@where(data["fromj_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("Renters leaving region $(x["j"]), $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_own_buy"] = melt(df["toj_own_buy"],:year)
-		dd["toj_own_buy"] = plot(@where(data["toj_own_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_own_rent"] = melt(df["toj_own_rent"],:year)
-		dd["toj_own_rent"] = plot(@where(data["toj_own_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("owners moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_rent_rent"] = melt(df["toj_rent_rent"],:year)
-		dd["toj_rent_rent"] = plot(@where(data["toj_rent_rent"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), renting, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-		# data["toj_rent_buy"] = melt(df["toj_rent_buy"],:year)
-		dd["toj_rent_buy"] = plot(@where(data["toj_rent_buy"],:year.>1996),x="year",y="value",color="variable",Geom.line(),Theme(line_width=0.07cm),Guide.title("renters moving to region $(x["j"]), buying, $exp_typ shock to $exp_var in $(x["shockYear"])"))
-
-		kkey = "$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"
-		plotkey = "plots_"*kkey
-		out[plotkey] = dd
-		if print
-			for (k,v) in dd
-				draw(PDF(joinpath(opth,string(kkey,"_",k,".pdf")),6inch,5inch),v)
-			end
-		end
-		out["data_$(x["which"])_$(x["j"])_$(exp_typ)_$(x["shockYear"])"] = data
+	if shockYear<1997
+		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
 	end
-	return out
 
+	# Baseline
+	# --------
+
+	# note: we must know the baseline model in any case.
+	# this is because policy functions of agents in years
+	# BEFORE the shock need to be adjusted to be equal to the baseline ones.
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+	sim0 = sim0[!isna(sim0[:cohort]),:]
+	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
+
+	# Policy
+	# ------
+	
+	# compute behaviour for all individuals, assuming each time the shock
+	# hits at a different age. selecting the right cohort will then imply
+	# that the shock hits you in a given year.
+	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+
+	# remove worker processes now.
+	if length(workers()) > 1
+		rmprocs(workers())
+	end
+
+	# stack dataframes
+	# 
+	df1 = ss[1]
+	for i in 2:length(ss)
+		df1 = vcat(df1,ss[i])
+		ss[i] = 0
+		gc()
+	end
+	df1 =  df1[!isna(df1[:cohort]),:]
+	maxc = maximum(df1[:cohort])
+	minc = minimum(df1[:cohort])
+
+	if minc > 1
+		# add all cohorts that were not simulated in computeShockAge
+		df1 = vcat(df1,@where(sim0,:cohort.<minc))
+	end
+
+
+	# stack
+	sim1 = df1
+	df1 = 0
+	gc()
+
+	# compute summaries
+	# =================
+
+	# get averge lifetime of all and movers in shockYear
+	# ----------------------------------------------
+	w0 = @linq sim0 |>
+		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @select(v = mean(:maxv),u = mean(:utility))
+	mms0 = computeMoments(sim0,p)	
+
+	# dataset of baseline movers and their counterparts under the shock
+	b_movers = sim0[findin(sim0[:id],mv_ids)];
+	movers = join(b_movers,sim1[findin(sim1[:id],mv_ids)][[:cons,:save,:move,:own,:hh,:utility,:maxv]])
+
+	w1 = @linq sim1 |>
+		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @select(v = mean(:maxv),u = mean(:utility))
+	mms1 = computeMoments(sim1,p)	
+
+
+	# get flows for each region
+	d = Dict{AbstractString,DataFrame}()
+	d["base"] = sim0
+	d[which] = sim1
+	flows = getFlowStats(d,false,"$(which)_$j")
+
+	# calculate an elasticity of out and inflows
+	# -------------------------------------------
+
+	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year)
+
+	# for kennan figure 1
+	ela1 = @linq ela |>
+			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,year=:year) 
+			
+	ela1[:pshock] = 0.0
+	ela1[:yshock] = 0.0
+
+	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
+
+	# println("shockVal_y = $(opts["shockVal_y"])")
+	# println("shockVal_p = $(opts["shockVal_p"])")
+
+	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
+	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
+
+	# println(ela1[[:year,:yshock,:pshock]])
+	ela1[:d_all_p] = 0.0
+	ela1[:d_own_p] = 0.0
+	ela1[:d_net_own_p] = 0.0
+	ela1[:d_rent_p] = 0.0
+	ela1[:d_net_rent_p] = 0.0
+	ela1[:d_all_y] = 0.0
+	ela1[:d_own_y] = 0.0
+	ela1[:d_net_own_y] = 0.0
+	ela1[:d_rent_y] = 0.0
+	ela1[:d_net_rent_y] = 0.0
+	ela1[:d_out_buy_y] = 0.0
+	ela1[:d_out_buy_p] = 0.0
+	ela1[:d_in_buy_y] = 0.0
+	ela1[:d_in_buy_p] = 0.0
+	ela1[:d_out_rent_y] = 0.0
+	ela1[:d_out_rent_p] = 0.0
+	ela1[:d_in_rent_y] = 0.0
+	ela1[:d_in_rent_p] = 0.0
+
+	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_net_own_p] = ela1[ela1[:pshock].!= 0.0, :d_net_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_out_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_in_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+
+	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_out_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_in_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_in_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+
+	out = Dict("which" => which,
+		   "j" => j, 
+	       "shockYear" => shockYear, 
+	       "movers" => movers, 
+	       # "dfs" => dfs,
+	       "flows" => flows,
+	       "opts" => opts,
+	       # "elasticity_net" => elas,
+	       "elasticity" => ela1,
+	       "values" => Dict("base" => w0[:maxv][1], which => w1[:maxv][1]),
+	       "moments" => Dict("base" => mms0, which => mms1))
+
+	return (out,sim0,sim1)
 end
+
 
 
 function adjustVShocks!(mm::Model,m::Model,p::Param)
