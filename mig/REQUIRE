@@ -10,7 +10,8 @@ ApproXD
 Optim
 HDF5
 JLD
-PyPlot
+@osx PyPlot
+@linux GR
 JSON
 Copulas
 ClusterManagers

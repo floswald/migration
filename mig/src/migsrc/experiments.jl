@@ -118,7 +118,7 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::Vector{Int
 	(w1[:v][1] - w0)^2
 end
 
-function exp_highMC(;pshock=0.0,yshock=0.0)
+function exp_highMC(;pshock=1.0,yshock=1.0)
 
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
@@ -134,10 +134,10 @@ function exp_highMC(;pshock=0.0,yshock=0.0)
 	basel = simulate(m,p);
 	basel = basel[.!isna.(basel[:cohort]),:];
 
-	if (pshock == 0) & (yshock == 0)
+	if (pshock == 1) & (yshock == 1)
 		info("noMove in ALL regions")
 		opts = Dict("policy" => "noMove")
-	elseif (yshock == 0)
+	elseif (yshock == 1)
 		info("noMove in ALL regions with pshock=$(pshock)")
 		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1])
 
@@ -162,9 +162,16 @@ end
 """
 	exp_value_mig_base(;ctax::Bool=false,save::Bool=false)
 
-compares baesline with noMove scenario. returns differences in utility and other oucomes if moving is shut down everywhere.
+compares baseline with noMove scenario. returns differences in utility and other oucomes if moving is shut down everywhere.
+
+## keywords
+
+* `do_ctax`: compute compensating consumption tax
+* `save`: save results to disk
+* `ys`: multiplicative *yshock* to be applied to the counterfactual
+* `ps`: multiplicative *pshock* to be applied to the counterfactual
 """
-function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys::Float64=1,ps::Float64=1)
+function exp_value_mig_base(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
 
 	bp = exp_highMC(yshock=ys,pshock=ps)
 	base = bp[:base]
@@ -322,7 +329,7 @@ function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys::Float64=1,p
 	js = 0:p.nJ
 	ctax = Dict()
 	for ij in js
-		if doctax 
+		if do_ctax 
 			Base.info("doing ctax for region $ij")
 			ctax[ij] = Dict()
 			if ij==0
@@ -342,6 +349,7 @@ function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys::Float64=1,p
 				# for those who did own a house when age == 30
 				x=mig.ctaxxer("noMove",:own_30,t->t)
 				ctax[ij][:own_30]=Optim.minimizer(x)
+				gc()
 			else
 				# do subset to region j
 				# all
@@ -359,6 +367,7 @@ function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys::Float64=1,p
 				# for those who did own a house when age == 30
 				x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
 				ctax[ij][:own_30]=Optim.minimizer(x)
+				gc()
 			end
 		else
 			# read from file
@@ -502,82 +511,52 @@ end
 # f(y,:j,g,:year,g2)
 
 # 
-function ctaxxer_own30(pol::String)
-	s = runSim()
-	val = @linq s |>
-		@where((:year.>1996)) |>
-	    @transform(own_30=:own.*(:realage.==30)) |>
-		@by(:own_30,v=mean(:maxv),u=mean(:utility))
-	v0 = val[:v]
-
-	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
-
-	function ftau!(ctau::Vector{Float64},fvec,v0::Vector{Float64},pol::String)
-		si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
-		val = @linq s |>
-			@where(:year.>1996) |>
-		    @transform(own_30=:own.*(:realage.==30)) |>
-			@by(:own_30,v=mean(:maxv),u=mean(:utility))
-		v1 = val[:v]
-		fvec[:] = (v0 .- v1).^2
-	end
-	# ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
-	ctax = NLsolve.nlsolve(ftau!,ones(2))
-	return ctax
-
-end
-
-# solution
-function ctaxxer(pol::String,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
-
-end
 
 
 
+# """
+# 	ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
 
-"""
-	ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
+# computes the implied consumption tax for a given policy from model solution. This is a number τ by which optimal consumption is changed at each state. That is, if `v0` is the value of the baseline scenario, and v1 that of `pol`, then τ is such that `v1(c(τ)) = v0`.
 
-computes the implied consumption tax for a given policy from model solution. This is a number τ by which optimal consumption is changed at each state. That is, if `v0` is the value of the baseline scenario, and v1 that of `pol`, then τ is such that `v1(c(τ)) = v0`.
+# ### Keyword args
 
-### Keyword args
+# * `sol`: true if measure value at a certain state of the DP solution. false if measured from average v of simulation
+# * `ix`: states where to measure the value function.
+# """
+# function ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
+# 	at_idx = (ik,is,iz,iy,ip,itau,ia,ih,ij,it)
+# 	# get baseline value 
+# 	if sol
+# 		val = runSol()
+# 		v0 = val.v[at_idx...]
+# 	else
+# 		# simulate
+# 		s = runSim()
+# 		val = @linq s |>
+# 			@where(:year.>1996) |>
+# 			@select(v=mean(:maxv),u=mean(:utility))
+# 		v0 = val[:v][1]
+# 	end
 
-* `sol`: true if measure value at a certain state of the DP solution. false if measured from average v of simulation
-* `ix`: states where to measure the value function.
-"""
-function ctaxxer(pol::String;sol=true,ia=11,is=2,iz=2,iy=2,ip=1,ih=1,itau=1,ij=7,it=2,ik=7)
-	at_idx = (ik,is,iz,iy,ip,itau,ia,ih,ij,it)
-	# get baseline value 
-	if sol
-		val = runSol()
-		v0 = val.v[at_idx...]
-	else
-		# simulate
-		s = runSim()
-		val = @linq s |>
-			@where(:year.>1996) |>
-			@select(v=mean(:maxv),u=mean(:utility))
-		v0 = val[:v][1]
-	end
+# 	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
 
-	# dimvec  = (nJ, ns, nz, ny, np, ntau, na, nh,  nJ, nt-1 )
-
-	function ftau(ctau::Float64,v0::Float64,pol::String,at::Tuple,sol::Bool)
-		if sol
-			so = runSol(opt=Dict(:policy=>pol,:ctax=>ctau))
-			v1 = so.v[at...]
-		else
-			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
-			val = @linq si |>
-				@where(:year.>1996) |>
-				@select(v=mean(:maxv),u=mean(:utility))
-			v1 = val[:v][1]
-		end
-		return (v0 - v1)^2
-	end
-	ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
-	return ctax
-end
+# 	function ftau(ctau::Float64,v0::Float64,pol::String,at::Tuple,sol::Bool)
+# 		if sol
+# 			so = runSol(opt=Dict(:policy=>pol,:ctax=>ctau))
+# 			v1 = so.v[at...]
+# 		else
+# 			si = runSim(opt=Dict(:policy=>pol,:ctax=>ctau))
+# 			val = @linq si |>
+# 				@where(:year.>1996) |>
+# 				@select(v=mean(:maxv),u=mean(:utility))
+# 			v1 = val[:v][1]
+# 		end
+# 		return (v0 - v1)^2
+# 	end
+# 	ctax = optimize((x) -> ftau(x,v0,pol,at_idx,sol),0.5,2.0, show_trace=true,iterations=10)
+# 	return ctax
+# end
 
 
 # get the consumption subsidy that makes
