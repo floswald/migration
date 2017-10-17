@@ -164,7 +164,7 @@ end
 
 compares baesline with noMove scenario. returns differences in utility and other oucomes if moving is shut down everywhere.
 """
-function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys=0,ps=0)
+function exp_value_mig_base(;doctax::Bool=false,save::Bool=false,ys::Float64=1,ps::Float64=1)
 
 	bp = exp_highMC(yshock=ys,pshock=ps)
 	base = bp[:base]
