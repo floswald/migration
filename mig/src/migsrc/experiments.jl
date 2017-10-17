@@ -808,6 +808,32 @@ end
 
 
 """
+	shockRegions_scenarios(save::Bool=false)
+
+Run shockRegion experiment for each region and for different price scenarios
+"""
+function shockRegions_scenarios(;save::Bool=false,yrange=0.05,prange=0.05)
+
+	p = Param(2)
+	d = Dict()
+	for j in 1:p.nJ
+		d[j] = Dict()
+		for ps in [1.0-prange, 1.0, 1.0+prange]
+			for ys in [1.0-yrange, 1.0, 1.0+yrange]
+
+				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockRegion"=>j,"policy"=>"ypshock","shockYear"=>2000))[1]
+			end
+		end
+	end
+	io = setPaths()
+	f = open(joinpath(io["outdir"],"shockRegions_scenarios.json"),"w")
+	JSON.print(f,d)
+	close(f)
+	return d
+end
+
+
+"""
 	exp_shockRegion_impact(opts::Dict)
 
 Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role.
@@ -1019,7 +1045,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	# 	@assert p.shockAge == shockAge + 1
 	# else
 		opts["shockAge"] = shockAge
-		p = Param(2,opts)
+		p = Param(2,opts=opts)
 		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
