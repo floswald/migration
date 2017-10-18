@@ -911,7 +911,7 @@ function exp_shockRegion_impact(opts::Dict)
 	mms0 = computeMoments(sim0,p)	
 
 	# dataset of baseline movers and their counterparts under the shock
-	b_movers = sim0[findin(sim0[:id],mv_ids)];
+	b_movers = sim0[findin(sim0[:id],mv_ids),:];
 	movers = join(b_movers,sim1[findin(sim1[:id],mv_ids)][[:cons,:save,:move,:own,:hh,:utility,:maxv]])
 
 	w1 = @linq sim1 |>
