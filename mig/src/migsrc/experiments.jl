@@ -619,7 +619,7 @@ end
 # and compare to behaviour in the non-shocked version.
 function exp_shockRegion(opts::Dict)
 
-	j         = opts["shockRegion"]
+	j         = opts["shockReg"]
 	which     = opts["policy"]
 	shockYear = opts["shockYear"]
 
@@ -840,7 +840,7 @@ Applies price/income shock to a certain region in certain year and returns measu
 """
 function exp_shockRegion_impact(opts::Dict)
 
-	j         = opts["shockRegion"]
+	j         = opts["shockReg"]
 	which     = opts["policy"]
 	shockYear = opts["shockYear"]
 
