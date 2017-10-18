@@ -61,6 +61,7 @@ type Param
 	ctax         :: Float64    # proportional consumption scale. used to find equalizing utility
 	shockReg     :: Int
 	shockAge     :: Int
+	shockYear     :: Int
 	shockVal     :: Vector{Float64}
 	shockVal_y     :: Vector{Float64}
 	shockVal_p     :: Vector{Float64}
@@ -210,13 +211,14 @@ type Param
 			verbose  = 0
 			shockReg = 0
 			shockAge = 100
+			shockYear = 2000
 			shockVal = ones(nt-1)
 			shockVal_y = ones(nt-1)
 			shockVal_p = ones(nt-1)
 		# end
 		# create object
 
-		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
 
 		# override defaults
 		if length(opts) > 0

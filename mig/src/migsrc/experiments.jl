@@ -821,7 +821,7 @@ function shockRegions_scenarios(;save::Bool=false,yrange=0.05,prange=0.05)
 		for ps in [1.0-prange, 1.0, 1.0+prange]
 			for ys in [1.0-yrange, 1.0, 1.0+yrange]
 
-				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>ps,"shockVal_y"=>ys))[1]
+				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)))[1]
 			end
 		end
 	end
@@ -868,6 +868,7 @@ function exp_shockRegion_impact(opts::Dict)
 	# hits at a different age. selecting the right cohort will then imply
 	# that the shock hits you in a given year.
 	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+	info("pmap done")
 
 	# remove worker processes now.
 	if length(workers()) > 1
@@ -879,9 +880,11 @@ function exp_shockRegion_impact(opts::Dict)
 	df1 = ss[1]
 	for i in 2:length(ss)
 		df1 = vcat(df1,ss[i])
-		ss[i] = 0
 		gc()
 	end
+	ss = 0
+	gc()
+	info("stack done")
 	df1 =  df1[!isna(df1[:cohort]),:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
