@@ -821,7 +821,7 @@ function shockRegions_scenarios(;save::Bool=false,yrange=0.05,prange=0.05)
 		for ps in [1.0-prange, 1.0, 1.0+prange]
 			for ys in [1.0-yrange, 1.0, 1.0+yrange]
 
-				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockRegion"=>j,"policy"=>"ypshock","shockYear"=>2000))[1]
+				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>ps,"shockVal_y"=>ys))[1]
 			end
 		end
 	end
