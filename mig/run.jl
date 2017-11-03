@@ -1,99 +1,73 @@
-# migration project run file
+doc = """
 
-using mig
+Homeownership, Regional Shocks and Migration (Oswald, 2017)
+
+    | Welcome to the run file of my paper. Please
+    | see below how to run the code. 
+    | Thanks,
+    | Florian
+
+Usage:
+    run.jl -h | --help
+    run.jl --version
+    run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>]
+    run.jl test 
+    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave]
+    run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>]
+    run.jl experiment (moneyMC|decomp) [--nosave]
+
+Options:
+    -h --help           Show this screen.
+    --nworkers=<nw>     use <nw> of workers for task. [default: 1]
+    --maxiter=<maxit>   max number of iterations in estimation [default: 500].
+    --nosave            don't save experiment output
+    --yshock=<ys>       shock applied to regional income [default: 1.0]
+    --pshock=<ps>       shock applied to regional price [default: 1.0]
+    --on_impact         measure experiment in year of impact only
+    --version           show version
+
+"""
 using DocOpt
+args = docopt(doc, version=v"0.9")
 
-function main()
-    doc = """
 
-        Usage:
-           run.jl -h | --help 
-           run.jl --test=<test>
-           run.jl --estim=<estimation> [--nworkers=<nw>] [--maxiter=<maxit>]
-           run.jl --exper=<exper> [--reg=<region>] [--year=<year>]
-
-        Options:
-            -h --help       Show this screen.
-            --test=<test>   run test  
-                            tests:
-                                sol             Compute solution to DP
-                                sim             Compute simulation
-                                runtests        Run all unit tests
-                                test_<name>.jl  Run unit tests in test/test_<name>.jl
-            --estim=<estim>  run estimation estimation
-                                estimations:
-                                BGP         estimate model via BGP algorithm
-                                slices      compute model slices along parameters
-            --nworkers=<nw>    run estimation on num_workers [default: 1]
-            --maxiter=<maxit>  run estimation for maxiter iterations [default: 500]
-            --exper=<exper>    run experiment 
-                                    experiments:
-                                        highMC        Perform highMC experiment in <region>
-                                        noMove        Shutdown moving everywhere      
-                                        moneyMC       Monetize moving cost      
-                                        ypshock       shock y and p in region in year
-                                        pshock        shock p in region in year
-                                        yshock        shock y in region in year
-                                        decomp        decompose owner's moving cost
-            --save=<true/false>  save the results? [default: false]
-            --reg=<region>  run experiment in region region [default: 8]
-            --year=<year>   run experiment in starting in year [default: 2000]
- 
-        """
-
-    dir = dirname(@__FILE__)
-
-    args = docopt(doc)
-    for (k,v) in args
-        if (v==nothing) | (v=="--help")
-        else
-            if k=="--test"
-                Base.info("Running test: $v")
-                if v=="sol"
-                    mig.runSol()
-                elseif v=="sim"
-                    mig.runSim()
-                elseif v=="runtests"
-                    include(joinpath(dir,"test","runtests.jl"))
-                elseif contains(v,"test_")
-                    include(joinpath(dir,"test",v))
-                end
-            elseif k=="--estim"
-                Base.info("Running estimation: $v")
-                if v=="BGP"
-                    # run estimation with BGP
-                    mig.estimate(args["--maxiter"],args["--nworkers"])
-                elseif v=="slices"
-                    # run slices
-                # which estim
-                end
-            elseif k=="--exper"
-                Base.info("Running experiment: $v")
-                save = parse(Bool,args["--save"])
-                if save
-                    Base.info("will save results to disk")
-                else
-                    Base.info("will NOT save results to disk")
-                end
-                reg = parse(Int,args["--reg"])
-                if v=="highMC"
-                    Base.info("in region: $reg")
-                    e = mig.exp_value_mig_base(reg,save=true,ctax=false)   # true recomputes all cons taxes.
-                if v=="noMove"
-                    info("shutting down moving in all regions")
-                    e = mig.exp_value_mig_base(0,save=true,ctax=false)   # true recomputes all cons taxes.
-                elseif v=="moneyMC"
-                    mig.moneyMC()
-                elseif (v=="ypshock") | (v=="yshock") | (v=="pshock")
-                    mig.runExperiment(v,reg,parse(Int,args["--year"]))
-                elseif v=="decomp"
-                    mig.decompose_MC_owners()
-                end
-            end
+if args["estim"]
+    using mig
+    info("Running estimation: ")
+    nwork = parse(Int,args["--nworkers"])
+    maxit = parse(Int,args["--maxit"])
+    if args["BGP"]
+        info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
+        mig.estimate(maxit,nwork)
+    elseif args["slices"]
+        info("      compute slices on $nwork workers.")
+        mig.slices(nwork)
+    end
+elseif args["test"]
+    info("Running tests")
+elseif args["experiment"]
+    info("Running experiments:")
+    nosave = args["--nosave"]
+    on_impact = args["--on_impact"]
+    nwork = parse(Int,args["--nworkers"])
+    _ys = parse(Float64,args["--yshock"])
+    _ps = parse(Float64,args["--pshock"])
+    if args["noMove"]
+        using mig
+        info("      noMove experiment, with nosave=$nosave")
+        info("      applying ys=$_ys, ps=$_ps")
+        mig.exp_Nomove(save=!nosave,ys=_ys,ps=_ps)
+    elseif args["shockRegion"]
+        if nwork > 1
+            addprocs(nwork)
         end
+        using mig
+        info("      shockRegion experiment, with nosave=$nosave, on_impact=$on_impact, on $(length(workers())) cores")
+        mig.shockRegions_scenarios(on_impact,save=!nosave)
+    elseif args["moneyMC"]
+        info("      monetize the moving costs, with nosave=$nosave")
+    elseif args["decomp"]
+        info("      decompose the moving costs, with nosave=$nosave")
     end
 
 end
-
-main()
-

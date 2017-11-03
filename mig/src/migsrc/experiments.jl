@@ -73,7 +73,7 @@ function sim_expost_value(m::Model,p::Param,j::Int,mv_id::Vector{Int})
 	cutyr = 1997 - 1
 	solve!(m,p)
 	base = simulate(m,p);
-	base = base[!isna(base[:cohort]),:];
+	base = base[!isna.(base[:cohort]),:];
 	if length(mv_id)>0
 		base = base[findin(base[:id],mv_id),:]
 		# do NOT condition on their tenure in j only, but entire lifecycle
@@ -118,7 +118,7 @@ function vdiff_value_mig_base(ctax::Float64,w0::Float64,j::Int,mv_id::Vector{Int
 	(w1[:v][1] - w0)^2
 end
 
-function exp_highMC(;pshock=1.0,yshock=1.0)
+function shutdownMoving(;pshock=1.0,yshock=1.0)
 
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
@@ -160,9 +160,9 @@ end
 
 
 """
-	exp_value_mig_base(;ctax::Bool=false,save::Bool=false)
+	exp_Nomove(;ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
 
-compares baseline with noMove scenario. returns differences in utility and other oucomes if moving is shut down everywhere.
+compares baseline with noMove scenario: shut down moving in all regions. returns differences in utility and other oucomes if moving is shut down everywhere. Results are by region.
 
 ## keywords
 
@@ -171,9 +171,9 @@ compares baseline with noMove scenario. returns differences in utility and other
 * `ys`: multiplicative *yshock* to be applied to the counterfactual
 * `ps`: multiplicative *pshock* to be applied to the counterfactual
 """
-function exp_value_mig_base(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
+function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
 
-	bp = exp_highMC(yshock=ys,pshock=ps)
+	bp = shutdownMoving(yshock=ys,pshock=ps)
 	base = bp[:base]
 	pol = bp[:pol]
 	p = Param(2)
@@ -606,18 +606,12 @@ function valdiff_shockRegion(ctax::Float64,v0::Float64,opts::Dict)
 end
 
 
-# shocking a given region shockReg in a given year shockYear
-# 
-# this requires to compute the solution for all cohorts alive in shockYear
-# this in turn requires the solution to be computed T times.
-# The particular difference for each solution is that the mapping p_j = g(Y,P,j) changes
-# at the date at which the cohort hit shockYear. This means that suddenly in shockYear agents realize their mapping is no longer valid and they adjust to the new reality. 
-# the shock never reverts back, i.e. if the region is hit, it is depressed forever.
-# the value and policy functions for t<1997 must be replaced by the ones
-# from the standard solution, since otherwise agents will expect the shock
-# then simulate as usual and pick up the behaviour in j around 1997
-# and compare to behaviour in the non-shocked version.
-function exp_shockRegion(opts::Dict)
+"""
+	exp_shockRegion(opts::Dict; on_impact::Bool=false)
+
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: if `on_impact`, Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role. Alternatively, price scenarios can be given as members of `opts`.
+"""
+function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 
 	j         = opts["shockReg"]
 	which     = opts["policy"]
@@ -637,7 +631,7 @@ function exp_shockRegion(opts::Dict)
 	m = Model(p)
 	solve!(m,p)
 	sim0 = simulate(m,p)
-	sim0 = sim0[!isna(sim0[:cohort]),:]
+	sim0 = sim0[.!isna.(sim0[:cohort]),:]
 
 	# Policy
 	# ------
@@ -650,6 +644,7 @@ function exp_shockRegion(opts::Dict)
 	# remove worker processes now.
 	if length(workers()) > 1
 		rmprocs(workers())
+		info("removed worker processes")
 	end
 
 	# stack dataframes
@@ -660,7 +655,7 @@ function exp_shockRegion(opts::Dict)
 		ss[i] = 0
 		gc()
 	end
-	df1 =  df1[!isna(df1[:cohort]),:]
+	df1 =  df1[.!isna.(df1[:cohort]),:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
 
@@ -669,16 +664,8 @@ function exp_shockRegion(opts::Dict)
 		df1 = vcat(df1,@where(sim0,:cohort.<minc))
 	end
 
-
 	# compute behaviour of all born into post shock world
-	if get(opts,"verbose",0) > 0
-		println("computing behaviour for post shock cohorts")
-	end
-
-	if which=="p3" || which == "y3"|| which == "ypshock3"
-		# assume shock goes away immediately and all behave as in baseline
-		sim2 = @where(sim0,:cohort.>maxc)
-	else
+	if !on_impact
 		# assume shock stays forever
 		opts["shockAge"] = 1
 		p1 = Param(2,opts)
@@ -686,217 +673,18 @@ function exp_shockRegion(opts::Dict)
 		mm = Model(p1)
 		solve!(mm,p1)
 		sim2 = simulate(mm,p1)
-		sim2 = sim2[!isna(sim2[:cohort]),:]
+		sim2 = sim2[!.isna.(sim2[:cohort]),:]
 		mm = 0
 		gc()
 		# keep only guys born after shockYear
 		sim2 = @where(sim2,:cohort.>maxc)
+
+		# stack
+		sim1 = vcat(df1,sim2)
+		sim2 = 0
+	else
+		sim1 = df1
 	end
-
-	# stack
-	sim1 = vcat(df1,sim2)
-	df1 = 0
-	sim2 = 0
-	gc()
-
-	# compute summaries
-	# =================
-
-	# get discounted lifetime utility of people in j from shockYear forward
-	# ----------------------------------------------
-	w0   = getDiscountedValue(@where(sim0,(:j.==j)&(:year.>=shockYear)),p,m,true)
-	mms0 = computeMoments(sim0,p)	
-
-	w1 = getDiscountedValue(@where(sim1,(:j.==j)&(:year.>=shockYear)),p,m,true)
-	mms1 = computeMoments(sim1,p)	
-
-
-	# get flows for each region
-	d = Dict{AbstractString,DataFrame}()
-	d["base"] = sim0
-	d[which] = sim1
-	flows = getFlowStats(d,false,"$(which)_$j")
-
-	# calculate an elasticity of out and inflows
-	# -------------------------------------------
-
-	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year)
-
-	# for kennan figure 1
-	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,year=:year) 
-			
-	ela1[:pshock] = 0.0
-	ela1[:yshock] = 0.0
-
-	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
-
-	# println("shockVal_y = $(opts["shockVal_y"])")
-	# println("shockVal_p = $(opts["shockVal_p"])")
-
-	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
-	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
-
-	# println(ela1[[:year,:yshock,:pshock]])
-	ela1[:d_all_p] = 0.0
-	ela1[:d_own_p] = 0.0
-	ela1[:d_net_own_p] = 0.0
-	ela1[:d_rent_p] = 0.0
-	ela1[:d_net_rent_p] = 0.0
-	ela1[:d_all_y] = 0.0
-	ela1[:d_own_y] = 0.0
-	ela1[:d_net_own_y] = 0.0
-	ela1[:d_rent_y] = 0.0
-	ela1[:d_net_rent_y] = 0.0
-	ela1[:d_out_buy_y] = 0.0
-	ela1[:d_out_buy_p] = 0.0
-	ela1[:d_in_buy_y] = 0.0
-	ela1[:d_in_buy_p] = 0.0
-	ela1[:d_out_rent_y] = 0.0
-	ela1[:d_out_rent_p] = 0.0
-	ela1[:d_in_rent_y] = 0.0
-	ela1[:d_in_rent_p] = 0.0
-
-	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_net_own_p] = ela1[ela1[:pshock].!= 0.0, :d_net_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_out_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_in_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-
-	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-
-	out = Dict("which" => which,
-		   "j" => j, 
-	       "shockYear" => shockYear, 
-	       # "dfs" => dfs,
-	       "flows" => flows,
-	       "opts" => opts,
-	       # "elasticity_net" => elas,
-	       "elasticity" => ela1,
-	       "values" => Dict("base" => w0, which => w1),
-	       "moments" => Dict("base" => mms0, which => mms1))
-
-	return (out,sim0,sim1)
-end
-
-function read_exp_shockRegion(f::AbstractString)
-	d = JSON.parsefile(f)
-	# out and in
-	for (k,v) in d
-		if isa(v,Dict)
-		println(collect(keys(v)))
-			if all(["colindex","columns"] .== collect(keys(v)))
-				# this is a dataframe
-				d[k] = DataFrame(v["columns"],Symbol[symbol(v["colindex"]["names"][i]) for i in 1:length(v["colindex"]["names"])])
-			end
-		end
-	end
-	return d
-end
-
-
-"""
-	shockRegions_scenarios(save::Bool=false)
-
-Run shockRegion experiment for each region and for different price scenarios
-"""
-function shockRegions_scenarios(;save::Bool=false,yrange=0.05,prange=0.05)
-
-	p = Param(2)
-	d = Dict()
-	for j in 1:p.nJ
-		d[j] = Dict()
-		for ps in [1.0-prange, 1.0, 1.0+prange]
-			for ys in [1.0-yrange, 1.0, 1.0+yrange]
-
-				d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion_impact(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)))[1]
-			end
-		end
-	end
-	io = setPaths()
-	f = open(joinpath(io["outdir"],"shockRegions_scenarios.json"),"w")
-	JSON.print(f,d)
-	close(f)
-	return d
-end
-
-
-"""
-	exp_shockRegion_impact(opts::Dict)
-
-Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role.
-"""
-function exp_shockRegion_impact(opts::Dict)
-
-	j         = opts["shockReg"]
-	which     = opts["policy"]
-	shockYear = opts["shockYear"]
-
-	if shockYear<1997
-		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
-	end
-
-	# Baseline
-	# --------
-
-	# note: we must know the baseline model in any case.
-	# this is because policy functions of agents in years
-	# BEFORE the shock need to be adjusted to be equal to the baseline ones.
-	p = Param(2)
-	m = Model(p)
-	solve!(m,p)
-	sim0 = simulate(m,p)
-	sim0 = sim0[!isna(sim0[:cohort]),:]
-	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
-
-	# Policy
-	# ------
-	
-	# compute behaviour for all individuals, assuming each time the shock
-	# hits at a different age. selecting the right cohort will then imply
-	# that the shock hits you in a given year.
-	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
-	info("pmap done")
-
-	# remove worker processes now.
-	if length(workers()) > 1
-		rmprocs(workers())
-	end
-
-	# stack dataframes
-	# 
-	df1 = ss[1]
-	for i in 2:length(ss)
-		df1 = vcat(df1,ss[i])
-		gc()
-	end
-	ss = 0
-	gc()
-	info("stack done")
-	df1 =  df1[!isna(df1[:cohort]),:]
-	maxc = maximum(df1[:cohort])
-	minc = minimum(df1[:cohort])
-
-	if minc > 1
-		# add all cohorts that were not simulated in computeShockAge
-		df1 = vcat(df1,@where(sim0,:cohort.<minc))
-	end
-
-
-	# stack
-	sim1 = df1
 	df1 = 0
 	gc()
 
@@ -926,66 +714,173 @@ function exp_shockRegion_impact(opts::Dict)
 	d[which] = sim1
 	flows = getFlowStats(d,false,"$(which)_$j")
 
-	# calculate an elasticity of out and inflows
-	# -------------------------------------------
 
-	ela = join(flows["base"][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],flows[which][j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year)
+	out = Dict("which" => which,
+		   "j" => j, 
+	       "shockYear" => shockYear, 
+	       "flows" => flows,
+	       "opts" => opts,
+	       "values" => Dict("base" => w0, which => w1),
+	       "moments" => Dict("base" => mms0, which => mms1))
 
-	# for kennan figure 1
-	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, d_own = (:Owners_1 - :Owners)./:Owners, d_rent = (:Renters_1 - :Renters)./:Renters,d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,year=:year) 
-			
-	ela1[:pshock] = 0.0
-	ela1[:yshock] = 0.0
+	io = setPaths()
+	f = open(joinpath(io["outdir"],"shockRegions_scenarios.json"),"w")
+	JSON.print(f,d)
+	close(f)
 
-	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
+	return (out,sim0,sim1)
+end
 
-	# println("shockVal_y = $(opts["shockVal_y"])")
-	# println("shockVal_p = $(opts["shockVal_p"])")
 
-	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
-	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
+"""
+	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,yrange=0.05,prange=0.05)
 
-	# println(ela1[[:year,:yshock,:pshock]])
-	ela1[:d_all_p] = 0.0
-	ela1[:d_own_p] = 0.0
-	ela1[:d_net_own_p] = 0.0
-	ela1[:d_rent_p] = 0.0
-	ela1[:d_net_rent_p] = 0.0
-	ela1[:d_all_y] = 0.0
-	ela1[:d_own_y] = 0.0
-	ela1[:d_net_own_y] = 0.0
-	ela1[:d_rent_y] = 0.0
-	ela1[:d_net_rent_y] = 0.0
-	ela1[:d_out_buy_y] = 0.0
-	ela1[:d_out_buy_p] = 0.0
-	ela1[:d_in_buy_y] = 0.0
-	ela1[:d_in_buy_p] = 0.0
-	ela1[:d_out_rent_y] = 0.0
-	ela1[:d_out_rent_p] = 0.0
-	ela1[:d_in_rent_y] = 0.0
-	ela1[:d_in_rent_p] = 0.0
+Run shockRegion experiment for each region and for different price scenarios
+"""
+function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.05,prange=0.05)
 
-	ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_net_own_p] = ela1[ela1[:pshock].!= 0.0, :d_net_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_out_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_in_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	p = Param(2)
+	d = Dict()
+	for j in 1:p.nJ
+		info("Applying shock to region $j")
+		if on_impact
+			d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
 
-	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+		else
+			d[j] = Dict()
+			for ps in [1.0-prange, 1.0, 1.0+prange]
+				for ys in [1.0-yrange, 1.0, 1.0+yrange]
+					info("doing exp_shockRegion with ps=$ps, ys=$ys")
 
+					d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
+				end
+			end
+		end
+	end
+	io = setPaths()
+	ostr = on_impact ? "shockRegions_onimpact.json" : "shockRegions_scenarios.json"
+	f = open(joinpath(io["outdir"],ostr),"w")
+	JSON.print(f,d)
+	close(f)
+	info("done.")
+	return d
+end
+
+
+"""
+	exp_shockRegion_impact(opts::Dict)
+
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role.
+"""
+function exp_shockRegion_impact(opts::Dict; on_impact::Bool=false)
+
+	j         = opts["shockReg"]
+	which     = opts["policy"]
+	shockYear = opts["shockYear"]
+
+	if shockYear<1997
+		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
+	end
+
+	# Baseline
+	# --------
+
+	# note: we must know the baseline model in any case.
+	# this is because policy functions of agents in years
+	# BEFORE the shock need to be adjusted to be equal to the baseline ones.
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+	sim0 = sim0[.!isna.(sim0[:cohort]),:]
+	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
+
+	# Policy
+	# ------
+	
+	# compute behaviour for all individuals, assuming each time the shock
+	# hits at a different age. selecting the right cohort will then imply
+	# that the shock hits you in a given year.
+	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+
+	# remove worker processes now.
+	if length(workers()) > 1
+		rmprocs(workers())
+		info("removed worker processes")
+	end
+
+	# compute behaviour of all born into post shock world
+	opts["shockAge"] = 1
+	p1 = Param(2,opts)
+	setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
+	mm = Model(p1)
+	solve!(mm,p1)
+	sim2 = simulate(mm,p1)
+	sim2 = sim2[.!isna.(sim2[:cohort]),:]
+	mm = 0
+	gc()
+	# keep only guys born after shockYear
+	sim2 = @where(sim2,:cohort.>maxc)
+
+	df1 = ss[1]
+	for i in 2:length(ss)
+		df1 = vcat(df1,ss[i])
+		gc()
+	end
+	ss = 0
+	gc()
+
+	# stack
+	sim1 = vcat(df1,sim2)
+	df1 = 0
+	sim2 = 0
+	gc()
+	df1 =  df1[!isna.(df1[:cohort]),:]
+	maxc = maximum(df1[:cohort])
+	minc = minimum(df1[:cohort])
+
+	if minc > 1
+		# add all cohorts that were not simulated in computeShockAge
+		df1 = vcat(df1,@where(sim0,:cohort.<minc))
+	end
+
+
+	# stack
+	sim1 = df1
+	df1 = 0
+	gc()
+
+	# compute summaries
+	# =================
+
+	# * measure ONLY in period of impact, i.e. shockYear
+	# * get mean value difference
+	# * how many leave
+
+	# get averge lifetime of all and movers in shockYear
+	# ----------------------------------------------
+	w0 = @linq sim0 |>
+		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @select(v = mean(:maxv),u = mean(:utility))
+	mms0 = computeMoments(sim0,p)	
+
+	# dataset of baseline movers and their counterparts under the shock
+	b_movers = sim0[findin(sim0[:id],mv_ids),:];
+	movers = join(b_movers,sim1[findin(sim1[:id],mv_ids)][[:cons,:save,:move,:own,:hh,:utility,:maxv]])
+
+	w1 = @linq sim1 |>
+		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @select(v = mean(:maxv),u = mean(:utility))
+	mms1 = computeMoments(sim1,p)	
+
+
+	# get flows for each region
+	d = Dict{AbstractString,DataFrame}()
+	d["base"] = sim0
+	d[which] = sim1
+	flows = getFlowStats(d,false,"$(which)_$j")
+
+	
 	out = Dict("which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
