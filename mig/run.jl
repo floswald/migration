@@ -62,8 +62,9 @@ elseif args["experiment"]
             addprocs(nwork)
         end
         using mig
+        tic()
         info("      shockRegion experiment, with nosave=$nosave, on_impact=$on_impact, on $(length(workers())) cores")
-        mig.shockRegions_scenarios(on_impact,save=!nosave)
+        @time mig.shockRegions_scenarios(on_impact,save=!nosave)
     elseif args["moneyMC"]
         info("      monetize the moving costs, with nosave=$nosave")
     elseif args["decomp"]

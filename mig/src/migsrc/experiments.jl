@@ -641,11 +641,6 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# that the shock hits you in a given year.
 	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 
-	# remove worker processes now.
-	if length(workers()) > 1
-		rmprocs(workers())
-		info("removed worker processes")
-	end
 
 	# stack dataframes
 	# 
@@ -673,7 +668,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		mm = Model(p1)
 		solve!(mm,p1)
 		sim2 = simulate(mm,p1)
-		sim2 = sim2[!.isna.(sim2[:cohort]),:]
+		sim2 = sim2[.!isna.(sim2[:cohort]),:]
 		mm = 0
 		gc()
 		# keep only guys born after shockYear
@@ -723,10 +718,10 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "values" => Dict("base" => w0, which => w1),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
-	io = setPaths()
-	f = open(joinpath(io["outdir"],"shockRegions_scenarios.json"),"w")
-	JSON.print(f,d)
-	close(f)
+	# io = setPaths()
+	# f = open(joinpath(io["outdir"],"shockRegions_scenarios.json"),"w")
+	# JSON.print(f,d)
+	# close(f)
 
 	return (out,sim0,sim1)
 end
@@ -738,7 +733,7 @@ end
 Run shockRegion experiment for each region and for different price scenarios
 """
 function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.05,prange=0.05)
-
+	tic()
 	p = Param(2)
 	d = Dict()
 	for j in 1:p.nJ
@@ -763,6 +758,9 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 	JSON.print(f,d)
 	close(f)
 	info("done.")
+
+	took = toq() / 3600.0  # hours
+	post_slack("[MIG] shockRegions_scenarios",took,"hours")
 	return d
 end
 

@@ -1,6 +1,22 @@
 
 
 
+function post_slack(job,time,units)
+	txt = "payload={'text': '$job finished after $time $units.'}"
+	println(txt)
+	println(ENV["MIG_SLACK"])
+	if haskey(ENV,"MIG_SLACK")
+		run(`curl -X POST --data-urlencode $txt $(ENV["MIG_SLACK"])`) 
+	else
+		error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
+	end
+end
+
+
+    # with open('slack-hook.txt','r') as myf:
+    #     TKN = myf.read()
+    # conn = connect()
+
 
 function mydf2dict(df::DataFrame)
 	if names(df) != [:moment,:model_value]
