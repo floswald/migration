@@ -632,6 +632,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	solve!(m,p)
 	sim0 = simulate(m,p)
 	sim0 = sim0[.!isna.(sim0[:cohort]),:]
+	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
 
 	# Policy
 	# ------
@@ -640,6 +641,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# hits at a different age. selecting the right cohort will then imply
 	# that the shock hits you in a given year.
 	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+	# debugging:
+	# ss = DataFrame[sim0[rand(1:nrow(sim0),1000),:],sim0[rand(1:nrow(sim0),1000),:]]
 
 
 	# stack dataframes
@@ -686,6 +689,16 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# compute summaries
 	# =================
 
+
+	# dataset of baseline movers and their counterparts under the shock
+	# ----------------------------------------------
+	b_movers = sim0[findin(sim0[:id],mv_ids[:id]),:];
+	p_movers = sim0[findin(sim1[:id],mv_ids[:id]),:];
+	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att = att_1 .- att_0 
+	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
+
 	# get averge lifetime of all and movers in shockYear
 	# ----------------------------------------------
 	w0 = @linq sim0 |>
@@ -693,9 +706,6 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		 @select(v = mean(:maxv),u = mean(:utility))
 	mms0 = computeMoments(sim0,p)	
 
-	# dataset of baseline movers and their counterparts under the shock
-	b_movers = sim0[findin(sim0[:id],mv_ids),:];
-	movers = join(b_movers,sim1[findin(sim1[:id],mv_ids)][[:cons,:save,:move,:own,:hh,:utility,:maxv]])
 
 	w1 = @linq sim1 |>
 		 @where((:j.==j)&(:year.>=shockYear)) |>
@@ -715,6 +725,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "shockYear" => shockYear, 
 	       "flows" => flows,
 	       "opts" => opts,
+	       "movers_effects" => atts,
 	       "values" => Dict("base" => w0, which => w1),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
@@ -762,136 +773,6 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 	took = toq() / 3600.0  # hours
 	post_slack("[MIG] shockRegions_scenarios",took,"hours")
 	return d
-end
-
-
-"""
-	exp_shockRegion_impact(opts::Dict)
-
-Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role.
-"""
-function exp_shockRegion_impact(opts::Dict; on_impact::Bool=false)
-
-	j         = opts["shockReg"]
-	which     = opts["policy"]
-	shockYear = opts["shockYear"]
-
-	if shockYear<1997
-		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
-	end
-
-	# Baseline
-	# --------
-
-	# note: we must know the baseline model in any case.
-	# this is because policy functions of agents in years
-	# BEFORE the shock need to be adjusted to be equal to the baseline ones.
-	p = Param(2)
-	m = Model(p)
-	solve!(m,p)
-	sim0 = simulate(m,p)
-	sim0 = sim0[.!isna.(sim0[:cohort]),:]
-	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
-
-	# Policy
-	# ------
-	
-	# compute behaviour for all individuals, assuming each time the shock
-	# hits at a different age. selecting the right cohort will then imply
-	# that the shock hits you in a given year.
-	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
-
-	# remove worker processes now.
-	if length(workers()) > 1
-		rmprocs(workers())
-		info("removed worker processes")
-	end
-
-	# compute behaviour of all born into post shock world
-	opts["shockAge"] = 1
-	p1 = Param(2,opts)
-	setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
-	mm = Model(p1)
-	solve!(mm,p1)
-	sim2 = simulate(mm,p1)
-	sim2 = sim2[.!isna.(sim2[:cohort]),:]
-	mm = 0
-	gc()
-	# keep only guys born after shockYear
-	sim2 = @where(sim2,:cohort.>maxc)
-
-	df1 = ss[1]
-	for i in 2:length(ss)
-		df1 = vcat(df1,ss[i])
-		gc()
-	end
-	ss = 0
-	gc()
-
-	# stack
-	sim1 = vcat(df1,sim2)
-	df1 = 0
-	sim2 = 0
-	gc()
-	df1 =  df1[!isna.(df1[:cohort]),:]
-	maxc = maximum(df1[:cohort])
-	minc = minimum(df1[:cohort])
-
-	if minc > 1
-		# add all cohorts that were not simulated in computeShockAge
-		df1 = vcat(df1,@where(sim0,:cohort.<minc))
-	end
-
-
-	# stack
-	sim1 = df1
-	df1 = 0
-	gc()
-
-	# compute summaries
-	# =================
-
-	# * measure ONLY in period of impact, i.e. shockYear
-	# * get mean value difference
-	# * how many leave
-
-	# get averge lifetime of all and movers in shockYear
-	# ----------------------------------------------
-	w0 = @linq sim0 |>
-		 @where((:j.==j)&(:year.>=shockYear)) |>
-		 @select(v = mean(:maxv),u = mean(:utility))
-	mms0 = computeMoments(sim0,p)	
-
-	# dataset of baseline movers and their counterparts under the shock
-	b_movers = sim0[findin(sim0[:id],mv_ids),:];
-	movers = join(b_movers,sim1[findin(sim1[:id],mv_ids)][[:cons,:save,:move,:own,:hh,:utility,:maxv]])
-
-	w1 = @linq sim1 |>
-		 @where((:j.==j)&(:year.>=shockYear)) |>
-		 @select(v = mean(:maxv),u = mean(:utility))
-	mms1 = computeMoments(sim1,p)	
-
-
-	# get flows for each region
-	d = Dict{AbstractString,DataFrame}()
-	d["base"] = sim0
-	d[which] = sim1
-	flows = getFlowStats(d,false,"$(which)_$j")
-
-	
-	out = Dict("which" => which,
-		   "j" => j, 
-	       "shockYear" => shockYear, 
-	       "movers" => movers, 
-	       # "dfs" => dfs,
-	       "flows" => flows,
-	       "opts" => opts,
-	       # "elasticity_net" => elas,
-	       "elasticity" => ela1,
-	       "values" => Dict("base" => w0[:maxv][1], which => w1[:maxv][1]),
-	       "moments" => Dict("base" => mms0, which => mms1))
-
-	return (out,sim0,sim1)
 end
 
 
