@@ -61,7 +61,7 @@ elseif args["experiment"]
     elseif args["shockRegion"]
         if nwork > 1
             if args["--cluster"]=="cumulus"
-                addprocs([("vm$i-8core",round(Int,nwork/7) for i in 3:10])
+                addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
             end
         end
         using mig
