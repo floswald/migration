@@ -10,15 +10,16 @@ Homeownership, Regional Shocks and Migration (Oswald, 2017)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>]
+    run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
     run.jl test 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave]
-    run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>]
+    run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>] [--cluster=<c>]
     run.jl experiment (moneyMC|decomp) [--nosave]
 
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
+    --cluster=<c>       name of cluster to use [default: cumulus]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --nosave            don't save experiment output
     --yshock=<ys>       shock applied to regional income [default: 1.0]
@@ -59,7 +60,9 @@ elseif args["experiment"]
         mig.exp_Nomove(save=!nosave,ys=_ys,ps=_ps)
     elseif args["shockRegion"]
         if nwork > 1
-            addprocs(nwork)
+            if args["--cluster"]=="cumulus"
+                addprocs([("vm$i-8core",round(Int,nwork/7) for i in 3:10])
+            end
         end
         using mig
         tic()
