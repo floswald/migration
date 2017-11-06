@@ -663,7 +663,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	if !on_impact
 		# assume shock stays forever
 		opts["shockAge"] = 1
-		p1 = Param(2,opts)
+		p1 = Param(2,opts=opts)
 		setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		mm = Model(p1)
 		solve!(mm,p1)
