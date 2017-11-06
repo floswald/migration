@@ -647,9 +647,9 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	df1 = ss[1]
 	for i in 2:length(ss)
 		df1 = vcat(df1,ss[i])
-		ss[i] = 0
-		gc()
 	end
+	ss = 0
+	gc()
 	df1 =  df1[.!isna.(df1[:cohort]),:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
