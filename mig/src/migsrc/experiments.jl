@@ -702,13 +702,13 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# get averge lifetime of all and movers in shockYear
 	# ----------------------------------------------
 	w0 = @linq sim0 |>
-		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @where((:j.==j).&(:year.>=shockYear)) |>
 		 @select(v = mean(:maxv),u = mean(:utility))
 	mms0 = computeMoments(sim0,p)	
 
 
 	w1 = @linq sim1 |>
-		 @where((:j.==j)&(:year.>=shockYear)) |>
+		 @where((:j.==j).&(:year.>=shockYear)) |>
 		 @select(v = mean(:maxv),u = mean(:utility))
 	mms1 = computeMoments(sim1,p)	
 
@@ -758,7 +758,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 				for ys in [1.0-yrange, 1.0, 1.0+yrange]
 					info("doing exp_shockRegion with ps=$ps, ys=$ys")
 
-					d[Symbol("ps_$ps_ys_$ys")] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
+					d[Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
 				end
 			end
 		end
@@ -828,9 +828,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	if get(opts,"verbose",0) > 0
-		println("applying $(opts["policy"]) at age $(p.shockAge) with shockVals=$(p.shockVal[1:4]), keeping cohort $keep")
-	end
+	info("applying $(opts["policy"]) at age $(p.shockAge), keeping cohort $keep")
 	mm = Model(p)
 	solve!(mm,p)
 
