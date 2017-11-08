@@ -640,7 +640,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# compute behaviour for all individuals, assuming each time the shock
 	# hits at a different age. selecting the right cohort will then imply
 	# that the shock hits you in a given year.
-	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+	ss = map(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 	# debugging:
 	# ss = DataFrame[sim0[rand(1:nrow(sim0),1000),:],sim0[rand(1:nrow(sim0),1000),:]]
 
@@ -747,7 +747,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 	tic()
 	p = Param(2)
 	d = Dict()
-	for j in 1:p.nJ
+	@sync @parallel for j in 1:p.nJ
 		info("Applying shock to region $j")
 		if on_impact
 			d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
