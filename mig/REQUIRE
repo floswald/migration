@@ -1,21 +1,20 @@
 julia 0.6
 
 GLM
-MomentOpt
 PDMats
 Distributions
 DataFrames
 DataFramesMeta
-ApproXD
 Optim
 HDF5
 JLD
-@osx PyPlot
-@linux GR
+PyPlot
 JSON
-Copulas
 ClusterManagers
 QuantileRegression
 FileIO
 RData
 NLsolve
+ApproXD
+Copulas
+MomentOpt
