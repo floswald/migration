@@ -828,7 +828,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	info("applying $(opts["policy"]) at age $(p.shockAge), keeping cohort $keep")
+	info("applying $(opts["policy"]) in $(opts["shockReg"]) at age $(p.shockAge), keeping cohort $keep")
 	mm = Model(p)
 	solve!(mm,p)
 

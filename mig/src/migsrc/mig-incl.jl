@@ -297,9 +297,9 @@ function setPaths()
 		outdir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_data_jl"
 		outg   = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_graphs_jl"
 	elseif is_linux()
-		indir = joinpath(ENV["HOME"],"data_repo/mig/in_data_jl")
-		outdir = joinpath(ENV["HOME"],"data_repo/mig/out_data_jl")
-		outg   = joinpath(ENV["HOME"],"data_repo/mig/out_graphs_jl")
+		indir  = joinpath(joinpath(dirname(@__FILE__),"..","in")
+		outdir = joinpath(joinpath(dirname(@__FILE__),"..","out")
+		outg   = outdir
 	end
 	rem_in = "~/data_repo/mig/in_data_jl"
 	rem_out = "~/data_repo/mig/out_data_jl"

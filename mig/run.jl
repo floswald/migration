@@ -65,7 +65,6 @@ elseif args["experiment"]
             end
         end
         using mig
-        tic()
         info("      shockRegion experiment, with nosave=$nosave, on_impact=$on_impact, on $(length(workers())) cores")
         @time mig.shockRegions_scenarios(on_impact,save=!nosave)
     elseif args["moneyMC"]
