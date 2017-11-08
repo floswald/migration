@@ -70,6 +70,7 @@
 			end
 		end
 	end
+	gc()
 
 
 	@testset "testing get_rho_ktmp" begin
@@ -134,6 +135,7 @@
 			@test ktmp[ik] == m.v[ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 		end
 	end
+	gc()
 
 
 
@@ -294,6 +296,7 @@
 			mig.resetCache!(L["l_vcs"])
 		end
 	end
+	gc()
 
 	@testset "testing get_v1v2" begin
 
@@ -356,7 +359,7 @@
 		@test v1v2[1] == m.vh[1,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 		@test v1v2[2] == m.vh[2,ik,is,iz,iy,ip,itau,ia,ih,ij,it]
 	end
-
+	gc()
 
 	@testset "testing get_cs" begin
 
@@ -420,6 +423,7 @@
 	end
 
 end
+gc()
 
 
 

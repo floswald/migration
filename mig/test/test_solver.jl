@@ -128,6 +128,7 @@
 	end
 
 end
+gc()
 
 @testset "Solver. other parts." begin
 

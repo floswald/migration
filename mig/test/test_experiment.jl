@@ -79,6 +79,7 @@
 
 		@test all(m2.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[1,6,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) == true
 	end
+	gc()
 
 	@testset "checking solution under income shock" begin
 
@@ -124,23 +125,32 @@
 		@test all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,5,shockAge-1][:]) == true
 		@test all(m2.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:] .== m.vh[1,5,:,:,:,:,:,m.aone+1,1,6,shockAge-1][:]) == true
 	end
+	gc()
 
 
 	@testset "z shock sequences are identical in baseline and shocked versions" begin
 		
-		p = Param(2)
-		m = Model(p)
-		solve!(m,p)
-		sim0 = simulate(m,p)
-		sim0 = sim0[.!mig.isna.(sim0[:cohort]),:]
+		if is_apple()
+			p = Param(2)
+			m = Model(p)
+			solve!(m,p)
+			sim0 = simulate(m,p)
+			sim0 = sim0[.!mig.isna.(sim0[:cohort]),:]
 
 
-		s10 = mig.computeShockAge(m,Dict("policy"=>"pshock","shockReg"=>5,"shockYear"=>2007),10);
-		coh = unique(s10[:cohort])
+			s10 = mig.computeShockAge(m,Dict("policy"=>"pshock","shockReg"=>5,"shockYear"=>2007),10);
+			coh = unique(s10[:cohort])
 
-		@test coh[1] == p.nt - 10 + 2007 - 1997
+			@test coh[1] == p.nt - 10 + 2007 - 1997
 
-		@test all(sim0[sim0[:cohort].==coh,:z] .== s10[:z]) == true
+			@test all(sim0[sim0[:cohort].==coh,:z] .== s10[:z]) == true
+
+			s10 = 0
+			sim0 = 0
+			gc()
+		else
+			@test_skip "z shock sequences"
+		end
 
 	end
 
