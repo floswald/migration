@@ -616,6 +616,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	j         = opts["shockReg"]
 	which     = opts["policy"]
 	shockYear = opts["shockYear"]
+	info("Applying shock to region $j")
 
 	if shockYear<1998
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
@@ -738,6 +739,19 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 end
 
 
+function exp_shockRegion_ranges(prange,yrange,on_impact,nt,j)
+	d = Dict()
+	for ps in [1.0-prange, 1.0, 1.0+prange]
+		for ys in [1.0-yrange, 1.0, 1.0+yrange]
+			info("doing exp_shockRegion with ps=$ps, ys=$ys")
+			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(ys,nt-1))
+			d[Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+		end
+	end
+	return d
+end
+
+
 """
 	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,yrange=0.05,prange=0.05)
 
@@ -747,20 +761,19 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 	tic()
 	p = Param(2)
 	d = Dict()
-	@sync @parallel for j in 1:p.nJ
-		info("Applying shock to region $j")
-		if on_impact
-			d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
+	if on_impact
+		y = pmap(x->exp_shockRegion(Dict("shockReg"=>x,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(0.94,p.nt-1),"shockVal_y"=>fill(0.9,p.nt-1)),on_impact=on_impact)[1],1:p.nJ)
+		# reorder
+		for j in 1:p.nJ
+			d[j] = y[map(x->x["j"]==j,y)]
+		end
+		# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	),on_impact=on_impact)[1]
 
-		else
-			d[j] = Dict()
-			for ps in [1.0-prange, 1.0, 1.0+prange]
-				for ys in [1.0-yrange, 1.0, 1.0+yrange]
-					info("doing exp_shockRegion with ps=$ps, ys=$ys")
-
-					d[Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)),on_impact=on_impact)[1]
-				end
-			end
+	else
+		y = pmap(x->exp_shockRegion_ranges(prange,yrange,on_impact,p.nt,x),1:p.nJ)
+		# reorder
+		for j in 1:p.nJ
+			d[j] = y[map(x->x[Symbol("ps_1.0_ys_1.0")]["j"]==j,y)]
 		end
 	end
 	io = setPaths()
@@ -770,7 +783,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 	close(f)
 	info("done.")
 
-	took = toq() / 3600.0  # hours
+	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] shockRegions_scenarios",took,"hours")
 	return d
 end
