@@ -639,15 +639,9 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	        @where((:tau.==1)) |>
 	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=:j))
 
-	never_id = @linq mv_count |>
+	stay_ids = @linq mv_count |>
 	        @where(:n_moves.==0 ) |>
 	        @select(id=unique(:id))
-	once_id = @linq mv_count |>
-	        @where(:n_moves.>0 ) |>
-	        @select(id=unique(:id))
-
-	# people are mover type and stay till end of life. stayers.
-	stay_ids = base[findin(sim0[:id],never_id[:id]),:]
 
 	# Policy
 	# ------
