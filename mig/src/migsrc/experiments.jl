@@ -751,7 +751,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "opts" => opts,
 	       "movers_effects" => atts,
 	       "stayer_effects" => atns,
-	       "values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1])
+	       "values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1]),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
 	# io = setPaths()
