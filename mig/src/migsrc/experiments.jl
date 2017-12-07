@@ -634,6 +634,20 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	sim0 = simulate(m,p)
 	sim0 = sim0[.!isna.(sim0[:cohort]),:]
 	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
+	
+	mv_count = @linq sim0|>
+	        @where((:tau.==1)) |>
+	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=:j))
+
+	never_id = @linq mv_count |>
+	        @where(:n_moves.==0 ) |>
+	        @select(id=unique(:id))
+	once_id = @linq mv_count |>
+	        @where(:n_moves.>0 ) |>
+	        @select(id=unique(:id))
+
+	# people are mover type and stay till end of life. stayers.
+	stay_ids = base[findin(sim0[:id],never_id[:id]),:]
 
 	# Policy
 	# ------
@@ -694,11 +708,20 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# dataset of baseline movers and their counterparts under the shock
 	# ----------------------------------------------
 	b_movers = sim0[findin(sim0[:id],mv_ids[:id]),:];
-	p_movers = sim0[findin(sim1[:id],mv_ids[:id]),:];
+	p_movers = sim1[findin(sim1[:id],mv_ids[:id]),:];
 	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
 	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
+
+	# dataset of baseline stayer and their counterparts under the shock
+	# ----------------------------------------------
+	b_stayers = sim0[findin(sim0[:id],stay_ids[:id]),:];
+	p_stayers = sim1[findin(sim1[:id],stay_ids[:id]),:];
+	atn_0 = @select(b_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	atn_1 = @select(p_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	atn = atn_1 .- atn_0 
+	atns = convert(Dict,100.0 * (att ./ abs(att_0)))
 
 	# get averge lifetime of all and movers in shockYear
 	# ----------------------------------------------
@@ -727,7 +750,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "flows" => flows,
 	       "opts" => opts,
 	       "movers_effects" => atts,
-	       "values" => Dict("base" => w0, which => w1),
+	       "stayer_effects" => atns,
+	       "values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1])
 	       "moments" => Dict("base" => mms0, which => mms1))
 
 	# io = setPaths()
