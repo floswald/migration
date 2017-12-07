@@ -737,6 +737,9 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	d[which] = sim1
 	flows = getFlowStats(d,false,"$(which)_$j")
 
+	println("att = $att")
+	println("atn = $atn")
+
 
 	out = Dict("which" => which,
 		   "j" => j, 
