@@ -762,11 +762,14 @@ end
 
 function exp_shockRegion_ranges(prange,yrange,on_impact,nt,j)
 	d = Dict()
+	d[:region] = j
+	d[:data] = Dict()
 	for ps in [1.0-prange, 1.0, 1.0+prange]
 		for ys in [1.0-yrange, 1.0, 1.0+yrange]
 			info("doing exp_shockRegion with ps=$ps, ys=$ys")
 			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(ys,nt-1))
-			d[Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+			d[:data][Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+			# d[:data][Symbol("ps_$ps"*"_ys_$ys")] = Dict(:a=>1,:b=> rand())
 		end
 	end
 	return d
@@ -794,7 +797,8 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 		y = pmap(x->exp_shockRegion_ranges(prange,yrange,on_impact,p.nt,x),1:p.nJ)
 		# reorder
 		for j in 1:p.nJ
-			d[j] = y[map(x->x[Symbol("ps_1.0_ys_1.0")]["j"]==j,y)]
+			println(map(x->get(x,:region,0)==j,y))
+			d[j] = y[map(x->get(x,:region,0)==j,y)]
 		end
 	end
 	io = setPaths()
@@ -806,7 +810,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] shockRegions_scenarios",took,"hours")
-	return d
+	return (d,y)
 end
 
 
