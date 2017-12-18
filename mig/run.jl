@@ -64,7 +64,7 @@ elseif args["experiment"]
         using mig
         info("      noMove experiment, with nosave=$nosave")
         info("      applying ys=$_ys, ps=$_ps")
-        mig.exp_Nomove(save=!nosave,ys=_ys,ps=_ps)
+        mig.exp_Nomove(do_ctax=true,save=!nosave,ys=_ys,ps=_ps)
     elseif args["shockRegion"]
         if nwork > 1
             if args["--cluster"]=="cumulus"
