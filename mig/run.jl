@@ -54,6 +54,13 @@ elseif args["experiment"]
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
     if args["noMove"]
+        if nwork > 1
+            if args["--cluster"]=="cumulus"
+                addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
+            elseif args["--cluster"]=="local"
+                addprocs(nwork)
+            end
+        end
         using mig
         info("      noMove experiment, with nosave=$nosave")
         info("      applying ys=$_ys, ps=$_ps")
@@ -63,7 +70,7 @@ elseif args["experiment"]
             if args["--cluster"]=="cumulus"
                 addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
             elseif args["--cluster"]=="local"
-                # addprocs(nwork)
+                addprocs(nwork)
             end
         end
         using mig

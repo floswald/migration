@@ -11,10 +11,10 @@ JLD
 PyPlot
 JSON
 ClusterManagers
-QuantileRegression
 FileIO
 RData
 NLsolve
 ApproXD
 Copulas
 MomentOpt
+QuantileRegression
