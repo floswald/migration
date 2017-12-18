@@ -308,6 +308,51 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		atts[k] = convert(Dict,100.0 * (att ./ abs(att_0)))
 	end
 
+	function ctaxxers(ij::Int)
+		println("doing ctax for region $ij")
+		ctax = Dict()
+		ctax[:region] = ij
+		ctax[:data] = Dict()
+		if ij==0
+			# don't subset to any region: compute aggregate impact
+			# all
+			x=mig.ctaxxer("noMove",:realage,t->t.==t)
+			ctax[:data][:ate] = Optim.minimizer(x)
+			# young
+			x=mig.ctaxxer("noMove",:realage,t->t.<31)
+			ctax[:data][:young]=Optim.minimizer(x)
+			# young
+			x=mig.ctaxxer("noMove",:realage,t->t.>30)
+			ctax[:data][:old]=Optim.minimizer(x)
+			# for those who did not own a house when age == 30
+			x=mig.ctaxxer("noMove",:rent_30,t->t)
+			ctax[:data][:rent_30]=Optim.minimizer(x)
+			# for those who did own a house when age == 30
+			x=mig.ctaxxer("noMove",:own_30,t->t)
+			ctax[:data][:own_30]=Optim.minimizer(x)
+			gc()
+		else
+			# do subset to region j
+			# all
+			x=mig.ctaxxer("noMove",:j,t->t.==ij)
+			ctax[:data][:ate] = Optim.minimizer(x)
+			# young
+			x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
+			ctax[:data][:young]=Optim.minimizer(x)
+			# young
+			x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
+			ctax[:data][:old]=Optim.minimizer(x)
+			# for those who did not own a house when age == 30
+			x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
+			ctax[:data][:rent_30]=Optim.minimizer(x)
+			# for those who did own a house when age == 30
+			x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
+			ctax[:data][:own_30]=Optim.minimizer(x)
+			gc()
+		end
+		return ctax
+	end
+
 	# preparing io.
 	io = mig.setPaths()
 
@@ -327,54 +372,54 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	path = joinpath(io["outdir"],ostr)
 	f = open(joinpath(io["outdir"],ostr),"a+")
 	js = 0:p.nJ
-	ctax = Dict()
-	for ij in js
+	# for ij in js
 		if do_ctax 
-			Base.info("doing ctax for region $ij")
-			ctax[ij] = Dict()
-			if ij==0
-				# don't subset to any region: compute aggregate impact
-				# all
-				x=mig.ctaxxer("noMove",:realage,t->t.==t)
-				ctax[ij][:ate] = Optim.minimizer(x)
-				# young
-				x=mig.ctaxxer("noMove",:realage,t->t.<31)
-				ctax[ij][:young]=Optim.minimizer(x)
-				# young
-				x=mig.ctaxxer("noMove",:realage,t->t.>30)
-				ctax[ij][:old]=Optim.minimizer(x)
-				# for those who did not own a house when age == 30
-				x=mig.ctaxxer("noMove",:rent_30,t->t)
-				ctax[ij][:rent_30]=Optim.minimizer(x)
-				# for those who did own a house when age == 30
-				x=mig.ctaxxer("noMove",:own_30,t->t)
-				ctax[ij][:own_30]=Optim.minimizer(x)
-				gc()
-			else
-				# do subset to region j
-				# all
-				x=mig.ctaxxer("noMove",:j,t->t.==ij)
-				ctax[ij][:ate] = Optim.minimizer(x)
-				# young
-				x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
-				ctax[ij][:young]=Optim.minimizer(x)
-				# young
-				x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
-				ctax[ij][:old]=Optim.minimizer(x)
-				# for those who did not own a house when age == 30
-				x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
-				ctax[ij][:rent_30]=Optim.minimizer(x)
-				# for those who did own a house when age == 30
-				x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
-				ctax[ij][:own_30]=Optim.minimizer(x)
-				gc()
-			end
+			ctax = pmap(x->ctaxxers(x),js)
+			# Base.info("doing ctax for region $ij")
+			# ctax[Symbol("reg_$ij")] = Dict()
+			# if ij==0
+			# 	# don't subset to any region: compute aggregate impact
+			# 	# all
+			# 	x=mig.ctaxxer("noMove",:realage,t->t.==t)
+			# 	ctax[Symbol("reg_$ij")][:ate] = Optim.minimizer(x)
+			# 	# young
+			# 	x=mig.ctaxxer("noMove",:realage,t->t.<31)
+			# 	ctax[Symbol("reg_$ij")][:young]=Optim.minimizer(x)
+			# 	# young
+			# 	x=mig.ctaxxer("noMove",:realage,t->t.>30)
+			# 	ctax[Symbol("reg_$ij")][:old]=Optim.minimizer(x)
+			# 	# for those who did not own a house when age == 30
+			# 	x=mig.ctaxxer("noMove",:rent_30,t->t)
+			# 	ctax[Symbol("reg_$ij")][:rent_30]=Optim.minimizer(x)
+			# 	# for those who did own a house when age == 30
+			# 	x=mig.ctaxxer("noMove",:own_30,t->t)
+			# 	ctax[Symbol("reg_$ij")][:own_30]=Optim.minimizer(x)
+			# 	gc()
+			# else
+			# 	# do subset to region j
+			# 	# all
+			# 	x=mig.ctaxxer("noMove",:j,t->t.==ij)
+			# 	ctax[Symbol("reg_$ij")][:ate] = Optim.minimizer(x)
+			# 	# young
+			# 	x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
+			# 	ctax[Symbol("reg_$ij")][:young]=Optim.minimizer(x)
+			# 	# young
+			# 	x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
+			# 	ctax[Symbol("reg_$ij")][:old]=Optim.minimizer(x)
+			# 	# for those who did not own a house when age == 30
+			# 	x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
+			# 	ctax[Symbol("reg_$ij")][:rent_30]=Optim.minimizer(x)
+			# 	# for those who did own a house when age == 30
+			# 	x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
+			# 	ctax[Symbol("reg_$ij")][:own_30]=Optim.minimizer(x)
+			# 	gc()
+			# end
 		else
 			# read from file
 			ctax = JSON.parse(f)
+			close(f)
 		end
-		close(f)
-	end
+	# end
 
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
@@ -458,7 +503,7 @@ end
 # mig.ctaxxer("noMove",:j,t->t.==4) subsets in addition to year=>1996 that :j==4
 # mig.ctaxxer("noMove",:own_30,t->t) subsets in addition to year=>1996 that :own_30 is true
 function ctaxxer(pol::String,var::Symbol,sel_func)
-	info("finding consumtion tax for $pol policy. subsetting $var")
+	info("finding consumption tax for $pol policy. subsetting $var")
 	s = runSim()
 	val = @linq s |>
 		@where((:year.>1996) .& sel_func(_I_(var))) |>
@@ -477,7 +522,7 @@ function ctaxxer(pol::String,var::Symbol,sel_func)
 	return ctax
 end
 function ctaxxer(pol::String,var1::Symbol,sel_func1,var2::Symbol,sel_func2)
-	info("finding consumtion tax for $pol policy. subsetting $var1 and $var2")
+	info("finding consumption tax for $pol policy. subsetting $var1 and $var2")
 	s = runSim()
 	val = @linq s |>
 		@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2))) |>
