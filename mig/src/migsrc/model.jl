@@ -337,7 +337,7 @@ type Model
 		# -------------------------------------------
 
 		# get supports for shocks and trans mat
-		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y],p)
+		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y].data,p)
 
 		# zgrid holds ln(y) for all states of Y,P,age and region
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
@@ -635,7 +635,7 @@ end
 
 # end
 
-function rouwenhorst(df::DataFrame,ygrid::DataArray,p::Param)
+function rouwenhorst(df::DataFrame,ygrid::Array,p::Param)
 
 	# 3D version for rho varying by region
 	# P = zeros(p.nz,p.nz,p.nJ)
