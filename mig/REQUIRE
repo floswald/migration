@@ -3,7 +3,7 @@ julia 0.6
 GLM
 PDMats
 Distributions
-DataFrames
+DataFrames 0.10.0 0.10.1
 DataFramesMeta
 Optim
 HDF5

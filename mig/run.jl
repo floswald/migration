@@ -12,7 +12,7 @@ Usage:
     run.jl --version
     run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
     run.jl test 
-    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave]
+    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] [--cluster=<c>]
     run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>] [--cluster=<c>]
     run.jl experiment (moneyMC|decomp) [--nosave]
 
