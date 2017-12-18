@@ -3,7 +3,8 @@ module mig
 using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
 using NLsolve
 using JSON , Copulas, FileIO, RData # FixedSizeArrays #, Plots, StatPlots
-using QuantileRegression: qreg
+# using QuantileRegression: qreg
+using DataArrays
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
