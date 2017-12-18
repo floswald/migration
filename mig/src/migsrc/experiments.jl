@@ -636,11 +636,11 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
 	
 	mv_count = @linq sim0|>
-	        @where((:tau.==1)) |>
+	        @where((:year.>1996) .& (:tau.==1)) |>
 	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=:j))
 
 	stay_ids = @linq mv_count |>
-	        @where(:n_moves.==0 ) |>
+	        @where((:n_moves.==0) ) |>
 	        @select(id=unique(:id))
 
 	# Policy
@@ -703,8 +703,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# ----------------------------------------------
 	b_movers = sim0[findin(sim0[:id],mv_ids[:id]),:];
 	p_movers = sim1[findin(sim1[:id],mv_ids[:id]),:];
-	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
 	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
 
@@ -712,22 +712,22 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# ----------------------------------------------
 	b_stayers = sim0[findin(sim0[:id],stay_ids[:id]),:];
 	p_stayers = sim1[findin(sim1[:id],stay_ids[:id]),:];
-	atn_0 = @select(b_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	atn_1 = @select(p_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	atn_0 = @select(b_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	atn_1 = @select(p_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
 	atn = atn_1 .- atn_0 
-	atns = convert(Dict,100.0 * (att ./ abs(att_0)))
+	atns = convert(Dict,100.0 * (atn ./ abs(atn_0)))
 
 	# get averge lifetime of all and movers in shockYear
 	# ----------------------------------------------
 	w0 = @linq sim0 |>
 		 @where((:j.==j).&(:year.>=shockYear)) |>
-		 @select(v = mean(:maxv),u = mean(:utility))
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 	mms0 = computeMoments(sim0,p)	
 
 
 	w1 = @linq sim1 |>
 		 @where((:j.==j).&(:year.>=shockYear)) |>
-		 @select(v = mean(:maxv),u = mean(:utility))
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 	mms1 = computeMoments(sim1,p)	
 
 
@@ -748,7 +748,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "opts" => opts,
 	       "movers_effects" => atts,
 	       "stayer_effects" => atns,
-	       "values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1]),
+	       "d_values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1]),
+	       "d_cons" => (w1[:cons][1] - w0[:cons][1]) /  abs(w0[:cons][1]),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
 	# io = setPaths()
@@ -971,5 +972,38 @@ function moneyMC()
 
 
 	return (d,MC)
+end
+
+function shockRegion_json(f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_ys_1.0")
+
+	di = Dict()
+	open(f) do fi
+		d = JSON.parse(fi)
+		J = collect(keys(d))
+		di[:d_value] = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["values"] for j in J )
+		# di[:d_cons]  = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_cons"] for j in J)
+		di[:m_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["a"] for j in J)
+		di[:m_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["w"] for j in J)
+		di[:m_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["p"] for j in J)
+		di[:m_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["y"] for j in J)
+		di[:m_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["v"] for j in J)
+		di[:m_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["h"] for j in J)
+		di[:m_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["u"] for j in J)
+		di[:m_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
+		di[:s_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["a"] for j in J)
+		di[:s_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["w"] for j in J)
+		di[:s_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["p"] for j in J)
+		di[:s_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["y"] for j in J)
+		di[:s_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["v"] for j in J)
+		di[:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["h"] for j in J)
+		di[:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["u"] for j in J)
+		di[:s_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
+
+	end
+	open("mig/out/shockRegions_tmp.json","w") do f
+       JSON.print(f,di)
+       end
+	return di
+
 end
 

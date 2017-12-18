@@ -2,12 +2,12 @@
  "decompose":{
     "template" : "decompose.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/decompose_MC/decompose_MC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/decompose_MC_owners.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/decompose_MC_owners.json"
   },
   "moneyMC":{
     "template" : "moneyMC.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/moneyMC2.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/moneyMC2.json"
   },
   "copulas":{
     "template" : "copulas.mus",
@@ -17,28 +17,13 @@
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/noMove8mig_value_baseline.json"
   },
   "mig_value":{
     "template" : "mig_value.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/noMove8mig_value_baseline.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/noMove8mig_value_baseline.json"
   },
-  "mig_value2":{
-    "template" : "mig_value2.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/exp_yp/mig_value2.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/mig_value.json"
-  },
-  "mig_value3":{
-    "template" : "mig_value3.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/exp_yp/mig_value3.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/mig_value.json"
-  },    
-  "mig_value_detail2":{
-    "template" : "mig_value_detail2.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/exp_yp/mig_value_detail2.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/mig_value.json"
-  },    
   "moments":{
     "template" : "moms.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/moms.tex",
@@ -67,16 +52,21 @@
   "mortgage":{
     "template" : "mortgage.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/mortgage.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/mortgage.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/exp_Mortgage/mortgage.json"
   },     
   "mortgage_pres":{
     "template" : "mortgage_pres.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/MortgageSubsidy/mortgage_pres.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/exp_Mortgage/mortgage.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/exp_Mortgage/mortgage.json"
   },    
   "params":{
     "template" : "params.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/params.tex",
     "data"     : "Dropbox/research/mobility/output/model/fit/params.json"
+  },    
+  "shockRegions":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions.tex",
+    "data"     : "git/migration/mig/out/shockRegions_tmp.json"
   }   
 }

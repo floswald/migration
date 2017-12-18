@@ -63,7 +63,7 @@ elseif args["experiment"]
             if args["--cluster"]=="cumulus"
                 addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
             elseif args["--cluster"]=="local"
-                addprocs(nwork)
+                # addprocs(nwork)
             end
         end
         using mig

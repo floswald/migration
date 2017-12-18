@@ -1,0 +1,29 @@
+{% macro show(name,dd,dec) %}
+    {{name}} & {{ dd.reg_1 | prettyNum(dec) }} & {{ dd.reg_2 | prettyNum(dec) }}& {{ dd.reg_3 | prettyNum(dec) }}& {{ dd.reg_4 | prettyNum(dec) }}& {{ dd.reg_5 | prettyNum(dec) }}& {{ dd.reg_6 | prettyNum(dec) }}& {{ dd.reg_7 | prettyNum(dec) }}& {{ dd.reg_8 | prettyNum(dec) }}& {{ dd.reg_9 | prettyNum(dec) }} \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}}
+  \toprule 
+    \multicolumn{10}{c}{Regional Shock by Region} \\
+  \midrule
+    \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{ENC} & \multicolumn{1}{c}{ESC}& \multicolumn{1}{c}{MdA}& \multicolumn{1}{c}{Mnt}& \multicolumn{1}{c}{NwE}& \multicolumn{1}{c}{Pcf}& \multicolumn{1}{c}{StA}& \multicolumn{1}{c}{WNC}& \multicolumn{1}{c}{WSC}\\ 
+  \midrule
+  {{  show("$\%\Delta V$", d_value, 3 ) }}
+  \midrule
+    \multicolumn{10}{c}{Stayers} \\
+  {{  show("$\%\Delta w$", s_w, 3 ) }}
+  {{  show("$\%\Delta p$", s_p, 3 ) }}
+  {{  show("$\%\Delta y$", s_y, 3 ) }}
+  {{  show("$\%\Delta v$", s_v, 3 ) }}
+  {{  show("$\%\Delta u$", s_u, 3 ) }}
+  {{  show("$\%\Delta inc$", s_inc, 3 ) }}
+  \midrule
+    \multicolumn{10}{c}{Movers} \\
+  {{  show("$\%\Delta w$", m_w, 3 ) }}
+  {{  show("$\%\Delta p$", m_p, 3 ) }}
+  {{  show("$\%\Delta y$", m_y, 3 ) }}
+  {{  show("$\%\Delta v$", m_v, 3 ) }}
+  {{  show("$\%\Delta u$", m_u, 3 ) }}
+  {{  show("$\%\Delta inc$", m_inc, 3 ) }}
+  \bottomrule
+\end{tabular}
+
