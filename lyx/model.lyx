@@ -7542,7 +7542,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/shockRegions.tex}
+Dropbox/model/experiments/shockRegions_ps_0.95_ys_1.0.tex}
 \end_layout
 
 \end_inset
@@ -7554,7 +7554,7 @@ Dropbox/model/experiments/shockRegions.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-shpocks by region
+shocks by region
 \end_layout
 
 \end_inset
@@ -7563,6 +7563,47 @@ shpocks by region
 \end_layout
 
 \begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+shocks by region
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
