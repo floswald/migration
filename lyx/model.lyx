@@ -7527,6 +7527,11 @@ Regional shock sby regoin
 \end_layout
 
 \begin_layout Standard
+this applies a shock of different sizes to each region separately, keeping
+ all other regions at the baseline prices.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
@@ -7554,7 +7559,7 @@ Dropbox/model/experiments/shockRegions_ps_0.95_ys_1.0.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-shpocks by region
+shocks by region
 \end_layout
 
 \end_inset
@@ -7563,6 +7568,99 @@ shpocks by region
 \end_layout
 
 \begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+shocks by region
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Complete shutdown of moving in all regions
+\end_layout
+
+\begin_layout Standard
+this shuts down moving in all regions.
+ i provide different scenarios of how prices will adjust relative to the
+ baseline, i.e.
+ prices go up or down in response to the policy.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+shocks by region
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
