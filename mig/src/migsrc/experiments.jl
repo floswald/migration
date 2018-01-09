@@ -1017,14 +1017,14 @@ function moneyMC()
 	return (d,MC)
 end
 
-function shockRegion_json(f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_ys_1.0")
+function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_ys_1.0")
 
 	di = Dict()
 	open(f) do fi
 		d = JSON.parse(fi)
 		J = collect(keys(d))
-		di[:d_value] = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["values"] for j in J )
-		# di[:d_cons]  = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_cons"] for j in J)
+		di[:d_value] = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_values"] for j in J )
+		di[:d_cons]  = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_cons"] for j in J)
 		di[:m_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["a"] for j in J)
 		di[:m_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["w"] for j in J)
 		di[:m_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["p"] for j in J)
@@ -1041,9 +1041,10 @@ function shockRegion_json(f::String="$(ENV["HOME"])/git/migration/mig/out/shockR
 		di[:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["h"] for j in J)
 		di[:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["u"] for j in J)
 		di[:s_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
+		di[:scenario] = replace(scenario,"_","")
 
 	end
-	open("mig/out/shockRegions_tmp.json","w") do f
+	open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_$scenario.json"),"w") do f
        JSON.print(f,di)
        end
 	return di

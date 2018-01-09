@@ -8,6 +8,7 @@
     \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{ENC} & \multicolumn{1}{c}{ESC}& \multicolumn{1}{c}{MdA}& \multicolumn{1}{c}{Mnt}& \multicolumn{1}{c}{NwE}& \multicolumn{1}{c}{Pcf}& \multicolumn{1}{c}{StA}& \multicolumn{1}{c}{WNC}& \multicolumn{1}{c}{WSC}\\ 
   \midrule
   {{  show("$\%\Delta V$", d_value, 3 ) }}
+  {{  show("$\%\Delta c$", d_cons, 3 ) }}
   \midrule
     \multicolumn{10}{c}{Stayers} \\
   {{  show("$\%\Delta w$", s_w, 3 ) }}
@@ -24,6 +25,8 @@
   {{  show("$\%\Delta v$", m_v, 3 ) }}
   {{  show("$\%\Delta u$", m_u, 3 ) }}
   {{  show("$\%\Delta inc$", m_inc, 3 ) }}
+  \midrule
+ \multicolumn{10}{c}{ {{scenario}} }  \\
   \bottomrule
 \end{tabular}
 
