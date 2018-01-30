@@ -6788,11 +6788,11 @@ move, they greatly suffer from the reduced prospect of potentially ever
  and this is reflected in larger mortgage debts and slightly greater wealth
  averages.
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 The distributional assumption 
@@ -6930,7 +6930,7 @@ name "tab:value-of-migration-flows"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7617,17 +7617,6 @@ shocks by region
 
 \end_layout
 
-\begin_layout Subsection
-Complete shutdown of moving in all regions
-\end_layout
-
-\begin_layout Standard
-this shuts down moving in all regions.
- i provide different scenarios of how prices will adjust relative to the
- baseline, i.e.
- prices go up or down in response to the policy.
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float table
 wide false
@@ -7697,7 +7686,7 @@ Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-shpocks by region
+shocks by region
 \end_layout
 
 \end_inset
@@ -7708,6 +7697,17 @@ shpocks by region
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Complete shutdown of moving in all regions
+\end_layout
+
+\begin_layout Standard
+this shuts down moving in all regions.
+ i provide different scenarios of how prices will adjust relative to the
+ baseline, i.e.
+ prices go up or down in response to the policy.
 \end_layout
 
 \begin_layout Standard
