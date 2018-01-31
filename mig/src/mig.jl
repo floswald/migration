@@ -1,6 +1,8 @@
 module mig
 
 using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
+using CategoricalArrays: CategoricalArray
+using Missings
 using NLsolve
 using JSON , Copulas, FileIO, RData # FixedSizeArrays #, Plots, StatPlots
 # using QuantileRegression: qreg
