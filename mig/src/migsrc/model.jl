@@ -228,7 +228,7 @@ type Model
 
 
 		# population weights
-		regnames = DataFrame(j=1:p.nJ,Division=PooledDataArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
+		regnames = DataFrame(j=1:p.nJ,Division=CategoricalArray(popweights[1:p.nJ,:Division]),prop=popweights[1:p.nJ,:proportion])
 
 
 
@@ -337,7 +337,7 @@ type Model
 		# -------------------------------------------
 
 		# get supports for shocks and trans mat
-		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y].data,p)
+		(zsupp,Gz) = rouwenhorst(inc_coefs,VAR_reg[:,:mean_y],p)
 
 		# zgrid holds ln(y) for all states of Y,P,age and region
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)

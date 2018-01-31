@@ -27,7 +27,7 @@ function mydf2dict(df::DataFrame)
 	for e in eachrow(df)
 		# d[Symbol(e[:moment])] = [e[:model_value],e[:model_sd]]
 		# does not make sense to return model_sd!
-		if (isna(e[:model_value]) | !isfinite(e[:model_value]))
+		if (ismissing(e[:model_value]) | !isfinite(e[:model_value]))
 			d[Symbol(e[:moment])] = NaN
 			status = -1
 		else
@@ -105,10 +105,10 @@ function objfunc(ev::Eval)
 		# v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
-	setValue(ev, (isna(vv) | !isfinite(vv)) ? NaN : vv )
+	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
 	setMoment(ev,simMoments)
 
-	status = (isna(vv) | !isfinite(vv)) ? -1 : status
+	status = (ismissing(vv) | !isfinite(vv)) ? -1 : status
 
     if get(ev.options,"printm",false) 
     	mms = MomentOpt.check_moments(ev)
@@ -161,7 +161,7 @@ function runSim(;opt=Dict())
 	m = Model(p)
 	mig.solve!(m,p)
 	s   = simulate(m,p)
-	s = s[.!isna.(s[:cohort]),:]
+	s = s[.!ismissing.(s[:cohort]),:]
 	# s2 = @where(s,:year.>1996)
 	# showall(@by(s2,[:own,:realage],m=mean(:move)))
 	# showall(@by(s2,[:realage],own=mean(:own),buy=mean((:h.==0).*(:hh.==1)),sell=mean((:h.==1).*(:hh.==0))))
@@ -424,7 +424,7 @@ function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 	end
 
 	for (k,v) in dfs
-		v = v[!isna(v[:cohort]),:]
+		v = v[!ismissing(v[:cohort]),:]
 		d[k] = Dict()
 
 		for j in 1:9 

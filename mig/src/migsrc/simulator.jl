@@ -195,7 +195,7 @@ function simulate(m::Model,p::Param)
 	cumGz = cumsum(m.gridsXD["Gz"],2)
 	cumGs = cumsum(m.gridsXD["Gs"],2)
 	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
-	G0j   = Categorical(m.regnames[:prop].data)	
+	G0j   = Categorical(m.regnames[:prop])	
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 
@@ -248,8 +248,9 @@ function simulate(m::Model,p::Param)
 	Di       = repeat(collect(1:nsim),inner = [T],outer = [1])
 	Dage     = repeat(collect(1:T),inner = [1],outer = [nsim])
 	Drealage = repeat(collect(p.ages[1:T]),inner = [1],outer = [nsim])
-	Dyear    = DataArray(Int,nsim*T)
-	Dcohort  = DataArray(Int,nsim*T) # allocates as NA
+	# Dyear    = DataArray(Int,nsim*T)
+	Dyear    = Union{Int64, Missings.Missing}[missing for i in 1:nsim*T]
+	Dcohort  = Union{Int64, Missings.Missing}[missing for i in 1:nsim*T] # allocates as missing
 	Dhh      = zeros(Int,nsim*T)
 	Dh       = zeros(Int,nsim*T)
 	Dj       = zeros(Int,nsim*T)
@@ -662,15 +663,17 @@ function simulate(m::Model,p::Param)
 	end  # age
 
 	# pack into a dataframe
-	# kids=PooledDataArray(convert(Array{Bool,1},Dis))
+	# kids=CategoricalArray(convert(Array{Bool,1},Dis))
 
 	# note: some individuals will not get simulated at certain ages because they fall out of the sampling frame
 	# i.e. if you are the last cohort, i will only observe you at age 1
 	# therefore, for all other ages, that cohort will have garbage values in the arrays.
 
 	# convert children indicator into a boolean:
-	Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=PooledDataArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=PooledDataArray(convert(Array{Bool},DM)),moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=PooledDataArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=PooledDataArray(convert(Array{Bool},Dh.*(Drealage.==30))),rent_30=PooledDataArray(convert(Array{Bool},(Dh.==0).*(Drealage.==30))))
+	# Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
+
+	# df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=CategoricalArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=CategoricalArray(convert(Array{Bool},DM)),moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=CategoricalArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=CategoricalArray(convert(Array{Bool},Dh.*(Drealage.==30))),rent_30=CategoricalArray(convert(Array{Bool},(Dh.==0).*(Drealage.==30))))
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=Dis.>1,tau=Dtau,j=Dj,Division=CategoricalArray(Dregname),Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh.==1,hh=Dhh.==1,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=Dh.==1,canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=(Dh.==1).*(Drealage.==30),rent_30=(Dh.==0).*(Drealage.==30))
 
 	# some transformations before exit
 	# --------------------------------
@@ -857,15 +860,15 @@ function computeMoments(df::DataFrame,p::Param)
 	# pdebug("entered computeMoments")
 
 	# keep only relevant years
-	# and drop NAs
-	df = @where(df,(:year.>1996) .& (.!isna.(:cohort)))
+	# and drop NAs / missing
+	df = @where(df,(:year.>1996) .& (.!ismissing.(:cohort)))
 
 
 	# transformations, adding columns
 	# df = @transform(df, agebin = cut(p.ages[:age],int(quantile(p.ages[:age],[1 : ngroups - 1] / ngroups))), age2 = :age.^2)  # cut age into 3 bins, and add age squared
 	ngroups = 3
 	# df = @transform(df, agebin = cut(:realage,round(Int64,quantile(:realage,collect(1 : ngroups - 1)/ ngroups))), age2 = :age.^2, sell = (:h.==1) & (:hh.==0) )  # cut age into 3 bins, and add age squared
-	df[:agebin] = cut(df[:realage],round.(Int64,quantile(df[:realage],collect(1 : ngroups - 1)/ ngroups)))
+	df[:agebin] = CategoricalArrays.cut(df[:realage],round.(Int64,quantile(df[:realage],collect(1 : ngroups - 1)/ ngroups)),extend=true)
 	df[:age2] = df[:age].^2
 	df[:sell] = (df[:h].==1) .& (df[:hh].==0)   # cut age into 3 bins, and add age squared
 
@@ -920,8 +923,8 @@ function computeMoments(df::DataFrame,p::Param)
 	# ----------
 
 	for div in g_div
-		w = Weights(convert(Array,div[:density]))
-		push!(mom1,["mean_own_$(div[1,:Division])",mean(convert(Array{Float64},div[:h]),w)])
+		w = Weights(div[:density])
+		push!(mom1,["mean_own_$(div[1,:Division])",mean(div[:h],w)])
 	end
 
 	# own ~ kids
@@ -929,11 +932,12 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for div in g_kids
 		kk = "$(div[1,:kids])"
-		w = Weights(convert(Array,div[:density]))
-		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(convert(Array{Float64},div[:h]),w)])
+		w = mig.Weights(div[:density])
+		push!(mom1,["mean_own_kids$(uppercase(kk))",mean(div[:h],w)])
+		# println("mean_own_kids$(uppercase(kk)) = $(mean(div[:h],w))")
 	end
 	# TODO std error
-	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:kids]),fullw)
+	covar = cov(hcat(df[:h],df[:kids]),fullw,corrected=false)
 	push!(mom1,["cov_own_kids",covar[1,2]])
 
 	gc()
@@ -966,7 +970,7 @@ function computeMoments(df::DataFrame,p::Param)
 	moved2plus = mean(movecount[:x1].>=2)
 
 	# TODO std error
-	push!(mom1,["mean_move",mean(convert(Array{Float64},df[:move]),fullw)])	# unconditional mean
+	push!(mom1,["mean_move",mean(df[:move],fullw)])	# unconditional mean
 	push!(mom1,["moved0",moved0])
 	push!(mom1,["moved1",moved1])
 	push!(mom1,["moved2plus",moved2plus])
@@ -996,13 +1000,13 @@ function computeMoments(df::DataFrame,p::Param)
 	else
 		for idf in g_own
 			kk = "$(idf[1,:own])"
-			w = Weights(convert(Array,idf[:density]))
-			push!(mom1,["mean_move_own$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
+			w = Weights(idf[:density])
+			push!(mom1,["mean_move_own$(uppercase(kk))",mean(idf[:move],w)])
 		end
 
 	end
 	# TODO std error
-	covar = cov(hcat(convert(Array{Float64},df[:h]),df[:move]),fullw)
+	covar = cov(hcat(df[:h],df[:move]),fullw,corrected=false)
 	push!(mom1,["cov_move_h",covar[1,2]])
 
 
@@ -1012,11 +1016,11 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for idf in g_kids
 		kk = "$(idf[1,:kids])"
-		w = Weights(convert(Array,idf[:density]))
-		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(convert(Array{Float64},idf[:move]),w)])
+		w = Weights(idf[:density])
+		push!(mom1,["mean_move_kids$(uppercase(kk))",mean(idf[:move],w)])
 	end
 	# TODO std error
-	covar = cov(hcat(convert(Array{Float64},df[:move]),df[:kids]),fullw)
+	covar = cov(hcat(df[:move],df[:kids]),fullw,corrected=false)
 	push!(mom1,["cov_move_kids",covar[1,2]])
 
 	gc()
@@ -1072,8 +1076,8 @@ function computeMoments(df::DataFrame,p::Param)
 	# -----------------
 
 	for idf in g_div
-		w = Weights(convert(Array,idf[:density]))
-		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(convert(Array,idf[:wealth]),w)])
+		w = Weights(idf[:density])
+		push!(mom1,["mean_wealth_$(idf[1,:Division])",mean(idf[:wealth],w)])
 	end
 
 	# wealth ~ own
@@ -1082,12 +1086,12 @@ function computeMoments(df::DataFrame,p::Param)
 	if noown
 
 		push!(mom1,["mean_wealth_ownTRUE",0.0,0.0])
-		push!(mom1,["mean_wealth_ownFALSE",mean(convert(Array,df[:wealth]),fullw)])
+		push!(mom1,["mean_wealth_ownFALSE",mean(df[:wealth],fullw)])
 	else
 		for idf in g_own
-			w = Weights(convert(Array,idf[:density]))
+			w = Weights(idf[:density])
 			kk = "$(idf[1,:own])"
-			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(convert(Array,idf[:wealth]),w)])
+			push!(mom1,["mean_wealth_own$(uppercase(kk))",mean(idf[:wealth],w)])
 		end
 	end
 	gc()
