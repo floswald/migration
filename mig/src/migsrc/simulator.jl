@@ -916,8 +916,8 @@ function computeMoments(df::DataFrame,p::Param)
 	# unconditional mean of owning
 	# ----------------------------
 
-	push!(mom1,["mean_own",mean(convert(Array{Float64},df[:h]),fullw)])
-	covar = mean(convert(Array{Float64},df[:h]),fullw)
+	push!(mom1,["mean_own",mean(df[:h],fullw)])
+	covar = mean(df[:h],fullw)
 
 	# own ~ Division
 	# ----------
