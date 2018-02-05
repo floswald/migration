@@ -1,0 +1,21 @@
+{% macro show(name,dd,dec) %}
+    {{name}} & {{ dd.young | prettyNum(dec) }} & {{ dd.old | prettyNum(dec) }}& {{ dd.own_30 | prettyNum(dec) }}& {{ dd.rent_30 | prettyNum(dec) }}& {{ dd.ate | prettyNum(dec) }} \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}   D{.}{.}{3.4}@{}  }
+  \toprule 
+    \multicolumn{1}{l}{Region}  & \multicolumn{1}{c}{Young}& \multicolumn{1}{c}{Old} & \multicolumn{1}{c}{own|30} &\multicolumn{1}{c}{rent|30}& \multicolumn{1}{c}{ATE} \\ 
+  \midrule
+  {{  show("Aggregate", ctax[0].data, 3 ) }}
+  \midrule
+  {{  show("ENC", ctax[1].data, 3 ) }}
+  {{  show("ESC", ctax[2].data, 3 ) }}
+  {{  show("MdA", ctax[3].data, 3 ) }}
+  {{  show("Mnt", ctax[4].data, 3 ) }}
+  {{  show("NwE", ctax[5].data, 3 ) }}
+  {{  show("Pcf", ctax[6].data, 3 ) }}
+  {{  show("StA", ctax[7].data, 3 ) }}
+  {{  show("WNC", ctax[8].data, 3 ) }}
+  {{  show("WSC", ctax[9].data, 3 ) }}
+  \bottomrule
+\end{tabular}
+

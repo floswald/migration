@@ -53,7 +53,7 @@ end
 # 	cutyr = 1997 - 1
 # 	solve!(m,p)
 # 	base = simulate(m,p);
-# 	base = base[!isna(base[:cohort]),:];
+# 	base = base[!ismissing(base[:cohort]),:];
 # 	if base_move
 # 		mv_id = @select(@where(base,(:year.>cutyr)&(:move)&(:j.==j)),id=unique(:id))
 # 		base = base[findin(base[:id],mv_id[:id]),:]
@@ -73,7 +73,7 @@ function sim_expost_value(m::Model,p::Param,j::Int,mv_id::Vector{Int})
 	cutyr = 1997 - 1
 	solve!(m,p)
 	base = simulate(m,p);
-	base = base[!isna.(base[:cohort]),:];
+	base = base[!ismissing.(base[:cohort]),:];
 	if length(mv_id)>0
 		base = base[findin(base[:id],mv_id),:]
 		# do NOT condition on their tenure in j only, but entire lifecycle
@@ -132,7 +132,7 @@ function shutdownMoving(;pshock=1.0,yshock=1.0)
 	# dimvec2 = (ns, ny, np, nz, ntau,  na, nh, nJ, nt-1 )
 	EV0 = mean(m.EV[1,2,2,2,1,m.aone,1,:,2])
 	basel = simulate(m,p);
-	basel = basel[.!isna.(basel[:cohort]),:];
+	basel = basel[.!ismissing.(basel[:cohort]),:];
 
 	if (pshock == 1) & (yshock == 1)
 		info("noMove in ALL regions")
@@ -149,10 +149,10 @@ function shutdownMoving(;pshock=1.0,yshock=1.0)
 	p2 = Param(2,opts=opts)
 	m2 = Model(p2)
 	solve!(m2,p2)
-	EV1 = mean(m.EV[1,2,2,2,1,m.aone,1,:,2])
+	EV1 = mean(m2.EV[1,2,2,2,1,m.aone,1,:,2])
 
 	pol = simulate(m2,p2);
-	pol = pol[.!isna.(pol[:cohort]),:];
+	pol = pol[.!ismissing.(pol[:cohort]),:];
 
 	return Dict(:base=>basel,:pol=>pol,:EV0=>EV0,:EV1=>EV1,:perc=>100.0*(EV1.-EV0)./abs(EV0))
 
@@ -257,7 +257,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 						 y=mean(:y),
 						 p=mean(:p))
 
-	age_ate_perc = convert(Dict,100.0 * (age_ate_1 .- age_ate_0)./abs(age_ate_0))
 	age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
 	loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
 	own30_perc   = pdiff(convert(Dict,own30_1,:own_30),convert(Dict,own30_0,:own_30))
@@ -356,64 +355,15 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	# preparing io.
 	io = mig.setPaths()
 
-	ystr=""
-	pstr=""
-	if ys > 1
-		ystr = "hi"
-	elseif ys<1
-		ystr = "lo"
-	end
-	if ps > 1
-		pstr = "hi"
-	elseif ps<1
-		pstr = "lo"
-	end
-	ostr = string("noMove_ys",ystr,"_ps",pstr,".json")
+	scenario = string("ps_",ps,"_ys_",ys)
+	ostr = string("noMove_",scenario,".json")
 	path = joinpath(io["outdir"],ostr)
 	f = open(joinpath(io["outdir"],ostr),"a+")
 	js = 0:p.nJ
 	# for ij in js
 		if do_ctax 
 			ctax = pmap(x->ctaxxers(x),js)
-			# Base.info("doing ctax for region $ij")
-			# ctax[Symbol("reg_$ij")] = Dict()
-			# if ij==0
-			# 	# don't subset to any region: compute aggregate impact
-			# 	# all
-			# 	x=mig.ctaxxer("noMove",:realage,t->t.==t)
-			# 	ctax[Symbol("reg_$ij")][:ate] = Optim.minimizer(x)
-			# 	# young
-			# 	x=mig.ctaxxer("noMove",:realage,t->t.<31)
-			# 	ctax[Symbol("reg_$ij")][:young]=Optim.minimizer(x)
-			# 	# young
-			# 	x=mig.ctaxxer("noMove",:realage,t->t.>30)
-			# 	ctax[Symbol("reg_$ij")][:old]=Optim.minimizer(x)
-			# 	# for those who did not own a house when age == 30
-			# 	x=mig.ctaxxer("noMove",:rent_30,t->t)
-			# 	ctax[Symbol("reg_$ij")][:rent_30]=Optim.minimizer(x)
-			# 	# for those who did own a house when age == 30
-			# 	x=mig.ctaxxer("noMove",:own_30,t->t)
-			# 	ctax[Symbol("reg_$ij")][:own_30]=Optim.minimizer(x)
-			# 	gc()
-			# else
-			# 	# do subset to region j
-			# 	# all
-			# 	x=mig.ctaxxer("noMove",:j,t->t.==ij)
-			# 	ctax[Symbol("reg_$ij")][:ate] = Optim.minimizer(x)
-			# 	# young
-			# 	x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
-			# 	ctax[Symbol("reg_$ij")][:young]=Optim.minimizer(x)
-			# 	# young
-			# 	x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
-			# 	ctax[Symbol("reg_$ij")][:old]=Optim.minimizer(x)
-			# 	# for those who did not own a house when age == 30
-			# 	x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
-			# 	ctax[Symbol("reg_$ij")][:rent_30]=Optim.minimizer(x)
-			# 	# for those who did own a house when age == 30
-			# 	x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
-			# 	ctax[Symbol("reg_$ij")][:own_30]=Optim.minimizer(x)
-			# 	gc()
-			# end
+			
 		else
 			# read from file
 			ctax = JSON.parse(f)
@@ -426,8 +376,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	for (k,v) in ate_perc
 		ate_att[k] = Dict(:ate=>v,:att=>atts["att"][k],:atn=>atts["atn"][k],:att_young=>atts["att_young"][k],:att_old=>atts["att_old"][k])
 	end
-	# add constaxes
-	ate_att[:ctax] = ctax
 
 
 	# output
@@ -442,7 +390,9 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		:year_perc => year_perc,
 		:ate_perc => ate_perc,
 		:att_perc => atts["att"],
-		:ate_att => ate_att)
+		:ate_att => ate_att,
+		:ctax => ctax,
+		:scenario => scenario)
 
 	rm(joinpath(io["outdir"],ostr),force=true)
 	if save
@@ -677,7 +627,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	m = Model(p)
 	solve!(m,p)
 	sim0 = simulate(m,p)
-	sim0 = sim0[.!isna.(sim0[:cohort]),:]
+	sim0 = sim0[.!ismissing.(sim0[:cohort]),:]
 	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
 	
 	mv_count = @linq sim0|>
@@ -707,7 +657,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	end
 	ss = 0
 	gc()
-	df1 =  df1[.!isna.(df1[:cohort]),:]
+	df1 =  df1[.!ismissing.(df1[:cohort]),:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
 
@@ -725,7 +675,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		mm = Model(p1)
 		solve!(mm,p1)
 		sim2 = simulate(mm,p1)
-		sim2 = sim2[.!isna.(sim2[:cohort]),:]
+		sim2 = sim2[.!ismissing.(sim2[:cohort]),:]
 		mm = 0
 		gc()
 		# keep only guys born after shockYear
@@ -923,7 +873,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 	mm = 0
 	gc()
 	# throw away NA cohorts
-	ss = ss[.!isna.(ss[:cohort]),:]
+	ss = ss[.!ismissing.(ss[:cohort]),:]
 	# keep only cohort that gets the shock at age shockAge in shockYear.
 	ss = @where(ss,:cohort .== keep)
 	return ss
@@ -1041,7 +991,8 @@ function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shock
 		di[:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["h"] for j in J)
 		di[:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["u"] for j in J)
 		di[:s_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
-		di[:scenario] = replace(scenario,"_","")
+		sc = split(scenario,"_")
+		di[:scenario] = string(sc[1],"=",sc[2],", ",sc[3],"=",sc[4])
 
 	end
 	open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_$scenario.json"),"w") do f
@@ -1049,5 +1000,24 @@ function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shock
        end
 	return di
 
+end
+
+function read_noMove(;f::String="$(ENV["HOME"])/git/migration/mig/out/noMove_ys_ps.json")
+	di = open(f) do fi
+		JSON.parse(fi)
+	end
+	s = di["age_ate_perc"]
+
+	d = DataFrame()
+	d[:age] = parse.(Int,collect(keys(s)))
+	for vi in keys(s["20"])
+       d[Symbol(vi)] = [v[vi] for (k,v) in s]
+    end
+    sort!(d,cols=:age)
+    p = Any[]
+    for c in filter(x->x!=:age,names(d))
+    	xi = @df d plot(:age,c,title="$c")
+    end
+    return plot(p...,layout=(3,3))
 end
 

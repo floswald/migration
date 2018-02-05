@@ -73,5 +73,10 @@
     "template" : "shockRegions.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.0_ys_0.95.tex",
     "data"     : "git/migration/mig/out/shockRegions_ps_1.0_ys_0.95.json"
+  },   
+  "noMove_region":{
+    "template" : "noMove_region_ctax.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax.tex",
+    "data"     : "git/migration/mig/out/noMove_ys_ps.json"
   }   
 }
