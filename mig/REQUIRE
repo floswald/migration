@@ -9,7 +9,7 @@ DataFramesMeta
 Optim
 HDF5
 JLD
-PyPlot
+GR
 JSON
 ClusterManagers
 FileIO
@@ -20,3 +20,5 @@ Copulas
 MomentOpt
 DocOpt
 DataArrays
+Plots
+StatPlots

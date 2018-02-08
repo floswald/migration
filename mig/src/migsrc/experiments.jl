@@ -143,7 +143,7 @@ function shutdownMoving(;pshock=1.0,yshock=1.0)
 
 	else
 		info("noMove in ALL regions with pshock=$(pshock),yshock=$(yshock)")
-		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1]"shockVal_y" => [pshock for i in 1:p.nt-1])
+		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1]"shockVal_y" => [yshock for i in 1:p.nt-1])
 
 	end
 	p2 = Param(2,opts=opts)
@@ -360,16 +360,14 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	path = joinpath(io["outdir"],ostr)
 	f = open(joinpath(io["outdir"],ostr),"a+")
 	js = 0:p.nJ
-	# for ij in js
-		if do_ctax 
-			ctax = pmap(x->ctaxxers(x),js)
-			
-		else
-			# read from file
-			ctax = JSON.parse(f)
-			close(f)
-		end
-	# end
+	if do_ctax 
+		ctax = pmap(x->ctaxxers(x),js)
+		
+	else
+		# read from file
+		ctax = JSON.parse(f)
+	end
+	close(f)
 
 	# merge all ATE/ATT perc dicts
 	ate_att = Dict()
@@ -394,11 +392,11 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		:ctax => ctax,
 		:scenario => scenario)
 
-	rm(joinpath(io["outdir"],ostr),force=true)
 	if save
-		f = open(joinpath(io["outdir"],ostr),"w")
-		JSON.print(f,d)
-		close(f)
+		rm(joinpath(io["outdir"],ostr),force=true)
+		open(joinpath(io["outdir"],ostr),"w") do f
+			JSON.print(f,d)
+		end
 	end
 	return d
 end
@@ -1015,8 +1013,9 @@ function read_noMove(;f::String="$(ENV["HOME"])/git/migration/mig/out/noMove_ys_
     end
     sort!(d,cols=:age)
     p = Any[]
-    for c in filter(x->x!=:age,names(d))
-    	xi = @df d plot(:age,c,title="$c")
+    for ic in filter(x->x!=:age,names(d))
+    	xi = @df d plot(:age,cols(ic))
+    	push!(p,xi)
     end
     return plot(p...,layout=(3,3))
 end
