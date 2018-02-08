@@ -57,7 +57,7 @@ end
 # function draw_yp(m::Model,Ly::Float64,Lp::Float64,j::Int)
 
 
-# 	ycoef = convert(Array,m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]]) 
+# 	ycoef = convert(Array,m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]])
 # 	pcoef = convert(Array,m.VAR_coefs[j,[:p_Intercept, :p_Lp, :p_Ly]])
 
 # 	x = vcat(1.0,Lp,Ly)
@@ -74,7 +74,7 @@ end
 
 function draw_z(m::Model,Lz::Float64,idx::Int)
 
-	zz = m.Inc_shocks[1,1] * Lz + m.zshock[idx]	
+	zz = m.Inc_shocks[1,1] * Lz + m.zshock[idx]
 	# zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
 	# z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.Inc_shocks[j,4])
 	z = forceBounds(zz,m.gridsXD["zsupp"][1,1],m.gridsXD["zsupp"][end,1])
@@ -151,7 +151,7 @@ function simulate(m::Model,p::Param)
 		zsupps[j] = m.gridsXD["zsupp"][:,j]
 	end
 
-	
+
 	# linear interpolator objects
 	# ===========================
 
@@ -163,7 +163,7 @@ function simulate(m::Model,p::Param)
 	push!(gs,ygrid)
 	push!(gs,pgrid)
 
-	# value arrays 
+	# value arrays
 	# ------------
 	rho_arr = Array{Float64}[]
 	for i in 1:p.nJ
@@ -195,7 +195,7 @@ function simulate(m::Model,p::Param)
 	cumGz = cumsum(m.gridsXD["Gz"],2)
 	cumGs = cumsum(m.gridsXD["Gs"],2)
 	Gtau  = Categorical(m.grids["Gtau"])	# type distribution
-	G0j   = Categorical(m.regnames[:prop])	
+	G0j   = Categorical(m.regnames[:prop])
 	G0k   = Categorical([0.6,0.4])  # 40% of 21-year olds have kids in SIPP
 	G0h   = Categorical([0.8,0.2])  # 20% of 21-year olds have kids a house in SIPP
 
@@ -284,7 +284,7 @@ function simulate(m::Model,p::Param)
 
 
 	# populate age=1 with initial conditions
-	# those are independent of cohort, so just draw for each 
+	# those are independent of cohort, so just draw for each
 	# age = 1 individual
 	idxvec = Dage .== 1
 	Dis[idxvec]  = rand(G0k,nsim)
@@ -293,7 +293,7 @@ function simulate(m::Model,p::Param)
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
-	# we want stable proportions within each cohort. i.e. each cohort should have the 
+	# we want stable proportions within each cohort. i.e. each cohort should have the
 	# the same amount of people in state j, type tau, etct
 	Dj[idxvec] = repeat(rand(G0j,m.coh_n[1]),inner=[1],outer=[N_coh])
 
@@ -311,23 +311,23 @@ function simulate(m::Model,p::Param)
 	pshock = false
 	yshock = false
 	shockmyy = false
-	if p.policy == "pshock" 
+	if p.policy == "pshock"
 		pshock = true
 	end
-	if p.policy == "yshock" 
+	if p.policy == "yshock"
 		yshock = true
 	end
-	if p.policy == "pshock_noBuying" 
+	if p.policy == "pshock_noBuying"
 		pshock = true
 		noBuying = true
 	end
-	if p.policy == "noBuying" 
+	if p.policy == "noBuying"
 		noBuying = true
 	end
-	if p.policy == "highMC" 
+	if p.policy == "highMC"
 		highMC = true
 	end
-	if p.policy == "noMove" 
+	if p.policy == "noMove"
 		highMC = true
 	end
 
@@ -362,7 +362,7 @@ function simulate(m::Model,p::Param)
 		gg = groupby(g,[:j,:is,:h,:tau])
 
 		for ig in gg
-	
+
 			g_count += 1
 
 			# get group-specific discrete vars
@@ -389,11 +389,11 @@ function simulate(m::Model,p::Param)
 			resetCache!(L["l_rho"])
 			resetCache!(L["l_vcs"])
 
-			# list of group individuals	
+			# list of group individuals
 			ginds = ig[:id]
 
 			# loop over individuals
-			# notice that inds here are from several distinct cohorts. 
+			# notice that inds here are from several distinct cohorts.
 			# that's fine, because the cohort effect (aggregate prices) is predetermined.
 			for i in ginds
 				# this individuals index in arrays at current age
@@ -453,15 +453,15 @@ function simulate(m::Model,p::Param)
 					# V(state) = max_k {v(state,k) + eps(k)}	--> maximal discrete choice value
 					# D(state) = indmax_k {v(state,k) + eps(k)}	 --> maximal discrete choice (index)
 					# the solution computes v(state,k), i.e. the value net of eps(k)
-					# 1) interpolate v(state,k) ∀ k 
+					# 1) interpolate v(state,k) ∀ k
 					# 2) draw eps(k) ∀ k
 					# 3) find indmax_k {v(state,k) + eps(k)}
-			
-					# 1) interpolate v(state,k) ∀ k 
+
+					# 1) interpolate v(state,k) ∀ k
 					ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
 
 					# 2) draw eps(k) ∀ k
-					# eps = rand(G_eps,p.nJ)   done in model 
+					# eps = rand(G_eps,p.nJ)   done in model
 					# vtmp[:] = ktmp .+ convert(Vector{Float64},m.eps_shock[i_idx])
 
 					# 3) find indmax_k {v(state,k) + eps(k)}
@@ -499,7 +499,7 @@ function simulate(m::Model,p::Param)
 				# =========================================
 
 				if mortgageSub
-					# policy is on: 
+					# policy is on:
 					# 1) substract subsidy from owners
 					if ih == 1
 						subsidize = findSubsidy(yy,age,p,m)
@@ -508,7 +508,7 @@ function simulate(m::Model,p::Param)
 
 					# 2) redistribute according to policy
 					yy += p.redistribute[age]
-					
+
 				else
 					# mortgage subsidy policy is off: record amount paid to owners
 					if ih == 1
@@ -533,7 +533,7 @@ function simulate(m::Model,p::Param)
 				# ======================================================
 
 				# if
-				# 1) you are current owner who stays or 
+				# 1) you are current owner who stays or
 				# 2) you are current owner who moves and can buy
 				# 3) you are current renter who can buy
 
@@ -601,7 +601,7 @@ function simulate(m::Model,p::Param)
 				# 		val2 = ufun(cons,ev,p) + ihh*p.xi1 - log(stayprob)/(1-log(stayprob))
 				# 	else
 				# 		val2 = ufun(cons,ev,p) + ihh*p.xi2 - log(stayprob)/(1-log(stayprob))
-				# 	end 
+				# 	end
 				# else
 				# 	val2 = 0.0
 				# end
@@ -637,10 +637,10 @@ function simulate(m::Model,p::Param)
 					Dj[i_idx_next] = moveto
 					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
 					# if !move
-					# 	# Dzcop[i_idx_next] = draw_z_cop(m,z,i_idx) 
-					# 	Dz[i_idx_next] = draw_z(m,z,i_idx) 
+					# 	# Dzcop[i_idx_next] = draw_z_cop(m,z,i_idx)
+					# 	Dz[i_idx_next] = draw_z(m,z,i_idx)
 					# else
-					# 	Dz[i_idx_next] = draw_z_cop(m,z,i_idx) 
+					# 	Dz[i_idx_next] = draw_z_cop(m,z,i_idx)
 					# end
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
@@ -687,7 +687,7 @@ function simulate(m::Model,p::Param)
 end
 
 
-# mortgage policy 
+# mortgage policy
 # subsidy finder
 function findSubsidy(y::Float64,age::Int,p::Param,m::Model)
 	ret = 0.0
@@ -719,14 +719,14 @@ end
 
 
 
-# fills arrays with corresponding values at 
+# fills arrays with corresponding values at
 # discrete state (is,ih,itau,ij,age)
 # fills l_vcs with all possible combinations of (ihh,ik)
 function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param,m::Model)
 
 	# L contains:
 	# 1. l_vcs
-	# 2. l_rho  
+	# 2. l_rho
 
 # # dimvec  = (p.nJ, p.ns, p.nz, p.ny, p.np, p.ntau,  p.na, p.nh,p.nJ, p.nt-1 )
 # function idx10(ik::Int,is::Int,iz::Int,iy::Int,ip::Int,itau::Int,ia::Int,ih::Int,ij::Int,age::Int,p::Param)
@@ -738,7 +738,7 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 		offset_a = iia-1 + p.na*offset_h_age_j
 		for iP in 1:p.np
 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
+			for iY in 1:p.ny
 				offset_Y = iY-1 + p.ny * offset_P
 				for iz in 1:p.nz
 					offset_z = iz-1 + p.nz * offset_Y
@@ -748,17 +748,17 @@ function fill_interp_arrays!(L::Dict{String,Lininterp},is::Int,ih::Int,itau::Int
 					for ik in 1:p.nJ
 						rho_idx = ik + p.nJ * (is-1 + p.ns * offset_z)
 						# CAUTION: we are no longer interpolating the probability function rho but the underlying value function v
-						# @inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx] 	
-						@inbounds L["l_rho"].vals[ik][arr_idx] = m.v[rho_idx] 	
+						# @inbounds L["l_rho"].vals[ik][arr_idx] = m.rho[rho_idx]
+						@inbounds L["l_rho"].vals[ik][arr_idx] = m.v[rho_idx]
 
 						for ihh in 1:p.nh
 
 							vh_idx = ihh + p.nh * (ik-1 + p.nJ * (is-1 + p.ns * offset_z))
 							# index to get i in {(v,c,s) x (1,2,3,...,9) x (1,2)}
 							l_idx  = 3*(ik-1 + p.nJ*(ihh-1))
-							@inbounds L["l_vcs"].vals[1+l_idx][arr_idx] = m.vh[vh_idx] 	
-							@inbounds L["l_vcs"].vals[2+l_idx][arr_idx] = m.ch[vh_idx] 	
-							@inbounds L["l_vcs"].vals[3+l_idx][arr_idx] = m.sh[vh_idx] 	
+							@inbounds L["l_vcs"].vals[1+l_idx][arr_idx] = m.vh[vh_idx]
+							@inbounds L["l_vcs"].vals[2+l_idx][arr_idx] = m.ch[vh_idx]
+							@inbounds L["l_vcs"].vals[3+l_idx][arr_idx] = m.sh[vh_idx]
 
 
 						end
@@ -784,13 +784,13 @@ function fill_interp_EV!(L::Lininterp,is::Int,ih::Int,itau::Int,ij::Int,age::Int
 		offset_a = iia-1 + p.na*offset_h_age_j
 		for iP in 1:p.np
 			offset_P = iP-1 + p.np * (itau-1 + p.ntau * offset_a)
-			for iY in 1:p.ny 
+			for iY in 1:p.ny
 				offset_Y = iY-1 + p.ny * offset_P
 				for iz in 1:p.nz
 					offset_z = iz-1 + p.nz * offset_Y
 
 					arr_idx = iia + p.na*(iz-1 + p.nz *(iY-1 + p.ny *(iP-1)))
-					@inbounds L.vals[1][arr_idx] = m.EV[arr_idx] 	
+					@inbounds L.vals[1][arr_idx] = m.EV[arr_idx]
 
 				end
 			end
@@ -891,23 +891,23 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# linear probability model of homeownership
 	if mean(df[:h]) == 1.0 || noown
-		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
-		coef_h = DataArray(Float64,3)
-		std_h =  DataArray(Float64,3)
+		nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]
+		coef_h = missings(Float64,3)
+		std_h =  missings(Float64,3)
 	else
-		try 
+		try
 			lm_h = glm(@formula(h ~ age + age2) ,df,Normal(),IdentityLink())
 			cc_h  = coeftable(lm_h)
-			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)] 
-			coef_h = @data(coef(lm_h))
-			std_h = @data(stderr(lm_h))
+			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)]
+			coef_h = coef(lm_h)
+			std_h =  stderr(lm_h)
 		catch
-			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]  
-			coef_h = DataArray(Float64,3)
-			std_h =  DataArray(Float64,3)
+			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]
+			coef_h = missings(Float64,3)
+			std_h =  missings(Float64,3)
 		end
 	end
-	
+
 	xx = @linq df |>
 		   @where(:age.==31) |>
 		   @select(moment="mean_sell_50",model_value=mean(:sell))
@@ -950,15 +950,15 @@ function computeMoments(df::DataFrame,p::Param)
 	# linear probability model of mobility
 	if sum(df[:move]) == 0.0
 		nomove = true
-		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]  
-		coef_mv = @data(zeros(3))
-		std_mv =  @data(ones(3))
+		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]
+		coef_mv = missings(zeros(3))
+		std_mv =  missings(ones(3))
 	else
 		lm_mv = glm( @formula(move ~ age + age2),df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
-		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)] 
-		coef_mv = @data(coef(lm_mv))
-		std_mv = @data(stderr(lm_mv))
+		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)]
+		coef_mv = coef(lm_mv)
+		std_mv = stderr(lm_mv)
 	end
 
 	# move count
@@ -982,7 +982,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# flows of moves: where do moves go to?
 	# -------------------------------------
-	xx = proportionmap(df[ df[:move],:Division_to] )
+	xx = StatsBase.proportionmap(df[ df[:move],:Division_to] )
 	zz = DataFrame(moment=map(string,map(x->"flow_move_to_$x",collect(keys(xx)))), model_value = collect(values(xx)))
 	append!(mom1,zz)
 
@@ -1024,7 +1024,7 @@ function computeMoments(df::DataFrame,p::Param)
 	push!(mom1,["cov_move_kids",covar[1,2]])
 
 	gc()
-	# move ~ distance 
+	# move ~ distance
 	# ---------------
 
 	if nomove
@@ -1055,13 +1055,13 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# linear regression of total wealth
 	# if sum(df[:own]) == 1.0 || noown
-	# 	nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2"]  
+	# 	nm_w  = ["lm_w_(Intercept)","lm_w_age","lm_w_age2"]
 	# 	coef_w = DataArray(Float64,3)
 	# 	std_w =  DataArray(Float64,3)
 	# else
 	# 	lm_w = fit(LinearModel, wealth ~ age + age2,df )
 	# 	cc_w  = coeftable(lm_w)
-	# 	nm_w  = String["lm_w_" *  convert(String,cc_w.rownms[i]) for i=1:size(cc_w.rownms,1)] 
+	# 	nm_w  = String["lm_w_" *  convert(String,cc_w.rownms[i]) for i=1:size(cc_w.rownms,1)]
 	# 	coef_w = @data(coef(lm_w))
 	# 	std_w = @data(stderr(lm_w))
 	# end
@@ -1137,7 +1137,7 @@ function computeMoments(df::DataFrame,p::Param)
 
 	# compute estimates by year
 	yearly = @by(df,[:year; :Division],meany = mean(:income), meanc = mean(:cons), means = mean(:save),meanw = mean(:wealth))
-	
+
 	# 	push!(dfs,vcat(mom1,mom2))
 
 	# end
@@ -1163,7 +1163,7 @@ end
 
 # select inds from sim dataframe
 function getID(df::DataFrame,id::Array{Int,1})
-	df[findin(df[:id],id),:] 
+	df[findin(df[:id],id),:]
 end
 
 
@@ -1172,7 +1172,7 @@ end
 
 
 # setting up the FSpace objects for simulation
-# if Sys.OS_NAME == :Darwin 
+# if Sys.OS_NAME == :Darwin
 # 	using ApproXD
 # end
 # function setupFSpaceXD(m::Model,p::Param)
@@ -1201,7 +1201,7 @@ end
 # 	id = Dict{Int,Dict{Integer,Array{Float64,2}}}()
 # 	# bsp[5] = BSpline(m.nknots["age"],m.degs["age"],bounds[5][1],bounds[5][2])
 
-# 	for ij   = 1:p.nJ	
+# 	for ij   = 1:p.nJ
 
 # 		points[ij] = Dict{Integer,Array}()
 # 		bounds[ij] = Dict{Integer,Array}()
@@ -1241,7 +1241,7 @@ end
 # 		end
 
 
-# 		for itau = 1:p.ntau		
+# 		for itau = 1:p.ntau
 # 		for ih   = 1:2
 # 		for is   = 1:p.ns
 # 		for ik   = 1:p.nJ
@@ -1306,7 +1306,7 @@ end
 # end
 
 # function fx_idx(ihh::Int,ik::Int,is::Int,ih::Int,itau::Int,ij::Int,age::Int,p::Param)
-	 
+
 # 	ihh + p.nh * (ik + p.nJ * (is + p.ns * (ih + p.nh * (itau + p.ntau * (ij + p.nJ*(age-1)-1)-1)-1)-1)-1)
 # end
 
@@ -1406,20 +1406,3 @@ end
 # 		end
 # 	end
 # end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
