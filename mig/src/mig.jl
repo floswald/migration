@@ -4,12 +4,8 @@ using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD
 using CategoricalArrays: CategoricalArray
 using Missings
 using StatsBase
-# using NLsolve
-using JSON , Copulas, FileIO, RData # FixedSizeArrays #, Plots, StatPlots
+using JSON , Copulas, FileIO, RData 
 using Plots, StatPlots
-# using QuantileRegression: qreg
-using Plots, StatPlots
-# using DataArrays
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
@@ -27,10 +23,11 @@ include("migsrc/mig-incl.jl")
 include("migsrc/solver.jl")
 include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
+include("migsrc/noMove.jl")
 include("migsrc/reporting.jl")
 
-if is_apple()
-	include("migsrc/plotting.jl")
-end
+# if is_apple()
+# 	include("migsrc/plotting.jl")
+# end
 
 end
