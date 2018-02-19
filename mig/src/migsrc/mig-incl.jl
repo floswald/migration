@@ -364,7 +364,7 @@ end
 function abs(d1::DataFrame)
     df = deepcopy(DataFrame(d1))
     for n in names(d1)
-        df[n] = abs.(d1[n].data)
+        df[n] = abs.(d1[n])
     end
     return df
 end
@@ -395,7 +395,7 @@ function convert(::Type{Dict},x::DataFrame,pivot::Symbol)
 	end
 	return r
 end
-pdiff(x,y) = 100*(x-y) / abs(y)
+pdiff(x,y) = 100*(x.-y) ./ abs.(y)
 function pdiff(x::Dict,y::Dict)
 	r = Dict()
 	for k in keys(y)
@@ -403,7 +403,16 @@ function pdiff(x::Dict,y::Dict)
 	end
 	return r
 end
+function pdiff(x::DataFrame,y::DataFrame,p::Symbol)
+	# check same colnames
+	@assert names(x)==names(y)
 
+	pd = copy(x)
+	for ic in filter(x->x!=p,names(y))
+		pd[ic] = pdiff(x[ic],y[ic])
+	end
+	return pd
+end
 
 #' computes flow statistics of 
 #' baseline model. 

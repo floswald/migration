@@ -1,8 +1,9 @@
 module mig
 
-using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD
+using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD2
 using CategoricalArrays: CategoricalArray
 using Missings
+using LaTeXStrings
 using StatsBase
 using JSON , Copulas, FileIO, RData 
 using Plots, StatPlots
