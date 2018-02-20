@@ -138,7 +138,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2)),id=unique(:id))
 	old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2)),id=unique(:id))
 	mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move).&(:own)),id=unique(:id))
-	mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(!.(:own))),id=unique(:id))
+	mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(.!(:own))),id=unique(:id))
 	# these people are "treated"
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
@@ -296,37 +296,37 @@ end
 
 # Reporting Results
 
-function noMove_plot(jkey::Symbol,plotkey::Symbol,di::Dict)
-	s = di[jkey]
-	if !isa(s,DataFrame)
-		d = DataFrame()
-		# d[plotkey] = parse.(Int,collect(keys(s)))   # breaks for non integer x axis
-		d[plotkey] = collect(keys(s))   # breaks for non integer x axis
-		for vi in keys(s[collect(keys(s))[1]])
-	        # d[Symbol(vi)] = missings(Float64,nrow(d))
-	        d[Symbol(vi)] = [v[vi] for (k,v) in s]
-	        if any(d[Symbol(vi)].==nothing)
-	        	d[Symbol(vi)][d[Symbol(vi)].==nothing] = NaN
-	        end
-	    end
-	else
-		d = s
-	end
-    sort!(d,cols=plotkey)
-    p = Any[]
-    if typeof(d[plotkey])==Bool
-	    for ic in filter(x->x!=plotkey,names(d))
-	    	xi = @df d bar(cols(plotkey),cols(ic),label=ic)
-	    	push!(p,xi)
-	    end
-    else
-	    for ic in filter(x->x!=plotkey,names(d))
-	    	xi = @df d plot(cols(plotkey),cols(ic),label=ic)
-	    	push!(p,xi)
-	    end
-    end
-    return plot(p...)
-end
+# function noMove_plot(jkey::Symbol,plotkey::Symbol,di::Dict)
+# 	s = di[jkey]
+# 	if !isa(s,DataFrame)
+# 		d = DataFrame()
+# 		# d[plotkey] = parse.(Int,collect(keys(s)))   # breaks for non integer x axis
+# 		d[plotkey] = collect(keys(s))   # breaks for non integer x axis
+# 		for vi in keys(s[collect(keys(s))[1]])
+# 	        # d[Symbol(vi)] = missings(Float64,nrow(d))
+# 	        d[Symbol(vi)] = [v[vi] for (k,v) in s]
+# 	        if any(d[Symbol(vi)].==nothing)
+# 	        	d[Symbol(vi)][d[Symbol(vi)].==nothing] = NaN
+# 	        end
+# 	    end
+# 	else
+# 		d = s
+# 	end
+#     sort!(d,cols=plotkey)
+#     p = Any[]
+#     if typeof(d[plotkey])==Bool
+# 	    for ic in filter(x->x!=plotkey,names(d))
+# 	    	xi = @df d bar(cols(plotkey),cols(ic),label=ic)
+# 	    	push!(p,xi)
+# 	    end
+#     else
+# 	    for ic in filter(x->x!=plotkey,names(d))
+# 	    	xi = @df d plot(cols(plotkey),cols(ic),label=ic)
+# 	    	push!(p,xi)
+# 	    end
+#     end
+#     return plot(p...)
+# end
 
 
 
