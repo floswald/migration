@@ -20,15 +20,10 @@ include("migsrc/param.jl")
 include("migsrc/model.jl")
 include("migsrc/accelerator.jl")
 include("migsrc/mig-incl.jl")
-# include("migsrc/E_tensors.jl")
 include("migsrc/solver.jl")
 include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
 include("migsrc/noMove.jl")
 include("migsrc/reporting.jl")
-
-# if is_apple()
-# 	include("migsrc/plotting.jl")
-# end
 
 end

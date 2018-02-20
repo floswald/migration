@@ -25,7 +25,7 @@ Options:
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
     --cluster=<c>       name of cluster to use [default: cumulus]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
-    --nosave            don't save experiment output
+    --nosave            don't save experiment output. If you set it, it doesn't save. 
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
     --on_impact         measure experiment in year of impact only
@@ -33,7 +33,7 @@ Options:
 
 """
 using DocOpt
-args = docopt(doc, version=v"0.9")
+args = docopt(doc, version=v"0.9.5")
 
 
 if args["estim"]
