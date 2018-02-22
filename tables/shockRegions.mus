@@ -12,19 +12,19 @@
   \midrule
     \multicolumn{10}{c}{Stayers} \\
   {{  show("$\%\Delta w$", s_w, 3 ) }}
-  {{  show("$\%\Delta p$", s_p, 3 ) }}
+  {{  show("$\%\Delta h$", s_h, 3 ) }}
+  {{  show("$\%\Delta a$", s_a, 3 ) }}
   {{  show("$\%\Delta y$", s_y, 3 ) }}
   {{  show("$\%\Delta v$", s_v, 3 ) }}
   {{  show("$\%\Delta u$", s_u, 3 ) }}
-  {{  show("$\%\Delta inc$", s_inc, 3 ) }}
   \midrule
     \multicolumn{10}{c}{Movers} \\
   {{  show("$\%\Delta w$", m_w, 3 ) }}
-  {{  show("$\%\Delta p$", m_p, 3 ) }}
+  {{  show("$\%\Delta h$", m_h, 3 ) }}
+  {{  show("$\%\Delta a$", m_a, 3 ) }}
   {{  show("$\%\Delta y$", m_y, 3 ) }}
   {{  show("$\%\Delta v$", m_v, 3 ) }}
   {{  show("$\%\Delta u$", m_u, 3 ) }}
-  {{  show("$\%\Delta inc$", m_inc, 3 ) }}
   \midrule
  \multicolumn{10}{c}{ {{scenario}} }  \\
   \bottomrule

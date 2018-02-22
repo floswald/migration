@@ -416,8 +416,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# ----------------------------------------------
 	b_movers = sim0[findin(sim0[:id],mv_ids[:id]),:];
 	p_movers = sim1[findin(sim1[:id],mv_ids[:id]),:];
-	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
+	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
 	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
 
@@ -425,8 +425,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# ----------------------------------------------
 	b_stayers = sim0[findin(sim0[:id],stay_ids[:id]),:];
 	p_stayers = sim1[findin(sim1[:id],stay_ids[:id]),:];
-	atn_0 = @select(b_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-	atn_1 = @select(p_stayers,v=mean(:maxv),u=mean(:utility),inc = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+	atn_0 = @select(b_stayers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
+	atn_1 = @select(p_stayers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	atn = atn_1 .- atn_0 
 	atns = convert(Dict,100.0 * (atn ./ abs(atn_0)))
 
@@ -459,8 +459,8 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	       "opts" => opts,
 	       "movers_effects" => atts,
 	       "stayer_effects" => atns,
-	       "d_values" => (w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1]),
-	       "d_cons" => (w1[:cons][1] - w0[:cons][1]) /  abs(w0[:cons][1]),
+	       "d_values" => 100*(w1[:v][1] - w0[:v][1]) /  abs(w0[:v][1]),
+	       "d_cons" => 100*(w1[:cons][1] - w0[:cons][1]) /  abs(w0[:cons][1]),
 	       "moments" => Dict("base" => mms0, which => mms1))
 
 	# io = setPaths()
@@ -472,15 +472,15 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 end
 
 
-function exp_shockRegion_ranges(prange,yrange,on_impact,nt,j)
+function exp_shockRegion_ranges(prange,qrange,on_impact,nt,j)
 	d = Dict()
 	d[:region] = j
 	d[:data] = Dict()
 	for ps in [1.0-prange, 1.0, 1.0+prange]
-		for ys in [1.0-yrange, 1.0, 1.0+yrange]
-			info("doing exp_shockRegion with ps=$ps, ys=$ys")
-			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(ys,nt-1))
-			d[:data][Symbol("ps_$ps"*"_ys_$ys")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+		for qs in [1.0-qrange, 1.0, 1.0+qrange]
+			info("doing exp_shockRegion with ps=$ps, qs=$qs")
+			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(qs,nt-1))
+			d[:data][Symbol("ps_$ps"*"_qs_$qs")] = exp_shockRegion(dd,on_impact=on_impact)[1]
 			# d[:data][Symbol("ps_$ps"*"_ys_$ys")] = Dict(:a=>1,:b=> rand())
 		end
 	end
@@ -489,11 +489,11 @@ end
 
 
 """
-	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,yrange=0.05,prange=0.05)
+	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,qrange=0.05,prange=0.05)
 
 Run shockRegion experiment for each region and for different price scenarios
 """
-function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.05,prange=0.05)
+function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,qrange=0.05,prange=0.05)
 	tic()
 	p = Param(2)
 	d = Dict()
@@ -506,7 +506,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,yrange=0.
 		# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	),on_impact=on_impact)[1]
 
 	else
-		y = pmap(x->exp_shockRegion_ranges(prange,yrange,on_impact,p.nt,x),1:p.nJ)
+		y = pmap(x->exp_shockRegion_ranges(prange,qrange,on_impact,p.nt,x),1:p.nJ)
 		# reorder
 		for j in 1:p.nJ
 			println(map(x->get(x,:region,0)==j,y))
@@ -685,7 +685,7 @@ function moneyMC()
 	return (d,MC)
 end
 
-function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_ys_1.0")
+function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_qs_1.0")
 
 	di = Dict()
 	open(f) do fi
@@ -700,7 +700,7 @@ function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shock
 		di[:m_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["v"] for j in J)
 		di[:m_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["h"] for j in J)
 		di[:m_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["u"] for j in J)
-		di[:m_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
+		di[:m_q]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["q"] for j in J)
 		di[:s_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["a"] for j in J)
 		di[:s_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["w"] for j in J)
 		di[:s_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["p"] for j in J)
@@ -708,7 +708,7 @@ function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shock
 		di[:s_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["v"] for j in J)
 		di[:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["h"] for j in J)
 		di[:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["u"] for j in J)
-		di[:s_inc]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["inc"] for j in J)
+		di[:s_q]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["q"] for j in J)
 		sc = split(scenario,"_")
 		di[:scenario] = string(sc[1],"=",sc[2],", ",sc[3],"=",sc[4])
 
