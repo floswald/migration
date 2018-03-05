@@ -25,5 +25,6 @@ include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
 include("migsrc/noMove.jl")
 include("migsrc/reporting.jl")
+include("migsrc/plotting.jl")
 
 end

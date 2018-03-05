@@ -10,6 +10,7 @@ Optim
 HDF5
 JLD2
 GR
+PGFPlots
 JSON
 ClusterManagers
 FileIO

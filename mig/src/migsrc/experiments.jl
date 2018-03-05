@@ -685,35 +685,38 @@ function moneyMC()
 	return (d,MC)
 end
 
-function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json",scenario::String="ps_0.95_qs_1.0")
+function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json")
 
 	di = Dict()
 	open(f) do fi
 		d = JSON.parse(fi)
-		J = collect(keys(d))
-		di[:d_value] = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_values"] for j in J )
-		di[:d_cons]  = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["d_cons"] for j in J)
-		di[:m_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["a"] for j in J)
-		di[:m_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["w"] for j in J)
-		di[:m_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["p"] for j in J)
-		di[:m_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["y"] for j in J)
-		di[:m_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["v"] for j in J)
-		di[:m_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["h"] for j in J)
-		di[:m_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["movers_effects"]["u"] for j in J)
-		di[:m_q]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["q"] for j in J)
-		di[:s_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["a"] for j in J)
-		di[:s_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["w"] for j in J)
-		di[:s_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["p"] for j in J)
-		di[:s_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["y"] for j in J)
-		di[:s_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["v"] for j in J)
-		di[:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["h"] for j in J)
-		di[:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["u"] for j in J)
-		di[:s_q]   = Dict(Symbol("reg_$j") => d[j][1]["data"][scenario]["stayer_effects"]["q"] for j in J)
-		sc = split(scenario,"_")
-		di[:scenario] = string(sc[1],"=",sc[2],", ",sc[3],"=",sc[4])
-
+		J = collect(keys(d))   # all regions
+		scs = collect(keys(d["1"][1]["data"]) )  # all scenarios saved
+		for s in scs
+			di[s] = Dict()
+			di[s][:d_value] = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["d_values"] for j in J )
+			di[s][:d_cons]  = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["d_cons"] for j in J)
+			di[s][:m_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["a"] for j in J)
+			di[s][:m_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["w"] for j in J)
+			di[s][:m_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["p"] for j in J)
+			di[s][:m_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["y"] for j in J)
+			di[s][:m_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["v"] for j in J)
+			di[s][:m_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["h"] for j in J)
+			di[s][:m_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["movers_effects"]["u"] for j in J)
+			di[s][:m_q]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["q"] for j in J)
+			di[s][:s_a]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["a"] for j in J)
+			di[s][:s_w]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["w"] for j in J)
+			di[s][:s_p]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["p"] for j in J)
+			di[s][:s_y]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["y"] for j in J)
+			di[s][:s_v]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["v"] for j in J)
+			di[s][:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["h"] for j in J)
+			di[s][:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["u"] for j in J)
+			di[s][:s_q]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["q"] for j in J)
+			sc = split(scenario,"_")
+			di[s][:scenario] = string(sc[1],"=",sc[2],", ",sc[3],"=",sc[4])
+		end
 	end
-	open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_$scenario.json"),"w") do f
+	open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_print.json"),"w") do f
        JSON.print(f,di)
        end
 	return di

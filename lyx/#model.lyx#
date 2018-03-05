@@ -6244,7 +6244,7 @@ reference "tab:Decomposing-owner's-moving"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6309,93 +6309,63 @@ Comparative Statics of a Regional Price Shock
 \end_layout
 
 \begin_layout Standard
-In this section I illustrate how the model reacts to large economic shocks
- at the regional level.
- The regional shock consists of reducing the level of the observed mean
- income series by 10% in the West North Central division only (West North
- Central (WNC) has region index 
-\begin_inset Formula $d=8$
-\end_inset
-
-).
- Regional income and house price shocks are correlated, and I measure this
- correlation with an estimate of 
-\begin_inset Formula $\Omega_{d}$
-\end_inset
-
- obtained in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:VAR-process-1"
-
-\end_inset
-
-.
- This correlation translates the income shock into a -6% shock for house
- prices.
- 
+The aim of this section is to illustrate how the model reacts to regional
+ price shocks in a comparative statics sense.
+ This means that I will shock one region at a time with a regional house
+ price and income shock, which deviates the observed price and income series
+ to an unexpectedly lower level in the year 2000.
+ All other regions are kept constant at baseline, observed, prices.
+ The purpose of this exercise is to show how regions differ in response
+ to a given shock.
+ It is important to understand that the same shock can have very different
+ results in different regions.
 \end_layout
 
 \begin_layout Standard
-The experiment is conducted under the assumption that agents did not foresee
- the shock and therefore are surprised in the year 2000 to find that the
- mapping form aggregate factors 
-\begin_inset Formula $\left(Q,P\right)$
+The exercise is set up in partial equilibrium, as is indeed the model.
+ In the present context where we are interested in a ceteris paribus effect
+ of shocking one region only at each time, this seems to be only a small
+ limitation.
+ We proceed thus in the folling fashion: Every region is taken through different
+ combinations of counterfactual regional price and income shocks.
+ For each region 
+\begin_inset Formula $d$
 \end_inset
 
- into 
-\begin_inset Formula $\left(q_{8},p_{8}\right)$
+, both 
+\begin_inset Formula $p_{dt}$
 \end_inset
 
- as defined in equation 
+ and 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ may deviate in the year 
+\begin_inset Formula $t=2000$
+\end_inset
+
+ by 
+\begin_inset Formula $\pm5\%$
+\end_inset
+
+ with respect to their observed (and expected) level, by surprise, and proceed
+ at this deviated level for ever after.
+ The workings of this shock are illustrated in figure 
 \begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:VAR-reg-determ"
+LatexCommand ref
+reference "fig:Comparative-Statics"
 
 \end_inset
 
- does not apply anymore.
- In terms of their beliefs about aggregate and regional prices, instead
- of 
-\begin_inset Formula $\left[q_{8,2000},p_{8,2000}\right]'=\mathbf{a}_{8}\mathbf{F}_{2000}$
+, where again, all other regions 
+\begin_inset Formula $d'$
 \end_inset
 
- as expected, they observe 
-\begin_inset Formula $\left[0.9q_{8,2000},0.94p_{8,2000}\right]'=\mathbf{a}'_{8}\mathbf{F}_{2000}$
-\end_inset
-
-.
- They realize that the coefficients in 
-\begin_inset Formula $\mathbf{a}_{8}$
-\end_inset
-
- have changed to 
-\begin_inset Formula $\mathbf{a}'_{8}$
-\end_inset
-
- and they use this new set of coefficients to derive prices in region 
-\begin_inset Formula $d=8$
-\end_inset
-
- from then on, ie.
- the shock is permanent thereafter.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
- A separate experiment with a shock that reverts back over 3 years to trend
- delivered similar results, just limited to a shorter timeframe.
-\end_layout
-
-\end_inset
-
- Notice that this is a pure level shift, i.e.
- the growth rate and implied variance remain the same.
+ are following their baseline prices.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
-placement p
 wide false
 sideways false
 status collapsed
@@ -6403,9 +6373,17 @@ status collapsed
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/outflow.pdf
-	scale 80
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
+\end_layout
 
 \end_inset
 
@@ -6416,16 +6394,21 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Changes in outflows from WNC after a 10% shock is applied to average income
- in the region.
- The top panel shows the proportion of the population that is leaving in
- each period in both baseline and shock scenario.
- The bottom two panels illustrate how the regional price and income series
- are changed in the course of the experiment.
- .
+Comparative Statics of Regional Shock.
+ Dashed line is the shocked series for a given region.
+ This picture applies a 10% shock to 
+\begin_inset Formula $Q$
+\end_inset
+
+ and a 6% shock to 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ 
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:ypshock-experiment"
+name "fig:Comparative-Statics"
 
 \end_inset
 
@@ -6443,98 +6426,6 @@ name "fig:ypshock-experiment"
 \end_layout
 
 \begin_layout Standard
-Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ypshock-experiment"
-
-\end_inset
-
- illustrates the experiment.
- Starting with the bottom 2 panels, we see how the shock is implemented.
- A 10% drop in regional labor income is accompanied by a 6% reduction in
- the level of house prices.
- It is a priori unclear what aggregate response in mobility to expect from
- such a shock: in the end, renters benefit from lower house prices, both
- because of smaller expenses and because of a relaxation of their downpayment
- constraint.
- Hence, for renters WNC might become more rather than less attractive after
- the shock.
- In terms of cash on hand, the result is going to depend on the expenditure
- share of housing in household income.
- Also, renters and owners have different mobility costs, and they may value
- differently changes to prices and how those affect their future wealth.
- 
-\end_layout
-
-\begin_layout Standard
-Under the current parameterization of the model, the reduction in labor
- income has a larger effect than the cheaper price of rent, resulting in
- an overall increase in outflows from the region, as can be seen in the
- first panel of figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ypshock-experiment"
-
-\end_inset
-
-, which depicts outflows as a proportion of local population, and the shock
- shifts outflows up by 0.2 percentage points on average.
- It is interesting to compare this result to the elasticity obtained in
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-, where a similar 10% shock is applied to income in a region, resulting
- in an elasticity of total poluation of 0.5.
- I find in the present model an elasticity of total population which is
- 0.4.
- Looking at the elasticity of the outflow rate, however, I find 1.53 for
- renters, and 0.18 for owners.
- This large difference in outflow elasticities illustrates the important
- difference between renters and owners when thinking about mobility as a
- reponse to shocks.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-It is important to emphasize that this comparison is far from ideal and
- I don't want this to be misunderstood.
- There is a conceptual difference, and a practical one.
- Conceptually, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
- iterate on the model-implied transition matrix of moves to generate a new
- steady state equilibium; Instead, I alter the observed series of regional
- prices in the described fashion and resimulate the model once.
- Both exercises measure changes between 2 equilibria, but my model takes
- prices and incomes as given from the data (house prices don't exist in
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-
-\end_inset
-
-, and local wage distributions are stationary and iid from the point of
- view of a mover).
- As a practical matter, I take the average over changes 
-\emph on
-in each period
-\emph default
-, while they focus on the new equilibrium after convergence (roughly 15
- years).
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
