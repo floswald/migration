@@ -18,6 +18,7 @@ compares baseline with noMove scenario: shut down moving in all regions. returns
 """
 function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
 
+	tic()
 	bp = shutdownMoving(yshock=ys,pshock=ps)
 	base = bp[:base]
 	pol = bp[:pol]
@@ -248,6 +249,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	open(joinpath(io["outdir"],jstr),"w") do f
 		JSON.print(f,d)
 	end
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] noMove experiment ",took," hours")
 	return n
 end
 
