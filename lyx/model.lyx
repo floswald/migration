@@ -5380,6 +5380,13 @@ reference "eq:auxmod-h"
 
 \begin_layout Subsection
 Parameter Estimates and Moments 
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Parameter-Estimates"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6406,7 +6413,7 @@ reference "tab:shocks-by-region_1_95"
 
 \end_inset
 
- for each configuration of shocks is in the appendix.
+ for each configuration of shocks is available in the appendix.
 \end_layout
 
 \begin_layout Subsection
@@ -6418,7 +6425,176 @@ This section presents a measure of how much individuals care about having
  the option to migrate across regions.
  The question is motivated by relatively low migratory flows across regions,
  1.32% of households per year, as initially stated.
- Do low flows imply low value? 
+ Do low flows imply low value? And how does this valuation depend on age,
+ location, ownership status, and current state of the business cycle? 
+\end_layout
+
+\begin_layout Standard
+I will attempt to answer this set of questions by first simulating the model
+ in the baseline equilibrium, i.e.
+ at observed regional prices and incomes and importantly, 
+\emph on
+with migration
+\emph default
+ as an option.
+ Subsequently I will compare this to a counterfactual equilibrium 
+\emph on
+without 
+\emph default
+the migration option, i.e.
+ migration is shut down in the entire economy.
+ The results of this exercise will be presented in terms of percentage differenc
+es along different margins between those two simulations.
+ 
+\end_layout
+
+\begin_layout Standard
+Before delving into the results it is paramount to clarify the role of the
+ partial equilibrium assumption in this counterfactual.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Thanks to an anonymous referee for insisting on this point.
+\end_layout
+
+\end_inset
+
+ Assuming that the model is well-specified, the structural parameters are
+ such that given prices and incomes, the resulting decision rules of agents
+ in the model are correct.
+ This mapping from model to data was shown to be satisfactory in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Parameter-Estimates"
+
+\end_inset
+
+.
+ What this model cannot deliver is a prediction of how the 
+\emph on
+exogenous
+\emph default
+ series for 
+\begin_inset Formula $q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+ would change if we were to abolish migration.
+ To address this concern at least to some degree, I will present three different
+ scenarios of this counterfactual, which differ by how we think that prices
+ could change.
+ There is no clear empirical guidance on the effects of such an experiment,
+ so I will comment in the end on the overall plausibility of each of them.
+ 
+\end_layout
+
+\begin_layout Standard
+Starting with a scenario where prices are unaffected by the experiment,
+ table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+
+\end_inset
+
+ shows in the first row the consumption compensation demanded in the entire
+ economy, for different subsets of the population, including young, old,
+ owners at age 30, renters at age 30, and the entire population.
+ The values in the table stand for the proportional per period increase
+ in consumption that would make individuals indifferent between baseline
+ and migration shutdown.
+ For example, the group of young people (with age below half of their lifespan)
+ would demand 1.076 times what they consume in the baseline in each period,
+ or an increase of 7.6% of per period consumption.
+ This amount is lower for old people at 2.3%, which is intuitive since they
+ forgo fewer periods where the migration could have been optimally chosen.
+ We can look at the same measure by ownership status at age 30: owners at
+ that age demand 3.8% more consumption, while same aged renters demand almost
+ double that, i.e.
+ 6.3%.
+ Part of this difference comes from the fact that stayer types know that
+ they will not move, hence are more likely to buy, hence suffer less from
+ a removal of the migration option.
+ As an average over all individuals treated in this experiment (ATE), the
+ corresponding number if 5.1% of consumption compensation demanded.
+ 
+\end_layout
+
+\begin_layout Standard
+In the same table we the continue with this exercise and split the sample
+ by region to understand how heterogeneous those valuations are distributed.
+ Perhaps not surprisingly, there is a lot of variation in how individuals
+ feel about removal of the migration option by region.
+ In general, living in a high-income, high-price region like Pacific (Pcf)
+ accentuates the difference between young and old even more (7.9% vs 0.6%
+ compensation demanded).
+ Put simply, this is because high prices are good for owners, who are more
+ likely to stay in the region anyways, but bad for renters who cannot afford
+ to buy a house, hence would prefer to migrate and therefore suffer more
+ from the removal of the migration option.
+\end_layout
+
+\begin_layout Standard
+Whichever way one decides to slice this data, it is clear that individuals
+ attach a large value to the migration option.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in the baseline
+ scenario, i.e.
+ regional prices are unaffected by the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-base"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6740,6 +6916,10 @@ I chose WNC as the region to implement this experiment because the price
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6795,7 +6975,7 @@ name "tab:value-of-migration-flows"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -6905,7 +7085,8 @@ name "tab:value-of-migration-utility"
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
 
@@ -7400,49 +7581,6 @@ this shuts down moving in all regions.
  i provide different scenarios of how prices will adjust relative to the
  baseline, i.e.
  prices go up or down in response to the policy.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/noMove_region_ctax.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Consumption compensation demanded after migration shutdown.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
