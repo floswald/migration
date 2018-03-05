@@ -28,78 +28,78 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	
 	ate_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	ate_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	ate = copy(ate_1 .- ate_0 )
 	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
 	age_ate_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
-			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	age_ate_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
-			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	own30_0 = @linq base |>
 	    @where((:year.>cutyr)) |>
 		@by(:own_30,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
-					 inc = mean(:income),
+					 y = mean(:income),
 					 a=mean(:a),
 					 h=mean(:h),
 					 w=mean(:wealth),
-					 y=mean(:y),
+					 q=mean(:y),
 					 p=mean(:p))
 	own30_1 = @linq pol |>
 	    @where((:year.>cutyr)) |>
 		@by(:own_30,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
-					 inc = mean(:income),
+					 y = mean(:income),
 					 a=mean(:a),
 					 h=mean(:h),
 					 w=mean(:wealth),
-					 y=mean(:y),
+					 q=mean(:y),
 					 p=mean(:p))
 	year_0 = @linq base |>
 	    @where((:year.>cutyr)) |>
 		@by(:year,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
-					 inc = mean(:income),
+					 y = mean(:income),
 					 a=mean(:a),
 					 h=mean(:h),
 					 w=mean(:wealth),
-					 y=mean(:y),
+					 q=mean(:y),
 					 p=mean(:p))
 	year_1 = @linq pol |>
 	    @where((:year.>cutyr)) |>
 		@by(:year,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
-					 inc = mean(:income),
+					 y = mean(:income),
 					 a=mean(:a),
 					 h=mean(:h),
 					 w=mean(:wealth),
-					 y=mean(:y),
+					 q=mean(:y),
 					 p=mean(:p))
 	loc_0 = @linq base |>
 		    @where((:year.>cutyr)) |>
 			@by(:Division,v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
-						 inc = mean(:income),
+						 y = mean(:income),
 						 a=mean(:a),
 						 h=mean(:h),
 						 w=mean(:wealth),
-						 y=mean(:y),
+						 q=mean(:y),
 						 p=mean(:p))
 	loc_1 = @linq pol |>
 		    @where((:year.>cutyr)) |>
 			@by(:Division,v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
-						 inc = mean(:income),
+						 y = mean(:income),
 						 a=mean(:a),
 						 h=mean(:h),
 						 w=mean(:wealth),
-						 y=mean(:y),
+						 q=mean(:y),
 						 p=mean(:p))
 
 	age_ate_perc = pdiff(age_ate_1,age_ate_0,:realage)
@@ -150,8 +150,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		pmv = pol[findin(pol[:id],v[:id]),:]
 		pmv2 = @where(pmv,:year.>cutyr)
 		# computing effects
-		att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
-		att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),inc = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),y=mean(:y),p=mean(:p))
+		att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
+		att_1 = @select(pmv2,v=mean(:maxv),u=mean(:utility),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 		att = att_1 .- att_0 
 		atts[k] = convert(Dict,100.0 * (att ./ abs(att_0)))
 	end
@@ -448,7 +448,7 @@ end
 function read_noMove(ps,ys)
 
 	scenario = string("ps_",ps,"_ys_",ys)
-	ostr = string("TEST_noMove_",scenario,".jld2")
+	ostr = string("noMove_",scenario,".jld2")
 	io = mig.setPaths()
 	path = joinpath(io["outdir"],ostr)
 	println(path)
@@ -458,7 +458,7 @@ function read_noMove(ps,ys)
 		return 0
 	else
 		x = FileIO.load(path)
-		return x["n2"]
+		return x["n"]
 	end
 end
 
