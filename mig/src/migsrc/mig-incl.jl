@@ -288,9 +288,13 @@ myexp2(x::Float64) = ccall(:exp, Cdouble, (Cdouble,), x)
 
 function setPaths()
 # get moments from dropbox:
+	d = dirname(@__FILE__)
+	ind = out = ""
 	if is_apple()
 		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
+		out    = joinpath(d,"..","..","out")
+		ind    = joinpath(d,"..","..","in")
 		outg   = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_graphs_jl")
 	elseif is_windows()
 		indir = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\in_data_jl"
@@ -303,7 +307,7 @@ function setPaths()
 	end
 	rem_in = "~/data_repo/mig/in_data_jl"
 	rem_out = "~/data_repo/mig/out_data_jl"
-	return Dict("indir"=>indir, "outdir" => outdir, "out_graphs"=>outg, "remote_in" => rem_in, "remote_out"=> rem_out)
+	return Dict("indir"=>indir, "outdir" => outdir, "out_graphs"=>outg, "remote_in" => rem_in, "remote_out"=> rem_out,"in"=>ind,"out"=>out)
 end
 
 # set outpath rel to dropbox/mobility/output/model

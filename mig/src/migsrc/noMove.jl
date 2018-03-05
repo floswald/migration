@@ -448,12 +448,12 @@ end
 end
 
 
-function read_noMove(ps,ys)
+function read_noMove(;ps=1.0,ys=1.0)
 
 	scenario = string("ps_",ps,"_ys_",ys)
 	ostr = string("noMove_",scenario,".jld2")
 	io = mig.setPaths()
-	path = joinpath(io["outdir"],ostr)
+	path = joinpath(io["out"],ostr)
 	println(path)
 
 	if !isfile(path)
@@ -478,7 +478,7 @@ function plot_noMove(n::noMoveRes;save=true)
 	if save
 		savefig(string(path,"year",fiend))
 	end
-	p_loc = bar(n,:loc_perc,:j,drop=[:u,:w])
+	p_loc = bar(n,:loc_perc,:Division,drop=[:u,:w],xrotation=90,xguide="",xtickfont=8)
 	if save
 		savefig(string(path,"loc",fiend))
 	end

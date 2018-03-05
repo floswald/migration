@@ -448,14 +448,14 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
-	flows = getFlowStats(d,false,"$(which)_$j")
+	# flows = getFlowStats(d,false,"$(which)_$j")
 
 
 
 	out = Dict("which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
-	       "flows" => flows,
+	       # "flows" => flows,
 	       "opts" => opts,
 	       "movers_effects" => atts,
 	       "stayer_effects" => atns,

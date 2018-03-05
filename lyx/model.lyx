@@ -6317,7 +6317,7 @@ The aim of this section is to illustrate how the model reacts to regional
  All other regions are kept constant at baseline, observed, prices.
  The purpose of this exercise is to show how regions differ in response
  to a given shock.
- It is important to understand that the same shock can have very different
+ It is important to understand that the same sized shock can have very different
  results in different regions.
 \end_layout
 
@@ -6357,7 +6357,7 @@ reference "fig:Comparative-Statics"
 
 \end_inset
 
-, where again, all other regions 
+ in the appendix, where again, all other regions 
 \begin_inset Formula $d'$
 \end_inset
 
@@ -6365,68 +6365,48 @@ reference "fig:Comparative-Statics"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
+In table x we present the main overview of this exercise by showing the
+ percentage change in lifetime utility (
+\begin_inset Formula $\%\Delta V$
+\end_inset
 
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
+) by region and by 
+\emph on
+scenario
+\emph default
+, where a scenario stands for a particular combination of shocks.
+ The table shows quite clearly that the same scenario plays out very differently
+ in different regions, because those regions start out from different levels
+ of prices, homeownership rates, as well as in and out migration flows.
+ While 
+\begin_inset Formula $\%\Delta V$
+\end_inset
 
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
-\end_layout
+ is informative overall, it is interesting to consider how other dimensions
+ of the model react to the shock – in particular, how do 
+\emph on
+stayers 
+\emph default
+and 
+\emph on
+movers 
+\emph default
+differentially experience the shock? [comment on one particular case] The
+ full set of tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shocks-by-region_95_1"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Comparative Statics of Regional Shock.
- Dashed line is the shocked series for a given region.
- This picture applies a 10% shock to 
-\begin_inset Formula $Q$
-\end_inset
-
- and a 6% shock to 
-\begin_inset Formula $P$
-\end_inset
-
-.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Comparative-Statics"
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shocks-by-region_1_95"
 
 \end_inset
 
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
+ for each configuration of shocks is in the appendix.
 \end_layout
 
 \begin_layout Subsection
@@ -7412,183 +7392,6 @@ In concluding this section, it is instructive to note the importance of
 \end_layout
 
 \begin_layout Subsection
-Regional shock sby regoin
-\end_layout
-
-\begin_layout Standard
-this applies a shock of different sizes to each region separately, keeping
- all other regions at the baseline prices.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_0.95_ys_1.0.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Complete shutdown of moving in all regions
 \end_layout
 
@@ -7660,7 +7463,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_age.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_age.tex}
 \end_layout
 
 \end_inset
@@ -7707,7 +7510,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_year.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_year.tex}
 \end_layout
 
 \end_inset
@@ -7754,7 +7557,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_own30.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_own30.tex}
 \end_layout
 
 \end_inset
@@ -7801,7 +7604,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_loc.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_loc.tex}
 \end_layout
 
 \end_inset
@@ -8825,6 +8628,168 @@ name "fig:Census-Division-Map"
 
 \begin_layout Section
 Additional tables and figures
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparative Statics of Regional Shock.
+ Dashed line is the shocked series for a given region.
+ This picture applies a 10% shock to 
+\begin_inset Formula $Q$
+\end_inset
+
+ and a 6% shock to 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ Both 
+\begin_inset Formula $y$
+\end_inset
+
+-axis are in thousands of dollars.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Comparative-Statics"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/shockRegions_ps_0.95_ys_1.0.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+shocks by region
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shocks-by-region_95_1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/shockRegions_ps_1.0_ys_0.95.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+shocks by region
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shocks-by-region_1_95"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

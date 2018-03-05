@@ -6317,7 +6317,7 @@ The aim of this section is to illustrate how the model reacts to regional
  All other regions are kept constant at baseline, observed, prices.
  The purpose of this exercise is to show how regions differ in response
  to a given shock.
- It is important to understand that the same shock can have very different
+ It is important to understand that the same sized shock can have very different
  results in different regions.
 \end_layout
 
@@ -6365,6 +6365,19 @@ reference "fig:Comparative-Statics"
 \end_layout
 
 \begin_layout Standard
+In table x we present the main overview of this exercise by showing the
+ percentage change in lifetime utility by region and by 
+\emph on
+scenario
+\emph default
+, where a scenario stands for a particular combination of shocks.
+ The table shows quite clearly that the same scenario plays out very differently
+ in different regions, because those regions start out from different levels
+ of prices, homeownership rates, as well as in and out migration flows.
+ It is
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -6405,6 +6418,11 @@ Comparative Statics of Regional Shock.
 \end_inset
 
 .
+ Both 
+\begin_inset Formula $y$
+\end_inset
+
+-axis are in thousands of dollars.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -6422,10 +6440,6 @@ name "fig:Comparative-Statics"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -7660,7 +7674,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_age.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_age.tex}
 \end_layout
 
 \end_inset
@@ -7707,7 +7721,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_year.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_year.tex}
 \end_layout
 
 \end_inset
@@ -7754,7 +7768,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_own30.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_own30.tex}
 \end_layout
 
 \end_inset
@@ -7801,7 +7815,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/data_repo/out_graphs_jl/noMove_baseline_loc.tex}
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_loc.tex}
 \end_layout
 
 \end_inset
