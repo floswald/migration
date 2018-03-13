@@ -4315,9 +4315,8 @@ reference "fig:shock-reg-model-illustrate"
 
 \end_inset
 
-.
- We can see that the model generates considerable variation in the size
- of the resulting local shock.
+ in the appendix and it shows that the model generates considerable variation
+ in the size of the resulting local shock.
 \end_layout
 
 \begin_layout Standard
@@ -4441,106 +4440,6 @@ reference "fig:mapping-Y-y"
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Mapping-P-p"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{adjustbox}{center}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/impulse_y.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{adjustbox}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Illustrating the transformation of aggregate shocks into regional counterparts.
- This exercise keeps the aggregate 
-\begin_inset Formula $\mathbf{F}_{t}$
-\end_inset
-
- constant at its mean level except for period 
-\begin_inset Formula $t=2000$
-\end_inset
-
- where the 
-\begin_inset Formula $Y_{t}$
-\end_inset
-
- component (only) is reduced by 10% relative to its mean.
-
-\emph on
- 
-\emph default
-The panels show the resulting deviation in regional labor productivity 
-\begin_inset Formula $q_{dt}$
-\end_inset
-
-
-\emph on
-.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:shock-reg-model-illustrate"
 
 \end_inset
 
@@ -6488,8 +6387,8 @@ exogenous
  To address this concern at least to some degree, I will present three different
  scenarios of this counterfactual, which differ by how we think that prices
  could change.
- There is no clear empirical guidance on the effects of such an experiment,
- so I will comment in the end on the overall plausibility of each of them.
+ There is little empirical guidance on the effects of such an experiment.
+ , so I will comment in the end on the overall plausibility of each of them.
  
 \end_layout
 
@@ -6521,7 +6420,7 @@ reference "tab:shutdown-cons-base"
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
  As an average over all individuals treated in this experiment (ATE), the
- corresponding number if 5.1% of consumption compensation demanded.
+ corresponding number is 5.1% of consumption compensation demanded.
  
 \end_layout
 
@@ -6530,19 +6429,27 @@ In the same table we the continue with this exercise and split the sample
  by region to understand how heterogeneous those valuations are distributed.
  Perhaps not surprisingly, there is a lot of variation in how individuals
  feel about removal of the migration option by region.
- In general, living in a high-income, high-price region like Pacific (Pcf)
- accentuates the difference between young and old even more (7.9% vs 0.6%
- compensation demanded).
+ In general, living in a high-income, high-price region like Pacific accentuates
+ the difference between young and old even more (7.9% vs 0.6% compensation
+ demanded).
  Put simply, this is because high prices are good for owners, who are more
- likely to stay in the region anyways, but bad for renters who cannot afford
- to buy a house, hence would prefer to migrate and therefore suffer more
- from the removal of the migration option.
+ likely to stay in the region no matter what, but bad for renters who cannot
+ afford to buy a house.
+ They would prefer to migrate at some point if necessary and therefore suffer
+ disproportionately from the removal of the migration option.
+ By way of summary of this table, individuals value having the option of
+ migration to a large degree and in the range of -2% (young owners in East
+ South Central prefer never being able to move) and up to 13% of per period
+ consumption.
+ 
 \end_layout
 
 \begin_layout Standard
-Whichever way one decides to slice this data, it is clear that individuals
- attach a large value to the migration option.
- 
+[Counterfactual price adjustments: income constant, price -1% (local wage
+ does not adjust after loss of migrants, pressure on housing market goes
+ down).
+ income -1%, price constant (local firms' productivity suffers from the
+ loss of skilled migrant workers, hence wage goes down).]
 \end_layout
 
 \begin_layout Standard
@@ -6590,324 +6497,6 @@ name "tab:shutdown-cons-base"
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-I attempt to answer this question with a counterfactual experiment whereby
- the situation of West North Central is changed in the sense that immigration
- is allowed, but emigrating from there is prohibited.
- I will call this policy the 
-\emph on
-no-move 
-\emph default
-policy.
- The question is: Who is most affected by this restriction, young, old,
- people who did in fact move and cannot now or the ones who did not move
- to start with? First we will discuss changes in migration flows, and the
- welfare effects for residents of WNC under both scenarios, and by whether
- they are classified as 
-\emph on
-young 
-\emph default
-or 
-\emph on
-old
-\emph default
-.
- Finally, we will analyze the experience of individuals who would have moved
- in the baseline environment, but are now prevented from doing so.
- In all of the following experiments, individuals experience the same sequences
- of random shocks in each simulation.
-\end_layout
-
-\begin_layout Standard
-Migration flows and are displayed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration-flows"
-
-\end_inset
-
-.
- The top panel shows changes in immigration flows to the region for both
- scenarios, and the respective percentage change.
- Comparing the first two columns as percentage changes in column three,
- we see that inflows into the region fall dramatically in a world where
- moving away from WNC is not an option.
- This shows that agents outside of the region perceive WNC as a much inferior
- option to the baseline.
- The lower panel of the table shows baseline emmigration flows for comparison.
- 
-\end_layout
-
-\begin_layout Standard
-Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration-utility"
-
-\end_inset
-
- contains the main results.
- All columns display percentage differences between 
-\emph on
-no-move 
-\emph default
-and baseline.
- The first three columns give a general overview of people who resided some
- time in the region, whereas the last two columns focus on people born in
- WNC.
- Starting with the first column, we see that looking at all one-time residents,
- average realized lifetime utility 
-\begin_inset Formula $V$
-\end_inset
-
- (this is object 
-\begin_inset Formula $V$
-\end_inset
-
- from 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:V"
-
-\end_inset
-
-) decreases by 1.22%.
- Considering only flow payoffs (i.e.
- object 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:utility"
-
-\end_inset
-
-), we see that 
-\begin_inset Formula $u$
-\end_inset
-
- decreases by almost 6% on average.
- The difference between 
-\begin_inset Formula $\Delta V$
-\end_inset
-
- and 
-\begin_inset Formula $\Delta u$
-\end_inset
-
- is informative about the tradeoff between period utility and how the policy
- is reflected in future values.
- Given that in this instance the ownership rate rises by 8% as emigration
- is shut down, given that owning gives extra utility and it occurs later
- in life, it is easy to see why future expected values decrease less than
- flow payoffs.
- The value of savings and mortgages falls by roughly 33%.
- Taken together, all of this implies that the average person who lived at
- least some time in WNC would demand a 2.17% proportional increase in consumption
- in order to be indifferent between both scenarios.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Calculation of the consumption measure is described in the appendix section
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Welfare-Measure"
-
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
- These numbers clearly confound many things (the policy changes the composition
- of residents who move to WNC), but they give a global overview of how individua
-ls in the entire economy are affected, who considered staying or moving
- there an optimal choice in the baseline.
-\end_layout
-
-\begin_layout Standard
-The second column splits the analysis by age and considers people below
- and above mean age in the region, labelled 
-\emph on
-young 
-\emph default
-and 
-\emph on
-old 
-\emph default
-respectively.
- The purpose of this is to see which part of the lifecycle is particularly
- affected by the policy.
- The young section of the simulated lifes bears the brunt of the loss in
- utility, suffering a 3.66% reduction in average lifetime value for young
- ages vs a 0.74% reduction when older.
- This is an intuitive result, since it is the young population that has
- to forgoe a greater number of profitable opportunities of moving away.
- Ownership increases again, which is largely a result of WNC being a region
- with relatively low house price level.
- The implied consumption subsidies are 5% for young and 1.45% for old.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Keep in mind that this paragraph refers to 
-\emph on
-the same individual 
-\emph default
-when young vs when old, i.e.
- an old individual in the 
-\emph on
-no-move
-\emph default
- world has lived through 
-\emph on
-no-move 
-\emph default
-as a young person already, and their choices will reflect this fact.
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-Finally, the last two columns show the experience of people who were born
- in WNC as a mover type (
-\begin_inset Formula $\tau=0$
-\end_inset
-
-), and either moved away in the baseline, or not.
- It turns out that in terms of lifetime utility 
-\begin_inset Formula $V$
-\end_inset
-
- those who moved away are almost equally well off in both scenarios.
- Among the explaining factors for this result is the avoidance of the moving
- cost, and the potentially slower entry into homeownership after a move.
- The average lifetime experience being slightly better when they cannot
- move, the original movers would be happy to accept 1.3% lower consumption
- to be able to participate in the 
-\emph on
-no-move 
-\emph default
-policy.
-\end_layout
-
-\begin_layout Standard
-Quite differently for people who were born in WNC and stayed there for their
- entire life, see the final column of table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:value-of-migration-utility"
-
-\end_inset
-
-.
- Even though their arrangement of state variables and shocks never lead
- to an 
-\emph on
-actual 
-\emph default
-move, they greatly suffer from the reduced prospect of potentially ever
- being able to make such a move in the future.
- This is clearly visible from the difference in 
-\begin_inset Formula $\Delta V$
-\end_inset
-
- and 
-\begin_inset Formula $\Delta u$
-\end_inset
-
- for this group.
- They have slightly higher period utility because more of them decide to
- become homeowners now that the future option of migration has been removed,
- and this is reflected in larger mortgage debts and slightly greater wealth
- averages.
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-The distributional assumption 
-\begin_inset Formula $\varepsilon\sim\text{Gumbel}$
-\end_inset
-
- plays a role here and it maps into a result concerning logit models: since
- the expected value function w.r.t.
- 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- is the well-known 
-\emph on
-log-sum
-\emph default
-, i.e.
- the log of the sum of the exponential of all constituting values as in
- expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:vbar"
-
-\end_inset
-
-, removing an option deterministically reduces this expected value.
- Numerically, this reduction may be indistinguishable from zero (e.g.
- 
-\begin_inset Formula $\exp(-99)$
-\end_inset
-
- is smaller than machine epsilon and therefore equal to 0.0 on my computer).
- In practice it is very hard to relax 
-\begin_inset Formula $\varepsilon\sim\text{Gumbel}$
-\end_inset
-
-, since other distributions require 
-\begin_inset Formula $D$
-\end_inset
-
--dimensional numerical integration of 
-\begin_inset Formula $EV_{\varepsilon}$
-\end_inset
-
-, which is clearly infeasible for this model formulation and the current
- state of computing facilities.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
- the Finally, in terms of compensating consumption, this group would demand
- demand a close to 16% increase in consumption per period were they to be
- made indifferent between their lifecycle histories in either scenario.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-I chose WNC as the region to implement this experiment because the price
- and income series around the year 2000 are relatively stable.
- For other regions, I expect the results to carry over except for the group
- of movers born in the treated region; Their relative gains and losses depend
- strongly on how the treated region compares with others in terms of amenities,
- average price and incomes, which in turn will determine the asset position
- with which they will migrate (and be able to buy a house in the new region,
- etc).
 \end_layout
 
 \end_inset
@@ -9221,6 +8810,106 @@ reference "eq:indiv-labor-empirical"
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:age-profiles"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{adjustbox}{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/impulse_y.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{adjustbox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Illustrating the transformation of aggregate shocks into regional counterparts.
+ This exercise keeps the aggregate 
+\begin_inset Formula $\mathbf{F}_{t}$
+\end_inset
+
+ constant at its mean level except for period 
+\begin_inset Formula $t=2000$
+\end_inset
+
+ where the 
+\begin_inset Formula $Y_{t}$
+\end_inset
+
+ component (only) is reduced by 10% relative to its mean.
+
+\emph on
+ 
+\emph default
+The panels show the resulting deviation in regional labor productivity 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+
+\emph on
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:shock-reg-model-illustrate"
 
 \end_inset
 

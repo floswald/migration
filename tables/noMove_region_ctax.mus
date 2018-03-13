@@ -7,15 +7,15 @@
   \midrule
   {{  show("Aggregate", ctax[0].data, 3 ) }}
   \midrule
-  {{  show("ENC", ctax[1].data, 3 ) }}
-  {{  show("ESC", ctax[2].data, 3 ) }}
-  {{  show("MdA", ctax[3].data, 3 ) }}
-  {{  show("Mnt", ctax[4].data, 3 ) }}
-  {{  show("NwE", ctax[5].data, 3 ) }}
-  {{  show("Pcf", ctax[6].data, 3 ) }}
-  {{  show("StA", ctax[7].data, 3 ) }}
-  {{  show("WNC", ctax[8].data, 3 ) }}
-  {{  show("WSC", ctax[9].data, 3 ) }}
+  {{  show("East North Central", ctax[1].data, 3 ) }}
+  {{  show("East South Central", ctax[2].data, 3 ) }}
+  {{  show("Middle Atlantic", ctax[3].data, 3 ) }}
+  {{  show("Mountain", ctax[4].data, 3 ) }}
+  {{  show("New England", ctax[5].data, 3 ) }}
+  {{  show("Pacific", ctax[6].data, 3 ) }}
+  {{  show("South Atlantic", ctax[7].data, 3 ) }}
+  {{  show("West North Central", ctax[8].data, 3 ) }}
+  {{  show("West South Central", ctax[9].data, 3 ) }}
   \bottomrule
 \end{tabular}
 
