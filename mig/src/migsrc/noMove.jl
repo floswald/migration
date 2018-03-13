@@ -281,7 +281,7 @@ function shutdownMoving(;pshock=1.0,yshock=1.0)
 
 	else
 		info("noMove in ALL regions with pshock=$(pshock),yshock=$(yshock)")
-		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1]"shockVal_y" => [yshock for i in 1:p.nt-1])
+		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1],"shockVal_y" => [yshock for i in 1:p.nt-1])
 
 	end
 	p2 = Param(2,opts=opts)
