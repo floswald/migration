@@ -1,7 +1,3 @@
-# on unix cluster you must run
-# LD_PRELOAD=${HOME}/.julia/v0.6/Conda/deps/usr/lib/libz.so julia
-
-
 doc = """
 
 Homeownership, Regional Shocks and Migration (Oswald, 2017)

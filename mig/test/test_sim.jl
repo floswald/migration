@@ -49,10 +49,10 @@
 
 		# check that arrays on the interpolator correspond to the ones in m:
 
-		for ia in 1:p.na
-			for iz in 1:p.nz
-				for iy in 1:p.ny
-					for ip in 1:p.np
+		for ia in rand(1:p.na,2)
+		for iz in rand(1:p.nz,2)
+		for iy in rand(1:p.ny,2)
+		for ip in rand(1:p.np,2)
 
 						for ik in 1:p.nJ
 							@test L["l_rho"].vals[ik][ia,iz,iy,ip] == m.v[mig.idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,it,p)]
