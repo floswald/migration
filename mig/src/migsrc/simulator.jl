@@ -245,6 +245,7 @@ function simulate(m::Model,p::Param)
 	DP       = zeros(nsim*T)
 	DM       = falses(nsim*T)
 	Dcanbuy  = falses(nsim*T)
+	DDrop    = falses(nsim*T)
 	Di       = repeat(collect(1:nsim),inner = [T],outer = [1])
 	Dage     = repeat(collect(1:T),inner = [1],outer = [nsim])
 	Drealage = repeat(collect(p.ages[1:T]),inner = [1],outer = [nsim])
@@ -310,6 +311,7 @@ function simulate(m::Model,p::Param)
 
 	pshock = false
 	yshock = false
+	nomove_yshock = false
 	shockmyy = false
 	if p.policy == "pshock"
 		pshock = true
@@ -329,6 +331,7 @@ function simulate(m::Model,p::Param)
 	end
 	if p.policy == "noMove"
 		highMC = true
+		nomove_yshock = pshock = true
 	end
 
 
@@ -426,6 +429,7 @@ function simulate(m::Model,p::Param)
 				# 	y *= p.shockVal_y[age-p.shockAge+1]
 				# end
 
+
 				# record regional prices
 				Dy[i_idx] = y
 				Dp[i_idx] = price_j
@@ -437,6 +441,7 @@ function simulate(m::Model,p::Param)
 					# println("shockincome = $(getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]),age,ij))")
 				# end
 				yy = shockmyy ? getIncome(m,y,z + log(p.shockVal_y[age-p.shockAge+1]) ,age,ij) : getIncome(m,y,z,age,ij)
+				yy = nomove_yshock ? getIncome(m,y,z + log(p.shockVal_y[age]) ,age,ij) : yy
 
 				# CAUTION: this if-clause should not be necessary!
 				# if moving is not allowed from your region...
@@ -459,6 +464,10 @@ function simulate(m::Model,p::Param)
 
 					# 1) interpolate v(state,k) ∀ k
 					ktmp = get_rho_ktmp(L["l_rho"],azYP,p)
+					if ktmp[ij] == p.myNA
+						DDrop[i_idx] = true
+							# warn("indi $i on an infeasible state")
+					end
 
 					# 2) draw eps(k) ∀ k
 					# eps = rand(G_eps,p.nJ)   done in model
@@ -481,7 +490,14 @@ function simulate(m::Model,p::Param)
 						error("problem in moveto = $moveto")
 					end
 					if move && highMC
-						error("indi $i is moving from $ij to $moveto")
+						# println(ktmp)
+						# println(m.eps_shock[i_idx])
+						if ktmp[ij] == p.myNA
+							DDrop[i_idx] = true
+							# warn("indi $i on an infeasible state")
+						end
+						# println("movecost = $(movecost[idxMC(age,ij,moveto,itau,ih+1,is,p)])")
+						# warn("indi $i is moving from $ij to $moveto")
 					end
 				# end
 
@@ -662,6 +678,11 @@ function simulate(m::Model,p::Param)
 		end # groups
 	end  # age
 
+	sdrop = sum(DDrop)
+	if sdrop > 0
+		warn("Had to drop $sdrop inds (out of $(length(DDrop))) because on infeasible state")
+	end
+
 	# pack into a dataframe
 	# kids=CategoricalArray(convert(Array{Bool,1},Dis))
 
@@ -673,7 +694,7 @@ function simulate(m::Model,p::Param)
 	# Dis[Dis.>0] = Dis[Dis.>0] .-ones(length(Dis[Dis.>0]))
 
 	# df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=CategoricalArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=CategoricalArray(convert(Array{Bool},DM)),moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=CategoricalArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=CategoricalArray(convert(Array{Bool},Dh.*(Drealage.==30))),rent_30=CategoricalArray(convert(Array{Bool},(Dh.==0).*(Drealage.==30))))
-	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=Dis.>1,tau=Dtau,j=Dj,Division=CategoricalArray(Dregname),Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh.==1,hh=Dhh.==1,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=Dh.==1,canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=(Dh.==1).*(Drealage.==30),rent_30=(Dh.==0).*(Drealage.==30))
+	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=Dis.>1,tau=Dtau,j=Dj,Division=CategoricalArray(Dregname),Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh.==1,hh=Dhh.==1,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=Dh.==1,canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=(Dh.==1).*(Drealage.==30),rent_30=(Dh.==0).*(Drealage.==30),drop=DDrop)
 
 	# some transformations before exit
 	# --------------------------------

@@ -6582,7 +6582,7 @@ In the same table we the continue with this exercise and split the sample
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6608,12 +6608,114 @@ Dropbox/model/experiments/noMove_region_ctax.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 2,
+ i.e.
+ regional prices decrease both by 1% as a result of the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-base"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_small.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
 Consumption compensation demanded after migration shutdown in the baseline
  scenario, i.e.
  regional prices are unaffected by the shutdown of migration.
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:shutdown-cons-base"
+name "tab:shutdown-cons-small"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_big.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 3,
+ i.e.
+ regional prices and incomes decrease by 10% and 5% respectively as a result
+ of the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-big"
 
 \end_inset
 

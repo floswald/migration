@@ -13,7 +13,7 @@ import Base: +, -, *, /, abs
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 
-const NOMOVE_PEN = 10000.0
+const NOMOVE_PEN = 100_000_000.0
 
 
 include("migsrc/param.jl")

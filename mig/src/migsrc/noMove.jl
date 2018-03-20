@@ -20,6 +20,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 	tic()
 	bp = shutdownMoving(yshock=ys,pshock=ps)
+	return(bp)
 	base = bp[:base]
 	pol = bp[:pol]
 	p = Param(2)

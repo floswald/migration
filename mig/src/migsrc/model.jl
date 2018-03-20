@@ -327,10 +327,11 @@ type Model
 			# adjust price to rent ratio if doing GE adjustment
 			p.kappa = p.kappa ./ p.shockVal[1]
 		elseif p.policy == "noMove"
-			pgrid  = pgrid .* p.shockVal[1]
-			pred_p = pred_p .* p.shockVal[1]
+			pgrid  = pgrid .* p.shockVal_p[1]
+			pred_p = pred_p .* p.shockVal_p[1]
 			# adjust price to rent ratio if doing GE adjustment
-			p.kappa = p.kappa ./ p.shockVal[1]
+			p.kappa = p.kappa ./ p.shockVal_p[1]
+			# info("pshokc=$(p.shockVal_p[1])")
 		end
 
 		# grid for individual income (based on ygrid(Y,P))
@@ -343,7 +344,9 @@ type Model
 		zgrid = zeros(p.nz,p.ny,p.np,p.nt-1,p.nJ)
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
-				yshock = (p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5" || p.policy=="noMove") && ((it >= p.shockAge) && (j==p.shockReg)) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
+				yshock = ((p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg))) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
+				yshock = (p.policy=="noMove") ? log(p.shockVal_y[it]) : yshock
+				# info("yshock = $yshock")
 				for iy in 1:p.ny
 					for ip in 1:p.np
 						for iz in 1:p.nz
