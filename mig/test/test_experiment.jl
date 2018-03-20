@@ -135,7 +135,7 @@
 			m = Model(p)
 			solve!(m,p)
 			sim0 = simulate(m,p)
-			sim0 = sim0[.!mig.isna.(sim0[:cohort]),:]
+			sim0 = sim0[.!mig.ismissing.(sim0[:cohort]),:]
 
 
 			s10 = mig.computeShockAge(m,Dict("policy"=>"pshock","shockReg"=>5,"shockYear"=>2007),10);
