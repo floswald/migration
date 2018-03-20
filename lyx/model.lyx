@@ -1,5 +1,5 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 508
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -40,6 +40,8 @@
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -78,6 +80,7 @@
 \suppress_date false
 \justification true
 \use_refstyle 0
+\use_minted 0
 \boxbgcolor #dbdbdb
 \branch answer
 \selected 1
@@ -94,7 +97,10 @@
 \tocdepth 3
 \paragraph_separation skip
 \defskip smallskip
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -401,6 +407,7 @@ In terms of the decision to migrate to another region, the model predicts
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -436,6 +443,7 @@ I find that owners and renters face very different incentives in the model.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -501,6 +509,7 @@ I find that abolishing the mortgage interest deduction would have a only
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sommer2013implications"
+literal "true"
 
 \end_inset
 
@@ -536,6 +545,7 @@ My paper builds on
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -565,6 +575,7 @@ key "kennan2003effect"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
+literal "true"
 
 \end_inset
 
@@ -575,6 +586,7 @@ key "gemici2007family"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
+literal "true"
 
 \end_inset
 
@@ -582,6 +594,7 @@ key "winkler2010effect"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
+literal "true"
 
 \end_inset
 
@@ -591,6 +604,7 @@ key "gemici2007family"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
+literal "true"
 
 \end_inset
 
@@ -602,6 +616,7 @@ key "winkler2010effect"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
+literal "true"
 
 \end_inset
 
@@ -610,6 +625,7 @@ key "winkler2010effect"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -619,6 +635,7 @@ key "kennan2003effect"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
+literal "true"
 
 \end_inset
 
@@ -638,6 +655,7 @@ By considering regional shocks, this paper is also related to the seminal
 \begin_inset CommandInset citation
 LatexCommand cite
 key "blanchard1992regional"
+literal "true"
 
 \end_inset
 
@@ -650,6 +668,7 @@ key "blanchard1992regional"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "notowidigdo2011incidence"
+literal "true"
 
 \end_inset
 
@@ -665,6 +684,7 @@ See
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Moretti:2011fk"
+literal "true"
 
 \end_inset
 
@@ -672,6 +692,7 @@ key "Moretti:2011fk"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Roback:1982uq"
+literal "true"
 
 \end_inset
 
@@ -679,6 +700,7 @@ key "Roback:1982uq"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "rosen1979wage"
+literal "true"
 
 \end_inset
 
@@ -686,6 +708,7 @@ key "rosen1979wage"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "diamond2016determinants"
+literal "true"
 
 \end_inset
 
@@ -693,6 +716,7 @@ key "diamond2016determinants"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "piypromdee"
+literal "true"
 
 \end_inset
 
@@ -713,6 +737,7 @@ Also related is a recent literature that considers the effects of the 2007
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Ferreira201034"
+literal "true"
 
 \end_inset
 
@@ -720,6 +745,7 @@ key "Ferreira201034"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "schulhofer2011negative"
+literal "true"
 
 \end_inset
 
@@ -727,6 +753,7 @@ key "schulhofer2011negative"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "demyanyk2013moving"
+literal "true"
 
 \end_inset
 
@@ -739,6 +766,7 @@ key "demyanyk2013moving"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "head2012housing"
+literal "true"
 
 \end_inset
 
@@ -746,6 +774,7 @@ key "head2012housing"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "nenov2012regional"
+literal "true"
 
 \end_inset
 
@@ -753,6 +782,7 @@ key "nenov2012regional"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "song2012measuring"
+literal "true"
 
 \end_inset
 
@@ -760,6 +790,7 @@ key "song2012measuring"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "karahan2011housing"
+literal "true"
 
 \end_inset
 
@@ -781,6 +812,7 @@ In general, the relationship between homeownership and labor market mobility
 \begin_inset CommandInset citation
 LatexCommand cite
 key "oswald1996conjecture,blanchflower2013does"
+literal "true"
 
 \end_inset
 
@@ -788,6 +820,7 @@ key "oswald1996conjecture,blanchflower2013does"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "coulson2002tenure"
+literal "true"
 
 \end_inset
 
@@ -795,6 +828,7 @@ key "coulson2002tenure"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "guler2011homeownership"
+literal "true"
 
 \end_inset
 
@@ -802,6 +836,7 @@ key "guler2011homeownership"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "battu2008housing"
+literal "true"
 
 \end_inset
 
@@ -809,6 +844,7 @@ key "battu2008housing"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "halket2014saving"
+literal "true"
 
 \end_inset
 
@@ -833,6 +869,7 @@ Finally, the paper relates to the literature on tax treatment of housing
 \begin_inset CommandInset citation
 LatexCommand cite
 key "glaeser2011rethinking"
+literal "true"
 
 \end_inset
 
@@ -840,6 +877,7 @@ key "glaeser2011rethinking"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "glaeser2002benefits"
+literal "true"
 
 \end_inset
 
@@ -848,6 +886,7 @@ key "glaeser2002benefits"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Poterba:2008fk"
+literal "true"
 
 \end_inset
 
@@ -856,6 +895,7 @@ key "Poterba:2008fk"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sommer2013implications"
+literal "true"
 
 \end_inset
 
@@ -874,6 +914,7 @@ This paper merges housing demand over the lifecycle, as for example
 \begin_inset CommandInset citation
 LatexCommand cite
 key "bk_wenli"
+literal "true"
 
 \end_inset
 
@@ -897,6 +938,7 @@ The amount of regional migration in the US is still high by international
 \begin_inset CommandInset citation
 LatexCommand cite
 key "molloy2011internal"
+literal "true"
 
 \end_inset
 
@@ -911,6 +953,7 @@ key "molloy2011internal"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fallick2004employer"
+literal "true"
 
 \end_inset
 
@@ -1161,6 +1204,7 @@ Migration rates at different levels of geographic aggreagation and over
 \begin_inset CommandInset citation
 LatexCommand cite
 key "molloy2011internal"
+literal "true"
 
 \end_inset
 
@@ -1189,6 +1233,7 @@ It is somewhat unfortunate that none of the datasets employed by
 \begin_inset CommandInset citation
 LatexCommand cite
 key "molloy2011internal"
+literal "true"
 
 \end_inset
 
@@ -1355,6 +1400,7 @@ By way of comparison, the estimation sample in
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -2171,6 +2217,7 @@ The job search process is modeled as in
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -2293,6 +2340,7 @@ status collapsed
 \begin_inset CommandInset citation
 LatexCommand cite
 key "redding"
+literal "true"
 
 \end_inset
 
@@ -2787,6 +2835,7 @@ Ownership choice is discrete,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Attanasio20121"
+literal "true"
 
 \end_inset
 
@@ -3338,6 +3387,7 @@ It is now possible to formulate the problem recursively.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "rust-bus"
+literal "true"
 
 \end_inset
 
@@ -3907,6 +3957,7 @@ There has recently been a lot of progress on this front.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "clausenenvelope"
+literal "true"
 
 \end_inset
 
@@ -3915,6 +3966,7 @@ key "clausenenvelope"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "carroll2006method"
+literal "true"
 
 \end_inset
 
@@ -3922,6 +3974,7 @@ key "carroll2006method"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fella2011generalized"
+literal "true"
 
 \end_inset
 
@@ -3929,6 +3982,7 @@ key "fella2011generalized"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "iskhakovRust2014"
+literal "true"
 
 \end_inset
 
@@ -4602,6 +4656,7 @@ A copula is a multivariate probability distribution function which connects
 \begin_inset CommandInset citation
 LatexCommand cite
 key "bonhomme2006modeling"
+literal "true"
 
 \end_inset
 
@@ -4742,6 +4797,7 @@ reference "tab:Preset-parameter-values"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "french_2005"
+literal "true"
 
 \end_inset
 
@@ -4754,6 +4810,7 @@ key "french_2005"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Li"
+literal "true"
 
 \end_inset
 
@@ -4768,6 +4825,7 @@ key "Li"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "rust-bus"
+literal "true"
 
 \end_inset
 
@@ -4783,6 +4841,7 @@ key "rust-bus"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "attanasio_weber"
+literal "true"
 
 \end_inset
 
@@ -4795,6 +4854,7 @@ To calibrate the interest rate for savings and for mortage debt, I follow
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sommer2013implications"
+literal "true"
 
 \end_inset
 
@@ -4975,6 +5035,7 @@ I obtain point estimates for
 \begin_inset CommandInset citation
 LatexCommand cite
 key "chernozhukov2003mcmc"
+literal "true"
 
 \end_inset
 
@@ -4987,6 +5048,7 @@ key "chernozhukov2003mcmc"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "chernozhukov2003mcmc"
+literal "true"
 
 \end_inset
 
@@ -5007,6 +5069,7 @@ tempered
 \begin_inset CommandInset citation
 LatexCommand cite
 key "baragatti2013likelihood"
+literal "true"
 
 \end_inset
 
@@ -5036,6 +5099,7 @@ https://github.com/floswald/MomentOpt.jl
 \begin_inset CommandInset citation
 LatexCommand cite
 key "chernozhukov2003mcmc"
+literal "true"
 
 \end_inset
 
@@ -5093,6 +5157,7 @@ Additional to SIPP data, the moment vector contains three statistics from
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -5966,6 +6031,7 @@ Similarly to
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -5992,6 +6058,7 @@ reference "tab:MC-money"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -6043,6 +6110,7 @@ Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
+literal "true"
 
 \end_inset
 
@@ -6408,6 +6476,7 @@ I take this insight from the literature that assesses the impact of immigrants
 \begin_inset CommandInset citation
 LatexCommand cite
 key "dustmann2008labour,dustmann2013effect,card2012comment"
+literal "true"
 
 \end_inset
 
@@ -6422,8 +6491,8 @@ key "dustmann2008labour,dustmann2013effect,card2012comment"
 
 \end_inset
 
- Absent such empirial evidence, I first perform an additional counterfactual
- where both regional incomes and prices decline by 1% relative to their
+ Absent such empirial evidence, the additional scenarios are first one in
+ which both regional incomes and prices decline by 1% relative to their
  obeserved trajectories after the shutdown of migration.
  This could arise as a result of decreased firm productivity from the lack
  of suitable (migrant) skills, which leads to lower disposable income in
@@ -6832,6 +6901,7 @@ status collapsed
 \begin_inset CommandInset citation
 LatexCommand cite
 key "JCT2012"
+literal "true"
 
 \end_inset
 
@@ -6850,6 +6920,7 @@ The mortgage interest deduction has been widely critized on grounds of equity
 \begin_inset CommandInset citation
 LatexCommand cite
 key "glaeser2011rethinking"
+literal "true"
 
 \end_inset
 
@@ -6868,6 +6939,7 @@ It is often held that if there were an offsetting taxation of imputed rent
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bourassa:2010fk"
+literal "true"
 
 \end_inset
 
@@ -6903,6 +6975,7 @@ At this point it is important to emphasize that depending on the elasticity
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sommer2013implications"
+literal "true"
 
 \end_inset
 
@@ -6957,6 +7030,7 @@ reference "subsec:Home-Ownership-Choice"
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Poterba:2008fk"
+literal "true"
 
 \end_inset
 
@@ -7009,6 +7083,7 @@ Average annual tax savings in dollars implied by the mortgage interest rate
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Poterba:2008fk"
+literal "true"
 
 \end_inset
 
@@ -8086,6 +8161,7 @@ The problem is fully discretized on a grid of points, however, the savings
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Kopecky2010701"
+literal "true"
 
 \end_inset
 
