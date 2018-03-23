@@ -165,37 +165,37 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		if ij==0
 			# don't subset to any region: compute aggregate impact
 			# all
-			x=mig.ctaxxer("noMove",:realage,t->t.==t)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:realage,t->t.==t)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer("noMove",:realage,t->t.<31)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:realage,t->t.<31)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer("noMove",:realage,t->t.>30)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:realage,t->t.>30)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer("noMove",:rent_30,t->t)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:rent_30,t->t)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer("noMove",:own_30,t->t)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:own_30,t->t)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			gc()
 		else
 			# do subset to region j
 			# all
-			x=mig.ctaxxer("noMove",:j,t->t.==ij)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:j,t->t.==ij)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer("noMove",:realage,t->t.<31,:j,t->t.==ij)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:realage,t->t.<31,:j,t->t.==ij)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer("noMove",:realage,t->t.>30,:j,t->t.==ij)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:realage,t->t.>30,:j,t->t.==ij)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer("noMove",:rent_30,t->t,:j,t->t.==ij)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:rent_30,t->t,:j,t->t.==ij)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer("noMove",:own_30,t->t,:j,t->t.==ij)
+			x=mig.ctaxxer(Dict(:pol=>"noMove",:ctau=>1.0),:own_30,t->t,:j,t->t.==ij)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			gc()
 		end
