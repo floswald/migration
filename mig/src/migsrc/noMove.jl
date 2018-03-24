@@ -157,45 +157,47 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		atts[k] = convert(Dict,100.0 * (att ./ abs(att_0)))
 	end
 
-	function ctaxxers(ij::Int)
+
+	function ctaxxers(ij::Int;ys::Float64=1.0,ps::Float64=1.0)
 		println("doing ctax for region $ij")
 		ctax = Dict()
 		ctax[:region] = ij
 		ctax[:data] = Dict()
+		opt_dict = Dict(:policy=>"noMove",:ctax=>1.0,:shockVal_p => [ps for i in 1:p.nt-1],:shockVal_y => [ys for i in 1:p.nt-1])
 		if ij==0
 			# don't subset to any region: compute aggregate impact
 			# all
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:realage,t->t.==t)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.==t)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:realage,t->t.<31)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.<31)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:realage,t->t.>30)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.>30)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:rent_30,t->t)
+			x=mig.ctaxxer(opt_dict,:rent_30,t->t)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:own_30,t->t)
+			x=mig.ctaxxer(opt_dict,:own_30,t->t)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			gc()
 		else
 			# do subset to region j
 			# all
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:j,t->t.==ij)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:realage,t->t.<31,:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.<31,:j,t->t.==ij)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:realage,t->t.>30,:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.>30,:j,t->t.==ij)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:rent_30,t->t,:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:rent_30,t->t,:j,t->t.==ij)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:own_30,t->t,:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:own_30,t->t,:j,t->t.==ij)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			gc()
 		end
@@ -211,7 +213,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	path = joinpath(io["outdir"],ostr)
 	js = 0:p.nJ
 	if do_ctax 
-		ctax = pmap(x->ctaxxers(x),js)
+		ctax = pmap(x->ctaxxers(x,ys=ys,ps=ps),js)
 	else
 		# read from file
 		ctax = 0

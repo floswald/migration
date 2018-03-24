@@ -172,6 +172,7 @@ end
 # mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:own_30,t->t) subsets in addition to year=>1996 that :own_30 is true
 function ctaxxer(opt::Dict,var::Symbol,sel_func)
 	info("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
+	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim() # baseline
 	val = @linq s |>
 		@where((:year.>1996) .& sel_func(_I_(var))) |>
@@ -192,6 +193,7 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func)
 end
 function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2)
 	info("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2")
+	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim()  # baseline
 	val = @linq s |>
 		@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2))) |>
