@@ -116,7 +116,7 @@
 \begin_layout Title
 Regional Shocks, Migration and Homeownership
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
@@ -125,7 +125,8 @@ I would like to thank Costas Meghir, Lars Nesheim and Mariacristina De Nardi
  Richard Blundell, Jose-Victor Rios Rull, Morten Ravn, Fabien Postel-Vinay
  and seminar participants at UCL, IFS, Royal Holloway, Chicago Fed, Boston
  College, Stockholm School of Economics, DIW Berlin, Cambridge, Toulouse,
- Sciences Po and Bank of England for helpful comments and suggestions.
+ Sciences Po, the Bank of England and two anonymous referees and the Editor
+ for helpful comments and suggestions.
  I would like to acknowledge financial support from cemmap under ESRC grant
  ES/I034021/1 and ESRC transformative grant ES/M000486/1.
  I also acknowledge that the work presented here made use of the IRIDIS
@@ -211,7 +212,7 @@ JEL-Codes:
 J6, R23, R21
 \end_layout
 
-\begin_layout Abstract
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -227,7 +228,7 @@ vfill
 
 \end_layout
 
-\begin_layout Abstract
+\begin_layout Standard
 \begin_inset Note Note
 status collapsed
 
@@ -280,30 +281,30 @@ Regional migration rates in the USA are relatively low despite the presence
  migrate in the context of a lifecycle model with regional income and house
  price uncertainty, and I show that the value is large.
  To arrive at this measure, after fitting the model to micro data, I perform
- a counterfactual experiment whereby all migratory movement from a certain
- US region is prohibited, much like a country in a trade model that reverts
- to autarky.
+ a counterfactual experiment whereby all migration between regions is shut
+ down.
  I then ask the question of how large of a compensation affected inviduals
  would demand in order to be indifferent between implementation and not
  of this policy.
  I can show that considering homeowners and renters separately in the model
  is of first order importance for answering this question, since they have
  very different elasticities of migration with respect to regional shocks.
- Providing new estimates for this elasticity by ownership status is a by-product
- of the main exercise, which is important for public policy in its own right.
+ Providing structural estimates of crucial objects like moving costs by
+ ownership status is important for many realms of public policy, and hence
+ another contribution of the paper.
 \end_layout
 
 \begin_layout Standard
 Regional shocks to labor demand and house prices may have profound and longlasti
-ng impacts, as we are still witnessing in the aftermath of the 2007 fall
- in house prices and ensuing Great Recession.
+ng impacts, as we have seen in the aftermath of the 2007 fall in house prices
+ and ensuing Great Recession.
  In this episode we have seen wide variation in the magnitude of local shocks
  despite underlying high national correlations.
  For example, the peak-to-trough decline in the Federal Housing Financing
  Agency (FHFA) house price index from 2007 to 2011 ranged from -2.2% in the
  West South Central Census Division, to -42% in the Pacific Division.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 West South Central contains Arkansas, Louisiana, Oklahoma and Texas, Pacific
@@ -427,9 +428,8 @@ I estimate the model using a simulated method of moments estimator.
  ownership rates by region, migration flows across regions, as well as wealth
  accumulation over the lifecycle and by region.
  After fitting the model to the data, I first show how the model reacts
- to large regional shocks, I then estimate spatial labor supply elasticities
- for renters and owners separately before I move on to compute a measure
- of the value of the migration option.
+ to large regional shocks and then I move on to compute a measure of the
+ value of the migration option for various sub populations.
 \end_layout
 
 \begin_layout Standard
@@ -453,86 +453,33 @@ literal "true"
 \begin_layout Standard
 Migration is a low probability event in both data and model.
  Nevertheless, the welfare implications are large.
- I conduct an experiment whereby moving away from a certain region is prohibited.
- I compute the average lifetime utility of agents in the region under both
- scenarios, and I find that removing the option to move away from the region
- reduces lifetime utility by 1.22% on average.
- Conditioning on young versus old household, one finds a reduction of 3.66%
- for the former and 0.74% for the latter.
- In terms of compensating consumption that would achieve indifference for
- each of those groups, one would have to increase baseline consumption by
- 2.2%, 5% and 1.5% for all residents, young residents and old residents, respectiv
-ley.
- To properly understand these results it is important to keep in mind that
- I obtain estimates for the elasticity of labor supply with respect to a
- region-level income shock which vary significantly for renters and owners:
- I find an elasticity of 1.5 for renters and 0.18 for owners.
+ I conduct an experiment where migration across regions is prohibited.
+ In the baseline version, I compute the average lifetime utility of agents
+ in the region under both scenarios, and I find that removing the option
+ to move is valued at 5.1% of optimal per period consumption over the entire
+ lifecycle – a large value.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The baseline version assumes no change to regional prices as a a result
+ of the policy; I provide three additional scenarios with different assumptions
+ about how regional prices might change after introduction of the policy.
+ The scenarios assume shocks ranging from large and negative to positive,
+ and all imply even higher valuations of the forgone migration option than
+ under observed prices.
+\end_layout
+
+\end_inset
+
+ Conditioning on young versus old household, one finds 7.6% for the former
+ and 2.3% the latter.
  Given that the ownership rate varies significantly by age, one can see
  that young, mobile renters are the group which incurs the greatest welfare
  loss from reduced mobility.
  The results further show the prominent role of expectations about future
  potential moves, which may not have to be realized in the end.
- People who are born in the treated region and never actually move incur
- the greatest loss of all from this curtailment of future actions.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Government policies might help to increase labor market efficiency, housing
- market inefficiency or both.
- The main inefficiencies any policy might target are incomplete asset markets,
- liquidity constraints, moving and transaction costs, income taxes and imperfect
- rental markets.
- One large pre-existing intervention in this context is the mortgage interest
- deduction.
- It is interesting to consider how abolishing this tax deduction might interact
- with borrowing, housing tenure choice and migration.
  
-\end_layout
-
-\begin_layout Plain Layout
-I find that abolishing the mortgage interest deduction would have a only
- a negligible impact on the aggregate migration rate.
- At first sight one might be tempted to think that removing the deduction
- would result in more renters, which would mechanically translate into an
- increase in migration, since renters move more.
- The actual effect is more nuanced.
- First, because the mortgage tax deduction is a large scale policy, there
- is likely to be a general equilibrium effect.
- While my model is a partial equilibrium model, I can approximate the general
- equilibrium effect by assuming that the policy changes both taxes as well
- as prices.
- I use recent results from a stationary GE model by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-literal "true"
-
-\end_inset
-
- who find that house prices fall, while rents keep constant, after the policy
- is changed.
- Applying this price and rent correction to my model results in an increase
- in the ownership rate of roughly 1%, because more households are able to
- buy at lower prices.
- The net effect on migration is very small (0.1% of the baseline rate).
- The reduction in mobility is smaller than what we would expect from a pure
- change in composition towards more owners, because migration behaviour
- changes as well.
- Lower prices and a higher level of disposable income for the poor after
- redistribution of tax proceeds in all regions change the incentives to
- exploit regional differences with respect to the baseline.
- In terms of welfare, households prefer removing the deduction and would
- agree to giving up 2.4% of period consumption before being indifferent to
- the status quo.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Paragraph
@@ -1578,7 +1525,7 @@ reference "fig:Regional-Income-data"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1648,7 +1595,7 @@ name "tab:Annual-moving-rate"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1720,7 +1667,7 @@ name "tab:SIPP-nummoves"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1763,7 +1710,7 @@ name "fig:SIPP-sample-proportion-1"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6385,6 +6332,13 @@ reference "tab:shocks-by-region_1_95"
 
 \begin_layout Subsection
 The value of Migration
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:The-value-of"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6453,9 +6407,9 @@ exogenous
 \end_inset
 
  would change if we were to abolish migration.
- To address this concern at least to some degree, I will present three different
- scenarios of this counterfactual, one with prices unchanged, and two with
- different prices.
+ To address this concern at least to some degree, I will present different
+ scenarios of this counterfactual, a baseline version with prices unchanged,
+ and a set of experiments with changed prices.
  There is no direct empirical guidance on the effects of such a drastic
  experiment on regional house prices and labor income levels, except maybe
  that 
@@ -6491,15 +6445,17 @@ literal "true"
 
 \end_inset
 
- Absent such empirial evidence, the additional scenarios are first one in
- which both regional incomes and prices decline by 1% relative to their
- obeserved trajectories after the shutdown of migration.
+ Absent such empirial evidence, I try to cover the most relevant cases.
+ Version two thus decreases both regional incomes and prices by 1% relative
+ to their observed trajectories after the shutdown of migration.
  This could arise as a result of decreased firm productivity from the lack
  of suitable (migrant) skills, which leads to lower disposable income in
  a given region and hence a reduction in house prices.
- Finally, I simulate a bust scenario, where incomes decline by 5% and house
- prices by 10%.
- Summing up, this experiment is available in three versions:
+ Version three simulates a bust scenario, where incomes decline by 5% and
+ house prices by 10%.
+ A final version shows results under the assumption that a large increase
+ in owner-occupied housing after the shutdown fuels a price increase.
+ Summing up, this experiment is available in four versions:
 \end_layout
 
 \begin_layout Enumerate
@@ -6520,6 +6476,19 @@ Baseline
 
 \begin_layout Enumerate
 5%/10% shock: Large productivity decline and amplified effect on house prices.
+\end_layout
+
+\begin_layout Enumerate
+No change to 
+\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+, but house prices 
+\emph on
+increase 
+\emph default
+by 5%: This could arise in case of a strong increase of demand for owner-occupie
+d housing, while local productivity remains unchanged.
 \end_layout
 
 \begin_layout Standard
@@ -6575,14 +6544,56 @@ In the same table we the continue with this exercise and split the sample
 \end_layout
 
 \begin_layout Standard
-[Counterfactual price adjustments]
+Versions two, three and four of this experiment are described in appendix
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Migration-Shutdown-with"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, where the general conclusions from this series of results goes through,
+ with the qualification that the bigger the price shock after migration
+ shutdown, the more individuals value the baseline.
+ Interestingly, this is true even for the case when house prices are assumend
+ to 
+\emph on
+increase 
+\emph default
+as in version number four.
+ As will be highlighted in the next subsection and the relevant appendix,
+ this is easy to understand if one knows that the next best option to migrating
+ is to buy a better house, in case one is barred from migrating (and in
+ case it's affordable).
+ This sequence of counterfactuals tells us that the estimates from the baseline
+ scenario with observed prices provide a lower bound.
+ If in reality a general equilibrium effect would change regional incomes
+ downwards, and prices down 
+\emph on
+or 
+\emph default
+upwards, the valuation of the migration option would be larger than displayed
+ in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6608,9 +6619,19 @@ Dropbox/model/experiments/noMove_region_ctax.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Consumption compensation demanded after migration shutdown in scenario 2,
- i.e.
- regional prices decrease both by 1% as a result of the shutdown of migration.
+Consumption compensation demanded after migration shutdown in the baseline
+ scenario, i.e.
+ regional prices are unaffected by the shutdown of migration.
+ The numbers in this table represent the required proportional scaling factor
+ 
+\begin_inset Formula $\Delta c$
+\end_inset
+
+ by which optimal consumption under the shutdown policy would have to be
+ increased in order for individuals to be indifferent to the baseline.
+ A value of 1.076 as in the first row of the second column, then, means that
+ young people would demand an increase of 7.6% of the consumption level which
+ they had optimally chosen under the policy.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:shutdown-cons-base"
@@ -6630,771 +6651,6 @@ name "tab:shutdown-cons-base"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/noMove_region_ctax_small.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Consumption compensation demanded after migration shutdown in the baseline
- scenario, i.e.
- regional prices are unaffected by the shutdown of migration.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shutdown-cons-small"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/noMove_region_ctax_big.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Consumption compensation demanded after migration shutdown in scenario 3,
- i.e.
- regional prices and incomes decrease by 10% and 5% respectively as a result
- of the shutdown of migration.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shutdown-cons-big"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/highMC/mig_value.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Removing the migration option from residents of West North Central.
- The top panel shows immigration flows to West North Central as a percentage
- of the resident population.
- The same holds for the second panel shows outflows in the baseline.
- The final two rows show the average expected lifetime utility across scenarios,
- and the required consumption compensation in order to make agents indifferent.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:value-of-migration-flows"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/highMC/mig_value_utility.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Differences in average lifetime utility (
-\begin_inset Formula $V$
-\end_inset
-
-), flow payoffs only (
-\begin_inset Formula $u$
-\end_inset
-
-), ownership rate (
-\begin_inset Formula $h$
-\end_inset
-
-), assets (
-\begin_inset Formula $a$
-\end_inset
-
-), realized local house price (
-\begin_inset Formula $p$
-\end_inset
-
-) and regional income (
-\begin_inset Formula $y$
-\end_inset
-
-), and wealth (
-\begin_inset Formula $w=ph+a$
-\end_inset
-
-) between the 
-\emph on
-no-move
-\emph default
- scenario and the baseline expressed in percent of the baseline value, e.g.
- 
-\begin_inset Formula $\Delta v=100\frac{v'-v}{v}$
-\end_inset
-
- where 
-\begin_inset Formula $v'$
-\end_inset
-
- is the value under policy.
- The last row (
-\begin_inset Formula $\Delta c^{*}$
-\end_inset
-
-) shows the required consumption compensation that would make agents indifferent
- between both scenarios.
- A value of 
-\begin_inset Formula $\Delta c^{*}=2.2\%$
-\end_inset
-
- thus means that consumption would have to be increased by 2.2% 
-\emph on
-per period over the entire lifecycle 
-\emph default
-in order to be indifferent between both scenarios.
- Notice that the first three columns confound treatment and composition
- effect, since the set of people 
-\emph on
-immigrating
-\emph default
- to WNC is different across scenarios.
- The final two columns condition on being born in WNC and therefore identify
- the average treatment on treated and non-treated invidivuals, respectively.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:value-of-migration-utility"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/highMC/mig_value_detail.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-This table compares individuals who move away from West North Central in
- the baseline scenario and compares them to their hypothetical counterparts
- in a world where moving from the region is impossible.
- The large difference in lifetime utility is a result from the big house
- price increases experienced in other regions.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:value-of-migration"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Section
-Abolishing the Mortgage Interest Deduction
-\end_layout
-
-\begin_layout Plain Layout
-In this section I investigate the impact of abolishing the mortgage interest
- deduction on migration and ownership rates.
- In the United States, homeowners are allowed to deduct the interest paid
- on the mortgage for their primary residence from taxable income.
- This reduces the user cost of owning because it exempts one of the largest
- component of an owner's housing cost – mortgage interest – from taxation.
- This is different for renters, whose housing expenditures are not tax deductibl
-e.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
- The Joint Committee on Taxation estimates that tax expenditure to finance
- the mortgage interest deduction, which is the largest housing policy policy
- program in the states, was $71.7 billion in 2014 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "JCT2012"
-literal "true"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-The mortgage interest deduction has been widely critized on grounds of equity
- and distortionary effects in the housing market, see for example 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2011rethinking"
-literal "true"
-
-\end_inset
-
- for an overview.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-It is often held that if there were an offsetting taxation of imputed rent
- which owner-occupiers pay to themselves in place, the negative aspects
- of the subsidy could be greatly reduced.
- Implementing such taxes is politically difficult in most circumstances,
- probably highlighted by the small number of nations which have adopted
- some form of this tax.
- For the case of Switzerland, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Bourassa:2010fk"
-literal "true"
-
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
- The common wisdom is that it distorts the housing market by subsidizing
- owners, thereby leading to a higher rate of ownership as would arise without
- the subsidy.
- As discussed at length above, owners are less mobile than renters, so the
- question investigated in this subsection is whether abolishing the mortgage
- interest deduction would increase mobility, and if so, by how much.
- The answer to this question provides some guidance on whether housing policy
- could serve as an effective means to enhance the efficiency of the labor
- market by fostering greater mobility, or not.
-\end_layout
-
-\begin_layout Plain Layout
-At this point it is important to emphasize that depending on the elasticity
- of housing supply in a given market, we expect to see a general equilibrium
- effect of house prices in response to the policy change.
- The subsidy implied by the interest deduction can be viewed much like a
- characteristic of the house, like for instance distance to schools, or
- access to transportation networks.
- As such, it is capitalized into house price.
- Therefore, removing the subsidy would change long-run equilibrium prices,
- in the same way as moving a certain property to a location with a different
- set of available amenities would change its value.
- In order to partially accomodate this effect, I will refer to the recent
- paper by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-literal "true"
-
-\end_inset
-
-, in which the authors compute the stationary general equilibrium in a model
- with infinitely lived, heterogeneous agents who are either renters, owner-occup
-iers or owner-landlords.
- They compute equilibrium prices and rents arising from different assumption
- about the tax system.
- They find that house prices decrease on the order of 5% when the mortgage
- interest deduction is abolished, with rents keeping roughly constant and
- the homeownership rate increasing from 65% to 71%.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The mechanism is as follows: removing the subsidy lowers the equilibrium
- house price, since this is no longer capitalized into the value of the
- house; lower house prices makes housing affordable to more low wealth people
- who couldn't buy before, thereby increasing the ownership rate.
- Their model does not feature multiple labor or housing markets, and resting
- on the stationary equilibrium concept it does not allow for variation in
- house prices over time as is the case here; nevertheless, using their result
- to adjust the level of house prices by 5% in all locations when removing
- the mortgage deduction seems like a worthwhile exercise to at least approximate
- a potential general equilibrium effect in my model.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-The experiment is implemented as follows.
- The model being in after tax terms, it does not feature a formal tax system
- which could be changed in an experiment.
- The role of taxes and, in general, the user cost of housing is subsumed
- in the implicit mortgage repayment path brought about by the final period
- restriction on assets, as explained in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "subsec:Home-Ownership-Choice"
-
-\end_inset
-
-.
- In reality the interest rate deduction reduces taxable income, thereby
- increasing disposable income of owners.
- Therefore, to simulate the removal of the deduction, I reduce disposable
- income of owners by an amount equivalent to their average implied tax savings.
- To do this I use data from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-literal "true"
-
-\end_inset
-
-, which provides estimates of the average tax savings from the interest
- deduction for several income and age brackets.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:sinai-data"
-
-\end_inset
-
- shows my version of their table.
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-placement h
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/data_repo/out_data_jl/sinai.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Average annual tax savings in dollars implied by the mortgage interest rate
- deduction for owners at various age and income groups.
- Data from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-literal "true"
-
-\end_inset
-
- adjusted to 2012 dollars.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:sinai-data"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-To provide some guidance, it is useful to start with a simple calculation
- to gauge the likely effect of the policy change on migration rates under
- the assumption that the conditional choice probabilities (i.e.
- whether to move or not) in the model do not change.
- This is equivalent to saying that there is a pure composition effect, but
- no effect on behaviour.
- To simplify the example, let's assume that the baseline ownership rate
- is 
-\begin_inset Formula $\pi_{o}=0.63$
-\end_inset
-
-, and that the annual migration rates for owners and renters are given by
- 
-\begin_inset Formula $m_{o}=0.7$
-\end_inset
-
-% and 
-\begin_inset Formula $m_{r}=2\%$
-\end_inset
-
- respectively.
- This would give rise to a baseline unconditional migration rate of 
-\begin_inset Formula $\pi_{o}m_{o}+(1-\pi_{o})m_{r}=1.81\%$
-\end_inset
-
-.
- Assuming that the conditional choice probabilities which give rise to 
-\begin_inset Formula $m_{o}$
-\end_inset
-
- and 
-\begin_inset Formula $m_{r}$
-\end_inset
-
- do not change due to the policy change, and assume, for example, that removing
- the subsidy increases the ownership rate by 1% such that 
-\begin_inset Formula $\pi_{o}'=0.64$
-\end_inset
-
-.
- In that case we would expect to see a new migration rate of 
-\begin_inset Formula $\pi_{o}'m_{o}+(1-\pi_{o}')m_{r}=1.68\%$
-\end_inset
-
-, implying a decrease in the migration rate of 0.013 percentage points (or
- a 35% reduction of the rate).
-\end_layout
-
-\begin_layout Plain Layout
-The choice probabilities do change after the policy is implemented.
- In fact, it is easy to show that the only case under which the relative
- moving probabilities would remain constant is the one where the relative
- lifetime utilities in each region would change by exactly the same amount.
- This is not very likely to happen.
- Remember that the value in any location is determined by the utility derived
- from owning (enters utility directly), by the level of house prices, and
- by the level of consumption.
- Given a vector of house prices and incomes in the baseline environment,
- we can determine the relative differences in utilities and the corresponding
- probabilities of moving.
- Removing the mortgage deduction affects the price vector.
- Furthermore, by redistributing tax receipts we increase disposable income
- of a set of the population that was not able to buy before – not in their
- current region, and possibly not in another region.
- The overall effect on the migration rate will therefore be composed of
- a composition effect (shifting individuals from renter to owner status
- or vice versa), and an effect that arises from changes in behaviour, influenced
- by different price levels, different price to rent ratios, and redistribution
- of tax receipts from previous owners to the entire population.
-\end_layout
-
-\begin_layout Plain Layout
-The results are listed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Abolishing-the-mortgage"
-
-\end_inset
-
-, and the columns under the subheading 
-\emph on
-Remove Deduction 
-\emph default
-show the results of the experiment with and without the GE correction.
- Both cases redistribute the taxes saved by removing the deduction on a
- per capita, per period basis.
- In other words, for total tax revenue 
-\begin_inset Formula $X$
-\end_inset
-
-, and 
-\begin_inset Formula $N$
-\end_inset
-
- individuals observed for 
-\begin_inset Formula $T$
-\end_inset
-
- periods, each individual receives 
-\begin_inset Formula $X/(TN)$
-\end_inset
-
- additional dollars per period.
- This scheme approximates a reduction in income taxes financed by the removal
- of the mortgage deduction.
- 
-\end_layout
-
-\begin_layout Plain Layout
-In the column without the GE correction, we see that ownership decreases
- by roughly 0.8%.
- This is a result of some marginal buyers being unable to satisfy the downpaymen
-t without the deduction.
- The migration rate increase only marginally despite this, because the change
- in composition towards more renters is offset to some degree by harder
- access to ownership in all regions without the benefits of the deduction.
- This reduces the incentives to move for some households who would have
- bought in different regions before.
- In terms of welfare effects, agents are close to indifferent between this
- policy and the baseline.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-As a metric of welfare I compute the implicit consumption tax 
-\begin_inset Formula $\delta$
-\end_inset
-
- which would make agents indifferent in terms of expected lifetime utility
- between the baseline and policy regimes, as detailed in appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Welfare-Measure"
-
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Plain Layout
-The final column shows the results with the GE correction, which lowers
- house prices by 5% in all regions, while keeping rents at a constant level.
- Keeping rents constant is achieved by changing the price to rent ratios
- 
-\begin_inset Formula $\kappa_{d}$
-\end_inset
-
- in proportion to the reduction in prices.
- We find that ownership increases by about 1.3% as a result of lower house
- prices.
- The reverse mechanism to the previous paragraph is at work, implying that
- more people can buy, in this case despite the removal of the subsidy to
- owners.
- The change in composition towards more owners combined with access to housing
- in more regions produces a net effect on migration that is slightly positive
- at 0.115% of the baseline rate.
- The welfare implications for this experiment are larger than in the previous
- case and amount to 2.4% of per period consumption over the lifecycle.
- 
-\end_layout
-
-\begin_layout Plain Layout
-In concluding this section, it is instructive to note the importance of
- the general equilibrium effect in this case.
- Under the assumption of constant prices, the effect of removing the deduction
- is that ownership is reduced and that migration slightly increases.
- Removing the deduction means fewer low wealth housholds can buy housing,
- which reduces welfare, and this offsets any gains made form slightly more
- migration.
- Taking the price change and the implications for the price to rent ratio
- into account, however, shows that ownership would increase.
- This would affect the migration rate only marginally, but have a significant
- impact on welfare.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Effects along lifecycle, business cycle, ownership and location
 \end_layout
@@ -7402,14 +6658,14 @@ Effects along lifecycle, business cycle, ownership and location
 \begin_layout Standard
 We have shown that lifetime utility changes dramatically with the removal
  of migration.
- We now go further and investigate where does changes come from, i.e.
- how do other characteristics of individuals in the model change? In the
- following, we focus only on the main counterfactual with constant prices.
+ We now go further and investigate where those changes come from, i.e.
+ how do the state variables of individuals in the model change? In the following
+, we focus only on the main counterfactual with constant prices.
 \end_layout
 
 \begin_layout Standard
 Starting out with the lifecycle considerations, the results are presented
- in 
+ in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:noMove-lifecycle"
@@ -7443,8 +6699,8 @@ The next two panels for
 
  are best viewed in conjunction, as they are tightly connected: After migration
  is abolished, the aggregate homeownership rate increases strongly for 30
- year-olds, and with it the outstanding mortgage balance as measure by negative
- 
+ year-olds, and with it the outstanding mortgage balance as measured by
+ negative net assets 
 \begin_inset Formula $a$
 \end_inset
 
@@ -7454,11 +6710,11 @@ The next two panels for
 \end_inset
 
  this result may be somewhat surprising.
- We observe that after migration is abolished, homeownership rises by 11%
- at age 30.
+ We observe that after migration is abolished, homeownership rises by about
+ 11% at age 30.
  Notice that this increase implies that far more than only the previous
- migrants now choose to buy, which is relatively small group of people.
- This increase comes from the fact that potential future moves
+ migrants now choose to buy, which was relatively small group of people.
+ The increase in ownership comes from the fact that potential future moves
 \emph on
  
 \emph default
@@ -7467,7 +6723,7 @@ of
 all individuals
 \emph default
  have been ruled out, and therefore a much larger number of them finds it
- profitable to take out a mortgage and buy.
+ profitable to take out a mortgage and buy in the current (constant) location.
  This suggests that absent the option to move to a better region in response
  to shocks, the best thing to do is is to invest in more enjoyable housing
  in the current region in order to, in some sense, 
@@ -7482,7 +6738,7 @@ soften the blow
  Notice that this increase in ownership can be seen as a simple reallocation
  of previously rented real estate into owned one, i.e.
  one would not have to imagine construction of additional housing units
- (and ensuing price effects) because of this effect.
+ (and ensuing price increases) because of this effect.
  The final two panels for 
 \begin_inset Formula $q$
 \end_inset
@@ -7505,7 +6761,7 @@ prices for simulated individuals, exhibit negative deviations from the baseline.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7535,7 +6791,11 @@ Impact of
 \emph on
 migration shutdown 
 \emph default
-along the lifecycle
+along the lifecycle.
+ Each line shows the percentage difference between baseline conditional
+ mean of a certain variable of interest and the conditional mean under the
+ policy.
+ The means are conditional on age.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-lifecycle"
@@ -7556,7 +6816,7 @@ name "fig:noMove-lifecycle"
 \end_layout
 
 \begin_layout Standard
-There are threee additional figures which tell the same story from different
+There are three additional figures which tell the same story from different
  angles: In figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7575,7 +6835,11 @@ reference "fig:noMove-age30"
 
 \end_inset
 
- have a smaller utility loss and they have about 0.2% higher income on average
+ have a smaller utility loss (panel 
+\begin_inset Formula $u$
+\end_inset
+
+ shows average period payoff) and they have about 0.2% higher income on average
  if they don't have to move.
  This is also reflected in the 
 \begin_inset Formula $q,p$
@@ -7583,8 +6847,9 @@ reference "fig:noMove-age30"
 
  panels, indicating that on average they would have moved to lower income
  and price regions.
- All of this comes from the fact that they had otherwise motivated moves,
- given their relatively well off position in the baseline.
+ This comes from the fact that their baseline moves were motivated by other
+ considerations than regional price differences, given their relatively
+ well off position in the baseline.
 \end_layout
 
 \begin_layout Standard
@@ -7619,10 +6884,39 @@ mortgage debt with respect to the baseline, where the house was bought in
 \end_layout
 
 \begin_layout Standard
+Finally, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:noMove-businesscycle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ performs the same analysis over the business cycle 1997–2012.
+ While the variations of lifetime value changes in the first panel are not
+ very informative over calendar time, the panels for 
+\begin_inset Formula $y,q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+ illustrate that differences between regions where diminishing over the
+ business cycle in terms of those variables.
+ In other words, as the business cycles moved over the house price peak
+ in 2008 and beyond, the moves of people in the baseline were to locations
+ that were convergent relative to the earlier period in the sample.
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7653,6 +6947,9 @@ Impact of
 migration shutdown 
 \emph default
 by ownership status at age 30.
+ Bars show the percentage difference between the conditional mean of the
+ respective variable conditional on owernship status at age 30 in the baseline,
+ and the shutdown policy.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-age30"
@@ -7676,7 +6973,7 @@ name "fig:noMove-age30"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7707,6 +7004,11 @@ Impact of
 migration shutdown 
 \emph default
 by location.
+ Each bar represents the percentage difference between averages in policy
+ and baseline, conditional on region.
+ Regions are East North Central (ENC), East South Central (ESC), Middle
+ Atlantic (MdA), New England (NwE), Pacific (Pcf), South Atlantic (StA),
+ West North Central (WNC) and West South Central (WSC).
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-location"
@@ -7730,7 +7032,7 @@ name "fig:noMove-location"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7805,9 +7107,11 @@ The main result of this paper is to show that despite average migration
  rates being low, the option value associated with the possibility to leave
  a location in a world with regional shocks to house prices and labor income
  is large.
- Removing the option to leave a certain region in the model implies an associate
-d reduction in lifetime utility that ranges from 0% up to almost 16% depending
- on the type of household one considers.
+ Removing the option to migrate in the model implies an associated reduction
+ in lifetime utility that ranges from 0% up to almost 13% depending on the
+ type of household one considers.
+ Variations in this measure vary widely with age, ownership status, original
+ location, and piont in the business cycle.
  To arrive at this result, I construct a lifecycle model which includes
  homeownership as a choice variable next to savings and location choices,
  which I then fit to SIPP data and use to make counterfactual experiments.
@@ -7820,407 +7124,20 @@ d reduction in lifetime utility that ranges from 0% up to almost 16% depending
 \end_layout
 
 \begin_layout Standard
-The model delivers an estimate of the elasticity of local population size
- with respect to a large regional income shock that is in line with the
- previous literature.
- The new finding here, however, is that the elasticity of outflows differs
- greatly between owners and renters.
- It is important for policy makers to keep in mind the very low mobility
- of owners when thinking about how households could offset large shocks.
- Subsidies to homeownership like the mortgage interest deduction are examples
- of policies which greatly affect the aggregate elasticity of mobility w.r.t.
- to regional shocks by increasing the share of owners.
- A thorough investigation of issues like this requires an equilibrium model
- for house prices, however, so is left for future research.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/yshock8_out.pdf
+The model delivers structural estimates for differential moving costs between
+ owners and renters, over and above financial transaction costs.
+ It is shown that this moving cost component is first order in explaining
+ differential moving rates between renters and owners, and that the implied
+ monetary value of the moving costs for both groups bracket the cost from
+ a previous model in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+literal "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-The effect of a permanent 10% reduction in productivity 
-\begin_inset Formula $q$
-\end_inset
-
- in 2000 in the WNC region only.
- The experiment holds the regional price series in WNC and price and incomes
- in all other regions fixed at their observed values.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:yshock-outflow"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/pshock8_out.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-The effect of a 30% decrease of the house price level in 2000 in the West
- North Central Division on migratory outflows from the region.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pshock-out"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-placement p
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/experiments/exp_yp/pshock8_in.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-The effect of a 30% decrease of the house price level in 2000 in the West
- North Central Division on migratory inflows to the region.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pshock-in"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/experiments/highMC/values.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Removing the option to leave WNC.
- This plot shows average utility levels conditional on age, for the population
- residing in WNC, and the population residing elsewhere.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Average-utility-levels"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Subsection
-Changing the Moving Cost
-\end_layout
-
-\begin_layout Plain Layout
-In this set of experiments I assume there is a government policy that can
- affect the moving cost as implied by equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:moving-cost"
-
-\end_inset
-
-.
- In particular, I assume the government can affect a factor 
-\begin_inset Formula $\lambda$
-\end_inset
-
- that multiplies equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:moving-cost"
-
-\end_inset
-
- to produce a proportionally different moving cost.
- In the first experiment, moving costs are reduced to half their level,
- i.e.
- 
-\begin_inset Formula $\lambda_{1}=0.5$
-\end_inset
-
-, and in the second experiment they are doubled such that 
-\begin_inset Formula $\lambda_{2}=2$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Plain Layout
-The results in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:halfMC"
-
-\end_inset
-
- refer to policy 
-\begin_inset Formula $\lambda_{1}=0.5$
-\end_inset
-
-, i.e.
- halfing the moving cost.
- Renters average mobility jumps to 16% of the population changing locations
- per period, owners increase from 1% to 3% of movers.
- Accordingly the ownership rate drops to 42%.
- The policy is very valuable in terms of welfare, with 
-\begin_inset Formula $\delta=0.88$
-\end_inset
-
- implying that agents in the baseline would be ready to give up 12% of period
- consumption if they were allowed to switch to 
-\begin_inset Formula $\lambda_{1}$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Plain Layout
-We see the opposite kind of effects if we perform the policy in the other
- direction, i.e.
- we increase the moving cost in policy 
-\begin_inset Formula $\lambda_{2}=2$
-\end_inset
-
-.
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:doubleMC"
-
-\end_inset
-
- shows the results of this experiment, and we see that mobility of both
- renters and owners is reduced by a factor of 10.
- The homeownership rate increases, since some individuals who were on the
- margin of buying in the baseline and did not because they anticipated the
- possibility of a move are now tipped over the balance and buy, because
- moving got very costly.
- The implied welfare equalizing consumption subsidy is 12% of period consumption.
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_MC/halfMC.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Welfare implications of halfing the moving cost.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:halfMC"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/exp_MC/doubleMC.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Welfare implications of doubling the moving cost.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:doubleMC"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+, which doesn't make the distinction.
 \end_layout
 
 \begin_layout Standard
@@ -8359,6 +7276,343 @@ reference "eq:v"
 \end_inset
 
  (necessary to compute the 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Migration Shutdown with Changing Prices
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Migration-Shutdown-with"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This section presents the results from the experiment in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:The-value-of"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ under scenarios 2 and 3:
+\end_layout
+
+\begin_layout Enumerate
+Baseline 
+\begin_inset Formula $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+: Loss of migrants has negligible impact on regional prices.
+\end_layout
+
+\begin_layout Enumerate
+1% shock to 
+\begin_inset Formula $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+: Local productivity suffers a small loss.
+\end_layout
+
+\begin_layout Enumerate
+5%/10% shock: Large productivity decline and amplified effect on house prices.
+\end_layout
+
+\begin_layout Enumerate
+No change to 
+\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+, but house prices 
+\emph on
+increase 
+\emph default
+by 5%.
+ This is motivated by the strong increase in ownership illustrated in panel
+ 
+\begin_inset Formula $h$
+\end_inset
+
+ of figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:noMove-lifecycle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Starting in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-small"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ with scenario 2, we see the general pattern from the baseline experiment
+ without changing prices going through: Individuals dislike the counterfactual
+ world, with strong differences across regions and betwen age groups, and
+ between renters and owners at young age.
+ With the 1% shock on regional income and house price, the compensation
+ demanded is slightly higher everywhere as compared to the baseline in table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-big"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ presents the corresponding results for scenario 3, where the trend from
+ scenario 2 continues: We see the same pattern, just larger numbers.
+ More interesting in this regard is the final version in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-pos-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, where 
+\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+ is unchanged from the baseline, but prices are assumed to increase.
+ As explained in relation to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:noMove-lifecycle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, buying a house is the preferred option of many individuals once moving
+ is abolished.
+ In terms of welfare, higher prices imply that more individuals are below
+ the downpayment constraint, and thus suffer more from the abolishment of
+ migration: not only can they not move over their entire lifecycle, but
+ they also cannot compensate with the purchase of a better house.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_small.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 2,
+ i.e.
+ regional prices decrease both by 1% as a result of the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-small"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_big.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 3,
+ i.e.
+ regional prices and incomes decrease by 10% and 5% respectively as a result
+ of the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-big"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_pos_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 4
+ where regional prices and incomes increase by 5% as a result of the shutdown
+ of migration, while the income series 
+\begin_inset Formula $q$
+\end_inset
+
+ is unchanged.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-pos-p"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

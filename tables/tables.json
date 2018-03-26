@@ -88,5 +88,10 @@
     "template" : "noMove_region_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_big.tex",
     "data"     : "git/migration/mig/out/noMove_ps_0.9_ys_0.95.json"
-  }   
+  },   
+  "noMove_region_pos_p":{
+    "template" : "noMove_region_ctax.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_pos_p.tex",
+    "data"     : "git/migration/mig/out/noMove_ps_1.05_ys_1.0.json"
+  }      
 }
