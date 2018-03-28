@@ -3,14 +3,14 @@
 {%- endmacro %}
 \begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}}
   \toprule 
-    \multicolumn{10}{c}{Regional Shock by Region} \\
+    \multicolumn{10}{c}{Shocks by Region} \\
   \midrule
     \multicolumn{1}{l}{Moment}  & \multicolumn{1}{c}{ENC} & \multicolumn{1}{c}{ESC}& \multicolumn{1}{c}{MdA}& \multicolumn{1}{c}{Mnt}& \multicolumn{1}{c}{NwE}& \multicolumn{1}{c}{Pcf}& \multicolumn{1}{c}{StA}& \multicolumn{1}{c}{WNC}& \multicolumn{1}{c}{WSC}\\ 
   \midrule
-  {{  show("$\%\Delta V$", d_value, 3 ) }}
+  {{  show("$\%\Delta v$", d_value, 3 ) }}
   {{  show("$\%\Delta c$", d_cons, 3 ) }}
   \midrule
-    \multicolumn{10}{c}{Stayers} \\
+    \multicolumn{10}{l}{\textbf{Stayers}} \\
   {{  show("$\%\Delta w$", s_w, 3 ) }}
   {{  show("$\%\Delta h$", s_h, 3 ) }}
   {{  show("$\%\Delta a$", s_a, 3 ) }}
@@ -18,7 +18,7 @@
   {{  show("$\%\Delta v$", s_v, 3 ) }}
   {{  show("$\%\Delta u$", s_u, 3 ) }}
   \midrule
-    \multicolumn{10}{c}{Movers} \\
+    \multicolumn{10}{l}{\textbf{Movers}} \\
   {{  show("$\%\Delta w$", m_w, 3 ) }}
   {{  show("$\%\Delta h$", m_h, 3 ) }}
   {{  show("$\%\Delta a$", m_a, 3 ) }}

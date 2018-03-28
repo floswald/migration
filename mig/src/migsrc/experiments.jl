@@ -716,13 +716,16 @@ function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shock
 			di[s][:s_h]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["h"] for j in J)
 			di[s][:s_u]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["u"] for j in J)
 			di[s][:s_q]     = Dict(Symbol("reg_$j") => d[j][1]["data"][s]["stayer_effects"]["q"] for j in J)
-			sc = split(scenario,"_")
+			sc = split(s,"_")
 			di[s][:scenario] = string(sc[1],"=",sc[2],", ",sc[3],"=",sc[4])
+			open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_$s.json"),"w") do f
+		        JSON.print(f,di[s])
+	        end
 		end
 	end
-	open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_print.json"),"w") do f
-       JSON.print(f,di)
-       end
+	# open(joinpath("$(ENV["HOME"])/git/migration","mig/out/shockRegions_print.json"),"w") do f
+ #       JSON.print(f,di)
+ #       end
 	return di
 
 end

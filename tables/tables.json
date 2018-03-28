@@ -64,16 +64,51 @@
     "output"   : "Dropbox/research/mobility/output/model/fit/params.tex",
     "data"     : "Dropbox/research/mobility/output/model/fit/params.json"
   },    
+  "shockRegions_ps0.95ys0.95":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_0.95_qs_0.95.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_0.95_qs_0.95.json"
+  },    
   "shockRegions_ps0.95ys1.0":{
     "template" : "shockRegions.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_0.95_ys_1.0.tex",
-    "data"     : "git/migration/mig/out/shockRegions_ps_0.95_ys_1.0.json"
-    },    
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_0.95_qs_1.0.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_0.95_qs_1.0.json"
+  },    
+  "shockRegions_ps0.95ys1.05":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_0.95_qs_1.05.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_0.95_qs_1.05.json"
+  },    
   "shockRegions_ps1.0ys0.95":{
     "template" : "shockRegions.mus",
-    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.0_ys_0.95.tex",
-    "data"     : "git/migration/mig/out/shockRegions_ps_1.0_ys_0.95.json"
-  },   
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.0_qs_0.95.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.0_qs_0.95.json"
+  },    
+  "shockRegions_ps1.0ys1.0":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.0_qs_1.0.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.0_qs_1.0.json"
+  },    
+  "shockRegions_ps1.0ys1.05":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.0_qs_1.05.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.0_qs_1.05.json"
+  },    
+  "shockRegions_ps1.05ys0.95":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.05_qs_0.95.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.05_qs_0.95.json"
+  },    
+  "shockRegions_ps10.5ys1.0":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.05_qs_1.0.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.05_qs_1.0.json"
+  },    
+  "shockRegions_ps1.05ys1.05":{
+    "template" : "shockRegions.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/shockRegions_ps_1.05_qs_1.05.tex",
+    "data"     : "git/migration/mig/out/shockRegions_ps_1.05_qs_1.05.json"
+  },    
   "noMove_region":{
     "template" : "noMove_region_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax.tex",
@@ -88,5 +123,10 @@
     "template" : "noMove_region_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_big.tex",
     "data"     : "git/migration/mig/out/noMove_ps_0.9_ys_0.95.json"
-  }   
+  },   
+  "noMove_region_pos_p":{
+    "template" : "noMove_region_ctax.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_pos_p.tex",
+    "data"     : "git/migration/mig/out/noMove_ps_1.05_ys_1.0.json"
+  }      
 }
