@@ -26,16 +26,32 @@ function decompose_MC_owners()
 	o3 = runObj(p1)
 	s3 = o3.simMoments
 
+
+	# do the same but for mover types only
+	# TODO
+
     pfun(x,y) = 100 * (x-y) / y
 
     d = Dict()
-    d["own"] = Dict("base" => s0[:mean_own], "alpha" => s1[:mean_own], "phi" => s3[:mean_own], "alpha_phi" => s2[:mean_own])
+    d["own"] = Dict("base" => s0[:mean_own], 
+    				"alpha" => s1[:mean_own], 
+    				"phi" => s3[:mean_own], 
+    				"alpha_phi" => s2[:mean_own])
 
-    d["move"] = Dict("base" => pfun(s0[:mean_move],s0[:mean_move]), "alpha" => pfun(s1[:mean_move],s0[:mean_move]), "phi" => pfun(s3[:mean_move],s0[:mean_move]), "alpha_phi" => pfun(s2[:mean_move],s0[:mean_move]))
+    d["move"] = Dict("base" => pfun(s0[:mean_move],s0[:mean_move]), 
+    				"alpha" => pfun(s1[:mean_move],s0[:mean_move]), 
+    				"phi" => pfun(s3[:mean_move],s0[:mean_move]), 
+    				"alpha_phi" => pfun(s2[:mean_move],s0[:mean_move]))
 
-    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "alpha" => pfun(s1[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "phi" => pfun(s3[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), "alpha_phi" => pfun(s2[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]))
+    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
+    					 "alpha" => pfun(s1[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
+    					 "phi" => pfun(s3[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
+    					 "alpha_phi" => pfun(s2[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]))
    
-    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "alpha" => pfun(s1[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "phi" => pfun(s3[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), "alpha_phi" => pfun(s2[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]))
+    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
+    					 "alpha" => pfun(s1[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
+    					 "phi" => pfun(s3[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
+    					 "alpha_phi" => pfun(s2[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]))
 
     io = mig.setPaths()
     f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")

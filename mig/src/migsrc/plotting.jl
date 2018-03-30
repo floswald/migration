@@ -1,4 +1,17 @@
 
+function own_cond_tau()
+	s = runSim()
+	s = s[.!ismissing.(s[:cohort]),:];
+
+	x = @linq s |>
+       @where(:year .> 1996 ) |>
+       @by([:tau,:age], o=mean(:own))
+
+    @df x plot(:age, :o,group=:tau)
+
+end
+
+
 function plotShockRegion(m::Model;save=true)
 
 	pa = setPaths()

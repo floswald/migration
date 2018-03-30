@@ -2895,6 +2895,13 @@ reference "subsec:Budget-movers"
 
 \begin_layout Subsection
 Moving
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Moving"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -4293,7 +4300,7 @@ reference "eq:VAR-process-1"
 \end_inset
 
  when I shock component 
-\begin_inset Formula $Y_{t}$
+\begin_inset Formula $Q_{t}$
 \end_inset
 
  by 
@@ -4318,6 +4325,28 @@ reference "fig:shock-reg-model-illustrate"
 
  in the appendix and it shows that the model generates considerable variation
  in the size of the resulting local shock.
+ In an additional online appendix available at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://floswald.github.io/research/
+\end_layout
+
+\end_inset
+
+ I show how the estimated model model reacts to different combinations of
+ shocks to 
+\emph on
+regional 
+\emph default
+prices (i.e.
+ 
+\begin_inset Formula $q_{d},p_{d}$
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -5870,14 +5899,15 @@ Results
 
 \begin_layout Standard
 I will now move on to describe the results of this paper.
- I will first investigate moving costs, then estimate migration elasticities
- with respect to regional shocks to frame the main result, which is the
- value of the migration option.
+ I will first investigate the dollar value of moving costs, before answering
+ the question of why owners move less through the lens of the model.
+ Finally I will present the main set of results pertainting to the value
+ of the migration option.
  
 \end_layout
 
 \begin_layout Subsection
-The role of moving costs 
+Quantifying Moving Costs 
 \end_layout
 
 \begin_layout Standard
@@ -5965,7 +5995,7 @@ stayer
 \end_inset
 
  and 
-\begin_inset Formula $Y$
+\begin_inset Formula $Q$
 \end_inset
 
  are at the midpoint of their respective grids.
@@ -6106,6 +6136,10 @@ name "tab:MC-money"
 
 \end_layout
 
+\begin_layout Subsection
+Why Do Owners Move Less?
+\end_layout
+
 \begin_layout Standard
 There are several reasons for why owners move less than renters.
  First, they have higher moving costs as implied by a positive estimate
@@ -6119,11 +6153,15 @@ al cost
 \begin_inset Formula $\phi$
 \end_inset
 
-), which affects the value of migration.
+), so any (expected) gains from migration need to be traded off against
+ this financial cost.
  Third, owners have to comply with the downpayment constraint if they wish
  to buy in the new region, which puts restrictions on the consumption paths
  of movers.
- Finally, ownership is correlated with larger household size 
+ Most owners will indeed return to ownership status in the new region, given
+ the utility benefits, and given that in principle they are above the downpaymen
+t constraint.
+ Fourth, ownership is correlated with larger household size 
 \begin_inset Formula $(s=1)$
 \end_inset
 
@@ -6132,7 +6170,24 @@ al cost
 \end_inset
 
 .
+ Last but certainly not least, a large proportion of owners is of the stayer
+ type because they self-select into ownership as was discussed in section
  
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Moving"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The ownership rate conditional only on moving cost type 
+\begin_inset Formula $\tau$
+\end_inset
+
+is 0.51 for movers vs 0.56 for stayers.
 \end_layout
 
 \begin_layout Standard
@@ -6223,111 +6278,6 @@ name "tab:Decomposing-owner's-moving"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Comparative Statics of a Regional Price Shock
-\end_layout
-
-\begin_layout Standard
-The aim of this section is to illustrate how the model reacts to regional
- price shocks in a comparative statics sense.
- This means that I will shock one region at a time with a regional house
- price and income shock, which deviates the observed price and income series
- to an unexpectedly lower level in the year 2000.
- All other regions are kept constant at baseline, observed, prices.
- The purpose of this exercise is to show how regions differ in response
- to a given shock.
- It is important to understand that the same sized shock can have very different
- results in different regions.
-\end_layout
-
-\begin_layout Standard
-The exercise is set up in partial equilibrium, as is indeed the model.
- In the present context where we are interested in a ceteris paribus effect
- of shocking one region only at each time, this seems to be only a small
- limitation.
- We proceed thus in the folling fashion: Every region is taken through different
- combinations of counterfactual regional price and income shocks.
- For each region 
-\begin_inset Formula $d$
-\end_inset
-
-, both 
-\begin_inset Formula $p_{dt}$
-\end_inset
-
- and 
-\begin_inset Formula $q_{dt}$
-\end_inset
-
- may deviate in the year 
-\begin_inset Formula $t=2000$
-\end_inset
-
- by 
-\begin_inset Formula $\pm5\%$
-\end_inset
-
- with respect to their observed (and expected) level, by surprise, and proceed
- at this deviated level for ever after.
- The workings of this shock are illustrated in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Comparative-Statics"
-
-\end_inset
-
- in the appendix, where again, all other regions 
-\begin_inset Formula $d'$
-\end_inset
-
- are following their baseline prices.
-\end_layout
-
-\begin_layout Standard
-In table x we present the main overview of this exercise by showing the
- percentage change in lifetime utility (
-\begin_inset Formula $\%\Delta V$
-\end_inset
-
-) by region and by 
-\emph on
-scenario
-\emph default
-, where a scenario stands for a particular combination of shocks.
- The table shows quite clearly that the same scenario plays out very differently
- in different regions, because those regions start out from different levels
- of prices, homeownership rates, as well as in and out migration flows.
- While 
-\begin_inset Formula $\%\Delta V$
-\end_inset
-
- is informative overall, it is interesting to consider how other dimensions
- of the model react to the shock – in particular, how do 
-\emph on
-stayers 
-\emph default
-and 
-\emph on
-movers 
-\emph default
-differentially experience the shock? [comment on one particular case] The
- full set of tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shocks-by-region_95_95"
-
-\end_inset
-
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shocks-by-region_1_95"
-
-\end_inset
-
- for each configuration of shocks is available in the appendix.
 \end_layout
 
 \begin_layout Subsection
@@ -6928,7 +6878,7 @@ noprefix "false"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6985,7 +6935,7 @@ name "fig:noMove-age30"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7044,7 +6994,7 @@ name "fig:noMove-location"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -8114,151 +8064,7 @@ name "fig:Comparative-Statics"
 \begin_inset Float table
 wide false
 sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_0.95_qs_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shocks-by-region_95_95"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_1.0_qs_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shocks-by-region_1_95"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/shockRegions_ps_1.5_qs_0.95.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-shocks by region
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shocks-by-region_105_95"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
