@@ -5,7 +5,7 @@ using CategoricalArrays: CategoricalArray
 using Missings
 using LaTeXStrings
 using StatsBase
-using JSON , Copulas, FileIO, RData 
+using JSON , Copulas, FileIO#, RData 
 using Plots, StatPlots
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./

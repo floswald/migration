@@ -9,8 +9,23 @@ function decompose_MC_owners()
 	o = runObj()
 	s0 = o.simMoments
 
+	ps = Dict(:base => Dict(),
+		      :alpha_3 => Dict(:MC3=>0.0),
+		      :phi => Dict(:phi => 0.0),
+		      :alpha_phi => Dict(:MC3=>0.0,:phi => 0.0))
+
+	d = Dict()
+	# for p in ps
+	# 	s = runSim(opt=p)
+	# 	m = computeMoments(s,p)
+	# 	d[p] = 
+
+
+
+
 	# no owner MC
     # alpha_3 = 0
+
     p1 = Dict(:MC3 => 0.0)
 	o1 = runObj(p1)
 	s1 = o1.simMoments

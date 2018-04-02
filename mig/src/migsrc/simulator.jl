@@ -902,6 +902,8 @@ function computeMoments(df::DataFrame,p::Param)
 	g_kids = groupby(df, :kids)
 	g_own = groupby(df, :h)
 	g_abin = groupby(df,:agebin)
+	g_tau = groupby(df, :tau)  # mover type
+	g_tau_own = groupby(df, [:tau,:h])  # mover type
 
 	# pdebug("defined groups")
 
@@ -939,6 +941,15 @@ function computeMoments(df::DataFrame,p::Param)
 
 	push!(mom1,["mean_own",mean(df[:h],fullw)])
 	covar = mean(df[:h],fullw)
+
+	# own ~ Type
+	# ----------
+
+	d_tau = Dict()
+	for tau in g_tau
+		w = Weights(tau[:density])
+		d_tau["mean_own_$(tau[1,:tau])"] = mean(tau[:h],w)
+	end
 
 	# own ~ Division
 	# ----------
@@ -1001,6 +1012,8 @@ function computeMoments(df::DataFrame,p::Param)
 		   @select(moment="mean_move_50",model_value=mean(:move))
 	append!(mom1,xx)
 
+	# 
+
 	# flows of moves: where do moves go to?
 	# -------------------------------------
 	xx = StatsBase.proportionmap(df[ df[:move],:Division_to] )
@@ -1008,6 +1021,18 @@ function computeMoments(df::DataFrame,p::Param)
 	append!(mom1,zz)
 
 	gc()
+
+	# move ~ type
+
+	for tau in g_tau
+		w = Weights(tau[:density])
+		d_tau["mean_move_$(tau[1,:tau])"] = mean(tau[:move],w)
+	end
+	for tau in g_tau_own
+		kk = "$(tau[1,:own])"
+		w = Weights(tau[:density])
+		d_tau["mean_move_own$(uppercase(kk))_$(tau[1,:tau])"] = mean(tau[:move],w)
+	end
 
 	# move ~ own
 	# ----------
