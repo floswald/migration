@@ -6233,12 +6233,36 @@ reference "tab:Decomposing-owner's-moving"
 \end_inset
 
  leads to an even bigger increase of 2.58%.
- In the final row, combining both changes, we see an increase of 4.44% in
- ownership.
+ In the final column 
+\begin_inset Formula $\alpha=\phi=0$
+\end_inset
+
+, combining both changes, we see an increase of 4.44% in ownership.
+ 
 \end_layout
 
 \begin_layout Standard
-[more]
+The second row shows the same experiment for the migration rate.
+ Here the direct impact of 
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+ is larger than removal of the financial transaction cost, and it leads
+ to roughly a 7% increase in overall migration.
+ The third row finally conditions on owners in order to emphasize that most
+ migratory movement comes from renters to start with, so the previous experiment
+ masks a great deal of heterogeneity.
+ Here we see large increases in the migratory propensity of owners after
+ removing the 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ cost component.
+ 
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
@@ -6271,7 +6295,7 @@ Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Decomposing owner's moving costs.
+Decomposing owners' moving costs.
  Compares baseline statistics to scenarios with no additional moving cost
  for owners (
 \begin_inset Formula $\alpha_{3}=0$
@@ -6286,6 +6310,12 @@ Decomposing owner's moving costs.
 \end_inset
 
 .
+ The top panel is for the entire population, the bottom panel conditions
+ on mover types 
+\begin_inset Formula $(\tau=0)$
+\end_inset
+
+ only.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Decomposing-owner's-moving"
