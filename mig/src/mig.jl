@@ -10,6 +10,7 @@ using Plots, StatPlots
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
+using ProgressMeter
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 

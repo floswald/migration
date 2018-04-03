@@ -6,74 +6,50 @@
 
 function decompose_MC_owners()
 
-	o = runObj()
-	s0 = o.simMoments
-
-	ps = Dict(:base => Dict(),
-		      :alpha_3 => Dict(:MC3=>0.0),
+	ps = Dict(:alpha => Dict(:MC3=>0.0),
 		      :phi => Dict(:phi => 0.0),
 		      :alpha_phi => Dict(:MC3=>0.0,:phi => 0.0))
 
-	d = Dict()
-	# for p in ps
-	# 	s = runSim(opt=p)
-	# 	m = computeMoments(s,p)
-	# 	d[p] = 
+	d = Dict(:own=>Dict(),
+		     :move=> Dict(),
+		     :move_own => Dict())
 
+	tau = Dict(:own=>Dict(),
+		     :move=> Dict(),
+		     :move_own => Dict())
 
-
-
-	# no owner MC
-    # alpha_3 = 0
-
-    p1 = Dict(:MC3 => 0.0)
-	o1 = runObj(p1)
-	s1 = o1.simMoments
-
-	# no owner MgC and no transaction cost :
-    # alpha_3 = 0, phi = 0
-    p1[:phi] = 0.0
-	o2 = runObj(p1)
-	s2 = o2.simMoments
-
-	# no transaction cost: phi = 0
-    p1 = Dict(:phi => 0.0)
-	o3 = runObj(p1)
-	s3 = o3.simMoments
-
-
-	# do the same but for mover types only
-	# TODO
+	# get baseline 
+	info("Baseline")
+	bs = runSim()
+	p = Param(2)
+	m = computeMoments(bs,p)
+	m_b = mydf2dict(m["moments"])[1]
+	t_b = m["tau"]
 
     pfun(x,y) = 100 * (x-y) / y
 
-    d = Dict()
-    d["own"] = Dict("base" => s0[:mean_own], 
-    				"alpha" => s1[:mean_own], 
-    				"phi" => s3[:mean_own], 
-    				"alpha_phi" => s2[:mean_own])
+	@showprogress 1 "Simulating ..." for (k,v) in ps
+		p = Param(2,opts=v)
+		s = runSim(opt=v)
+		m = computeMoments(s,p)
+		mo = mydf2dict(m["moments"])[1]
+		ta = m["tau"]	# Dict
+		d[:own][k]        = pfun(mo[:mean_own],m_b[:mean_own])
+		d[:move][k]       = pfun(mo[:mean_move],m_b[:mean_move])
+		d[:move_own][k]   = pfun(mo[:mean_move_ownTRUE],m_b[:mean_move_ownTRUE])
+		tau[:own][k]      = pfun(ta[:mean_own_1],t_b[:mean_own_1])  		# condition on tau=1 i.e. mover types
+		tau[:move][k]     = pfun(ta[:mean_move_1],t_b[:mean_move_1])
+		tau[:move_own][k] = pfun(ta[:mean_move_ownTRUE_1],t_b[:mean_move_ownTRUE_1])
+	end
 
-    d["move"] = Dict("base" => pfun(s0[:mean_move],s0[:mean_move]), 
-    				"alpha" => pfun(s1[:mean_move],s0[:mean_move]), 
-    				"phi" => pfun(s3[:mean_move],s0[:mean_move]), 
-    				"alpha_phi" => pfun(s2[:mean_move],s0[:mean_move]))
-
-    d["move_rent"] = Dict("base" => pfun(s0[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
-    					 "alpha" => pfun(s1[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
-    					 "phi" => pfun(s3[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]), 
-    					 "alpha_phi" => pfun(s2[:mean_move_ownFALSE],s0[:mean_move_ownFALSE]))
-   
-    d["move_own"] = Dict("base" => pfun(s0[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
-    					 "alpha" => pfun(s1[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
-    					 "phi" => pfun(s3[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]), 
-    					 "alpha_phi" => pfun(s2[:mean_move_ownTRUE],s0[:mean_move_ownTRUE]))
+	di = Dict(:agg=>d,:tau=>tau)
 
     io = mig.setPaths()
     f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
-    JSON.print(f,d)
+    JSON.print(f,di)
     close(f)
 
-	return(d)
+	return(di)
 end
 
 

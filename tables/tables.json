@@ -2,7 +2,7 @@
  "decompose":{
     "template" : "decompose.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/decompose_MC/decompose_MC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl_old/decompose_MC_owners.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/out_data_jl/decompose_MC_owners.json"
   },
   "moneyMC":{
     "template" : "moneyMC.mus",

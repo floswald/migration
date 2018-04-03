@@ -5611,7 +5611,7 @@ name "tab:fit-model-and-data-flows"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5846,7 +5846,7 @@ name "fig:fit-2"
 placement p
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6183,37 +6183,62 @@ noprefix "false"
 \end_inset
 
 .
- The ownership rate conditional only on moving cost type 
-\begin_inset Formula $\tau$
+ The ownership rate conditional only on moving cost type is 0.59 for movers
+ 
+\begin_inset Formula $(\tau=0)$
 \end_inset
 
-is 0.51 for movers vs 0.56 for stayers.
+ vs 0.64 for stayers 
+\begin_inset Formula $(\tau=1)$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-In table 
+To investigate those issues in more detail, I sequentially remove owner-specific
+ moving costs in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Decomposing-owner's-moving"
 
 \end_inset
 
- I sequentially remove estimated frictions from owner mobility to uncover
- the relative importance of each component.
- Ownership increases as we successively remove frictions along the first
- row of the table, as expected: owning becomes less costly in terms of both
- money and utility.
- The second row shows that the average migration rate increases more strongly
- if we remove the owner's moving cost 
-\begin_inset Formula $\alpha_{3}$
-\end_inset
-
- rather than the fixed cost of selling 
-\begin_inset Formula $\phi$
-\end_inset
-
 .
- The bottom row illustrates the same but conditional on owners.
+ The aim is to understand the relative importance of both financial transaction
+ cost and utility cost.
+ If we see a large reaction of the model–generated moments after setting
+ a certain cost component to zero, we can conclude that this component is
+ relatively important to explain the data.
+ Starting therefore in the top panel of table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Decomposing-owner's-moving"
+
+\end_inset
+
+, we see changes in three key moments when considering all types of households.
+ The first row shows the percentage change in the ownership rate for different
+ configurations of the model parameters.
+ Setting the utility cost of moving for owners to zero in the column labelled
+ 
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+ increases the ownership rate by 1.72%, because this makes owning a more
+ attractive option in case of the need to migrate.
+ Similarly, abolishing the financial transaction cost from selling in column
+ 
+\begin_inset Formula $\phi=0$
+\end_inset
+
+ leads to an even bigger increase of 2.58%.
+ In the final row, combining both changes, we see an increase of 4.44% in
+ ownership.
+\end_layout
+
+\begin_layout Standard
+[more]
 \end_layout
 
 \begin_layout Standard

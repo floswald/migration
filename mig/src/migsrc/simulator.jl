@@ -948,7 +948,7 @@ function computeMoments(df::DataFrame,p::Param)
 	d_tau = Dict()
 	for tau in g_tau
 		w = Weights(tau[:density])
-		d_tau["mean_own_$(tau[1,:tau])"] = mean(tau[:h],w)
+		d_tau[Symbol("mean_own_$(tau[1,:tau])")] = mean(tau[:h],w)
 	end
 
 	# own ~ Division
@@ -1026,12 +1026,12 @@ function computeMoments(df::DataFrame,p::Param)
 
 	for tau in g_tau
 		w = Weights(tau[:density])
-		d_tau["mean_move_$(tau[1,:tau])"] = mean(tau[:move],w)
+		d_tau[Symbol("mean_move_$(tau[1,:tau])")] = mean(tau[:move],w)
 	end
 	for tau in g_tau_own
 		kk = "$(tau[1,:own])"
 		w = Weights(tau[:density])
-		d_tau["mean_move_own$(uppercase(kk))_$(tau[1,:tau])"] = mean(tau[:move],w)
+		d_tau[Symbol("mean_move_own$(uppercase(kk))_$(tau[1,:tau])")] = mean(tau[:move],w)
 	end
 
 	# move ~ own
@@ -1202,7 +1202,7 @@ function computeMoments(df::DataFrame,p::Param)
 	# end
 
 
-	return Dict("moments" => dfout, "yearly" => yearly)
+	return Dict("moments" => dfout, "yearly" => yearly, "tau" => d_tau)
 end
 
 
