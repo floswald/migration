@@ -114,7 +114,7 @@
 \begin_body
 
 \begin_layout Title
-Regional Shocks, Migration and Homeownership
+The Effect of Homeownership on the Option Value of Regional Migration
 \begin_inset Foot
 status collapsed
 
@@ -191,17 +191,14 @@ today
 This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
- Using the model I estimate the value of the migration option and the welfare
- impact of policies that may restrict mobility.
- The value of the option to move ranges from 0% up to almost 16% of lifetime
+ Using the model I estimate the value of the migration option.
+ The value of the option to move ranges from 0% up to almost 13% of lifetime
  consumption depending on the type of household considered.
- While I obtain an estimate of the elasticity of local population size with
- respect to a large regional shock which is close to estimates from the
- previous literature, I am able to show that the respective elasticities
- of outflows for renters and owners from that region are orders of magnitude
- apart.
- This has important implications for the design of housing and labour market
- policies.
+ Individuals self-select into ownership, and the model provides cross equation
+ restrictions to address this problem.
+ In doing so, it identifies several structural primitives like for instance
+ separate moving cost functions for renters and owners, which are of first
+ order importance for policy makers concerned with housing and labor markets.
 \end_layout
 
 \begin_layout Standard
@@ -876,6 +873,30 @@ literal "true"
 
 \begin_layout Section
 Empirical Background
+\end_layout
+
+\begin_layout Standard
+The main estimation dataset in this paper will be the Survey of Income and
+ Program Participation (SIPP).
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The PSID is a natural competitor to the SIPP for this kind of study, with
+ the PSID's main advantage being the fact it's a long panel.
+ I found that cell sizes got extremely small, however, after conditioning
+ on the most important covariates in the PSID.
+ Even unconditionally there are only 1560 unique cross-Division moves in
+ the PSID 1994–2011, and four cells in the region-by-region transition matrix
+ have no observations for this entire period.
+ I have 2512 unique cross-Division moves in SIPP 1996–2012 and the corresponding
+ transition matrix is dense.
+\end_layout
+
+\end_inset
+
+ It is useful, however, to survey the literature and other datasets in order
+ to get a good overview.
 \end_layout
 
 \begin_layout Standard
@@ -3903,7 +3924,7 @@ The consumption/savings problem to be solved at each state, and its combination
  This makes using fast first order condition–based approaches to solve the
  consumption problem more difficult.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 There has recently been a lot of progress on this front.
@@ -3941,8 +3962,37 @@ literal "true"
 \end_inset
 
  are promising avenues.
- I found my problem not easily amenable to their solution, and focused on
- a robust, but relatively slow, solution.
+ I did not further pursue conditional choice probability (CCP) methods as
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "arcidiacono2008ccp"
+literal "false"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IERE:IERE12001"
+literal "false"
+
+\end_inset
+
+ for example because of data limitations.
+ I experimented in particular with the latter paper's approach but soon
+ had to give up because of too many empty cells in the empirical choice
+ probability matrix (e.g.
+ an entry like 
+\begin_inset Formula $\Pr(\text{own},\text{save}=s,\text{move}|X)$
+\end_inset
+
+ would be empty for many values of 
+\begin_inset Formula $X$
+\end_inset
+
+; in general, my problem was to recover the first stage decision rules form
+ the data in a satisfactory kind of way).
 \end_layout
 
 \end_inset
@@ -4012,10 +4062,19 @@ In this section I explain how the model is estimated to fit some features
  of moments (SMM) approach, whereby given a set of parameters, the model
  is used to compute decision rules of agents, which in turn are used to
  simulate artificial data.
- A set of summarizing features from the artificial data should then be close
- to the same features of the the real data.
- I will first discuss estimation of the exogenous stochastic processes,
- and then turn to the estimation of the model preference parameters.
+ I decided to choose SMM over maximum likelihood mainly because I need to
+ combine several datasets.
+ For example, the SIPP does not have information on long-duration moments
+ (like number of moves over lifecycle), and the PSID does not have enough
+ observations to construct a region by region transition matrix conditional
+ on my state vector.
+ 
+\end_layout
+
+\begin_layout Standard
+In what follows, I now will first discuss estimation of the exogenous stochastic
+ processes, and then turn to the estimation of the model preference parameters.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -6040,7 +6099,14 @@ literal "true"
 \end_inset
 
 .
- 
+ This is reassuring, since their model is a weighted average of owners and
+ renters.
+ A simple calculation reveals that using my estimates and an ownership rate
+ of 61% as found in the data, one obtains 
+\begin_inset Formula $147,000\times0.39+547,000\times0.61=391,000$
+\end_inset
+
+ dollars of average moving costs.
 \end_layout
 
 \begin_layout Standard
@@ -6204,7 +6270,7 @@ reference "tab:Decomposing-owner's-moving"
 
 \end_inset
 
-.
+ from the model .
  The aim is to understand the relative importance of both financial transaction
  cost and utility cost.
  If we see a large reaction of the model–generated moments after setting
@@ -6217,7 +6283,8 @@ reference "tab:Decomposing-owner's-moving"
 
 \end_inset
 
-, we see changes in three key moments when considering all types of households.
+, we see changes in three key moments when considering first all types of
+ households.
  The first row shows the percentage change in the ownership rate for different
  configurations of the model parameters.
  Setting the utility cost of moving for owners to zero in the column labelled
@@ -6258,11 +6325,46 @@ The second row shows the same experiment for the migration rate.
 \end_inset
 
  cost component.
- 
+ Overall, the first panel shows that both cost components affect both ownership
+ and migration, with the relative importance of each as one would expect:
+ owners' utility cost of migration, 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+, is more important in determining migration flows, and vice versa for the
+ financial transaction cost and ownership choices.
 \end_layout
 
 \begin_layout Standard
+The bottom panel of the table repeat this exercise while conditioning only
+ on the 
+\emph on
+mover 
+\emph default
+population, i.e.
+ types 
+\begin_inset Formula $\tau=0$
+\end_inset
 
+.
+ This helps to further clarify the top panel, where the results are from
+ a mixture of stayers and movers.
+ It is interesting to note that among the movers, the impacts on ownership
+ rate are greater than for the population at large, whereas those on migration
+ of owners are smaller throughout.
+ The former is a consequence of 
+\emph on
+stayers 
+\emph default
+being overrepresented in the group of owners already, hence see a smaller
+ increase in ownership in the top panel.
+ The latter effect is the converse of this, in the sense that the larger
+ numbers for increased migration in the top panel comes from a few stayer
+ types, who 
+\emph on
+do 
+\emph default
+in fact move, now that costs are lower.
 \end_layout
 
 \begin_layout Standard

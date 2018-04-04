@@ -31,7 +31,6 @@ Depends:
     testthat,
     plyr,
     MASS,
-    rhdf5,
     psidR,
     erer,
     tikzDevice,
