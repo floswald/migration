@@ -695,6 +695,7 @@ function simulate(m::Model,p::Param)
 
 	# df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=CategoricalArray(convert(Array{Bool},Dis)),tau=Dtau,j=Dj,Division=Dregname,Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=CategoricalArray(convert(Array{Bool},DM)),moveto=DMt,h=Dh,hh=Dhh,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=CategoricalArray(convert(Array{Bool},Dh)),canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=CategoricalArray(convert(Array{Bool},Dh.*(Drealage.==30))),rent_30=CategoricalArray(convert(Array{Bool},(Dh.==0).*(Drealage.==30))))
 	df = DataFrame(id=Di,age=Dage,realage=Drealage,income=Dincome,cons=Dcons,cash=Dcash,a=Da,save=Dsave,kids=Dis.>1,tau=Dtau,j=Dj,Division=CategoricalArray(Dregname),Division_to=Dtoname,rent=Drent,z=Dz,p=Dp,y=Dy,P=DP,Y=DY,move=DM,moveto=DMt,h=Dh.==1,hh=Dhh.==1,v=Dv,utility=Dutility,maxv = Dmaxv,prob=Dprob,eps_shock=Dshock,cumprob=Dcumprob,wealth=Dwealth,wealth2=Dwealth2,km_distance=Ddist,own=Dh.==1,canbuy=Dcanbuy,cohort=Dcohort,year=Dyear,subsidy=Dsubsidy,own_30=(Dh.==1).*(Drealage.==30),rent_30=(Dh.==0).*(Drealage.==30),drop=DDrop)
+	df[:zcat] = cut(df[:z],5,labels=["20","40","60","80","100"])
 
 	# some transformations before exit
 	# --------------------------------

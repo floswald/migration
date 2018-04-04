@@ -178,7 +178,7 @@ end
 # mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:j,t->t.==4) subsets in addition to year=>1996 that :j==4
 # mig.ctaxxer(Dict(:policy=>"noMove",:ctax=>1.0),:own_30,t->t) subsets in addition to year=>1996 that :own_30 is true
 function ctaxxer(opt::Dict,var::Symbol,sel_func)
-	info("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
+	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
 	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim() # baseline
 	val = @linq s |>
@@ -195,11 +195,11 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func)
 		v1 = val[:v][1]
 		return (v0 - v1)^2
 	end
-	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=true,iterations=12)
+	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=false,iterations=12)
 	return ctax
 end
 function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2)
-	info("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2")
+	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2")
 	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim()  # baseline
 	val = @linq s |>
@@ -216,7 +216,29 @@ function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2)
 		v1 = val[:v][1]
 		return (v0 - v1)^2
 	end
-	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=true,iterations=12)
+	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=false,iterations=12)
+	return ctax
+end
+
+function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2,var3::Symbol,sel_func3)
+	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2 and $var3")
+	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
+	s = runSim()  # baseline
+	val = @linq s |>
+		@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2)) .& sel_func3(_I_(var3))) |>
+		@select(v=mean(:maxv),u=mean(:utility))
+	v0 = val[:v][1]
+
+	function ftau(ctau::Float64,v0::Float64,opts::Dict)
+		opts[:ctax] = ctau
+		si = runSim(opt=opts)
+		val = @linq si |>
+			@where((:year.>1996) .& sel_func1(_I_(var1)) .& sel_func2(_I_(var2)) .& sel_func3(_I_(var3))) |>
+			@select(v=mean(:maxv),u=mean(:utility))
+		v1 = val[:v][1]
+		return (v0 - v1)^2
+	end
+	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=false,iterations=12)
 	return ctax
 end
 

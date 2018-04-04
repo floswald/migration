@@ -19,31 +19,27 @@ compares baseline with noMove scenario: shut down moving in all regions. returns
 function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
 
 	tic()
-	bp = shutdownMoving(yshock=ys,pshock=ps)
-	base = bp[:base]
-	pol = bp[:pol]
-	p = Param(2)
-
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
+
+	bp = shutdownMoving(yshock=ys,pshock=ps)
+	base = @where(bp[:base],:year .> cutyr)
+	pol = @where(bp[:pol],:year .> cutyr )
+	p = Param(2)
+
 	
 	ate_0 = @linq base |>
-		    @where((:year.>cutyr)) |>
 			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	ate_1 = @linq pol |>
-		    @where((:year.>cutyr)) |>
 			@select(v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	ate = copy(ate_1 .- ate_0 )
 	ate_perc = convert(Dict,100.0 * (ate ./ abs(ate_0)))
 
 	age_ate_0 = @linq base |>
-		    @where((:year.>cutyr)) |>
 			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	age_ate_1 = @linq pol |>
-		    @where((:year.>cutyr)) |>
 			@by(:realage,v=mean(:maxv),u=mean(:utility[isfinite.(:utility)]),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	own30_0 = @linq base |>
-	    @where((:year.>cutyr)) |>
 		@by(:own_30,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
 					 y = mean(:income),
@@ -53,7 +49,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 					 q=mean(:y),
 					 p=mean(:p))
 	own30_1 = @linq pol |>
-	    @where((:year.>cutyr)) |>
 		@by(:own_30,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
 					 y = mean(:income),
@@ -63,7 +58,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 					 q=mean(:y),
 					 p=mean(:p))
 	year_0 = @linq base |>
-	    @where((:year.>cutyr)) |>
 		@by(:year,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
 					 y = mean(:income),
@@ -73,7 +67,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 					 q=mean(:y),
 					 p=mean(:p))
 	year_1 = @linq pol |>
-	    @where((:year.>cutyr)) |>
 		@by(:year,v=mean(:maxv),
 					 u=mean(:utility[isfinite.(:utility)]),
 					 y = mean(:income),
@@ -83,7 +76,6 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 					 q=mean(:y),
 					 p=mean(:p))
 	loc_0 = @linq base |>
-		    @where((:year.>cutyr)) |>
 			@by(:Division,v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
@@ -93,8 +85,28 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 						 q=mean(:y),
 						 p=mean(:p))
 	loc_1 = @linq pol |>
-		    @where((:year.>cutyr)) |>
 			@by(:Division,v=mean(:maxv),
+						 u=mean(:utility[isfinite.(:utility)]),
+						 y = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 q=mean(:y),
+						 p=mean(:p))
+
+	tau_z0 = @linq base |>
+			 @by([:tau, :zcat],v=mean(:maxv),
+						 u=mean(:utility[isfinite.(:utility)]),
+						 y = mean(:income),
+						 a=mean(:a),
+						 h=mean(:h),
+						 w=mean(:wealth),
+						 q=mean(:y),
+						 p=mean(:p))
+
+
+	tau_z1 = @linq pol |>
+			 @by([:tau, :zcat],v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
 						 a=mean(:a),
@@ -107,6 +119,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	loc_perc     = pdiff(loc_1,loc_0,:Division)
 	own30_perc   = pdiff(own30_1,own30_0,:own_30)
 	year_perc    = pdiff(year_1,year_0,:year)
+	zcat_1_perc    = pdiff(@where(tau_z1,:tau.==1),@where(tau_z0,:tau.==1),:zcat)
+	zcat_2_perc    = pdiff(@where(tau_z1,:tau.==2),@where(tau_z0,:tau.==2),:zcat)
 
 	# age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
 	# loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
@@ -119,7 +133,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 	# number of moves 
 	
-	mv_count = @linq base |>
+	mv_count = @linq bp[:base] |>
 	        @where((:tau.==1)) |>
 	        @by(:id, n_moves = sum(:move), n_moveto = sum(:moveto.!=:j))
 
@@ -131,24 +145,24 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	        @select(id=unique(:id))
 
 	# people are mover type and stay till end of life. stayers.
-	stay_id = base[findin(base[:id],never_id[:id]),:]
+	stay_id = bp[:base][findin(bp[:base][:id],never_id[:id]),:]
 
 	# people who were born in j and move away
 	away_id = once_id
 
-	young_id = @select(@where(base,(:year.>cutyr).&(:age.<p.nt/2)),id=unique(:id))
-	old_id = @select(@where(base,(:year.>cutyr).&(:age.>=p.nt/2)),id=unique(:id))
-	mv_id_owners = @select(@where(base,(:year.>cutyr).&(:move).&(:own)),id=unique(:id))
-	mv_id_renters= @select(@where(base,(:year.>cutyr).&(:move).&(.!(:own))),id=unique(:id))
+	young_id = @select(@where(base,(:age.<p.nt/2)),id=unique(:id))
+	old_id = @select(@where(base,(:age.>=p.nt/2)),id=unique(:id))
+	mv_id_owners = @select(@where(base,(:move).&(:own)),id=unique(:id))
+	mv_id_renters= @select(@where(base,(:move).&(.!(:own))),id=unique(:id))
 	# these people are "treated"
 
 	# get a dict with percentage changes for movers, movers|rent and movers|own
 	atts = Dict()
 	for (k,v) in zip(("att","atn","att_young","att_old"),(away_id,stay_id,young_id,old_id))
 		# subsetting
-		bmv = 	base[findin(base[:id],v[:id]),:]
+		bmv = 	bp[:base][findin(bp[:base][:id],v[:id]),:]
 		bmv2 = @where(bmv,:year.>cutyr)
-		pmv = pol[findin(pol[:id],v[:id]),:]
+		pmv = bp[:pol][findin(bp[:pol][:id],v[:id]),:]
 		pmv2 = @where(pmv,:year.>cutyr)
 		# computing effects
 		att_0 = @select(bmv2,v=mean(:maxv),u=mean(:utility),y = mean(:income),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
@@ -181,6 +195,12 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			# for those who did own a house when age == 30
 			x=mig.ctaxxer(opt_dict,:own_30,t->t)
 			ctax[:data][:own_30]=Optim.minimizer(x)
+			# mover types at lowest z quantile
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:zcat,t->t.=="10")
+			ctax[:data][:tau1_z10]=Optim.minimizer(x)
+			# stayer types at lowest z quantile
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==2,:zcat,t->t.=="10")
+			ctax[:data][:tau2_z10]=Optim.minimizer(x)
 			gc()
 		else
 			# do subset to region j
@@ -199,6 +219,12 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			# for those who did own a house when age == 30
 			x=mig.ctaxxer(opt_dict,:own_30,t->t,:j,t->t.==ij)
 			ctax[:data][:own_30]=Optim.minimizer(x)
+			# mover types at lowest z quantile
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:zcat,t->t.=="10",:j,t->t.==ij)
+			ctax[:data][:tau1_z10]=Optim.minimizer(x)
+			# stayer types at lowest z quantile
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==2,:zcat,t->t.=="10",:j,t->t.==ij)
+			ctax[:data][:tau2_z10]=Optim.minimizer(x)
 			gc()
 		end
 		return ctax
@@ -236,6 +262,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		:loc_perc => loc_perc,
 		:own30_perc => own30_perc,
 		:year_perc => year_perc,
+		:zcat_1_perc => zcat_1_perc,
+		:zcat_2_perc => zcat_2_perc,
 		:ate_perc => ate_perc,
 		:att_perc => atts["att"],
 		:ate_att => ate_att,
@@ -259,9 +287,6 @@ end
 
 # helper function for exp_Nomove
 function shutdownMoving(;pshock=1.0,yshock=1.0)
-
-	# look at results after full cohorts available
-	cutyr = 1997 - 1
 
 	# baseline model
 
