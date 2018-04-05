@@ -95,7 +95,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 						 p=mean(:p))
 
 	tau_z0 = @linq base |>
-			 @by([:tau, :zcat],v=mean(:maxv),
+			 @by([:tau, :mean_zcat],v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
 						 a=mean(:a),
@@ -106,7 +106,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 
 	tau_z1 = @linq pol |>
-			 @by([:tau, :zcat],v=mean(:maxv),
+			 @by([:tau, :mean_zcat],v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
 						 a=mean(:a),
@@ -119,8 +119,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	loc_perc     = pdiff(loc_1,loc_0,:Division)
 	own30_perc   = pdiff(own30_1,own30_0,:own_30)
 	year_perc    = pdiff(year_1,year_0,:year)
-	zcat_1_perc    = pdiff(@where(tau_z1,:tau.==1),@where(tau_z0,:tau.==1),:zcat)
-	zcat_2_perc    = pdiff(@where(tau_z1,:tau.==2),@where(tau_z0,:tau.==2),:zcat)
+	zcat_1_perc    = pdiff(@where(tau_z1,:tau.==1),@where(tau_z0,:tau.==1),:mean_zcat)
+	zcat_2_perc    = pdiff(@where(tau_z1,:tau.==2),@where(tau_z0,:tau.==2),:mean_zcat)
 
 	# age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
 	# loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
