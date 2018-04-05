@@ -291,7 +291,7 @@ function simulate(m::Model,p::Param)
 	Dis[idxvec]  = rand(G0k,nsim)
 	Dj[idxvec]   = rand(G0j,nsim)
 	Dz[idxvec]   = m.zshock0	# get initial z shock
-	Dzcat = repeat(cut(m.zshock0,5,labels=["20","40","60","80","100"]),inner=[p.nT],outer=[1])  # category of initial draw of z
+	Dzcat = repeat(cut(m.zshock0,5,labels=["20","40","60","80","100"]),inner=[T],outer=[1])  # category of initial draw of z
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
 	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
