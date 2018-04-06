@@ -199,7 +199,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
 			ctax[:data][:tau1_z10]=Optim.minimizer(x)
 			# stayer types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==2,:mean_zcat,t->t.=="20")
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80")
 			ctax[:data][:tau2_z10]=Optim.minimizer(x)
 			gc()
 		else
@@ -223,7 +223,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20",:j,t->t.==ij)
 			ctax[:data][:tau1_z10]=Optim.minimizer(x)
 			# stayer types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==2,:mean_zcat,t->t.=="20",:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80",:j,t->t.==ij)
 			ctax[:data][:tau2_z10]=Optim.minimizer(x)
 			gc()
 		end
