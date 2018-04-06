@@ -876,30 +876,6 @@ Empirical Background
 \end_layout
 
 \begin_layout Standard
-The main estimation dataset in this paper will be the Survey of Income and
- Program Participation (SIPP).
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The PSID is a natural competitor to the SIPP for this kind of study, with
- the PSID's main advantage being the fact it's a long panel.
- I found that cell sizes got extremely small, however, after conditioning
- on the most important covariates in the PSID.
- Even unconditionally there are only 1560 unique cross-Division moves in
- the PSID 1994–2011, and four cells in the region-by-region transition matrix
- have no observations for this entire period.
- I have 2512 unique cross-Division moves in SIPP 1996–2012 and the corresponding
- transition matrix is dense.
-\end_layout
-
-\end_inset
-
- It is useful, however, to survey the literature and other datasets in order
- to get a good overview.
-\end_layout
-
-\begin_layout Standard
 The amount of regional migration in the US is still high by international
  standards.
  According to 
@@ -1224,6 +1200,23 @@ It is possible to construct a panel dataset from the CPS, but only with
 
  I therefore use the Survey of Income and Program Participation (SIPP) in
  this paper, a longitudinal and nationally representative dataset.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The PSID is a natural competitor to the SIPP for this kind of study, with
+ the PSID's main advantage being the fact it's a long panel.
+ I found that cell sizes got extremely small, however, after conditioning
+ on the most important covariates in the PSID.
+ Even unconditionally there are only 1560 unique cross-Division moves in
+ the PSID 1994–2011, and four cells in the region-by-region transition matrix
+ have no observations for this entire period.
+ I have 2512 unique cross-Division moves in SIPP 1996–2012 and the corresponding
+ transition matrix is dense.
+\end_layout
+
+\end_inset
+
  
 \end_layout
 
