@@ -194,9 +194,9 @@ This paper estimates a lifecycle model of consumption, housing choice and
  Using the model I estimate the value of the migration option.
  The value of the option to move ranges from 0% up to almost 13% of lifetime
  consumption depending on the type of household considered.
- Individuals self-select into ownership, and the model provides cross equation
+ Individuals self-select into ownership, and the model provides cross–equation
  restrictions to address this problem.
- In doing so, it identifies several structural primitives like for instance
+ In doing so, it identifies several structural primitives, for instance
  separate moving cost functions for renters and owners, which are of first
  order importance for policy makers concerned with housing and labor markets.
 \end_layout
@@ -476,7 +476,11 @@ The baseline version assumes no change to regional prices as a a result
  loss from reduced mobility.
  The results further show the prominent role of expectations about future
  potential moves, which may not have to be realized in the end.
- 
+ The relatively large values which consumers place on the migration option,
+ as well as the large dispartities in valuations between renters, owners,
+ and young and old people, are all policy relevant.
+ They illustrate the welfare costs of policies which reduce mobility – such
+ as subsidized homeowership, for example.
 \end_layout
 
 \begin_layout Paragraph
@@ -2196,6 +2200,37 @@ literal "true"
  The new job can be viewed as an experience good where quality is revealed
  only after an initial period.
  This setup gives rise to income risk associated with moving.
+ I do not attempt to explain return migrations, which 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+literal "true"
+
+\end_inset
+
+ achieve with a region-person specific match effect.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Adding this feature would increase the computational burden of the model
+ to make it infeasible, even with the limited memory assumption employed
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kennan2003effect"
+literal "true"
+
+\end_inset
+
+.
+ I don't expect return migration to be of first order for the questions
+ adressed here.
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3972,7 +4007,7 @@ literal "false"
 
 \end_inset
 
- for example because of data limitations.
+, for example, because of data limitations.
  I experimented in particular with the latter paper's approach but soon
  had to give up because of too many empty cells in the empirical choice
  probability matrix (e.g.
@@ -4065,7 +4100,7 @@ In this section I explain how the model is estimated to fit some features
 \end_layout
 
 \begin_layout Standard
-In what follows, I now will first discuss estimation of the exogenous stochastic
+In what follows, I will first discuss estimation of the exogenous stochastic
  processes, and then turn to the estimation of the model preference parameters.
  
 \end_layout
@@ -5176,7 +5211,6 @@ t over their lifecycle than a similar 30-year-old in 2012 would have.
  This requires to simulate individuals starting in different calendar years,
  taking into account the actual observed time series for regional house
  prices and incomes.
- I describe the proceedure in detail in the appendix.
 \end_layout
 
 \begin_layout Standard
@@ -5217,6 +5251,50 @@ moved more two times or more
  The reason for using external data is that I cannot compute such a statistic
  from SIPP, where the maximum panel length is four years.
  
+\end_layout
+
+\begin_layout Standard
+Finally, it is important to clarify the role of variables which are observed
+ in the data, but which are missing in the model's state space.
+ In light of the simple probit model from table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:D2D-probit"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, this concerns above all education.
+ In that table, the marginal effect of having a college degree on the probabilit
+y of moving is roughly equal in absolute size than the one of being an owner
+ – hence, important.
+ The statistics in the moment vector do not condition on education, therefore
+ the model is representative for an education-weighted average of the population.
+ Given that education is contained in SIPP, it would be possible to condition
+ the moments in this way – subject to quite strict constraints on cell sizes,
+ as mentioned above.
+ Furthermore, while endogenizing the education choice would clearly be infeasibl
+e, one could think of running the model separately for different education
+ groups, after specifying an appropriate education–dependent income process.
+ It is by no means clear, however, that the model would be able to fit different
+ial mobility rates by education very well without additional assumptions
+ on the moving cost function (e.g.
+ different moving costs by education).
+ As it stands, the unobserved moving cost type 
+\begin_inset Formula $\tau$
+\end_inset
+
+ accounts for everything affecting an individual's baseline probability
+ of moving, which is missing from the model.
+ Given observed low moving rates of non-college educated people, I expect
+ a high correlation between non college degree and a high moving cost type.
+ In this sense, 
+\begin_inset Formula $\tau$
+\end_inset
+
+ is a reduced form representation of the impact of education on mobility.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -6601,9 +6679,10 @@ reference "tab:shutdown-cons-base"
 
 \end_inset
 
- shows in the first row the consumption compensation demanded in the entire
- economy, for different subsets of the population, including young, old,
- owners at age 30, renters at age 30, and the entire population.
+ provides the main results of the paper.
+ In the first row the consumption compensation demanded in the entire economy,
+ for different subsets of the population, including young, old, owners at
+ age 30, renters at age 30, and the entire population.
  The values in the table stand for the proportional per period increase
  in consumption that would make individuals indifferent between baseline
  and migration shutdown.
@@ -6721,6 +6800,67 @@ Dropbox/model/experiments/noMove_region_ctax.tex}
 
 \begin_layout Plain Layout
 Consumption compensation demanded after migration shutdown in the baseline
+ scenario (regional prices are unaffected by the shutdown of migration).
+ The numbers in this table represent the required proportional scaling factor
+ 
+\begin_inset Formula $\Delta c$
+\end_inset
+
+ by which optimal consumption under the shutdown policy would have to be
+ increased in order for individuals to be indifferent to the baseline.
+ A value of 1.076 as in the first row of the second column, then, means that
+ young people would demand an increase of 7.6% of the consumption level which
+ they had optimally chosen under the policy.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-base"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_tau_ctax.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in the baseline
  scenario, i.e.
  regional prices are unaffected by the shutdown of migration.
  The numbers in this table represent the required proportional scaling factor
@@ -6735,7 +6875,7 @@ Consumption compensation demanded after migration shutdown in the baseline
  they had optimally chosen under the policy.
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:shutdown-cons-base"
+name "tab:shutdown-cons-base-1"
 
 \end_inset
 
