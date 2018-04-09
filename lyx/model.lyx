@@ -1682,6 +1682,78 @@ name "tab:SIPP-nummoves"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/rsquareds.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Distribution of the number of moves per mover by homeownership status.
+ Households are categorized into 
+\begin_inset Quotes eld
+\end_inset
+
+Renter
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Owner
+\begin_inset Quotes erd
+\end_inset
+
+ based on their homeownership status at the 
+\emph on
+first 
+\emph default
+move.
+ SIPP data.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-nummoves-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -7318,6 +7390,60 @@ over entire sample period
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-businesscycle"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_zcat.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Impact of 
+\emph on
+migration shutdown 
+\emph default
+over entire sample period
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:noMove-zcat"
 
 \end_inset
 

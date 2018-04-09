@@ -513,5 +513,9 @@ function plot_noMove(n::noMoveRes;save=true)
 	if save
 		savefig(string(path,"own30",fiend))
 	end
- 	return (p_age,p_year,p_loc,p_own30)
+	p_zcat = bar(n,:zcat_1_perc,:mean_zcat,drop=[:tau],xguide="z quantile",xrotation=45)
+	if save
+		savefig(string(path,"zcat",fiend))
+	end
+ 	return (p_age,p_year,p_loc,p_own30,p_zcat)
 end
