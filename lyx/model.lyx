@@ -192,8 +192,8 @@ This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
  Using the model I estimate the value of the migration option.
- The value of the option to move ranges from 0% up to almost 13% of lifetime
- consumption depending on the type of household considered.
+ This value ranges from 0% up to almost 13% of lifetime consumption depending
+ on the type of household considered.
  Individuals self-select into ownership, and the model provides cross–equation
  restrictions to address this problem.
  In doing so, it identifies several structural primitives, for instance
@@ -612,6 +612,10 @@ literal "true"
  after an adverse shock, the relocation of workers is one of the main mechanisms
  to restore unemployment and participation rates back to trend in an affected
  region.
+ Relative to their paper, this paper shows how the underlying decision maker
+ reacts to their regional shocks – in particular, how owners and renters
+ react differently to those shocks, and what this implies for their valuation
+ of the migration option.
  Related to this, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -921,221 +925,22 @@ reference "tab:Migration-rates-Molloy"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Period
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Geography
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-% of US population
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Annual
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-county
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
+
+\backslash
+input{
+\backslash
+Dropbox/data/Molloy/molloy.tex}
 \end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-state
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-region
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.5
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5-year
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-county
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-18.6
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-state
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-8.9
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-region
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4.8
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
 
 \end_inset
 
@@ -1146,8 +951,8 @@ region
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Migration rates at different levels of geographic aggreagation and over
- different time spells.
+Percent of US population migrating across different geographic boundaries
+ over different time spells.
  Taken from 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1305,7 +1110,8 @@ The model presented below contains 25.4 million different points in the state
 
 \end_inset
 
-
+ I will demonstrate below what the choice of divisions implies for the captured
+ state–level variation.
 \end_layout
 
 \begin_layout Paragraph
@@ -1665,78 +1471,6 @@ move.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:SIPP-nummoves"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/FHFA/rsquareds.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Distribution of the number of moves per mover by homeownership status.
- Households are categorized into 
-\begin_inset Quotes eld
-\end_inset
-
-Renter
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Owner
-\begin_inset Quotes erd
-\end_inset
-
- based on their homeownership status at the 
-\emph on
-first 
-\emph default
-move.
- SIPP data.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-nummoves-1"
 
 \end_inset
 
@@ -4495,8 +4229,8 @@ https://floswald.github.io/research/
 
 \end_inset
 
- I show how the estimated model model reacts to different combinations of
- shocks to 
+ [TODO pdf] I show how the estimated model model reacts to different combination
+s of shocks to 
 \emph on
 regional 
 \emph default
@@ -4506,6 +4240,125 @@ prices (i.e.
 \end_inset
 
 ).
+\end_layout
+
+\begin_layout Standard
+Finally, a reasonable concern is how good an approximation of a more fine-graine
+d geography such as state–level this setup based on Divisions is.
+ In order to shed some light on this, I run pooled OLS on my entire prices
+ dataset, where on the left hand side I have the price index for state 
+\begin_inset Formula $s$
+\end_inset
+
+ in period 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $p_{st}$
+\end_inset
+
+, and as explanatory variable the corresponding Census Division level index,
+ 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+.
+ In table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:-region-state-rsquared"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we see the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ measured from each regression, the division index is highly significant
+ throughout.
+ The full regression output is available in the previously mentioned online
+ appendix at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://floswald.github.io/research/
+\end_layout
+
+\end_inset
+
+.
+ [TODO pdf]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/rsquareds.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ from pooled OLS regression of state level indices 
+\begin_inset Formula $p_{st},q_{st}$
+\end_inset
+
+on corresponding Division level indices 
+\begin_inset Formula $p_{dt},q_{dt}$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:-region-state-rsquared"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6770,8 +6623,12 @@ reference "tab:shutdown-cons-base"
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
- As an average over all individuals treated in this experiment (ATE), the
- corresponding number is 5.1% of consumption compensation demanded.
+ The next two columns condition the measure on position in the 
+\begin_inset Formula $z$
+\end_inset
+
+ distributionAs an average over all individuals treated in this experiment
+ (ATE), the corresponding number is 5.1% of consumption compensation demanded.
  
 \end_layout
 
@@ -6845,68 +6702,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/noMove_region_ctax.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Consumption compensation demanded after migration shutdown in the baseline
- scenario (regional prices are unaffected by the shutdown of migration).
- The numbers in this table represent the required proportional scaling factor
- 
-\begin_inset Formula $\Delta c$
-\end_inset
-
- by which optimal consumption under the shutdown policy would have to be
- increased in order for individuals to be indifferent to the baseline.
- A value of 1.076 as in the first row of the second column, then, means that
- young people would demand an increase of 7.6% of the consumption level which
- they had optimally chosen under the policy.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:shutdown-cons-base"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6933,8 +6729,7 @@ Dropbox/model/experiments/noMove_region_tau_ctax.tex}
 
 \begin_layout Plain Layout
 Consumption compensation demanded after migration shutdown in the baseline
- scenario, i.e.
- regional prices are unaffected by the shutdown of migration.
+ scenario (regional prices are unaffected by the shutdown of migration).
  The numbers in this table represent the required proportional scaling factor
  
 \begin_inset Formula $\Delta c$
@@ -6947,7 +6742,7 @@ Consumption compensation demanded after migration shutdown in the baseline
  they had optimally chosen under the policy.
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:shutdown-cons-base-1"
+name "tab:shutdown-cons-base"
 
 \end_inset
 
@@ -7085,7 +6880,7 @@ prices for simulated individuals, exhibit negative deviations from the baseline.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7407,10 +7202,14 @@ name "fig:noMove-businesscycle"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7444,6 +7243,11 @@ over entire sample period
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-zcat"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -7516,6 +7320,10 @@ literal "false"
 \end_inset
 
 , which doesn't make the distinction.
+ The results are important for policy makers in terms of both housing and
+ labor markets, since they illustrate the implied costs of policies which
+ might reduce mobility, such as implicit or explicit subsidies to homeownership,
+ for example.
 \end_layout
 
 \begin_layout Standard

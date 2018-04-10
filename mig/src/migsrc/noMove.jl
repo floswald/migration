@@ -95,7 +95,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 						 p=mean(:p))
 
 	tau_z0 = @linq base |>
-			 @by([:tau, :mean_zcat],v=mean(:maxv),
+			 @by([:mean_zcat],v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
 						 a=mean(:a),
@@ -106,7 +106,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 
 	tau_z1 = @linq pol |>
-			 @by([:tau, :mean_zcat],v=mean(:maxv),
+			 @by([ :mean_zcat],v=mean(:maxv),
 						 u=mean(:utility[isfinite.(:utility)]),
 						 y = mean(:income),
 						 a=mean(:a),
@@ -119,8 +119,9 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	loc_perc     = pdiff(loc_1,loc_0,:Division)
 	own30_perc   = pdiff(own30_1,own30_0,:own_30)
 	year_perc    = pdiff(year_1,year_0,:year)
-	zcat_1_perc    = pdiff(@where(tau_z1,:tau.==1),@where(tau_z0,:tau.==1),:mean_zcat)
-	zcat_2_perc    = pdiff(@where(tau_z1,:tau.==2),@where(tau_z0,:tau.==2),:mean_zcat)
+	zcat_1_perc    = pdiff(tau_z1,tau_z0,:mean_zcat)
+	# zcat_1_perc    = pdiff(@where(tau_z1,:tau.==1),@where(tau_z0,:tau.==1),:mean_zcat)
+	# zcat_2_perc    = pdiff(@where(tau_z1,:tau.==2),@where(tau_z0,:tau.==2),:mean_zcat)
 
 	# age_ate_perc = pdiff(convert(Dict,age_ate_1,:realage),convert(Dict,age_ate_0,:realage))
 	# loc_perc     = pdiff(convert(Dict,loc_1,:j),convert(Dict,loc_0,:j))
@@ -195,12 +196,17 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			# for those who did own a house when age == 30
 			x=mig.ctaxxer(opt_dict,:own_30,t->t)
 			ctax[:data][:own_30]=Optim.minimizer(x)
-			# mover types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
-			ctax[:data][:tau1_z20]=Optim.minimizer(x)
-			# stayer types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80")
-			ctax[:data][:tau1_z80]=Optim.minimizer(x)
+			# lowest z quantile
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20")
+			ctax[:data][:z20]=Optim.minimizer(x)
+			# 80 z quantile
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80")
+			ctax[:data][:z80]=Optim.minimizer(x)
+			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
+			# ctax[:data][:tau1_z20]=Optim.minimizer(x)
+			# # stayer types at lowest z quantile
+			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80")
+			# ctax[:data][:tau1_z80]=Optim.minimizer(x)
 			gc()
 		else
 			# do subset to region j
@@ -220,11 +226,11 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 			x=mig.ctaxxer(opt_dict,:own_30,t->t,:j,t->t.==ij)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			# mover types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20",:j,t->t.==ij)
-			ctax[:data][:tau1_z20]=Optim.minimizer(x)
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",:j,t->t.==ij)
+			ctax[:data][:z20]=Optim.minimizer(x)
 			# stayer types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80",:j,t->t.==ij)
-			ctax[:data][:tau1_z80]=Optim.minimizer(x)
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",:j,t->t.==ij)
+			ctax[:data][:z80]=Optim.minimizer(x)
 			gc()
 		end
 		return ctax
@@ -263,7 +269,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		:own30_perc => own30_perc,
 		:year_perc => year_perc,
 		:zcat_1_perc => zcat_1_perc,
-		:zcat_2_perc => zcat_2_perc,
+		# :zcat_2_perc => zcat_2_perc,
 		:ate_perc => ate_perc,
 		:att_perc => atts["att"],
 		:ate_att => ate_att,

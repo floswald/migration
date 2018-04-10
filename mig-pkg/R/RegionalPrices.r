@@ -65,7 +65,7 @@ reg_vs_state_p <- function(){
     qt = dqt[qt]
 
     # clean up
-    qt[,c("Reg_ID","Region","Div_ID","index_sa","FIPS","PSID","STATE","quarter.1","note") := NULL]
+    qt[,c("Reg_ID","Region","Div_ID","index_sa","FIPS","PSID","STATE","note") := NULL]
     yr[,c("Reg_ID","Region","Div_ID","index_sa","FIPS","PSID","STATE") := NULL]
 
     divs = unique(yr[,Division])
@@ -82,7 +82,7 @@ reg_vs_state_p <- function(){
     rs_qt = lapply(s_qt,function(x) x$r.squared)
 
     df_rs = data.frame(yearly=unlist(rs_yr),quarterly=unlist(rs_qt))
-    return(list(s_yr=s_yr,rsq=df_rs))
+    return(list(mods=m_yr,rsq=df_rs))
 
 
 
@@ -139,15 +139,23 @@ reg_vs_state_y <- function(){
     rs_yr = lapply(s_yr,function(x) x$r.squared)
 
     df_rs = data.frame(yearly=unlist(rs_yr))
-    return(list(s_yr=s_yr,rsq=df_rs))
+    return(list(mods=m_yr,rsq=df_rs))
 
 }
 
 both_prices_output <- function(){
   p = reg_vs_state_p()
   y = reg_vs_state_y()
+  
+  loc = "~/Dropbox/research/mobility/output/data/FHFA"
+  
+  # save reg output
+  texreg(p$mods,file=file.path(loc,"p-P-mods.tex"),table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE,stars=c(0.1,0.05,0.01),digits = 4,custom.model.names = abbreviate(names(p$mods),minlength = 3L))
+  
+  texreg(y$mods,file=file.path(loc,"q-Q-mods.tex"),table=FALSE,dcolumn=TRUE,booktabs=TRUE,use.packages=FALSE,stars=c(0.1,0.05,0.01),digits = 4,custom.model.names = abbreviate(names(y$mods),minlength = 3L))
+  
   o = cbind(subset(p$rsq,select=yearly),y$rsq)
   names(o) <- c("$R^2: p_{st} \\sim p_{dt}$","$R^2: q_{st} \\sim q_{dt}$")
-  print(xtable(o),sanitize.text.function=function(x){x},file=file.path("~/Dropbox/research/mobility/output/data/FHFA","rsquareds.tex"),floating=FALSE,booktabs=TRUE)
+  print(xtable(o),sanitize.text.function=function(x){x},file=file.path(loc,"rsquareds.tex"),floating=FALSE,booktabs=TRUE)
   xtable(o)
 }

@@ -1,9 +1,9 @@
 {% macro show(name,dd,dec) %}
-    {{name}} & {{ dd.young | prettyNum(dec) }} & {{ dd.old | prettyNum(dec) }}& {{ dd.own_30 | prettyNum(dec) }}& {{ dd.rent_30 | prettyNum(dec) }}& {{ dd.tau1_z10 | prettyNum(dec) }} & {{ dd.tau2_z10 | prettyNum(dec) }}  & {{ dd.ate | prettyNum(dec) }} \\
+    {{name}} & {{ dd.young | prettyNum(dec) }} & {{ dd.old | prettyNum(dec) }}& {{ dd.own_30 | prettyNum(dec) }}& {{ dd.rent_30 | prettyNum(dec) }}& {{ dd.z20 | prettyNum(dec) }} & {{ dd.z80 | prettyNum(dec) }}  & {{ dd.ate | prettyNum(dec) }} \\
 {%- endmacro %}
 \begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}   D{.}{.}{3.4}@{}   D{.}{.}{3.4}@{} | D{.}{.}{3.4}@{} }
   \toprule 
-    \multicolumn{1}{l}{Region}  & \multicolumn{1}{c}{Young}& \multicolumn{1}{c}{Old} & \multicolumn{1}{c}{own|30} &\multicolumn{1}{c}{rent|30} & \multicolumn{1}{c}{$y_{0.2}\tau=0$}& \multicolumn{1}{c}{$y_{0.8}\tau=0$} &  \multicolumn{1}{c}{ATE}   \\ 
+    \multicolumn{1}{l}{Region}  & \multicolumn{1}{c}{Young}& \multicolumn{1}{c}{Old} & \multicolumn{1}{c}{own|30} &\multicolumn{1}{c}{rent|30} & \multicolumn{1}{c}{$z_{0.2}$}& \multicolumn{1}{c}{$z_{0.8}$} &  \multicolumn{1}{c}{ATE}   \\ 
   \midrule
   {{  show("Aggregate", ctax[0].data, 3 ) }}
   \midrule

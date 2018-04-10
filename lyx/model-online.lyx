@@ -694,5 +694,151 @@ name "tab:shocks-by-region_105_105"
 
 \end_layout
 
+\begin_layout Section
+State level vs Division level 
+\end_layout
+
+\begin_layout Standard
+Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-y"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ show the results from regressions of the form
+\begin_inset Formula 
+\begin{align*}
+q_{st} & =\beta_{0}+\beta_{1}q_{dt}+u_{st},s\in d,t=1967,\dots,2012\\
+p_{st} & =\alpha_{0}+\alpha_{1}p_{dt}+u_{st},s\in d,t=1967,\dots,2012
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The aim of those regressions is to measure how much state level variation
+ is captured by the corresponding Divison level indices 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p-P-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/q-Q-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
