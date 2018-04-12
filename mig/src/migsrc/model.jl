@@ -56,6 +56,7 @@ type Model
 	pred_pdf::DataFrame
 	pred_y::Matrix
 	pred_p::Matrix
+	zrange::Tuple{Float64,Float64}
 
 	# cohort settings
 	# ---------------
@@ -80,8 +81,11 @@ type Model
 
 	# copula objects
 	# --------------
-	copula::NormalCopula
-	cop_quants::Matrix
+	# copula::NormalCopula
+	# cop_quants::Matrix
+	copdf::DataFrame
+	cop::Matrix{Float64}
+	cop_cdf::Matrix{Float64}
 	cop_shock::Vector
 
 
@@ -357,6 +361,7 @@ type Model
 				end
 			end
 		end
+
 		# convert to levels
 		zgrid = exp.(zgrid)
 
@@ -508,15 +513,33 @@ type Model
 
 		# copula settings
 		# ===============
-		cop = NormalCopula(2,0.5976)   # a 2D normal copula with parameter 0.5976
-		cop_quants = zeros(1000,2)
-		cop_quants[:,1] = linspace(0.01,0.99,1000)
+		# the input numbers here are from function
+		# migration::Sipp.wage_residual_copulas in 
+		# in the associated R package mig-pkg in this same repository.
+		zmarginal = collect(linspace(gridsXD["zsupp"][1,1],gridsXD["zsupp"][end,1],p.ncop))
+		gridsXD["zmarginal"] = zmarginal
+		gridsXD["zrange"] = extrema(zmarginal)
+		copdf = rcopy(
+			R"""
+			library(copula)
+			# load saved copula
+			load($(joinpath(io["in"],"copula.RData")))
+			qtl <- expand.grid(today=$zmarginal,tomorrow=$zmarginal)
+			qtl$dens <- dMvdc(as.matrix(qtl),cop)
+			qtl
+			"""
+			)
+		cop = reshape(copdf[:dens],p.ncop,p.ncop)
+		cop = cop ./ sum(cop,2)
+		cop_cdf = cumsum(cop,2)
+
+
 		cop_shock = rand(N*(p.nt-1))
 
 
 
 
-        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,c_yrs,c_idx,c_breaks,c_n,c_mem,zshock,sshock,mshock,zshock0,eps_dist,eps_shock,sinai,cop,cop_quants,cop_shock)
+        return new(v,vh,vfeas,sh,ch,cash,canbuy,rho,dh,EV,vbar,EVfinal,aone,amenities,grids,gridsXD,dimvec,dimvecH,dimvec2,popweights,dimnames,regnames,agedist,dist,inc_coefs,ageprof,inc_shocks,init_asset,Regmods_YP,sigma_reg,PYdata,pred_ydf,pred_pdf,pred_y,pred_p,extrema(zmarginal),c_yrs,c_idx,c_breaks,c_n,c_mem,zshock,sshock,mshock,zshock0,eps_dist,eps_shock,sinai,copdf,cop,cop_cdf,cop_shock)
 
 	end
 end

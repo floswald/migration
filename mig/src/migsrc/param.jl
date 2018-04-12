@@ -79,6 +79,7 @@ type Param
 	np    :: Int # number of price levels in each location
 	ny    :: Int # number of income levels by location
 	ns    :: Int # number of HHsizes
+	ncop  :: Int # number of bins to approximate the copula
 
 	# used in simulations
 	nsim::Int # number of individuals. this will be changed by cohort setup in model
@@ -101,6 +102,7 @@ type Param
 			nt    = 8
 			ns    = 2
 			nsim  = 100
+			ncop = 50
 
 		elseif size==2
 			# na    = 21
@@ -116,6 +118,7 @@ type Param
 			nt    = 32
 			ns    = 2
 			nsim  = 50000
+			ncop = 100
 
 		end		
 
@@ -218,7 +221,7 @@ type Param
 		# end
 		# create object
 
-		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,nsim,verbose)
 
 		# override defaults
 		if length(opts) > 0

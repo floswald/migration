@@ -475,19 +475,8 @@ Sipp.wage_residual_copulas <- function(){
 	f1 = fitCopula(normal.cop,as.matrix(d1))
 	cop <- mvdc(normalCopula(coef(f1)), c("norm", "norm"), list(list(mean = 0, sd =margins[,s]), list(mean = 0, sd =margins[,s1])))
 
-	# these are the grid points of z from the rouwenhorst discretization in the model:
-	q1 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=margins[,s1])
-	q2 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=margins[,s2])
-
-	qtl = expand.grid(q1,q2)
-	qtl$p = dMvdc(as.matrix(qtl),cop)
-	Gmove = matrix(qtl$p,4,4)
-	Gmove2 =  Gmove / rowSums(Gmove)
-	l = list()
-	l$cop_param = coef(f1)
-	l$cop_margins = margins
-	l$Gmove = Gmove2
-	cat(toJSON(l),file="~/Dropbox/mobility/output/model/data_repo/in_data_jl/Gmove.json")
+	# save this object to disk
+	save(cop,file="~/git/migration/mig/in/copula.RData")
 
 	d2 = data[D2D==1,list(p_u_minus1,p_u)]
 	d2 = d2[complete.cases(d2)]

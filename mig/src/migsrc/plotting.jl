@@ -1,4 +1,24 @@
 
+function plot_copula(m::Model)
+	n = length(m.gridsXD["zmarginal"])
+	contour(m.gridsXD["zmarginal"],
+		m.gridsXD["zmarginal"],
+		reshape(m.copdf[:dens],n,n),
+		c=ColorGradient([:blue,:red]),
+		xlabel="z today",
+		ylabel="z tomorrow",title="Movers z copula density")
+	io = setPaths()
+	savefig(joinpath(io["out_graphs"],"mover-copula.pdf"))
+	heatmap(m.gridsXD["zmarginal"],
+		m.gridsXD["zmarginal"],
+		m.cop,
+		# c=ColorGradient([:blue,:red]),
+		xlabel="z today",
+		ylabel="z tomorrow",title="Movers Transition Matrix")
+	savefig(joinpath(io["out_graphs"],"mover-trans.pdf"))
+end
+
+
 function own_cond_tau()
 	s = runSim()
 	s = s[.!ismissing.(s[:cohort]),:];

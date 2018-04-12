@@ -6607,7 +6607,16 @@ reference "tab:shutdown-cons-base"
  provides the main results of the paper.
  In the first row the consumption compensation demanded in the entire economy,
  for different subsets of the population, including young, old, owners at
- age 30, renters at age 30, and the entire population.
+ age 30, renters at age 30, individuals whose average 
+\begin_inset Formula $z$
+\end_inset
+
+ history is lower than the 20-th percentile of the distribution of 
+\begin_inset Formula $z$
+\end_inset
+
+ histories, same for people above the 80-th percentile, and finally the
+ entire population.
  The values in the table stand for the proportional per period increase
  in consumption that would make individuals indifferent between baseline
  and migration shutdown.
@@ -6623,12 +6632,15 @@ reference "tab:shutdown-cons-base"
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
- The next two columns condition the measure on position in the 
+ The next two columns condition the measure on position in the distribution
+ of realized 
 \begin_inset Formula $z$
 \end_inset
 
- distributionAs an average over all individuals treated in this experiment
- (ATE), the corresponding number is 5.1% of consumption compensation demanded.
+ draws.
+ It is evident that people who have relatively favourable .
+ As an average over all individuals treated in this experiment (ATE), the
+ corresponding number is 5.1% of consumption compensation demanded.
  
 \end_layout
 

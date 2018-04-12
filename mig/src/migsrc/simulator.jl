@@ -1,127 +1,37 @@
 
 
-
-function drawMarkov(G::Array{Float64,2},init::Array{Float64,1},N::Int,T::Int)
-
-	out = zeros(Int,N,T)
-	eps = rand(N,T)
-
-	n = size(G,1)
-
-	if length(init) != n
-		error("length(init) must be size(G,1)")
+function clamp(x::Number,a::Number,b::Number)
+	if x < a
+		a
+	elseif x > b
+		b
+	else
+		x
 	end
-
-	g = Categorical(init)
-
-	Gs = mapslices(cumsum,G,2)
-
-	z = zeros(n)
-
-	# initiate everybody on a random state
-	# drawn from init distribution
-	out[:,1] = rand(g,N)
-
-	for i = 1:N
-		for t = 2:T
-
-			z = Gs[ out[i,t-1], : ]
-
-			out[i,t] = findfirst(z.>eps[i,t])
-
-		end
-	end
-	out
 end
 
 
+"""
+	draw_z(m::Model,Lz::Float64,idx::Int)
 
-
-function forceBounds(x::Float64,lb::Float64,ub::Float64)
-	if x < lb
-		x = lb
-	elseif x > ub
-		x = ub
-	end
- 	return x
-end
-
-function forceBounds(x::Vector{Float64},lb::Float64,ub::Float64)
-	for i in 1:length(x)
-		x[i] = forceBounds(x[i],lb,ub)
-	end
-	return x
-end
-
-# # get one draw for y and p given Ly and Lp
-# function draw_yp(m::Model,Ly::Float64,Lp::Float64,j::Int)
-
-
-# 	ycoef = convert(Array,m.VAR_coefs[j,[:y_Intercept, :y_Lp, :y_Ly]])
-# 	pcoef = convert(Array,m.VAR_coefs[j,[:p_Intercept, :p_Lp, :p_Ly]])
-
-# 	x = vcat(1.0,Lp,Ly)
-
-# 	shock = rand(m.VAR_shock[j]) 	# [shock_y, shock_p]
-# 	yy = ycoef * x + shock[1]
-# 	pp = pcoef * x + shock[2]
-
-# 	# force inside of bounds
-# 	y = forceBounds(yy[1],m.VAR_coefs[j,:lb_y],m.VAR_coefs[j,:ub_y])
-# 	p = forceBounds(pp[1],m.VAR_coefs[j,:lb_p],m.VAR_coefs[j,:ub_p])
-# 	(y,p)
-# end
-
+Given a last draw `Lz`, return the next random draw ``z_{t+1}`` from
+```math 
+z_{t+1} = \rho z_{t}  + \varepsilon_t
+```
+"""
 function draw_z(m::Model,Lz::Float64,idx::Int)
-
 	zz = m.Inc_shocks[1,1] * Lz + m.zshock[idx]
-	# zz = m.Inc_shocks[j,1] * Lz + rand(Normal(0,m.Inc_shocks[j,2]))	#TODO
-	# z = forceBounds(zz,m.gridsXD["zsupp"][1,4],m.Inc_shocks[j,4])
-	z = forceBounds(zz,m.gridsXD["zsupp"][1,1],m.gridsXD["zsupp"][end,1])
-	return z
+	return clamp(zz,m.zrange[1],m.zrange[2])
 end
 
-function draw_z_cop(m::Model,Lz::Float64,idx::Int)
-
-	# what rank is Lz in the range of z?
-	zr = (Lz-m.gridsXD["zsupp"][1,1]) / m.gridsXD["zlength"][1]
-
-	# fill in column 2 of copula quantiles with conditioning value:
-	m.cop_quants[:,2] = repeat([zr],inner=[size(m.cop_quants,1)],outer=[1])
-
-	# get copula density on those values
-	d = dnormCopula(m.cop_quants,m.copula)
-
-	# normalize to sum to 1
-	d = d ./ sum(d)
-	cdf = cumsum(d)
-
-	# get rank of random draw from this cdf
-	r = searchsortedfirst(cdf[:],m.cop_shock[idx])
-
-	# map this rank back into z-space
-	zr = cdf[r] * m.gridsXD["zlength"][1] + m.gridsXD["zsupp"][1,1]
-
-	# return
-	return zr
-end
-
+"compute the level of income, including age profile and regional effects"
 function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
-
 	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logCensusMedinc] * log(y) + z )
 end
 
 
-# function getRegional(m::Model,Y::Float64,P::Float64,j::Int)
-
-# 	m.Regmods_YP[j] * vcat(1,Y,P)
-
-# end
-
 
 function simulate(m::Model,p::Param)
-
-	# pdebug("entered simulation")
 
 	T     = p.nt-1
 	nsim  = m.coh_breaks[end]	# total number of individuals
@@ -134,6 +44,7 @@ function simulate(m::Model,p::Param)
 	ygrid      = m.grids["Y"]
 	pgrid      = m.grids["P"]
 	regnames   = m.regnames[:Division]
+	zmarginal  = m.gridsXD["zmarginal"]
 
 	# temporary objects
 	ktmp  = zeros(Float64,p.nJ)
@@ -292,7 +203,6 @@ function simulate(m::Model,p::Param)
 	Dj[idxvec]   = rand(G0j,nsim)
 	Dz[idxvec]   = m.zshock0	# get initial z shock
 	Dh[idxvec]   = rand(G0h,nsim) .- 1
-	# Da[idxvec]   = forceBounds(rand(m.Init_asset,nsim),0.0,100.0)
 
 	# we want stable proportions within each cohort. i.e. each cohort should have the
 	# the same amount of people in state j, type tau, etct
@@ -598,7 +508,7 @@ function simulate(m::Model,p::Param)
 				# println("shock = $realized_shock")
 				# make sure savings is inside grid
 				# (although interpolator forces that anyway)
-				ss = forceBounds(ss,agrid[1],agrid[end])
+				clamp(ss,agrid[1],agrid[end])
 
 				# if move
 				# 	# find alternative value based on average moving cost for a mover
@@ -651,13 +561,12 @@ function simulate(m::Model,p::Param)
 					Dh[i_idx_next] = ihh
 					Da[i_idx_next] = ss
 					Dj[i_idx_next] = moveto
-					Dz[i_idx_next] = draw_z(m,z,i_idx) # TODO drawign this from the right distribution depending on whether move or not!
-					# if !move
-					# 	# Dzcop[i_idx_next] = draw_z_cop(m,z,i_idx)
-					# 	Dz[i_idx_next] = draw_z(m,z,i_idx)
-					# else
-					# 	Dz[i_idx_next] = draw_z_cop(m,z,i_idx)
-					# end
+					if move 
+						iz = searchsortedfirst(zmarginal,z)  # rank of your current z
+						Dz[i_idx_next] = zmarginal[searchsortedfirst( m.cop_cdf[iz,:], m.cop_shock[i_idx])]
+					else
+						Dz[i_idx_next] = draw_z(m,z,i_idx)
+					end
 					Dis[i_idx_next] = searchsortedfirst( cumGs[is,:,age][:], m.sshock[i_idx] )
 				end
 				if highMC && (p.shockReg==ij) && move
