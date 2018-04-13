@@ -302,6 +302,7 @@ function setPaths()
 		outg   = "C:\\Users\\florian_o\\Dropbox\\mobility\\output\\model\\data_repo\\out_graphs_jl"
 	elseif is_linux()
 		indir  = joinpath(joinpath(dirname(@__FILE__),"..","..","in"))
+		ind    = joinpath(d,"..","..","in")
 		outdir = joinpath(joinpath(dirname(@__FILE__),"..","..","out"))
 		outg   = outdir
 	end
