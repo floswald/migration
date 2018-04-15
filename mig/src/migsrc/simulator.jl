@@ -612,6 +612,10 @@ function simulate(m::Model,p::Param)
 	# --------------------------------
 
 	df = join(df,m.agedist,on=:realage)
+	wgt = m.regnames[[:j,:prop]]
+	wgt[:pop_wgt] = Weights(wgt[:prop])
+	@assert isa(wgt[:pop_wgt],AbstractWeights)
+	df = join(df,wgt[[:j,:pop_wgt]],on=:j)
 	df[:p2y] = df[:p] ./ df[:y]
 	df[:p2w] = df[:p] ./ df[:wealth]
 	# df = @transform(df,p2y = :p ./ :y, p2w = :p ./ :wealth)
@@ -806,6 +810,8 @@ function computeMoments(df::DataFrame,p::Param)
 	df[:sell] = (df[:h].==1) .& (df[:hh].==0)   # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
+	println("density")
+	println(df[:density])
 	fullw = Weights(convert(Array,df[:density]))
 
 

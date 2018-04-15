@@ -182,25 +182,25 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		if ij==0
 			# don't subset to any region: compute aggregate impact
 			# all
-			x=mig.ctaxxer(opt_dict,:realage,t->t.==t)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.==t,wgt=true)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.<31)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.<31,wgt=true)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.>30)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.>30,wgt=true)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:rent_30,t->t)
+			x=mig.ctaxxer(opt_dict,:rent_30,t->t,wgt=true)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:own_30,t->t)
+			x=mig.ctaxxer(opt_dict,:own_30,t->t,wgt=true)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			# lowest z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20")
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",wgt=true)
 			ctax[:data][:z20]=Optim.minimizer(x)
 			# 80 z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80")
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",wgt=true)
 			ctax[:data][:z80]=Optim.minimizer(x)
 			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
 			# ctax[:data][:tau1_z20]=Optim.minimizer(x)

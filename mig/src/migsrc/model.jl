@@ -519,19 +519,28 @@ type Model
 		zmarginal = collect(linspace(gridsXD["zsupp"][1,1],gridsXD["zsupp"][end,1],p.ncop))
 		gridsXD["zmarginal"] = zmarginal
 		gridsXD["zrange"] = extrema(zmarginal)
-		copdf = rcopy(
-			R"""
-			library(copula)
-			# load saved copula
-			load($(joinpath(io["in"],"copula.RData")))
-			qtl <- expand.grid(today=$zmarginal,tomorrow=$zmarginal)
-			qtl$dens <- dMvdc(as.matrix(qtl),cop)
-			qtl
-			"""
-			)
-		cop = reshape(copdf[:dens],p.ncop,p.ncop)
-		cop = cop ./ sum(cop,2)
-		cop_cdf = cumsum(cop,2)
+
+		# this commented out because of trouble installing R on my cluster
+		# i just saved the copula cdf in a file and load it from disk instead.
+		# the code below would create the data contained in the file.
+
+		# copdf = rcopy(
+		# 	R"""
+		# 	library(copula)
+		# 	# load saved copula
+		# 	load($(joinpath(io["in"],"copula.RData")))
+		# 	qtl <- expand.grid(today=$zmarginal,tomorrow=$zmarginal)
+		# 	qtl$dens <- dMvdc(as.matrix(qtl),cop)
+		# 	qtl
+		# 	"""
+		# 	)
+		# cop = reshape(copdf[:dens],p.ncop,p.ncop)
+		# cop = cop ./ sum(cop,2)
+		# cop_cdf = cumsum(cop,2)
+
+		cop_cdf = FileIO.load(joinpath(io["in"],"cop_cdf.jld2"))["cop_cdf"]
+		cop = zeros(p.ncop,p.ncop)  # dummy value
+		copdf = DataFrame()
 
 
 		cop_shock = rand(N*(p.nt-1))
