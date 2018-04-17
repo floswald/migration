@@ -67,7 +67,10 @@ elseif args["experiment"]
     if args["noMove"]
         if nwork > 1
             if args["--cluster"]=="cumulus"
-                addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
+                if nwork > 10
+                    error("only 10 workers on cumulus")
+                end
+                addprocs([cumulus[i] for i in 1:nwork])
             elseif args["--cluster"]=="local"
                 addprocs(nwork)
             end
