@@ -31,6 +31,17 @@ Options:
 using DocOpt
 args = docopt(doc, version=v"0.9.5")
 
+cumulus = vcat("10.20.35.11",
+"10.20.35.21",
+"10.20.35.26",
+"10.20.35.27",
+"10.20.35.30",
+"10.20.35.31",
+"10.20.35.32",
+"10.20.35.33",
+"10.20.35.35",
+"10.20.35.36")
+
 
 if args["estim"]
     using mig
@@ -68,7 +79,10 @@ elseif args["experiment"]
     elseif args["shockRegion"]
         if nwork > 1
             if args["--cluster"]=="cumulus"
-                addprocs([("vm$i-8core",round(Int,nwork/7)) for i in 3:10])
+                if nwork > 10
+                    error("only 10 workers on cumulus")
+                end
+                addprocs([cumulus[i] for i in 1:nwork])
             elseif args["--cluster"]=="local"
                 addprocs(nwork)
             end
