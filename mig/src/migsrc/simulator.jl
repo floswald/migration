@@ -810,8 +810,6 @@ function computeMoments(df::DataFrame,p::Param)
 	df[:sell] = (df[:h].==1) .& (df[:hh].==0)   # cut age into 3 bins, and add age squared
 
 	# df = join(df,m.agedist,on=:realage)
-	println("density")
-	println(df[:density])
 	fullw = Weights(convert(Array,df[:density]))
 
 
