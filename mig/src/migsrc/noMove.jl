@@ -287,10 +287,8 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	end
 
 	# sync to dropbox
-	# tmp = mktempdir()
-	# cp(joinpath(io["outdir"],jstr),tmp)
-	# cp(path,tmp)
-	# run(`dropbox-api sync $tmp dropbox:/research/mobility/output/model/data_repo/outbox`)
+	run(`dbxcli put $(joinpath(io["outdir"],jstr)) research/mobility/output/model/data_repo/outbox`)
+	run(`dbxcli put $path research/mobility/output/model/data_repo/outbox`)
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] noMove experiment ",took," hours")
