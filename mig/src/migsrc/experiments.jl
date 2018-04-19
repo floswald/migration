@@ -213,8 +213,8 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func;wgt=false)
 		val = @linq s |>
 			@where((:year.>1996) .& sel_func(_I_(var))) |>
 			@select(v=mean(:maxv),u=mean(:utility))
-		v0 = val[:v][1]
 	end
+	v0 = val[:v][1]
 
 	function ftau(ctau::Float64,v0::Float64,opt::Dict,wgt::Bool)
 		opt[:ctax] = ctau
@@ -228,8 +228,8 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func;wgt=false)
 			val = @linq s |>
 				@where((:year.>1996) .& sel_func(_I_(var))) |>
 				@select(v=mean(:maxv),u=mean(:utility))
-			v1 = val[:v][1]
 		end
+		v1 = val[:v][1]
 		return (v0 - v1)^2
 	end
 	ctax = optimize((x) -> ftau(x,v0,opt,wgt),0.5,2.0, show_trace=false,iterations=12)
