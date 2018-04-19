@@ -207,7 +207,7 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func;wgt=false)
 	v0 = 0.0
 	if wgt
 		val = @linq s |>
-			@where((:year.>1996) .& sel_func(_I_(var)))
+			@where((:year.>1996) .& sel_func(_I_(var))) |>
 			@select(v=mean(:maxv,:pop_wgt),u=mean(:utility,:pop_wgt))
 	else
 		val = @linq s |>
@@ -222,7 +222,7 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func;wgt=false)
 		v1 = 0.0
 		if wgt
 			val = @linq s |>
-				@where((:year.>1996) .& sel_func(_I_(var)))
+				@where((:year.>1996) .& sel_func(_I_(var))) |>
 				@select(v=mean(:maxv,:pop_wgt),u=mean(:utility,:pop_wgt))
 		else
 			val = @linq s |>
