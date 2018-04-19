@@ -5,13 +5,13 @@ using CategoricalArrays: CategoricalArray
 using Missings
 using LaTeXStrings
 using StatsBase
-using JSON ,FileIO#, RData 
+using JSON , FileIO#, RData 
 using Plots, StatPlots
 import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
 using ProgressMeter
-using RCall
+# using RCall  # dont use this as impossible to install on cluster.
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 
