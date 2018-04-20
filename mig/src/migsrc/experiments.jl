@@ -212,7 +212,7 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func)
 	function ftau(ctau::Float64,v0::Float64,opt::Dict)
 		opt[:ctax] = ctau
 		si = runSim(opt=opt)
-		val = @linq s |>
+		val = @linq si |>
 			@where((:year.>1996) .& sel_func(_I_(var))) |>
 			@select(v=mean(:maxv),u=mean(:utility))
 		v1 = val[:v][1]
