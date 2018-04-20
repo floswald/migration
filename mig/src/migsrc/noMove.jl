@@ -288,7 +288,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 	# sync output to dropbox
 	for fi in (jstr,ostr)
-		ficmd = run(`dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`)
+		ficmd = `dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`
 		out,proc = open(ficmd)
 	end
 
