@@ -200,39 +200,25 @@ end
 # 	return ctax
 # end
 
-function ctaxxer(opt::Dict,var::Symbol,sel_func;wgt=false)
+function ctaxxer(opt::Dict,var::Symbol,sel_func)
 	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
-	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1]),pop_wgt=$wgt")
+	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim() # baseline
-	v0 = 0.0
-	if wgt
-		val = @linq s |>
-			@where((:year.>1996) .& sel_func(_I_(var))) |>
-			@select(v=mean(:maxv ),u=mean(:utility ))
-	else
+	val = @linq s |>
+		@where((:year.>1996) .& sel_func(_I_(var))) |>
+		@select(v=mean(:maxv),u=mean(:utility))
+	v0 = val[:v][1]
+
+	function ftau(ctau::Float64,v0::Float64,opt::Dict)
+		opt[:ctax] = ctau
+		si = runSim(opt=opt)
 		val = @linq s |>
 			@where((:year.>1996) .& sel_func(_I_(var))) |>
 			@select(v=mean(:maxv),u=mean(:utility))
-	end
-	v0 = val[:v][1]
-
-	function ftau(ctau::Float64,v0::Float64,opt::Dict,wgt::Bool)
-		opt[:ctax] = ctau
-		si = runSim(opt=opt)
-		v1 = 0.0
-		if wgt
-			val = @linq s |>
-				@where((:year.>1996) .& sel_func(_I_(var))) |>
-				@select(v=mean(:maxv ),u=mean(:utility ))
-		else
-			val = @linq s |>
-				@where((:year.>1996) .& sel_func(_I_(var))) |>
-				@select(v=mean(:maxv),u=mean(:utility))
-		end
 		v1 = val[:v][1]
 		return (v0 - v1)^2
 	end
-	ctax = optimize((x) -> ftau(x,v0,opt,wgt),0.5,2.0, show_trace=false,iterations=12)
+	ctax = optimize((x) -> ftau(x,v0,opt),0.5,2.0, show_trace=false,iterations=12)
 	return ctax
 end
 function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2)

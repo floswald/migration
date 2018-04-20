@@ -112,7 +112,7 @@
   "noMove_region":{
     "template" : "noMove_region_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax.tex",
-    "data"     : "git/migration/mig/out/noMove_ps_1.0_ys_1.0.json"
+    "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/noMove_ps_1.0_ys_1.0.json"
   },   
   "noMove_region_tau":{
     "template" : "noMove_region_tau_ctax.mus",

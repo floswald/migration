@@ -182,25 +182,25 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		if ij==0
 			# don't subset to any region: compute aggregate impact
 			# all
-			x=mig.ctaxxer(opt_dict,:realage,t->t.==t,wgt=true)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.==t)
 			ctax[:data][:ate] = Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.<31,wgt=true)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.<31)
 			ctax[:data][:young]=Optim.minimizer(x)
 			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.>30,wgt=true)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.>30)
 			ctax[:data][:old]=Optim.minimizer(x)
 			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:rent_30,t->t,wgt=true)
+			x=mig.ctaxxer(opt_dict,:rent_30,t->t)
 			ctax[:data][:rent_30]=Optim.minimizer(x)
 			# for those who did own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:own_30,t->t,wgt=true)
+			x=mig.ctaxxer(opt_dict,:own_30,t->t)
 			ctax[:data][:own_30]=Optim.minimizer(x)
 			# lowest z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",wgt=true)
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20")
 			ctax[:data][:z20]=Optim.minimizer(x)
 			# 80 z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",wgt=true)
+			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80")
 			ctax[:data][:z80]=Optim.minimizer(x)
 			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
 			# ctax[:data][:tau1_z20]=Optim.minimizer(x)
@@ -286,9 +286,17 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 		JSON.print(f,d)
 	end
 
-	# sync to dropbox
-	run(`dbxcli put $(joinpath(io["outdir"],jstr)) research/mobility/output/model/data_repo/outbox`)
-	run(`dbxcli put $path research/mobility/output/model/data_repo/outbox`)
+	# sync output to dropbox
+	for fi in (jstr,ostr)
+		ficmd = run(`dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`)
+		out,proc = open(ficmd)
+	end
+
+	# make tables
+    # cd(joinpath(dirname(@__FILE__),"..","..","..","tables"))
+    # out,proc = open(run(`zsh -c "make"`))
+
+
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] noMove experiment ",took," hours")
