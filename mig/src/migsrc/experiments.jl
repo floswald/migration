@@ -4,7 +4,7 @@
 # Decompose Moving Cost of Owners
 # ===============================
 
-function decompose_MC_owners()
+function decompose_MC_owners(nosave::Bool=true)
 
 	ps = Dict(:alpha => Dict(:MC3=>0.0),
 		      :phi => Dict(:phi => 0.0),
@@ -44,12 +44,14 @@ function decompose_MC_owners()
 
 	di = Dict(:agg=>d,:tau=>tau)
 
-    io = mig.setPaths()
-    f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
-    JSON.print(f,di)
-    close(f)
-	ficmd = `dbxcli put $(joinpath(io["outdir"],"decompose_MC_owners.json")) research/mobility/output/model/data_repo/outbox/decompose_MC_owners.json`
-	out,proc = open(ficmd)
+	if !nosave
+	    io = mig.setPaths()
+	    f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
+	    JSON.print(f,di)
+	    close(f)
+		ficmd = `dbxcli put $(joinpath(io["outdir"],"decompose_MC_owners.json")) research/mobility/output/model/data_repo/outbox/decompose_MC_owners.json`
+		out,proc = open(ficmd)
+	end
 
 	post_slack("[MIG] decompose_MC_owners done.")
 	return(di)
@@ -694,7 +696,7 @@ function find_xtra_ass(v0::Float64,opts::Dict)
 	return ctax
 end
 
-function moneyMC()
+function moneyMC(nosave::Bool=false)
 
 	# compute a baseline without MC
 	p = Param(2)
@@ -736,10 +738,18 @@ function moneyMC()
 	d =Dict( "low_type" => Dict( "rent" => Optim.minimizer(MC[1,1]), "own" => Optim.minimizer(MC[2,1]), "high_type" => Dict( "rent" => Optim.minimizer(MC[1,2]), "own" => Optim.minimizer(MC[2,2]))) )
 
 	io = mig.setPaths()
-	f = open(joinpath(io["outdir"],"moneyMC2.json"),"w")
-	JSON.print(f,d)
-	close(f)
 
+	if !nosave
+	    io = mig.setPaths()
+	    fi = joinpath(io["outdir"],"moneyMC2.json")
+		f = open(fi,"w")
+		JSON.print(f,d)
+		close(f)
+		ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+		out,proc = open(ficmd)
+	end
+
+	post_slack("[MIG] MoneyMC done.")
 
 	return (d,MC)
 end

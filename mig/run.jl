@@ -95,10 +95,12 @@ elseif args["experiment"]
         @time mig.shockRegions_scenarios(on_impact,save=!nosave)
     elseif args["moneyMC"]
         info("      monetize the moving costs, with nosave=$nosave")
+        using mig
+        mig.moneyMC($nosave)
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig
-        mig.decompose_MC_owners()
+        mig.decompose_MC_owners($nosave)
     end
 
 end
