@@ -1,11 +1,19 @@
 {% macro showparam(param,dd) %}
     {{param}} & {{ dd.Estimate | prettyNum(5) }} & {{ dd.SE | prettyNum(5) }}  \\
 {%- endmacro %}
+{% macro showmargin(param,dd) %}
+    {{param}} & {{ dd.mean | prettyNum(5) }} & {{ dd.sd | prettyNum(5) }}  \\
+{%- endmacro %}
 \begin{tabular}{c D{.}{.}{6.7}@{} D{.}{.}{6.7}@{}  }
   \toprule 
-     & \multicolumn{1}{c}{$\rho$} & \multicolumn{1}{c}{S.E.} \\ 
-  \midrule
+  \textbf{Copula Params}      & \multicolumn{1}{c}{$\rho$} & \multicolumn{1}{c}{S.E.} \\ 
+  \cmidrule{2-3}
   {{  showparam("$G_\\text{move}(z_t,z_{t+1})$", movers ) }}
+  \midrule
+  \textbf{Margins}   & \multicolumn{1}{c}{$E(u)$} & \multicolumn{1}{c}{$sd(u)$} \\
+    \cmidrule{2-3}
+   {{showmargin("$u_t$", margins[0]) }}\\
+   {{showmargin("$u_{t+1}$", margins[1])}} \\
   \bottomrule
 \end{tabular}
 

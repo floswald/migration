@@ -461,6 +461,13 @@ Sipp.wage_residual_copulas <- function(){
 	dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
 	dat[,u_minus1 := dat[list(upid,timeid-1)][["u"]]]
 
+	par(mfrow=(c(1,2)))
+	dat[D2D==TRUE,hist(u,breaks=20,freq=FALSE,main="Histrogram of u(t)")]
+	lines(density(dat[D2D==TRUE,u]),col="red",lw=2)
+	dat[D2D==TRUE,hist(u_plus1,breaks=20,freq=FALSE,main="Histrogram of u(t+1)")]
+	lines(density(dat[D2D==TRUE & (!is.na(u_plus1)),u_plus1]),col="red",lw=2)
+	par(mfrow=c(1,1))
+
 	margins=dat[D2D==TRUE,list(m=mean(u),s=sd(u),m1=mean(u_plus1,na.rm=T),s1=sd(u_plus1,na.rm=T))]
 
 	# standardize into ranks
@@ -484,7 +491,7 @@ Sipp.wage_residual_copulas <- function(){
 
 	c1 = as.data.frame(summary(f1)$coefficients)
 	c2 = as.data.frame(summary(f2)$coefficients)
-	cat(toJSON(list(movers=c1,stayers=c2)),file="~/Dropbox/mobility/output/model/fit/copulas.json")
+	cat(toJSON(list(movers=c1,before_move=c2,margins=cop@paramMargins)),file="~/Dropbox/research/mobility/output/model/fit/copulas.json")
 
 	return(list(movers=f1,Gmove=Gmove2))
 }

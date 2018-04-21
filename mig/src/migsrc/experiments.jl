@@ -672,14 +672,14 @@ end
 # compute the factor xtra_ass which equalizes the baseline value (no MC) to the one with MC but where you multiply assets with xtra_ass at a certain age (only at that age, not all ages!)
 
 # adds xtra_ass dollars to each asset grid point at age t
-function valueDiff(xtra_ass::Float64,v0::Float64,opts::Dict)
-	p = Param(2,opts)
+function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
+	p = Param(2,opts=opt["p"])
 	println("extra assets=$xtra_ass")
 	setfield!(p,:shockVal,[xtra_ass])
-	setfield!(p,:shockAge,opts["it"])
+	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[1,1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
 	if w == p.myNA
 		return NaN 
 	else
@@ -700,7 +700,7 @@ function moneyMC(nosave::Bool=false)
 
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array(Any,p.nh,p.ntau)
+	MC = Array{Any}(p.nh,p.ntau)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
@@ -713,7 +713,8 @@ function moneyMC(nosave::Bool=false)
 	# 0 net wealth means that assets are -163K.
 
 	opts = Dict()
-	opts["policy"] = "moneyMC"
+	opts["p"] = Dict()
+	opts["p"]["policy"] = "moneyMC"
 	for ih in 0:1
 		if ih==0
 			opts["asset"] = whichasset
@@ -724,11 +725,11 @@ function moneyMC(nosave::Bool=false)
 		for itau in 1:p.ntau
 			opts["itau"] = itau
 			opts["iz"] = 1  	# lowest income state
-				opts["it"] = 1 	# age 1
-				v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-				MC[ih+1,itau] = find_xtra_ass(v0,opts)
-				println("done with MC ih=$ih, itau=$itau")
-				println("moving cost: $(Optim.minimizer(MC[ih+1,itau]))")
+			opts["it"] = 1 	# age 1
+			v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+			MC[ih+1,itau] = find_xtra_ass(v0,opts)
+			info("done with MC ih=$ih, itau=$itau")
+			info("moving cost: $(Optim.minimizer(MC[ih+1,itau]))")
 
 		end
 	end
