@@ -1,8 +1,8 @@
 
 
 
-function post_slack(job,time,units)
-	txt = "payload={'text': '$job finished after $time $units.'}"
+function post_slack(job)
+	txt = "payload={'text': '$job'}"
 	# println(txt)
 	# println(ENV["MIG_SLACK"])
 	if haskey(ENV,"MIG_SLACK")

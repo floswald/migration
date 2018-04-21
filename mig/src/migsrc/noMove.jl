@@ -299,7 +299,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] noMove experiment ",took," hours")
+	post_slack("[MIG] noMove experiment finished after $took hours")
 	return n
 end
 
