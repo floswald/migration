@@ -97,6 +97,7 @@ elseif args["experiment"]
         info("      monetize the moving costs, with nosave=$nosave")
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
+        mig.decompose_MC_owners()
     end
 
 end
