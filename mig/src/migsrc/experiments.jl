@@ -48,7 +48,10 @@ function decompose_MC_owners()
     f = open(joinpath(io["outdir"],"decompose_MC_owners.json"),"w")
     JSON.print(f,di)
     close(f)
+	ficmd = `dbxcli put $(joinpath(io["outdir"],"decompose_MC_owners.json")) research/mobility/output/model/data_repo/outbox/decompose_MC_owners.json`
+	out,proc = open(ficmd)
 
+	post_slack("[MIG] decompose_MC_owners done.")
 	return(di)
 end
 
