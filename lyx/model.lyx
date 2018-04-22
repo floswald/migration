@@ -195,10 +195,11 @@ This paper estimates a lifecycle model of consumption, housing choice and
  This value ranges from 0% up to almost 13% of lifetime consumption depending
  on the type of household considered.
  Individuals self-select into ownership, and the model provides cross–equation
- restrictions to address this problem.
+ restrictions to address this econometric problem.
  In doing so, it identifies several structural primitives, for instance
- separate moving cost functions for renters and owners, which are of first
- order importance for policy makers concerned with housing and labor markets.
+ separate moving costs for renters and owners, which are of first order
+ importance for policy makers concerned with housing and labor markets.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -449,12 +450,13 @@ literal "true"
 
 \begin_layout Standard
 Migration is a low probability event in both data and model.
- Nevertheless, the welfare implications are large.
- I conduct an experiment where migration across regions is prohibited.
- In the baseline version, I compute the average lifetime utility of agents
- in the region under both scenarios, and I find that removing the option
- to move is valued at 5.1% of optimal per period consumption over the entire
- lifecycle – a large value.
+ Nevertheless, the welfare implications not being able to migrate are large.
+ I conduct an experiment where migration across regions is prohibited in
+ order to measure the insurance value provided by migration.
+ In the main version of this counterfactual experiment, I compute the average
+ lifetime utility of agents under both scenarios, and I find that removing
+ the option to move is valued at 4.6% of optimal per period consumption over
+ the entire lifecycle – a large value.
 \begin_inset Foot
 status collapsed
 
@@ -462,15 +464,15 @@ status collapsed
 The baseline version assumes no change to regional prices as a a result
  of the policy; I provide three additional scenarios with different assumptions
  about how regional prices might change after introduction of the policy.
- The scenarios assume shocks ranging from large and negative to positive,
+ The scenarios assume price changes ranging from large and negative to positive,
  and all imply even higher valuations of the forgone migration option than
  under observed prices.
 \end_layout
 
 \end_inset
 
- Conditioning on young versus old household, one finds 7.6% for the former
- and 2.3% the latter.
+ Conditioning on young versus old household, one finds 7.1% for the former
+ and 2% for the latter.
  Given that the ownership rate varies significantly by age, one can see
  that young, mobile renters are the group which incurs the greatest welfare
  loss from reduced mobility.
@@ -569,6 +571,8 @@ literal "true"
 \end_inset
 
 .
+ The i.i.d.
+ assumption for regional shocks is clearly rejected in the data.
  I follow 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -680,6 +684,39 @@ literal "true"
  The same mechanism operates in my model.
  Furthermore, the dynamic nature of my model allows me to evaluate the response
  of migration to shocks over time.
+ My paper can be seen as a complement to the exercise proposed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+, or 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan2017employment"
+literal "false"
+
+\end_inset
+
+, where the question is how much insurance against local labor market shocks
+ is offered by migration.
+ The author finds migration insures against 7% of an average local labor
+ demand shock.
+ My paper implements a fully structural analysis of the same question, with
+ the added benefit that I can measure a value of the migration option in
+ terms of consumption.
+ In this sense, the present paper offers a more direct answer to the question
+ of 
+\emph on
+how much consumption would I forgo today in order to be insured in an adverse
+ future state
+\emph default
+, which describes an insurance contract fairly well.
+ In a similar vein, the model delivers dollar estimates for average moving
+ costs for all types of agents in the model which are in line with the previous
+ literature.
 \end_layout
 
 \begin_layout Standard
@@ -876,7 +913,7 @@ literal "true"
  The likelihood of moving depends not only on whether or not the individual
  owns their house and on their asset holdings, but also on the price and
  income levels in all potential destination regions.
- The value of the migration option to actual migrants is very large.
+ The value of the migration option is very large.
 \end_layout
 
 \begin_layout Section
@@ -1349,7 +1386,7 @@ reference "fig:Regional-Income-data"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1419,7 +1456,7 @@ name "tab:Annual-moving-rate"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -2237,7 +2274,7 @@ When moving from region
 \end_inset
 
 , as mentioned above.
- If we imagine 
+ In the model I use 
 \begin_inset Formula $G_{\text{stay}}$
 \end_inset
 
@@ -2253,28 +2290,9 @@ When moving from region
 \begin_inset Formula $z'$
 \end_inset
 
- tomorrow, and we think it is harder to predict 
-\begin_inset Formula $z'$
-\end_inset
-
- for movers than for stayers, given 
-\begin_inset Formula $z$
-\end_inset
-
-, then the corresponding distribution of 
-\begin_inset Formula $z'$
-\end_inset
-
- will be more equally distruted according to 
-\begin_inset Formula $G_{\text{move}}$
-\end_inset
-
- than in 
-\begin_inset Formula $G_{\text{stay}}$
-\end_inset
-
-.
- I will estimate both objects from data as described in subsection 
+ tomorrow for stayers and movers, respectively.
+ Both objects are estimated from individual SIPP data as described in subsection
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:copula-estimates"
@@ -4333,7 +4351,7 @@ Dropbox/data/FHFA/rsquareds.tex}
 \begin_inset Formula $p_{st},q_{st}$
 \end_inset
 
-on corresponding Division level indices 
+ on corresponding Division level indices 
 \begin_inset Formula $p_{dt},q_{dt}$
 \end_inset
 
@@ -4349,10 +4367,6 @@ name "tab:-region-state-rsquared"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4664,6 +4678,34 @@ literal "true"
  is the same regardless the origin location.
  It would be straightforward to relax this assumption, but data limitations
  forced me to impose this restriction.
+ A copula is a multivariate distribution function with marginals that are
+ all uniformly distributed on the unit interval.
+ For example, if 
+\begin_inset Formula $F$
+\end_inset
+
+ is a bi-dimensional CDF, and if 
+\begin_inset Formula $F_{i}$
+\end_inset
+
+ is the CDF of the 
+\begin_inset Formula $i$
+\end_inset
+
+-th margin, then the copula is given by
+\begin_inset Formula 
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $F_{i}^{-1}$
+\end_inset
+
+ is the quantile function.
+ There are different families of copulae, I will use a normal copula.
  
 \end_layout
 
@@ -5956,9 +5998,8 @@ Results
 I will now move on to describe the results of this paper.
  I will first investigate the dollar value of moving costs, before answering
  the question of why owners move less through the lens of the model.
- Finally I will present the main set of results pertainting to the value
+ Finally I will present the main set of results pertaining to the value
  of the migration option.
- 
 \end_layout
 
 \begin_layout Subsection
@@ -6266,7 +6307,7 @@ reference "tab:Decomposing-owner's-moving"
 
 \end_inset
 
- from the model .
+ from the model.
  The aim is to understand the relative importance of both financial transaction
  cost and utility cost.
  If we see a large reaction of the model–generated moments after setting
@@ -6281,31 +6322,31 @@ reference "tab:Decomposing-owner's-moving"
 
 , we see changes in three key moments when considering first all types of
  households.
- The first row shows the percentage change in the ownership rate for different
- configurations of the model parameters.
+ The first row shows the percentage change in the aggregate ownership rate
+ for different configurations of the model parameters.
  Setting the utility cost of moving for owners to zero in the column labelled
  
 \begin_inset Formula $\alpha_{3}=0$
 \end_inset
 
- increases the ownership rate by 1.72%, because this makes owning a more
+ increases the ownership rate by 1.78%, because this makes owning a more
  attractive option in case of the need to migrate.
  Similarly, abolishing the financial transaction cost from selling in column
  
 \begin_inset Formula $\phi=0$
 \end_inset
 
- leads to an even bigger increase of 2.58%.
+ leads to an even bigger increase of 2.47%.
  In the final column 
 \begin_inset Formula $\alpha=\phi=0$
 \end_inset
 
-, combining both changes, we see an increase of 4.44% in ownership.
+, combining both changes, we see an increase of 4.4% in ownership.
  
 \end_layout
 
 \begin_layout Standard
-The second row shows the same experiment for the migration rate.
+The second row shows the same experiment for the overall migration rate.
  Here the direct impact of 
 \begin_inset Formula $\alpha_{3}=0$
 \end_inset
@@ -6352,15 +6393,18 @@ population, i.e.
 \emph on
 stayers 
 \emph default
-being overrepresented in the group of owners already, hence see a smaller
+being overrepresented in the group of owners already, hence we see a smaller
  increase in ownership in the top panel.
- The latter effect is the converse of this, in the sense that the larger
- numbers for increased migration in the top panel comes from a few stayer
- types, who 
+ The latter effect has to do with this change in composition of renters
+ versus owners: given that in the mover population we register a larger
+ increase in ownership, the denominator in 
 \emph on
-do 
+Migration | Own 
 \emph default
-in fact move, now that costs are lower.
+becomes larger, hence the value decreases.
+ Finally, the fact that the increase in migration rate is identical across
+ both panels shows that any additional mobility can come only from the subpopula
+tion of mover types.
 \end_layout
 
 \begin_layout Standard
@@ -6394,6 +6438,8 @@ Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
 
 \begin_layout Plain Layout
 Decomposing owners' moving costs.
+ This table shows the percentage increase in three key model moments related
+ to ownership and migration as we successively remove moving costs for owners.
  Compares baseline statistics to scenarios with no additional moving cost
  for owners (
 \begin_inset Formula $\alpha_{3}=0$
@@ -6450,7 +6496,23 @@ This section presents a measure of how much individuals care about having
  The question is motivated by relatively low migratory flows across regions,
  1.32% of households per year, as initially stated.
  Do low flows imply low value? And how does this valuation depend on age,
- location, ownership status, and current state of the business cycle? 
+ location, ownership status, and current state of the business cycle? This
+ value is related to what in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+ is called 
+\emph on
+migratory insurance.
+
+\emph default
+ Here, I don't infer this from the amount of migration after a local shock
+ has occured, ex post, but I consider how much individuals value to have
+ the option to migrate ex ante, in case a shock were to occur.
 \end_layout
 
 \begin_layout Standard
@@ -6480,7 +6542,7 @@ Before delving into the results it is paramount to clarify the role of the
 status collapsed
 
 \begin_layout Plain Layout
-Thanks to an anonymous referee for insisting on this point.
+Thanks to an anonymous referee for helping me to clarify this point.
 \end_layout
 
 \end_inset
@@ -6615,20 +6677,32 @@ reference "tab:shutdown-cons-base"
 \begin_inset Formula $z$
 \end_inset
 
- histories, same for people above thee 80-th percentile, and finally the
+ histories (i.e.
+ 
+\emph on
+poor 
+\emph default
+individuals), same for people above thee 80-th percentile, and finally the
  entire population.
  The values in the table stand for the proportional per period increase
  in consumption that would make individuals indifferent between baseline
  and migration shutdown.
- For example, the group of young people (with age below half of their lifespan)
- would demand 1.076 times what they consume in the baseline in each period,
- or an increase of 7.6% of per period consumption.
- This amount is lower for old people at 2.3%, which is intuitive since they
+ Hence it is a measure for their willingness to pay to maintain migration.
+ For example, in the first row of table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+
+\end_inset
+
+, the group of young people (with age below half of their lifespan) would
+ demand an increase of 7.1% of per period consumption.
+ This amount is lower for old people at 2%, which is intuitive since they
  forgo fewer periods where the migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
- that age demand 3.8% more consumption, while same aged renters demand almost
- double that, i.e.
- 6.3%.
+ that age demand 4% more consumption, while same aged renters demand more,
+ i.e.
+ 5%.
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
@@ -6638,19 +6712,47 @@ reference "tab:shutdown-cons-base"
 \end_inset
 
  draws.
- It is evident that people who have relatively favourable .
- As an average over all individuals treated in this experiment (ATE), the
- corresponding number is 5.1% of consumption compensation demanded.
+ It is evident that people who have relatively favourable draws of 
+\begin_inset Formula $z$
+\end_inset
+
+ value migration more, which has to do with the shape of the estimated transitio
+n matrix for movers, 
+\begin_inset Formula $G_{\text{move}}$
+\end_inset
+
+ as illustrated in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:copula-estimates"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ (High 
+\begin_inset Formula $z$
+\end_inset
+
+ movers can expect another high 
+\begin_inset Formula $z$
+\end_inset
+
+ draw in the new location.) As an average over all individuals treated in
+ this experiment (ATE), the corresponding number is 5.1% of consumption compensat
+ion demanded.
  
 \end_layout
 
 \begin_layout Standard
-In the same table we the continue with this exercise and split the sample
- by region to understand how heterogeneous those valuations are distributed.
+In the same table we continue with this exercise and split the sample by
+ region to understand how heterogeneous those valuations are distributed.
  Perhaps not surprisingly, there is a lot of variation in how individuals
  feel about removal of the migration option by region.
  In general, living in a high-income, high-price region like Pacific accentuates
- the difference between young and old even more (7.9% vs 0.6% compensation
+ the difference between young and old even more (7.1% vs -0.3% compensation
  demanded).
  Put simply, this is because high prices are good for owners, who are more
  likely to stay in the region no matter what, but bad for renters who cannot
@@ -6661,7 +6763,18 @@ In the same table we the continue with this exercise and split the sample
  migration to a large degree and in the range of -2% (young owners in East
  South Central prefer not having the option to move) and up to 13% of per
  period consumption.
- 
+ Notice that negative values, i.e.
+ a willingness to pay to keep the migration restriction in place, like for
+ poor individuals in the Pacific region, mean that they are compensated
+ by 
+\begin_inset Formula $q_{\text{Pacific}}$
+\end_inset
+
+, which is high relative to the regional 
+\begin_inset Formula $q$
+\end_inset
+
+ of most other regions, hence moving would worsen their utility.
 \end_layout
 
 \begin_layout Standard
@@ -6714,7 +6827,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6728,7 +6841,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/noMove_region_tau_ctax.tex}
+Dropbox/model/experiments/noMove_region_z_ctax.tex}
 \end_layout
 
 \end_inset
@@ -6742,16 +6855,18 @@ Dropbox/model/experiments/noMove_region_tau_ctax.tex}
 \begin_layout Plain Layout
 Consumption compensation demanded after migration shutdown in the baseline
  scenario (regional prices are unaffected by the shutdown of migration).
- The numbers in this table represent the required proportional scaling factor
+ The numbers in this table represent the required percentage scaling factor
  
 \begin_inset Formula $\Delta c$
 \end_inset
 
  by which optimal consumption under the shutdown policy would have to be
  increased in order for individuals to be indifferent to the baseline.
- A value of 1.076 as in the first row of the second column, then, means that
- young people would demand an increase of 7.6% of the consumption level which
- they had optimally chosen under the policy.
+ Positive values indicate people disapproving the policy, negative values
+ indicate the opposite.
+ A value of 7.0% as in the first row of the second column means that young
+ people would demand an increase of 7.0% of the consumption level which they
+ had optimally chosen under the policy, in order for them to be indifferent.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:shutdown-cons-base"
@@ -6831,7 +6946,7 @@ The next two panels for
 
  this result may be somewhat surprising.
  We observe that after migration is abolished, homeownership rises by about
- 11% at age 30.
+ 9% at age 30.
  Notice that this increase implies that far more than only the previous
  migrants now choose to buy, which was relatively small group of people.
  The increase in ownership comes from the fact that potential future moves
@@ -7305,7 +7420,7 @@ The main result of this paper is to show that despite average migration
  in lifetime utility that ranges from 0% up to almost 13% depending on the
  type of household one considers.
  Variations in this measure vary widely with age, ownership status, original
- location, and piont in the business cycle.
+ location, and point in the business cycle.
  To arrive at this result, I construct a lifecycle model which includes
  homeownership as a choice variable next to savings and location choices,
  which I then fit to SIPP data and use to make counterfactual experiments.
@@ -7315,11 +7430,35 @@ The main result of this paper is to show that despite average migration
  The model places particular emphasis on a close representation of the observed
  house price and income series, both of which exhibit strong correlation
  of regional shocks.
+ These results resonate with the findings in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+ in the sense that both papers provide an estimate of 
+\emph on
+migratory insurance
+\emph default
+.
+ Here I provide a well-defined value in terms of consumption, whereas the
+ unit of measurement is more abstract in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-The model delivers structural estimates for differential moving costs between
- owners and renters, over and above financial transaction costs.
+The present model delivers structural estimates for differential moving
+ costs between owners and renters, over and above financial transaction
+ costs.
  It is shown that this moving cost component is first order in explaining
  differential moving rates between renters and owners, and that the implied
  monetary value of the moving costs for both groups bracket the cost from
@@ -8036,6 +8175,13 @@ Estimation of
 \end_inset
 
 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Copula-Estimation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8114,8 +8260,37 @@ Here
 \end_inset
 
  is a Division fixed effect.
- Then I convert the residuals into their respective rank in the empirical
- distributions of before and after move residuals.
+ Remember that the copula is given as 
+\begin_inset Formula 
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+
+\end_inset
+
+so that it is necessary to specify 1) the copula family and 2) both margins
+ 
+\begin_inset Formula $F_{1},F_{2}$
+\end_inset
+
+.
+ Visual inspection of the margins lead me to assume normal margins, see
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Densities-of-wage-z"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Estimation itself is based on the respective rank of 
+\begin_inset Formula $u$
+\end_inset
+
+ in the empirical distributions.
  Denoting the standardized values by 
 \begin_inset Formula $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$
 \end_inset
@@ -8163,6 +8338,140 @@ reference "tab:Normal-Copula-estimates"
 \end_inset
 
 .
+ The contours of the corresponding density function of copula 
+\begin_inset Formula $C$
+\end_inset
+
+ are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contours-of-copula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/data/sipp/z_margins.pdf
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Densities of wage residual 
+\begin_inset Formula $u$
+\end_inset
+
+in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:copula-margins-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ of movers today 
+\begin_inset Formula $(u)$
+\end_inset
+
+ and tomorrow (u_plus1).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Densities-of-wage-z"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/mover-copula.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Contours of copula density which is the estimate of the transition matrix
+ of movers' 
+\begin_inset Formula $z$
+\end_inset
+
+, denoted 
+\begin_inset Formula $G_{\text{move}}$
+\end_inset
+
+ in the text.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contours-of-copula"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

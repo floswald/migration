@@ -41,12 +41,15 @@ def prettyPerc(value, dec=4):
   value = round(value,dec)
   return "%g \phantom{,}\\%%" % value
 
-def prettyPercLessOne(value, dec=4):
+def prettyPercLessOne(value,dec):
   value = float(value)
   if (value==0):
     return "%.2f \phantom{,}\\%%" % 0
   value = round(100*(value-1),dec)
-  return "%g \phantom{,}\\%%" % value
+  pval = '{0:.1f}'.format(value)
+  return "%s \phantom{,}\\%%" % pval
+
+
 
 def getJson(filename):
   with open(filename) as data_file:    

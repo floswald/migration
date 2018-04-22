@@ -118,7 +118,7 @@ Online Appendix to
 \begin_inset Newline newline
 \end_inset
 
-Regional Shocks, Migration and Homeownership
+The Effect of Homeownership on the Option Value of Regional Migration
 \end_layout
 
 \begin_layout Author
@@ -248,22 +248,32 @@ The exercise is set up in partial equilibrium, as is indeed the model.
 
  with respect to their observed (and expected) level, by surprise, and proceed
  at this deviated level for ever after.
- The workings of this shock are illustrated in figure 
+ The results from this are collected in tables 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Comparative-Statics"
+reference "tab:shocks-by-region_95_95"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- in the appendix, where again, all other regions 
-\begin_inset Formula $d'$
+ through 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shocks-by-region_105_105"
+plural "false"
+caps "false"
+noprefix "false"
+
 \end_inset
 
- are following their baseline prices.
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -312,6 +322,7 @@ name "tab:shocks-by-region_95_95"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -360,6 +371,7 @@ name "tab:shocks-by-region_1_95"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -408,6 +420,7 @@ name "tab:shocks-by-region_105_95"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -456,6 +469,7 @@ name "tab:shocks-by-region_95_1"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -504,6 +518,7 @@ name "tab:shocks-by-region_1_1"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -552,6 +567,7 @@ name "tab:shocks-by-region_105_1"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -600,6 +616,7 @@ name "tab:shocks-by-region_95_105"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -648,6 +665,7 @@ name "tab:shocks-by-region_1_105"
 
 \begin_layout Standard
 \begin_inset Float table
+placement p
 wide false
 sideways false
 status collapsed
@@ -796,7 +814,7 @@ name "tab:state-vs-region-p"
 \begin_inset Float table
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT

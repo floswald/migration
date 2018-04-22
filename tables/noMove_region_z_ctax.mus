@@ -1,21 +1,21 @@
 {% macro show(name,dd,dec) %}
-    {{name}} & {{ dd.young | prettyNum(dec) }} & {{ dd.old | prettyNum(dec) }}& {{ dd.own_30 | prettyNum(dec) }}& {{ dd.rent_30 | prettyNum(dec) }}& {{ dd.z20 | prettyNum(dec) }} & {{ dd.z80 | prettyNum(dec) }}  & {{ dd.ate | prettyNum(dec) }} \\
+    {{name}} & {{ dd.young | prettyPercLessOne(dec) }} & {{ dd.old | prettyPercLessOne(dec) }}& {{ dd.own_30 | prettyPercLessOne(dec) }}& {{ dd.rent_30 | prettyPercLessOne(dec) }}& {{ dd.z20 | prettyPercLessOne(dec) }} & {{ dd.z80 | prettyPercLessOne(dec) }}  & {{ dd.ate | prettyPercLessOne(dec) }} \\
 {%- endmacro %}
 \begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}   D{.}{.}{3.4}@{}   D{.}{.}{3.4}@{} | D{.}{.}{3.4}@{} }
   \toprule 
     \multicolumn{1}{l}{Region}  & \multicolumn{1}{c}{Young}& \multicolumn{1}{c}{Old} & \multicolumn{1}{c}{own|30} &\multicolumn{1}{c}{rent|30} & \multicolumn{1}{c}{$z_{0.2}$}& \multicolumn{1}{c}{$z_{0.8}$} &  \multicolumn{1}{c}{ATE}   \\ 
   \midrule
-  {{  show("Aggregate", ctax[0].data, 3 ) }}
+  {{  show("Aggregate", ctax[0].data,          2 ) }}
   \midrule
-  {{  show("East North Central", ctax[1].data, 3 ) }}
-  {{  show("East South Central", ctax[2].data, 3 ) }}
-  {{  show("Middle Atlantic", ctax[3].data, 3 ) }}
-  {{  show("Mountain", ctax[4].data, 3 ) }}
-  {{  show("New England", ctax[5].data, 3 ) }}
-  {{  show("Pacific", ctax[6].data, 3 ) }}
-  {{  show("South Atlantic", ctax[7].data, 3 ) }}
-  {{  show("West North Central", ctax[8].data, 3 ) }}
-  {{  show("West South Central", ctax[9].data, 3 ) }}
+  {{  show("East North Central", ctax[1].data, 2 ) }}
+  {{  show("East South Central", ctax[2].data, 2 ) }}
+  {{  show("Middle Atlantic", ctax[3].data,    2 ) }}
+  {{  show("Mountain", ctax[4].data,           2 ) }}
+  {{  show("New England", ctax[5].data,        2 ) }}
+  {{  show("Pacific", ctax[6].data,            2 ) }}
+  {{  show("South Atlantic", ctax[7].data,     2 ) }}
+  {{  show("West North Central", ctax[8].data, 2 ) }}
+  {{  show("West South Central", ctax[9].data, 2 ) }}
   \bottomrule
 \end{tabular}
 
