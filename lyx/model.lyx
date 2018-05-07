@@ -471,16 +471,16 @@ The baseline version assumes no change to regional prices as a a result
 
 \end_inset
 
- Conditioning on young versus old household, one finds 7.1% for the former
+ Conditioning on young versus old household, one finds 7% for the former
  and 2% for the latter.
  Given that the ownership rate varies significantly by age, one can see
  that young, mobile renters are the group which incurs the greatest welfare
  loss from reduced mobility.
- The results further show the prominent role of expectations about future
- potential moves, which may not have to be realized in the end.
+ This result shows the prominent role of expectations about future potential
+ moves.
  The relatively large values which consumers place on the migration option,
  as well as the large dispartities in valuations between renters, owners,
- and young and old people, are all policy relevant.
+ by location as well as between young and old people, are all policy relevant.
  They illustrate the welfare costs of policies which reduce mobility – such
  as subsidized homeowership, for example.
 \end_layout
@@ -6338,7 +6338,7 @@ reference "tab:Decomposing-owner's-moving"
 
  leads to an even bigger increase of 2.47%.
  In the final column 
-\begin_inset Formula $\alpha=\phi=0$
+\begin_inset Formula $\alpha_{3}=\phi=0$
 \end_inset
 
 , combining both changes, we see an increase of 4.4% in ownership.
@@ -6516,8 +6516,8 @@ migratory insurance.
 \end_layout
 
 \begin_layout Standard
-I will attempt to answer this set of questions by first simulating the model
- in the baseline equilibrium, i.e.
+I will attempt to answer this question by first simulating the model in
+ the baseline equilibrium, i.e.
  at observed regional prices and incomes and importantly, 
 \emph on
 with migration
@@ -6684,9 +6684,10 @@ poor
 \emph default
 individuals), same for people above thee 80-th percentile, and finally the
  entire population.
- The values in the table stand for the proportional per period increase
- in consumption that would make individuals indifferent between baseline
- and migration shutdown.
+ The values in the table stand for the per period increase in consumption
+ that would make individuals indifferent between baseline and migration
+ shutdown, as a percentage of what they had optimally chosen to consume
+ in the policy environment.
  Hence it is a measure for their willingness to pay to maintain migration.
  For example, in the first row of table 
 \begin_inset CommandInset ref
@@ -6696,7 +6697,7 @@ reference "tab:shutdown-cons-base"
 \end_inset
 
 , the group of young people (with age below half of their lifespan) would
- demand an increase of 7.1% of per period consumption.
+ demand an increase of 7% of optimal per period consumption.
  This amount is lower for old people at 2%, which is intuitive since they
  forgo fewer periods where the migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
@@ -6724,7 +6725,7 @@ n matrix for movers,
  as illustrated in appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subsec:copula-estimates"
+reference "sec:Copula-Estimation"
 plural "false"
 caps "false"
 noprefix "false"
@@ -6741,7 +6742,7 @@ noprefix "false"
 \end_inset
 
  draw in the new location.) As an average over all individuals treated in
- this experiment (ATE), the corresponding number is 5.1% of consumption compensat
+ this experiment (ATE), the corresponding number is 4.6% of consumption compensat
 ion demanded.
  
 \end_layout
@@ -6805,7 +6806,7 @@ as in version number four.
  This sequence of counterfactuals tells us that the estimates from the baseline
  scenario with observed prices provide a lower bound.
  If in reality a general equilibrium effect would change regional incomes
- downwards, and prices down 
+ downwards, and house prices down 
 \emph on
 or 
 \emph default
@@ -6948,7 +6949,7 @@ The next two panels for
  We observe that after migration is abolished, homeownership rises by about
  9% at age 30.
  Notice that this increase implies that far more than only the previous
- migrants now choose to buy, which was relatively small group of people.
+ migrants now choose to buy, as this was relatively small group of people.
  The increase in ownership comes from the fact that potential future moves
 \emph on
  
@@ -7125,8 +7126,8 @@ reference "fig:noMove-location"
 \emph on
 decreasing 
 \emph default
-mortgage debt with respect to the baseline, where the house was bought in
- another, more expensive, region.
+mortgage debt with respect to the baseline, where some houses were instead
+ bought in another, more expensive, region.
 \end_layout
 
 \begin_layout Standard
@@ -7417,8 +7418,9 @@ The main result of this paper is to show that despite average migration
  a location in a world with regional shocks to house prices and labor income
  is large.
  Removing the option to migrate in the model implies an associated reduction
- in lifetime utility that ranges from 0% up to almost 13% depending on the
- type of household one considers.
+ in per period consumption that ranges from 0% (or even implied increases
+ in consumption) up to almost 13% depending on the type of household one
+ considers.
  Variations in this measure vary widely with age, ownership status, original
  location, and point in the business cycle.
  To arrive at this result, I construct a lifecycle model which includes
@@ -8540,72 +8542,6 @@ Additional tables and figures
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Comparative Statics of Regional Shock.
- Dashed line is the shocked series for a given region.
- This picture applies a 10% shock to 
-\begin_inset Formula $Q$
-\end_inset
-
- and a 6% shock to 
-\begin_inset Formula $P$
-\end_inset
-
-.
- Both 
-\begin_inset Formula $y$
-\end_inset
-
--axis are in thousands of dollars.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Comparative-Statics"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
@@ -9014,7 +8950,7 @@ name "fig:shock-reg-model-illustrate"
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Float table

@@ -269,6 +269,83 @@ noprefix "false"
 \end_inset
 
 .
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Comparative-Statics"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ provides an illustration of a prototypical regional shock.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparative Statics of Regional Shock.
+ Dashed line is the shocked series for a given region.
+ This picture applies a 10% shock to 
+\begin_inset Formula $Q$
+\end_inset
+
+ and a 6% shock to 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ Both 
+\begin_inset Formula $y$
+\end_inset
+
+-axis are in thousands of dollars.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Comparative-Statics"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
