@@ -714,11 +714,15 @@ plot.simulation <- function(){
 
 
 # export data to julia
-Export.Julia <- function(writedisk=TRUE){
+Export.Julia <- function(writedisk=TRUE,noCollege=TRUE){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
 	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
 
+	if (noCollege) {
+		merged <- merged[college==FALSE]
+		des <- subset(des,college == FALSE)
+	}
 
 	# subset age
 	sub = merged[,age>=20 & age <= 53]
@@ -1784,10 +1788,10 @@ get_BEA_persincome <- function(){
 	data(Population,package="EconData",envir=environment())
 
 	# this is personal income for an entire state!
-	setkey(pers_income_current,state,year)
+	setkey(pers_income,state,year)
 	setkey(population,state,year)
-	population[pers_income_current]
-	py = pers_income_current[population]
+	population[pers_income]
+	py = pers_income[population]
 	py[,pcy := income / population]
 
 
