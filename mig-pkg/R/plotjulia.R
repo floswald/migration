@@ -1420,63 +1420,31 @@ Export.IncomeProcess <- function(dat,writedisk){
 	setnames(cd,"y","CensusMedinc")
 
 	# get models of individual income
+	# estimate separate models for each region
 	setkey(cd,upid,Division)
 	divs = cd[,unique(Division)]
 	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
 	names(lmods) = divs
-
-
-	# TODO change this!!!!
-	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
-	names = coef(lmod)
-
-
-
-	if (writedisk){
-		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+	x <- lapply(lmods,function(x){nd = expand.grid(age=20:50,CensusMedinc=c(30,45,60)); cbind(nd,exp(predict(x,nd)))})
+	# add name as a column
+	for (n in names(x)){
+		x[[n]] <- cbind(x[[n]],Division = n)
 	}
-
-	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
-	newdat2 = expand.grid(age=20:50,CensusMedinc=c(30,45,60))
-	x=cbind(newdat,exp(predict(lmod,newdat)))
-	cbind(exp(predict(lmod,newdat)),exp(predict(lmods$ENC,newdat2)))
-	x2=cbind(newdat2,exp(predict(lmods$ENC,newdat2)))
-	x$meany = paste0("$\\overline{y}_{dt}=",x$CensusMedinc,"$")
-	names(x)[4] = "predict"
+	# stack
+	pred_profiles <- rbindlist(x)
+	setnames(pred_profiles,c("age","meany","predicted","Division"))
 
 	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
-	p = ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	ggplot(pred_profiles,aes(age,y=predicted,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
 	dev.off()
 
-	# new version
-	cd2 = copy(cd)
-	cd2[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3))) ]
-	setkey(cd2,upid,timeid)
-	cd2[, resid_p := cd2[list(upid,timeid+1)][["resid"]] ]
-
-	# standardize into ranks
-	mmat = cd2[,list(p_resid=resid,p_resid1=resid_p)]
-	pmat = pobs(mmat)
-	data = cbind(cd2[,list(upid,timeid,D2D,resid,resid_p)],pmat)
-	d1 = data[D2D==1,list(p_resid,p_resid1)]
-	d1 = d1[complete.cases(d1)]
-
-	normal.cop = normalCopula(0.7,2,"ar1")
-	f1 = fitCopula(normal.cop,as.matrix(d1))
-	sds = cd2[D2D==TRUE,list(sd=sd(resid),sd2=sd(resid_p,na.rm=T))]
-	cop <- mvdc(normalCopula(coef(f1)), c("norm", "norm"), list(list(mean = 0, sd =sds[,sd]), list(mean = 0, sd =sds[,sd])))
-
-	# these are the grid points of z from the rouwenhorst discretization in the model:
-	q1 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
-	q2 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
-
-	qtl = expand.grid(q1,q2)
-	qtl$p = dMvdc(as.matrix(qtl),cop)
-	Gmove = matrix(qtl$p,4,4)
-	Gmove2 =  Gmove / rowSums(Gmove)
+	if (writedisk){
+		texreg(lmods,custom.model.names=c("East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"), digits=3,booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+		# screenreg(lmods,custom.model.names=c("East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"), digits=3,booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},use.packages=FALSE)
+	}
 
 
-
+	# construct easily to export data table with all those coefficients.
 
 	# add residuals indiv data
 	cd [ ,resid := 0]
@@ -1489,19 +1457,14 @@ Export.IncomeProcess <- function(dat,writedisk){
 	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
 
 	# get autocorrelation coefficient of residuals
-	# TODO
-	# this is not what you want!
+	# this is wrong. will manually overwrite with French(2005) numbers.
 	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
 	names(rhos) = divs
-
-	# why are those rhos so low?????
-	# use 0.97 as in french 2005 for now.
 
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks
 	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
 	names(bounds)[-1] <- c("q05","q95")
-
 
 	# make a table with those
 	ztab <- as.data.frame(t(sapply(lmods,coef)))
