@@ -8776,7 +8776,7 @@ name "tab:Regional-2-indiv-income"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -8786,24 +8786,12 @@ status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
 input{
 \backslash
 Dropbox/model/fit/income_profiles.tex}
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/fit/income_profiles.pdf
-	scale 80
 
 \end_inset
 

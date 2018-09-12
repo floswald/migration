@@ -355,7 +355,7 @@ type Model
 					for ip in 1:p.np
 						for iz in 1:p.nz
 							
-							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + yshock + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + yshock + inc_coefs[j,:logq] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 						end
 					end
 				end

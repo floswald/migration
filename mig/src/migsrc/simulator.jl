@@ -26,7 +26,7 @@ end
 
 "compute the level of income, including age profile and regional effects"
 function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
-	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logCensusMedinc] * log(y) + z )
+	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logq] * log(y) + z )
 end
 
 

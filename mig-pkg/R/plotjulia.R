@@ -717,7 +717,11 @@ plot.simulation <- function(){
 Export.Julia <- function(writedisk=TRUE,noCollege=TRUE){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
-	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
+	# path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/git/migration/mig/in"
+
+	# individual income processes by region
+	ind <- Export.IncomeProcess(merged,writedisk,noCollege)
 
 	if (noCollege) {
 		merged <- merged[college==FALSE]
@@ -732,10 +736,8 @@ Export.Julia <- function(writedisk=TRUE,noCollege=TRUE){
 	agedist = data.frame(realage=20:52,density=hi$density)
 
 	# regional processes for p and y
-	reg <- Export.VAR(writedisk=writedisk)
+	reg <- Export.VAR(writedisk=FALSE)   # dont' write because tex output is in one column... fixed by hand.
 
-	# individual income processes by region
-	ind <- Export.IncomeProcess(merged,writedisk)
 	
 	# stayer's copula
 	# commented out because takes some time
@@ -1406,45 +1408,41 @@ plot.dataP2Y <- function(){
 #' by census division. 
 #'
 #' exports coefficients to julia
-Export.IncomeProcess <- function(dat,writedisk){
+#' notice that the year 2007 has a lot of issues in the SIPP, hence will be excluded.
+Export.IncomeProcess <- function(dat,writedisk,nocollege=FALSE){
 
 	
 	# cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
-	cd <- dat[HHincome>0,list(upid,timeid,D2D,year,MyMedinc,HHincome,age,Division)]
+	cd <- dat[HHincome>0 & (year != 2007) & (year != 2012),list(upid,timeid,D2D,year,MyMedinc,HHincome,age,Division,college)]
 	cd <- cd[complete.cases(cd)]
 	setkey(cd,year,Division)
 
 	x = get_BEA_persincome()
 	setkey(x,year,Division)
 	cd = x[cd]
-	setnames(cd,"y","CensusMedinc")
+	setnames(cd,"y","q")
 
 	# get models of individual income
-	# estimate separate models for each region
 	setkey(cd,upid,Division)
 	divs = cd[,unique(Division)]
-	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
+	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(q) + college + age + I(age^2) + I(age^3),cd[Division==x]))
 	names(lmods) = divs
-	x <- lapply(lmods,function(x){nd = expand.grid(age=20:50,CensusMedinc=c(30,45,60)); cbind(nd,exp(predict(x,nd)))})
-	# add name as a column
-	for (n in names(x)){
-		x[[n]] <- cbind(x[[n]],Division = n)
-	}
-	# stack
-	pred_profiles <- rbindlist(x)
-	setnames(pred_profiles,c("age","meany","predicted","Division"))
-
-	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
-	ggplot(pred_profiles,aes(age,y=predicted,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
-	dev.off()
 
 	if (writedisk){
-		texreg(lmods,custom.model.names=c("East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"), digits=3,booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
-		# screenreg(lmods,custom.model.names=c("East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"), digits=3,booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},use.packages=FALSE)
+		texreg(lmods,custom.model.names=names(lmods), digits=3, custom.coef.names=c("Intercept","$q_d$","college","age","$\\text{age}^2$","$\\text{age}^3$"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
 	}
 
+	nd = expand.grid(age=20:50,college=!nocollege,q=c(30,45,60))
+	x <- lapply(lmods, function(x) cbind(nd,exp(predict(x,nd))))
+	x <- lapply(names(x),function(z){cbind(x[[z]],Division=z)})
 
-	# construct easily to export data table with all those coefficients.
+	predicted_y <- rbindlist(x)
+	setnames(predicted_y,c(3,4),c("$q_d$","predict"))
+
+	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
+	p = ggplot(predicted_y,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~`$q_d$`) + ggtitle("Labor Income profiles for different $q_{d}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	plot(p)
+	dev.off()
 
 	# add residuals indiv data
 	cd [ ,resid := 0]
@@ -1457,14 +1455,25 @@ Export.IncomeProcess <- function(dat,writedisk){
 	cd[, Lresid := cd[list(upid,timeid-1)][["resid"]] ]
 
 	# get autocorrelation coefficient of residuals
-	# this is wrong. will manually overwrite with French(2005) numbers.
+	# TODO
+	# this is not what you want!
 	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
 	names(rhos) = divs
 
+	# why are those rhos so low?????
+	# use 0.97 as in french 2005 for now.
+
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks
-	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+	if (nocollege){
+		bounds = ddply(subset(dat,(college==FALSE) & (HHincome>0)),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+
+	} else {
+		bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+
+	}
 	names(bounds)[-1] <- c("q05","q95")
+
 
 	# make a table with those
 	ztab <- as.data.frame(t(sapply(lmods,coef)))
@@ -1491,6 +1500,7 @@ Export.IncomeProcess <- function(dat,writedisk){
 
 	return(list(incmods=lmods,rhomods=rhos,ztab=ztab))
 }
+
 
 # TODO exporting for region level processes
 # ytable: div, ylow, yhigh, beta0, betay, betap
