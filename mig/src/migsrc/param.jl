@@ -3,6 +3,7 @@
 
 # define the struct
 
+# ev = mig.runObj(Dict(:MC0=>3.19,:xi1=>0.008,:xi2=>0.049))
 
 type Param
 

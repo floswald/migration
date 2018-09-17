@@ -8700,8 +8700,8 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_layout Standard
 \begin_inset Float table
 wide false
-sideways false
-status collapsed
+sideways true
+status open
 
 \begin_layout Plain Layout
 \noindent

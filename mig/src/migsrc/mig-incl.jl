@@ -170,6 +170,7 @@ function runSim(;opt=Dict())
 	# # figure()
 	# simplot(s,5)
 	# x=computeMoments(s,p)
+	# MomentOpt.check_moments()
 	# showall(x["moments"])
 	# showall(x["yearly"])
 	return s
@@ -208,6 +209,7 @@ function runObj(printm::Bool=false,subset=true)
 	end
 
 	ev = objfunc(ev)
+	MomentOpt.check_moments(ev)
 	return ev
 end
 function runObj(p::Dict)
@@ -230,6 +232,7 @@ function runObj(p::Dict)
 	# create Eval
 	ev = MomentOpt.Eval(p,moms_use)
 	ev = objfunc(ev)
+	MomentOpt.check_moments(ev)
 	return ev
 end
 
