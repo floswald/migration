@@ -137,7 +137,7 @@ type Model
 
 		# population weights
 		popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
-		sort!(popweights,cols=1)
+		sort!(popweights,1)
 
 		# age distribution
 		agedist = DataFrame(FileIO.load(joinpath(io["indir"],"agedist.rda"))["agedist"])

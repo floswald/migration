@@ -11,6 +11,9 @@ function post_slack(job)
 		error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
 	end
 end
+function post_slack()
+	haskey(ENV,"MIG_SLACK") || error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
+end
 
 
     # with open('slack-hook.txt','r') as myf:

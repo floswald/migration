@@ -10,7 +10,7 @@ Homeownership, Regional Shocks and Migration (Oswald, 2017)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
+    run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
     run.jl test 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] [--cluster=<c>]
     run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>] [--cluster=<c>]
@@ -28,6 +28,7 @@ Options:
     --version           show version
 
 """
+
 using DocOpt
 args = docopt(doc, version=v"0.9.5")
 
@@ -43,16 +44,19 @@ cumulus = vcat("10.20.35.11",
 "10.20.35.36")
 
 
+
 if args["estim"]
-    using mig
     info("Running estimation: ")
     nwork = parse(Int,args["--nworkers"])
-    maxit = parse(Int,args["--maxit"])
-    if args["BGP"]
+    maxit = parse(Int,args["--maxiter"])
+    if args["bgp"]
         info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
+        addprocs(nwork)
+        using mig
         mig.estimate(maxit,nwork)
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
+        using mig
         mig.slices(nwork)
     end
 elseif args["test"]

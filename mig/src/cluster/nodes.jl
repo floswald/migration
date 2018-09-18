@@ -2,7 +2,7 @@
 # sets up an MProb on each node
 
 # this is loaded on all nodes
-using mig, MOpt
+using mig, MomentOpt
 
 
 # this is loaded only on the master
@@ -21,6 +21,9 @@ moms_use = moms[findin(moms[:name],use_names) ,:]
 
 # initial value
 p0 = mig.Param(2)
+setfield!(p0,:MC0, 3.19)
+setfield!(p0,:xi1, 0.008)
+setfield!(p0,:xi2, 0.049)
 pb = Dict{String,Array{Float64}}()
 pb["xi1"] = [p0.xi1, 0.0,0.02]
 pb["xi2"] = [p0.xi2, 0.0,0.1]
@@ -41,8 +44,8 @@ pb["amenity_StA"] = [p0.amenity_StA, 0.0,1]
 pb["amenity_WNC"] = [p0.amenity_WNC, 0.0,1]
 pb["amenity_WSC"] = [p0.amenity_WSC, 0.0,1]
 
-mprob = MOpt.MProb() 
-MOpt.addSampledParam!(mprob,pb) 
-MOpt.addMoment!(mprob,moms_use) 
-MOpt.addEvalFunc!(mprob,mig.objfunc)
+mprob = MomentOpt.MProb() 
+MomentOpt.addSampledParam!(mprob,pb) 
+MomentOpt.addMoment!(mprob,moms_use) 
+MomentOpt.addEvalFunc!(mprob,mig.objfunc)
 

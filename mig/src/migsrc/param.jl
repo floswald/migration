@@ -163,7 +163,7 @@ type Param
 
 		io = setPaths()
 		popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
-		sort!(popweights,cols=1)
+		sort!(popweights,1)
 
 		# set amenity to popweights initially
 		amenity = convert(Array,popweights[:proportion])
