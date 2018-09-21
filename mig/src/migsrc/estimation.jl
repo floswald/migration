@@ -1,5 +1,7 @@
 
 
+perc_bound(x,p) = [x;x*(1-p);x*(1+p)]
+
 function setup_mprob()
 	# this is loaded only on the master
 	io = mig.setPaths()
@@ -21,15 +23,15 @@ function setup_mprob()
 	setfield!(p0,:xi1, 0.008)
 	setfield!(p0,:xi2, 0.049)
 	pb = Dict{String,Array{Float64}}()
-	pb["xi1"] = [p0.xi1, 0.0,0.02]
-	pb["xi2"] = [p0.xi2, 0.0,0.1]
-	pb["omega2"] = [p0.omega2, 2.0,4.1]
-	pb["MC0"] = [p0.MC0, 2.0,4.0]
-	pb["MC1"] = [p0.MC1, 0.0,0.04]
-	pb["MC2"] = [p0.MC2, 0.0,0.01]
-	pb["MC3"] = [p0.MC3, 0.0,1]
-	pb["MC4"] = [p0.MC4, 0.0,1]
-	pb["taudist"] = [p0.taudist, 0.0,1]
+	pb["xi1"]         = [p0.xi1, 0.0,0.02]
+	pb["xi2"]         = [p0.xi2, 0.0,0.1]
+	pb["omega2"]      = perc_bound(p0.omega2,0.2)
+	pb["MC0"]         = perc_bound(p0.MC0, 0.2)
+	pb["MC1"]         = [p0.MC1, 0.0,0.04]
+	pb["MC2"]         = [p0.MC2, 0.0,0.01]
+	pb["MC3"]         = [p0.MC3, 0.0,1]
+	pb["MC4"]         = [p0.MC4, 0.0,1]
+	pb["taudist"]     = [p0.taudist, 0.0,1]
 	pb["amenity_ENC"] = [p0.amenity_ENC, 0.0,1]
 	pb["amenity_ESC"] = [p0.amenity_ESC, 0.0,1]
 	pb["amenity_MdA"] = [p0.amenity_MdA, 0.0,1]
@@ -43,7 +45,7 @@ function setup_mprob()
 	mprob = MomentOpt.MProb() 
 	MomentOpt.addSampledParam!(mprob,pb) 
 	MomentOpt.addMoment!(mprob,moms_use) 
-	MomentOpt.addEvalFunc!(mprob,mig.objfunc)
+	MomentOpt.addEvalFunc!(mprob,mig.objfunc_test)
 	return mprob
 end
 
@@ -91,17 +93,14 @@ function estimate(maxiter::Int,nworkers::Int)
 	opts = Dict("N"=>nchains,
         "maxiter"=>maxiter,
         "maxtemp"=> 5,
-        "coverage"=>0.025,
-        "sigma_update_steps"=>10,
+        "coverage"=>0.09,
 		"user"=> ENV["USER"],
 		"save_frequency"=> maxiter < 10 ? 2 : 5,
 		"filename" => joinpath(dir,string("estim_",Dates.today(),".h5")),	
-        "sigma_adjust_by"=>0.01,
-        "smpl_iters"=>10000,
+        "smpl_iters"=>1000,
         "parallel"=>true,
         "maxdists"=>[0.05 for i in 1:nchains],
-        "mixprob"=>0.3,
-        "acc_tuner"=>12.0,
+        "acc_tuners"=>[12.0 for i in 1:nchains],
         "animate"=>false)
 
 

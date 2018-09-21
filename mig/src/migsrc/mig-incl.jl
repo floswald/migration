@@ -76,6 +76,30 @@ function cov2corr(x::Matrix)
 	return y
 end
 
+function objfunc_test(ev::Eval)
+
+	start(ev)
+	Base.info("in objective function")
+	p = Param(2)	# create a default param type
+	MomentOpt.fill(p,ev)      # fill p with current values on eval object
+	println("param = $p")
+	v = Dict{Symbol,Float64}()
+	for (k,mom) in MomentOpt.dataMomentd(ev)
+		# if haskey(dataMomentWd(ev),k)
+		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+		# else
+		# 	v[k] = ((simMoments[k] .- mom) ) .^2
+		# end
+		v[k] = rand()
+		# v[k] = v[k] / 1000
+	end
+	vv = mean(collect(values(v)))
+	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
+	finish(ev)
+
+	return ev
+end
+
 
 # objective function to work with MomentOpt
 function objfunc(ev::Eval)
