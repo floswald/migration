@@ -45,7 +45,7 @@ function setup_mprob()
 	mprob = MomentOpt.MProb() 
 	MomentOpt.addSampledParam!(mprob,pb) 
 	MomentOpt.addMoment!(mprob,moms_use) 
-	MomentOpt.addEvalFunc!(mprob,mig.objfunc_test)
+	MomentOpt.addEvalFunc!(mprob,mig.objfunc)
 	return mprob
 end
 
@@ -92,15 +92,16 @@ function estimate(maxiter::Int,nworkers::Int)
 	# MOpt options
 	opts = Dict("N"=>nchains,
         "maxiter"=>maxiter,
-        "maxtemp"=> 5,
-        "coverage"=>0.09,
+        "maxtemp"=> 1,
+        "coverage"=>0.00005,
 		"user"=> ENV["USER"],
 		"save_frequency"=> maxiter < 10 ? 2 : 5,
 		"filename" => joinpath(dir,string("estim_",Dates.today(),".h5")),	
         "smpl_iters"=>1000,
         "parallel"=>true,
         "maxdists"=>[0.05 for i in 1:nchains],
-        "acc_tuners"=>[12.0 for i in 1:nchains],
+        "acc_tuners"=>[1.0 for i in 1:nchains],
+        "batch_size" => 1,
         "animate"=>false)
 
 
@@ -120,10 +121,10 @@ function estimate(maxiter::Int,nworkers::Int)
 	runMOpt!(MA)
 	# close(io)
 
-	took = toq() / 3600.0  # hours
+	took = round(toq() / 3600.0,2)  # hours
 
 	# send message to slack channel
-	txt = "mig Estimation finished with $maxiter iterations after $took hours."
+	txt = "[mig] Estimation finished with $maxiter iterations after $took hours."
 	post_slack(txt)
 
 	# compute point estimates and SD on coldest chain

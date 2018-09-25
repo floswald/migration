@@ -5,14 +5,15 @@ function post_slack(job)
 	txt = "payload={'text': '$job'}"
 	# println(txt)
 	# println(ENV["MIG_SLACK"])
-	if haskey(ENV,"MIG_SLACK")
-		run(`curl -X POST --data-urlencode $txt $(ENV["MIG_SLACK"])`) 
+	if haskey(ENV,"SLACK_HOOK")
+		run(`curl -X POST --data-urlencode $txt $(ENV["SLACK_HOOK"])`) 
+		return nothing
 	else
-		error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
+		error("you need a webhook into slack as environment variable SLACK_HOOK to post a message")
 	end
 end
 function post_slack()
-	haskey(ENV,"MIG_SLACK") || error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
+	haskey(ENV,"SLACK_HOOK") || error("you need a webhook into slack as environment variable SLACK_HOOK to post a message")
 end
 
 
@@ -129,6 +130,7 @@ function objfunc(ev::Eval)
 		# 	v[k] = ((simMoments[k] .- mom) ) .^2
 		# end
 		v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
+		# println("perc dev of moment $k is $(v[k])")
 		# v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
@@ -153,6 +155,7 @@ function objfunc(ev::Eval)
 	end
 
 	ev.status = status
+	println("value = $vv")
 
 	finish(ev)
 

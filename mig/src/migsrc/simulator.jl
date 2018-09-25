@@ -839,7 +839,7 @@ function computeMoments(df::DataFrame,p::Param)
 			cc_h  = coeftable(lm_h)
 			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)]
 			coef_h = coef(lm_h)
-			std_h =  stderr(lm_h)
+			std_h =  stderror(lm_h)
 		catch
 			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]
 			coef_h = missings(Float64,3)
@@ -906,7 +906,7 @@ function computeMoments(df::DataFrame,p::Param)
 		cc_mv = coeftable(lm_mv)
 		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)]
 		coef_mv = coef(lm_mv)
-		std_mv = stderr(lm_mv)
+		std_mv = stderror(lm_mv)
 	end
 
 	# move count
@@ -933,6 +933,16 @@ function computeMoments(df::DataFrame,p::Param)
 	# flows of moves: where do moves go to?
 	# -------------------------------------
 	xx = StatsBase.proportionmap(df[ df[:move],:Division_to] )
+	if length(xx) != p.nJ
+		froms = unique(df[:Division])
+		for f in froms
+			if !in(f,collect(keys(xx)))
+				xx[f] = 0.0
+			end
+		end
+	end
+	
+
 	zz = DataFrame(moment=map(string,map(x->"flow_move_to_$x",collect(keys(xx)))), model_value = collect(values(xx)))
 	append!(mom1,zz)
 
