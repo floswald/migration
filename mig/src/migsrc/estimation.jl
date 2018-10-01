@@ -87,6 +87,10 @@ function estimate(maxiter::Int,nworkers::Int)
 
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob()
+
+	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01)
+
+
 	nchains = length(workers())
 
 	# MOpt options
