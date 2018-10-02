@@ -71,7 +71,6 @@ function estimate(maxiter::Int,nworkers::Int)
 				maxiter = 4
 				nworkers = 3
 			end
-			using ClusterManagers
 			if gethostname() == "hpc-a"
 				addprocs_sge(nworkers)
 			else
@@ -162,7 +161,6 @@ function slices(nworkers::Int)
 				maxiter = 4
 				nworkers = 3
 			end
-			using ClusterManagers
 			if gethostname() == "hpc-a"
 				addprocs_sge(nworkers)
 			else
