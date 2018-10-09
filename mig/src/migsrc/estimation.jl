@@ -86,8 +86,8 @@ function estimate(maxiter::Int,nworkers::Int)
 
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob()
-
-	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01)
+	date()
+	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
 
 
 	nchains = length(workers())
@@ -120,8 +120,8 @@ function estimate(maxiter::Int,nworkers::Int)
 	# 	redirect_stdout(io)
 	# end
 
-	MA = MAlgoBGP(mprob,opts)
-	runMOpt!(MA)
+	# MA = MAlgoBGP(mprob,opts)
+	# runMOpt!(MA)
 	# close(io)
 
 	took = round(toq() / 3600.0,2)  # hours
