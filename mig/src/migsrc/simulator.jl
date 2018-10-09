@@ -899,8 +899,8 @@ function computeMoments(df::DataFrame,p::Param)
 	if sum(df[:move]) == 0.0
 		nomove = true
 		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]
-		coef_mv = missings(zeros(3))
-		std_mv =  missings(ones(3))
+		coef_mv = missings(Float64,3)
+		std_mv =  missings(Float64,3)
 	else
 		lm_mv = glm( @formula(move ~ age + age2),df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)

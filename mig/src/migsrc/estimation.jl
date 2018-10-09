@@ -30,17 +30,17 @@ function setup_mprob()
 	pb["MC1"]         = [p0.MC1, 0.0,0.04]
 	pb["MC2"]         = [p0.MC2, 0.0,0.01]
 	pb["MC3"]         = [p0.MC3, 0.0,1]
-	pb["MC4"]         = [p0.MC4, 0.0,1]
+	pb["MC4"]         = [p0.MC4, 0.01,0.9]
 	pb["taudist"]     = [p0.taudist, 0.0,1]
-	pb["amenity_ENC"] = [p0.amenity_ENC, 0.0,1]
-	pb["amenity_ESC"] = [p0.amenity_ESC, 0.0,1]
-	pb["amenity_MdA"] = [p0.amenity_MdA, 0.0,1]
-	pb["amenity_Mnt"] = [p0.amenity_Mnt, 0.0,1]
-	pb["amenity_NwE"] = [p0.amenity_NwE, 0.0,1]
-	pb["amenity_Pcf"] = [p0.amenity_Pcf, 0.0,1]
-	pb["amenity_StA"] = [p0.amenity_StA, 0.0,1]
-	pb["amenity_WNC"] = [p0.amenity_WNC, 0.0,1]
-	pb["amenity_WSC"] = [p0.amenity_WSC, 0.0,1]
+	pb["amenity_ENC"] = [p0.amenity_ENC, 0.01,0.99]
+	pb["amenity_ESC"] = [p0.amenity_ESC, 0.01,0.99]
+	pb["amenity_MdA"] = [p0.amenity_MdA, 0.01,0.99]
+	pb["amenity_Mnt"] = [p0.amenity_Mnt, 0.01,0.99]
+	pb["amenity_NwE"] = [p0.amenity_NwE, 0.01,0.99]
+	pb["amenity_Pcf"] = [p0.amenity_Pcf, 0.01,0.99]
+	pb["amenity_StA"] = [p0.amenity_StA, 0.01,0.99]
+	pb["amenity_WNC"] = [p0.amenity_WNC, 0.01,0.99]
+	pb["amenity_WSC"] = [p0.amenity_WSC, 0.01,0.99]
 
 	mprob = MomentOpt.MProb() 
 	MomentOpt.addSampledParam!(mprob,pb) 
@@ -86,7 +86,6 @@ function estimate(maxiter::Int,nworkers::Int)
 
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob()
-	date()
 	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
 
 
