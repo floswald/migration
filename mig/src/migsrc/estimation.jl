@@ -86,7 +86,11 @@ function estimate(maxiter::Int,nworkers::Int)
 
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob()
-	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
+	if length(workers()) > 1
+		s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
+	else
+		s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
+	end
 
 
 	nchains = length(workers())
