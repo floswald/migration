@@ -3,6 +3,9 @@
 
 # define the struct
 
+# ev = mig.runObj(Dict(:MC0=>3.19,:xi1=>-0.015,:xi2=>0.045,:amenity_ENC=>0.1,:amenity_Pcf=>0.22,:amenity_WNC=>0.03,:amenity_WSC=>0.09))
+
+
 # ev = mig.runObj(Dict(:MC0=>3.19,:xi1=>0.008,:xi2=>0.049))
 
 type Param
