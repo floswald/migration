@@ -458,30 +458,21 @@ end
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
+function getFlowStats(dfs::Dict)
 
 	# s is a simulation output
 	d = Dict()
 
-	if writedisk
-		io = mig.setPaths()
-		fi = readdir(io["outdir"])
-		if !in(pth,fi)
-			mkpath(string(joinpath(io["outdir"],pth)))
-		end
-		opth = string(joinpath(io["outdir"],pth))
-	end
-
 	for (k,v) in dfs
-		v = v[!ismissing(v[:cohort]),:]
+		v = v[.!(ismissing.(v[:cohort])),:]
 		d[k] = Dict()
 
-		for j in 1:9 
+		for j in unique(v[:j]) 
 
 			# population of j over time
 			a = @linq v |>
 				@where((:year.>1997) .& (:j.==j)) |>
-				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own)) |>
+				@by(:year, Owners=sum(:own),Renters=sum(.!:own),All=length(:own)) |>
 				@transform(popgrowth = [diff(:All);0.0]./:All)
 
 			# movers to j over time
@@ -500,11 +491,6 @@ function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out),Net_own = (:Owners_in - :Owners_out),Net_rent = (:Renters_in - :Renters_out))
 
 			d[k][j] = ma
-
-			if writedisk
-				writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
-			end
-
 		end
 	end
 
