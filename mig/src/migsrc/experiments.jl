@@ -381,16 +381,19 @@ end
 
 
 """
-	exp_shockRegion(opts::Dict; on_impact::Bool=false)
+	exp_shockRegion(opts::Dict)
 
-Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: if `on_impact`, Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role. Alternatively, price scenarios can be given as members of `opts`.
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. Price scenarios can be given as members of `opts`.
 """
-function exp_shockRegion(opts::Dict; on_impact::Bool=false)
+function exp_shockRegion(opts::Dict)
 
 	j         = opts["shockReg"]
 	which     = opts["policy"]
 	shockYear = opts["shockYear"]
 	info("Applying shock to region $j")
+
+	# is this a reverting shock?
+	reverting = any(opts["shockVal_p"].== 1.0) || any(opts["shockVal_y"].== 1.0)
 
 	if shockYear<1998
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
@@ -445,11 +448,13 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		df1 = vcat(df1,@where(sim0,:cohort.<minc))
 	end
 
-	# compute behaviour of all born into post shock world
-	if !on_impact
+	if reverting
+		# assume shock goes away immediately and all behave as in baseline
+		sim2 = @where(sim0,:cohort.>maxc)
+	else
 		# assume shock stays forever
 		opts["shockAge"] = 1
-		p1 = Param(2,opts=opts)
+		p1 = Param(2,opts)
 		setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		mm = Model(p1)
 		solve!(mm,p1)
@@ -459,14 +464,12 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		gc()
 		# keep only guys born after shockYear
 		sim2 = @where(sim2,:cohort.>maxc)
-
-		# stack
-		sim1 = vcat(df1,sim2)
-		sim2 = 0
-	else
-		sim1 = df1
 	end
+
+	# stack up results
+	sim1 = vcat(df1,sim2)
 	df1 = 0
+	sim2 = 0
 	gc()
 
 	# compute summaries
@@ -480,7 +483,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
-	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
+	atts = convertDict,100.0 * (att ./ abs(att_0)))
 
 	# dataset of baseline stayer and their counterparts under the shock
 	# ----------------------------------------------
@@ -554,7 +557,7 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 
 
-	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = (1-opts["shockVal_y"][1:shockyrs])
+	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = abs.(opts["shockVal_y"][1:shockyrs] - 1)
 	# ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
 	ela1[:d_all_p] = 0.0
@@ -618,9 +621,9 @@ function elasticity()
 			 "shockAge" => 1   # dummy arg
 			 )
 	dout = Dict()
-	for j in 1:9
+	for j in 1:1
 		o["shockReg"] = j
-		x = exp_shockRegion(o,on_impact=false)[1]
+		x = exp_shockRegion(o)[1]
 		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
 	end
 
@@ -628,18 +631,18 @@ function elasticity()
 
 	io = setPaths()
 	ostr = "elasticity.json" 
-	f = open(joinpath(io["outdir"],ostr),"w")
+	f = open(joinpath(io["out"],ostr),"w")
 	JSON.print(f,dout)
 	close(f)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] elasticity",took,"hours")
+	post_slack("[MIG] elasticity $took hours")
 	return dout
 end
 
 
-function exp_shockRegion_ranges(prange,qrange,on_impact,nt,j)
+function exp_shockRegion_ranges(prange,qrange,nt,j)
 	d = Dict()
 	d[:region] = j
 	d[:data] = Dict()
@@ -647,7 +650,7 @@ function exp_shockRegion_ranges(prange,qrange,on_impact,nt,j)
 		for qs in [1.0-qrange, 1.0, 1.0+qrange]
 			info("doing exp_shockRegion with ps=$ps, qs=$qs")
 			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(qs,nt-1))
-			d[:data][Symbol("ps_$ps"*"_qs_$qs")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+			d[:data][Symbol("ps_$ps"*"_qs_$qs")] = exp_shockRegion(dd)[1]
 			# d[:data][Symbol("ps_$ps"*"_ys_$ys")] = Dict(:a=>1,:b=> rand())
 		end
 	end
@@ -656,32 +659,33 @@ end
 
 
 """
-	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,qrange=0.05,prange=0.05)
+	shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 
 Run shockRegion experiment for each region and for different price scenarios
 """
-function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,qrange=0.05,prange=0.05)
+function shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 	tic()
 	p = Param(2)
 	d = Dict()
-	if on_impact
-		y = pmap(x->exp_shockRegion(Dict("shockReg"=>x,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(0.94,p.nt-1),"shockVal_y"=>fill(0.9,p.nt-1)),on_impact=on_impact)[1],1:p.nJ)
-		# reorder
-		for j in 1:p.nJ
-			d[j] = y[map(x->x["j"]==j,y)]
-		end
-		# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	),on_impact=on_impact)[1]
+	# if on_impact
+	# 	y = pmap(x->exp_shockRegion(Dict("shockReg"=>x,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(0.94,p.nt-1),"shockVal_y"=>fill(0.9,p.nt-1)))[1],1:p.nJ)
+	# 	# reorder
+	# 	for j in 1:p.nJ
+	# 		d[j] = y[map(x->x["j"]==j,y)]
+	# 	end
+	# 	# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	))[1]
 
-	else
-		y = pmap(x->exp_shockRegion_ranges(prange,qrange,on_impact,p.nt,x),1:p.nJ)
+	# else
+		y = pmap(x->exp_shockRegion_ranges(prange,qrange,p.nt,x),1:p.nJ)
 		# reorder
 		for j in 1:p.nJ
 			println(map(x->get(x,:region,0)==j,y))
 			d[j] = y[map(x->get(x,:region,0)==j,y)]
 		end
-	end
+	# end
 	io = setPaths()
-	ostr = on_impact ? "shockRegions_onimpact.json" : "shockRegions_scenarios.json"
+	# ostr = on_impact ? "shockRegions_onimpact.json" : "shockRegions_scenarios.json"
+	ostr = "shockRegions_scenarios.json"
 	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
@@ -693,7 +697,7 @@ function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,qrange=0.
 end
 
 
-
+# make sure behaviour is identical before shock for all agents.
 function adjustVShocks!(mm::Model,m::Model,p::Param)
 
 	if p.shockAge > 1

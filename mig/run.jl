@@ -13,7 +13,7 @@ Usage:
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
     run.jl test 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] [--cluster=<c>]
-    run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>] [--cluster=<c>]
+    run.jl experiment shockRegion [--nosave] [--nworkers=<nw>] [--cluster=<c>]
     run.jl experiment (moneyMC|decomp) [--nosave]
 
 Options:
@@ -24,7 +24,6 @@ Options:
     --nosave            don't save experiment output. If you set it, it doesn't save. 
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
-    --on_impact         measure experiment in year of impact only
     --version           show version
 
 """
@@ -64,7 +63,6 @@ elseif args["test"]
 elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
-    on_impact = args["--on_impact"]
     nwork = parse(Int,args["--nworkers"])
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
@@ -95,8 +93,8 @@ elseif args["experiment"]
             end
         end
         using mig
-        info("      shockRegion experiment, with nosave=$nosave, on_impact=$on_impact, on $(length(workers())) cores")
-        @time mig.shockRegions_scenarios(on_impact,save=!nosave)
+        info("      shockRegion experiment, with nosave=$nosave, on $(length(workers())) cores")
+        @time mig.shockRegions_scenarios(save=!nosave)
     elseif args["moneyMC"]
         info("      monetize the moving costs, with nosave=$nosave")
         using mig
