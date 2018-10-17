@@ -385,7 +385,7 @@ end
 
 Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. Price scenarios can be given as members of `opts`.
 """
-function exp_shockRegion(opts::Dict)
+function exp_shockRegion(opts::Dict;same_ids=false)
 
 	j         = opts["shockReg"]
 	which     = opts["policy"]
@@ -393,7 +393,7 @@ function exp_shockRegion(opts::Dict)
 	info("Applying shock to region $j")
 
 	# is this a reverting shock?
-	reverting = any(opts["shockVal_p"].== 1.0) || any(opts["shockVal_y"].== 1.0)
+	# reverting = any(opts["shockVal_p"].== 1.0) || any(opts["shockVal_y"].== 1.0)
 
 	if shockYear<1998
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
@@ -410,6 +410,7 @@ function exp_shockRegion(opts::Dict)
 	solve!(m,p)
 	sim0 = simulate(m,p)
 	sim0 = sim0[.!ismissing.(sim0[:cohort]),:]
+	sim0 = sim0[sim0[:year].>1996,:]
 	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
 	
 	mv_count = @linq sim0|>
@@ -440,6 +441,7 @@ function exp_shockRegion(opts::Dict)
 	ss = 0
 	gc()
 	df1 =  df1[.!ismissing.(df1[:cohort]),:]
+	df1 = df1[df1[:year].>1996,:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
 
@@ -448,13 +450,13 @@ function exp_shockRegion(opts::Dict)
 		df1 = vcat(df1,@where(sim0,:cohort.<minc))
 	end
 
-	if reverting
-		# assume shock goes away immediately and all behave as in baseline
-		sim2 = @where(sim0,:cohort.>maxc)
-	else
+	# if reverting
+	# 	# assume shock goes away immediately and all behave as in baseline
+	# 	sim2 = @where(sim0,:cohort.>maxc)
+	# else
 		# assume shock stays forever
 		opts["shockAge"] = 1
-		p1 = Param(2,opts)
+		p1 = Param(2,opts=opts)
 		setfield!(p1,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		mm = Model(p1)
 		solve!(mm,p1)
@@ -463,14 +465,22 @@ function exp_shockRegion(opts::Dict)
 		mm = 0
 		gc()
 		# keep only guys born after shockYear
-		sim2 = @where(sim2,:cohort.>maxc)
-	end
+		sim2 = @where(sim2,(:cohort.>maxc) .& (:year .> 1996))
+	# end
 
 	# stack up results
 	sim1 = vcat(df1,sim2)
 	df1 = 0
 	sim2 = 0
 	gc()
+
+	if same_ids
+		# keep only people in baseline which also show up in the shocked regime
+		# not all do!
+		ids = @select(sim1,id=unique(:id))
+		sim0 = sim0[findin(sim0[:id],ids[:id]),:]
+	end
+
 
 	# compute summaries
 	# =================
@@ -483,7 +493,7 @@ function exp_shockRegion(opts::Dict)
 	att_0 = @select(b_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	att_1 = @select(p_movers,v=mean(:maxv),u=mean(:utility),y = mean(:income),cons=mean(:cons),a=mean(:a),h=mean(:h),w=mean(:wealth),q=mean(:y),p=mean(:p))
 	att = att_1 .- att_0 
-	atts = convertDict,100.0 * (att ./ abs(att_0)))
+	atts = convert(Dict,100.0 * (att ./ abs(att_0)))
 
 	# dataset of baseline stayer and their counterparts under the shock
 	# ----------------------------------------------
@@ -617,13 +627,15 @@ function elasticity()
 	o = Dict("shockReg" => 0,
 			 "policy" => "ypshock",
 			 "shockYear" => 2000,
-			 "shockVal_y" => [1.1,1.1,1.1,ones(30)...],  # shock reverts after 3 years
+			 "shockVal_y" => ones(32),  
+			 "shockVal_p" => ones(32),  
 			 "shockAge" => 1   # dummy arg
 			 )
 	dout = Dict()
 	for j in 1:1
 		o["shockReg"] = j
-		x = exp_shockRegion(o)[1]
+		x = exp_shockRegion(o,same_ids=true)[1]
+		return x
 		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
 	end
 
