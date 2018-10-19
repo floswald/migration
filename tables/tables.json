@@ -9,11 +9,6 @@
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
     "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/moneyMC2.json"
   },
-  "copulas":{
-    "template" : "copulas.mus",
-    "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
-    "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
-  },
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",
@@ -133,5 +128,10 @@
     "template" : "noMove_region_z_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_pos_p.tex",
     "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/noMove_ps_1.05_ys_1.0.json"
+  },   
+  "elasticities":{
+    "template" : "elasticities.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities.tex",
+    "data"     : "git/migration/mig/out/elasticity.json"
   }      
 }

@@ -547,7 +547,7 @@ end
 
 function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 
-	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in_all,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year,makeunique=true)
+	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year,makeunique=true)
 
 
 	ela1 = @linq ela |>
@@ -556,6 +556,7 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 				d_rent = (:Renters_1 - :Renters)./:Renters,
 				d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,
 				d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,
+				d_total_in = (:Total_in_1 - :Total_in)./:in_rent,
 				d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,
 				d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,
 				d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,
@@ -582,6 +583,7 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	ela1[:d_net_rent_y] = 0.0
 	ela1[:d_out_buy_y] = 0.0
 	ela1[:d_out_buy_p] = 0.0
+	ela1[:d_total_in_y] = 0.0
 	ela1[:d_in_buy_y] = 0.0
 	ela1[:d_in_buy_p] = 0.0
 	ela1[:d_out_rent_y] = 0.0
@@ -600,6 +602,7 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	# ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 
 	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_total_in_y] = ela1[ela1[:yshock].!= 0.0, :d_total_in] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
@@ -623,23 +626,42 @@ function elasticity()
 	post_slack()
 	tic()
 
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+	sim0 = sim0[.!ismissing.(sim0[:cohort]),:]
+	sim0 = sim0[sim0[:year].>1996,:]
+
+	dout = Dict()
+
 	# opts dict 
 	o = Dict("shockReg" => 0,
 			 "policy" => "ypshock",
 			 "shockYear" => 2000,
-			 "shockVal_y" => ones(32),  
+			 "shockVal_y" => 1.1 .* ones(32),  
 			 "shockVal_p" => ones(32),  
 			 "shockAge" => 1   # dummy arg
 			 )
-	dout = Dict()
-	for j in 1:1
+	regs = m.regnames[:Division]
+	@showprogress "Computing..." for j in 1:p.nJ
 		o["shockReg"] = j
-		x = exp_shockRegion(o,same_ids=true)[1]
-		return x
-		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
-	end
 
-	@save "elasts.jld2" dout
+		p1 = Param(2,opts=o)
+		mm = Model(p1)
+		solve!(mm,p1)
+		sim1 = simulate(mm,p1)
+		sim1 = sim1[.!ismissing.(sim1[:cohort]),:]
+		mm = 0
+		gc()
+		sim1 = @where(sim1,(:year .> 1996))
+		flows = getFlowStats(Dict(:base=>sim0,:pol=>sim1))
+		x = get_elas(flows[:base],flows[:pol],o,j)
+		dout[Symbol(regs[j])] = Dict(:all => mean(x[:d_all_y]),
+			:d_total_in_y =>mean(x[:d_total_in_y]),
+			:d_in_rent_y =>mean(x[:d_in_rent_y]),
+			:d_in_buy_y =>mean(x[:d_in_buy_y]))
+	end
 
 	io = setPaths()
 	ostr = "elasticity.json" 
