@@ -383,7 +383,7 @@ end
 """
 	exp_shockRegion(opts::Dict)
 
-Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. Price scenarios can be given as members of `opts`.
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. Price scenarios can be given as members of `opts`. This experiment is complicated by the fact that I use a cohort setup: Only certain cohorts are alive in certain years. In order to simulate a shock in calendar year t, one needs two parts: first, a version of the model where the shock happens (say, different price kicking in at age j). Now, to be a real shock, this must come unexpected. In general, there will be a reaction to the coming shock at age j-1, etc. So, one needs to reset the model solution in years 1...j-1 to the baseline solution first.
 """
 function exp_shockRegion(opts::Dict;same_ids=false)
 
@@ -641,41 +641,21 @@ function elasticity()
 			 "shockYear" => 2000,
 			 "shockVal_y" => 1.1 .* ones(32),  
 			 "shockVal_p" => ones(32),  
-			 "shockAge" => 10   # dummy arg
+			 "shockAge" => 0   # dummy arg
 			 )
-	regs = m.regnames[:Division]
-	# @showprogress "Computing..." for j in 1:p.nJ
-	# 	o["shockReg"] = j
 
-	# 	p1 = Param(2,opts=o)
-	# 	mm = Model(p1)
-	# 	solve!(mm,p1)
-	# 	sim1 = simulate(mm,p1)
-	# 	sim1 = sim1[.!ismissing.(sim1[:cohort]),:]
-	# 	mm = 0
-	# 	gc()
-	# 	sim1 = @where(sim1,(:year .> 1996))
-	# 	flows = getFlowStats(Dict(:base=>sim0,:pol=>sim1))
-	# 	x = get_elas(flows[:base],flows[:pol],o,j)
-	# 	dout[Symbol(regs[j])] = Dict(:all => mean(x[:d_all_y]),
-	# 		:d_total_in_y =>mean(x[:d_total_in_y]),
-	# 		:d_in_rent_y =>mean(x[:d_in_rent_y]),
-	# 		:d_in_buy_y =>mean(x[:d_in_buy_y]))
-	# end
-
-	for j in 1:1
+	for j in 1:p.nJ
 		o["shockReg"] = j
 		x = exp_shockRegion(o)[1]
-		return x
 		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
 	end
 
-	# io = setPaths()
-	# ostr = "elasticity.json" 
-	# f = open(joinpath(io["out"],ostr),"w")
-	# JSON.print(f,dout)
-	# close(f)
-	# info("done.")
+	io = setPaths()
+	ostr = "elasticity.json" 
+	f = open(joinpath(io["out"],ostr),"w")
+	JSON.print(f,dout)
+	close(f)
+	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] elasticity $took hours")
@@ -737,8 +717,11 @@ function shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 	return (d,y)
 end
 
+"""
+	adjustVShocks!(mm::Model,m::Model,p::Param)
 
-# make sure behaviour is identical before shock for all agents.
+Resets decision rules to pre-shock environment found in model `m`. Pre-shock decision rules in shocked model `mm` are contaminated by altered future values in `mm` after the shock.
+"""
 function adjustVShocks!(mm::Model,m::Model,p::Param)
 
 	if p.shockAge > 1

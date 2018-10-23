@@ -768,6 +768,13 @@ function Gyp_indices(p::Param,show=false)
 	return idx
 end
 
+function model(;opt::Dict=Dict())
+	p = Param(2,opts=opt)
+	m = Model(p)
+	solve!(m,p)
+	return m
+end
+
 
 function show(io::IO, M::Model)
 	r = sizeof(M.v)+sizeof(M.vh)+
