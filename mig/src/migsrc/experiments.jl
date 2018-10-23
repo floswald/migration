@@ -636,12 +636,12 @@ function elasticity()
 	dout = Dict()
 
 	# opts dict 
-	o = Dict("shockReg" => 0,
+	o = Dict("shockReg" => 1,
 			 "policy" => "ypshock",
 			 "shockYear" => 2000,
 			 "shockVal_y" => 1.1 .* ones(32),  
 			 "shockVal_p" => ones(32),  
-			 "shockAge" => 1   # dummy arg
+			 "shockAge" => 10   # dummy arg
 			 )
 	regs = m.regnames[:Division]
 	# @showprogress "Computing..." for j in 1:p.nJ
@@ -752,7 +752,7 @@ function adjustVShocks!(mm::Model,m::Model,p::Param)
 		for iy=1:p.ny 				
 		for is=1:p.ns 				
 		for ik=1:p.nJ			
-			mm.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+			mm.v[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.v[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
 			for ihh in 1:p.nh
 				mm.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
 				mm.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
