@@ -349,7 +349,7 @@ type Model
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
 				yshock = ((p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg))) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
-				yshock = (p.policy=="noMove") ? log(p.shockVal_y[it]) : yshock
+				yshock = ((p.policy=="noMove") || (p.policy=="ownerWTP")) ? log(p.shockVal_y[it]) : yshock
 				# info("yshock = $yshock")
 				for iy in 1:p.ny
 					for ip in 1:p.np
@@ -771,6 +771,10 @@ end
 function model(;opt::Dict=Dict())
 	p = Param(2,opts=opt)
 	m = Model(p)
+	return (m,p)
+end
+function solve(;opt::Dict=Dict())
+	m,p = model(opt=opt)
 	solve!(m,p)
 	return m
 end

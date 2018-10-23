@@ -160,6 +160,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	highMC      = false
 	all_j       =  false
 	pshock      = false
+	ownerWTP = false
 
 	Poterba = m.gridsXD["Poterba"]
 	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
@@ -234,6 +235,10 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		if age >= p.shockAge
 			pshock = true
 		end
+	end
+
+	if p.policy == "ownerWTP"
+		ownerWTP = true
 	end
 
 	# state dependent stochastic states 
@@ -344,12 +349,23 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# @assert offset_k+1 == kidx
 										kidx = offset_k + 1
 
+										# monetize policies
+										# =================
+
 										# add money to assets of movers if required
 
 										# if in moneyMC experiment and
 										# if this is the period where we measure, ie there IS a MC (!p.noMC) and
 										# if this is the value of someone who is moving
 										if moneyMC && (!p.noMC) && (ij!=ik)
+											a = a_0 + p.shockVal[1]
+										else
+											a = a_0
+										end
+
+										# measure owners wtp 
+										# -------------------
+										if ownerWTP && (ih==1)
 											a = a_0 + p.shockVal[1]
 										else
 											a = a_0

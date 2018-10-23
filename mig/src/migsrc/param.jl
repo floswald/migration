@@ -230,7 +230,9 @@ type Param
 		# override defaults
 		if length(opts) > 0
             for (k,v) in opts
-                setfield!(out,Symbol(k),v)
+            	if in(Symbol(k),fieldnames(out))
+                	setfield!(out,Symbol(k),v)
+                end
             end
         end
 
