@@ -644,31 +644,38 @@ function elasticity()
 			 "shockAge" => 1   # dummy arg
 			 )
 	regs = m.regnames[:Division]
-	@showprogress "Computing..." for j in 1:p.nJ
-		o["shockReg"] = j
+	# @showprogress "Computing..." for j in 1:p.nJ
+	# 	o["shockReg"] = j
 
-		p1 = Param(2,opts=o)
-		mm = Model(p1)
-		solve!(mm,p1)
-		sim1 = simulate(mm,p1)
-		sim1 = sim1[.!ismissing.(sim1[:cohort]),:]
-		mm = 0
-		gc()
-		sim1 = @where(sim1,(:year .> 1996))
-		flows = getFlowStats(Dict(:base=>sim0,:pol=>sim1))
-		x = get_elas(flows[:base],flows[:pol],o,j)
-		dout[Symbol(regs[j])] = Dict(:all => mean(x[:d_all_y]),
-			:d_total_in_y =>mean(x[:d_total_in_y]),
-			:d_in_rent_y =>mean(x[:d_in_rent_y]),
-			:d_in_buy_y =>mean(x[:d_in_buy_y]))
+	# 	p1 = Param(2,opts=o)
+	# 	mm = Model(p1)
+	# 	solve!(mm,p1)
+	# 	sim1 = simulate(mm,p1)
+	# 	sim1 = sim1[.!ismissing.(sim1[:cohort]),:]
+	# 	mm = 0
+	# 	gc()
+	# 	sim1 = @where(sim1,(:year .> 1996))
+	# 	flows = getFlowStats(Dict(:base=>sim0,:pol=>sim1))
+	# 	x = get_elas(flows[:base],flows[:pol],o,j)
+	# 	dout[Symbol(regs[j])] = Dict(:all => mean(x[:d_all_y]),
+	# 		:d_total_in_y =>mean(x[:d_total_in_y]),
+	# 		:d_in_rent_y =>mean(x[:d_in_rent_y]),
+	# 		:d_in_buy_y =>mean(x[:d_in_buy_y]))
+	# end
+
+	for j in 1:1
+		o["shockReg"] = j
+		x = exp_shockRegion(o)[1]
+		return x
+		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
 	end
 
-	io = setPaths()
-	ostr = "elasticity.json" 
-	f = open(joinpath(io["out"],ostr),"w")
-	JSON.print(f,dout)
-	close(f)
-	info("done.")
+	# io = setPaths()
+	# ostr = "elasticity.json" 
+	# f = open(joinpath(io["out"],ostr),"w")
+	# JSON.print(f,dout)
+	# close(f)
+	# info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] elasticity $took hours")
@@ -770,20 +777,23 @@ end
 # apply a shock at a certain age.
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
+	# important!
+	oo = deepcopy(opts)
+
 	# if shockAge==0
 	# 	opts["shockAge"] = shockAge + 1
 	# 	p = Param(2,opts)
 	# 	keep = (p.nt) - shockAge + opts["shockYear"] - 1998 # relative to 1998, first year with all ages present
 	# 	@assert p.shockAge == shockAge + 1
 	# else
-		opts["shockAge"] = shockAge
-		p = Param(2,opts=opts)
-		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
+		oo["shockAge"] = shockAge
+		p = Param(2,opts=oo)
+		setfield!(p,:ctax,get(oo,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
-		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		keep = (p.nt) - shockAge + oo["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	info("applying $(opts["policy"]) in $(opts["shockReg"]) at age $(p.shockAge), keeping cohort $keep")
+	println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
 	mm = Model(p)
 	solve!(mm,p)
 
