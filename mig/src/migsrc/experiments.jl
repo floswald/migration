@@ -656,6 +656,7 @@ function ownersWTP(nosave::Bool=false)
 
 	function wtp_impl(m,p,j)
 		dout = Dict()
+		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
 		dout[:region] = j
 		dout[:data] = Dict()
 		for it in (2,10)
@@ -663,40 +664,43 @@ function ownersWTP(nosave::Bool=false)
 			age_hit = it
 			# for iz in 1:1
 			for iz in 1:p.nz
-				info("now at it=$it, j=$j, iz=$iz")
-				own_a0 = 8
-				rent_a0 = m.aone
-				o = Dict("shockReg" => j,
-						 "policy" => "ownerWTP",
-						 "shockYear" => 2000,
-						 "shockVal_y" => 0.9 .* ones(32),  
-						 "shockVal_p" => ones(32),  
-						 "shockAge" => age_hit,   # dummy arg
-						 "oidx" => (j,1,iz,2,2,1,own_a0,2,j,age_hit),
-						 "oidx2" => (j,1,iz,2,2,1,:,2,j,age_hit),
-						 "ridx" => (j,1,iz,2,2,1,rent_a0,1,j,age_hit)
-						 )
+				dout[:data][it][iz] = Dict()
+				for sh in (:y,:p)
+					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
+					own_a0 = 8
+					rent_a0 = m.aone
+					o = Dict("shockReg" => j,
+							 "policy" => "ownerWTP",
+							 "shockYear" => 2000,
+							 "shockVal_y" => shocks[sh][1] .* ones(32),  
+							 "shockVal_p" => shocks[sh][2] .* ones(32),  
+							 "shockAge" => age_hit,   # dummy arg
+							 "oidx" => (j,1,iz,2,2,1,own_a0,2,j,age_hit),
+							 "oidx2" => (j,1,iz,2,2,1,:,2,j,age_hit),
+							 "ridx" => (j,1,iz,2,2,1,rent_a0,1,j,age_hit)
+							 )
 
-				# get the target value: renters valueation.
-				r_0 = m.v[o["ridx"]...]
-				if r_0 == p.myNA
-					warn("r_0 = $r_0. skip this state")
-					continue
+					# get the target value: renters valueation.
+					r_0 = m.v[o["ridx"]...]
+					if r_0 == p.myNA
+						warn("r_0 = $r_0. skip this state")
+						continue
+					end
+
+					# find exact asset level where owner value is identical to r_0
+					# interpolate assets and m.v 
+					# feed to root solver
+					itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
+					a_0 = fzero(x->r_0 - itp[x],-500.0,0.0)  # critical asset level
+					info("renters baseline value is $r_0")
+					# info("owners baseline value (before shock) was $(itp[a_0])")
+					info("owners baseline critical asset level is $a_0")
+
+
+					# find asset compensation value that makes owners indifferent.
+					result = optimize( x-> v_ownersWTP(x,r_0,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
+					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer)
 				end
-
-				# find exact asset level where owner value is identical to r_0
-				# interpolate assets and m.v 
-				# feed to root solver
-				itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
-				a_0 = fzero(x->r_0 - itp[x],-500.0,0.0)  # critical asset level
-				info("renters baseline value is $r_0")
-				# info("owners baseline value (before shock) was $(itp[a_0])")
-				info("owners baseline critical asset level is $a_0")
-
-
-				# find asset compensation value that makes owners indifferent.
-				result = optimize( x-> v_ownersWTP(x,r_0,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
-				dout[:data][it][iz] = Dict(:a_0 => a_0, :comp => result.minimizer)
 			end
 		end
 		return dout
@@ -706,7 +710,7 @@ function ownersWTP(nosave::Bool=false)
 	# y = pmap(x->wtp_impl(m,p,x),1:1)
 	# reorder
 	d = Dict()
-	for j in 1:1
+	for j in 1:p.nJ
 		println(map(x->get(x,:region,0)==j,y))
 		d[j] = y[map(x->get(x,:region,0)==j,y)]
 	end
