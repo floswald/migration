@@ -12,6 +12,8 @@ import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
 using ProgressMeter
 using ClusterManagers
+using Interpolations
+using Roots
 # using RCall  # dont use this as impossible to install on cluster.
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment

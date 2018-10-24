@@ -1,6 +1,7 @@
 doc = """
 
-Homeownership, Regional Shocks and Migration (Oswald, 2017)
+The Effect of Homeownership on the Option
+Value of Regional Migration (Oswald, 2018)
 
     | Welcome to the run file of my paper. Please
     | see below how to run the code. 
@@ -10,16 +11,14 @@ Homeownership, Regional Shocks and Migration (Oswald, 2017)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
+    run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] [--cluster=<c>]
-    run.jl experiment shockRegion [--nosave] [--nworkers=<nw>] [--cluster=<c>]
-    run.jl experiment (moneyMC|decomp) [--nosave]
+    run.jl experiment (elasticity|ownersWTP|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
-    --cluster=<c>       name of cluster to use [default: cumulus]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
     --yshock=<ys>       shock applied to regional income [default: 1.0]
@@ -29,20 +28,7 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"0.9.5")
-
-cumulus = vcat("10.20.35.11",
-"10.20.35.21",
-"10.20.35.26",
-"10.20.35.27",
-"10.20.35.30",
-"10.20.35.31",
-"10.20.35.32",
-"10.20.35.33",
-"10.20.35.35",
-"10.20.35.36")
-
-
+args = docopt(doc, version=v"0.9.6")
 
 if args["estim"]
     info("Running estimation: ")
@@ -67,38 +53,25 @@ elseif args["experiment"]
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
     if args["noMove"]
-        if nwork > 1
-            if args["--cluster"]=="cumulus"
-                if nwork > 10
-                    error("only 10 workers on cumulus")
-                end
-                addprocs([cumulus[i] for i in 1:nwork])
-            elseif args["--cluster"]=="local"
-                addprocs(nwork)
-            end
-        end
+        addprocs(nwork)
         using mig
         info("      noMove experiment, with nosave=$nosave")
         info("      applying ys=$_ys, ps=$_ps")
         mig.exp_Nomove(do_ctax=true,save=!nosave,ys=_ys,ps=_ps)
-    elseif args["shockRegion"]
-        if nwork > 1
-            if args["--cluster"]=="cumulus"
-                if nwork > 10
-                    error("only 10 workers on cumulus")
-                end
-                addprocs([cumulus[i] for i in 1:nwork])
-            elseif args["--cluster"]=="local"
-                addprocs(nwork)
-            end
-        end
-        using mig
-        info("      shockRegion experiment, with nosave=$nosave, on $(length(workers())) cores")
-        @time mig.shockRegions_scenarios(save=!nosave)
     elseif args["moneyMC"]
         info("      monetize the moving costs, with nosave=$nosave")
         using mig
         mig.moneyMC(nosave)
+    elseif args["ownersWTP"]
+        info("      computing owners WTP to become renter again, with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.ownersWTP(nosave)
+    elseif args["elasticity"]
+        info("      computing elasticity wrt 10% income shock, with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.elasticity(nosave)
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig
