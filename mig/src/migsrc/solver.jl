@@ -238,10 +238,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	end
 
 	if p.policy == "ownerWTP"
-		ownerWTP = true
 		if age >= p.shockAge
 			pshock = true
 		end
+		# make a one-off lump sum payment to compensate
+		ownerWTP = age==p.shockAge ? true : false
 	end
 
 	# state dependent stochastic states 
