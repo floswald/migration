@@ -31,6 +31,18 @@ function own_cond_tau()
 
 end
 
+function plotOwnerWTP()
+
+	df = DataFrame(div=Int[],comp=Float64[])
+
+	for (k,v) in d
+        push!(df,[v[1]["region"],v[1]["data"]["2"]["4"]["y"]["comp"]])
+  	end
+
+
+end
+
+
 
 function plotShockRegion(m::Model;save=true)
 
