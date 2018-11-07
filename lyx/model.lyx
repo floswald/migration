@@ -6273,7 +6273,20 @@ Dropbox/model/fit/elasticities.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-elasticities.
+Elasticities of migration 
+\emph on
+inflows
+\emph default
+ with respect to an unexpected and permanent income shock in any given region.
+ For example, the first row reports that following a 1% permanent shock
+ to regional income 
+\begin_inset Formula $q$
+\end_inset
+
+ in East North Central in year 2000, subsequent buyer inflows increase by
+ 1.5%, whereas renter inflows increase by 3.7% with respect to the baseline
+ where this shock does not happen.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:elasticities"
@@ -6285,6 +6298,41 @@ name "tab:elasticities"
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Shadow Cost of Owning
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Owner willingness to pay to become a renter 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 

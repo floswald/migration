@@ -654,7 +654,8 @@ function ownersWTP(nosave::Bool=false)
 
 	# prepare shocked model: get hit in age_hit
 
-	function wtp_impl(m,p,j)
+	function wtp_impl(j)
+
 		dout = Dict()
 		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
 		dout[:region] = j
@@ -662,10 +663,22 @@ function ownersWTP(nosave::Bool=false)
 		for it in (2,10)
 			dout[:data][it] = Dict()
 			age_hit = it
-			# for iz in 1:1
-			for iz in 1:p.nz
-				dout[:data][it][iz] = Dict()
-				for sh in (:y,:p)
+			for sh in (:y,:p)
+				# get renters valuation in each shock scenario
+				o = Dict("shockReg" => j,
+						 "policy" => "ownerWTP",
+						 "shockYear" => 2000,
+						 "shockVal_y" => shocks[sh][1] .* ones(32),  
+						 "shockVal_p" => shocks[sh][2] .* ones(32),  
+						 "shockAge" => age_hit  
+						 )
+				p = Param(2,opts=o)
+				m = Model(p)
+				solve!(m,p)
+
+				# for iz in 1:1
+				for iz in 1:p.nz
+					dout[:data][it][iz] = Dict()
 					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
 					own_a0 = 8
 					rent_a0 = m.aone
@@ -706,7 +719,7 @@ function ownersWTP(nosave::Bool=false)
 		return dout
 	end
 
-	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
+	y = pmap(x->wtp_impl(x),1:p.nJ)
 	# y = pmap(x->wtp_impl(m,p,x),1:1)
 	# reorder
 	d = Dict()
@@ -758,10 +771,15 @@ function elasticity(nosave::Bool=false)
 			 "shockAge" => 0   # dummy arg
 			 )
 
-	for j in 1:p.nJ
+	regs = m.regnames[:Division]
+	@showprogress "Computing..." for j in 1:p.nJ
 		o["shockReg"] = j
 		x = exp_shockRegion(o)[1]
-		dout[j] = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
+		y = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
+		dout[Symbol(regs[j])] = Dict(:all => mean(y[:d_all_y]),
+			:d_total_in_y =>mean(y[:d_total_in_y]),
+			:d_in_rent_y =>mean(y[:d_in_rent_y]),
+			:d_in_buy_y =>mean(y[:d_in_buy_y]))
 	end
 
 	if !nosave
