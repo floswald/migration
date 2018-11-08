@@ -367,7 +367,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 											a = a_0
 										end
 
-										# measure owners wtp 
+										# measure sellers wtp 
 										# -------------------
 										if ownerWTP && (ih==1)
 											a = a_0 + p.shockVal[1]
@@ -426,8 +426,8 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 												fill!(EV,p.myNA)
 												fill!(w,p.myNA)
 
-
 												cash = cashFunction(a,newz,ih,ihh,price_j,price_k,ij!=ik,ik,p)
+
 												m.cash[hidx] = cash
 
 
