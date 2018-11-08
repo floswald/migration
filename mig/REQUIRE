@@ -17,8 +17,9 @@ RData
 DocOpt
 Plots
 StatPlots
-ApproXD
-MomentOpt
 ProgressMeter
 Interpolations
 Roots
+ApproXD
+MomentOpt
+
