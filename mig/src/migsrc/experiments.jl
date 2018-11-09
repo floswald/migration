@@ -618,9 +618,17 @@ end
 function v_ownersWTP(x::Float64,v0::Float64,m0::Model,o::Dict)
 
 	oo = deepcopy(o)
-	oo["ctax"] = x
+	oo["shockVal"] = [x]
 	s = mig.computeShockAge(m0,oo,oo["iage"])
 	# mean of value after shockage => v1
+	vd = @linq s|>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own)) |>
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+	# println(vd)
+	# compute mean of V after suitable subsetting. => v0 
+	v1 = vd[:v][1]
+	println("v0 = $v0")
+	println("v1 = $v1")
 	(v1 - v0)^2
 end
 
@@ -642,55 +650,69 @@ function ownersWTP(nosave::Bool=false)
 	# v0 = shocked economy measured at v, m.aone and dd
 	# v1 = shocked economy measured at v, m.aone, no dd, but + assets
 
-
 	# get baseline model decision rules
 	m,p = solve()
 
-	# set up base opts dict
-	j = 1
-	o = Dict("shockReg"=>j,"shockYear"=>2000,
-			 "shockVal_y" => 0.9 .* ones(32),  
-			 "shockVal_p" => 1.0 .* ones(32),
-			 "iage" => findfirst(p.ages.==30))  
-	keep = (p.nt) - o["iage"] + o["shockYear"] - 1997 # relative to 1997, first year with all ages present
+	function wtp_impl(m::Model,p::Param,j::Int)
 
-	# baseline value: a renter's world
-	# compare simulated mean V from `if only i were a renter now` world...
-	oNomc = deepcopy(o)
-	oNomc["MC3"] = 0.0
-	oNomc["phi"] = 0.0
-	sNomc = mig.computeShockAge(m,oNomc,o["iage"])
-	v0 = @linq sNomc |>
-		 @where((:j.==j).&(:year.==o["shockYear"])) |>
-		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
-	# compute mean of V after suitable subsetting. => v0 
+		println("working on region $j")
 
+		dout = Dict()
+		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+		dout[:region] = j
+		dout[:data] = Dict()
+		for sh in (:y,:p)
+			o = Dict("shockReg" => j,
+					 "shockYear" => 2000,
+					 "shockVal_y" => shocks[sh][1] .* ones(32),  
+					 "shockVal_p" => shocks[sh][2] .* ones(32),  
+					 "iage" => findfirst(p.ages.==30))  
 
-	# res = optimize( x-> v_ownersWTP(x,v0,m,o), 0.0, 2.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-	# return res
-end
+			# baseline value: a renter's world
+			# compare simulated mean V from `if only i were a renter now` world...
+			oNomc = deepcopy(o)
+			oNomc["MC3"] = 0.0
+			oNomc["phi"] = 0.0
+			sNomc = mig.computeShockAge(m,oNomc,o["iage"])
+			vd = @linq sNomc |>
+				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own)) |>
+				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+			# compute mean of V after suitable subsetting. => v0 
+			v0 = vd[:v]
 
+			# now turn on the policy to compensate owners 
+			o["policy"] = "ownersWTP"
+
+			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 30.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			dout[:data][sh] = res.minimizer
+
+		end
+		return dout
+	end
 # 	# y = pmap(x->wtp_impl(x),1:p.nJ)
-# 	# y = pmap(x->wtp_impl(x),1:1)
+	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
-# 	d = Dict()
-# 	for j in 1:p.nJ
-# 		println(map(x->get(x,:region,0)==j,y))
-# 		d[j] = y[map(x->get(x,:region,0)==j,y)]
-# 	end
-# 	if !nosave
-# 		io = setPaths()
-# 		ostr = "ownersWTP.json" 
-# 		f = open(joinpath(io["out"],ostr),"w")
-# 		JSON.print(f,d)
-# 		close(f)
-# 	end
-# 	info("done.")
+	d = Dict()
+	for j in 1:p.nJ
+		println(map(x->get(x,:region,0)==j,y))
+		d[j] = y[map(x->get(x,:region,0)==j,y)]
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "ownersWTP.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
+	info("done.")
 
-# 	took = round(toc() / 3600.0,2)  # hours
-# 	post_slack("[MIG] ownersWTP $took hours")
-# 	return d
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] ownersWTP $took hours")
+	return d
+
+end
+
 
 # end
 
@@ -862,7 +884,13 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt) - shockAge + oo["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
+	# println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
+	# println("mc = $(p.MC3)")
+	# println("phi = $(p.phi)")
+	# println("shockVal = $(p.shockVal)")
+	# println("shockVal_y = $(p.shockVal_y)")
+	# println("shockVal_p = $(p.shockVal_p)")
+	mm = Model(p)
 	mm = Model(p)
 	solve!(mm,p)
 

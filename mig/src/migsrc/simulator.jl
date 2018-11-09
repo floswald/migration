@@ -221,6 +221,7 @@ function simulate(m::Model,p::Param)
 
 	pshock = false
 	yshock = false
+	ownersWTP = false
 	nomove_yshock = false
 	shockmyy = false
 	if p.policy == "pshock"
@@ -255,10 +256,17 @@ function simulate(m::Model,p::Param)
 		yshock = true
 	end
 
-	# pdebug("set policy switches")
 	# println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
 
 	for age = 1:T
+		if p.policy == "ownersWTP"
+			if age >= p.shockAge
+				pshock = true
+				yshock = true
+			end
+			# make a one-off lump sum payment to compensate
+			ownersWTP = age==p.shockAge ? true : false
+		end
 
 		# pdebug("simulating age=$age")
 
@@ -324,6 +332,17 @@ function simulate(m::Model,p::Param)
 				P         = DP[i_idx]
 				a         = Da[i_idx]
 				z         = Dz[i_idx]
+
+				# ownersWTP experiment
+				# give owners money
+				if ownersWTP && ((age == p.shockAge) && (ij == p.shockReg)  && (ih == 1))
+					# println("a = $a")
+					a += p.shockVal[1]
+					# println("after = $a")
+					# println("shockval = $(p.shockVal[1])")
+					# println("")
+				end
+
 				azYP      = [a,z,Y,P]
 				price_j   = m.pred_p[m.coh_idx[coh][age],ij]
 				y         = m.pred_y[m.coh_idx[coh][age],ij]

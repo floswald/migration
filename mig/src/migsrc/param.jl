@@ -219,9 +219,14 @@ type Param
 			shockReg = 0
 			shockAge = 100
 			shockYear = 2000
-			shockVal = ones(nt-1)
 			shockVal_y = ones(nt-1)
 			shockVal_p = ones(nt-1)
+			shockVal = zeros(nt-1)
+			# if length(opts) > 0
+			# 	shockVal = ones(nt-1) .* get(opts,"shockVal",1.0)
+			# else
+			# 	shockVal = ones(nt-1) 
+			# end
 		# end
 		# create object
 

@@ -6273,19 +6273,22 @@ Dropbox/model/fit/elasticities.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Elasticities of migration 
+Elasticities with respect to a permanent income shock by region.
+ This table reports elasticities of population (i.e.
+ number of individuals present) and migration 
 \emph on
 inflows
 \emph default
  with respect to an unexpected and permanent income shock in any given region.
+ Elasticities are computed as averages over all years after the shock occurs.
  For example, the first row reports that following a 1% permanent shock
  to regional income 
 \begin_inset Formula $q$
 \end_inset
 
- in East North Central in year 2000, subsequent buyer inflows increase by
- 1.5%, whereas renter inflows increase by 3.7% with respect to the baseline
- where this shock does not happen.
+ in East North Central in year 2000, the population grows by 0.5%.
+ The number of people coming into the region increases by 5% on average,
+ split by 2.3% coming to buy and 4.3% in order to rent.
  
 \begin_inset CommandInset label
 LatexCommand label

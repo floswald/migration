@@ -160,7 +160,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	highMC      = false
 	all_j       =  false
 	pshock      = false
-	ownerWTP = false
+	ownersWTP = false
 
 	Poterba = m.gridsXD["Poterba"]
 	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
@@ -237,12 +237,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	if p.policy == "ownerWTP"
+	if p.policy == "ownersWTP"
 		if age >= p.shockAge
 			pshock = true
 		end
 		# make a one-off lump sum payment to compensate
-		ownerWTP = age==p.shockAge ? true : false
+		ownersWTP = age==p.shockAge ? true : false
 	end
 
 	# state dependent stochastic states 
@@ -369,11 +369,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# measure sellers wtp 
 										# -------------------
-										if ownerWTP && (ih==1)
-											a = a_0 + p.shockVal[1]
-										else
-											a = a_0
-										end
+										# if ownersWTP && (ih==1)
+										# 	a = a_0 + p.shockVal[1]
+										# else
+										# 	a = a_0
+										# end
 
 
 										if ih==0
