@@ -338,6 +338,7 @@ function setPaths()
 		indir  = joinpath(joinpath(dirname(@__FILE__),"..","..","in"))
 		ind    = joinpath(d,"..","..","in")
 		outdir = joinpath(joinpath(dirname(@__FILE__),"..","..","out"))
+		out    = joinpath(joinpath(dirname(@__FILE__),"..","..","out"))
 		outg   = outdir
 		outbox = "null"
 	end

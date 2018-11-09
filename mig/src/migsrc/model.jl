@@ -776,7 +776,7 @@ end
 function solve(;opt::Dict=Dict())
 	m,p = model(opt=opt)
 	solve!(m,p)
-	return m
+	return m,p
 end
 
 
