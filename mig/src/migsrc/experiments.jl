@@ -949,6 +949,7 @@ end
 
 function moneyMC(nosave::Bool=false)
 
+	post_slack()
 	# compute a baseline without MC
 	p = Param(2)
 	MC = Array{Any}(p.nh,p.ntau)
@@ -997,8 +998,8 @@ function moneyMC(nosave::Bool=false)
 		f = open(fi,"w")
 		JSON.print(f,d)
 		close(f)
-		ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
-		out,proc = open(ficmd)
+		# ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+		# out,proc = open(ficmd)
 	end
 
 	post_slack("[MIG] MoneyMC done.")
