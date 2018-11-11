@@ -631,6 +631,22 @@ function v_ownersWTP(x::Float64,v0::Float64,m0::Model,o::Dict)
 	println("v1 = $v1")
 	(v1 - v0)^2
 end
+function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
+
+	oo = deepcopy(o)
+	oo["shockVal"] = [x]
+	s = mig.computeShockAge(m0,oo,oo["iage"])
+	# mean of value after shockage => v1
+	vd = @linq s|>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move)) |>
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+	# println(vd)
+	# compute mean of V after suitable subsetting. => v0 
+	v1 = vd[:v][1]
+	println("v0 = $v0")
+	println("v1 = $v1")
+	(v1 - v0)^2
+end
 
 
 """
@@ -679,12 +695,18 @@ function ownersWTP(nosave::Bool=false)
 				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 			# compute mean of V after suitable subsetting. => v0 
 			v0 = vd[:v]
+			vd = @linq sNomc |>
+				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move)) |>
+				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+			# compute mean of V after suitable subsetting. => v0 
+			v0_move = vd[:v]
 
 			# now turn on the policy to compensate owners 
 			o["policy"] = "ownersWTP"
 
 			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 30.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			dout[:data][sh] = res.minimizer
+			res_m = optimize( x-> v_ownersWTP_m(x,v0[1],m,o), 0.0, 30.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			dout[:data][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
 
 		end
 		return dout
