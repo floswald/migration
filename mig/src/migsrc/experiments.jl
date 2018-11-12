@@ -388,7 +388,7 @@ Applies price/income shock to a certain region in certain year and returns measu
 function exp_shockRegion(opts::Dict;same_ids=false)
 
 	j         = opts["shockReg"]
-	which     = opts["policy"]
+	which     = get(opts,"policy","NULL")
 	shockYear = opts["shockYear"]
 	info("Applying shock to region $j")
 
@@ -619,7 +619,7 @@ function v_ownersWTP(x::Float64,v0::Float64,m0::Model,o::Dict)
 
 	oo = deepcopy(o)
 	oo["shockVal"] = [x]
-	s = mig.computeShockAge(m0,oo,oo["iage"])
+	s = mig.exp_shockRegion(oo)[3]
 	# mean of value after shockage => v1
 	vd = @linq s|>
 		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite.(:maxv))) |>
@@ -635,7 +635,7 @@ function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
 
 	oo = deepcopy(o)
 	oo["shockVal"] = [x]
-	s = mig.computeShockAge(m0,oo,oo["iage"])
+	s = mig.exp_shockRegion(oo)[3]
 	# mean of value after shockage => v1
 	vd = @linq s|>
 		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
@@ -669,27 +669,27 @@ function ownersWTP(nosave::Bool=false)
 	# get baseline model decision rules
 	m,p = solve()
 
-	function wtp_impl(m::Model,p::Param,j::Int)
+	# function wtp_impl(m::Model,p::Param,j::Int)
 
-		println("working on region $j")
+	# 	println("working on region $j")
 
-		dout = Dict()
+	dout = Dict()
+
+	@showprogress "Computing..." for j in 1:p.nJ
 		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
-		dout[:region] = j
-		dout[:data] = Dict()
+		dout[j] = Dict()
 		for sh in (:y,:p)
 			o = Dict("shockReg" => j,
 					 "shockYear" => 2000,
 					 "shockVal_y" => shocks[sh][1] .* ones(32),  
-					 "shockVal_p" => shocks[sh][2] .* ones(32),  
-					 "iage" => findfirst(p.ages.==30))  
+					 "shockVal_p" => shocks[sh][2] .* ones(32))
 
 			# baseline value: a renter's world
 			# compare simulated mean V from `if only i were a renter now` world...
 			oNomc = deepcopy(o)
 			oNomc["MC3"] = 0.0
 			oNomc["phi"] = 0.0
-			sNomc = mig.computeShockAge(m,oNomc,o["iage"])
+			sNomc = mig.exp_shockRegion(o)[3]
 			vd = @linq sNomc |>
 				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite.(:maxv))) |>
 				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
@@ -708,20 +708,20 @@ function ownersWTP(nosave::Bool=false)
 
 			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
 			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			dout[:data][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
+			dout[j][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
 
 		end
-		return dout
+	# 	return dout
 	end
 	# y = pmap(x->wtp_impl(x),1:p.nJ)
-	y = pmap(x->wtp_impl(m,p,x),4:4)
+	# y = pmap(x->wtp_impl(m,p,x),4:4)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
-	d = Dict()
-	for j in 1:p.nJ
-		println(map(x->get(x,:region,0)==j,y))
-		d[j] = y[map(x->get(x,:region,0)==j,y)]
-	end
+	# d = Dict()
+	# for j in 1:p.nJ
+	# 	println(map(x->get(x,:region,0)==j,y))
+	# 	d[j] = y[map(x->get(x,:region,0)==j,y)]
+	# end
 	if !nosave
 		io = setPaths()
 		ostr = "ownersWTP.json" 
