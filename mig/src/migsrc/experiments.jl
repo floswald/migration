@@ -622,7 +622,7 @@ function v_ownersWTP(x::Float64,v0::Float64,m0::Model,o::Dict)
 	s = mig.computeShockAge(m0,oo,oo["iage"])
 	# mean of value after shockage => v1
 	vd = @linq s|>
-		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own)) |>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite(:maxv))) |>
 		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 	# println(vd)
 	# compute mean of V after suitable subsetting. => v0 
@@ -638,7 +638,7 @@ function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
 	s = mig.computeShockAge(m0,oo,oo["iage"])
 	# mean of value after shockage => v1
 	vd = @linq s|>
-		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move)) |>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite(:maxv))) |>
 		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 	# println(vd)
 	# compute mean of V after suitable subsetting. => v0 
@@ -691,12 +691,12 @@ function ownersWTP(nosave::Bool=false)
 			oNomc["phi"] = 0.0
 			sNomc = mig.computeShockAge(m,oNomc,o["iage"])
 			vd = @linq sNomc |>
-				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own)) |>
+				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite(:maxv))) |>
 				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 			# compute mean of V after suitable subsetting. => v0 
 			v0 = vd[:v]
 			vd = @linq sNomc |>
-				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move)) |>
+				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite(:maxv))) |>
 				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
 			# compute mean of V after suitable subsetting. => v0 
 			v0_move = vd[:v]
@@ -711,8 +711,8 @@ function ownersWTP(nosave::Bool=false)
 		end
 		return dout
 	end
-	y = pmap(x->wtp_impl(x),1:p.nJ)
-	# y = pmap(x->wtp_impl(m,p,x),8:8)
+	# y = pmap(x->wtp_impl(x),1:p.nJ)
+	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
 	d = Dict()
