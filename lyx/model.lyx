@@ -6150,7 +6150,7 @@ literal "true"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6196,30 +6196,7 @@ literal "true"
 
  report an average moving cost of $384,000 for a young and $312,000 for
  an average mover.
- The table does not display moving costs for the stayer type 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- because the resulting value is not very interesting: I implement the 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- type as an individual with 
-\emph on
-very high
-\emph default
- moving cost, i.e.
- a cost so high that they never move.
- The resulting dollar value in this table for the case 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- would therefore vary with 
-\emph on
-how high
-\emph default
- that cost eventually is, so there is nothing to learn (at the current parameter
-ization, the value is $32m, but as I said, this means very little).
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:MC-money"

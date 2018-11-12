@@ -7,7 +7,7 @@
   "moneyMC":{
     "template" : "moneyMC.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/moneyMC2.json"
+    "data"     : "git/migration/mig/out/moneyMC2.json"
   },
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
