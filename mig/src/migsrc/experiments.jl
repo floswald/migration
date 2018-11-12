@@ -704,15 +704,15 @@ function ownersWTP(nosave::Bool=false)
 			# now turn on the policy to compensate owners 
 			o["policy"] = "ownersWTP"
 
-			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 30.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			res_m = optimize( x-> v_ownersWTP_m(x,v0[1],m,o), 0.0, 30.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
 			dout[:data][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
 
 		end
 		return dout
 	end
 # 	# y = pmap(x->wtp_impl(x),1:p.nJ)
-	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
+	y = pmap(x->wtp_impl(m,p,x),8:8)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
 	d = Dict()
