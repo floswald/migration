@@ -714,7 +714,7 @@ function ownersWTP(nosave::Bool=false)
 		return dout
 	end
 	# y = pmap(x->wtp_impl(x),1:p.nJ)
-	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
+	y = pmap(x->wtp_impl(m,p,x),4:4)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
 	d = Dict()
