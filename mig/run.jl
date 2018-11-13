@@ -13,7 +13,8 @@ Usage:
     run.jl --version
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment (elasticity|ownersWTP|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment (elasticity|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment ownersWTP [--nworkers=<nw>] [--nosave] [--region=<reg>]  
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
 Options:
@@ -21,6 +22,7 @@ Options:
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
+    --region=<reg>      run in which region [default: 1]
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
     --version           show version
@@ -49,6 +51,7 @@ elseif args["test"]
 elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
+    reg = parse(Int,args["--reg"])
     nwork = parse(Int,args["--nworkers"])
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
@@ -66,7 +69,7 @@ elseif args["experiment"]
         info("      computing owners WTP to become renter again, with nosave=$nosave")
         addprocs(nwork)
         using mig
-        mig.ownersWTP(nosave)
+        mig.ownersWTP(reg,nosave)
     elseif args["elasticity"]
         info("      computing elasticity wrt 10% income shock, with nosave=$nosave")
         addprocs(nwork)

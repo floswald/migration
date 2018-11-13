@@ -656,9 +656,9 @@ What is the willingness to pay of an owner to become a renter after their region
 > what an owner in a down region would pay to be a renter again
 This is complicated because two things happen at the same time: price shock in region j, and asset compensation to owners in region j
 """
-function ownersWTP(nosave::Bool=false)
+function ownersWTP(j::Int,nosave::Bool=false)
 
-	info("runing ownersWTP computation")
+	info("runing ownersWTP computation in region $j")
 	post_slack()
 	tic()
 
@@ -675,9 +675,9 @@ function ownersWTP(nosave::Bool=false)
 
 	dout = Dict()
 
-	@showprogress "Computing..." for j in 1:p.nJ
+	# @showprogress "Computing..." for j in 1:p.nJ
 		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
-		dout[j] = Dict()
+		# dout[j] = Dict()
 		for sh in (:y,:p)
 			o = Dict("shockReg" => j,
 					 "shockYear" => 2000,
@@ -706,13 +706,13 @@ function ownersWTP(nosave::Bool=false)
 			# now turn on the policy to compensate owners 
 			o["policy"] = "ownersWTP"
 
-			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-2)
-			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-2)
-			dout[j][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
+			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-1)
+			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-1)
+			dout[sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
 
 		end
 	# 	return dout
-	end
+	# end
 	# y = pmap(x->wtp_impl(x),1:p.nJ)
 	# y = pmap(x->wtp_impl(m,p,x),4:4)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
@@ -724,7 +724,7 @@ function ownersWTP(nosave::Bool=false)
 	# end
 	if !nosave
 		io = setPaths()
-		ostr = "ownersWTP.json" 
+		ostr = "ownersWTP_$j.json" 
 		f = open(joinpath(io["out"],ostr),"w")
 		JSON.print(f,d)
 		close(f)
@@ -732,7 +732,7 @@ function ownersWTP(nosave::Bool=false)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] ownersWTP $took hours")
+	post_slack("[MIG] ownersWTP_$j $took hours")
 	return d
 
 end
