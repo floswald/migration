@@ -706,8 +706,8 @@ function ownersWTP(nosave::Bool=false)
 			# now turn on the policy to compensate owners 
 			o["policy"] = "ownersWTP"
 
-			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-2)
+			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-2)
 			dout[j][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
 
 		end
@@ -908,7 +908,7 @@ function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 		keep = (p.nt) - shockAge + oo["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	# println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
+	println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
 	# println("mc = $(p.MC3)")
 	# println("phi = $(p.phi)")
 	# println("shockVal = $(p.shockVal)")
