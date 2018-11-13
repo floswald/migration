@@ -51,7 +51,7 @@ elseif args["test"]
 elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
-    reg = parse(Int,args["--reg"])
+    reg = parse(Int,args["--region"])
     nwork = parse(Int,args["--nworkers"])
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
