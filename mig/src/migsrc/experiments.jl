@@ -1000,17 +1000,19 @@ end
 # adds xtra_ass dollars to each asset grid point at age t
 function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	p = Param(2,opts=opt["p"])
-	println("extra assets=$xtra_ass")
+	# println("extra assets=$xtra_ass")
 	setfield!(p,:shockVal,[xtra_ass])
 	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
 	w = m.v[1,1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	r = p.myNA
 	if w == p.myNA
-		return NaN 
 	else
-		(w - v0)^2
+		r = (w - v0)^2
 	end
+	println("distance = $r")
+	return r
 end
 
 
@@ -1018,20 +1020,20 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,100000.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-6)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,500.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
 	return ctax
 end
 
 function moneyMC(nosave::Bool=false)
 
+	tic()
 	post_slack()
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array{Any}(p.nh,p.ntau)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
-	println("baseline without MC done.")
+	info("baseline without MC done.")
 
 	whichasset = m.aone
 
@@ -1039,31 +1041,29 @@ function moneyMC(nosave::Bool=false)
 	# compare a zero asset renter to an owner with 0 net wealth.
 	# 0 net wealth means that assets are -163K.
 
+	out = Dict()
 	opts = Dict()
 	opts["p"] = Dict()
 	opts["p"]["policy"] = "moneyMC"
+	opts["itau"] = 1   # only mover type
 	for ih in 0:1
+		opts["ih"] = ih+1
 		if ih==0
 			opts["asset"] = whichasset
 		else
 			opts["asset"] = whichasset-1 
 		end
-		opts["ih"] = ih+1
-		for itau in 1:p.ntau
-			opts["itau"] = itau
-			opts["iz"] = 1  	# lowest income state
+		out[ih] = Dict()
+		for iz in 1:p.nz
+			opts["iz"] = iz  	
 			opts["it"] = 1 	# age 1
 			v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-			MC[ih+1,itau] = find_xtra_ass(v0,opts)
-			info("done with MC ih=$ih, itau=$itau")
-			info("moving cost: $(Optim.minimizer(MC[ih+1,itau]))")
-
+			res = find_xtra_ass(v0,opts)
+			info("done with MC ih=$ih, iz=$iz")
+			info("moving cost: $(Optim.minimizer(res))")
+			out[ih][iz] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
 		end
 	end
-
-	zs = m.gridsXD["zsupp"][:,1]
-	# make an out dict
-	d =Dict( "low_type" => Dict( "rent" => Optim.minimizer(MC[1,1]), "own" => Optim.minimizer(MC[2,1]), "high_type" => Dict( "rent" => Optim.minimizer(MC[1,2]), "own" => Optim.minimizer(MC[2,2]))) )
 
 	io = mig.setPaths()
 
@@ -1071,13 +1071,18 @@ function moneyMC(nosave::Bool=false)
 	    io = mig.setPaths()
 	    fi = joinpath(io["outdir"],"moneyMC2.json")
 		f = open(fi,"w")
-		JSON.print(f,d)
+		JSON.print(f,out)
 		close(f)
-		# ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
-		# out,proc = open(ficmd)
+		try
+			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+			out,proc = open(ficmd)
+		catch
+			warn("no dbxcli installed")
+		end
 	end
 
-	post_slack("[MIG] MoneyMC done.")
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] MoneyMC $took hours")
 
 	return (d,MC)
 end
