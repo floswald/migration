@@ -705,7 +705,7 @@ function moversWTP(j::Int,nosave::Bool=false)
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] moversWTP_$j $took hours")
-	return d
+	return dout
 end
 
 """
