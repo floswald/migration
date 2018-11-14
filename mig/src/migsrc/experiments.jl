@@ -698,7 +698,7 @@ function moversWTP(j::Int,nosave::Bool=false)
 		io = setPaths()
 		ostr = "moversWTP_$j.json" 
 		f = open(joinpath(io["out"],ostr),"w")
-		JSON.print(f,d)
+		JSON.print(f,dout)
 		close(f)
 	end
 	info("done.")
