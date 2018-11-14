@@ -14,12 +14,14 @@ Usage:
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
+    --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
@@ -28,7 +30,7 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"0.9.6")
+args = docopt(doc, version=v"0.9.7")
 
 if args["estim"]
     info("Running estimation: ")
@@ -50,6 +52,7 @@ elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
     nwork = parse(Int,args["--nworkers"])
+    reg = parse(Int,args["--region"])
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
     if args["noMove"]
@@ -67,6 +70,11 @@ elseif args["experiment"]
         addprocs(nwork)
         using mig
         mig.ownersWTP(nosave)
+    elseif args["moversWTP"]
+        info("      computing movers WTP in region $reg with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.moversWTP(reg,nosave)
     elseif args["elasticity"]
         info("      computing elasticity wrt 10% income shock, with nosave=$nosave")
         addprocs(nwork)

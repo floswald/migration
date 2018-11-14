@@ -635,12 +635,11 @@ function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
 
 	oo = deepcopy(o)
 	oo["shockVal"] = [x]
-	s = mig.computeShockAge(m0,oo,oo["iage"])
+	s = mig.exp_shockRegion(oo)[3]
 	# mean of value after shockage => v1
 	vd = @linq s|>
 		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
 		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
-	println(vd)
 	# compute mean of V after suitable subsetting. => v0 
 	v1 = vd[:v][1]
 	println("v0 = $v0")
@@ -648,6 +647,66 @@ function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
 	(v1 - v0)^2
 end
 
+
+"""
+	moversWTP(nosave::Bool=false)
+
+Same as `ownersWTP`[@ref] but for owners who move in `shockYear` from region j.
+"""
+function moversWTP(j::Int,nosave::Bool=false)
+
+	info("runing moversWTP computation in $j")
+	post_slack()
+	tic()
+
+	# "becoem a renter" means dd=Dict(:MC3=>0.0,:phi => 0.0)
+	# v0 = shocked economy measured at v, m.aone and dd
+	# v1 = shocked economy measured at v, m.aone, no dd, but + assets
+
+	# get baseline model decision rules
+	m,p = solve()
+	dout = Dict()
+
+	shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+	# dout[j] = Dict()
+	for sh in (:y,:p)
+		o = Dict("shockReg" => j,
+				 "shockYear" => 2000,
+				 "shockVal_y" => shocks[sh][1] .* ones(32),  
+				 "shockVal_p" => shocks[sh][2] .* ones(32))
+
+		# baseline value: a renter's world
+		# compare simulated mean V from `if only i were a renter now` world...
+		oNomc = deepcopy(o)
+		oNomc["MC3"] = 0.0
+		oNomc["phi"] = 0.0
+		sNomc = mig.exp_shockRegion(o)[3]
+		vd = @linq sNomc |>
+			 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
+			 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+		# compute mean of V after suitable subsetting. => v0 
+		v0_move = vd[:v]
+
+		# now turn on the policy to compensate owners 
+		o["policy"] = "ownersWTP"
+
+		res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-1)
+		dout[sh] = Dict(:own_move => res_m.minimizer)
+
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "moversWTP_$j.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] moversWTP_$j $took hours")
+	return d
+end
 
 """
 	ownersWTP(nosave::Bool=false)
@@ -693,22 +752,14 @@ function ownersWTP(nosave::Bool=false)
 			vd = @linq sNomc |>
 				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite.(:maxv))) |>
 				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
-			println(vd)
 			# compute mean of V after suitable subsetting. => v0 
 			v0 = vd[:v]
-			vd = @linq sNomc |>
-				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
-				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
-			println(vd)
-			# compute mean of V after suitable subsetting. => v0 
-			v0_move = vd[:v]
 
 			# now turn on the policy to compensate owners 
 			o["policy"] = "ownersWTP"
 
 			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
-			dout[:data][sh] = Dict(:own => res.minimizer, :own_move => res_m.minimizer)
+			dout[:data][sh] = Dict(:own => res.minimizer)
 
 		end
 		return dout
