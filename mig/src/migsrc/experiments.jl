@@ -1020,7 +1020,7 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,500.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,800.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
 	return ctax
 end
 
@@ -1084,7 +1084,7 @@ function moneyMC(nosave::Bool=false)
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] MoneyMC $took hours")
 
-	return (d,MC)
+	return out
 end
 
 function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json")
