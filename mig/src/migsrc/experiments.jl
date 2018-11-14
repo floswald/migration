@@ -388,7 +388,7 @@ Applies price/income shock to a certain region in certain year and returns measu
 function exp_shockRegion(opts::Dict;same_ids=false)
 
 	j         = opts["shockReg"]
-	which     = opts["policy"]
+	which     = get(opts,"policy","NULL")
 	shockYear = opts["shockYear"]
 	info("Applying shock to region $j")
 
@@ -765,7 +765,7 @@ function ownersWTP(nosave::Bool=false)
 		return dout
 	end
 	# y = pmap(x->wtp_impl(x),1:p.nJ)
-	y = pmap(x->wtp_impl(m,p,x),4:4)
+	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
 	d = Dict()
