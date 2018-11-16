@@ -1,11 +1,11 @@
 {% macro showparam(dd) %}
-     {{ dd.rent | prettyDollar(3) }}  && {{ dd.own| prettyDollar(3) }}  \\
+     {{ dd.z1.kdollars | prettyDollar(3) }}  
 {%- endmacro %}
 \begin{tabular}{D{.}{.}{6.7}@{} c D{.}{.}{6.7}@{}}
   \toprule
      \multicolumn{3}{c}{Money metric of moving cost $\Delta(k,x)$}\\ 
   \midrule
     \multicolumn{1}{c}{Renter} && \multicolumn{1}{c}{Owner}\\ 
-  {{  showparam(low_type) }}
+  {{  showparam(h0) }} && {{  showparam(h1) }} \\
   \bottomrule
 \end{tabular}

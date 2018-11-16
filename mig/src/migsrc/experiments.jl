@@ -768,10 +768,11 @@ function ownersWTP(nosave::Bool=false)
 	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
 # 	y = pmap(x->wtp_impl(v,p,x),1:1)
 # 	# reorder
+	regs = m.regnames[:Division]
 	d = Dict()
 	for j in 1:p.nJ
 		println(map(x->get(x,:region,0)==j,y))
-		d[j] = y[map(x->get(x,:region,0)==j,y)]
+		d[Symbol(regs[j])] = y[map(x->get(x,:region,0)==j,y)]
 	end
 	if !nosave
 		io = setPaths()
@@ -1053,7 +1054,7 @@ function moneyMC(nosave::Bool=false)
 		else
 			opts["asset"] = whichasset-1 
 		end
-		out[ih] = Dict()
+		out["h$ih"] = Dict()
 		for iz in 1:p.nz
 			opts["iz"] = iz  	
 			opts["it"] = 1 	# age 1
@@ -1061,7 +1062,7 @@ function moneyMC(nosave::Bool=false)
 			res = find_xtra_ass(v0,opts)
 			info("done with MC ih=$ih, iz=$iz")
 			info("moving cost: $(Optim.minimizer(res))")
-			out[ih][iz] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
+			out["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
 		end
 	end
 

@@ -9,6 +9,11 @@
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
     "data"     : "git/migration/mig/out/moneyMC2.json"
   },
+  "owernsWTP":{
+    "template" : "ownersWTP.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/ownersWTP.tex",
+    "data"     : "git/migration/mig/out/ownersWTP.json"
+  },
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",

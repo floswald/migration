@@ -1,0 +1,19 @@
+{% macro show(name,dd,dec) %}
+    {{name}} & {{ dd.data.y.own | prettyNum(dec) }}  & {{ dd.data.p.own | prettyNum(dec) }} \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} }
+  \toprule 
+Division &   \multicolumn{1}{c}{$10\%y$-shock}  & \multicolumn{1}{c}{$10\%p$-shock} \\ 
+  \midrule
+  {{  show("East North Central" , ENC[0], 1 ) }}
+  {{  show("East South Central" , ESC[0], 1) }}
+  {{  show("Middle Atlantic"    , MdA[0], 1) }}
+  {{  show("Mountain"           , Mnt[0], 1) }}
+  {{  show("New England"        , NwE[0], 1) }}
+  {{  show("Pacific"            , Pcf[0], 1) }}
+  {{  show("South Atlantic"     , StA[0], 1) }}
+  {{  show("West North Central" , WNC[0], 1) }}
+  {{  show("West South Central" , WSC[0], 1) }}
+  \bottomrule
+\end{tabular}
+

@@ -962,7 +962,7 @@ reference "tab:Migration-rates-Molloy"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1082,7 +1082,7 @@ for the presentation of census data
 
 
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 See the Census bureau's website at 
@@ -1152,23 +1152,156 @@ The model presented below contains 25.4 million different points in the state
 \end_layout
 
 \begin_layout Paragraph
-Descriptive Statistics on Cross Division Migration.
+Determinants of Cross Division Migration.
 \end_layout
 
 \begin_layout Standard
-I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
- with 102,529 individuals that I can follow over time and space.
- From this dataset, a couple of interesting facts emerge.
+The March Supplement to the Current Population Survey (CPS) contains several
+ questions relevant for the study of migration.
+ Here I analyse answers to the 2013 edition of the CPS to the question 
+\begin_inset Quotes eld
+\end_inset
+
+What was the main reason for moving
+\begin_inset Quotes erd
+\end_inset
+
+ where respondents are offered 19 options to choose from.
+ The results are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:CPS-reason-move"
+
+\end_inset
+
+, and the caption to the table provides the key according to which I group
+ the 19 options into four categories.
+ It is striking to note that even though we are conditioning on moves across
+ Division boundaries (and thus think of long-range moves), the percentage
+ of people citing category 
+\begin_inset Quotes eld
+\end_inset
+
+housing
+\begin_inset Quotes erd
+\end_inset
+
+ as their main motivation is roughly 24% of the total population of movers.
+ The table also disagreggates the response to the question by the distance
+ between origin and destination state (not Division), and we can see that
+ the proportion of respondents does vary with distance moved, but not to
+ an extent that would suggest that housing becomes irrelevant as a motivation
+ with increasing distance.
+ Summing up in the bottom row of the table, we see that 55% say work was
+ the main reason, 24% refer to housing and the remaining 21% is split between
+ family and other reasons.
+ The model to be presented below addresses each of these categories: Individuals
+ can move out of work-related concerns (regional and individual level income
+ fluctuations), because of housing considerations (regional house price
+ fluctuation), for family reasons (stochastic age-dependent arrival of children)
+ as well reasons classified as 
+\begin_inset Quotes eld
+\end_inset
+
+other
+\begin_inset Quotes erd
+\end_inset
+
+, which are accounted for by an idiosyncratic preference shock.
+\end_layout
+
+\begin_layout Standard
+Putting somewhat more structure onto this, I next present estimates from
+ a statistical analysis of the determinants of cross division moves from
+ SIPP data.
+ I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
+ with 102,529 household heads that I can follow over time and space.
+ This is the central estimation sample in main analsis below.
  Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:D2D-probit"
+
+\end_inset
+
+ shows the results.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+It's worth emphasizing that at this point I am abstracting away from the
+ severe endogeneity issues which the structural model below will account
+ for.
+\end_layout
+
+\end_inset
+
+ I regress a binary indicator for whether or not a cross division move took
+ place in a given year on a set of explanatory variables, which relate to
+ the household in question in a probit regression.
+ The table shows marginal effects computed at the sample mean of each variable,
+ as well as the ratio of marginal effects to the baseline unconditional
+ probability of moving (1.32%).
+ The results indicate that there is a pronounced age effect, with each additiona
+l year of age implying a reduction that is equal to 6% of the baseline probabili
+ty.
+ The same effect is found for whether or not children are present in the
+ household.
+ The effect of being a homeowner is very large and equivalent to a reduction
+ in the propensity to move of 51% of the baseline probability.
+ Increasing household income by $100,000 is equivalent to a 5% baseline
+ increase.
+ Finally, having a college degree has an effect of equal magnitude than
+ being a homeowner, but in the opposite direction: a college degree amounts
+ to an increase of the baseline of 49%.
+ According to this model, the effect of being a homeowner on the baseline
+ moving probability is equal to an age increase of 8.3 years, thus taking
+ a 30-year old to age 38; also, a household which owns the house would have
+ to experience an increase in household income of $1m in order to make up
+ for the implied loss in the probability of moving across divisions from
+ being an owner.
+ The house price to income ratio and total household wealth are not statisticall
+y significant in this specification.
+\end_layout
+
+\begin_layout Paragraph
+Sample Selection.
+\end_layout
+
+\begin_layout Standard
+Even though the estimates in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:D2D-probit"
+
+\end_inset
+
+ only measure statistical associations, they highlight an important feature
+ of the data: moving and having a college degree are strongly correlated.
+ While this paper specifically aims to investigate the other strong correlation
+ in that table, i.e.
+ between ownership status and mobility, a full treatment which endogenizes
+ education choices is too ambitious.
+ The pragmatic solution to this problem is to condition the data on a certain
+ education group and disregard education choices, as is done in the previous
+ literature.
+ In what follows, therefore, all SIPP data will refer to household heads
+ without a college degree, which selects 62% of the original sample, resulting
+ in 65,482 unique household heads.
+\end_layout
+
+\begin_layout Standard
+In order to give a sense the magnitude of migration rates by ownership status,
+ table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Annual-moving-rate"
 
 \end_inset
 
- presents some summary annual moving rates for both state and Census Division
+ presents summary annual moving rates for both state and Census Division
  level migration.
- The overall unconditional migration rate is 1.95% and 1.32% per year for
+ The overall unconditional migration rate is 1.51% and 1.32% per year for
  cross state and cross division, respectively.
  The cross state figure differs from the 2% in table 
 \begin_inset CommandInset ref
@@ -1249,104 +1382,6 @@ reference "tab:SIPP-divisions"
 \end_layout
 
 \begin_layout Paragraph
-Determinants of Migration.
-\end_layout
-
-\begin_layout Standard
-The March Supplement to the Current Population Survey (CPS) contains several
- questions relevant for the study of migration.
- Here I analyse answers to the 2013 edition of the CPS to the question 
-\begin_inset Quotes eld
-\end_inset
-
-What was the main reason for moving
-\begin_inset Quotes erd
-\end_inset
-
- where respondents are offered 19 options to choose from.
- The results are displayed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:CPS-reason-move"
-
-\end_inset
-
-, and the caption to the table provides the key according to which I group
- the 19 options into four categories.
- It is striking to note that even though we are conditioning on moves across
- Division boundaries (and thus think of long-range moves), the percentage
- of people citing category 
-\begin_inset Quotes eld
-\end_inset
-
-housing
-\begin_inset Quotes erd
-\end_inset
-
- as their main motivation is roughly 24% of the total population of movers.
- The table also disagreggates the response to the question by the distance
- between origin and destination state (not Division), and we can see that
- the proportion of respondents does vary with distance moved, but not to
- an extent that would suggest that housing becomes irrelevant as a motivation
- with increasing distance.
- Summing up in the bottom row of the table, we see that 55% say work was
- the main reason, 24% refer to housing and the remaining 21% is split between
- family and other reasons.
- The model to be presented below addresses each of these categories: Individuals
- can move out of work-related concerns (regional and individual level income
- fluctuations), because of housing considerations (regional house price
- fluctuation), for family reasons (stochastic age-dependent arrival of children)
- as well reasons classified as 
-\begin_inset Quotes eld
-\end_inset
-
-other
-\begin_inset Quotes erd
-\end_inset
-
-, which are accounted for by an idiosyncratic preference shock.
-\end_layout
-
-\begin_layout Standard
-In table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:D2D-probit"
-
-\end_inset
-
- I present estimates from a statistical analysis of the determinants of
- cross division moves from SIPP data, abstracting away from the severe endogenei
-ty issues which the structural model below will account for.
- I regress a binary indicator for whether or not a cross division move took
- place in a given year on a set of explanatory variables which relate to
- the household in question in a probit regression.
- The table shows marginal effects computed at the sample mean of each variable,
- as well as the ratio of marginal effects to the baseline unconditional
- probability of moving (1.32%).
- The results indicate that there is a pronounced age effect, with each additiona
-l year of age implying a reduction that is equal to 6% of the baseline probabili
-ty.
- The same effect is found for whether or not children are present in the
- household.
- The effect of being a homeowner is very large and equivalent to a reduction
- in the propensity to move of 51% of the baseline probability.
- Increasing household income by $100,000 is equivalent to a 5% baseline
- baseline increase.
- Finally, having a college degree has an effect of equal magnitude than
- being a homeowner, but in the opposite direction: a college degree amounts
- to an increase of the baseline of 49%.
- According to this model, the effect of being a homeowner on the baseline
- moving probability is equal to an age increase of 8.3 years, thus taking
- a 30-year old to age 38; also, a household which owns the house would have
- to experience an increase in household income of $1m in order to make up
- for the implied loss in the probability of moving across divisions from
- being an owner.
- The house price to income ratio does not play a significant role in this
- specification.
-\end_layout
-
-\begin_layout Paragraph
 Regional Income and House Price Risk.
 \end_layout
 
@@ -1386,7 +1421,7 @@ reference "fig:Regional-Income-data"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1400,7 +1435,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/sipp/move_rates_edit.tex}
+Dropbox/data/sipp/move_rates.tex}
 \end_layout
 
 \end_inset
@@ -1456,7 +1491,7 @@ name "tab:Annual-moving-rate"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1534,7 +1569,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D.pdf
+	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2.pdf
 	scale 85
 
 \end_inset
@@ -1548,6 +1583,7 @@ status open
 \begin_layout Plain Layout
 SIPP sample proportion moving across Census Division boundaries by age (upper
  panel) and proportion of owners by age (lower panel).
+ Conditions on individuals without a college degree.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:SIPP-sample-proportion-1"
@@ -1710,7 +1746,7 @@ state
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6298,6 +6334,22 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/ownersWTP.tex}
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -6305,7 +6357,43 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Owner willingness to pay to become a renter 
+Owner willingness to pay to be able to move with zero ownership-related
+ moving costs 
+\begin_inset Formula $(\alpha_{3}=0)$
+\end_inset
+
+ and zero financial transaction costs upon selling the house 
+\begin_inset Formula $(\phi=0)$
+\end_inset
+
+ in case of an unexpected house price or regional income shock.
+ In this experiment, an unexpected shock occurs in year 2000 to reduce either
+ regional income 
+\begin_inset Formula $q$
+\end_inset
+
+ or house prices 
+\begin_inset Formula $p$
+\end_inset
+
+ by 10% forever after.
+ This table reports the lump-sum dollar amount (in 1000s) required to make
+ owners aged 30 in year 2000 indifferent between this scenario under the
+ estimated parameter vector, and a world where owners find it 
+\emph on
+as easy
+\emph default
+ as renters to move, i.e.
+ they bear no additional moving costs in terms of either utility or money,
+ hence we modify the parameter vector with 
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=0$
+\end_inset
+
+.
 \end_layout
 
 \end_inset
