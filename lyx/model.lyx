@@ -1301,8 +1301,8 @@ reference "tab:Annual-moving-rate"
 
  presents summary annual moving rates for both state and Census Division
  level migration.
- The overall unconditional migration rate is 1.51% and 1.32% per year for
- cross state and cross division, respectively.
+ The overall unconditional migration rate is 1.51% and 0.99% of households
+ per year for cross state and cross division, respectively.
  The cross state figure differs from the 2% in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1311,8 +1311,7 @@ reference "tab:Migration-rates-Molloy"
 \end_inset
 
  because I set up the SIPP data in terms of household heads, thereby missing
- some moves of non–reference persons, and potentially because of sample
- attrition.
+ some moves of non–reference persons, and because I condition on non–college.
  It is quite clear from table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1321,11 +1320,12 @@ reference "tab:Annual-moving-rate"
 \end_inset
 
  that there is a marked distinction in the likelihood of moving across state
- as well as division boundaries between renters and owners, with 2.6% (1.85%)
- of renters versus 0.93% (0.7%) of owners moving across state (division) boundarie
-s on average per year.
- In total I observe of 2684 cross Division moves made by 2329 unique individuals
-, implying multiple moves for some movers, see table 
+ as well as division boundaries between renters and owners, with 2.07% (1.49%)
+ of renters versus 0.82% (0.64%) of owners moving across state (division)
+ boundaries on average per year.
+ In total I observe 1259 cross Division moves made by 1069 unique individuals
+ in my non-college sample, implying multiple moves for some movers, see
+ table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:SIPP-nummoves"
@@ -1419,255 +1419,10 @@ reference "fig:Regional-Income-data"
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/move_rates.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Annual moving rate in percent of the population.
- Households are categorized into 
-\begin_inset Quotes eld
-\end_inset
-
-Renter
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Owner
-\begin_inset Quotes erd
-\end_inset
-
- based on their homeownership status at the beginning of the period in which
- they move.
- SIPP data.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Annual-moving-rate"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/num_moves.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Distribution of the number of moves per mover by homeownership status.
- Households are categorized into 
-\begin_inset Quotes eld
-\end_inset
-
-Renter
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Owner
-\begin_inset Quotes erd
-\end_inset
-
- based on their homeownership status at the 
-\emph on
-first 
-\emph default
-move.
- SIPP data.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-nummoves"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2.pdf
-	scale 85
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-SIPP sample proportion moving across Census Division boundaries by age (upper
- panel) and proportion of owners by age (lower panel).
- Conditions on individuals without a college degree.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:SIPP-sample-proportion-1"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/own_p2y-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Census Division housing characteristics.
- Shows average ownership rates over 1997–2011 and median price to income
- ratios for the same period.
- The (unobserved) house price for renters is computed assuming an implied
- user cost of owning of 5%, i.e.
- 
-\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
-\end_inset
-
-.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-divisions"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1744,6 +1499,7 @@ state
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
@@ -1805,10 +1561,259 @@ name "tab:D2D-probit"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/move_rates.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Annual moving rate in percent of the population.
+ Households are categorized into 
+\begin_inset Quotes eld
+\end_inset
+
+Renter
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Owner
+\begin_inset Quotes erd
+\end_inset
+
+ based on their homeownership status at the beginning of the period in which
+ they move.
+ SIPP data subset to non-college degree holders.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Annual-moving-rate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/num_moves.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Distribution of the number of moves per mover by homeownership status.
+ Households are categorized into 
+\begin_inset Quotes eld
+\end_inset
+
+Renter
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Owner
+\begin_inset Quotes erd
+\end_inset
+
+ based on their homeownership status at the 
+\emph on
+first 
+\emph default
+move.
+ SIPP data subset to non-college degree holders.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-nummoves"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+SIPP sample proportion moving across Census Division boundaries by age (upper
+ panel) and proportion of owners by age (lower panel).
+ Conditions on individuals without a college degree.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:SIPP-sample-proportion-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/own_p2y-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Census Division housing characteristics.
+ Shows average ownership rates over 1997–2011 and median price to income
+ ratios for the same period.
+ The (unobserved) house price for renters is computed assuming an implied
+ user cost of owning of 5%, i.e.
+ 
+\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-divisions"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1851,7 +1856,7 @@ name "fig:Regional-House-Price-data"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6162,7 +6167,7 @@ reference "tab:MC-money"
 
 \end_inset
 
- where we see moving costs for renters are $147,111 and $547,473 for owners.
+ where we see moving costs for renters are $76,632 and $393,964 for owners.
  These estimates bracket the average cost of $312,000 reported in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -6176,10 +6181,10 @@ literal "true"
  renters.
  A simple calculation reveals that using my estimates and an ownership rate
  of 61% as found in the data, one obtains 
-\begin_inset Formula $147,000\times0.39+547,000\times0.61=391,000$
+\begin_inset Formula $147,000\times0.39+547,000\times0.61=270,204$
 \end_inset
 
- dollars of average moving costs.
+ dollars of average moving costs, reasonably close to their estimate.
 \end_layout
 
 \begin_layout Standard
@@ -6257,7 +6262,73 @@ Elasticities
 \end_layout
 
 \begin_layout Standard
+The model can be used to compute elasticities of population size and migratory
+ flows with respect to regional income shocks.
+ Those elasticities are an important precursor to the main result of the
+ paper, because they illustrate the incentives of agents in the event of
+ price or income shocks.
+ To measure the elasticity of population or migratory inflows, I simulate
+ the economy and apply an unexpected and permanent shock to 
+\begin_inset Formula $q_{d}$
+\end_inset
+
+ in division 
+\begin_inset Formula $d$
+\end_inset
+
+ in the year 2000.
+ The elasticities are computed by comparing population size or migration
+ flows across shocked and baseline scenarios, normalizing the result by
+ the size of the shock.
+ Notice that given the cohort setup of the model, it is necessary simluate
+ all cohorts separately (they all experience the shock at different ages,
+ and the 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ are predetermined in the data).
+ 
+\end_layout
+
+\begin_layout Standard
+The results by region are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ First we observe that the average of population elasticities across regions
+ is a value around 0.54, implying that on average, a 1% permanent shock to
+ regional income will lead to a 0.5% increase of population size of the shocked
+ area.
+ Total inflows into regions increase in the range of approximately 4% to
+ 7%, and in most regions the inflow rate of renters increases more than
+ the one of incoming buyers.
+ Renters are more mobile, as we have seen several times already, hence this
+ is expected.
+ Renter inflows don't respond more strongly in general, however, because
+ this depends on many things which vary across regions: for example, the
+ relative ranking of house price levels 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and expectations about their future values, as well as the level of amenities.
+ The shock changes the relative attractiveness ranking of regions, and this
+ shift is highly non-linear.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
@@ -6331,7 +6402,7 @@ Shadow Cost of Owning
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6648,6 +6719,31 @@ name "tab:Decomposing-owner's-moving"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Owners' Regret
+\end_layout
+
+\begin_layout Standard
+In the model as well as for a great number of families in reality, ownership
+ is desirable in and of itself.
+ In reality, this may have to do with certain types of housing being supplied
+ to only to either sector, as explored in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "halket2015housing"
+literal "false"
+
+\end_inset
+
+, for example; be that as it may, in the model all agents aspire to housing.
+ An interesting question to ask, hence, is whether owners 
+\emph on
+regret 
+\emph default
+their decision to become an owner in the event of a large regional shock.
+ 
 \end_layout
 
 \begin_layout Subsection
