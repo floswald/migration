@@ -6398,89 +6398,6 @@ name "tab:elasticities"
 Shadow Cost of Owning
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/ownersWTP.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Owner willingness to pay to be able to move with zero ownership-related
- moving costs 
-\begin_inset Formula $(\alpha_{3}=0)$
-\end_inset
-
- and zero financial transaction costs upon selling the house 
-\begin_inset Formula $(\phi=0)$
-\end_inset
-
- in case of an unexpected house price or regional income shock.
- In this experiment, an unexpected shock occurs in year 2000 to reduce either
- regional income 
-\begin_inset Formula $q$
-\end_inset
-
- or house prices 
-\begin_inset Formula $p$
-\end_inset
-
- by 10% forever after.
- This table reports the lump-sum dollar amount (in 1000s) required to make
- owners aged 30 in year 2000 indifferent between this scenario under the
- estimated parameter vector, and a world where owners find it 
-\emph on
-as easy
-\emph default
- as renters to move, i.e.
- they bear no additional moving costs in terms of either utility or money,
- hence we modify the parameter vector with 
-\begin_inset Formula $\alpha_{3}=0$
-\end_inset
-
- and 
-\begin_inset Formula $\phi=0$
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Why Do Owners Move Less?
 \end_layout
@@ -6722,28 +6639,174 @@ name "tab:Decomposing-owner's-moving"
 \end_layout
 
 \begin_layout Subsection
-Owners' Regret
+Owner Regret
 \end_layout
 
 \begin_layout Standard
-In the model as well as for a great number of families in reality, ownership
- is desirable in and of itself.
- In reality, this may have to do with certain types of housing being supplied
- to only to either sector, as explored in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "halket2015housing"
-literal "false"
-
-\end_inset
-
-, for example; be that as it may, in the model all agents aspire to housing.
- An interesting question to ask, hence, is whether owners 
+Individuals in the model decide whether to buy a house or rent based on
+ a multi–facetted tradeoff involving the size of houses, their preference
+ for owned property, their expectations about future moves, as well as expectati
+ons about future prices.
+ Buying a house is consequential for later mobility decisions, as we have
+ seen, because owners face higher moving costs.
+ A pertinent question question in this context is whether owners actually
+ 
 \emph on
 regret 
 \emph default
-their decision to become an owner in the event of a large regional shock.
- 
+having bought their house when it was optimal to do so, if the state of
+ the world changes? For example, imagine that expectations about future
+ prices were wrong, in the sense that there is an unexpected shock.
+ The owner finds themselves with a greatly devalued house – how big is the
+ cost of being an owner in this circumstance? 
+\end_layout
+
+\begin_layout Standard
+The following experiment sheds some light on this question.
+ I compute the willingness to pay of an owner who experiences a permanent
+ 10% house price or regional income shock when aged 30 in year 2000 for
+ being to able 
+\emph on
+as if
+\emph default
+ they were a renter: that is, with no additional moving costs in terms of
+ either utility (setting parameter 
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+), or financial transaction costs 
+\begin_inset Formula $(\phi=0)$
+\end_inset
+
+.
+ The results of this exercise are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Owner-WTP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for each region.
+ We see that owners would be willing to pay at most about 13,000 dollars
+ for the option to move like renters, as an average of the entire cohort,
+ in most regions considerably less.
+ Notice the contrast to the numbers in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:MC-money"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, which show that estimated moving costs for renters and owners are an order
+ of magnitude apart.
+ It's important to bear in mind that table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Owner-WTP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ measures a different object, however, and so we should not expect to find
+ numbers of similar magnitude.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/ownersWTP.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Owner willingness to pay to be able to move with zero ownership-related
+ moving costs 
+\begin_inset Formula $(\alpha_{3}=0)$
+\end_inset
+
+ and zero financial transaction costs upon selling the house 
+\begin_inset Formula $(\phi=0)$
+\end_inset
+
+ in case of an unexpected house price or regional income shock.
+ In this experiment, an unexpected shock occurs in year 2000 to reduce either
+ regional income 
+\begin_inset Formula $q$
+\end_inset
+
+ or house prices 
+\begin_inset Formula $p$
+\end_inset
+
+ by 10% forever after.
+ This table reports the lump-sum dollar amount (in 1000s) required to make
+ owners aged 30 in year 2000 indifferent between this scenario under the
+ estimated parameter vector, and a world where owners find it 
+\emph on
+as easy
+\emph default
+ as renters to move, i.e.
+ they bear no additional moving costs in terms of either utility or money,
+ hence we modify the parameter vector with 
+\begin_inset Formula $\alpha_{3}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=0$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Owner-WTP"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

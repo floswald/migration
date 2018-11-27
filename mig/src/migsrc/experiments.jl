@@ -801,8 +801,8 @@ function v_ownersWTP2(xtra_ass::Float64,v0::Float64,a_0::Float64,o::Dict)
 	# a0. check that w[a0] == v0
 	itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
 	w = itp[a_0]
-	println("v0 = $v0")
-	println("w = $w")
+	println("vrent|shock = $v0")
+	println("vown|shock = $w")
 	if w == p.myNA
 		return NaN 
 	else
@@ -835,30 +835,40 @@ function ownersWTP2(nosave::Bool=false)
 		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
 		dout[:region] = j
 		dout[:data] = Dict()
+
+		# this model to find out at which
+		# asset position v(rent) == v(own) in the baseline
+		p0 = Param(2)
+		m0 = Model(p0)
+		solve!(m0,p0)
+
 		for it in (2,10)
 			dout[:data][it] = Dict()
 			age_hit = it
 			for sh in (:y,:p)
 				# get renters valuation in each shock scenario
 				o = Dict("shockReg" => j,
-						 "policy" => "ownerWTP",
+						 "policy" => "ownersWTP2",
 						 "shockYear" => 2000,
 						 "shockVal_y" => shocks[sh][1] .* ones(32),  
 						 "shockVal_p" => shocks[sh][2] .* ones(32),  
 						 "shockAge" => age_hit  
 						 )
+
+				# the shocked model
 				p = Param(2,opts=o)
 				m = Model(p)
 				solve!(m,p)
 
 				# for iz in 1:1
 				for iz in 1:p.nz
+
 					dout[:data][it][iz] = Dict()
 					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
 					own_a0 = 8
 					rent_a0 = m.aone
 					o = Dict("shockReg" => j,
-							 "policy" => "ownerWTP",
+							 "policy" => "ownersWTP2",
 							 "shockYear" => 2000,
 							 "shockVal_y" => shocks[sh][1] .* ones(32),  
 							 "shockVal_p" => shocks[sh][2] .* ones(32),  
@@ -869,24 +879,28 @@ function ownersWTP2(nosave::Bool=false)
 							 )
 
 					# get the target value: renters valueation.
-					r_0 = m.v[o["ridx"]...]
+					r_0 = m0.v[o["ridx"]...]
 					if r_0 == p.myNA
 						warn("r_0 = $r_0. skip this state")
 						continue
 					end
 
-					# find exact asset level where owner value is identical to r_0
-					# interpolate assets and m.v 
-					# feed to root solver
-					itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
+					itp = interpolate((m.grids["assets"],),m0.v[o["oidx2"]...],Gridded(Linear()))
 					a_0 = fzero(x->r_0 - itp[x],-500.0,0.0)  # critical asset level
 					info("renters baseline value is $r_0")
 					# info("owners baseline value (before shock) was $(itp[a_0])")
-					info("owners baseline critical asset level is $a_0")
+					info("v(own)==v(rent)|noshock at a= $a_0")
 
+					# renters value in shock
+					r_shock = m.v[o["ridx"]...]
+					info("renters shock value is $r_shock")
+					if r_shock == p.myNA
+						warn("r_shock = $r_shock. skip this state")
+						continue
+					end
 
 					# find asset compensation value that makes owners indifferent.
-					result = optimize( x-> v_ownersWTP(x,r_0,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
+					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
 					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer)
 				end
 			end

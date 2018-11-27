@@ -349,7 +349,7 @@ type Model
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
 				yshock = ((p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg))) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
-				yshock = ((p.policy=="noMove") || (p.policy=="ownerWTP")) ? log(p.shockVal_y[it]) : yshock
+				yshock = ((p.policy=="noMove") || (p.policy=="ownersWTP") || (p.policy=="ownersWTP2")) ? log(p.shockVal_y[it]) : yshock
 				# info("yshock = $yshock")
 				for iy in 1:p.ny
 					for ip in 1:p.np

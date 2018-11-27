@@ -237,7 +237,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		end
 	end
 
-	if p.policy == "ownersWTP"
+	if p.policy == "ownersWTP2"
 		if age >= p.shockAge
 			pshock = true
 		end
@@ -369,11 +369,11 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# measure sellers wtp 
 										# -------------------
-										# if ownersWTP && (ih==1)
-										# 	a = a_0 + p.shockVal[1]
-										# else
-										# 	a = a_0
-										# end
+										if ownersWTP && (ih==1)
+											a = a_0 + p.shockVal[1]
+										else
+											a = a_0
+										end
 
 
 										if ih==0
