@@ -13,7 +13,7 @@ Usage:
     run.jl --version
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment (elasticity|ownersWTP|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
@@ -70,6 +70,11 @@ elseif args["experiment"]
         addprocs(nwork)
         using mig
         mig.ownersWTP(nosave)
+    elseif args["ownersWTP2"]
+        info("      computing owners WTP v2 to become renter again, with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.ownersWTP2(nosave)
     elseif args["moversWTP"]
         info("      computing movers WTP in region $reg with nosave=$nosave")
         addprocs(nwork)

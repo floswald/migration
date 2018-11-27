@@ -790,6 +790,135 @@ function ownersWTP(nosave::Bool=false)
 end
 
 
+
+function v_ownersWTP2(xtra_ass::Float64,v0::Float64,a_0::Float64,o::Dict)
+
+	p = Param(2,opts=o)
+	setfield!(p,:shockVal,[xtra_ass])
+	m = Model(p)
+	solve!(m,p)
+	# interpolate asset grid, check value at reference asset level
+	# a0. check that w[a0] == v0
+	itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
+	w = itp[a_0]
+	println("v0 = $v0")
+	println("w = $w")
+	if w == p.myNA
+		return NaN 
+	else
+		(w - v0)^2
+	end
+end
+
+
+"""
+	ownersWTP2(nosave::Bool=false)
+What is the willingness to pay of an owner to become a renter after their region is hit by a negative income or price shock? This focuses on owners at a certain age only. 
+This is complicated because two things happen at the same time: price shock in region j, and asset compensation to owners in region j
+"""
+function ownersWTP2(nosave::Bool=false)
+
+	info("runing ownersWTP computation")
+	post_slack()
+	tic()
+
+	# compute baseline model: no shock
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+
+	# prepare shocked model: get hit in age_hit
+
+	function wtp_impl(j)
+
+		dout = Dict()
+		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+		dout[:region] = j
+		dout[:data] = Dict()
+		for it in (2,10)
+			dout[:data][it] = Dict()
+			age_hit = it
+			for sh in (:y,:p)
+				# get renters valuation in each shock scenario
+				o = Dict("shockReg" => j,
+						 "policy" => "ownerWTP",
+						 "shockYear" => 2000,
+						 "shockVal_y" => shocks[sh][1] .* ones(32),  
+						 "shockVal_p" => shocks[sh][2] .* ones(32),  
+						 "shockAge" => age_hit  
+						 )
+				p = Param(2,opts=o)
+				m = Model(p)
+				solve!(m,p)
+
+				# for iz in 1:1
+				for iz in 1:p.nz
+					dout[:data][it][iz] = Dict()
+					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
+					own_a0 = 8
+					rent_a0 = m.aone
+					o = Dict("shockReg" => j,
+							 "policy" => "ownerWTP",
+							 "shockYear" => 2000,
+							 "shockVal_y" => shocks[sh][1] .* ones(32),  
+							 "shockVal_p" => shocks[sh][2] .* ones(32),  
+							 "shockAge" => age_hit,   # dummy arg
+							 "oidx" => (j,1,iz,2,2,1,own_a0,2,j,age_hit),
+							 "oidx2" => (j,1,iz,2,2,1,:,2,j,age_hit),
+							 "ridx" => (j,1,iz,2,2,1,rent_a0,1,j,age_hit)
+							 )
+
+					# get the target value: renters valueation.
+					r_0 = m.v[o["ridx"]...]
+					if r_0 == p.myNA
+						warn("r_0 = $r_0. skip this state")
+						continue
+					end
+
+					# find exact asset level where owner value is identical to r_0
+					# interpolate assets and m.v 
+					# feed to root solver
+					itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
+					a_0 = fzero(x->r_0 - itp[x],-500.0,0.0)  # critical asset level
+					info("renters baseline value is $r_0")
+					# info("owners baseline value (before shock) was $(itp[a_0])")
+					info("owners baseline critical asset level is $a_0")
+
+
+					# find asset compensation value that makes owners indifferent.
+					result = optimize( x-> v_ownersWTP(x,r_0,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
+					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer)
+				end
+			end
+		end
+		return dout
+	end
+
+	y = pmap(x->wtp_impl(x),1:p.nJ)
+	# y = pmap(x->wtp_impl(m,p,x),1:1)
+	# reorder
+	d = Dict()
+	for j in 1:p.nJ
+		println(map(x->get(x,:region,0)==j,y))
+		d[j] = y[map(x->get(x,:region,0)==j,y)]
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "ownersWTP2.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] ownersWTP2 $took hours")
+	return d
+
+end
+
+
+
 # end
 
 """
