@@ -138,5 +138,10 @@
     "template" : "elasticities.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/elasticities.tex",
     "data"     : "git/migration/mig/out/elasticity.json"
+  } ,   
+  "copulas":{
+    "template" : "copulas.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
+    "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
   }      
 }

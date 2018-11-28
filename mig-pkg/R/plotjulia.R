@@ -1103,6 +1103,58 @@ Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",w
 
 }
 
+correlograms <- function(){
+	path = "~/Dropbox/research/mobility/output/data/FHFA"
+    data(BEA_fhfa,envir=environment())
+    py = BEA_fhfa_agg$py
+    setkey(py,year,Division)
+    agg = BEA_fhfa_agg$agg
+    setkey(agg,year)
+    pyagg = agg[py]
+    pp=dcast(pyagg[,list(Division,year,p)],year ~ Division)
+    yy=dcast(pyagg[,list(Division,year,y)],year ~ Division)
+
+	pts = ts(pp[,-1],start=1967,frequency=1)
+	yts = ts(yy[,-1],start=1967,frequency=1)
+	ptrends = apply(pts,function(x) ma(x,order=4,centre=4),MARGIN=2)
+	ytrends = apply(yts,function(x) ma(x,order=4,centre=4),MARGIN=2)
+
+	dtrendp = pts - ptrends
+	dtrendy = yts - ytrends
+
+	pdf(file.path(path,"detrended-y.pdf"),width=14,height=8)
+	plot(as.ts(dtrendy),main="Detrended q Series",nc=3)
+	dev.off()
+
+	pdf(file.path(path,"detrended-p.pdf"),width=14,height=8)
+	plot(as.ts(dtrendp),main="Detrended p Series",nc=3)
+	dev.off()
+
+	# correlograms of detrended data
+	pcor = cor(dtrendp[3:44,])
+	ycor = cor(dtrendy[3:44,])
+
+	print(xtable(pcor,digits=2),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"p_corrs.tex"))
+	print(xtable(ycor,digits=2),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"y_corrs.tex"))
+
+	# autocorrelations in raw data
+	pacor = apply(X=pts,function(x) pacf(x,plot=FALSE)$acf[1],MARGIN=2)
+	yacor = apply(X=yts,function(x) pacf(x,plot=FALSE)$acf[1],MARGIN=2)
+	acordf = data.frame(Division=names(pacor),p=pacor,q = yacor)
+	print(xtable(acordf),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"auto_corrs.tex"))
+
+	# plot
+	mp = melt(pcor)
+	mp$type = "regional price p"
+	my = melt(ycor)
+	my$type = "regional income q"
+	names(mp) <- names(my) <- c("Division1","Division2","correlation","type" )
+	m = rbind(mp,my)
+	p= ggplot(m,aes(x=Division1,y=Division2,fill=correlation)) + geom_tile() + scale_fill_gradient(low = "white", high = "black") + facet_wrap(.~ type) + scale_y_discrete("Division 2") + scale_x_discrete("Division 1") + ggtitle("Cross Correlations between Detrended Time Series 1967-2012") + theme_bw()
+	ggsave(plot=p,file.path(path,"correlogram.pdf"),width= 8,height=4,device="pdf")
+	return(p)
+}
+
 # plot both price series
 compareVars <- function(){
 

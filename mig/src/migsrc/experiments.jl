@@ -938,9 +938,9 @@ function ownersWTP2(nosave::Bool=false)
 
 					# find asset compensation value that makes owners indifferent.
 					info("find stayers WTP first")
-					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=3)
+					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
 					info("now find movers WTP")
-					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=3)
+					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
 					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:a_0m => a_0m, :compm => resultm.minimizer)
 				end
 			end

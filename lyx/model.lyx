@@ -1291,19 +1291,19 @@ reference "tab:D2D-probit"
 \end_layout
 
 \begin_layout Standard
-In order to give a sense the magnitude of migration rates by ownership status,
- table 
+In order to give a sense of the magnitude of migration rates by ownership
+ status, table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Annual-moving-rate"
 
 \end_inset
 
- presents summary annual moving rates for both state and Census Division
+ presents summary annual moving rates for both State and Census Division
  level migration.
  The overall unconditional migration rate is 1.51% and 0.99% of households
- per year for cross state and cross division, respectively.
- The cross state figure differs from the 2% in table 
+ per year for cross State and cross Division, respectively.
+ The cross State figure differs from the 2% in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Migration-rates-Molloy"
@@ -1319,9 +1319,9 @@ reference "tab:Annual-moving-rate"
 
 \end_inset
 
- that there is a marked distinction in the likelihood of moving across state
+ that there is a marked distinction in the likelihood of moving across State
  as well as division boundaries between renters and owners, with 2.07% (1.49%)
- of renters versus 0.82% (0.64%) of owners moving across state (division)
+ of renters versus 0.82% (0.64%) of owners moving across State (Division)
  boundaries on average per year.
  In total I observe 1259 cross Division moves made by 1069 unique individuals
  in my non-college sample, implying multiple moves for some movers, see
@@ -1357,18 +1357,20 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
-Moving on to migration by age, we can see in figure 
+Reconsidering homeowership and migration by age in the thus select sample
+ gives rise to figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:SIPP-sample-proportion-1"
 
 \end_inset
 
- firstly that renters are more likely to move at all ages, and secondly
+.
+ It is clear that renters are more likely to move at all ages, and secondly
  that there is a strongly declining age effect – younger individuals move
  more.
- Both of those are highly salient features of the data, and they are the
- main dimension along which my model's performance is going to be evaluated.
+ Both of those are highly salient features of the data, and they are among
+ the key dimensions along which my model's performance is going to be evaluated.
  Finally, a summary regarding homeownership rates and median price to income
  ratios by Census division is presented as an average over the years 1997–2011
  in table 
@@ -1382,39 +1384,63 @@ reference "tab:SIPP-divisions"
 \end_layout
 
 \begin_layout Paragraph
-Regional Income and House Price Risk.
+Regional Income and House Price Risk are not IID.
 \end_layout
 
 \begin_layout Standard
-As a final piece of motivation I present an overview of the variation in
- house price and average income at the division level.
- I mentioned above that the shocks to each region exhibit a strong correlation
- as well as a high degree of persistence.
- This is best to see using a plot of the time series of regional house price
- and average income indices and how they relate to the national average
- of that index.
- Figures 
+The time series of household disposable income and house prices are strongly
+ correlated across Divisions.
+ Additionally, they exhibit high degress of autocorrelation, i.e.
+ shocks to regional incomes and prices are persistent.
+ To illustrate the degree of cross correlation of both prices and incomes
+ consider figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Regional-House-Price-data"
+reference "fig:TS-correlogram"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- and 
+.
+ I first detrend each time series by substracting its moving average before
+ computing the pairwise correlation of the time series across regions.
+ The figure highlights that deviations from trend are highly correlated
+ between Divisions, for both regional incomes 
+\begin_inset Formula $(q)$
+\end_inset
+
+ and regional prices 
+\begin_inset Formula $(p)$
+\end_inset
+
+.
+ Regarding persistence of those time series, the average autorcorrelation
+ coefficients are 0.91 for 
+\begin_inset Formula $p$
+\end_inset
+
+ and 0.92 for 
+\begin_inset Formula $q$
+\end_inset
+
+, respectively (for details see table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Regional-Income-data"
+reference "tab:Autocorrs"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- present the results of such an exercise.
- In both cases, we can see that nationwide shocks occur to varying degrees
- at the regional level; and that all series exhibit a high degree of persistence
-, i.e.
- they are visibly different from an i.i.d.
- process.
- The model I will present now takes those patterns seriously and proposes
- a way to solve and estimate the resulting high-dimensional problem.
+) over the considered time period.
+ Modelling regional risk as an IID process seems like an unjustifiably strong
+ assumptions given those high degrees of cross correlation and persistence.
+ Therefore the model introduced below will take both correlation and persistence
+ in regional prices seriously and will propose a method to solve and estimate
+ the resulting high-dimensional problem.
 \end_layout
 
 \begin_layout Standard
@@ -1502,7 +1528,7 @@ state
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1817,10 +1843,44 @@ status collapsed
 
 \begin_layout Plain Layout
 \noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{adjustbox}{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
-	scale 80
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{adjustbox}
+\end_layout
 
 \end_inset
 
@@ -1831,39 +1891,98 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Regional House Price indices vs National average.
- FHFA house price index.
+The time series for regional incomes 
+\begin_inset Formula $\{q_{dt}\}_{t=1967}^{2012}$
+\end_inset
+
+ (left panel) and house prices 
+\begin_inset Formula $\{p_{dt}\}_{t=1967}^{2012}$
+\end_inset
+
+ (right panel) are strongly correlated across Divisions 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ This plot shows the cross-correlation between the time series of either
+ 
+\begin_inset Formula $q$
+\end_inset
+
+ or 
+\begin_inset Formula $p$
+\end_inset
+
+ for all regions, after they have been detrended.
+ In other words, trend deviations strongly correlate across Divisions.
+ For instance in the left panel, the top left tile indicates that the correlatio
+n between the time series of 
+\begin_inset Formula $q$
+\end_inset
+
+ for East North Central (ENC) and West South Central (WSC) is around 0.75
+ (raw numbers in tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Cross-corr-q"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Cross-corr-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Similarly, in the right panel, the bottom right tile indicates that the
+ correlation between 
+\begin_inset Formula $\{p_{\text{{ENC},}t}\}_{t=1967}^{2012}$
+\end_inset
+
+ and 
+\begin_inset Formula $\{p_{\text{{WSC},}t}\}_{t=1967}^{2012}$
+\end_inset
+
+ after detrending both is around 0.69.
+ Detrending was performed by substracting a moving average of order four
+ from the raw time series, and can be seen in the appendix in figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detrended-y"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detrended-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Regional-House-Price-data"
+name "fig:TS-correlogram"
 
 \end_inset
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
-	scale 80
 
 \end_inset
 
@@ -1871,29 +1990,6 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Regional per capita personal income 
-\begin_inset Formula $q_{dt}$
-\end_inset
-
- from BEA vs the national average index 
-\begin_inset Formula $Q$
-\end_inset
-
-, for which I use real per capital GDP.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Regional-Income-data"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -4801,7 +4897,7 @@ reference "eq:income-process"
 .
  I describe the full procedure in the appendix.
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -6723,7 +6819,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -8872,6 +8968,99 @@ Additional tables and figures
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-p.pdf
+	scale 60
+	scaleBeforeRotation
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-y.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
@@ -8889,7 +9078,275 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/copulas.tex}
+Dropbox/data/FHFA/y_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-q"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/auto_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+First order partial autocorrelation coefficients of both 
+\begin_inset Formula $q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+ from raw (i.e.
+ not detrended) time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Autocorrs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional House Price indices vs National average.
+ FHFA house price index.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-House-Price-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional per capita personal income 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ from BEA vs the national average index 
+\begin_inset Formula $Q$
+\end_inset
+
+, for which I use real per capital GDP.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-Income-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/copulas-edit.tex}
 \end_layout
 
 \end_inset
@@ -8914,6 +9371,11 @@ Normal Copula estimates for the rank of wage residuals
 \end_inset
 
 .
+ The algorithm was not able to compute a standard error for 
+\begin_inset Formula $\rho$
+\end_inset
+
+ because of a flat hessian.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Normal-Copula-estimates"
@@ -9031,7 +9493,7 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_inset Float table
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9106,7 +9568,7 @@ name "tab:Regional-2-indiv-income"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
