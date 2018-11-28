@@ -790,7 +790,6 @@ function ownersWTP(nosave::Bool=false)
 end
 
 
-
 function v_ownersWTP2(xtra_ass::Float64,v0::Float64,a_0::Float64,o::Dict)
 
 	p = Param(2,opts=o)
@@ -877,6 +876,21 @@ function ownersWTP2(nosave::Bool=false)
 							 "oidx2" => (j,1,iz,2,2,1,:,2,j,age_hit),
 							 "ridx" => (j,1,iz,2,2,1,rent_a0,1,j,age_hit)
 							 )
+					# same but for a mover
+					mvto = j == p.nJ ? 1 : j + 1
+					om = Dict("shockReg" => j,
+							 "policy" => "ownersWTP2",
+							 "shockYear" => 2000,
+							 "shockVal_y" => shocks[sh][1] .* ones(32),  
+							 "shockVal_p" => shocks[sh][2] .* ones(32),  
+							 "shockAge" => age_hit,   # dummy arg
+							 "oidx" => (mvto,1,iz,2,2,1,own_a0,2,j,age_hit),
+							 "oidx2" => (mvto,1,iz,2,2,1,:,2,j,age_hit),
+							 "ridx" => (mvto,1,iz,2,2,1,rent_a0,1,j,age_hit)
+							 )
+
+					# get values for stayers 
+					# ======================
 
 					# get the target value: renters valueation.
 					r_0 = m0.v[o["ridx"]...]
@@ -899,9 +913,35 @@ function ownersWTP2(nosave::Bool=false)
 						continue
 					end
 
+					# get values for movers
+					# ======================
+					# get the target value: renters valueation.
+					r_0m = m0.v[om["ridx"]...]
+					if r_0m == p.myNA
+						warn("r_0m = $r_0m. skip this state")
+						continue
+					end
+
+					itp = interpolate((m.grids["assets"],),m0.v[om["oidx2"]...],Gridded(Linear()))
+					a_0m = fzero(x->r_0m - itp[x],-500.0,0.0)  # critical asset level
+					info("moving renters baseline value is $r_0m")
+					# info("owners baseline value (before shock) was $(itp[a_0])")
+					info("v(own,move)==v(rent,move)|noshock at a= $a_0m")
+
+					# renters value in shock
+					r_shockm = m.v[om["ridx"]...]
+					info("moving renters shock value is $r_shockm")
+					if r_shockm == p.myNA
+						warn("r_shockm = $r_shockm. skip this state")
+						continue
+					end
+
 					# find asset compensation value that makes owners indifferent.
-					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6)
-					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer)
+					info("find stayers WTP first")
+					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=3)
+					info("now find movers WTP")
+					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=3)
+					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:a_0m => a_0m, :compm => resultm.minimizer)
 				end
 			end
 		end
