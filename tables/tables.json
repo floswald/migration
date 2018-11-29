@@ -14,6 +14,11 @@
     "output"   : "Dropbox/research/mobility/output/model/experiments/ownersWTP.tex",
     "data"     : "git/migration/mig/out/ownersWTP.json"
   },
+  "owernsWTP2":{
+    "template" : "ownersWTP2.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/ownersWTP2.tex",
+    "data"     : "git/migration/mig/out/ownersWTP2.json"
+  },
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/highMC/mig_value_utility.tex",

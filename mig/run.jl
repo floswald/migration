@@ -56,7 +56,16 @@ elseif args["experiment"]
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
     if args["noMove"]
-        addprocs(nwork)
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
+        end
         using mig
         info("      noMove experiment, with nosave=$nosave")
         info("      applying ys=$_ys, ps=$_ps")

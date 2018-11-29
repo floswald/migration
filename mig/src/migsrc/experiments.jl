@@ -53,7 +53,7 @@ function decompose_MC_owners(nosave::Bool=true)
 		out,proc = open(ficmd)
 	end
 
-	post_slack("[MIG] decompose_MC_owners done.")
+	post_slack("[MIG] decompose_MC_owners done on $(gethostname()).")
 	return(di)
 end
 
@@ -704,7 +704,7 @@ function moversWTP(j::Int,nosave::Bool=false)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] moversWTP_$j $took hours")
+	post_slack("[MIG] moversWTP_$j $took hours on $(gethostname())")
 	return dout
 end
 
@@ -784,7 +784,7 @@ function ownersWTP(nosave::Bool=false)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] ownersWTP $took hours")
+	post_slack("[MIG] ownersWTP $took hours on $(gethostname())")
 	return d
 
 end
@@ -968,7 +968,7 @@ function ownersWTP2(nosave::Bool=false)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] ownersWTP2 $took hours")
+	post_slack("[MIG] ownersWTP2 $took hours on $(gethostname())")
 	return d
 
 end
@@ -1027,7 +1027,7 @@ function elasticity(nosave::Bool=false)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] elasticity $took hours")
+	post_slack("[MIG] elasticity $took hours on $(gethostname())")
 	return dout
 end
 
@@ -1082,7 +1082,7 @@ function shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] shockRegions_scenarios",took,"hours")
+	post_slack("[MIG] shockRegions_scenarios",took,"hours on $(gethostname())")
 	return (d,y)
 end
 
@@ -1273,7 +1273,7 @@ function moneyMC(nosave::Bool=false)
 	end
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] MoneyMC $took hours")
+	post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
 
 	return out
 end
