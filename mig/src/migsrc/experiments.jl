@@ -842,10 +842,11 @@ function ownersWTP2(nosave::Bool=false)
 		solve!(m0,p0)
 
 		for it in (2,)
-			dout[:data][it] = Dict()
+			dout[:data]["it$it"] = Dict()
 			age_hit = it
 			for sh in (:y,:p)
 				# get renters valuation in each shock scenario
+				dout[:data]["it$it"][sh] = Dict()
 				o = Dict("shockReg" => j,
 						 "policy" => "ownersWTP2",
 						 "shockYear" => 2000,
@@ -862,7 +863,6 @@ function ownersWTP2(nosave::Bool=false)
 				# for iz in 1:1
 				for iz in 1:1
 
-					dout[:data][it][iz] = Dict()
 					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
 					own_a0 = 8
 					rent_a0 = m.aone
@@ -941,7 +941,7 @@ function ownersWTP2(nosave::Bool=false)
 					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
 					info("now find movers WTP")
 					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
-					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,:minim=>Optim.minimum(resultm))
+					dout[:data]["it$it"][sh]["iz$iz"] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,:minim=>Optim.minimum(resultm))
 				end
 			end
 		end
@@ -951,10 +951,11 @@ function ownersWTP2(nosave::Bool=false)
 	y = pmap(x->wtp_impl(x),1:p.nJ)
 	# y = pmap(x->wtp_impl(m,p,x),1:1)
 	# reorder
+	regs = m.regnames[:Division]
 	d = Dict()
 	for j in 1:p.nJ
 		println(map(x->get(x,:region,0)==j,y))
-		d[j] = y[map(x->get(x,:region,0)==j,y)]
+		d[Symbol(regs[j])] = y[map(x->get(x,:region,0)==j,y)]
 	end
 	if !nosave
 		io = setPaths()
