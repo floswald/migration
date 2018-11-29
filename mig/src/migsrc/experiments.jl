@@ -941,7 +941,7 @@ function ownersWTP2(nosave::Bool=false)
 					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
 					info("now find movers WTP")
 					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
-					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,minim=>Optim.minimum(resultm))
+					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,:minim=>Optim.minimum(resultm))
 				end
 			end
 		end
