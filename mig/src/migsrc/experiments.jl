@@ -547,11 +547,14 @@ end
 
 function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 
-	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out_all,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:year]],on=:year,makeunique=true)
+	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],on=:year,makeunique=true)
 
 
 	ela1 = @linq ela |>
 			@transform(d_all = (:All_1 - :All) ./ :All, 
+				d_out = (:Total_out_1 - :Total_out) ./ :Total_out,
+				d_own_out = (:Owners_out_1 - :Owners_out) ./ :Owners_out,
+				d_rent_out = (:Renters_out_1 - :Renters_out) ./ :Renters_out,
 				d_own = (:Owners_1 - :Owners)./:Owners, 
 				d_rent = (:Renters_1 - :Renters)./:Renters,
 				d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,
@@ -572,6 +575,12 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	# ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
 	ela1[:d_all_p] = 0.0
+	ela1[:d_out_all_p] = 0.0
+	ela1[:d_out_y] = 0.0
+	ela1[:d_own_out_p] = 0.0
+	ela1[:d_rent_out_p] = 0.0
+	ela1[:d_own_out_y] = 0.0
+	ela1[:d_rent_out_y] = 0.0
 	ela1[:d_own_p] = 0.0
 	ela1[:d_net_own_p] = 0.0
 	ela1[:d_rent_p] = 0.0
@@ -602,6 +611,9 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	# ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
 
 	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_own_out_y] = ela1[ela1[:yshock].!= 0.0, :d_own_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_rent_out_y] = ela1[ela1[:yshock].!= 0.0, :d_rent_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock].!= 0.0, :d_out_y] = ela1[ela1[:yshock].!= 0.0, :d_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_total_in_y] = ela1[ela1[:yshock].!= 0.0, :d_total_in] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
 	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
@@ -978,13 +990,13 @@ end
 # end
 
 """
-	elasticity(nosave::Bool=false)
+	elasticity(;nosave::Bool=false,neg=false)
 
-Compute elasticity of income shock on migration choices: how many percent do inflows to `j` increase if income there increases by 1%?
+Compute elasticity of income shock on migration choices: how many percent do inflows to `j` increase if income there increases or decreases by 1%?
 """
-function elasticity(nosave::Bool=false)
+function elasticity(;nosave::Bool=false,neg=false)
 
-	info("runing elasticity computation")
+	info("runing elasticity computation neg = $neg")
 	post_slack()
 	tic()
 
@@ -1001,7 +1013,7 @@ function elasticity(nosave::Bool=false)
 	o = Dict("shockReg" => 1,
 			 "policy" => "ypshock",
 			 "shockYear" => 2000,
-			 "shockVal_y" => 1.1 .* ones(32),  
+			 "shockVal_y" => neg ? 0.9  .* ones(32) : 1.1 .* ones(32),  
 			 "shockVal_p" => ones(32),  
 			 "shockAge" => 0   # dummy arg
 			 )
@@ -1012,17 +1024,28 @@ function elasticity(nosave::Bool=false)
 		x = exp_shockRegion(o)[1]
 		y = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
 		dout[Symbol(regs[j])] = Dict(:all => mean(y[:d_all_y]),
-			:d_total_in_y =>mean(y[:d_total_in_y]),
-			:d_in_rent_y =>mean(y[:d_in_rent_y]),
-			:d_in_buy_y =>mean(y[:d_in_buy_y]))
+			:d_total_in_y => mean(y[:d_total_in_y]),
+			:d_in_rent_y  => mean(y[:d_in_rent_y]),
+			:d_in_buy_y   => mean(y[:d_in_buy_y]),
+			:d_total_out_y => mean(y[:d_out_y]),
+			:d_rent_out_y  => mean(y[:d_rent_out_y]),
+			:d_own_out_y   => mean(y[:d_own_out_y]))
 	end
+
 
 	if !nosave
 		io = setPaths()
-		ostr = "elasticity.json" 
-		f = open(joinpath(io["out"],ostr),"w")
+		ostr = neg ? "neg_elasticity.json" :"elasticity.json"
+		fi = joinpath(io["out"],ostr)
+		f = open(fi,"w")
 		JSON.print(f,dout)
 		close(f)
+		try
+			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+			out,proc = open(ficmd)
+		catch
+			warn("no dbxcli installed")
+		end
 	end
 	info("done.")
 

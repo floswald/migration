@@ -13,7 +13,7 @@ Usage:
     run.jl --version
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--nosave] 
+    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
@@ -23,6 +23,7 @@ Options:
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
+    --neg               perform negative elasticity shock. If you set it, it does negative.
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
     --version           show version
@@ -51,6 +52,7 @@ elseif args["test"]
 elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
+    neg = args["--neg"]
     nwork = parse(Int,args["--nworkers"])
     reg = parse(Int,args["--region"])
     _ys = parse(Float64,args["--yshock"])
@@ -99,10 +101,19 @@ elseif args["experiment"]
         using mig
         mig.moversWTP(reg,nosave)
     elseif args["elasticity"]
-        info("      computing elasticity wrt 10% income shock, with nosave=$nosave")
-        addprocs(nwork)
+        info("      computing elasticity wrt 10% income shock, with nosave=$nosave and neg=$neg")
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
+        end
         using mig
-        mig.elasticity(nosave)
+        mig.elasticity(nosave=nosave,neg=neg)
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig

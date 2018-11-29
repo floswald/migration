@@ -5280,7 +5280,8 @@ Estimation Sample
 
 \begin_layout Standard
 My estimation sample is formed mainly out of averages over SIPP data moments
- covering the period 1997–2012.
+ covering the period 1997–2012, conditional on non–college as described
+ above.
  All moments are constructed using SIPP cross-sectional survey weights,
  and all dollar values have been inflated to base year 2012 using the BLS
  CPI for all urban consumers.
@@ -5355,50 +5356,6 @@ moved more two times or more
  The reason for using external data is that I cannot compute such a statistic
  from SIPP, where the maximum panel length is four years.
  
-\end_layout
-
-\begin_layout Standard
-Finally, it is important to clarify the role of variables which are observed
- in the data, but which are missing in the model's state space.
- In light of the simple probit model from table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:D2D-probit"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, this concerns above all education.
- In that table, the marginal effect of having a college degree on the probabilit
-y of moving is roughly equal in absolute size than the one of being an owner
- – hence, important.
- The statistics in the moment vector do not condition on education, therefore
- the model is representative for an education-weighted average of the population.
- Given that education is contained in SIPP, it would be possible to condition
- the moments in this way – subject to quite strict constraints on cell sizes,
- as mentioned above.
- Furthermore, while endogenizing the education choice would clearly be infeasibl
-e, one could think of running the model separately for different education
- groups, after specifying an appropriate education–dependent income process.
- It is by no means clear, however, that the model would be able to fit different
-ial mobility rates by education very well without additional assumptions
- on the moving cost function (e.g.
- different moving costs by education).
- As it stands, the unobserved moving cost type 
-\begin_inset Formula $\tau$
-\end_inset
-
- accounts for everything affecting an individual's baseline probability
- of moving, which is missing from the model.
- Given observed low moving rates of non-college educated people, I expect
- a high correlation between non college degree and a high moving cost type.
- In this sense, 
-\begin_inset Formula $\tau$
-\end_inset
-
- is a reduced form representation of the impact of education on mobility.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -6287,7 +6244,7 @@ literal "true"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6354,7 +6311,7 @@ name "tab:MC-money"
 \end_layout
 
 \begin_layout Subsection
-Elasticities
+Elasticities with respect to Regional Shocks
 \end_layout
 
 \begin_layout Standard
@@ -6376,8 +6333,22 @@ The model can be used to compute elasticities of population size and migratory
  The elasticities are computed by comparing population size or migration
  flows across shocked and baseline scenarios, normalizing the result by
  the size of the shock.
- Notice that given the cohort setup of the model, it is necessary simluate
- all cohorts separately (they all experience the shock at different ages,
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Notice that given the cohort setup of the simulator, in this and all other
+ experiments that involve some notion of a 
+\begin_inset Quotes eld
+\end_inset
+
+shock
+\begin_inset Quotes erd
+\end_inset
+
+, it is necessary to simluate the model as many times as there are cohorts.
+ This is so because each cohort experiences the shock at a different age,
  and the 
 \begin_inset Formula $p_{dt}$
 \end_inset
@@ -6386,8 +6357,21 @@ The model can be used to compute elasticities of population size and migratory
 \begin_inset Formula $q_{dt}$
 \end_inset
 
- are predetermined in the data).
- 
+ are predetermined in the data.
+ Members of the cohort born in 1985 reach the shock year
+\begin_inset Formula $t^{*}$
+\end_inset
+
+ at a different age than those from the 1984 cohort.
+ The shock is implemented by immediately changing the policy functions when
+ the shock arises, and expectations adapt to the new setting.
+ Hence for cohort 1985, the policy functions look different than for the
+ 1984 cohort, and so on.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6427,7 +6411,7 @@ noprefix "false"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6491,10 +6475,6 @@ name "tab:elasticities"
 \end_layout
 
 \begin_layout Subsection
-Shadow Cost of Owning
-\end_layout
-
-\begin_layout Subsection
 Why Do Owners Move Less?
 \end_layout
 
@@ -6554,8 +6534,8 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-To investigate those issues in more detail, I sequentially remove owner-specific
- moving costs in table 
+To investigate those issues in more detail, I now sequentially remove owner-spec
+ific moving costs in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Decomposing-owner's-moving"
@@ -6740,9 +6720,9 @@ Owner Regret
 
 \begin_layout Standard
 Individuals in the model decide whether to buy a house or rent based on
- a multi–facetted tradeoff involving the size of houses, their preference
- for owned property, their expectations about future moves, as well as expectati
-ons about future prices.
+ a multi–facetted tradeoff involving the size of available houses, their
+ preference for owned property and their expectations about future moves
+ and prices.
  Buying a house is consequential for later mobility decisions, as we have
  seen, because owners face higher moving costs.
  A pertinent question question in this context is whether owners actually
@@ -6750,32 +6730,65 @@ ons about future prices.
 \emph on
 regret 
 \emph default
-having bought their house when it was optimal to do so, if the state of
- the world changes? For example, imagine that expectations about future
- prices were wrong, in the sense that there is an unexpected shock.
+having bought their house, if the state of the world changes in an unforeseen
+ way? For example, imagine that expectations about future prices were wrong,
+ in the sense that there is an unexpected shock.
  The owner finds themselves with a greatly devalued house – how big is the
- cost of being an owner in this circumstance? 
+ cost of being an owner in this new circumstance? 
 \end_layout
 
 \begin_layout Standard
-The following experiment sheds some light on this question.
- I compute the willingness to pay of an owner who experiences a permanent
- 10% house price or regional income shock when aged 30 in year 2000 for
- being to able 
-\emph on
-as if
-\emph default
- they were a renter: that is, with no additional moving costs in terms of
- either utility (setting parameter 
-\begin_inset Formula $\alpha_{3}=0$
+We want to assess this cost by looking at how much an owner in the shocked
+ scenario would be willing to pay to become a comparable renter.
+ Establishing comparability is important, because in general owners are
+ of higher networth than renters (by virtue of the downpayment requirement).
+ Therefore the experiment proceeds by establishing an asset level 
+\begin_inset Formula $a^{*}$
 \end_inset
 
-), or financial transaction costs 
-\begin_inset Formula $(\phi=0)$
+ in the baseline such that, with some abuse of notation, 
+\begin_inset Formula $V^{own}(a^{*})=V^{rent}(0)$
+\end_inset
+
+, in other where an owner's value is equal to a renter's value with zero
+ assets.
+ This value is in general a negative number, proportional to the greater
+ networth of owners and the additional utility derived from owning.
+ Then, we shock either 
+\begin_inset Formula $q$
+\end_inset
+
+ or 
+\begin_inset Formula $p$
+\end_inset
+
+ at a certain age in a given region, and we want to know how much the owner
+ would be willing to pay in order to convert to a renter, measured at the
+ pre-shock reference level 
+\begin_inset Formula $a^{*}$
 \end_inset
 
 .
- The results of this exercise are shown in figure 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In some sense this experiment measures the value of the option 
+\emph on
+sell 
+\emph default
+of the owner.
+ Since, if it was optimal to become a renter, they would of course make
+ this choice in equilibrium.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The results of this exercise are displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Owner-WTP"
@@ -6785,23 +6798,35 @@ noprefix "false"
 
 \end_inset
 
- for each region.
- We see that owners would be willing to pay at most about 13,000 dollars
- for the option to move like renters, as an average of the entire cohort,
- in most regions considerably less.
- Notice the contrast to the numbers in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:MC-money"
-plural "false"
-caps "false"
-noprefix "false"
-
+ for a permanent and unexpected reduction in the level of either 
+\begin_inset Formula $q$
 \end_inset
 
-, which show that estimated moving costs for renters and owners are an order
- of magnitude apart.
- It's important to bear in mind that table 
+ or 
+\begin_inset Formula $p$
+\end_inset
+
+ of 10% in a given Division.
+ We observe first that in the column corresponding to the 
+\begin_inset Formula $q$
+\end_inset
+
+ shock, there are relatively small dollar amounts (table is in 1000 of dollars),
+ and some are negative.
+ The negative entries imply that the owner would not be willing to pay anything
+ after income drops by 10%.
+ The intuition here is that in the case of an income shock, the renter is
+ equally affected than the owner, hence there is only a small desire to
+ become, or no desire at all to become a renter with zero assets and a significa
+ntly reduced income.
+ This is also the case because owners still have their housing capital to
+ fall back on, which is unaffected from the shock in this scenario.
+ 
+\end_layout
+
+\begin_layout Standard
+Quite different to this is the outcome of a price shock.
+ We see in the first column of table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Owner-WTP"
@@ -6811,15 +6836,30 @@ noprefix "false"
 
 \end_inset
 
- measures a different object, however, and so we should not expect to find
- numbers of similar magnitude.
+ that owners would be willing to pay amounts ranging from about 15,000 and
+ up to 25,600 dollars in order to be converted to a renter with zero assets.
+ Crucial to note is here that renters a priori benefit from the reduction
+ in house prices, because rental payments decrease.
+ The overall impact on renter values is more nuanced, however, because it
+ includes the expected value of owning, and this value has declined.
+ The experiment shares some features of mortgage default (which is not modeled),
+ in that the owner evaluates 
+\begin_inset Quotes eld
+\end_inset
+
+reset
+\begin_inset Quotes erd
+\end_inset
+
+ option.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6833,7 +6873,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/experiments/ownersWTP.tex}
+Dropbox/model/experiments/ownersWTP2.tex}
 \end_layout
 
 \end_inset
@@ -6845,43 +6885,9 @@ Dropbox/model/experiments/ownersWTP.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Owner willingness to pay to be able to move with zero ownership-related
- moving costs 
-\begin_inset Formula $(\alpha_{3}=0)$
-\end_inset
-
- and zero financial transaction costs upon selling the house 
-\begin_inset Formula $(\phi=0)$
-\end_inset
-
- in case of an unexpected house price or regional income shock.
- In this experiment, an unexpected shock occurs in year 2000 to reduce either
- regional income 
-\begin_inset Formula $q$
-\end_inset
-
- or house prices 
-\begin_inset Formula $p$
-\end_inset
-
- by 10% forever after.
- This table reports the lump-sum dollar amount (in 1000s) required to make
- owners aged 30 in year 2000 indifferent between this scenario under the
- estimated parameter vector, and a world where owners find it 
-\emph on
-as easy
-\emph default
- as renters to move, i.e.
- they bear no additional moving costs in terms of either utility or money,
- hence we modify the parameter vector with 
-\begin_inset Formula $\alpha_{3}=0$
-\end_inset
-
- and 
-\begin_inset Formula $\phi=0$
-\end_inset
-
-.
+Owners willingness to pay to convert to a comparable renter after an unexpected
+ 10% reduction in price or income arises.
+ In 1000 of dollars.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Owner-WTP"
@@ -9180,7 +9186,7 @@ name "tab:Cross-corr-p"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9332,7 +9338,7 @@ name "fig:Regional-Income-data"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9493,7 +9499,7 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_inset Float table
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
