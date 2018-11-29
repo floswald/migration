@@ -841,7 +841,7 @@ function ownersWTP2(nosave::Bool=false)
 		m0 = Model(p0)
 		solve!(m0,p0)
 
-		for it in (2,10)
+		for it in (2,)
 			dout[:data][it] = Dict()
 			age_hit = it
 			for sh in (:y,:p)
@@ -860,7 +860,7 @@ function ownersWTP2(nosave::Bool=false)
 				solve!(m,p)
 
 				# for iz in 1:1
-				for iz in 1:p.nz
+				for iz in 1:1
 
 					dout[:data][it][iz] = Dict()
 					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
@@ -941,7 +941,7 @@ function ownersWTP2(nosave::Bool=false)
 					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
 					info("now find movers WTP")
 					resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), 0.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
-					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,:a_0m => a_0m, :compm => resultm.minimizer)
+					dout[:data][it][iz][sh] = Dict(:a_0 => a_0, :comp => result.minimizer,mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,minim=>Optim.minimum(resultm))
 				end
 			end
 		end
