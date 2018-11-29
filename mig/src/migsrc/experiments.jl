@@ -1190,7 +1190,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[opt["ik"],1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
 	r = p.myNA
 	if w == p.myNA
 	else
@@ -1218,6 +1218,7 @@ function moneyMC(nosave::Bool=false)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
+	regs = m.regnames[:Division]
 	info("baseline without MC done.")
 
 	whichasset = m.aone
@@ -1231,22 +1232,26 @@ function moneyMC(nosave::Bool=false)
 	opts["p"] = Dict()
 	opts["p"]["policy"] = "moneyMC"
 	opts["itau"] = 1   # only mover type
-	for ih in 0:1
-		opts["ih"] = ih+1
-		if ih==0
-			opts["asset"] = whichasset
-		else
-			opts["asset"] = whichasset-1 
-		end
-		out["h$ih"] = Dict()
-		for iz in 1:p.nz
-			opts["iz"] = iz  	
-			opts["it"] = 1 	# age 1
-			v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-			res = find_xtra_ass(v0,opts)
-			info("done with MC ih=$ih, iz=$iz")
-			info("moving cost: $(Optim.minimizer(res))")
-			out["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
+	@showprogress for j in [1,3:p.nJ...]
+		out[Symbol(regs[j])] = Dict()
+		opts["ik"] = j   # moving to
+		for ih in 0:1
+			opts["ih"] = ih+1
+			if ih==0
+				opts["asset"] = whichasset
+			else
+				opts["asset"] = whichasset-1 
+			end
+			out[Symbol(regs[j])]["h$ih"] = Dict()
+			for iz in 1:p.nz
+				opts["iz"] = iz  	
+				opts["it"] = 1 	# age 1
+				v0 = m.v[opts["ik"],1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+				res = find_xtra_ass(v0,opts)
+				info("done with MC ih=$ih, iz=$iz")
+				info("moving cost: $(Optim.minimizer(res))")
+				out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
+			end
 		end
 	end
 
