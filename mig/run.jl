@@ -72,7 +72,16 @@ elseif args["experiment"]
         mig.ownersWTP(nosave)
     elseif args["ownersWTP2"]
         info("      computing owners WTP v2 to become renter again, with nosave=$nosave")
-        addprocs(nwork)
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
+        end
         using mig
         mig.ownersWTP2(nosave)
     elseif args["moversWTP"]
