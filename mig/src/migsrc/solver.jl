@@ -356,25 +356,13 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 										# monetize policies
 										# =================
 
-										# add money to assets of movers if required
+										# add p.shockVal[1] money to assets according to policy details
 
-										# if in moneyMC experiment and
-										# if this is the period where we measure, ie there IS a MC (!p.noMC) and
-										# if this is the value of someone who is moving
-										if moneyMC && (!p.noMC) && (ij!=ik)
+										if (moneyMC && (!p.noMC) && move) || (ownersWTP && (ih==1))
 											a = a_0 + p.shockVal[1]
 										else
 											a = a_0
 										end
-
-										# measure sellers wtp 
-										# -------------------
-										if ownersWTP && (ih==1)
-											a = a_0 + p.shockVal[1]
-										else
-											a = a_0
-										end
-
 
 										if ih==0
 											canbuy = a + newz > p.chi * price_k
