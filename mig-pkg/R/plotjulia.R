@@ -1130,6 +1130,25 @@ correlograms <- function(){
 	plot(as.ts(dtrendp),main="Detrended p Series",nc=3)
 	dev.off()
 
+	# all detrended states in one plot
+	ty = data.table(dtrendy,index(dtrendy))
+	tp = data.table(dtrendp,index(dtrendp))
+	setnames(ty,ncol(ty),"year")
+	setnames(tp,ncol(tp),"year")
+	mdty = melt(ty,id.vars=c("year"))
+	mdtp = melt(tp,id.vars=c("year"))
+	setnames(mdty,"variable","Division")
+	setnames(mdtp,"variable","Division")
+	mdtp[,group := "regional price p"]
+	mdty[,group := "regional income q"]
+
+	mdt = rbind(mdty,mdtp)
+	plots = list()
+	plots$detrended = ggplot(mdt,aes(x=year,y=value,linetype=Division)) + geom_line() + facet_wrap(~group,scales="free_y") + theme_bw() + theme(legend.position="none") + ggtitle("Detrended Time Series 1967-2012 for All Census Divisions")
+	ggsave(plot=plots$detrended,file.path(path,"detrended.pdf"),width= 8,height=4,device="pdf")
+
+
+
 	# correlograms of detrended data
 	pcor = cor(dtrendp[3:44,])
 	ycor = cor(dtrendy[3:44,])
@@ -1150,9 +1169,13 @@ correlograms <- function(){
 	my$type = "regional income q"
 	names(mp) <- names(my) <- c("Division1","Division2","correlation","type" )
 	m = rbind(mp,my)
-	p= ggplot(m,aes(x=Division1,y=Division2,fill=correlation)) + geom_tile() + scale_fill_gradient(low = "white", high = "black") + facet_wrap(.~ type) + scale_y_discrete("Division 2") + scale_x_discrete("Division 1") + ggtitle("Cross Correlations between Detrended Time Series 1967-2012") + theme_bw()
-	ggsave(plot=p,file.path(path,"correlogram.pdf"),width= 8,height=4,device="pdf")
-	return(p)
+	plots$corrs = ggplot(m,aes(x=Division1,y=Division2,fill=correlation)) + geom_tile() + scale_fill_gradient(low = "white", high = "black") + facet_wrap(.~ type) + scale_y_discrete("Division 2") + scale_x_discrete("Division 1") + ggtitle("Cross Correlations between Time Series") + theme_bw()
+	ggsave(plot=plots$corrs,file.path(path,"correlogram.pdf"),width= 8,height=4,device="pdf")
+
+	pdf(file.path(path,"correlogram-detrended.pdf"),width=8,height=8)
+		multiplot(plots$detrended, plots$corrs,cols=1)
+	dev.off()
+	return(plots)
 }
 
 # plot both price series

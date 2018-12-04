@@ -290,11 +290,12 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-This paper provides structural estimates of crucial objects like moving
- costs by ownership status, which are important for many realms of public
- policy.
- It is among the first to consider homeownership and migration in an empirical
- lifecycle model.
+Migration probabilities are thus heterogeneous in the population.
+ Which type a of household is likely to move in regional downturn? In this
+ paper, which is among the first to consider homeownership and migration
+ in an empirical lifecycle, I provide structural estimates of crucial objects
+ related to this question, like, for example, moving costs by ownership
+ status, age and other observables.
  Modelling homeownership realistically requires modelling asset accumulation,
  and it requires a proper treatment of expectations about house prices,
  both of which are computationally demanding to integrate in a dynamic model
@@ -305,27 +306,34 @@ This paper provides structural estimates of crucial objects like moving
 Homeownership and geographical mobility of households are tightly connected:
  Renters are more mobile than owners.
  What complicates the analysis, however, is that renters may choose to be
- renters precisely because they 
+ renters precisely 
 \emph on
-are
+because
 \emph default
- more mobile, in the sense that they either plan to move in the near future,
- or at least leave themselves the option to move.
+ they
+\emph on
+ 
+\emph default
+are more mobile, in the sense that they might assess their own likelihood
+ of moving to be relatively high.
  What is more, often the econometrician cannot observe the relevant state
  variables which would be informative about those considerations, hence,
  there is unobserved heterogeneity at play.
- This paper presents a model that allows to resolve the joint determination
- of housing tenure status, consumption, savings and mobility decisions,
- such that it can be used to structurally estimate deep parameters and to
- investigate counterfactual policies.
+ The model introduced below allows to resolve the joint determination of
+ housing tenure status, consumption, savings and mobility decisions, such
+ that it can be used to structurally estimate deep parameters and to investigate
+ counterfactual policies.
 \end_layout
 
 \begin_layout Standard
-The main experiment in the paper will be used to shed light on the option
- value of regional migration in the face of regional price and income risk.
- We will shut down the migration option in the economy, and compute the
- compensating consumption stream which would make individuals indifferent
- between this regime, and the status quo (i.e., a world with migration).
+The main counterfactual will be used to shed light on the option value of
+ regional migration in the face of regional price and income risk.
+ How much would households want to pay for a hypothetical migration insurance
+ policy, in other words, what is the value of the option to move? In order
+ to address this, the experiment shuts down migration in the economy, and
+ it reports the compensating consumption stream which would make individuals
+ indifferent between this regime, and the status quo (i.e.
+ a world with migration).
  The results of this exercise differ greatly by type of household considered,
  and they range from small valuations for older homeowners to very large
  valuations (13% of period consumption) for young renter households.
@@ -333,7 +341,7 @@ The main experiment in the paper will be used to shed light on the option
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Regional shocks to labor demand and house prices may have profound and longlasti
@@ -377,6 +385,10 @@ https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_us_and_census.txt
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Shocks to regional labor demand affect renters and owners in a similar way,
  i.e.
  labor income of both falls.
@@ -390,6 +402,11 @@ Shocks to regional labor demand affect renters and owners in a similar way,
  while price shocks could have differential impacts, depending on the relative
  importance of cheap rents, low value housing asset, and moving costs for
  renters and owners.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -420,10 +437,10 @@ see American Community Survey 2013, table DP04.
  is subject to shocks as discussed above, is relatively illiquid, and in
  addition may have a location specific flow of utility.
  Consumers may have preferences for locations.
- Finally, there is selection into homeownership based on unobservable moving
- costs: Individuals with a particular distaste for moving will be more likely
- to select into homeownership, because they anticipate that they are unlikely
- to ever move in the future.
+ Finally, as already mentioned, there is selection into homeownership based
+ on unobservable moving costs: Individuals with a particular distaste for
+ moving will be more likely to select into homeownership, because they anticipat
+e that they are unlikely to ever move in the future.
  All of these factors interact to shape the joint decision of housing tenure,
  location choice, and mortgage borrowing.
  What is more, they all interact to influence the decision to move in response
@@ -433,8 +450,8 @@ see American Community Survey 2013, table DP04.
 \begin_layout Standard
 In the model I develop, there are several mechanisms which affect the home
  ownership choice of individuals.
- A downpayment requirement means that only individuals with sufficient cash
- on hand are able to buy a house at the current price.
+ A downpayment requirement for implies means that only individuals with
+ sufficient cash on hand are able to buy a house at the current price.
  The model assumes a preference for owner-occupied accomodation, a local
  amenity and a partially unobserved cost of moving, which influence the
  buying decision in addition to age, the probability of moving, and beliefs
@@ -547,7 +564,7 @@ literal "true"
 
 \end_inset
 
- is a recent paper that extends 
+ is similar to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
@@ -555,8 +572,7 @@ literal "true"
 
 \end_inset
 
- to include housing choices and focuses on the response of owners to individual
- labor market shocks.
+ but with housing choices.
  The main differences to 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -712,7 +728,7 @@ literal "false"
  is offered by migration.
  The author finds migration insures against 7% of an average local labor
  demand shock.
- My paper implements a fully structural analysis of the same question, with
+ Here I implement a fully structural analysis of the same question, with
  the added benefit that I can measure a value of the migration option in
  terms of consumption.
  In this sense, the present paper offers a more direct answer to the question
@@ -854,13 +870,11 @@ literal "true"
 \end_layout
 
 \begin_layout Section
-Empirical Background
+Facts 
 \end_layout
 
 \begin_layout Standard
-The amount of regional migration in the US is still high by international
- standards.
- According to 
+According to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "molloy2011internal"
@@ -870,12 +884,9 @@ literal "true"
 
 , who use three publicly available datasets (American Community Survey (ACS),
  the Annual Social and Economic Supplement to the CPS (March CPS), and Internal
- Revenue Service (IRS) data), each year roughly 1.5% of the entire population
- moves between two out of four Census regions, and about 1.3% move between
- States within any one region.
- At a more local level, they find that 5% of the population move between
- counties each year, which amounts to roughly one-third of the annual flows
- into and out of employment according to the measure in 
+ Revenue Service (IRS) data), each year roughly 5% of the population moves
+ between counties each year, which amounts to roughly one-third of the annual
+ flows into and out of employment according to the measure in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fallick2004employer"
@@ -884,15 +895,15 @@ literal "true"
 \end_inset
 
 .
- An overview of migration rates across different regional delineations and
- over different time spells is shown in table 
+ The cross State figure is 2%, and the cross Census Division rate is estimated
+ at 1.5% of the population, per year (see table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Migration-rates-Molloy"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Standard
@@ -964,7 +975,7 @@ literal "true"
 
 \end_inset
 
- are very well suited for the purpose of analysing migration and ownership.
+ are well suited for the purpose of analysing migration and ownership.
  None of them tracks movers, so it is impossible to know the circumstances
  of an individual at the moment they decided to move, which is ultimately
  of interest in this paper.
@@ -1088,8 +1099,8 @@ The model presented below contains 25.4 million different points in the state
  state–level variation.
 \end_layout
 
-\begin_layout Paragraph
-Determinants of Cross Division Migration.
+\begin_layout Subsection
+The Main Reasons to Move are: Work, Housing and Family
 \end_layout
 
 \begin_layout Standard
@@ -1111,8 +1122,7 @@ reference "tab:CPS-reason-move"
 
 \end_inset
 
-, and the caption to the table provides the key according to which I group
- the 19 options into four categories.
+.
  It is striking to note that even though we are conditioning on moves across
  Division boundaries (and thus think of long-range moves), the percentage
  of people citing category 
@@ -1125,10 +1135,10 @@ housing
 
  as their main motivation is roughly 24% of the total population of movers.
  The table also disagreggates the response to the question by the distance
- between origin and destination state (not Division), and we can see that
- the proportion of respondents does vary with distance moved, but not to
- an extent that would suggest that housing becomes irrelevant as a motivation
- with increasing distance.
+ between origin and destination State, and we can see that the proportion
+ of respondents does vary with distance moved, but not to an extent that
+ would suggest that housing becomes irrelevant as a motivation with increasing
+ distance.
  Summing up in the bottom row of the table, we see that 55% say work was
  the main reason, 24% refer to housing and the remaining 21% is split between
  family and other reasons.
@@ -1147,13 +1157,17 @@ other
 , which are accounted for by an idiosyncratic preference shock.
 \end_layout
 
+\begin_layout Subsection
+Homeownership and College Education are Important for Migration
+\end_layout
+
 \begin_layout Standard
 Putting somewhat more structure onto this, I next present estimates from
  a statistical analysis of the determinants of cross division moves from
- SIPP data.
+ household–level SIPP data.
  I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
  with 102,529 household heads that I can follow over time and space.
- This is the central estimation sample in main analsis below.
+ This will be the central estimation sample in main analsis below.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1202,7 +1216,7 @@ y significant in this specification.
 \end_layout
 
 \begin_layout Paragraph
-Sample Selection.
+Sample Selection: Non–College Degree 
 \end_layout
 
 \begin_layout Standard
@@ -1219,7 +1233,7 @@ reference "tab:D2D-probit"
  in that table, i.e.
  between ownership status and mobility, a full treatment which endogenizes
  education choices is too ambitious.
- The pragmatic solution to this problem is to condition the data on a certain
+ A pragmatic solution to this problem is to condition the data on a certain
  education group and disregard education choices, as is done in the previous
  literature.
  In what follows, therefore, all SIPP data will refer to household heads
@@ -1227,9 +1241,13 @@ reference "tab:D2D-probit"
  in 65,482 unique household heads.
 \end_layout
 
+\begin_layout Subsection
+Renters Move at Twice the Rate of Owners
+\end_layout
+
 \begin_layout Standard
 In order to give a sense of the magnitude of migration rates by ownership
- status, table 
+ status in this selected sample, table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Annual-moving-rate"
@@ -1293,6 +1311,10 @@ literal "true"
  
 \end_layout
 
+\begin_layout Subsection
+Age Is Key
+\end_layout
+
 \begin_layout Standard
 Reconsidering homeowership and migration by age in the thus select sample
  gives rise to figure 
@@ -1307,8 +1329,14 @@ reference "fig:SIPP-sample-proportion-1"
  that there is a strongly declining age effect – younger individuals move
  more.
  Both of those are highly salient features of the data, and they are among
- the key dimensions along which my model's performance is going to be evaluated.
- Finally, a summary regarding homeownership rates and median price to income
+ the key dimensions along which this model's performance is going to be
+ evaluated.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Finally, a summary regarding homeownership rates and median price to income
  ratios by Census division is presented as an average over the years 1997–2011
  in table 
 \begin_inset CommandInset ref
@@ -1320,12 +1348,17 @@ reference "tab:SIPP-divisions"
 .
 \end_layout
 
-\begin_layout Paragraph
-Regional Income and House Price Risk are not IID.
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Regional Income and House Price Risk are not IID
 \end_layout
 
 \begin_layout Standard
-The time series of household disposable income and house prices are strongly
+The time series of regional disposable income and house prices are strongly
  correlated across Divisions.
  Additionally, they exhibit high degress of autocorrelation, i.e.
  shocks to regional incomes and prices are persistent.
@@ -1341,8 +1374,9 @@ noprefix "false"
 \end_inset
 
 .
- I first detrend each time series by substracting its moving average before
- computing the pairwise correlation of the time series across regions.
+ The top panels show the detrended version of each time series, while the
+ bottom panels show the pairwise correlation of those detrended time series
+ across regions.
  The figure highlights that deviations from trend are highly correlated
  between Divisions, for both regional incomes 
 \begin_inset Formula $(q)$
@@ -1799,7 +1833,7 @@ begin{adjustbox}{center}
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram.pdf
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram-detrended.pdf
 	scale 90
 
 \end_inset
@@ -1832,28 +1866,29 @@ The time series for regional incomes
 \begin_inset Formula $\{q_{dt}\}_{t=1967}^{2012}$
 \end_inset
 
- (left panel) and house prices 
+ and house prices 
 \begin_inset Formula $\{p_{dt}\}_{t=1967}^{2012}$
 \end_inset
 
- (right panel) are strongly correlated across Divisions 
+ are strongly correlated across Divisions 
 \begin_inset Formula $d$
 \end_inset
 
 .
- This plot shows the cross-correlation between the time series of either
- 
+ The top panels of this figure show the detrended series for all Divisions
+ for both 
 \begin_inset Formula $q$
 \end_inset
 
- or 
+ and 
 \begin_inset Formula $p$
 \end_inset
 
- for all regions, after they have been detrended.
- In other words, trend deviations strongly correlate across Divisions.
- For instance in the left panel, the top left tile indicates that the correlatio
-n between the time series of 
+.
+ The bottom panel further emphasizes that the cross-correlations across
+ states between regional trend deviations are substantial.
+ For instance in the bottom left panel, the top left tile indicates that
+ the correlation between the time series of 
 \begin_inset Formula $q$
 \end_inset
 
@@ -1879,39 +1914,7 @@ noprefix "false"
 \end_inset
 
 ).
- Similarly, in the right panel, the bottom right tile indicates that the
- correlation between 
-\begin_inset Formula $\{p_{\text{{ENC},}t}\}_{t=1967}^{2012}$
-\end_inset
-
- and 
-\begin_inset Formula $\{p_{\text{{WSC},}t}\}_{t=1967}^{2012}$
-\end_inset
-
- after detrending both is around 0.69.
- Detrending was performed by substracting a moving average of order four
- from the raw time series, and can be seen in the appendix in figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detrended-y"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detrended-p"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-.
- 
+ Detrended with fourth-order moving average.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:TS-correlogram"
