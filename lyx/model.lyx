@@ -194,12 +194,7 @@ This paper estimates a lifecycle model of consumption, housing choice and
  Using the model I estimate the value of the migration option.
  This value ranges from 0% up to almost 13% of lifetime consumption depending
  on the type of household considered.
- Individuals self-select into ownership, and the model provides cross–equation
- restrictions to address this econometric problem.
- In doing so, it identifies several structural primitives, for instance
- separate moving costs for renters and owners, which are of first order
- importance for policy makers concerned with housing and labor markets.
- 
+ [MORE]
 \end_layout
 
 \begin_layout Standard
@@ -276,23 +271,71 @@ Regional migration rates in the USA are relatively low despite the presence
  However, it would be a mistake to conclude from this observation that the
  option to migrate across regions has a small value to consumers.
  The goal of this paper is to provide a measure of having the option to
- migrate in the context of a lifecycle model with regional income and house
- price uncertainty, and I show that the value is large.
- To arrive at this measure, after fitting the model to micro data, I perform
- a counterfactual experiment whereby all migration between regions is shut
- down.
- I then ask the question of how large of a compensation affected inviduals
- would demand in order to be indifferent between implementation and not
- of this policy.
- I can show that considering homeowners and renters separately in the model
- is of first order importance for answering this question, since they have
- very different elasticities of migration with respect to regional shocks.
- Providing structural estimates of crucial objects like moving costs by
- ownership status is important for many realms of public policy, and hence
- another contribution of the paper.
+ migrate in the face of regional income and house price uncertainty, and
+ I show that the value is large.
+ The paper provides a structural interpretation of the insurance value of
+ migration against regional shocks, as proposed first in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+.
+ It shows that considering homeowners and renters separately is of first
+ order importance for this issue, since both have vastly different elasticities
+ of migration with respect to regional shocks.
+ This is relevant for labor market and housing policy alike.
 \end_layout
 
 \begin_layout Standard
+This paper provides structural estimates of crucial objects like moving
+ costs by ownership status, which are important for many realms of public
+ policy.
+ It is among the first to consider homeownership and migration in an empirical
+ lifecycle model.
+ Modelling homeownership realistically requires modelling asset accumulation,
+ and it requires a proper treatment of expectations about house prices,
+ both of which are computationally demanding to integrate in a dynamic model
+ of location choice.
+\end_layout
+
+\begin_layout Standard
+Homeownership and geographical mobility of households are tightly connected:
+ Renters are more mobile than owners.
+ What complicates the analysis, however, is that renters may choose to be
+ renters precisely because they 
+\emph on
+are
+\emph default
+ more mobile, in the sense that they either plan to move in the near future,
+ or at least leave themselves the option to move.
+ What is more, often the econometrician cannot observe the relevant state
+ variables which would be informative about those considerations, hence,
+ there is unobserved heterogeneity at play.
+ This paper presents a model that allows to resolve the joint determination
+ of housing tenure status, consumption, savings and mobility decisions,
+ such that it can be used to structurally estimate deep parameters and to
+ investigate counterfactual policies.
+\end_layout
+
+\begin_layout Standard
+The main experiment in the paper will be used to shed light on the option
+ value of regional migration in the face of regional price and income risk.
+ We will shut down the migration option in the economy, and compute the
+ compensating consumption stream which would make individuals indifferent
+ between this regime, and the status quo (i.e., a world with migration).
+ The results of this exercise differ greatly by type of household considered,
+ and they range from small valuations for older homeowners to very large
+ valuations (13% of period consumption) for young renter households.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Regional shocks to labor demand and house prices may have profound and longlasti
 ng impacts, as we have seen in the aftermath of the 2007 fall in house prices
  and ensuing Great Recession.
@@ -328,6 +371,11 @@ https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_us_and_census.txt
  
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Shocks to regional labor demand affect renters and owners in a similar way,
  i.e.
@@ -356,8 +404,8 @@ see American Community Survey 2013, table DP04.
 
 \end_inset
 
- At the same time, roughly 1.3% of the population migrate across US census
- division boundaries per year.
+ At the same time, roughly 1.3% of the population migrate across US Census
+ Division boundaries per year.
  Conditioning on ownership we find that 1.9% of renters and 0.67% owners move.
  A natural question is then to ask why do we observe owners moving less?
  All else equal, owners face higher moving costs, both in terms of financial
@@ -410,7 +458,7 @@ literal "true"
 
 \end_inset
 
-, since it provides an fundamental reason for agents to move in response
+, since it provides a fundamental reason for agents to move in response
  to a change in their economic environment, rather than as a result of idiosyncr
 atic preference shocks alone.
  Including time-varying location characteristics, however, increases computation
@@ -425,19 +473,9 @@ I estimate the model using a simulated method of moments estimator.
  of interest, which are mobility and ownership patterns over the lifecycle,
  ownership rates by region, migration flows across regions, as well as wealth
  accumulation over the lifecycle and by region.
- After fitting the model to the data, I first show how the model reacts
- to large regional shocks and then I move on to compute a measure of the
- value of the migration option for various sub populations.
-\end_layout
-
-\begin_layout Standard
-I find that owners and renters face very different incentives in the model.
- The probability of moving conditional on being a renter is consistently
- higher than the one for owners, and it varies considerably with income
- and assets.
- The model can be used to quantify the moving cost in terms of dollars,
- and I find that the estimates for renters and owners bracket the moving
- cost obtained in 
+ After fitting the model to the data, I first quantify the moving cost in
+ terms of dollars, and I find that the estimates for renters and owners
+ bracket the moving cost obtained in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
@@ -446,43 +484,12 @@ literal "true"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-Migration is a low probability event in both data and model.
- Nevertheless, the welfare implications not being able to migrate are large.
- I conduct an experiment where migration across regions is prohibited in
- order to measure the insurance value provided by migration.
- In the main version of this counterfactual experiment, I compute the average
- lifetime utility of agents under both scenarios, and I find that removing
- the option to move is valued at 4.6% of optimal per period consumption over
- the entire lifecycle – a large value.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The baseline version assumes no change to regional prices as a a result
- of the policy; I provide three additional scenarios with different assumptions
- about how regional prices might change after introduction of the policy.
- The scenarios assume price changes ranging from large and negative to positive,
- and all imply even higher valuations of the forgone migration option than
- under observed prices.
-\end_layout
-
-\end_inset
-
- Conditioning on young versus old household, one finds 7% for the former
- and 2% for the latter.
- Given that the ownership rate varies significantly by age, one can see
- that young, mobile renters are the group which incurs the greatest welfare
- loss from reduced mobility.
- This result shows the prominent role of expectations about future potential
- moves.
- The relatively large values which consumers place on the migration option,
- as well as the large dispartities in valuations between renters, owners,
- by location as well as between young and old people, are all policy relevant.
- They illustrate the welfare costs of policies which reduce mobility – such
- as subsidized homeowership, for example.
+ Then the model is used to compute migration elasticities to regional shocks
+ by tenure status and current location.
+ The main result shows that migration is a low probability event in both
+ data and model, but associated with a large option value for consumers.
+ Shutting down regional migration in an environment with income and price
+ shocks implies a [MORE].
 \end_layout
 
 \begin_layout Paragraph
@@ -572,7 +579,8 @@ literal "true"
 
 .
  The i.i.d.
- assumption for regional shocks is clearly rejected in the data.
+ assumption for regional shocks is clearly rejected in the data, as will
+ become clear in the next section.
  I follow 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -617,8 +625,8 @@ literal "true"
  to restore unemployment and participation rates back to trend in an affected
  region.
  Relative to their paper, this paper shows how the underlying decision maker
- reacts to their regional shocks – in particular, how owners and renters
- react differently to those shocks, and what this implies for their valuation
+ reacts to the regional shocks – in particular, how owners and renters react
+ differently to those shocks, and what this implies for their valuation
  of the migration option.
  Related to this, 
 \begin_inset CommandInset citation
@@ -720,8 +728,8 @@ how much consumption would I forgo today in order to be insured in an adverse
 \end_layout
 
 \begin_layout Standard
-Also related is a recent literature that considers the effects of the 2007
- housing bust on labor market mobility.
+Another related literature considers the effects of the 2007 housing bust
+ on labor market mobility.
  In terms of empirical contributions, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -845,77 +853,6 @@ literal "true"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Finally, the paper relates to the literature on tax treatment of housing
- and ownership.
- The federal tax code in the United States allows households to deduct mortgage
- interest payments from Federal taxes.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2011rethinking"
-literal "true"
-
-\end_inset
-
- and 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2002benefits"
-literal "true"
-
-\end_inset
-
- respectively discuss the benefits and distortions generated by this policy,
- and 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-literal "true"
-
-\end_inset
-
- provide an estimate of the financial benefit to owners from it.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-literal "true"
-
-\end_inset
-
- is a recent contribution that analyses the policy in a GE framework.
- I evaluate the effect of removing the deduction on both homeownership and
- mobility.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This paper merges housing demand over the lifecycle, as for example 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bk_wenli"
-literal "true"
-
-\end_inset
-
-, with dynamic migration decisions under aggregate and regional shocks.
- I find that housing is an important feature of the individual migration
- decision.
- The likelihood of moving depends not only on whether or not the individual
- owns their house and on their asset holdings, but also on the price and
- income levels in all potential destination regions.
- The value of the migration option is very large.
-\end_layout
-
 \begin_layout Section
 Empirical Background
 \end_layout
@@ -934,8 +871,8 @@ literal "true"
 , who use three publicly available datasets (American Community Survey (ACS),
  the Annual Social and Economic Supplement to the CPS (March CPS), and Internal
  Revenue Service (IRS) data), each year roughly 1.5% of the entire population
- moves between two out of four census regions, and about 1.3% move between
- states within any one region.
+ moves between two out of four Census regions, and about 1.3% move between
+ States within any one region.
  At a more local level, they find that 5% of the population move between
  counties each year, which amounts to roughly one-third of the annual flows
  into and out of employment according to the measure in 
@@ -1082,7 +1019,7 @@ for the presentation of census data
 
 
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 See the Census bureau's website at 
@@ -1147,7 +1084,7 @@ The model presented below contains 25.4 million different points in the state
 
 \end_inset
 
- I will demonstrate below what the choice of divisions implies for the captured
+ I will demonstrate below what the choice of Divisions implies for the captured
  state–level variation.
 \end_layout
 
@@ -6411,7 +6348,7 @@ noprefix "false"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6750,8 +6687,8 @@ We want to assess this cost by looking at how much an owner in the shocked
 \begin_inset Formula $V^{own}(a^{*})=V^{rent}(0)$
 \end_inset
 
-, in other where an owner's value is equal to a renter's value with zero
- assets.
+, in other words where an owner's value is equal to a renter's value with
+ zero assets.
  This value is in general a negative number, proportional to the greater
  networth of owners and the additional utility derived from owning.
  Then, we shock either 
@@ -6817,11 +6754,25 @@ noprefix "false"
  after income drops by 10%.
  The intuition here is that in the case of an income shock, the renter is
  equally affected than the owner, hence there is only a small desire to
- become, or no desire at all to become a renter with zero assets and a significa
-ntly reduced income.
+ become, or no desire at all to become, a renter with zero assets and a
+ significantly reduced income.
  This is also the case because owners still have their housing capital to
  fall back on, which is unaffected from the shock in this scenario.
- 
+ It is clear from table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ that renters respond stronger to shocks than owners in terms of increased
+ emigration, for obvious reasons, however, the expected gains in terms of
+ lifetime value don't seem to compensate an owner to want to switch to that
+ particular type of renter in most regions and take advantage of less costly
+ migration.
 \end_layout
 
 \begin_layout Standard
@@ -6843,7 +6794,7 @@ noprefix "false"
  The overall impact on renter values is more nuanced, however, because it
  includes the expected value of owning, and this value has declined.
  The experiment shares some features of mortgage default (which is not modeled),
- in that the owner evaluates 
+ in that the owner evaluates a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -6851,8 +6802,8 @@ reset
 \begin_inset Quotes erd
 \end_inset
 
- option.
- 
+ option here: the mortgage debt burden just increased substantially, so
+ much so that 
 \end_layout
 
 \begin_layout Standard
