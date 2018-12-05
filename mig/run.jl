@@ -13,7 +13,7 @@ Usage:
     run.jl --version
     run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--nosave]  [--neg]
+    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
@@ -24,6 +24,7 @@ Options:
     --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
     --neg               perform negative elasticity shock. If you set it, it does negative.
+    --shock=<sh>        type of shock to apply [default: q]
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
     --version           show version
@@ -53,6 +54,7 @@ elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
     neg = args["--neg"]
+    shock = args["--shock"]
     nwork = parse(Int,args["--nworkers"])
     reg = parse(Int,args["--region"])
     _ys = parse(Float64,args["--yshock"])
@@ -101,7 +103,7 @@ elseif args["experiment"]
         using mig
         mig.moversWTP(reg,nosave)
     elseif args["elasticity"]
-        info("      computing elasticity wrt 10% income shock, with nosave=$nosave and neg=$neg")
+        info("      computing elasticity wrt 10% $shock shock, with nosave=$nosave, neg=$neg")
         if gethostname()=="magi3"
             using ParallelTest
             wrkers = ParallelTest.machines()  # does addprocs
@@ -113,7 +115,7 @@ elseif args["experiment"]
             addprocs(nwork)
         end
         using mig
-        mig.elasticity(nosave=nosave,neg=neg)
+        mig.elasticity(shock=shock,nosave=nosave,neg=neg)
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig
