@@ -4650,22 +4650,23 @@ where
 \end_inset
 
  are the residuals.
- The results of this are displayed in table 
+ The results of this are shown in the appendix in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Regional-2-indiv-income"
 
 \end_inset
 
- in the appendix.
- Figure 
+ and figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:age-profiles"
 
 \end_inset
 
-, also in the appendix, illustrates predicted age profiles from this model.
+.
+ The estimated parameters are used in the structural model to generate a
+ grid of household income.
 \end_layout
 
 \begin_layout Subsubsection*
