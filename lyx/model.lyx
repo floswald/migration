@@ -23,6 +23,7 @@
 \usepackage{tikz}
 \usepackage{adjustbox}
 \usepackage{pgfplots}
+\usepackage{makecell}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -869,8 +870,74 @@ literal "true"
 
 \end_layout
 
+\begin_layout Standard
+In the remainder of this papers I will first present a set of facts from
+ aggregate and micro data about regional migration in the US in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Facts"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ before introducing a structural model which can speak to those fact in
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Model"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ I will then discuss solution and estimation of the model in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Solving-and-Simulating"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Estimation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ in order to finally present the results regarding the option value of migration
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Results"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Section
 Facts 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Facts"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1044,14 +1111,7 @@ https://www.census.gov/geo/reference/gtc/gtc_census_divreg.html
 
 \end_inset
 
- and figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Census-Division-Map"
-
-\end_inset
-
- for a map.
+.
  
 \end_layout
 
@@ -1097,6 +1157,25 @@ The model presented below contains 25.4 million different points in the state
 
  I will demonstrate below what the choice of Divisions implies for the captured
  state–level variation.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Census-Division-Map"
+
+\end_inset
+
+ presents a map, and table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:SIPP-divisions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ lists Division abbreviations and the member States.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -1242,7 +1321,7 @@ reference "tab:D2D-probit"
 \end_layout
 
 \begin_layout Subsection
-Renters Move at Twice the Rate of Owners
+Renters Move at Twice the Rate of Owners at all Ages
 \end_layout
 
 \begin_layout Standard
@@ -1279,15 +1358,7 @@ reference "tab:Annual-moving-rate"
  of renters versus 0.82% (0.64%) of owners moving across State (Division)
  boundaries on average per year.
  In total I observe 1259 cross Division moves made by 1069 unique individuals
- in my non-college sample, implying multiple moves for some movers, see
- table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:SIPP-nummoves"
-
-\end_inset
-
-.
+ in my non-college sample, implying multiple moves for some movers.
 \begin_inset Foot
 status collapsed
 
@@ -1309,10 +1380,6 @@ literal "true"
 \end_inset
 
  
-\end_layout
-
-\begin_layout Subsection
-Age Is Key
 \end_layout
 
 \begin_layout Standard
@@ -1358,8 +1425,8 @@ Regional Income and House Price Risk are not IID
 \end_layout
 
 \begin_layout Standard
-The time series of regional disposable income and house prices are strongly
- correlated across Divisions.
+The time series of regional disposable income and house prices are each
+ strongly correlated across Divisions.
  Additionally, they exhibit high degress of autocorrelation, i.e.
  shocks to regional incomes and prices are persistent.
  To illustrate the degree of cross correlation of both prices and incomes
@@ -1374,11 +1441,11 @@ noprefix "false"
 \end_inset
 
 .
- The top panels show the detrended version of each time series, while the
- bottom panels show the pairwise correlation of those detrended time series
- across regions.
+ The top panels show the detrended version of each time series, by region,
+ while the bottom panels show the pairwise correlation of those detrended
+ time series across regions.
  The figure highlights that deviations from trend are highly correlated
- between Divisions, for both regional incomes 
+ between Divisions, for both average regional incomes 
 \begin_inset Formula $(q)$
 \end_inset
 
@@ -1387,6 +1454,45 @@ noprefix "false"
 \end_inset
 
 .
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Data for 
+\begin_inset Formula $q$
+\end_inset
+
+ comes from the BEA series 
+\begin_inset Quotes eld
+\end_inset
+
+Personal Income by State
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $p$
+\end_inset
+
+ is the FHFA house price index by Census Division.
+ Both sets of series are a direct input to the structural model to be introduced
+ below.
+ Data are available via 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/floswald/EconData
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
  Regarding persistence of those time series, the average autorcorrelation
  coefficients are 0.91 for 
 \begin_inset Formula $p$
@@ -1629,6 +1735,10 @@ name "tab:Annual-moving-rate"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float table
 placement H
 wide false
@@ -1701,6 +1811,11 @@ name "tab:SIPP-nummoves"
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide false
@@ -1729,67 +1844,6 @@ SIPP sample proportion moving across Census Division boundaries by age (upper
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:SIPP-sample-proportion-1"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/own_p2y-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Census Division housing characteristics.
- Shows average ownership rates over 1997–2011 and median price to income
- ratios for the same period.
- The (unobserved) house price for renters is computed assuming an implied
- user cost of owning of 5%, i.e.
- 
-\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
-\end_inset
-
-.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-divisions"
 
 \end_inset
 
@@ -1956,6 +2010,13 @@ newpage
 
 \begin_layout Section
 Model
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Model"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1977,15 +2038,15 @@ region
 \begin_inset Formula $d\in D$
 \end_inset
 
- in any given period, and we let 
-\begin_inset Formula $j\in\left\{ 1,\dots,J\right\} $
-\end_inset
-
- index age, while 
+ in any given period at date 
 \begin_inset Formula $t$
 \end_inset
 
- represents calendar time.
+, and we let 
+\begin_inset Formula $j\in\left\{ 1,\dots,J\right\} $
+\end_inset
+
+ index age.
  At each age 
 \begin_inset Formula $j$
 \end_inset
@@ -2065,17 +2126,13 @@ Every individual in region
 \begin_inset Formula $\left(q_{dt+1},p_{dt+1}\right),\forall d$
 \end_inset
 
- in such a way that is compatible with the evidence from figures 
+ in such a way that is compatible with the evidence from figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Regional-House-Price-data"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Regional-Income-data"
+reference "fig:TS-correlogram"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
@@ -2128,9 +2185,11 @@ literal "true"
 
 \end_inset
 
- achieve with a region-person specific match effect.
+ achieve with a region-person specific match effect and by including this
+ match effect from the last location in the state space.
+ 
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Adding this feature would increase the computational burden of the model
@@ -2368,15 +2427,7 @@ When moving from region
 \end_inset
 
  tomorrow for stayers and movers, respectively.
- Both objects are estimated from individual SIPP data as described in subsection
  
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "subsec:copula-estimates"
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Subsection
@@ -2398,8 +2449,8 @@ As stated above, allowing
 
  to vary in an unrestricted fashion would make computation of this model
  infeasible.
- I assume that agents use a 2-dimensional factor model to infer regional
- prices.
+ To solve this problem, I assume that agents use a 2-dimensional factor
+ model to infer regional prices.
  To this end I define aggregate state variables 
 \begin_inset Formula $Q$
 \end_inset
@@ -2409,7 +2460,7 @@ As stated above, allowing
 \end_inset
 
 , which evolve according to a stationary vector autoregression of order
- one (VAR(1)).
+ one.
  At date 
 \begin_inset Formula $t$
 \end_inset
@@ -2609,90 +2660,6 @@ reference "subsec:Aggregate-to-regional"
  some illustration regarding the fit of this model to the data.
 \end_layout
 
-\begin_layout Standard
-With this modification let us now define the state vector which will facilitate
- the following description.
- The state vector of individual 
-\begin_inset Formula $i$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
- is given by 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)
-\]
-
-\end_inset
-
-where the variables stand for, in order, assets, individual income shock,
- household size, aggregate price vector, housing status coming into the
- current period, current region index, moving cost type and age.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-A word of caution regarding the two time indices 
-\begin_inset Formula $j$
-\end_inset
-
- and 
-\begin_inset Formula $t$
-\end_inset
-
-: For large parts of the exposition this distinction is irrelevant, i.e.
- saying 
-\begin_inset Formula $a_{ij}$
-\end_inset
-
- or 
-\begin_inset Formula $a_{it}$
-\end_inset
-
- is equivalent.
- However, in the estimation I will allow different cohorts 
-\begin_inset Formula $C_{1},\dots,C_{N}$
-\end_inset
-
- to experience different sequences of prices 
-\begin_inset Formula $\mathbf{F}_{C_{1}},\mathbf{F}_{C_{2}},\dots$
-\end_inset
-
-, and therefore separating time and age will be useful.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Home Ownership Choice
 \begin_inset CommandInset label
@@ -2880,7 +2847,7 @@ reference "subsec:Recursive-Formulation"
 \begin_inset Formula $x$
 \end_inset
 
-.
+ (defined below).
  Moving costs differ between renters and owners.
  Moving for an owner requires to sell the house, which in turn requires
  some effort and time costs.
@@ -3121,55 +3088,94 @@ reference "subsec:Recursive-Formulation"
 .
 \end_layout
 
+\begin_layout Subsection
+Timing and State Vector
+\end_layout
+
 \begin_layout Standard
-At this point a small remark about identification may be helpful in order
- to better understand some of the modelling choices so far.
- 
-\begin_inset Note Note
+The state vector of individual 
+\begin_inset Formula $i$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ when they are of age 
+\begin_inset Formula $j$
+\end_inset
+
+ is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)
+\]
+
+\end_inset
+
+where the variables stand for, in order, assets, individual income shock,
+ household size, aggregate price vector, housing status coming into the
+ current period, current region index, moving cost type and age.
+\begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-The moving cost function does not contain a term relating to distance of
- the move, which seems like a very intuitive thing to consider.
- This was not included because I could not find data moments that separately
- identify the cost of distance from the local amenity 
-\begin_inset Formula $A_{k}$
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+A word of caution regarding the two time indices 
+\begin_inset Formula $j$
 \end_inset
 
-.
- So a model with a regional fixed effect 
-\begin_inset Formula $A_{k}$
+ and 
+\begin_inset Formula $t$
 \end_inset
 
- is isomorphic to one with an additional distance term in 
-\begin_inset Formula $\Delta(d,x)$
+: For large parts of the exposition this distinction is irrelevant, i.e.
+ saying 
+\begin_inset Formula $a_{ij}$
 \end_inset
 
-.
- Similarly,
+ or 
+\begin_inset Formula $a_{it}$
+\end_inset
+
+ is equivalent.
+ However, in the estimation I will allow different cohorts 
+\begin_inset Formula $C_{1},\dots,C_{N}$
+\end_inset
+
+ to experience different sequences of prices 
+\begin_inset Formula $\mathbf{F}_{C_{1}},\mathbf{F}_{C_{2}},\dots$
+\end_inset
+
+, and therefore separating time and age will be useful.
 \end_layout
 
 \end_inset
 
- A different way to formalize the idea of the high moving cost type 
-\begin_inset Formula $\tau$
-\end_inset
 
- would be to allow for a nested structure of preference shocks, and/or a
- random preference for the current location that creates a home–bias in
- the same way as 
-\begin_inset Formula $\tau$
-\end_inset
-
- does.
- Again, given that each of those represents a particular parametric assumption
- and we cannot use data to tell us which one is more relevant (at least
- in the context of this model), I regard those formulations as close to
- equivalent.
-\end_layout
-
-\begin_layout Subsection
-Timing
 \end_layout
 
 \begin_layout Standard
@@ -3836,6 +3842,13 @@ a_{ij+1} & \geq & -(1-\chi)p_{kt}h_{ij}\label{eq:budget-own-borrow-1}
 
 \begin_layout Section
 Solving and Simulating the Model 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Solving-and-Simulating"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3978,7 +3991,14 @@ Once the solution is obtained, simulation of the model proceeds by using
 \end_layout
 
 \begin_layout Section
-Estimation
+Estimation 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Estimation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4050,8 +4070,8 @@ The VAR processes at the aggregate and regional level are estimated using
 value
 \emph default
 ), I compute the average level of house prices found in SIPP data for the
- year 2012 and then apply the FHFA index to construct the house value for
- each year.
+ year 2012 and then apply the FHFA index backwards to construct the house
+ value for each year.
 \begin_inset Foot
 status collapsed
 
@@ -4395,7 +4415,7 @@ https://floswald.github.io/research/
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4612,26 +4632,24 @@ reference "eq:budget-labor-income"
  I estimate the linear regression 
 \begin_inset Formula 
 \begin{eqnarray}
-\ln y_{ijdt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+u_{it}\nonumber \\
- & = & \beta_{0}+\left(\gamma_{d}\times\gamma_{q}\right)\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+u_{it}\label{eq:indiv-labor-empirical}
+\ln y_{ijdt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+\beta_{4}\text{college}_{it}+z_{it}\label{eq:indiv-labor-empirical}
 \end{eqnarray}
 
 \end_inset
 
-where the region-specific influence of regional mean productivity 
-\begin_inset Formula $q_{dt}$
+where 
+\begin_inset Formula $\text{college}_{it}=1$
 \end_inset
 
- on individual income is specified as an interaction between a regional
- fixed effect 
-\begin_inset Formula $\gamma_{d}$
+ if 
+\begin_inset Formula $i$
 \end_inset
 
- and the average effect 
-\begin_inset Formula $\gamma_{q}$
+ has a college degree, and where 
+\begin_inset Formula $z_{it}$
 \end_inset
 
- of regional income.
+ are the residuals.
  The results of this are displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4652,34 +4670,10 @@ reference "fig:age-profiles"
 
 \begin_layout Subsubsection*
 Copula estimates for 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $G_{\text{move}}$
+\begin_inset Formula $z$
 \end_inset
 
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-
+ Transistions 
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:copula-estimates"
@@ -4753,9 +4747,31 @@ literal "true"
 \end_inset
 
  is the same regardless the origin location.
- It would be straightforward to relax this assumption, but data limitations
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+It would be straightforward to relax this assumption, but data limitations
  forced me to impose this restriction.
- A copula is a multivariate distribution function with marginals that are
+ 
+\end_layout
+
+\end_inset
+
+A copula is a multivariate distribution function with marginals that are
  all uniformly distributed on the unit interval.
  For example, if 
 \begin_inset Formula $F$
@@ -4769,7 +4785,7 @@ literal "true"
 \begin_inset Formula $i$
 \end_inset
 
--th margin, then the copula is given by
+-th margin, then the bivariate copula is given by
 \begin_inset Formula 
 \[
 C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
@@ -4782,7 +4798,7 @@ where
 \end_inset
 
  is the quantile function.
- There are different families of copulae, I will use a normal copula.
+ There are different families of copulae, and I will use a normal copula.
  
 \end_layout
 
@@ -4799,20 +4815,28 @@ where
 \uwave off
 \noun off
 \color none
-To estimate the parameters of the copula, I view 
+To estimate the parameters of the copula, I take residuals 
 \begin_inset Formula $z_{it}$
 \end_inset
 
- in equation 
+ from equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:income-process"
+reference "eq:indiv-labor-empirical"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- as the residual from an ordinary least squares regression of log wages
- on time and region effects, as well as person specific demographic variables.
- The question is whether individuals with a particularly high residual 
+ and I want to study the joint distribution of movers, i.e.
+ 
+\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
+\end_inset
+
+.
+ This object is informative for the question of whether individuals with
+ a particularly high residual 
 \begin_inset Formula $z_{it}$
 \end_inset
 
@@ -4824,7 +4848,7 @@ reference "eq:income-process"
 \begin_inset Formula $k$
 \end_inset
 
-.
+, or not.
  In other words, we want to investigate the joint distribution of stayers
  
 \begin_inset Formula $\left(z_{it},z_{it+1}\right)|d=k$
@@ -4835,7 +4859,15 @@ reference "eq:income-process"
 \end_inset
 
 .
- I describe the full procedure in the appendix.
+ I obtain an estimate for the copula parameter 
+\begin_inset Formula $\rho_{s}$
+\end_inset
+
+ of 0.58, indicating substantial positive dependence for mover's 
+\begin_inset Formula $z$
+\end_inset
+
+
 \begin_inset Foot
 status open
 
@@ -4852,28 +4884,64 @@ status open
 \uwave off
 \noun off
 \color none
-The proceedure relies crucially on the assumption that individuals have
- to move to the new region before they can discover 
-\begin_inset Formula $z_{t+1}$
+\begin_inset Formula $\rho_{s}$
+\end_inset
+
+ is also called 
+\family default
+\series default
+\shape default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+Spearman's 
+\begin_inset Formula $\rho$
+\end_inset
+
+,
+\emph default
+ and it is related to Pearson's correlation coefficient 
+\begin_inset Formula $\rho_{p}$
+\end_inset
+
+ via 
+\begin_inset Formula $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=\rho_{p}=0.598$
+\end_inset
+
+ in this case of a gaussian copula.
+ In particular, 
+\begin_inset Formula $\rho_{s}\in[-1,1]$
 \end_inset
 
 .
- One could account for apotential selection effect on 
-\begin_inset Formula $z_{t}$
-\end_inset
-
- by moving estimation of this part into the structural model and jointly
- estimate behavioural and wage related parameters.
- The model provides a set of exclusion restrictions that would allow to
- do this in theory.
- Identification of a potential selection effect may be difficult, however,
- because the sample of movers is relatively small.
- 
 \end_layout
 
 \end_inset
 
+.
+ I describe the full procedure in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Copula-Estimation"
+plural "false"
+caps "false"
+noprefix "false"
 
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The conditional distribution of 
+\begin_inset Formula $z$
+\end_inset
+
+ for non-movers will be parameterized externally as explained next.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -6026,6 +6094,13 @@ name "tab:Parameter-estimates"
 
 \begin_layout Section
 Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Results"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6384,6 +6459,11 @@ Elasticities with respect to a permanent income shock by region.
 inflows
 \emph default
  with respect to an unexpected and permanent income shock in any given region.
+ Percentage change in renter inflows is defined as 
+\begin_inset Formula $\frac{\#[\text{move to }d\text{ as renter}|\text{shock}]-\#[\text{move to }d\text{ as renter}|\text{no shock}]}{\#[\text{move to }d\text{ as renter}|\text{no shock}]}$
+\end_inset
+
+ in each period, similarly for owners and for outflows.
  Elasticities are computed as averages over all years after the shock occurs.
  For example, the first row reports that following a 1% permanent shock
  to regional income 
@@ -8595,11 +8675,11 @@ In a first step I estimate the marginal distributions of
 
  for all movers.
  These are the cross-sectional distributions of residuals 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  from the regression in expression 
@@ -8615,7 +8695,7 @@ reference "eq:copula-margins-1"
 \end_inset
 
 , such that by assumption, 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  is the residual wage in origin location 
@@ -8623,7 +8703,7 @@ reference "eq:copula-margins-1"
 \end_inset
 
 , and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  is the residual wage in the new location 
@@ -8631,6 +8711,23 @@ reference "eq:copula-margins-1"
 \end_inset
 
 .
+ The proceedure relies crucially on the assumption that individuals have
+ to move to the new region before they can discover 
+\begin_inset Formula $z_{t+1}$
+\end_inset
+
+.
+ One could account for apotential selection effect on 
+\begin_inset Formula $z_{t}$
+\end_inset
+
+ by moving estimation of this part into the structural model and jointly
+ estimate behavioural and wage related parameters.
+ The model provides a set of exclusion restrictions that would allow to
+ do this in theory.
+ Identification of a potential selection effect may be difficult, however,
+ because the sample of movers is relatively small.
+ 
 \begin_inset Formula 
 \begin{equation}
 \ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins-1}
@@ -8675,7 +8772,7 @@ noprefix "false"
 
 .
  Estimation itself is based on the respective rank of 
-\begin_inset Formula $u$
+\begin_inset Formula $z$
 \end_inset
 
  in the empirical distributions.
@@ -8702,11 +8799,11 @@ reference "tab:Normal-Copula-estimates"
 
  of 0.59.
  This estimate together with the marginal distibutions of 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  are used in the structural model, where I use the current value of 
@@ -8714,7 +8811,7 @@ reference "tab:Normal-Copula-estimates"
 \end_inset
 
 , evaluated in the marginal distribution of 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  for a mover together with the copula estimate 
@@ -8863,7 +8960,7 @@ name "fig:Contours-of-copula"
 \end_layout
 
 \begin_layout Section
-Map
+Census Divisions
 \end_layout
 
 \begin_layout Standard
@@ -8907,6 +9004,67 @@ https://www.census.gov/geo/maps-data/maps/pdfs/reference/us_regdiv.pdf
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Census-Division-Map"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/own_p2y-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Census Division abbreviations and characteristics.
+ Shows average ownership rates over 1997–2011 and median price to income
+ ratios for the same period.
+ The (unobserved) house price for renters is computed assuming an implied
+ user cost of owning of 5%, i.e.
+ 
+\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-divisions"
 
 \end_inset
 

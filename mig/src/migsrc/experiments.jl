@@ -571,58 +571,67 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 
 
+	# there is surely a way to do this nicer in query.jl. argh.
+
 	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = abs.(opts["shockVal_y"][1:shockyrs] - 1)
+	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = abs.(opts["shockVal_p"][1:shockyrs] - 1)
 	# ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
 
-	ela1[:d_all_p] = 0.0
-	ela1[:d_out_all_p] = 0.0
-	ela1[:d_out_y] = 0.0
+	ela1[:d_out_p] = 0.0
 	ela1[:d_own_out_p] = 0.0
 	ela1[:d_rent_out_p] = 0.0
-	ela1[:d_own_out_y] = 0.0
-	ela1[:d_rent_out_y] = 0.0
+	ela1[:d_all_p] = 0.0
 	ela1[:d_own_p] = 0.0
 	ela1[:d_net_own_p] = 0.0
 	ela1[:d_rent_p] = 0.0
 	ela1[:d_net_rent_p] = 0.0
+	ela1[:d_out_buy_p] = 0.0
+	ela1[:d_total_in_p] = 0.0
+	ela1[:d_in_buy_p] = 0.0
+	ela1[:d_out_rent_p] = 0.0
+	ela1[:d_in_rent_p] = 0.0
+
+	ela1[:d_out_y] = 0.0
+	ela1[:d_own_out_y] = 0.0
+	ela1[:d_rent_out_y] = 0.0
 	ela1[:d_all_y] = 0.0
 	ela1[:d_own_y] = 0.0
 	ela1[:d_net_own_y] = 0.0
 	ela1[:d_rent_y] = 0.0
 	ela1[:d_net_rent_y] = 0.0
 	ela1[:d_out_buy_y] = 0.0
-	ela1[:d_out_buy_p] = 0.0
 	ela1[:d_total_in_y] = 0.0
 	ela1[:d_in_buy_y] = 0.0
-	ela1[:d_in_buy_p] = 0.0
 	ela1[:d_out_rent_y] = 0.0
-	ela1[:d_out_rent_p] = 0.0
 	ela1[:d_in_rent_y] = 0.0
-	ela1[:d_in_rent_p] = 0.0
 
-	# ela1[ela1[:pshock].!= 0.0, :d_all_p] = ela1[ela1[:pshock].!= 0.0, :d_all] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_own_p] = ela1[ela1[:pshock].!= 0.0, :d_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_net_own_p] = ela1[ela1[:pshock].!= 0.0, :d_net_own] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_out_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_in_buy_p] = ela1[ela1[:pshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
-	# ela1[ela1[:pshock].!= 0.0, :d_in_rent_p] = ela1[ela1[:pshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock].!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_all_p]      = ela1[ela1[:pshock] .!= 0.0, :d_all] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_own_out_p]  = ela1[ela1[:pshock] .!= 0.0, :d_own_out] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_rent_out_p] = ela1[ela1[:pshock] .!= 0.0, :d_rent_out] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_p]      = ela1[ela1[:pshock] .!= 0.0, :d_out] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_total_in_p] = ela1[ela1[:pshock] .!= 0.0, :d_total_in] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_own_p]      = ela1[ela1[:pshock] .!= 0.0, :d_own] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_rent_p]     = ela1[ela1[:pshock] .!= 0.0, :d_rent] ./ ela1[ela1[:pshock]     .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_net_own_p]  = ela1[ela1[:pshock] .!= 0.0, :d_net_own] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock] .!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_buy_p]  = ela1[ela1[:pshock] .!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_in_buy_p]   = ela1[ela1[:pshock] .!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock]   .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock] .!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_in_rent_p]  = ela1[ela1[:pshock] .!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
 
-	ela1[ela1[:yshock].!= 0.0, :d_all_y] = ela1[ela1[:yshock].!= 0.0, :d_all] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_own_out_y] = ela1[ela1[:yshock].!= 0.0, :d_own_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_rent_out_y] = ela1[ela1[:yshock].!= 0.0, :d_rent_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_y] = ela1[ela1[:yshock].!= 0.0, :d_out] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_total_in_y] = ela1[ela1[:yshock].!= 0.0, :d_total_in] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_own_y] = ela1[ela1[:yshock].!= 0.0, :d_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_own_y] = ela1[ela1[:yshock].!= 0.0, :d_net_own] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_buy_y] = ela1[ela1[:yshock].!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
-	ela1[ela1[:yshock].!= 0.0, :d_in_rent_y] = ela1[ela1[:yshock].!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock].!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_all_y]      = ela1[ela1[:yshock] .!= 0.0, :d_all] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_own_out_y]  = ela1[ela1[:yshock] .!= 0.0, :d_own_out] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_rent_out_y] = ela1[ela1[:yshock] .!= 0.0, :d_rent_out] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_y]      = ela1[ela1[:yshock] .!= 0.0, :d_out] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_total_in_y] = ela1[ela1[:yshock] .!= 0.0, :d_total_in] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_own_y]      = ela1[ela1[:yshock] .!= 0.0, :d_own] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_rent_y]     = ela1[ela1[:yshock] .!= 0.0, :d_rent] ./ ela1[ela1[:yshock]     .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_net_own_y]  = ela1[ela1[:yshock] .!= 0.0, :d_net_own] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock] .!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_buy_y]  = ela1[ela1[:yshock] .!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_in_buy_y]   = ela1[ela1[:yshock] .!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock]   .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock] .!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_in_rent_y]  = ela1[ela1[:yshock] .!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
 
 	return ela1			
 end
@@ -990,11 +999,11 @@ end
 # end
 
 """
-	elasticity(;nosave::Bool=false,neg=false)
+	elasticity(;shock="q",nosave::Bool=false,neg=false)
 
 Compute elasticity of income shock on migration choices: how many percent do inflows to `j` increase if income there increases or decreases by 1%?
 """
-function elasticity(;nosave::Bool=false,neg=false)
+function elasticity(;shock="q",nosave::Bool=false,neg=false)
 
 	info("runing elasticity computation neg = $neg")
 	post_slack()
@@ -1013,8 +1022,8 @@ function elasticity(;nosave::Bool=false,neg=false)
 	o = Dict("shockReg" => 1,
 			 "policy" => "ypshock",
 			 "shockYear" => 2000,
-			 "shockVal_y" => neg ? 0.9  .* ones(32) : 1.1 .* ones(32),  
-			 "shockVal_p" => ones(32),  
+			 "shockVal_y" => shock == "q" ? (neg ? 0.9  .* ones(32) : 1.1 .* ones(32)) : ones(32),  
+			 "shockVal_p" => shock == "q" ? ones(32) : (neg ? 0.9  .* ones(32) : 1.1 .* ones(32)) ,  
 			 "shockAge" => 0   # dummy arg
 			 )
 
@@ -1023,25 +1032,32 @@ function elasticity(;nosave::Bool=false,neg=false)
 		o["shockReg"] = j
 		x = exp_shockRegion(o)[1]
 		y = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
-		dout[Symbol(regs[j])] = Dict(:all => mean(y[:d_all_y]),
-			:d_total_in_y => mean(y[:d_total_in_y]),
-			:d_in_rent_y  => mean(y[:d_in_rent_y]),
-			:d_in_buy_y   => mean(y[:d_in_buy_y]),
-			:d_total_out_y => mean(y[:d_out_y]),
-			:d_rent_out_y  => mean(y[:d_rent_out_y]),
-			:d_own_out_y   => mean(y[:d_own_out_y]))
+		dout[Symbol(regs[j])] = Dict(:all_y => mean(y[:d_all_y]),
+									 :d_total_in_y => mean(y[:d_total_in_y]),
+									 :d_in_rent_y  => mean(y[:d_in_rent_y]),
+									 :d_in_buy_y   => mean(y[:d_in_buy_y]),
+									 :d_total_out_y => mean(y[:d_out_y]),
+									 :d_rent_out_y  => mean(y[:d_rent_out_y]),
+									 :d_own_out_y   => mean(y[:d_own_out_y]),
+		                             :all_p => mean(y[:d_all_p]),
+									 :d_total_in_p => mean(y[:d_total_in_p]),
+									 :d_in_rent_p  => mean(y[:d_in_rent_p]),
+									 :d_in_buy_p   => mean(y[:d_in_buy_p]),
+									 :d_total_out_p => mean(y[:d_out_p]),
+									 :d_rent_out_p  => mean(y[:d_rent_out_p]),
+									 :d_own_out_p   => mean(y[:d_own_out_p]))
 	end
 
 
 	if !nosave
 		io = setPaths()
-		ostr = neg ? "neg_elasticity.json" :"elasticity.json"
+		ostr = shock == "q" ? (neg ? "neg_elasticity_q.json" :"elasticity_q.json") : (neg ? "neg_elasticity_p.json" :"elasticity_p.json")
 		fi = joinpath(io["out"],ostr)
 		f = open(fi,"w")
 		JSON.print(f,dout)
 		close(f)
 		try
-			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$ostr`
 			out,proc = open(ficmd)
 		catch
 			warn("no dbxcli installed")
