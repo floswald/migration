@@ -1,0 +1,21 @@
+{% macro show(name,dd,dec) %}
+    {{name}} &  {{ dd.all_p | prettyNum(dec) }} & \multicolumn{1}{c|}{} & {{ dd.d_total_in_p | prettyNum(dec) }} & {{ dd.d_in_buy_p | prettyNum(dec) }} &  {{ dd.d_in_rent_p | prettyNum(dec) }} & \multicolumn{1}{c|}{} & {{ dd.d_total_out_p | prettyNum(dec) }}& {{ dd.d_own_out_p | prettyNum(dec)}} & {{ dd.d_rent_out_p | prettyNum(dec)}}  \\
+{%- endmacro %}
+\begin{tabular}{l D{.}{.}{3.4}@{} c D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}  c D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} }
+  \toprule 
+ &   &    & \multicolumn{3}{c}{Inflows}& &\multicolumn{3}{c}{Outflows}\\
+  \cmidrule{4-6}\cmidrule{7-9}
+    \multicolumn{1}{l}{Division}  & \multicolumn{1}{c}{Population}  & \multicolumn{1}{c}{Total}& \multicolumn{1}{c}{Buyers} & \multicolumn{1}{c}{Renters} & \multicolumn{1}{c}{Total}& \multicolumn{1}{c}{Owners} & \multicolumn{1}{c}{Renters} \\ 
+  \midrule
+  {{  show("East North Central" , ENC, 1 ) }}
+  {{  show("East South Central" , ESC, 1 ) }}
+  {{  show("Middle Atlantic"    , MdA, 1 ) }}
+  {{  show("Mountain"           , Mnt, 1 ) }}
+  {{  show("New England"        , NwE, 1 ) }}
+  {{  show("Pacific"            , Pcf, 1 ) }}
+  {{  show("South Atlantic"     , StA, 1 ) }}
+  {{  show("West North Central" , WNC, 1 ) }}
+  {{  show("West South Central" , WSC, 1 ) }}
+  \bottomrule
+\end{tabular}
+

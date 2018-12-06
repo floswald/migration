@@ -139,10 +139,15 @@
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_pos_p.tex",
     "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/noMove_ps_1.05_ys_1.0.json"
   },   
-  "elasticities":{
-    "template" : "elasticities.mus",
-    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities.tex",
-    "data"     : "git/migration/mig/out/elasticity.json"
+  "elasticities_p":{
+    "template" : "elasticities_p.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities_p.tex",
+    "data"     : "git/migration/mig/out/elasticity_p.json"
+  },   
+  "elasticities_q":{
+    "template" : "elasticities_q.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities_q.tex",
+    "data"     : "git/migration/mig/out/elasticity_q.json"
   } ,   
   "copulas":{
     "template" : "copulas.mus",

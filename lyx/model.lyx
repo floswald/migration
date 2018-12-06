@@ -4910,7 +4910,7 @@ Spearman's
 \end_inset
 
  via 
-\begin_inset Formula $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=\rho_{p}=0.598$
+\begin_inset Formula $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=2\sin\left(\frac{\pi}{6}0.58\right)=\rho_{p}=0.598$
 \end_inset
 
  in this case of a gaussian copula.
@@ -6403,9 +6403,9 @@ noprefix "false"
 
 .
  First we observe that the average of population elasticities across regions
- is a value around 0.54, implying that on average, a 1% permanent shock to
- regional income will lead to a 0.5% increase of population size of the shocked
- area.
+ is a value around 0.54, implying that on average, a 1% permanent increase
+ to regional income will lead to a 0.5% increase of population size of the
+ shocked area.
  Total inflows into regions increase in the range of approximately 4% to
  7%, and in most regions the inflow rate of renters increases more than
  the one of incoming buyers.
@@ -6420,6 +6420,14 @@ noprefix "false"
  and expectations about their future values, as well as the level of amenities.
  The shock changes the relative attractiveness ranking of regions, and this
  shift is highly non-linear.
+\end_layout
+
+\begin_layout Standard
+The table also reports the corresponding elasticities for outflows, which
+ are negative for the majority of cases.
+ Given an unexpected income increase, both renters and owners are less likely
+ to move away.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6441,7 +6449,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/elasticities.tex}
+Dropbox/model/fit/elasticities_q.tex}
 \end_layout
 
 \end_inset
@@ -6453,28 +6461,24 @@ Dropbox/model/fit/elasticities.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Elasticities with respect to a permanent income shock by region.
+Elasticities with respect to an unexpected and permanently positive income
+ shock by region.
  This table reports elasticities of population (i.e.
  number of individuals present) and migration 
 \emph on
 inflows
 \emph default
- with respect to an unexpected and permanent income shock in any given region.
- Percentage change in renter inflows is defined as 
+ and 
+\emph on
+outflows 
+\emph default
+elasticities.
+ For example, the percentage change in renter inflows is defined as 
 \begin_inset Formula $\frac{\#[\text{move to }d\text{ as renter}|\text{shock}]-\#[\text{move to }d\text{ as renter}|\text{no shock}]}{\#[\text{move to }d\text{ as renter}|\text{no shock}]}$
 \end_inset
 
  in each period, similarly for owners and for outflows.
  Elasticities are computed as averages over all years after the shock occurs.
- For example, the first row reports that following a 1% permanent shock
- to regional income 
-\begin_inset Formula $q$
-\end_inset
-
- in East North Central in year 2000, the population grows by 0.5% on average,
- in all ensuing years.
- The number of people coming into the region increases by 5% on average,
- split by 2.3% coming to buy and 4.3% in order to rent.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -9197,6 +9201,60 @@ status open
 \backslash
 input{
 \backslash
+Dropbox/model/fit/elasticities_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Migration elasticities to a price shock
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:elasticities-p-shock"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
 Dropbox/data/FHFA/y_corrs.tex}
 \end_layout
 
@@ -9612,7 +9670,7 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_inset Float table
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
