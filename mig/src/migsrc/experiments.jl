@@ -1047,7 +1047,11 @@ function elasticity(;shock="q",nosave::Bool=false,neg=false)
 									 :d_rent_out_p  => mean(y[:d_rent_out_p]),
 									 :d_own_out_p   => mean(y[:d_own_out_p]))
 	end
-
+	dagg= Dict()
+	for k in keys(dout[:ENC])
+		dagg[k] = mean([dout[i][k] for i in keys(dout)])
+	end
+	dout[:agg] = dagg
 
 	if !nosave
 		io = setPaths()

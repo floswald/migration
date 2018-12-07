@@ -6374,7 +6374,7 @@ shock
 \end_inset
 
  are predetermined in the data.
- Members of the cohort born in 1985 reach the shock year
+ Members of the cohort born in 1985 reach the shock year 
 \begin_inset Formula $t^{*}$
 \end_inset
 
@@ -6411,15 +6411,44 @@ noprefix "false"
  the one of incoming buyers.
  Renters are more mobile, as we have seen several times already, hence this
  is expected.
- Renter inflows don't respond more strongly in general, however, because
- this depends on many things which vary across regions: for example, the
- relative ranking of house price levels 
+ Renters' inflows are not greater everywhere, however, because this depends
+ on many things which vary across regions: for example, the relative ranking
+ of house price levels 
 \begin_inset Formula $p_{dt}$
 \end_inset
 
  and expectations about their future values, as well as the level of amenities.
  The shock changes the relative attractiveness ranking of regions, and this
  shift is highly non-linear.
+ The next set of columns looks at the complement to those statistics, i.e.
+ the elasticity of outflows.
+ In the present case of a positive income shock, outflows decline in general
+ as both renters and owners are less likely to move away.
+ As before, renters have larger elasticities.
+ 
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows the corresponding elasticities for the case of a regional house price
+ shock.
+ The overall population elasticity is on average 
+\begin_inset Formula $-0.3$
+\end_inset
+
+.
+ Inflow elasticities are unambigously negative for both incoming buyers
+ and renters: both find the region more expensive.
+ Regarding outflows
 \end_layout
 
 \begin_layout Standard
@@ -6435,7 +6464,7 @@ The table also reports the corresponding elasticities for outflows, which
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6483,6 +6512,70 @@ elasticities.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:elasticities"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/elasticities_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Elasticities with respect to an unexpected and permanently positive price
+ shock by region.
+ Statistics are computed identically as in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:elasticities-p"
 
 \end_inset
 
@@ -6798,13 +6891,24 @@ We want to assess this cost by looking at how much an owner in the shocked
 status collapsed
 
 \begin_layout Plain Layout
-In some sense this experiment measures the value of the option 
+Note that this experiment measures something different from the value of
+ the option 
 \emph on
 sell 
 \emph default
 of the owner.
  Since, if it was optimal to become a renter, they would of course make
  this choice in equilibrium.
+ Here we know that pre-shock, the owner is equally well-off at 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+ than the zero asset renter, and we want to know how this relationship changes
+ in the shocked economy, again measured at 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -7299,7 +7403,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
