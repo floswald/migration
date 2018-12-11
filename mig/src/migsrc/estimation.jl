@@ -104,6 +104,8 @@ function estimate(maxiter::Int,nworkers::Int)
 		"filename" => joinpath(dir,string("estim_",Dates.today(),".h5")),	
         "smpl_iters"=>1000,
         "parallel"=>true,
+        "sigma" => 0.01,
+        "sigma_update_steps"=>maxiter+1,  # never adjust variances
         "maxdists"=>[0.05 for i in 1:nchains],
         "acc_tuners"=>[1.0 for i in 1:nchains],
         "animate"=>false)
