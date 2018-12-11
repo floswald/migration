@@ -533,11 +533,11 @@ literal "true"
  which are uncertain ex-ante, so the consumer has to move to a location
  in order to discover their values.
  The distributions of those match effects in each location are stationary.
- In their model, after having learned the value of the current location,
- the only reason for a move is a favourable realization of an i.i.d.
- preference shock which might occur in some future period – there is no
- change in economic fundamentals which might encourage a move, like a shock
- to wages, for example.
+ After having learned the value of the current location, the only reason
+ for a move is a favourable realization of an i.i.d.
+ preference shock which might occur in some future period.
+ There is no change in economic fundamentals which might encourage a move,
+ like a shock to wages, for example.
  Relaxing this feature as well as adding housing and savings decisions are
  my main contributions to their paper.
  I am able to let regions experience differential income and price shocks
@@ -598,17 +598,7 @@ literal "true"
  The i.i.d.
  assumption for regional shocks is clearly rejected in the data, as will
  become clear in the next section.
- I follow 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
- in assuming that individuals must visit a location in order to discover
- the exact value of their new wage, over and above a predictable part, while
- 
+ Also, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
@@ -622,7 +612,7 @@ e location.
  in each period, and decide to move based on their expectations about how
  they will fare in each.
  Secondly it allows for reasons other than job offers to trigger a move,
- which is a feature of the data, as I will show below.
+ which is also a feature of the data, as I will show below.
  
 \end_layout
 
@@ -641,7 +631,7 @@ literal "true"
  after an adverse shock, the relocation of workers is one of the main mechanisms
  to restore unemployment and participation rates back to trend in an affected
  region.
- Relative to their paper, this paper shows how the underlying decision maker
+ Relative to their paper, here we show how the underlying decision maker
  reacts to the regional shocks – in particular, how owners and renters react
  differently to those shocks, and what this implies for their valuation
  of the migration option.
@@ -709,7 +699,8 @@ literal "true"
  The same mechanism operates in my model.
  Furthermore, the dynamic nature of my model allows me to evaluate the response
  of migration to shocks over time.
- My paper can be seen as a complement to the exercise proposed in 
+ The present paper can be seen as a complement to the exercise proposed
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "yagan"
@@ -729,9 +720,9 @@ literal "false"
  is offered by migration.
  The author finds migration insures against 7% of an average local labor
  demand shock.
- Here I implement a fully structural analysis of the same question, with
- the added benefit that I can measure a value of the migration option in
- terms of consumption.
+ I implement a fully structural analysis of the same question, with the
+ added benefit that I can measure a value of the migration option in terms
+ of consumption.
  In this sense, the present paper offers a more direct answer to the question
  of 
 \emph on
@@ -1354,7 +1345,7 @@ reference "tab:Annual-moving-rate"
 \end_inset
 
  that there is a marked distinction in the likelihood of moving across State
- as well as division boundaries between renters and owners, with 2.07% (1.49%)
+ as well as Division boundaries between renters and owners, with 2.07% (1.49%)
  of renters versus 0.82% (0.64%) of owners moving across State (Division)
  boundaries on average per year.
  In total I observe 1259 cross Division moves made by 1069 unique individuals
@@ -1383,8 +1374,7 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
-Reconsidering homeowership and migration by age in the thus select sample
- gives rise to figure 
+Reconsidering homeowership and migration by age gives rise to figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:SIPP-sample-proportion-1"
@@ -1392,12 +1382,11 @@ reference "fig:SIPP-sample-proportion-1"
 \end_inset
 
 .
- It is clear that renters are more likely to move at all ages, and secondly
- that there is a strongly declining age effect – younger individuals move
- more.
- Both of those are highly salient features of the data, and they are among
- the key dimensions along which this model's performance is going to be
- evaluated.
+ It is clear that renters are more likely to move at all ages, with a strongly
+ declining age effect – younger individuals move more.
+ At the same time, homeownership is increasing with age.
+ These are highly salient features of the data, and they are among the key
+ dimensions along which this model's performance is going to be evaluated.
  
 \begin_inset Note Note
 status collapsed
@@ -1425,8 +1414,8 @@ Regional Income and House Price Risk are not IID
 \end_layout
 
 \begin_layout Standard
-The time series of regional disposable income and house prices are each
- strongly correlated across Divisions.
+The time series of regional disposable income and regional house prices
+ are each strongly correlated across Divisions.
  Additionally, they exhibit high degress of autocorrelation, i.e.
  shocks to regional incomes and prices are persistent.
  To illustrate the degree of cross correlation of both prices and incomes
@@ -2851,8 +2840,8 @@ reference "subsec:Recursive-Formulation"
  Moving costs differ between renters and owners.
  Moving for an owner requires to sell the house, which in turn requires
  some effort and time costs.
- This is in addition to any other psychological costs incurred from moving
- states which are common between renters and owners.
+ This is in addition to any other utility costs incurred from moving regions
+ which are common between renters and owners.
  I specify the moving cost function as linear in parameters 
 \begin_inset Formula $\alpha$
 \end_inset
@@ -2912,8 +2901,8 @@ The unobserved moving cost type
 \begin_inset Formula $\tau=1$
 \end_inset
 
- indexes the high type, is a parsimonious way to account for the fact that
- in the data, some individuals never move.
+ indexes the high–cost type, is a parsimonious way to account for the fact
+ that in the data, some individuals never move.
  This is of particular relevance when thinking about owners, who may self–select
  into ownership because they know they are unlikely to ever move.
  In the model this selection mechanism, together with any other factor that
@@ -3192,7 +3181,7 @@ observe
 \end_inset
 
 , 
-\begin_inset Formula $z_{ij}$
+\begin_inset Formula $s_{it},z_{ij}$
 \end_inset
 
  and
@@ -4280,7 +4269,21 @@ reference "eq:VAR-process-1"
  I am purely interested in their ability to replicate the observed regional
  prices, when fed the observed aggregate series for the purpose of approximating
  the evolution of the prices state space during simulation.
- In that regard, I find they perform well.
+ In that regard, and by looking at 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mapping-Y-y"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Mapping-P-p"
+
+\end_inset
+
+, I find they perform well.
  
 \end_layout
 
@@ -4333,28 +4336,7 @@ reference "fig:shock-reg-model-illustrate"
 
  in the appendix and it shows that the model generates considerable variation
  in the size of the resulting local shock.
- In an additional online appendix available at 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://floswald.github.io/research/
-\end_layout
-
-\end_inset
-
- [TODO pdf] I show how the estimated model model reacts to different combination
-s of shocks to 
-\emph on
-regional 
-\emph default
-prices (i.e.
  
-\begin_inset Formula $q_{d},p_{d}$
-\end_inset
-
-).
 \end_layout
 
 \begin_layout Standard
@@ -4645,7 +4627,7 @@ where
 \begin_inset Formula $i$
 \end_inset
 
- has a college degree, and where 
+ has a college degree, zero else, and where 
 \begin_inset Formula $z_{it}$
 \end_inset
 
@@ -5254,7 +5236,7 @@ literal "true"
 status collapsed
 
 \begin_layout Plain Layout
-I've co-authored a software package that implements the proceedure at 
+I maintain a julia package that implements the proceedure at 
 \begin_inset Flex URL
 status open
 
@@ -5279,8 +5261,33 @@ literal "true"
 
 \end_inset
 
-, after accounting for the fact that I do not use the optimal weighting
- matrix.
+.
+ The procedure is similar to the estimator used in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LMR"
+literal "false"
+
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In particular, confidence intervals are constructed in a similar way by
+ showing the 0.025 and 0.975 quantiles of the lowest temperature chain.
+ This avoids having to compute the gradient of the moment function 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
+
+ at great additional computing cost, which would be necessary to construct
+ the traditional GMM standard errors.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5325,46 +5332,6 @@ t over their lifecycle than a similar 30-year-old in 2012 would have.
  This requires to simulate individuals starting in different calendar years,
  taking into account the actual observed time series for regional house
  prices and incomes.
-\end_layout
-
-\begin_layout Standard
-Additional to SIPP data, the moment vector contains three statistics from
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
-, which relate to the lifetime frequency of moves (
-\begin_inset Quotes eld
-\end_inset
-
-moved never
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-moved once
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-moved more two times or more
-\begin_inset Quotes erd
-\end_inset
-
-).
- The reason for using external data is that I cannot compute such a statistic
- from SIPP, where the maximum panel length is four years.
- 
 \end_layout
 
 \begin_layout Subsubsection*
@@ -6726,7 +6693,7 @@ The second row shows the same experiment for the overall migration rate.
 \end_layout
 
 \begin_layout Standard
-The bottom panel of the table repeat this exercise while conditioning only
+The bottom panel of the table repeats this exercise while conditioning only
  on the 
 \emph on
 mover 
@@ -6870,8 +6837,12 @@ We want to assess this cost by looking at how much an owner in the shocked
 
 , in other words where an owner's value is equal to a renter's value with
  zero assets.
- This value is in general a negative number, proportional to the greater
- networth of owners and the additional utility derived from owning.
+ 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+ is in general a negative number, proportional to the greater networth of
+ owners and the additional utility derived from owning.
  Then, we shock either 
 \begin_inset Formula $q$
 \end_inset
@@ -6888,7 +6859,7 @@ We want to assess this cost by looking at how much an owner in the shocked
 
 .
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 Note that this experiment measures something different from the value of
@@ -6899,11 +6870,11 @@ sell
 of the owner.
  Since, if it was optimal to become a renter, they would of course make
  this choice in equilibrium.
- Here we know that pre-shock, the owner is equally well-off at 
+ Here we know that pre-shock, the owner is as well-off at 
 \begin_inset Formula $a^{*}$
 \end_inset
 
- than the zero asset renter, and we want to know how this relationship changes
+ as the zero asset renter, and we want to know how this relationship changes
  in the shocked economy, again measured at 
 \begin_inset Formula $a^{*}$
 \end_inset
@@ -6935,7 +6906,7 @@ noprefix "false"
 \begin_inset Formula $p$
 \end_inset
 
- of 10% in a given Division.
+ of 10% in a given Division in year 2000.
  We observe first that in the column corresponding to the 
 \begin_inset Formula $q$
 \end_inset
@@ -6945,12 +6916,12 @@ noprefix "false"
  The negative entries imply that the owner would not be willing to pay anything
  after income drops by 10%.
  The intuition here is that in the case of an income shock, the renter is
- equally affected than the owner, hence there is only a small desire to
- become, or no desire at all to become, a renter with zero assets and a
- significantly reduced income.
+ equally affected, hence there is only a small desire to become, or no desire
+ at all to become, a renter with zero assets and a significantly reduced
+ income.
  This is also the case because owners still have their housing capital to
  fall back on, which is unaffected from the shock in this scenario.
- It is clear from table 
+ While we saw previsously in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:elasticities"
@@ -6961,10 +6932,9 @@ noprefix "false"
 \end_inset
 
  that renters respond stronger to shocks than owners in terms of increased
- emigration, for obvious reasons, however, the expected gains in terms of
- lifetime value don't seem to compensate an owner to want to switch to that
- particular type of renter in most regions and take advantage of less costly
- migration.
+ emigration, for obvious reasons, the expected gains in terms of lifetime
+ value don't seem to compensate an owner to want to switch to that particular
+ type of renter in most regions and take advantage of less costly migration.å
 \end_layout
 
 \begin_layout Standard
@@ -6980,7 +6950,8 @@ noprefix "false"
 \end_inset
 
  that owners would be willing to pay amounts ranging from about 15,000 and
- up to 25,600 dollars in order to be converted to a renter with zero assets.
+ up to 25,600 dollars in order to be converted to a renter with zero assets
+ after the unexpected price reduction.
  Crucial to note is here that renters a priori benefit from the reduction
  in house prices, because rental payments decrease.
  The overall impact on renter values is more nuanced, however, because it
@@ -7104,10 +7075,30 @@ without
 \emph default
 the migration option, i.e.
  migration is shut down in the entire economy.
- Even though trade is absent from the model, it helps the interpretation
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Even though trade is absent from the model, it helps the interpretation
  to assume that existing trade channels between regions remain intact throughout
  the experiment, i.e.
  we only expect changes from the absence of individuals changing location.
+\end_layout
+
+\end_inset
+
+ The welfare measure in terms of compensating consumption is defined in
+ appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Welfare-Measure"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -7149,7 +7140,7 @@ exogenous
  would change if we were to abolish migration.
  To address this concern at least to some degree, I will present different
  scenarios of this counterfactual, a baseline version with prices unchanged,
- and a set of experiments with changed prices.
+ and a set of experiments with changed prices in the appendix.
  There is no direct empirical guidance on the effects of such a drastic
  experiment on regional house prices and labor income levels, except maybe
  that 
@@ -7195,7 +7186,7 @@ literal "true"
  house prices by 10%.
  A final version shows results under the assumption that a large increase
  in owner-occupied housing after the shutdown fuels a price increase.
- Summing up, this experiment is available in four versions:
+ Summing up, this experiment is available in three versions:
 \end_layout
 
 \begin_layout Enumerate
@@ -7217,19 +7208,6 @@ Baseline
 \begin_layout Enumerate
 -5%/-10% shock: Large productivity decline and amplified effect on house
  prices.
-\end_layout
-
-\begin_layout Enumerate
-No change to 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
-, but house prices 
-\emph on
-increase 
-\emph default
-by +5%: This could arise in case of a strong increase of demand for owner-occupi
-ed housing, while local productivity remains unchanged.
 \end_layout
 
 \begin_layout Standard
@@ -7272,13 +7250,13 @@ reference "tab:shutdown-cons-base"
 \end_inset
 
 , the group of young people (with age below half of their lifespan) would
- demand an increase of 7% of optimal per period consumption.
- This amount is lower for old people at 2%, which is intuitive since they
+ demand an increase of 8.6% of optimal per period consumption.
+ This amount is lower for old people at 3.3%, which is intuitive since they
  forgo fewer periods where the migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
- that age demand 4% more consumption, while same aged renters demand more,
+ that age demand 3.3% more consumption, while same aged renters demand more,
  i.e.
- 5%.
+ 5.3%.
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
@@ -7317,8 +7295,8 @@ noprefix "false"
 \end_inset
 
  draw in the new location.) As an average over all individuals treated in
- this experiment (ATE), the corresponding number is 4.6% of consumption compensat
-ion demanded.
+ this experiment (ATE), the corresponding number is 6% of consumption compensati
+on demanded.
  
 \end_layout
 
@@ -7328,7 +7306,7 @@ In the same table we continue with this exercise and split the sample by
  Perhaps not surprisingly, there is a lot of variation in how individuals
  feel about removal of the migration option by region.
  In general, living in a high-income, high-price region like Pacific accentuates
- the difference between young and old even more (7.1% vs -0.3% compensation
+ the difference between young and old even more (17.7% vs 4.6% compensation
  demanded).
  Put simply, this is because high prices are good for owners, who are more
  likely to stay in the region no matter what, but bad for renters who cannot
@@ -7336,26 +7314,31 @@ In the same table we continue with this exercise and split the sample by
  They would prefer to migrate at some point if necessary and therefore suffer
  disproportionately from the removal of the migration option.
  By way of summary of this table, individuals value having the option of
- migration to a large degree and in the range of -2% (young owners in East
- South Central prefer not having the option to move) and up to 13% of per
- period consumption.
+ migration to a large degree and in the range of -6.2% (poor individuals
+ in West North Central prefer not having the option to move) and up to 17%
+ of per period consumption.
  Notice that negative values, i.e.
- a willingness to pay to keep the migration restriction in place, like for
- poor individuals in the Pacific region, mean that they are compensated
- by 
-\begin_inset Formula $q_{\text{Pacific}}$
+ a willingness to pay to keep the migration restriction in place as in the
+ case of low–
+\begin_inset Formula $z$
 \end_inset
 
-, which is high relative to the regional 
-\begin_inset Formula $q$
+ individuales in West North Central, has to do with a relatively low price
+ to income ratio in that region in year 2000, and again the positive correlation
+ estimated for 
+\begin_inset Formula $z$
 \end_inset
 
- of most other regions, hence moving would worsen their utility.
+draws of movers: Moving for such an individual raises the prospect of another
+ bad 
+\begin_inset Formula $z$
+\end_inset
+
+draw in a region with a higher price to income ratio.
 \end_layout
 
 \begin_layout Standard
-Versions two, three and four of this experiment are described in appendix
- 
+Versions two and three of this experiment are described in appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Migration-Shutdown-with"
@@ -7368,25 +7351,11 @@ noprefix "false"
 , where the general conclusions from this series of results goes through,
  with the qualification that the bigger the price shock after migration
  shutdown, the more individuals value the baseline.
- Interestingly, this is true even for the case when house prices are assumend
- to 
-\emph on
-increase 
-\emph default
-as in version number four.
- As will be highlighted in the next subsection and the relevant appendix,
- this is easy to understand if one knows that the next best option to migrating
- is to buy a better house, in case one is barred from migrating (and in
- case it's affordable).
  This sequence of counterfactuals tells us that the estimates from the baseline
  scenario with observed prices provide a lower bound.
  If in reality a general equilibrium effect would change regional incomes
- downwards, and house prices down 
-\emph on
-or 
-\emph default
-upwards, the valuation of the migration option would be larger than displayed
- in table 
+ and prices downwards, the valuation of the migration option would be larger
+ than displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:shutdown-cons-base"
@@ -7403,7 +7372,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7440,8 +7409,8 @@ Consumption compensation demanded after migration shutdown in the baseline
  increased in order for individuals to be indifferent to the baseline.
  Positive values indicate people disapproving the policy, negative values
  indicate the opposite.
- A value of 7.0% as in the first row of the second column means that young
- people would demand an increase of 7.0% of the consumption level which they
+ A value of 8.6% as in the first row of the second column means that young
+ people would demand an increase of 8.6% of the consumption level which they
  had optimally chosen under the policy, in order for them to be indifferent.
 \begin_inset CommandInset label
 LatexCommand label
@@ -8242,34 +8211,6 @@ Baseline
 5%/10% shock: Large productivity decline and amplified effect on house prices.
 \end_layout
 
-\begin_layout Enumerate
-No change to 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
-, but house prices 
-\emph on
-increase 
-\emph default
-by 5%.
- This is motivated by the strong increase in ownership illustrated in panel
- 
-\begin_inset Formula $h$
-\end_inset
-
- of figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:noMove-lifecycle"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Standard
 Starting in table 
 \begin_inset CommandInset ref
@@ -8313,37 +8254,7 @@ noprefix "false"
 
  presents the corresponding results for scenario 3, where the trend from
  scenario 2 continues: We see the same pattern, just larger numbers.
- More interesting in this regard is the final version in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shutdown-cons-pos-p"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, where 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
- is unchanged from the baseline, but prices are assumed to increase.
- As explained in relation to figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:noMove-lifecycle"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, buying a house is the preferred option of many individuals once moving
- is abolished.
- In terms of welfare, higher prices imply that more individuals are below
- the downpayment constraint, and thus suffer more from the abolishment of
- migration: not only can they not move over their entire lifecycle, but
- they also cannot compensate with the purchase of a better house.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -8469,6 +8380,10 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -8522,6 +8437,11 @@ noprefix "false"
 \end_inset
 
  for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
