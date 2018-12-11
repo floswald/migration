@@ -86,12 +86,12 @@ function estimate(maxiter::Int,nworkers::Int)
 
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob()
-	if length(workers()) > 1
-		s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
-	else
-		s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
-	end
-
+	# gradient descent
+	# if length(workers()) > 1
+	# 	s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
+	# else
+	# 	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
+	# end
 
 	nchains = length(workers())
 
@@ -99,7 +99,6 @@ function estimate(maxiter::Int,nworkers::Int)
 	opts = Dict("N"=>nchains,
         "maxiter"=>maxiter,
         "maxtemp"=> 1,
-        "coverage"=>0.00005,
 		"user"=> ENV["USER"],
 		"save_frequency"=> maxiter < 10 ? 2 : 5,
 		"filename" => joinpath(dir,string("estim_",Dates.today(),".h5")),	
@@ -107,39 +106,26 @@ function estimate(maxiter::Int,nworkers::Int)
         "parallel"=>true,
         "maxdists"=>[0.05 for i in 1:nchains],
         "acc_tuners"=>[1.0 for i in 1:nchains],
-        "batch_size" => 1,
         "animate"=>false)
 
-
-
-	# logdir = isdir(joinpath(dir,"../cluster/logs/")) ? joinpath(dir,"../cluster/logs/") : mkdir(joinpath(dir,"../cluster/logs/"))
-	# logfile = string(splitext(basename(opts["filename"]))[1],".log")
-	# if isfile(logfile)
-	# 	rm(logfile)
-	# end
-
-	# if !isinteractive()
-	# 	io = open(logfile,"w")
-	# 	redirect_stdout(io)
-	# end
-
-	# MA = MAlgoBGP(mprob,opts)
-	# runMOpt!(MA)
-	# close(io)
+	MA = MAlgoBGP(mprob,opts)
+	runMOpt!(MA)
 
 	took = round(toq() / 3600.0,2)  # hours
 
 	# send message to slack channel
-	txt = "[mig] Estimation finished with $maxiter iterations after $took hours."
+	txt = "[mig] Estimation finished with $maxiter iterations after $took hours on $(gethostname())"
 	post_slack(txt)
 
 	# compute point estimates and SD on coldest chain
-	# p = MOpt.parameters_ID(MA.MChains,MA.MChains[1].i)
-	# means = colwise(mean,mig.@select(mig.@where(p, :id .==1 ), MA.params2s_nms))
-	# sds = colwise(sd,@select(@where(p, :id .==1 ), MA.params2s_nms))
-
-	# out = DataFrame(estimate=means,sd=sds)
-	# println(out)
+	out = Dict(:estimates => MomentOpt.median(MA.chains[1]),
+			   :CI => MomentOpt.CI(MA.chains[1]))
+	println("estimates:")
+	print(json(out,4))
+    io = mig.setPaths()
+    f = open(joinpath(io["out"],"estimates.json"),"w")
+    JSON.print(f,out)
+    close(f)
 
 	println("quitting cluster")
 	quit()
