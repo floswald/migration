@@ -98,7 +98,7 @@ function estimate(maxiter::Int,nworkers::Int)
 	# MOpt options
 	opts = Dict("N"=>nchains,
         "maxiter"=>maxiter,
-        "maxtemp"=> 1,
+        "maxtemp"=> 2,
 		"user"=> ENV["USER"],
 		"save_frequency"=> maxiter < 10 ? 2 : 5,
 		"filename" => joinpath(dir,string("estim_",Dates.today(),".h5")),	
