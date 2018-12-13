@@ -129,7 +129,6 @@ function objfunc(ev::Eval)
 	for k in nm
 		v[k] = mean(mm[k])
 	end
-	print(json(v))
 	value = v[:MSE_SD_1000]
 
 	# v = Dict{Symbol,Float64}()
