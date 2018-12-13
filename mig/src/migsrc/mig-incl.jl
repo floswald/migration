@@ -130,7 +130,7 @@ function objfunc(ev::Eval)
 		v[k] = mean(mm[k])
 	end
 	print(json(v))
-	value = v[:MSE_SD]
+	value = v[:MSE_SD_1000]
 
 	# v = Dict{Symbol,Float64}()
 	# for (k,mom) in MomentOpt.dataMomentd(ev)
