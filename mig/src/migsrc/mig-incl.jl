@@ -121,28 +121,36 @@ function objfunc(ev::Eval)
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 	simMoments,status = mydf2dict(smm["moments"])
-
-	v = Dict{Symbol,Float64}()
-	for (k,mom) in MomentOpt.dataMomentd(ev)
-		# if haskey(dataMomentWd(ev),k)
-		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
-		# else
-		# 	v[k] = ((simMoments[k] .- mom) ) .^2
-		# end
-		v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
-		# println("perc dev of moment $k is $(v[k])")
-		# v[k] = v[k] / 1000
-	end
-	vv = mean(collect(values(v)))
-	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
 	setMoment(ev,simMoments)
 
-	status = (ismissing(vv) | !isfinite(vv)) ? -1 : status
+	mm = MomentOpt.check_moments(ev)
+	nm = filter(x->!in(x,[:moment,:data,:data_sd,:simulation,:distance]),names(mm))
+	v = Dict()
+	for k in nm
+		v[k] = mean(mm[k])
+	end
+	print(json(v))
+	value = v[:MSE_SD]
+
+	# v = Dict{Symbol,Float64}()
+	# for (k,mom) in MomentOpt.dataMomentd(ev)
+	# 	# if haskey(dataMomentWd(ev),k)
+	# 	# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+	# 	# else
+	# 	# 	v[k] = ((simMoments[k] .- mom) ) .^2
+	# 	# end
+	# 	v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
+	# 	# println("perc dev of moment $k is $(v[k])")
+	# 	# v[k] = v[k] / 1000
+	# end
+	# vv = mean(collect(values(v)))
+	setValue(ev, (ismissing(value) | !isfinite(value)) ? NaN : value )
+
+	status = (ismissing(value) | !isfinite(value)) ? -1 : status
 
     if get(ev.options,"printm",false) 
-    	mms = MomentOpt.check_moments(ev)
     	d = Dict()
-    	for e in eachrow(mms)
+    	for e in eachrow(mm)
        		d[e[:moment]] = Dict("data"=>e[:data],"model"=>e[:simulation])
        	end
     	# change age brackets
@@ -155,7 +163,7 @@ function objfunc(ev::Eval)
 	end
 
 	ev.status = status
-	println("value = $vv")
+	println("value = $value")
 
 	finish(ev)
 
@@ -249,8 +257,8 @@ function runObj(p::Dict)
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity"]
-	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+	# dont_use= ["lm_w_intercept","move_neg_equity"]
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2"]
 	for iw in moms[:name]
 		if contains(iw,"wealth") 
 			push!(dont_use,iw)
