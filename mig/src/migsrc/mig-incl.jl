@@ -129,7 +129,7 @@ function objfunc(ev::Eval)
 	for k in nm
 		v[k] = mean(mm[k])
 	end
-	value = v[:MSE_SD_1000]
+	value = v[:abs_percent_2]
 
 	# v = Dict{Symbol,Float64}()
 	# for (k,mom) in MomentOpt.dataMomentd(ev)
