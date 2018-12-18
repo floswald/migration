@@ -499,7 +499,7 @@ function read_noMove(;ps=1.0,ys=1.0)
 	scenario = string("ps_",ps,"_ys_",ys)
 	ostr = string("noMove_",scenario,".jld2")
 	io = mig.setPaths()
-	path = joinpath(io["outbox"],ostr)
+	path = joinpath(io["out"],ostr)
 	println("reading $path")
 
 	if !isfile(path)

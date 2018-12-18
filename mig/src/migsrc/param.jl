@@ -281,6 +281,21 @@ function print(p::Param,file_est::String,file_set::String)
 	close(f_set)
 end
 
+function printCI()
+	io = setPaths()
+	# read CIs
+	ci = open(joinpath(io["out"],"CI.json")) do f
+		JSON.parse(f)
+	end
+	p = Param(2)
+	for (k,v) in ci
+		prepend!(v,getfield(p,Symbol(k)))
+	end
+	open(joinpath(io["out"],"CI-estims.json"),"w") do f
+		JSON.print(f,ci)
+	end
+end
+
 
 
 function show(io::IO, p::Param)

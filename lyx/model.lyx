@@ -4000,17 +4000,7 @@ In this section I explain how the model is estimated to fit some features
  of moments (SMM) approach, whereby given a set of parameters, the model
  is used to compute decision rules of agents, which in turn are used to
  simulate artificial data.
- I decided to choose SMM over maximum likelihood mainly because I need to
- combine several datasets.
- For example, the SIPP does not have information on long-duration moments
- (like number of moves over lifecycle), and the PSID does not have enough
- observations to construct a region by region transition matrix conditional
- on my state vector.
- 
-\end_layout
-
-\begin_layout Standard
-In what follows, I will first discuss estimation of the exogenous stochastic
+ In what follows, I will first discuss estimation of the exogenous stochastic
  processes, and then turn to the estimation of the model preference parameters.
  
 \end_layout
@@ -6027,7 +6017,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/params-pres.tex}
+Dropbox/model/fit/params.tex}
 \end_layout
 
 \end_inset
@@ -6040,6 +6030,8 @@ Dropbox/model/fit/params-pres.tex}
 
 \begin_layout Plain Layout
 Parameter estimates.
+ The confidence intervals have been obtained as the 0.025 and 0.975 quantiles
+ of the parameter distribution on the coldest MCMC chain.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -7432,7 +7424,7 @@ name "tab:shutdown-cons-base"
 \end_layout
 
 \begin_layout Subsection
-Effects along lifecycle, business cycle, ownership and location
+Effects along the Lifecycle and by Ownership Status
 \end_layout
 
 \begin_layout Standard
@@ -7506,30 +7498,7 @@ all individuals
  profitable to take out a mortgage and buy in the current (constant) location.
  This suggests that absent the option to move to a better region in response
  to shocks, the best thing to do is is to invest in more enjoyable housing
- in the current region in order to, in some sense, 
-\begin_inset Quotes eld
-\end_inset
-
-soften the blow
-\begin_inset Quotes erd
-\end_inset
-
-.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Notice that this increase in ownership can be seen as a simple reallocation
- of previously rented real estate into owned one, i.e.
- one would not have to imagine construction of additional housing units
- (and ensuing price increases) because of this effect.
- The contrary case, i.e.
- prices increasing, is the topic of counterfactual number four in the previous
- section.
-\end_layout
-
-\end_inset
-
+ in the current region.
  The final two panels for 
 \begin_inset Formula $q$
 \end_inset
@@ -7607,8 +7576,7 @@ name "fig:noMove-lifecycle"
 \end_layout
 
 \begin_layout Standard
-There are three additional figures which tell the same story from different
- angles: In figure 
+In figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:noMove-age30"
@@ -7644,6 +7612,10 @@ reference "fig:noMove-age30"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Next in line is figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7674,7 +7646,7 @@ mortgage debt with respect to the baseline, where some houses were instead
  bought in another, more expensive, region.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Finally, figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7701,6 +7673,11 @@ noprefix "false"
  in 2008 and beyond, the moves of people in the baseline were to locations
  that were convergent relative to the earlier period in the sample.
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7761,6 +7738,10 @@ name "fig:noMove-age30"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -7819,7 +7800,7 @@ name "fig:noMove-location"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -7857,6 +7838,11 @@ over entire sample period
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-businesscycle"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
