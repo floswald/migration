@@ -59,28 +59,28 @@ function estimate(maxiter::Int,nworkers::Int)
 	# check whether we can post to slack
 	post_slack()
 
-	if is_apple()
-		if isinteractive()
-			# override maxiter
-			maxiter=20
-		end
-	else 
-		if length(workers()) == 1
-			if isinteractive()
-			# override maxiter
-				maxiter = 4
-				nworkers = 3
-			end
-			if gethostname() == "hpc-a"
-				addprocs_sge(nworkers)
-			else
-				addprocs(SGEManager(nworkers,""),qsub_env="",res_list="h_vmem=6G,tmem=6G")
-			end
-		else
-			# else we started a cluster with --machinefile
-			# cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt",remove_destination=true)
-		end
-	end
+	# if is_apple()
+	# 	if isinteractive()
+	# 		# override maxiter
+	# 		maxiter=20
+	# 	end
+	# else 
+	# 	if length(workers()) == 1
+	# 		if isinteractive()
+	# 		# override maxiter
+	# 			maxiter = 4
+	# 			nworkers = 3
+	# 		end
+	# 		if gethostname() == "hpc-a"
+	# 			addprocs_sge(nworkers)
+	# 		else
+	# 			addprocs(SGEManager(nworkers,""),qsub_env="",res_list="h_vmem=6G,tmem=6G")
+	# 		end
+	# 	else
+	# 		# else we started a cluster with --machinefile
+	# 		# cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt",remove_destination=true)
+	# 	end
+	# end
 
 	dir = dirname(@__FILE__)	# src/migsrc
 
