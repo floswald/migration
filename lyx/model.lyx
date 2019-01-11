@@ -292,8 +292,8 @@ literal "false"
 
 \begin_layout Standard
 Migration probabilities are thus heterogeneous in the population.
- Which type a of household is likely to move in regional downturn? In this
- paper, which is among the first to consider homeownership and migration
+ Which type a of household is likely to move in a regional downturn? In
+ this paper, which is among the first to consider homeownership and migration
  in an empirical lifecycle, I provide structural estimates of crucial objects
  related to this question, like, for example, moving costs by ownership
  status, age and other observables.
@@ -506,8 +506,11 @@ literal "true"
  by tenure status and current location.
  The main result shows that migration is a low probability event in both
  data and model, but associated with a large option value for consumers.
- Shutting down regional migration in an environment with income and price
- shocks implies a [MORE].
+ Shutting down regional migration in an environment with realistic income
+ and price shocks would require a 6% increase in per period consumption
+ to make the average consumer indifferent to the status quo.
+ This number varies greatly by household type (age, housing tenure, persistent
+ income level) as well as location.
 \end_layout
 
 \begin_layout Paragraph
@@ -4286,8 +4289,8 @@ reference "eq:VAR-process-1"
 \end_inset
 
  is that it is unclear a priori how they in fact transform aggregate shocks
- in to regional counterparts, as this of course depends on the value of
- the estimated parameters 
+ into regional counterparts, as this of course depends on the value of the
+ estimated parameters 
 \begin_inset Formula $\mathbf{a}_{d}$
 \end_inset
 
@@ -4296,7 +4299,7 @@ reference "eq:VAR-process-1"
 \begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
- at its mean value expect for 
+ at its mean value except for 
 \begin_inset Formula $t=2000$
 \end_inset
 
@@ -4367,20 +4370,27 @@ noprefix "false"
 
  measured from each regression, the division index is highly significant
  throughout.
- The full regression output is available in the previously mentioned online
- appendix at 
-\begin_inset Flex URL
-status collapsed
+ The full regression output is the appendix in tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-p"
+plural "false"
+caps "false"
+noprefix "false"
 
-\begin_layout Plain Layout
+\end_inset
 
-https://floswald.github.io/research/
-\end_layout
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-y"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
 .
- [TODO pdf]
 \end_layout
 
 \begin_layout Standard
@@ -4802,7 +4812,7 @@ noprefix "false"
 
 \end_inset
 
- and I want to study the joint distribution of movers, i.e.
+ and I want to study their joint distribution for movers, i.e.
  
 \begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
 \end_inset
@@ -4831,7 +4841,7 @@ noprefix "false"
 \begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
 \end_inset
 
-.
+ separately.
  I obtain an estimate for the copula parameter 
 \begin_inset Formula $\rho_{s}$
 \end_inset
@@ -4871,11 +4881,7 @@ status open
 \uwave default
 \noun default
 \color inherit
-Spearman's 
-\begin_inset Formula $\rho$
-\end_inset
-
-,
+Spearman's rho,
 \emph default
  and it is related to Pearson's correlation coefficient 
 \begin_inset Formula $\rho_{p}$
@@ -4907,10 +4913,19 @@ noprefix "false"
 \end_inset
 
 .
-\end_layout
 
-\begin_layout Standard
-The conditional distribution of 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ The conditional distribution of 
 \begin_inset Formula $z$
 \end_inset
 
@@ -5662,6 +5677,7 @@ reference "tab:Parameter-estimates"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6065,10 +6081,11 @@ name "sec:Results"
 
 \begin_layout Standard
 I will now move on to describe the results of this paper.
- I will first investigate the dollar value of moving costs, before answering
- the question of why owners move less through the lens of the model.
- Finally I will present the main set of results pertaining to the value
- of the migration option.
+ In order to fully appreciate the results, I will first discuss the role
+ of moving costs in the model, before answering the question of why owners
+ move less through the lens of the model.
+ Then I will present the main set of results pertaining to the value of
+ the migration option.
 \end_layout
 
 \begin_layout Subsection
@@ -6294,7 +6311,7 @@ The model can be used to compute elasticities of population size and migratory
  flows with respect to regional income shocks.
  Those elasticities are an important precursor to the main result of the
  paper, because they illustrate the incentives of agents in the event of
- price or income shocks.
+ such a shock.
  To measure the elasticity of population or migratory inflows, I simulate
  the economy and apply an unexpected and permanent shock to 
 \begin_inset Formula $q_{d}$
@@ -6308,7 +6325,6 @@ The model can be used to compute elasticities of population size and migratory
  The elasticities are computed by comparing population size or migration
  flows across shocked and baseline scenarios, normalizing the result by
  the size of the shock.
- 
 \begin_inset Foot
 status collapsed
 
@@ -6398,24 +6414,23 @@ noprefix "false"
 
 \end_inset
 
- shows the corresponding elasticities for the case of a regional house price
- shock.
+ shows the corresponding elasticities for the case of a positive regional
+ house price shock.
  The overall population elasticity is on average 
 \begin_inset Formula $-0.3$
 \end_inset
 
 .
  Inflow elasticities are unambigously negative for both incoming buyers
- and renters: both find the region more expensive.
- Regarding outflows
-\end_layout
-
-\begin_layout Standard
-The table also reports the corresponding elasticities for outflows, which
- are negative for the majority of cases.
- Given an unexpected income increase, both renters and owners are less likely
- to move away.
- 
+ and renters: both find the region more expensive, hence stay away.
+ Regarding outflows, the picture is more nuanced, because again it relates
+ to the relative ranking of regions.
+ Notice that owners experience a positive wealth shock in this case, which
+ may (or may not) tip the balance towards moving to another region, when
+ previously this was suboptimal.
+ On aggregate, a one percent price increase leads to a once percent increase
+ in renter outflows, much larger than the corresponding 0.2% increase in
+ owner outflows.
 \end_layout
 
 \begin_layout Standard
@@ -6620,8 +6635,16 @@ reference "tab:Decomposing-owner's-moving"
 \end_inset
 
  from the model.
- The aim is to understand the relative importance of both financial transaction
- cost and utility cost.
+ We should imagine an approximation to the partial derivative of the moment
+ function of the model with respect to the parameters 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
  If we see a large reaction of the model–generated moments after setting
  a certain cost component to zero, we can conclude that this component is
  relatively important to explain the data.
@@ -6720,6 +6743,19 @@ tion of mover types.
 \end_layout
 
 \begin_layout Standard
+The conclusion from this exercise is that including utility cost 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ over and above the assumed financial transaction cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+ (6%) in the model is important in order to fit the data, both in terms
+ of propensity to move and in terms of changes in the ownernship rate.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
@@ -6810,8 +6846,9 @@ regret
 having bought their house, if the state of the world changes in an unforeseen
  way? For example, imagine that expectations about future prices were wrong,
  in the sense that there is an unexpected shock.
- The owner finds themselves with a greatly devalued house – how big is the
- cost of being an owner in this new circumstance? 
+ Imagine further that that owner finds themselves with a greatly devalued
+ house – how big is the cost of being an owner in this new circumstance?
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6851,7 +6888,7 @@ We want to assess this cost by looking at how much an owner in the shocked
 
 .
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Note that this experiment measures something different from the value of
@@ -6861,8 +6898,8 @@ sell
 \emph default
 of the owner.
  Since, if it was optimal to become a renter, they would of course make
- this choice in equilibrium.
- Here we know that pre-shock, the owner is as well-off at 
+ this choice.
+ Here we know that before the shock, the owner is as well-off at 
 \begin_inset Formula $a^{*}$
 \end_inset
 
@@ -6926,7 +6963,7 @@ noprefix "false"
  that renters respond stronger to shocks than owners in terms of increased
  emigration, for obvious reasons, the expected gains in terms of lifetime
  value don't seem to compensate an owner to want to switch to that particular
- type of renter in most regions and take advantage of less costly migration.å
+ type of renter in most regions and take advantage of less costly migration.
 \end_layout
 
 \begin_layout Standard
@@ -6945,7 +6982,8 @@ noprefix "false"
  up to 25,600 dollars in order to be converted to a renter with zero assets
  after the unexpected price reduction.
  Crucial to note is here that renters a priori benefit from the reduction
- in house prices, because rental payments decrease.
+ in house prices, because rental payments decrease in line with the fall
+ in house prices.
  The overall impact on renter values is more nuanced, however, because it
  includes the expected value of owning, and this value has declined.
  The experiment shares some features of mortgage default (which is not modeled),
@@ -6957,15 +6995,29 @@ reset
 \begin_inset Quotes erd
 \end_inset
 
- option here: the mortgage debt burden just increased substantially, so
- much so that 
+ option here: the mortgage debt burden is increased substantially by the
+ price drop, so much so that the owner would be willing to pay substantial
+ amounts to get converted to a renter with zero assets.
+ Thus, to give an answer to the initial question of how much owners regret
+ to having bought when things turn out not as expected, or on the contrary,
+ how much they would value being a 
+\begin_inset Quotes eld
+\end_inset
+
+free but asset-poor
+\begin_inset Quotes erd
+\end_inset
+
+ renter again in case of a price shock, one could say that this lies in
+ between 15 and 25 thousand dollars.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7176,8 +7228,6 @@ literal "true"
  a given region and hence a reduction in house prices.
  Version three simulates a bust scenario, where incomes decline by 5% and
  house prices by 10%.
- A final version shows results under the assumption that a large increase
- in owner-occupied housing after the shutdown fuels a price increase.
  Summing up, this experiment is available in three versions:
 \end_layout
 
@@ -7203,7 +7253,7 @@ Baseline
 \end_layout
 
 \begin_layout Standard
-Starting with a scenario where prices are unaffected by the experiment,
+Starting with the scenario where prices are unaffected by the experiment,
  table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7244,7 +7294,7 @@ reference "tab:shutdown-cons-base"
 , the group of young people (with age below half of their lifespan) would
  demand an increase of 8.6% of optimal per period consumption.
  This amount is lower for old people at 3.3%, which is intuitive since they
- forgo fewer periods where the migration could have been optimally chosen.
+ forgo fewer periods where migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
  that age demand 3.3% more consumption, while same aged renters demand more,
  i.e.
@@ -7613,7 +7663,7 @@ reference "fig:noMove-age30"
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Next in line is figure 
@@ -9197,61 +9247,7 @@ name "fig:Detrended-y"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/fit/elasticities_p.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Migration elasticities to a price shock
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:elasticities-p-shock"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9899,6 +9895,102 @@ The panels show the resulting deviation in regional labor productivity
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shock-reg-model-illustrate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p-P-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/q-Q-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-y"
 
 \end_inset
 
