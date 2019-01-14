@@ -192,10 +192,14 @@ today
 This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
- Using the model I estimate the value of the migration option.
+ The model delivers structural estimates of moving costs by ownership status,
+ age and family size that are in line with previous literature.
+ Using the model I first show that migration elasticities vary substantially
+ between renters and owners, and I estimate the consumption value of having
+ the option to migrate across regions when there are shocks.
  This value ranges from 0% up to almost 13% of lifetime consumption depending
  on the type of household considered.
- [MORE]
+ 
 \end_layout
 
 \begin_layout Standard
@@ -291,16 +295,16 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-Migration probabilities are thus heterogeneous in the population.
+Migration probabilities are heterogeneous in the population.
  Which type a of household is likely to move in a regional downturn? In
  this paper, which is among the first to consider homeownership and migration
- in an empirical lifecycle, I provide structural estimates of crucial objects
- related to this question, like, for example, moving costs by ownership
+ in an empirical lifecycle model, I provide structural estimates of crucial
+ objects related to this question, for example, moving costs by ownership
  status, age and other observables.
- Modelling homeownership realistically requires modelling asset accumulation,
- and it requires a proper treatment of expectations about house prices,
- both of which are computationally demanding to integrate in a dynamic model
- of location choice.
+ Modelling homeownership realistically requires modelling asset accumulation
+ and mortgages, and it requires a proper treatment of expectations about
+ house prices, both of which are computationally demanding to integrate
+ in a dynamic model of location choice.
 \end_layout
 
 \begin_layout Standard
@@ -328,13 +332,13 @@ are more mobile, in the sense that they might assess their own likelihood
 
 \begin_layout Standard
 The main counterfactual will be used to shed light on the option value of
- regional migration in the face of regional price and income risk.
+ regional migration under regional price and income risk.
  How much would households want to pay for a hypothetical migration insurance
  policy, in other words, what is the value of the option to move? In order
  to address this, the experiment shuts down migration in the economy, and
  it reports the compensating consumption stream which would make individuals
- indifferent between this regime, and the status quo (i.e.
- a world with migration).
+ indifferent between this regime, and the status quo, that is, a world with
+ migration.
  The results of this exercise differ greatly by type of household considered,
  and they range from small valuations for older homeowners to very large
  valuations (13% of period consumption) for young renter households.
@@ -424,7 +428,8 @@ see American Community Survey 2013, table DP04.
 
  At the same time, roughly 1.3% of the population migrate across US Census
  Division boundaries per year.
- Conditioning on ownership we find that 1.9% of renters and 0.67% owners move.
+ Conditional on ownership, this implies that 1.9% of renters and 0.67% owners
+ move.
  A natural question is then to ask why do we observe owners moving less?
  All else equal, owners face higher moving costs, both in terms of financial
  as well as time and effort costs.
@@ -634,10 +639,28 @@ literal "true"
  after an adverse shock, the relocation of workers is one of the main mechanisms
  to restore unemployment and participation rates back to trend in an affected
  region.
- Relative to their paper, here we show how the underlying decision maker
- reacts to the regional shocks – in particular, how owners and renters react
- differently to those shocks, and what this implies for their valuation
- of the migration option.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lkhagvasuren2012big"
+literal "false"
+
+\end_inset
+
+ is a more recent paper on the topic, proposing a frictional version of
+ the 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lucas1974equilibrium"
+literal "false"
+
+\end_inset
+
+ island model.
+ Relative to those papers, here we show how the underlying decision maker
+ reacts to regional shocks – in particular, how owners and renters react
+ differently and what this implies for their valuation of the migration
+ option.
  Related to this, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -789,7 +812,7 @@ literal "true"
 , 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "song2012measuring"
+key "csahin2014mismatch"
 literal "true"
 
 \end_inset
@@ -2443,6 +2466,25 @@ As stated above, allowing
  infeasible.
  To solve this problem, I assume that agents use a 2-dimensional factor
  model to infer regional prices.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The method of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "krusell_smith"
+literal "false"
+
+\end_inset
+
+ is conceptually similar to what I'm doing.
+ Instead of mean and variance of a distribution, consumers here track the
+ value of two aggregate state variables.
+\end_layout
+
+\end_inset
+
  To this end I define aggregate state variables 
 \begin_inset Formula $Q$
 \end_inset
@@ -3308,11 +3350,35 @@ literal "true"
 
 .
  Furthermore, I assume that 
-\begin_inset Formula $\varepsilon\sim$
+\begin_inset Formula $\varepsilon$
 \end_inset
 
- EV Type 1.
- 
+ is distributed according to the Standard Type 1 Extreme Value distribution.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This is also called the Standard Gumbel distribution.
+ Notice that the 
+\emph on
+Standard
+\emph default
+ part implies that location and scale parameters of the Gumbel distribution
+ are chosen such that 
+\begin_inset Formula $E[\varepsilon]=\bar{\gamma}$
+\end_inset
+
+, a constant known as the Euler-Mascheroni number, and that the its standard
+ deviation is fixed at 
+\begin_inset Formula $\sqrt{Var(\varepsilon)=}\frac{\pi}{\sqrt{6}}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3974,12 +4040,13 @@ Once the solution is obtained, simulation of the model proceeds by using
 \end_inset
 
  to obtain simulated lifecycle data.
- As I will explain in greater detail in the next section, this proceedure
- needs to replicate the time and age structure found in the data, which
- is achieved by simulating different cohorts, starting life in 1967 and
- all successive years up until 2012.
+ As will become clear in the next section, this proceedure needs to replicate
+ the time and age structure found in the data, which is achieved by simulating
+ different cohorts, starting life in 1967 and all successive years up until
+ 2012.
  The model moments are then computed using the empirical age distribution
  found in the estimation sample as sampling weights.
+ 
 \end_layout
 
 \begin_layout Section
@@ -4631,7 +4698,7 @@ where
 \begin_inset Formula $z_{it}$
 \end_inset
 
- are the residuals.
+ are the regression residuals.
  The results of this are shown in the appendix in table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5468,7 +5535,7 @@ The proportion of high moving cost types
 \begin_inset Formula $E[\text{moved twice+}]$
 \end_inset
 
- help to identify all moving cost parameters.
+ are not part of the moment function, hence an out of sample prediction.
 \end_layout
 
 \begin_layout Standard
@@ -7571,7 +7638,7 @@ prices for simulated individuals, exhibit negative deviations from the baseline.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7606,6 +7673,32 @@ along the lifecycle.
  mean of a certain variable of interest and the conditional mean under the
  policy.
  The means are conditional on age.
+ The labels stand for, in order:
+\begin_inset Formula $v$
+\end_inset
+
+ value function, 
+\begin_inset Formula $y$
+\end_inset
+
+ is individual labor income, 
+\begin_inset Formula $a$
+\end_inset
+
+ is asset position, 
+\begin_inset Formula $h$
+\end_inset
+
+ is the ownership status, 
+\begin_inset Formula $q$
+\end_inset
+
+ is the regional income component of income, and 
+\begin_inset Formula $p$
+\end_inset
+
+ is the regional house price level.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-lifecycle"
@@ -7644,21 +7737,29 @@ reference "fig:noMove-age30"
 
 \end_inset
 
- have a smaller utility loss (panel 
+ have a smaller utility loss, as shown in panel 
 \begin_inset Formula $u$
 \end_inset
 
- shows average period payoff) and they have about 0.2% higher income on average
- if they don't have to move.
+ which displays average period payoff.
  This is also reflected in the 
 \begin_inset Formula $q,p$
 \end_inset
 
  panels, indicating that on average they would have moved to lower income
  and price regions.
- This comes from the fact that their baseline moves were motivated by other
- considerations than regional price differences, given their relatively
- well off position in the baseline.
+ This means that their baseline moves were motivated by other considerations
+ than regional price differences, given their relatively well off position
+ in the baseline.
+\end_layout
+
+\begin_layout Standard
+In summary, the results in this section show that moving costs differ greatly
+ by ownership status; that the resulting elasticities of migration with
+ respect to regional shocks differ greatly as well; and finally, that individual
+s place a large consumption value on having the option to migrate across
+ Census Division borders, ranging from negative values (some groups prefer
+ not to have the option) and up to about 13% of per period optimal consumption.
 \end_layout
 
 \begin_layout Standard
@@ -8200,6 +8301,10 @@ reference "eq:v"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part*
+Appendix
 \end_layout
 
 \begin_layout Section
