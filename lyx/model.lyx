@@ -196,10 +196,18 @@ This paper estimates a lifecycle model of consumption, housing choice and
  age and family size that are in line with previous literature.
  Using the model I first show that migration elasticities vary substantially
  between renters and owners, and I estimate the consumption value of having
- the option to migrate across regions when there are shocks.
+ the option to migrate across regions when there are regional shocks.
  This value ranges from 0% up to almost 13% of lifetime consumption depending
- on the type of household considered.
- 
+ on the type of household considered, and it can be related to previous
+ estimates in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+ when thinking about how much insurance migration provides to consumers.
 \end_layout
 
 \begin_layout Standard
@@ -291,7 +299,7 @@ literal "false"
  It shows that considering homeowners and renters separately is of first
  order importance for this issue, since both have vastly different elasticities
  of migration with respect to regional shocks.
- This is relevant for labor market and housing policy alike.
+ This insight is relevant for labor market and housing policy alike.
 \end_layout
 
 \begin_layout Standard
@@ -1254,7 +1262,7 @@ other
 \end_layout
 
 \begin_layout Subsection
-Homeownership and College Education are Important for Migration
+Homeownership and College Education are Important Predictors for Migration
 \end_layout
 
 \begin_layout Standard
