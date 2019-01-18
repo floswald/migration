@@ -455,6 +455,8 @@ Sipp.wage_residual_copulas <- function(){
 
 	data(Sipp_age,envir=environment())
 
+
+
 	dat <- merged[HHincome > 0]
 	dat[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids +metro))]
 	setkey(dat,upid,timeid)
@@ -488,16 +490,17 @@ Sipp.wage_residual_copulas <- function(){
 	d2 = data[D2D==1,list(p_u_minus1,p_u)]
 	d2 = d2[complete.cases(d2)]
 	f2 = fitCopula(normal.cop,as.matrix(d2))
+	cop_before_move <- mvdc(normalCopula(coef(f2)), c("norm", "norm"), list(list(mean = 0, sd =margins[,s]), list(mean = 0, sd =margins[,s1])))
 
 	c1 = as.data.frame(summary(f1)$coefficients)
 	c2 = as.data.frame(summary(f2)$coefficients)
 	cat(toJSON(list(movers=c1,before_move=c2,margins=cop@paramMargins)),file="~/Dropbox/research/mobility/output/model/fit/copulas.json")
 
-	return(list(movers=f1,Gmove=Gmove2))
+	return(list(movers=f1,before_move=f2))
 }
 
 
-Sipp.movers_empstat <- function()
+Sipp.movers_empstat <- function(nocollege=FALSE)
 
 
 Sipp.movers_wage_residual_copula_and_empstat <- function(path="~/Dropbox/mobility/output/data/sipp"){
@@ -580,7 +583,7 @@ Sipp.TransitionMatrix <- function(path = "~/Dropbox/research/mobility/output/mod
 }
 
 
-Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
+Sipp.SumStats <- function(path="~/Dropbox/research/mobility/output/data/sipp",nocollege=FALSE){
 
 
 	ta <- list()
@@ -589,6 +592,10 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 	# ==================
 
 	data(Sipp_age,envir=environment())
+
+	if (nocollege){
+		merged <- merged[college==FALSE]
+	}
 
 	S2S_percent <- merged[age>=20 & age<=50,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*100,D2D=weighted.mean(D2D,HHweight,na.rm=T)*100),by=list(age)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2))]
 	ta$S2S_percent <- merged[age>=20 & age<=50,list(S2S=weighted.mean(S2S,HHweight,na.rm=T)*100,D2D=weighted.mean(D2D,HHweight,na.rm=T)*100),by=list(own,year)][,list(S2S=round(mean(S2S),2),D2D=round(mean(D2D),2)),by=own][order(own)]
@@ -625,8 +632,14 @@ Sipp.SumStats <- function(path="~/Dropbox/mobility/output/data/sipp"){
 
 	rm(merged)
 	gc()
+
 	# monthly data
 	data(Sipp_aggby_NULL,envir=environment())
+
+	if (nocollege){
+		merged <- merged[college==FALSE]
+	}
+
 	d = merged
 	setkey(d,upid,timeid)
 	# get empstat before after

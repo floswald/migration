@@ -53,7 +53,7 @@ function decompose_MC_owners(nosave::Bool=true)
 		out,proc = open(ficmd)
 	end
 
-	post_slack("[MIG] decompose_MC_owners done.")
+	post_slack("[MIG] decompose_MC_owners done on $(gethostname()).")
 	return(di)
 end
 
@@ -381,16 +381,19 @@ end
 
 
 """
-	exp_shockRegion(opts::Dict; on_impact::Bool=false)
+	exp_shockRegion(opts::Dict)
 
-Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. **Important**: if `on_impact`, Differences are measured only in the period in which the shock actually occurs, so that GE adjustments of wages/prices play a smaller role. Alternatively, price scenarios can be given as members of `opts`.
+Applies price/income shock to a certain region in certain year and returns measures of differences wrt the baseline of that region. Price scenarios can be given as members of `opts`. This experiment is complicated by the fact that I use a cohort setup: Only certain cohorts are alive in certain years. In order to simulate a shock in calendar year t, one needs two parts: first, a version of the model where the shock happens (say, different price kicking in at age j). Now, to be a real shock, this must come unexpected. In general, there will be a reaction to the coming shock at age j-1, etc. So, one needs to reset the model solution in years 1...j-1 to the baseline solution first.
 """
-function exp_shockRegion(opts::Dict; on_impact::Bool=false)
+function exp_shockRegion(opts::Dict;same_ids=false)
 
 	j         = opts["shockReg"]
-	which     = opts["policy"]
+	which     = get(opts,"policy","NULL")
 	shockYear = opts["shockYear"]
 	info("Applying shock to region $j")
+
+	# is this a reverting shock?
+	# reverting = any(opts["shockVal_p"].== 1.0) || any(opts["shockVal_y"].== 1.0)
 
 	if shockYear<1998
 		throw(ArgumentError("must choose years after 1997. only then full cohorts available"))
@@ -407,6 +410,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	solve!(m,p)
 	sim0 = simulate(m,p)
 	sim0 = sim0[.!ismissing.(sim0[:cohort]),:]
+	sim0 = sim0[sim0[:year].>1996,:]
 	mv_ids = @select(@where(sim0,(:year.>1996).&(:move)),id=unique(:id))
 	
 	mv_count = @linq sim0|>
@@ -423,7 +427,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	# compute behaviour for all individuals, assuming each time the shock
 	# hits at a different age. selecting the right cohort will then imply
 	# that the shock hits you in a given year.
-	ss = map(x -> computeShockAge(m,opts,x),1:p.nt-1)		
+	ss = pmap(x -> computeShockAge(m,opts,x),1:p.nt-1)		
 	# debugging:
 	# ss = DataFrame[sim0[rand(1:nrow(sim0),1000),:],sim0[rand(1:nrow(sim0),1000),:]]
 
@@ -437,6 +441,7 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	ss = 0
 	gc()
 	df1 =  df1[.!ismissing.(df1[:cohort]),:]
+	df1 = df1[df1[:year].>1996,:]
 	maxc = maximum(df1[:cohort])
 	minc = minimum(df1[:cohort])
 
@@ -445,8 +450,10 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		df1 = vcat(df1,@where(sim0,:cohort.<minc))
 	end
 
-	# compute behaviour of all born into post shock world
-	if !on_impact
+	# if reverting
+	# 	# assume shock goes away immediately and all behave as in baseline
+	# 	sim2 = @where(sim0,:cohort.>maxc)
+	# else
 		# assume shock stays forever
 		opts["shockAge"] = 1
 		p1 = Param(2,opts=opts)
@@ -458,16 +465,22 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 		mm = 0
 		gc()
 		# keep only guys born after shockYear
-		sim2 = @where(sim2,:cohort.>maxc)
+		sim2 = @where(sim2,(:cohort.>maxc) .& (:year .> 1996))
+	# end
 
-		# stack
-		sim1 = vcat(df1,sim2)
-		sim2 = 0
-	else
-		sim1 = df1
-	end
+	# stack up results
+	sim1 = vcat(df1,sim2)
 	df1 = 0
+	sim2 = 0
 	gc()
+
+	if same_ids
+		# keep only people in baseline which also show up in the shocked regime
+		# not all do!
+		ids = @select(sim1,id=unique(:id))
+		sim0 = sim0[findin(sim0[:id],ids[:id]),:]
+	end
+
 
 	# compute summaries
 	# =================
@@ -509,14 +522,14 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	d = Dict{AbstractString,DataFrame}()
 	d["base"] = sim0
 	d[which] = sim1
-	# flows = getFlowStats(d,false,"$(which)_$j")
+	flows = getFlowStats(d)
 
 
 
 	out = Dict("which" => which,
 		   "j" => j, 
 	       "shockYear" => shockYear, 
-	       # "flows" => flows,
+	       "flows" => flows,
 	       "opts" => opts,
 	       "movers_effects" => atts,
 	       "stayer_effects" => atns,
@@ -532,8 +545,537 @@ function exp_shockRegion(opts::Dict; on_impact::Bool=false)
 	return (out,sim0,sim1)
 end
 
+function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 
-function exp_shockRegion_ranges(prange,qrange,on_impact,nt,j)
+	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],on=:year,makeunique=true)
+
+
+	ela1 = @linq ela |>
+			@transform(d_all = (:All_1 - :All) ./ :All, 
+				d_out = (:Total_out_1 - :Total_out) ./ :Total_out,
+				d_own_out = (:Owners_out_1 - :Owners_out) ./ :Owners_out,
+				d_rent_out = (:Renters_out_1 - :Renters_out) ./ :Renters_out,
+				d_own = (:Owners_1 - :Owners)./:Owners, 
+				d_rent = (:Renters_1 - :Renters)./:Renters,
+				d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,
+				d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,
+				d_total_in = (:Total_in_1 - :Total_in)./:in_rent,
+				d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,
+				d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,
+				d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,
+				d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,
+				year=:year, pshock = 1.0, yshock = 0.0) 
+
+	
+
+	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
+
+
+	# there is surely a way to do this nicer in query.jl. argh.
+
+	ela1[ela1[:year] .>= opts["shockYear"], :yshock] = abs.(opts["shockVal_y"][1:shockyrs] - 1)
+	ela1[ela1[:year] .>= opts["shockYear"], :pshock] = abs.(opts["shockVal_p"][1:shockyrs] - 1)
+	# ela1[ela1[:year] .>= opts["shockYear"], :pshock] = (1-opts["shockVal_p"][1:shockyrs])
+
+	ela1[:d_out_p] = 0.0
+	ela1[:d_own_out_p] = 0.0
+	ela1[:d_rent_out_p] = 0.0
+	ela1[:d_all_p] = 0.0
+	ela1[:d_own_p] = 0.0
+	ela1[:d_net_own_p] = 0.0
+	ela1[:d_rent_p] = 0.0
+	ela1[:d_net_rent_p] = 0.0
+	ela1[:d_out_buy_p] = 0.0
+	ela1[:d_total_in_p] = 0.0
+	ela1[:d_in_buy_p] = 0.0
+	ela1[:d_out_rent_p] = 0.0
+	ela1[:d_in_rent_p] = 0.0
+
+	ela1[:d_out_y] = 0.0
+	ela1[:d_own_out_y] = 0.0
+	ela1[:d_rent_out_y] = 0.0
+	ela1[:d_all_y] = 0.0
+	ela1[:d_own_y] = 0.0
+	ela1[:d_net_own_y] = 0.0
+	ela1[:d_rent_y] = 0.0
+	ela1[:d_net_rent_y] = 0.0
+	ela1[:d_out_buy_y] = 0.0
+	ela1[:d_total_in_y] = 0.0
+	ela1[:d_in_buy_y] = 0.0
+	ela1[:d_out_rent_y] = 0.0
+	ela1[:d_in_rent_y] = 0.0
+
+	ela1[ela1[:pshock] .!= 0.0, :d_all_p]      = ela1[ela1[:pshock] .!= 0.0, :d_all] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_own_out_p]  = ela1[ela1[:pshock] .!= 0.0, :d_own_out] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_rent_out_p] = ela1[ela1[:pshock] .!= 0.0, :d_rent_out] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_p]      = ela1[ela1[:pshock] .!= 0.0, :d_out] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_total_in_p] = ela1[ela1[:pshock] .!= 0.0, :d_total_in] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_own_p]      = ela1[ela1[:pshock] .!= 0.0, :d_own] ./ ela1[ela1[:pshock]      .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_rent_p]     = ela1[ela1[:pshock] .!= 0.0, :d_rent] ./ ela1[ela1[:pshock]     .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_net_own_p]  = ela1[ela1[:pshock] .!= 0.0, :d_net_own] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_net_rent_p] = ela1[ela1[:pshock] .!= 0.0, :d_net_rent] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_buy_p]  = ela1[ela1[:pshock] .!= 0.0, :d_out_buy] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_in_buy_p]   = ela1[ela1[:pshock] .!= 0.0, :d_in_buy] ./ ela1[ela1[:pshock]   .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_out_rent_p] = ela1[ela1[:pshock] .!= 0.0, :d_out_rent] ./ ela1[ela1[:pshock] .!= 0.0, :pshock]
+	ela1[ela1[:pshock] .!= 0.0, :d_in_rent_p]  = ela1[ela1[:pshock] .!= 0.0, :d_in_rent] ./ ela1[ela1[:pshock]  .!= 0.0, :pshock]
+
+	ela1[ela1[:yshock] .!= 0.0, :d_all_y]      = ela1[ela1[:yshock] .!= 0.0, :d_all] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_own_out_y]  = ela1[ela1[:yshock] .!= 0.0, :d_own_out] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_rent_out_y] = ela1[ela1[:yshock] .!= 0.0, :d_rent_out] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_y]      = ela1[ela1[:yshock] .!= 0.0, :d_out] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_total_in_y] = ela1[ela1[:yshock] .!= 0.0, :d_total_in] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_own_y]      = ela1[ela1[:yshock] .!= 0.0, :d_own] ./ ela1[ela1[:yshock]      .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_rent_y]     = ela1[ela1[:yshock] .!= 0.0, :d_rent] ./ ela1[ela1[:yshock]     .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_net_own_y]  = ela1[ela1[:yshock] .!= 0.0, :d_net_own] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_net_rent_y] = ela1[ela1[:yshock] .!= 0.0, :d_net_rent] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_buy_y]  = ela1[ela1[:yshock] .!= 0.0, :d_out_buy] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_in_buy_y]   = ela1[ela1[:yshock] .!= 0.0, :d_in_buy] ./ ela1[ela1[:yshock]   .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_out_rent_y] = ela1[ela1[:yshock] .!= 0.0, :d_out_rent] ./ ela1[ela1[:yshock] .!= 0.0, :yshock]
+	ela1[ela1[:yshock] .!= 0.0, :d_in_rent_y]  = ela1[ela1[:yshock] .!= 0.0, :d_in_rent] ./ ela1[ela1[:yshock]  .!= 0.0, :yshock]
+
+	return ela1			
+end
+
+function v_ownersWTP(x::Float64,v0::Float64,m0::Model,o::Dict)
+
+	oo = deepcopy(o)
+	oo["shockVal"] = [x]
+	s = mig.computeShockAge(m0,oo,oo["iage"])
+	# mean of value after shockage => v1
+	vd = @linq s|>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite.(:maxv))) |>
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+	println(vd)
+	# compute mean of V after suitable subsetting. => v0 
+	v1 = vd[:v][1]
+	println("v0 = $v0")
+	println("v1 = $v1")
+	(v1 - v0)^2
+end
+function v_ownersWTP_m(x::Float64,v0::Float64,m0::Model,o::Dict)
+
+	oo = deepcopy(o)
+	oo["shockVal"] = [x]
+	s = mig.exp_shockRegion(oo)[3]
+	# mean of value after shockage => v1
+	vd = @linq s|>
+		 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
+		 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+	# compute mean of V after suitable subsetting. => v0 
+	v1 = vd[:v][1]
+	println("v0 = $v0")
+	println("v1 = $v1")
+	(v1 - v0)^2
+end
+
+
+"""
+	moversWTP(nosave::Bool=false)
+
+Same as `ownersWTP`[@ref] but for owners who move in `shockYear` from region j.
+"""
+function moversWTP(j::Int,nosave::Bool=false)
+
+	info("runing moversWTP computation in $j")
+	post_slack()
+	tic()
+
+	# "becoem a renter" means dd=Dict(:MC3=>0.0,:phi => 0.0)
+	# v0 = shocked economy measured at v, m.aone and dd
+	# v1 = shocked economy measured at v, m.aone, no dd, but + assets
+
+	# get baseline model decision rules
+	m,p = solve()
+	dout = Dict()
+
+	shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+	# dout[j] = Dict()
+	for sh in (:y,:p)
+		o = Dict("shockReg" => j,
+				 "shockYear" => 2000,
+				 "shockVal_y" => shocks[sh][1] .* ones(32),  
+				 "shockVal_p" => shocks[sh][2] .* ones(32))
+
+		# baseline value: a renter's world
+		# compare simulated mean V from `if only i were a renter now` world...
+		oNomc = deepcopy(o)
+		oNomc["MC3"] = 0.0
+		oNomc["phi"] = 0.0
+		sNomc = mig.exp_shockRegion(o)[3]
+		vd = @linq sNomc |>
+			 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(:move).&(isfinite.(:maxv))) |>
+			 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+		# compute mean of V after suitable subsetting. => v0 
+		v0_move = vd[:v]
+
+		# now turn on the policy to compensate owners 
+		o["policy"] = "ownersWTP"
+
+		res_m = optimize( x-> v_ownersWTP_m(x,v0_move[1],m,o), 0.0, 200.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-1)
+		dout[sh] = Dict(:own_move => res_m.minimizer)
+
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "moversWTP_$j.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,dout)
+		close(f)
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] moversWTP_$j $took hours on $(gethostname())")
+	return dout
+end
+
+"""
+	ownersWTP(nosave::Bool=false)
+
+What is the willingness to pay of an owner to become a renter after their region is hit by a negative income or price shock? This focuses on owners at a certain age only. 
+> what an owner in a down region would pay to be a renter again
+This is complicated because two things happen at the same time: price shock in region j, and asset compensation to owners in region j
+"""
+function ownersWTP(nosave::Bool=false)
+
+	info("runing ownersWTP computation")
+	post_slack()
+	tic()
+
+	# "becoem a renter" means dd=Dict(:MC3=>0.0,:phi => 0.0)
+	# v0 = shocked economy measured at v, m.aone and dd
+	# v1 = shocked economy measured at v, m.aone, no dd, but + assets
+
+	# get baseline model decision rules
+	m,p = solve()
+
+	function wtp_impl(m::Model,p::Param,j::Int)
+
+		println("working on region $j")
+
+		dout = Dict()
+		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+		dout[:region] = j
+		dout[:data] = Dict()
+		for sh in (:y,:p)
+			o = Dict("shockReg" => j,
+					 "shockYear" => 2000,
+					 "shockVal_y" => shocks[sh][1] .* ones(32),  
+					 "shockVal_p" => shocks[sh][2] .* ones(32),  
+					 "iage" => findfirst(p.ages.==30))  
+
+			# baseline value: a renter's world
+			# compare simulated mean V from `if only i were a renter now` world...
+			oNomc = deepcopy(o)
+			oNomc["MC3"] = 0.0
+			oNomc["phi"] = 0.0
+			sNomc = mig.computeShockAge(m,oNomc,o["iage"])
+			vd = @linq sNomc |>
+				 @where((:j.==o["shockReg"]).&(:year.==o["shockYear"]).&(:own).&(isfinite.(:maxv))) |>
+				 @select(v = mean(:maxv),u = mean(:utility),cons=mean(:cons))
+			# compute mean of V after suitable subsetting. => v0 
+			v0 = vd[:v]
+
+			# now turn on the policy to compensate owners 
+			o["policy"] = "ownersWTP"
+
+			res = optimize( x-> v_ownersWTP(x,v0[1],m,o), 0.0, 50.0, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-3)
+			dout[:data][sh] = Dict(:own => res.minimizer)
+
+		end
+		return dout
+	end
+	# y = pmap(x->wtp_impl(x),1:p.nJ)
+	y = pmap(x->wtp_impl(m,p,x),1:p.nJ)
+# 	y = pmap(x->wtp_impl(v,p,x),1:1)
+# 	# reorder
+	regs = m.regnames[:Division]
+	d = Dict()
+	for j in 1:p.nJ
+		println(map(x->get(x,:region,0)==j,y))
+		d[Symbol(regs[j])] = y[map(x->get(x,:region,0)==j,y)]
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "ownersWTP.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] ownersWTP $took hours on $(gethostname())")
+	return d
+
+end
+
+
+function v_ownersWTP2(xtra_ass::Float64,v0::Float64,a_0::Float64,o::Dict)
+
+	p = Param(2,opts=o)
+	setfield!(p,:shockVal,[xtra_ass])
+	m = Model(p)
+	solve!(m,p)
+	# interpolate asset grid, check value at reference asset level
+	# a0. check that w[a0] == v0
+	itp = interpolate((m.grids["assets"],),m.v[o["oidx2"]...],Gridded(Linear()))
+	w = itp[a_0]
+	println("vrent|shock = $v0")
+	println("vown|shock = $w")
+	if w == p.myNA
+		return NaN 
+	else
+		(w - v0)^2
+	end
+end
+
+
+"""
+	ownersWTP2(nosave::Bool=false)
+What is the willingness to pay of an owner to become a renter after their region is hit by a negative income or price shock? This focuses on owners at a certain age only. 
+This is complicated because two things happen at the same time: price shock in region j, and asset compensation to owners in region j
+"""
+function ownersWTP2(nosave::Bool=false)
+
+	info("runing ownersWTP computation")
+	post_slack()
+	tic()
+
+	# compute baseline model: no shock
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+
+	# prepare shocked model: get hit in age_hit
+
+	function wtp_impl(j)
+
+		dout = Dict()
+		shocks = Dict(:y=>[0.9;1.0], :p => [1.0;0.9])
+		dout[:region] = j
+		dout[:data] = Dict()
+
+		# this model to find out at which
+		# asset position v(rent) == v(own) in the baseline
+		p0 = Param(2)
+		m0 = Model(p0)
+		solve!(m0,p0)
+
+		for it in (2,)
+			dout[:data]["it$it"] = Dict()
+			age_hit = it
+			for sh in (:y,:p)
+				# get renters valuation in each shock scenario
+				dout[:data]["it$it"][sh] = Dict()
+				o = Dict("shockReg" => j,
+						 "policy" => "ownersWTP2",
+						 "shockYear" => 2000,
+						 "shockVal_y" => shocks[sh][1] .* ones(32),  
+						 "shockVal_p" => shocks[sh][2] .* ones(32),  
+						 "shockAge" => age_hit  
+						 )
+
+				# the shocked model
+				p = Param(2,opts=o)
+				m = Model(p)
+				solve!(m,p)
+
+				# for iz in 1:1
+				for iz in 1:p.nz
+
+					info("now at it=$it, j=$j, iz=$iz, shock=$sh")
+					own_a0 = 8
+					rent_a0 = m.aone
+					o = Dict("shockReg" => j,
+							 "policy" => "ownersWTP2",
+							 "shockYear" => 2000,
+							 "shockVal_y" => shocks[sh][1] .* ones(32),  
+							 "shockVal_p" => shocks[sh][2] .* ones(32),  
+							 "shockAge" => age_hit,   # dummy arg
+							 "oidx" => (j,1,iz,2,2,1,own_a0,2,j,age_hit),
+							 "oidx2" => (j,1,iz,2,2,1,:,2,j,age_hit),
+							 "ridx" => (j,1,iz,2,2,1,rent_a0,1,j,age_hit)
+							 )
+					# same but for a mover
+					mvto = j == p.nJ ? 1 : j + 1
+					om = Dict("shockReg" => j,
+							 "policy" => "ownersWTP2",
+							 "shockYear" => 2000,
+							 "shockVal_y" => shocks[sh][1] .* ones(32),  
+							 "shockVal_p" => shocks[sh][2] .* ones(32),  
+							 "shockAge" => age_hit,   # dummy arg
+							 "oidx" => (mvto,1,iz,2,2,1,own_a0,2,j,age_hit),
+							 "oidx2" => (mvto,1,iz,2,2,1,:,2,j,age_hit),
+							 "ridx" => (mvto,1,iz,2,2,1,rent_a0,1,j,age_hit)
+							 )
+
+					# get values for stayers 
+					# ======================
+
+					# get the target value: renters valueation.
+					r_0 = m0.v[o["ridx"]...]
+					if r_0 == p.myNA
+						warn("r_0 = $r_0. skip this state")
+						continue
+					end
+
+					itp = interpolate((m.grids["assets"],),m0.v[o["oidx2"]...],Gridded(Linear()))
+					a_0 = fzero(x->r_0 - itp[x],-500.0,0.0)  # critical asset level
+					info("renters baseline value is $r_0")
+					# info("owners baseline value (before shock) was $(itp[a_0])")
+					info("v(own)==v(rent)|noshock at a= $a_0")
+
+					# renters value in shock
+					r_shock = m.v[o["ridx"]...]
+					info("renters shock value is $r_shock")
+					if r_shock == p.myNA
+						warn("r_shock = $r_shock. skip this state")
+						continue
+					end
+
+					# get values for movers
+					# ======================
+					# get the target value: renters valueation.
+					# r_0m = m0.v[om["ridx"]...]
+					# if r_0m == p.myNA
+					# 	warn("r_0m = $r_0m. skip this state")
+					# 	continue
+					# end
+
+					# itp = interpolate((m.grids["assets"],),m0.v[om["oidx2"]...],Gridded(Linear()))
+					# a_0m = fzero(x->r_0m - itp[x],-500.0,0.0)  # critical asset level
+					# info("moving renters baseline value is $r_0m")
+					# # info("owners baseline value (before shock) was $(itp[a_0])")
+					# info("v(own,move)==v(rent,move)|noshock at a= $a_0m")
+
+					# # renters value in shock
+					# r_shockm = m.v[om["ridx"]...]
+					# info("moving renters shock value is $r_shockm")
+					# if r_shockm == p.myNA
+					# 	warn("r_shockm = $r_shockm. skip this state")
+					# 	continue
+					# end
+
+					# find asset compensation value that makes owners indifferent.
+					info("find stayers WTP first")
+					result = optimize( x-> v_ownersWTP2(x,r_shock,a_0,o), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
+					# info("now find movers WTP")
+					# resultm = optimize( x-> v_ownersWTP2(x,r_shockm,a_0m,om), -10.0, 100, show_trace=length(workers())==1,method=Brent(),abs_tol=1e-6,iterations=15)
+					# dout[:data]["it$it"][sh]["iz$iz"] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result),:a_0m => a_0m, :compm => resultm.minimizer,:minim=>Optim.minimum(resultm))
+					dout[:data]["it$it"][sh]["iz$iz"] = Dict(:a_0 => a_0, :comp => result.minimizer,:mini=>Optim.minimum(result))
+				end
+			end
+		end
+		return dout
+	end
+
+	y = pmap(x->wtp_impl(x),1:p.nJ)
+	# y = pmap(x->wtp_impl(m,p,x),1:1)
+	# reorder
+	regs = m.regnames[:Division]
+	d = Dict()
+	for j in 1:p.nJ
+		println(map(x->get(x,:region,0)==j,y))
+		d[Symbol(regs[j])] = y[map(x->get(x,:region,0)==j,y)]
+	end
+	if !nosave
+		io = setPaths()
+		ostr = "ownersWTP2.json" 
+		f = open(joinpath(io["out"],ostr),"w")
+		JSON.print(f,d)
+		close(f)
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] ownersWTP2 $took hours on $(gethostname())")
+	return d
+
+end
+
+
+
+# end
+
+"""
+	elasticity(;shock="q",nosave::Bool=false,neg=false)
+
+Compute elasticity of income shock on migration choices: how many percent do inflows to `j` increase if income there increases or decreases by 1%?
+"""
+function elasticity(;shock="q",nosave::Bool=false,neg=false)
+
+	info("runing elasticity computation neg = $neg")
+	post_slack()
+	tic()
+
+	p = Param(2)
+	m = Model(p)
+	solve!(m,p)
+	sim0 = simulate(m,p)
+	sim0 = sim0[.!ismissing.(sim0[:cohort]),:]
+	sim0 = sim0[sim0[:year].>1996,:]
+
+	dout = Dict()
+
+	# opts dict 
+	o = Dict("shockReg" => 1,
+			 "policy" => "ypshock",
+			 "shockYear" => 2000,
+			 "shockVal_y" => shock == "q" ? (neg ? 0.9  .* ones(32) : 1.1 .* ones(32)) : ones(32),  
+			 "shockVal_p" => shock == "q" ? ones(32) : (neg ? 0.9  .* ones(32) : 1.1 .* ones(32)) ,  
+			 "shockAge" => 0   # dummy arg
+			 )
+
+	regs = m.regnames[:Division]
+	@showprogress "Computing..." for j in 1:p.nJ
+		o["shockReg"] = j
+		x = exp_shockRegion(o)[1]
+		y = get_elas(x["flows"]["base"],x["flows"][o["policy"]],o,j)
+		dout[Symbol(regs[j])] = Dict(:all_y => mean(y[:d_all_y]),
+									 :d_total_in_y => mean(y[:d_total_in_y]),
+									 :d_in_rent_y  => mean(y[:d_in_rent_y]),
+									 :d_in_buy_y   => mean(y[:d_in_buy_y]),
+									 :d_total_out_y => mean(y[:d_out_y]),
+									 :d_rent_out_y  => mean(y[:d_rent_out_y]),
+									 :d_own_out_y   => mean(y[:d_own_out_y]),
+		                             :all_p => mean(y[:d_all_p]),
+									 :d_total_in_p => mean(y[:d_total_in_p]),
+									 :d_in_rent_p  => mean(y[:d_in_rent_p]),
+									 :d_in_buy_p   => mean(y[:d_in_buy_p]),
+									 :d_total_out_p => mean(y[:d_out_p]),
+									 :d_rent_out_p  => mean(y[:d_rent_out_p]),
+									 :d_own_out_p   => mean(y[:d_own_out_p]))
+	end
+	dagg= Dict()
+	for k in keys(dout[:ENC])
+		dagg[k] = mean([dout[i][k] for i in keys(dout)])
+	end
+	dout[:agg] = dagg
+
+	if !nosave
+		io = setPaths()
+		ostr = shock == "q" ? (neg ? "neg_elasticity_q.json" :"elasticity_q.json") : (neg ? "neg_elasticity_p.json" :"elasticity_p.json")
+		fi = joinpath(io["out"],ostr)
+		f = open(fi,"w")
+		JSON.print(f,dout)
+		close(f)
+		try
+			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$ostr`
+			out,proc = open(ficmd)
+		catch
+			warn("no dbxcli installed")
+		end
+	end
+	info("done.")
+
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] elasticity $took hours on $(gethostname())")
+	return dout
+end
+
+
+function exp_shockRegion_ranges(prange,qrange,nt,j)
 	d = Dict()
 	d[:region] = j
 	d[:data] = Dict()
@@ -541,7 +1083,7 @@ function exp_shockRegion_ranges(prange,qrange,on_impact,nt,j)
 		for qs in [1.0-qrange, 1.0, 1.0+qrange]
 			info("doing exp_shockRegion with ps=$ps, qs=$qs")
 			dd = Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,nt-1),"shockVal_y"=>fill(qs,nt-1))
-			d[:data][Symbol("ps_$ps"*"_qs_$qs")] = exp_shockRegion(dd,on_impact=on_impact)[1]
+			d[:data][Symbol("ps_$ps"*"_qs_$qs")] = exp_shockRegion(dd)[1]
 			# d[:data][Symbol("ps_$ps"*"_ys_$ys")] = Dict(:a=>1,:b=> rand())
 		end
 	end
@@ -550,44 +1092,48 @@ end
 
 
 """
-	shockRegions_scenarios(on_impact::Bool=false,save::Bool=false,qrange=0.05,prange=0.05)
+	shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 
 Run shockRegion experiment for each region and for different price scenarios
 """
-function shockRegions_scenarios(on_impact::Bool=false;save::Bool=false,qrange=0.05,prange=0.05)
+function shockRegions_scenarios(save::Bool=false,qrange=0.05,prange=0.05)
 	tic()
 	p = Param(2)
 	d = Dict()
-	if on_impact
-		y = pmap(x->exp_shockRegion(Dict("shockReg"=>x,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(0.94,p.nt-1),"shockVal_y"=>fill(0.9,p.nt-1)),on_impact=on_impact)[1],1:p.nJ)
-		# reorder
-		for j in 1:p.nJ
-			d[j] = y[map(x->x["j"]==j,y)]
-		end
-		# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	),on_impact=on_impact)[1]
+	# if on_impact
+	# 	y = pmap(x->exp_shockRegion(Dict("shockReg"=>x,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(0.94,p.nt-1),"shockVal_y"=>fill(0.9,p.nt-1)))[1],1:p.nJ)
+	# 	# reorder
+	# 	for j in 1:p.nJ
+	# 		d[j] = y[map(x->x["j"]==j,y)]
+	# 	end
+	# 	# d[j] = exp_shockRegion(Dict("shockReg"=>j,"policy"=>"ypshock","shockYear"=>2000,"shockVal_p"=>fill(ps,p.nt-1),"shockVal_y"=>fill(ys,p.nt-1)	))[1]
 
-	else
-		y = pmap(x->exp_shockRegion_ranges(prange,qrange,on_impact,p.nt,x),1:p.nJ)
+	# else
+		y = pmap(x->exp_shockRegion_ranges(prange,qrange,p.nt,x),1:p.nJ)
 		# reorder
 		for j in 1:p.nJ
 			println(map(x->get(x,:region,0)==j,y))
 			d[j] = y[map(x->get(x,:region,0)==j,y)]
 		end
-	end
+	# end
 	io = setPaths()
-	ostr = on_impact ? "shockRegions_onimpact.json" : "shockRegions_scenarios.json"
+	# ostr = on_impact ? "shockRegions_onimpact.json" : "shockRegions_scenarios.json"
+	ostr = "shockRegions_scenarios.json"
 	f = open(joinpath(io["outdir"],ostr),"w")
 	JSON.print(f,d)
 	close(f)
 	info("done.")
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] shockRegions_scenarios",took,"hours")
+	post_slack("[MIG] shockRegions_scenarios",took,"hours on $(gethostname())")
 	return (d,y)
 end
 
+"""
+	adjustVShocks!(mm::Model,m::Model,p::Param)
 
-
+Resets decision rules to pre-shock environment found in model `m`. Pre-shock decision rules in shocked model `mm` are contaminated by altered future values in `mm` after the shock.
+"""
 function adjustVShocks!(mm::Model,m::Model,p::Param)
 
 	if p.shockAge > 1
@@ -601,7 +1147,7 @@ function adjustVShocks!(mm::Model,m::Model,p::Param)
 		for iy=1:p.ny 				
 		for is=1:p.ns 				
 		for ik=1:p.nJ			
-			mm.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.rho[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
+			mm.v[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.v[idx10(ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
 			for ihh in 1:p.nh
 				mm.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.vh[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
 				mm.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)] = m.ch[idx11(ihh,ik,is,iz,iy,ip,itau,ia,ih,ij,rt,p)]
@@ -626,20 +1172,29 @@ end
 # apply a shock at a certain age.
 function computeShockAge(m::Model,opts::Dict,shockAge::Int)
 
+	# important!
+	oo = deepcopy(opts)
+
 	# if shockAge==0
 	# 	opts["shockAge"] = shockAge + 1
 	# 	p = Param(2,opts)
 	# 	keep = (p.nt) - shockAge + opts["shockYear"] - 1998 # relative to 1998, first year with all ages present
 	# 	@assert p.shockAge == shockAge + 1
 	# else
-		opts["shockAge"] = shockAge
-		p = Param(2,opts=opts)
-		setfield!(p,:ctax,get(opts,"ctax",1.0))	# set the consumption tax, if there is one in opts
+		oo["shockAge"] = shockAge
+		p = Param(2,opts=oo)
+		setfield!(p,:ctax,get(oo,"ctax",1.0))	# set the consumption tax, if there is one in opts
 		@assert p.shockAge == shockAge
-		keep = (p.nt) - shockAge + opts["shockYear"] - 1997 # relative to 1997, first year with all ages present
+		keep = (p.nt) - shockAge + oo["shockYear"] - 1997 # relative to 1997, first year with all ages present
 	# end
 
-	info("applying $(opts["policy"]) in $(opts["shockReg"]) at age $(p.shockAge), keeping cohort $keep")
+	# println("applying $(p.policy) in $(p.shockReg) at age $(p.shockAge), keeping cohort $keep")
+	# println("mc = $(p.MC3)")
+	# println("phi = $(p.phi)")
+	# println("shockVal = $(p.shockVal)")
+	# println("shockVal_y = $(p.shockVal_y)")
+	# println("shockVal_p = $(p.shockVal_p)")
+	mm = Model(p)
 	mm = Model(p)
 	solve!(mm,p)
 
@@ -674,17 +1229,19 @@ end
 # adds xtra_ass dollars to each asset grid point at age t
 function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	p = Param(2,opts=opt["p"])
-	println("extra assets=$xtra_ass")
+	# println("extra assets=$xtra_ass")
 	setfield!(p,:shockVal,[xtra_ass])
 	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[1,1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[opt["ik"],1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	r = p.myNA
 	if w == p.myNA
-		return NaN 
 	else
-		(w - v0)^2
+		r = (w - v0)^2
 	end
+	println("distance = $r")
+	return r
 end
 
 
@@ -692,19 +1249,21 @@ end
 # find consumption scale ctax such that
 # two policies yield identical period 1 value
 function find_xtra_ass(v0::Float64,opts::Dict)
-	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,100000.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-6)
+	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,800.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
 	return ctax
 end
 
 function moneyMC(nosave::Bool=false)
 
+	tic()
+	post_slack()
 	# compute a baseline without MC
 	p = Param(2)
-	MC = Array{Any}(p.nh,p.ntau)
 	setfield!(p,:noMC,true)
 	m = Model(p)
 	solve!(m,p)
-	println("baseline without MC done.")
+	regs = m.regnames[:Division]
+	info("baseline without MC done.")
 
 	whichasset = m.aone
 
@@ -712,31 +1271,33 @@ function moneyMC(nosave::Bool=false)
 	# compare a zero asset renter to an owner with 0 net wealth.
 	# 0 net wealth means that assets are -163K.
 
+	out = Dict()
 	opts = Dict()
 	opts["p"] = Dict()
 	opts["p"]["policy"] = "moneyMC"
-	for ih in 0:1
-		if ih==0
-			opts["asset"] = whichasset
-		else
-			opts["asset"] = whichasset-1 
-		end
-		opts["ih"] = ih+1
-		for itau in 1:p.ntau
-			opts["itau"] = itau
-			opts["iz"] = 1  	# lowest income state
-			opts["it"] = 1 	# age 1
-			v0 = m.v[1,1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-			MC[ih+1,itau] = find_xtra_ass(v0,opts)
-			info("done with MC ih=$ih, itau=$itau")
-			info("moving cost: $(Optim.minimizer(MC[ih+1,itau]))")
-
+	opts["itau"] = 1   # only mover type
+	@showprogress for j in [1,3:p.nJ...]
+		out[Symbol(regs[j])] = Dict()
+		opts["ik"] = j   # moving to
+		for ih in 0:1
+			opts["ih"] = ih+1
+			if ih==0
+				opts["asset"] = whichasset
+			else
+				opts["asset"] = whichasset-1 
+			end
+			out[Symbol(regs[j])]["h$ih"] = Dict()
+			for iz in 1:p.nz
+				opts["iz"] = iz  	
+				opts["it"] = 1 	# age 1
+				v0 = m.v[opts["ik"],1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
+				res = find_xtra_ass(v0,opts)
+				info("done with MC ih=$ih, iz=$iz")
+				info("moving cost: $(Optim.minimizer(res))")
+				out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
+			end
 		end
 	end
-
-	zs = m.gridsXD["zsupp"][:,1]
-	# make an out dict
-	d =Dict( "low_type" => Dict( "rent" => Optim.minimizer(MC[1,1]), "own" => Optim.minimizer(MC[2,1]), "high_type" => Dict( "rent" => Optim.minimizer(MC[1,2]), "own" => Optim.minimizer(MC[2,2]))) )
 
 	io = mig.setPaths()
 
@@ -744,15 +1305,20 @@ function moneyMC(nosave::Bool=false)
 	    io = mig.setPaths()
 	    fi = joinpath(io["outdir"],"moneyMC2.json")
 		f = open(fi,"w")
-		JSON.print(f,d)
+		JSON.print(f,out)
 		close(f)
-		ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
-		out,proc = open(ficmd)
+		try
+			ficmd = `dbxcli put $fi research/mobility/output/model/data_repo/outbox/$fi`
+			out,proc = open(ficmd)
+		catch
+			warn("no dbxcli installed")
+		end
 	end
 
-	post_slack("[MIG] MoneyMC done.")
+	took = round(toc() / 3600.0,2)  # hours
+	post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
 
-	return (d,MC)
+	return out
 end
 
 function shockRegion_json(;f::String="$(ENV["HOME"])/git/migration/mig/out/shockRegions_scenarios.json")

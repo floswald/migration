@@ -11,6 +11,9 @@ import Base.show, Base.convert, Base.print, Base.get
 import Base: .+, .-, .*, ./
 import Base: +, -, *, /, abs
 using ProgressMeter
+using ClusterManagers
+using Interpolations
+using Roots
 # using RCall  # dont use this as impossible to install on cluster.
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
@@ -25,6 +28,7 @@ include("migsrc/mig-incl.jl")
 include("migsrc/solver.jl")
 include("migsrc/simulator.jl")
 include("migsrc/experiments.jl")
+include("migsrc/estimation.jl")
 include("migsrc/noMove.jl")
 include("migsrc/reporting.jl")
 include("migsrc/plotting.jl")

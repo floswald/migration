@@ -34,7 +34,8 @@ Depends:
     psidR,
     erer,
     tikzDevice,
-    MultinomialCI
+    MultinomialCI,
+    forecast
 Collate:
     'SippAnalyse.r'
     'SippPrepare.r'

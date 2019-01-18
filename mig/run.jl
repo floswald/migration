@@ -1,6 +1,7 @@
 doc = """
 
-Homeownership, Regional Shocks and Migration (Oswald, 2017)
+The Effect of Homeownership on the Option
+Value of Regional Migration (Oswald, 2018)
 
     | Welcome to the run file of my paper. Please
     | see below how to run the code. 
@@ -10,49 +11,41 @@ Homeownership, Regional Shocks and Migration (Oswald, 2017)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (BGP|slices) [--nworkers=<nw>] [--maxiter=<maxit>] [--cluster=<c>]
+    run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
     run.jl test 
-    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] [--cluster=<c>]
-    run.jl experiment shockRegion [--nosave] [--on_impact] [--nworkers=<nw>] [--cluster=<c>]
-    run.jl experiment (moneyMC|decomp) [--nosave]
+    run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
+    run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
+    run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
 
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
-    --cluster=<c>       name of cluster to use [default: cumulus]
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
+    --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
+    --neg               perform negative elasticity shock. If you set it, it does negative.
+    --shock=<sh>        type of shock to apply [default: q]
     --yshock=<ys>       shock applied to regional income [default: 1.0]
     --pshock=<ps>       shock applied to regional price [default: 1.0]
-    --on_impact         measure experiment in year of impact only
     --version           show version
 
 """
+
 using DocOpt
-args = docopt(doc, version=v"0.9.5")
-
-cumulus = vcat("10.20.35.11",
-"10.20.35.21",
-"10.20.35.26",
-"10.20.35.27",
-"10.20.35.30",
-"10.20.35.31",
-"10.20.35.32",
-"10.20.35.33",
-"10.20.35.35",
-"10.20.35.36")
-
+args = docopt(doc, version=v"0.9.7")
 
 if args["estim"]
-    using mig
     info("Running estimation: ")
     nwork = parse(Int,args["--nworkers"])
-    maxit = parse(Int,args["--maxit"])
-    if args["BGP"]
+    maxit = parse(Int,args["--maxiter"])
+    if args["bgp"]
         info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
+        addprocs(nwork)
+        using mig
         mig.estimate(maxit,nwork)
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
+        using mig
         mig.slices(nwork)
     end
 elseif args["test"]
@@ -60,43 +53,69 @@ elseif args["test"]
 elseif args["experiment"]
     info("Running experiments:")
     nosave = args["--nosave"]
-    on_impact = args["--on_impact"]
+    neg = args["--neg"]
+    shock = args["--shock"]
     nwork = parse(Int,args["--nworkers"])
+    reg = parse(Int,args["--region"])
     _ys = parse(Float64,args["--yshock"])
     _ps = parse(Float64,args["--pshock"])
     if args["noMove"]
-        if nwork > 1
-            if args["--cluster"]=="cumulus"
-                if nwork > 10
-                    error("only 10 workers on cumulus")
-                end
-                addprocs([cumulus[i] for i in 1:nwork])
-            elseif args["--cluster"]=="local"
-                addprocs(nwork)
-            end
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
         end
         using mig
         info("      noMove experiment, with nosave=$nosave")
         info("      applying ys=$_ys, ps=$_ps")
         mig.exp_Nomove(do_ctax=true,save=!nosave,ys=_ys,ps=_ps)
-    elseif args["shockRegion"]
-        if nwork > 1
-            if args["--cluster"]=="cumulus"
-                if nwork > 10
-                    error("only 10 workers on cumulus")
-                end
-                addprocs([cumulus[i] for i in 1:nwork])
-            elseif args["--cluster"]=="local"
-                addprocs(nwork)
-            end
-        end
-        using mig
-        info("      shockRegion experiment, with nosave=$nosave, on_impact=$on_impact, on $(length(workers())) cores")
-        @time mig.shockRegions_scenarios(on_impact,save=!nosave)
     elseif args["moneyMC"]
         info("      monetize the moving costs, with nosave=$nosave")
         using mig
         mig.moneyMC(nosave)
+    elseif args["ownersWTP"]
+        info("      computing owners WTP to become renter again, with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.ownersWTP(nosave)
+    elseif args["ownersWTP2"]
+        info("      computing owners WTP v2 to become renter again, with nosave=$nosave")
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
+        end
+        using mig
+        mig.ownersWTP2(nosave)
+    elseif args["moversWTP"]
+        info("      computing movers WTP in region $reg with nosave=$nosave")
+        addprocs(nwork)
+        using mig
+        mig.moversWTP(reg,nosave)
+    elseif args["elasticity"]
+        info("      computing elasticity wrt 10% $shock shock, with nosave=$nosave, neg=$neg")
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs(nwork)
+        end
+        using mig
+        mig.elasticity(shock=shock,nosave=nosave,neg=neg)
     elseif args["decomp"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig

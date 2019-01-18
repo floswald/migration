@@ -137,7 +137,7 @@ type Model
 
 		# population weights
 		popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
-		sort!(popweights,cols=1)
+		sort!(popweights,1)
 
 		# age distribution
 		agedist = DataFrame(FileIO.load(joinpath(io["indir"],"agedist.rda"))["agedist"])
@@ -349,13 +349,13 @@ type Model
 		for it in 1:p.nt-1
 			for j in 1:p.nJ
 				yshock = ((p.policy=="yshock" || p.policy=="ypshock" || p.policy=="ypshock3" || p.policy=="ypshock4" || p.policy=="ypshock5") && ((it >= p.shockAge) && (j==p.shockReg))) ? log(p.shockVal_y[it-p.shockAge+1]) : 0.0
-				yshock = (p.policy=="noMove") ? log(p.shockVal_y[it]) : yshock
+				yshock = ((p.policy=="noMove") || (p.policy=="ownersWTP") || (p.policy=="ownersWTP2")) ? log(p.shockVal_y[it]) : yshock
 				# info("yshock = $yshock")
 				for iy in 1:p.ny
 					for ip in 1:p.np
 						for iz in 1:p.nz
 							
-							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + yshock + inc_coefs[j,:logCensusMedinc] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
+							zgrid[iz,iy,ip,it,j] = inc_coefs[j,:Intercept] + yshock + inc_coefs[j,:logq] * log(ygrid[iy,ip,j]) + inc_coefs[j,:age]*p.ages[it] + inc_coefs[j,:age2]*(p.ages[it])^2 + inc_coefs[j,:age3]*(p.ages[it])^3 + zsupp[iz,j]
 						end
 					end
 				end
@@ -766,6 +766,17 @@ function Gyp_indices(p::Param,show=false)
 		end
 	end
 	return idx
+end
+
+function model(;opt::Dict=Dict())
+	p = Param(2,opts=opt)
+	m = Model(p)
+	return (m,p)
+end
+function solve(;opt::Dict=Dict())
+	m,p = model(opt=opt)
+	solve!(m,p)
+	return m,p
 end
 
 

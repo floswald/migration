@@ -299,7 +299,7 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] noMove experiment finished after $took hours")
+	post_slack("[MIG] noMove experiment finished after $took hours on $(gethostname())")
 	return n
 end
 
@@ -499,7 +499,7 @@ function read_noMove(;ps=1.0,ys=1.0)
 	scenario = string("ps_",ps,"_ys_",ys)
 	ostr = string("noMove_",scenario,".jld2")
 	io = mig.setPaths()
-	path = joinpath(io["outbox"],ostr)
+	path = joinpath(io["out"],ostr)
 	println("reading $path")
 
 	if !isfile(path)

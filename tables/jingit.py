@@ -24,6 +24,12 @@ def prettyNum(value, dec=4):
   elif (abs(value) >= 0.00001):
     return "%.5f" % value
 
+def prettyTimes(value, times=1000, dec=0):
+  value = float(value)*1000
+  if (value==0):
+    return "%.2f" % 0
+  return "%g" % value
+
 def prettyDollar(value, dec=4):
   value = float(value)
   if (value==0):
@@ -63,6 +69,7 @@ env.filters['prettyNum'] = prettyNum
 env.filters['prettyPerc'] = prettyPerc
 env.filters['prettyPercLessOne'] = prettyPercLessOne
 env.filters['prettyDollar'] = prettyDollar
+env.filters['prettyTimes'] = prettyTimes
 
 
 parser = argparse.ArgumentParser(description='Load a json file and apply on template file.')

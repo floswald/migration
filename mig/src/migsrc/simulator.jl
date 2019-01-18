@@ -26,7 +26,7 @@ end
 
 "compute the level of income, including age profile and regional effects"
 function getIncome(m::Model,y::Float64,z::Float64,age::Int,j::Int)
-	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logCensusMedinc] * log(y) + z )
+	inc = exp(m.Inc_ageprofile[age,j] + m.Inc_coefs[j,:logq] * log(y) + z )
 end
 
 
@@ -221,6 +221,7 @@ function simulate(m::Model,p::Param)
 
 	pshock = false
 	yshock = false
+	ownersWTP = false
 	nomove_yshock = false
 	shockmyy = false
 	if p.policy == "pshock"
@@ -255,10 +256,17 @@ function simulate(m::Model,p::Param)
 		yshock = true
 	end
 
-	# pdebug("set policy switches")
 	# println("policy = $(p.policy) and pshock = $(pshock) and yshock=$(yshock)")
 
 	for age = 1:T
+		if p.policy == "ownersWTP"
+			if age >= p.shockAge
+				pshock = true
+				yshock = true
+			end
+			# make a one-off lump sum payment to compensate
+			ownersWTP = age==p.shockAge ? true : false
+		end
 
 		# pdebug("simulating age=$age")
 
@@ -324,6 +332,17 @@ function simulate(m::Model,p::Param)
 				P         = DP[i_idx]
 				a         = Da[i_idx]
 				z         = Dz[i_idx]
+
+				# ownersWTP experiment
+				# give owners money
+				if ownersWTP && ((age == p.shockAge) && (ij == p.shockReg)  && (ih == 1))
+					# println("a = $a")
+					a += p.shockVal[1]
+					# println("after = $a")
+					# println("shockval = $(p.shockVal[1])")
+					# println("")
+				end
+
 				azYP      = [a,z,Y,P]
 				price_j   = m.pred_p[m.coh_idx[coh][age],ij]
 				y         = m.pred_y[m.coh_idx[coh][age],ij]
@@ -839,7 +858,7 @@ function computeMoments(df::DataFrame,p::Param)
 			cc_h  = coeftable(lm_h)
 			nm_h  = String["lm_h_" *  convert(String,cc_h.rownms[i]) for i=1:length(cc_h.rownms)]
 			coef_h = coef(lm_h)
-			std_h =  stderr(lm_h)
+			std_h =  stderror(lm_h)
 		catch
 			nm_h  = ["lm_h_(Intercept)","lm_h_age","lm_h_age2"]
 			coef_h = missings(Float64,3)
@@ -899,14 +918,14 @@ function computeMoments(df::DataFrame,p::Param)
 	if sum(df[:move]) == 0.0
 		nomove = true
 		nm_mv  = ["lm_mv_(Intercept)","lm_mv_age","lm_mv_age2"]
-		coef_mv = missings(zeros(3))
-		std_mv =  missings(ones(3))
+		coef_mv = missings(Float64,3)
+		std_mv =  missings(Float64,3)
 	else
 		lm_mv = glm( @formula(move ~ age + age2),df,Normal(),IdentityLink())
 		cc_mv = coeftable(lm_mv)
 		nm_mv = String["lm_mv_" * convert(String,cc_mv.rownms[i]) for i=1:length(cc_mv.rownms)]
 		coef_mv = coef(lm_mv)
-		std_mv = stderr(lm_mv)
+		std_mv = stderror(lm_mv)
 	end
 
 	# move count
@@ -933,6 +952,16 @@ function computeMoments(df::DataFrame,p::Param)
 	# flows of moves: where do moves go to?
 	# -------------------------------------
 	xx = StatsBase.proportionmap(df[ df[:move],:Division_to] )
+	if length(xx) != p.nJ
+		froms = unique(df[:Division])
+		for f in froms
+			if !in(f,collect(keys(xx)))
+				xx[f] = 0.0
+			end
+		end
+	end
+	
+
 	zz = DataFrame(moment=map(string,map(x->"flow_move_to_$x",collect(keys(xx)))), model_value = collect(values(xx)))
 	append!(mom1,zz)
 
@@ -1090,7 +1119,8 @@ function computeMoments(df::DataFrame,p::Param)
 		ss = replace(ss,"[","")
 		ss = replace(ss,")","")
 		ss = replace(ss,"(","")
-		ss = replace(ss,",","_")
+		ss = replace(ss,", ","_")
+		# ss = replace(ss,",","_")
 		# ss = replace(ss,"kidstrue","kidsTRUE")
 		ss = replace(ss,"owntrue","ownTRUE")
 		nms[i] = ss

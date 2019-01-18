@@ -23,6 +23,7 @@
 \usepackage{tikz}
 \usepackage{adjustbox}
 \usepackage{pgfplots}
+\usepackage{makecell}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -168,7 +169,7 @@ florian.oswald@gmail.com
 \begin_inset Newline newline
 \end_inset
 
-Sciences Po
+SciencesPo Paris
 \end_layout
 
 \begin_layout Date
@@ -191,15 +192,23 @@ today
 This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
- Using the model I estimate the value of the migration option.
+ The model delivers structural estimates of moving costs by ownership status,
+ age and family size that complement theprevious literature.
+ Using the model I first show that migration elasticities vary substantially
+ between renters and owners, and I estimate the consumption value of having
+ the option to migrate across regions when there are regional shocks.
  This value ranges from 0% up to almost 13% of lifetime consumption depending
- on the type of household considered.
- Individuals self-select into ownership, and the model provides cross–equation
- restrictions to address this econometric problem.
- In doing so, it identifies several structural primitives, for instance
- separate moving costs for renters and owners, which are of first order
- importance for policy makers concerned with housing and labor markets.
- 
+ on the type of household considered, and it can be related to previous
+ estimates in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+ when thinking about how much insurance is provided to consumers through
+ migration.
 \end_layout
 
 \begin_layout Standard
@@ -276,23 +285,79 @@ Regional migration rates in the USA are relatively low despite the presence
  However, it would be a mistake to conclude from this observation that the
  option to migrate across regions has a small value to consumers.
  The goal of this paper is to provide a measure of having the option to
- migrate in the context of a lifecycle model with regional income and house
- price uncertainty, and I show that the value is large.
- To arrive at this measure, after fitting the model to micro data, I perform
- a counterfactual experiment whereby all migration between regions is shut
- down.
- I then ask the question of how large of a compensation affected inviduals
- would demand in order to be indifferent between implementation and not
- of this policy.
- I can show that considering homeowners and renters separately in the model
- is of first order importance for answering this question, since they have
- very different elasticities of migration with respect to regional shocks.
- Providing structural estimates of crucial objects like moving costs by
- ownership status is important for many realms of public policy, and hence
- another contribution of the paper.
+ migrate in the face of regional income and house price uncertainty, and
+ I show that the value is large.
+ The paper provides a structural interpretation of the insurance value of
+ migration against regional shocks, as proposed first in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yagan"
+literal "false"
+
+\end_inset
+
+.
+ It shows that considering homeowners and renters separately is of first
+ order importance for this issue, since both have vastly different elasticities
+ of migration with respect to regional shocks.
+ This insight is relevant for labor market and housing policy alike.
 \end_layout
 
 \begin_layout Standard
+Migration probabilities are heterogeneous in the population.
+ Which type a of household is likely to move in a regional downturn? In
+ this paper, which is among the first to consider homeownership and migration
+ in an empirical lifecycle model, I provide structural estimates of crucial
+ objects related to this question, for example, moving costs by ownership
+ status, age and other observables.
+ Modelling homeownership realistically requires modelling asset accumulation
+ and mortgages, and it requires a proper treatment of expectations about
+ house prices, both of which are computationally demanding to integrate
+ in a dynamic model of location choice.
+\end_layout
+
+\begin_layout Standard
+Homeownership and geographical mobility of households are tightly connected:
+ Renters are more mobile than owners.
+ What complicates the analysis, however, is that renters may choose to be
+ renters precisely 
+\emph on
+because
+\emph default
+ they
+\emph on
+ 
+\emph default
+are more mobile, in the sense that they might assess their own likelihood
+ of moving to be relatively high.
+ What is more, often the econometrician cannot observe the relevant state
+ variables which would be informative about those considerations, hence,
+ there is unobserved heterogeneity at play.
+ The model introduced below allows to resolve the joint determination of
+ housing tenure status, consumption, savings and mobility decisions, such
+ that it can be used to structurally estimate deep parameters and to investigate
+ counterfactual policies.
+\end_layout
+
+\begin_layout Standard
+The main counterfactual will be used to shed light on the option value of
+ regional migration under regional price and income risk.
+ How much would households want to pay for a hypothetical migration insurance
+ policy, in other words, what is the value of the option to move? In order
+ to address this, the experiment shuts down migration in the economy, and
+ it reports the compensating consumption stream which would make individuals
+ indifferent between this regime, and the status quo, that is, a world with
+ migration.
+ The results of this exercise differ greatly by type of household considered,
+ and they range from small valuations for older homeowners to very large
+ valuations (13% of period consumption) for young renter households.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Regional shocks to labor demand and house prices may have profound and longlasti
 ng impacts, as we have seen in the aftermath of the 2007 fall in house prices
  and ensuing Great Recession.
@@ -328,7 +393,16 @@ https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_us_and_census.txt
  
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Shocks to regional labor demand affect renters and owners in a similar way,
  i.e.
  labor income of both falls.
@@ -344,6 +418,11 @@ Shocks to regional labor demand affect renters and owners in a similar way,
  renters and owners.
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 In 2013, 63% of occupied housing units in the US were owned, while 37% were
  rented.
@@ -356,9 +435,10 @@ see American Community Survey 2013, table DP04.
 
 \end_inset
 
- At the same time, roughly 1.3% of the population migrate across US census
- division boundaries per year.
- Conditioning on ownership we find that 1.9% of renters and 0.67% owners move.
+ At the same time, roughly 1.3% of the population migrate across US Census
+ Division boundaries per year.
+ Conditional on ownership, this implies that 1.9% of renters and 0.67% owners
+ move.
  A natural question is then to ask why do we observe owners moving less?
  All else equal, owners face higher moving costs, both in terms of financial
  as well as time and effort costs.
@@ -372,10 +452,10 @@ see American Community Survey 2013, table DP04.
  is subject to shocks as discussed above, is relatively illiquid, and in
  addition may have a location specific flow of utility.
  Consumers may have preferences for locations.
- Finally, there is selection into homeownership based on unobservable moving
- costs: Individuals with a particular distaste for moving will be more likely
- to select into homeownership, because they anticipate that they are unlikely
- to ever move in the future.
+ Finally, as already mentioned, there is selection into homeownership based
+ on unobservable moving costs: Individuals with a particular distaste for
+ moving will be more likely to select into homeownership, because they anticipat
+e that they are unlikely to ever move in the future.
  All of these factors interact to shape the joint decision of housing tenure,
  location choice, and mortgage borrowing.
  What is more, they all interact to influence the decision to move in response
@@ -385,8 +465,8 @@ see American Community Survey 2013, table DP04.
 \begin_layout Standard
 In the model I develop, there are several mechanisms which affect the home
  ownership choice of individuals.
- A downpayment requirement means that only individuals with sufficient cash
- on hand are able to buy a house at the current price.
+ A downpayment requirement for implies means that only individuals with
+ sufficient cash on hand are able to buy a house at the current price.
  The model assumes a preference for owner-occupied accomodation, a local
  amenity and a partially unobserved cost of moving, which influence the
  buying decision in addition to age, the probability of moving, and beliefs
@@ -410,7 +490,7 @@ literal "true"
 
 \end_inset
 
-, since it provides an fundamental reason for agents to move in response
+, since it provides a fundamental reason for agents to move in response
  to a change in their economic environment, rather than as a result of idiosyncr
 atic preference shocks alone.
  Including time-varying location characteristics, however, increases computation
@@ -425,19 +505,9 @@ I estimate the model using a simulated method of moments estimator.
  of interest, which are mobility and ownership patterns over the lifecycle,
  ownership rates by region, migration flows across regions, as well as wealth
  accumulation over the lifecycle and by region.
- After fitting the model to the data, I first show how the model reacts
- to large regional shocks and then I move on to compute a measure of the
- value of the migration option for various sub populations.
-\end_layout
-
-\begin_layout Standard
-I find that owners and renters face very different incentives in the model.
- The probability of moving conditional on being a renter is consistently
- higher than the one for owners, and it varies considerably with income
- and assets.
- The model can be used to quantify the moving cost in terms of dollars,
- and I find that the estimates for renters and owners bracket the moving
- cost obtained in 
+ After fitting the model to the data, I first quantify the moving cost in
+ terms of dollars, and I find that the estimates for renters and owners
+ bracket the moving cost obtained in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kennan2003effect"
@@ -446,43 +516,15 @@ literal "true"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-Migration is a low probability event in both data and model.
- Nevertheless, the welfare implications not being able to migrate are large.
- I conduct an experiment where migration across regions is prohibited in
- order to measure the insurance value provided by migration.
- In the main version of this counterfactual experiment, I compute the average
- lifetime utility of agents under both scenarios, and I find that removing
- the option to move is valued at 4.6% of optimal per period consumption over
- the entire lifecycle – a large value.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-The baseline version assumes no change to regional prices as a a result
- of the policy; I provide three additional scenarios with different assumptions
- about how regional prices might change after introduction of the policy.
- The scenarios assume price changes ranging from large and negative to positive,
- and all imply even higher valuations of the forgone migration option than
- under observed prices.
-\end_layout
-
-\end_inset
-
- Conditioning on young versus old household, one finds 7% for the former
- and 2% for the latter.
- Given that the ownership rate varies significantly by age, one can see
- that young, mobile renters are the group which incurs the greatest welfare
- loss from reduced mobility.
- This result shows the prominent role of expectations about future potential
- moves.
- The relatively large values which consumers place on the migration option,
- as well as the large dispartities in valuations between renters, owners,
- by location as well as between young and old people, are all policy relevant.
- They illustrate the welfare costs of policies which reduce mobility – such
- as subsidized homeowership, for example.
+ Then the model is used to compute migration elasticities to regional shocks
+ by tenure status and current location.
+ The main result shows that migration is a low probability event in both
+ data and model, but associated with a large option value for consumers.
+ Shutting down regional migration in an environment with realistic income
+ and price shocks would require a 6% increase in per period consumption
+ to make the average consumer indifferent to the status quo.
+ This number varies greatly by household type (age, housing tenure, persistent
+ income level) as well as location.
 \end_layout
 
 \begin_layout Paragraph
@@ -508,11 +550,11 @@ literal "true"
  which are uncertain ex-ante, so the consumer has to move to a location
  in order to discover their values.
  The distributions of those match effects in each location are stationary.
- In their model, after having learned the value of the current location,
- the only reason for a move is a favourable realization of an i.i.d.
- preference shock which might occur in some future period – there is no
- change in economic fundamentals which might encourage a move, like a shock
- to wages, for example.
+ After having learned the value of the current location, the only reason
+ for a move is a favourable realization of an i.i.d.
+ preference shock which might occur in some future period.
+ There is no change in economic fundamentals which might encourage a move,
+ like a shock to wages, for example.
  Relaxing this feature as well as adding housing and savings decisions are
  my main contributions to their paper.
  I am able to let regions experience differential income and price shocks
@@ -540,7 +582,7 @@ literal "true"
 
 \end_inset
 
- is a recent paper that extends 
+ is similar to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gemici2007family"
@@ -548,8 +590,7 @@ literal "true"
 
 \end_inset
 
- to include housing choices and focuses on the response of owners to individual
- labor market shocks.
+ but with housing choices.
  The main differences to 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -572,18 +613,9 @@ literal "true"
 
 .
  The i.i.d.
- assumption for regional shocks is clearly rejected in the data.
- I follow 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
- in assuming that individuals must visit a location in order to discover
- the exact value of their new wage, over and above a predictable part, while
- 
+ assumption for regional shocks is clearly rejected in the data, as will
+ become clear in the next section.
+ Also, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "winkler2010effect"
@@ -597,7 +629,7 @@ e location.
  in each period, and decide to move based on their expectations about how
  they will fare in each.
  Secondly it allows for reasons other than job offers to trigger a move,
- which is a feature of the data, as I will show below.
+ which is also a feature of the data, as I will show below.
  
 \end_layout
 
@@ -616,10 +648,28 @@ literal "true"
  after an adverse shock, the relocation of workers is one of the main mechanisms
  to restore unemployment and participation rates back to trend in an affected
  region.
- Relative to their paper, this paper shows how the underlying decision maker
- reacts to their regional shocks – in particular, how owners and renters
- react differently to those shocks, and what this implies for their valuation
- of the migration option.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lkhagvasuren2012big"
+literal "false"
+
+\end_inset
+
+ is a more recent paper on the topic, proposing a frictional version of
+ the 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lucas1974equilibrium"
+literal "false"
+
+\end_inset
+
+ island model.
+ Relative to those papers, here we show how the underlying decision maker
+ reacts to regional shocks – in particular, how owners and renters react
+ differently and what this implies for their valuation of the migration
+ option.
  Related to this, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -684,7 +734,8 @@ literal "true"
  The same mechanism operates in my model.
  Furthermore, the dynamic nature of my model allows me to evaluate the response
  of migration to shocks over time.
- My paper can be seen as a complement to the exercise proposed in 
+ The present paper can be seen as a complement to the exercise proposed
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "yagan"
@@ -704,9 +755,9 @@ literal "false"
  is offered by migration.
  The author finds migration insures against 7% of an average local labor
  demand shock.
- My paper implements a fully structural analysis of the same question, with
- the added benefit that I can measure a value of the migration option in
- terms of consumption.
+ I implement a fully structural analysis of the same question, with the
+ added benefit that I can measure a value of the migration option in terms
+ of consumption.
  In this sense, the present paper offers a more direct answer to the question
  of 
 \emph on
@@ -720,8 +771,8 @@ how much consumption would I forgo today in order to be insured in an adverse
 \end_layout
 
 \begin_layout Standard
-Also related is a recent literature that considers the effects of the 2007
- housing bust on labor market mobility.
+Another related literature considers the effects of the 2007 housing bust
+ on labor market mobility.
  In terms of empirical contributions, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -770,7 +821,7 @@ literal "true"
 , 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "song2012measuring"
+key "csahin2014mismatch"
 literal "true"
 
 \end_inset
@@ -846,84 +897,77 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Finally, the paper relates to the literature on tax treatment of housing
- and ownership.
- The federal tax code in the United States allows households to deduct mortgage
- interest payments from Federal taxes.
+In the remainder of this papers I will first present a set of facts from
+ aggregate and micro data about regional migration in the US in section
  
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2011rethinking"
-literal "true"
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Facts"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ before introducing a structural model which can speak to those fact in
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Model"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ I will then discuss solution and estimation of the model in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Solving-and-Simulating"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
  and 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "glaeser2002benefits"
-literal "true"
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Estimation"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- respectively discuss the benefits and distortions generated by this policy,
- and 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Poterba:2008fk"
-literal "true"
+ in order to finally present the results regarding the option value of migration
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Results"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- provide an estimate of the financial benefit to owners from it.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sommer2013implications"
-literal "true"
-
-\end_inset
-
- is a recent contribution that analyses the policy in a GE framework.
- I evaluate the effect of removing the deduction on both homeownership and
- mobility.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This paper merges housing demand over the lifecycle, as for example 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bk_wenli"
-literal "true"
-
-\end_inset
-
-, with dynamic migration decisions under aggregate and regional shocks.
- I find that housing is an important feature of the individual migration
- decision.
- The likelihood of moving depends not only on whether or not the individual
- owns their house and on their asset holdings, but also on the price and
- income levels in all potential destination regions.
- The value of the migration option is very large.
+.
 \end_layout
 
 \begin_layout Section
-Empirical Background
+Facts 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Facts"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-The amount of regional migration in the US is still high by international
- standards.
- According to 
+According to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "molloy2011internal"
@@ -933,12 +977,9 @@ literal "true"
 
 , who use three publicly available datasets (American Community Survey (ACS),
  the Annual Social and Economic Supplement to the CPS (March CPS), and Internal
- Revenue Service (IRS) data), each year roughly 1.5% of the entire population
- moves between two out of four census regions, and about 1.3% move between
- states within any one region.
- At a more local level, they find that 5% of the population move between
- counties each year, which amounts to roughly one-third of the annual flows
- into and out of employment according to the measure in 
+ Revenue Service (IRS) data), each year roughly 5% of the population moves
+ between counties each year, which amounts to roughly one-third of the annual
+ flows into and out of employment according to the measure in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "fallick2004employer"
@@ -947,22 +988,22 @@ literal "true"
 \end_inset
 
 .
- An overview of migration rates across different regional delineations and
- over different time spells is shown in table 
+ The cross State figure is 2%, and the cross Census Division rate is estimated
+ at 1.5% of the population, per year (see table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Migration-rates-Molloy"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1027,7 +1068,7 @@ literal "true"
 
 \end_inset
 
- are very well suited for the purpose of analysing migration and ownership.
+ are well suited for the purpose of analysing migration and ownership.
  None of them tracks movers, so it is impossible to know the circumstances
  of an individual at the moment they decided to move, which is ultimately
  of interest in this paper.
@@ -1096,14 +1137,7 @@ https://www.census.gov/geo/reference/gtc/gtc_census_divreg.html
 
 \end_inset
 
- and figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Census-Division-Map"
-
-\end_inset
-
- for a map.
+.
  
 \end_layout
 
@@ -1147,30 +1181,189 @@ The model presented below contains 25.4 million different points in the state
 
 \end_inset
 
- I will demonstrate below what the choice of divisions implies for the captured
+ I will demonstrate below what the choice of Divisions implies for the captured
  state–level variation.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Census-Division-Map"
+
+\end_inset
+
+ presents a map, and table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:SIPP-divisions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ lists Division abbreviations and the member States.
+ 
 \end_layout
 
-\begin_layout Paragraph
-Descriptive Statistics on Cross Division Migration.
+\begin_layout Subsection
+The Main Reasons to Move are: Work, Housing and Family
 \end_layout
 
 \begin_layout Standard
-I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
- with 102,529 individuals that I can follow over time and space.
- From this dataset, a couple of interesting facts emerge.
+The March Supplement to the Current Population Survey (CPS) contains several
+ questions relevant for the study of migration.
+ Here I analyse answers to the 2013 edition of the CPS to the question 
+\begin_inset Quotes eld
+\end_inset
+
+What was the main reason for moving
+\begin_inset Quotes erd
+\end_inset
+
+ where respondents are offered 19 options to choose from.
+ The results are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:CPS-reason-move"
+
+\end_inset
+
+.
+ It is striking to note that even though we are conditioning on moves across
+ Division boundaries (and thus think of long-range moves), the percentage
+ of people citing category 
+\begin_inset Quotes eld
+\end_inset
+
+housing
+\begin_inset Quotes erd
+\end_inset
+
+ as their main motivation is roughly 24% of the total population of movers.
+ The table also disagreggates the response to the question by the distance
+ between origin and destination State, and we can see that the proportion
+ of respondents does vary with distance moved, but not to an extent that
+ would suggest that housing becomes irrelevant as a motivation with increasing
+ distance.
+ Summing up in the bottom row of the table, we see that 55% say work was
+ the main reason, 24% refer to housing and the remaining 21% is split between
+ family and other reasons.
+ The model to be presented below addresses each of these categories: Individuals
+ can move out of work-related concerns (regional and individual level income
+ fluctuations), because of housing considerations (regional house price
+ fluctuation), for family reasons (stochastic age-dependent arrival of children)
+ as well reasons classified as 
+\begin_inset Quotes eld
+\end_inset
+
+other
+\begin_inset Quotes erd
+\end_inset
+
+, which are accounted for by an idiosyncratic preference shock.
+\end_layout
+
+\begin_layout Subsection
+Homeownership and College Education are Important Predictors for Migration
+\end_layout
+
+\begin_layout Standard
+Putting somewhat more structure onto this, I next present estimates from
+ a statistical analysis of the determinants of cross division moves from
+ household–level SIPP data.
+ I combine four panels of SIPP data (1996, 2001, 2004 and 2008) into a database
+ with 102,529 household heads that I can follow over time and space.
+ This will be the central estimation sample in main analsis below.
  Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:D2D-probit"
+
+\end_inset
+
+ shows the results.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+It's worth emphasizing that at this point I am abstracting away from the
+ severe endogeneity issues which the structural model below will account
+ for.
+\end_layout
+
+\end_inset
+
+ I regress a binary indicator for whether or not a cross division move took
+ place in a given year on a set of explanatory variables, which relate to
+ the household in question in a probit regression.
+ The table shows marginal effects computed at the sample mean of each variable,
+ as well as the ratio of marginal effects to the baseline unconditional
+ probability of moving (1.32%).
+ The results indicate that there is a pronounced age effect, with each additiona
+l year of age implying a reduction that is equal to 6% of the baseline probabili
+ty.
+ The same effect is found for whether or not children are present in the
+ household.
+ The effect of being a homeowner is very large and equivalent to a reduction
+ in the propensity to move of 51% of the baseline probability.
+ Increasing household income by $100,000 is equivalent to a 5% baseline
+ increase.
+ Finally, having a college degree has an effect of equal magnitude than
+ being a homeowner, but in the opposite direction: a college degree amounts
+ to an increase of the baseline of 49%.
+ According to this model, the effect of being a homeowner on the baseline
+ moving probability is equal to an age increase of 8.3 years, thus taking
+ a 30-year old to age 38; also, a household which owns the house would have
+ to experience an increase in household income of $1m in order to make up
+ for the implied loss in the probability of moving across divisions from
+ being an owner.
+ The house price to income ratio and total household wealth are not statisticall
+y significant in this specification.
+\end_layout
+
+\begin_layout Paragraph
+Sample Selection: Non–College Degree 
+\end_layout
+
+\begin_layout Standard
+Even though the estimates in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:D2D-probit"
+
+\end_inset
+
+ only measure statistical associations, they highlight an important feature
+ of the data: moving and having a college degree are strongly correlated.
+ While this paper specifically aims to investigate the other strong correlation
+ in that table, i.e.
+ between ownership status and mobility, a full treatment which endogenizes
+ education choices is too ambitious.
+ A pragmatic solution to this problem is to condition the data on a certain
+ education group and disregard education choices, as is done in the previous
+ literature.
+ In what follows, therefore, all SIPP data will refer to household heads
+ without a college degree, which selects 62% of the original sample, resulting
+ in 65,482 unique household heads.
+\end_layout
+
+\begin_layout Subsection
+Renters Move at Twice the Rate of Owners at all Ages
+\end_layout
+
+\begin_layout Standard
+In order to give a sense of the magnitude of migration rates by ownership
+ status in this selected sample, table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Annual-moving-rate"
 
 \end_inset
 
- presents some summary annual moving rates for both state and Census Division
+ presents summary annual moving rates for both State and Census Division
  level migration.
- The overall unconditional migration rate is 1.95% and 1.32% per year for
- cross state and cross division, respectively.
- The cross state figure differs from the 2% in table 
+ The overall unconditional migration rate is 1.51% and 0.99% of households
+ per year for cross State and cross Division, respectively.
+ The cross State figure differs from the 2% in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Migration-rates-Molloy"
@@ -1178,8 +1371,7 @@ reference "tab:Migration-rates-Molloy"
 \end_inset
 
  because I set up the SIPP data in terms of household heads, thereby missing
- some moves of non–reference persons, and potentially because of sample
- attrition.
+ some moves of non–reference persons, and because I condition on non–college.
  It is quite clear from table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1187,19 +1379,12 @@ reference "tab:Annual-moving-rate"
 
 \end_inset
 
- that there is a marked distinction in the likelihood of moving across state
- as well as division boundaries between renters and owners, with 2.6% (1.85%)
- of renters versus 0.93% (0.7%) of owners moving across state (division) boundarie
-s on average per year.
- In total I observe of 2684 cross Division moves made by 2329 unique individuals
-, implying multiple moves for some movers, see table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:SIPP-nummoves"
-
-\end_inset
-
-.
+ that there is a marked distinction in the likelihood of moving across State
+ as well as Division boundaries between renters and owners, with 2.07% (1.49%)
+ of renters versus 0.82% (0.64%) of owners moving across State (Division)
+ boundaries on average per year.
+ In total I observe 1259 cross Division moves made by 1069 unique individuals
+ in my non-college sample, implying multiple moves for some movers.
 \begin_inset Foot
 status collapsed
 
@@ -1224,19 +1409,25 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
-Moving on to migration by age, we can see in figure 
+Reconsidering homeowership and migration by age gives rise to figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:SIPP-sample-proportion-1"
 
 \end_inset
 
- firstly that renters are more likely to move at all ages, and secondly
- that there is a strongly declining age effect – younger individuals move
- more.
- Both of those are highly salient features of the data, and they are the
- main dimension along which my model's performance is going to be evaluated.
- Finally, a summary regarding homeownership rates and median price to income
+.
+ It is clear that renters are more likely to move at all ages, with a strongly
+ declining age effect – younger individuals move more.
+ At the same time, homeownership is increasing with age.
+ These are highly salient features of the data, and they are among the key
+ dimensions along which this model's performance is going to be evaluated.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Finally, a summary regarding homeownership rates and median price to income
  ratios by Census division is presented as an average over the years 1997–2011
  in table 
 \begin_inset CommandInset ref
@@ -1248,390 +1439,117 @@ reference "tab:SIPP-divisions"
 .
 \end_layout
 
-\begin_layout Paragraph
-Determinants of Migration.
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Regional Income and House Price Risk are not IID
 \end_layout
 
 \begin_layout Standard
-The March Supplement to the Current Population Survey (CPS) contains several
- questions relevant for the study of migration.
- Here I analyse answers to the 2013 edition of the CPS to the question 
-\begin_inset Quotes eld
-\end_inset
-
-What was the main reason for moving
-\begin_inset Quotes erd
-\end_inset
-
- where respondents are offered 19 options to choose from.
- The results are displayed in table 
+The time series of regional disposable income and regional house prices
+ are each strongly correlated across Divisions.
+ Additionally, they exhibit high degress of autocorrelation, i.e.
+ shocks to regional incomes and prices are persistent.
+ To illustrate the degree of cross correlation of both prices and incomes
+ consider figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:CPS-reason-move"
+reference "fig:TS-correlogram"
+plural "false"
+caps "false"
+noprefix "false"
 
-\end_inset
-
-, and the caption to the table provides the key according to which I group
- the 19 options into four categories.
- It is striking to note that even though we are conditioning on moves across
- Division boundaries (and thus think of long-range moves), the percentage
- of people citing category 
-\begin_inset Quotes eld
-\end_inset
-
-housing
-\begin_inset Quotes erd
-\end_inset
-
- as their main motivation is roughly 24% of the total population of movers.
- The table also disagreggates the response to the question by the distance
- between origin and destination state (not Division), and we can see that
- the proportion of respondents does vary with distance moved, but not to
- an extent that would suggest that housing becomes irrelevant as a motivation
- with increasing distance.
- Summing up in the bottom row of the table, we see that 55% say work was
- the main reason, 24% refer to housing and the remaining 21% is split between
- family and other reasons.
- The model to be presented below addresses each of these categories: Individuals
- can move out of work-related concerns (regional and individual level income
- fluctuations), because of housing considerations (regional house price
- fluctuation), for family reasons (stochastic age-dependent arrival of children)
- as well reasons classified as 
-\begin_inset Quotes eld
-\end_inset
-
-other
-\begin_inset Quotes erd
-\end_inset
-
-, which are accounted for by an idiosyncratic preference shock.
-\end_layout
-
-\begin_layout Standard
-In table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:D2D-probit"
-
-\end_inset
-
- I present estimates from a statistical analysis of the determinants of
- cross division moves from SIPP data, abstracting away from the severe endogenei
-ty issues which the structural model below will account for.
- I regress a binary indicator for whether or not a cross division move took
- place in a given year on a set of explanatory variables which relate to
- the household in question in a probit regression.
- The table shows marginal effects computed at the sample mean of each variable,
- as well as the ratio of marginal effects to the baseline unconditional
- probability of moving (1.32%).
- The results indicate that there is a pronounced age effect, with each additiona
-l year of age implying a reduction that is equal to 6% of the baseline probabili
-ty.
- The same effect is found for whether or not children are present in the
- household.
- The effect of being a homeowner is very large and equivalent to a reduction
- in the propensity to move of 51% of the baseline probability.
- Increasing household income by $100,000 is equivalent to a 5% baseline
- baseline increase.
- Finally, having a college degree has an effect of equal magnitude than
- being a homeowner, but in the opposite direction: a college degree amounts
- to an increase of the baseline of 49%.
- According to this model, the effect of being a homeowner on the baseline
- moving probability is equal to an age increase of 8.3 years, thus taking
- a 30-year old to age 38; also, a household which owns the house would have
- to experience an increase in household income of $1m in order to make up
- for the implied loss in the probability of moving across divisions from
- being an owner.
- The house price to income ratio does not play a significant role in this
- specification.
-\end_layout
-
-\begin_layout Paragraph
-Regional Income and House Price Risk.
-\end_layout
-
-\begin_layout Standard
-As a final piece of motivation I present an overview of the variation in
- house price and average income at the division level.
- I mentioned above that the shocks to each region exhibit a strong correlation
- as well as a high degree of persistence.
- This is best to see using a plot of the time series of regional house price
- and average income indices and how they relate to the national average
- of that index.
- Figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Regional-House-Price-data"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Regional-Income-data"
-
-\end_inset
-
- present the results of such an exercise.
- In both cases, we can see that nationwide shocks occur to varying degrees
- at the regional level; and that all series exhibit a high degree of persistence
-, i.e.
- they are visibly different from an i.i.d.
- process.
- The model I will present now takes those patterns seriously and proposes
- a way to solve and estimate the resulting high-dimensional problem.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/move_rates_edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Annual moving rate in percent of the population.
- Households are categorized into 
-\begin_inset Quotes eld
-\end_inset
-
-Renter
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Owner
-\begin_inset Quotes erd
-\end_inset
-
- based on their homeownership status at the beginning of the period in which
- they move.
- SIPP data.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Annual-moving-rate"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/num_moves.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Distribution of the number of moves per mover by homeownership status.
- Households are categorized into 
-\begin_inset Quotes eld
-\end_inset
-
-Renter
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Owner
-\begin_inset Quotes erd
-\end_inset
-
- based on their homeownership status at the 
-\emph on
-first 
-\emph default
-move.
- SIPP data.
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-nummoves"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D.pdf
-	scale 85
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-SIPP sample proportion moving across Census Division boundaries by age (upper
- panel) and proportion of owners by age (lower panel).
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:SIPP-sample-proportion-1"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/data/sipp/own_p2y-edit.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Census Division housing characteristics.
- Shows average ownership rates over 1997–2011 and median price to income
- ratios for the same period.
- The (unobserved) house price for renters is computed assuming an implied
- user cost of owning of 5%, i.e.
- 
-\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
 \end_inset
 
 .
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:SIPP-divisions"
-
+ The top panels show the detrended version of each time series, by region,
+ while the bottom panels show the pairwise correlation of those detrended
+ time series across regions.
+ The figure highlights that deviations from trend are highly correlated
+ between Divisions, for both average regional incomes 
+\begin_inset Formula $(q)$
 \end_inset
 
+ and regional prices 
+\begin_inset Formula $(p)$
+\end_inset
 
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Data for 
+\begin_inset Formula $q$
+\end_inset
+
+ comes from the BEA series 
+\begin_inset Quotes eld
+\end_inset
+
+Personal Income by State
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $p$
+\end_inset
+
+ is the FHFA house price index by Census Division.
+ Both sets of series are a direct input to the structural model to be introduced
+ below.
+ Data are available via 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/floswald/EconData
 \end_layout
 
 \end_inset
 
-
+.
 \end_layout
 
 \end_inset
 
+ Regarding persistence of those time series, the average autorcorrelation
+ coefficients are 0.91 for 
+\begin_inset Formula $p$
+\end_inset
 
+ and 0.92 for 
+\begin_inset Formula $q$
+\end_inset
+
+, respectively (for details see table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Autocorrs"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) over the considered time period.
+ Modelling regional risk as an IID process seems like an unjustifiably strong
+ assumptions given those high degrees of cross correlation and persistence.
+ Therefore the model introduced below will take both correlation and persistence
+ in regional prices seriously and will propose a method to solve and estimate
+ the resulting high-dimensional problem.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -1708,6 +1626,7 @@ state
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status collapsed
@@ -1769,17 +1688,26 @@ name "tab:D2D-probit"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
+\begin_inset Float table
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
-	scale 80
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/move_rates.tex}
+\end_layout
 
 \end_inset
 
@@ -1790,11 +1718,112 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Regional House Price indices vs National average.
- FHFA house price index.
+Annual moving rate in percent of the population.
+ Households are categorized into 
+\begin_inset Quotes eld
+\end_inset
+
+Renter
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Owner
+\begin_inset Quotes erd
+\end_inset
+
+ based on their homeownership status at the beginning of the period in which
+ they move.
+ SIPP data subset to non-college degree holders.
+ 
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Regional-House-Price-data"
+name "tab:Annual-moving-rate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/num_moves.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Distribution of the number of moves per mover by homeownership status.
+ Households are categorized into 
+\begin_inset Quotes eld
+\end_inset
+
+Renter
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Owner
+\begin_inset Quotes erd
+\end_inset
+
+ based on their homeownership status at the 
+\emph on
+first 
+\emph default
+move.
+ SIPP data subset to non-college degree holders.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-nummoves"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1815,14 +1844,14 @@ name "fig:Regional-House-Price-data"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
-	scale 80
+	filename ../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2.pdf
+	scale 85
 
 \end_inset
 
@@ -1833,18 +1862,12 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Regional per capita personal income 
-\begin_inset Formula $q_{dt}$
-\end_inset
-
- from BEA vs the national average index 
-\begin_inset Formula $Q$
-\end_inset
-
-, for which I use real per capital GDP.
+SIPP sample proportion moving across Census Division boundaries by age (upper
+ panel) and proportion of owners by age (lower panel).
+ Conditions on individuals without a college degree.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Regional-Income-data"
+name "fig:SIPP-sample-proportion-1"
 
 \end_inset
 
@@ -1853,6 +1876,138 @@ name "fig:Regional-Income-data"
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{adjustbox}{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram-detrended.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{adjustbox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The time series for regional incomes 
+\begin_inset Formula $\{q_{dt}\}_{t=1967}^{2012}$
+\end_inset
+
+ and house prices 
+\begin_inset Formula $\{p_{dt}\}_{t=1967}^{2012}$
+\end_inset
+
+ are strongly correlated across Divisions 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ The top panels of this figure show the detrended series for all Divisions
+ for both 
+\begin_inset Formula $q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ The bottom panel further emphasizes that the cross-correlations across
+ states between regional trend deviations are substantial.
+ For instance in the bottom left panel, the top left tile indicates that
+ the correlation between the time series of 
+\begin_inset Formula $q$
+\end_inset
+
+ for East North Central (ENC) and West South Central (WSC) is around 0.75
+ (raw numbers in tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Cross-corr-q"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Cross-corr-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Detrended with fourth-order moving average.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:TS-correlogram"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -1879,6 +2034,13 @@ newpage
 
 \begin_layout Section
 Model
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Model"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1900,15 +2062,15 @@ region
 \begin_inset Formula $d\in D$
 \end_inset
 
- in any given period, and we let 
-\begin_inset Formula $j\in\left\{ 1,\dots,J\right\} $
-\end_inset
-
- index age, while 
+ in any given period at date 
 \begin_inset Formula $t$
 \end_inset
 
- represents calendar time.
+, and we let 
+\begin_inset Formula $j\in\left\{ 1,\dots,J\right\} $
+\end_inset
+
+ index age.
  At each age 
 \begin_inset Formula $j$
 \end_inset
@@ -1959,8 +2121,8 @@ Every individual in region
 \end_inset
 
  enters the individual wage equation as a level shifter.
- At the individual level uncertainty enters the model through an idiosyncratic
- and persistent component of income risk 
+ At the individual level uncertainty enters the model through a Markovian
+ idiosyncratic component of income risk 
 \begin_inset Formula $z_{ij}$
 \end_inset
 
@@ -1988,17 +2150,13 @@ Every individual in region
 \begin_inset Formula $\left(q_{dt+1},p_{dt+1}\right),\forall d$
 \end_inset
 
- in such a way that is compatible with the evidence from figures 
+ in such a way that is compatible with the evidence from figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Regional-House-Price-data"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Regional-Income-data"
+reference "fig:TS-correlogram"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
@@ -2051,9 +2209,11 @@ literal "true"
 
 \end_inset
 
- achieve with a region-person specific match effect.
+ achieve with a region-person specific match effect and by including this
+ match effect from the last location in the state space.
+ 
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Adding this feature would increase the computational burden of the model
@@ -2067,7 +2227,7 @@ literal "true"
 \end_inset
 
 .
- I don't expect return migration to be of first order for the questions
+ I do not expect return migration to be of first order for the questions
  adressed here.
 \end_layout
 
@@ -2291,15 +2451,7 @@ When moving from region
 \end_inset
 
  tomorrow for stayers and movers, respectively.
- Both objects are estimated from individual SIPP data as described in subsection
  
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "subsec:copula-estimates"
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Subsection
@@ -2321,8 +2473,27 @@ As stated above, allowing
 
  to vary in an unrestricted fashion would make computation of this model
  infeasible.
- I assume that agents use a 2-dimensional factor model to infer regional
- prices.
+ To solve this problem, I assume that agents use a 2-dimensional factor
+ model to infer regional prices.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The method of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "krusell_smith"
+literal "false"
+
+\end_inset
+
+ is conceptually similar to what I'm doing.
+ Instead of mean and variance of a distribution, consumers here track the
+ value of two aggregate state variables.
+\end_layout
+
+\end_inset
+
  To this end I define aggregate state variables 
 \begin_inset Formula $Q$
 \end_inset
@@ -2332,7 +2503,7 @@ As stated above, allowing
 \end_inset
 
 , which evolve according to a stationary vector autoregression of order
- one (VAR(1)).
+ one.
  At date 
 \begin_inset Formula $t$
 \end_inset
@@ -2501,7 +2672,7 @@ One could say that the formulation is missing a shock, e.g.
  Adding such a shock would increase the state space by a factor equal to
  the number of integration nodes to be used for the approximation of the
  resulting integral, which is a big cost.
- I don't expect any major difference in my results.
+ I do not expect any major difference in my results.
  The fit of this approximation is very good, as will be shown further below.
 \end_layout
 
@@ -2530,90 +2701,6 @@ reference "subsec:Aggregate-to-regional"
 
  when I describe estimation of this part of the model and where I also provide
  some illustration regarding the fit of this model to the data.
-\end_layout
-
-\begin_layout Standard
-With this modification let us now define the state vector which will facilitate
- the following description.
- The state vector of individual 
-\begin_inset Formula $i$
-\end_inset
-
- at date 
-\begin_inset Formula $t$
-\end_inset
-
- is given by 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula 
-\[
-x_{it}=\left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)
-\]
-
-\end_inset
-
-where the variables stand for, in order, assets, individual income shock,
- household size, aggregate price vector, housing status coming into the
- current period, current region index, moving cost type and age.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-A word of caution regarding the two time indices 
-\begin_inset Formula $j$
-\end_inset
-
- and 
-\begin_inset Formula $t$
-\end_inset
-
-: For large parts of the exposition this distinction is irrelevant, i.e.
- saying 
-\begin_inset Formula $a_{ij}$
-\end_inset
-
- or 
-\begin_inset Formula $a_{it}$
-\end_inset
-
- is equivalent.
- However, in the estimation I will allow different cohorts 
-\begin_inset Formula $C_{1},\dots,C_{N}$
-\end_inset
-
- to experience different sequences of prices 
-\begin_inset Formula $\mathbf{F}_{C_{1}},\mathbf{F}_{C_{2}},\dots$
-\end_inset
-
-, and therefore separating time and age will be useful.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -2803,12 +2890,12 @@ reference "subsec:Recursive-Formulation"
 \begin_inset Formula $x$
 \end_inset
 
-.
+ (defined below).
  Moving costs differ between renters and owners.
  Moving for an owner requires to sell the house, which in turn requires
  some effort and time costs.
- This is in addition to any other psychological costs incurred from moving
- states which are common between renters and owners.
+ This is in addition to any other utility costs incurred from moving regions
+ which are common between renters and owners.
  I specify the moving cost function as linear in parameters 
 \begin_inset Formula $\alpha$
 \end_inset
@@ -2868,8 +2955,8 @@ The unobserved moving cost type
 \begin_inset Formula $\tau=1$
 \end_inset
 
- indexes the high type, is a parsimonious way to account for the fact that
- in the data, some individuals never move.
+ indexes the high–cost type, is a parsimonious way to account for the fact
+ that in the data, some individuals never move.
  This is of particular relevance when thinking about owners, who may self–select
  into ownership because they know they are unlikely to ever move.
  In the model this selection mechanism, together with any other factor that
@@ -3044,55 +3131,94 @@ reference "subsec:Recursive-Formulation"
 .
 \end_layout
 
+\begin_layout Subsection
+Timing and State Vector
+\end_layout
+
 \begin_layout Standard
-At this point a small remark about identification may be helpful in order
- to better understand some of the modelling choices so far.
- 
-\begin_inset Note Note
+The state vector of individual 
+\begin_inset Formula $i$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ when they are of age 
+\begin_inset Formula $j$
+\end_inset
+
+ is given by 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+x_{it}=\left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)
+\]
+
+\end_inset
+
+where the variables stand for, in order, assets, individual income shock,
+ household size, aggregate price vector, housing status coming into the
+ current period, current region index, moving cost type and age.
+\begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-The moving cost function does not contain a term relating to distance of
- the move, which seems like a very intuitive thing to consider.
- This was not included because I could not find data moments that separately
- identify the cost of distance from the local amenity 
-\begin_inset Formula $A_{k}$
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+A word of caution regarding the two time indices 
+\begin_inset Formula $j$
 \end_inset
 
-.
- So a model with a regional fixed effect 
-\begin_inset Formula $A_{k}$
+ and 
+\begin_inset Formula $t$
 \end_inset
 
- is isomorphic to one with an additional distance term in 
-\begin_inset Formula $\Delta(d,x)$
+: For large parts of the exposition this distinction is irrelevant, i.e.
+ saying 
+\begin_inset Formula $a_{ij}$
 \end_inset
 
-.
- Similarly,
+ or 
+\begin_inset Formula $a_{it}$
+\end_inset
+
+ is equivalent.
+ However, in the estimation I will allow different cohorts 
+\begin_inset Formula $C_{1},\dots,C_{N}$
+\end_inset
+
+ to experience different sequences of prices 
+\begin_inset Formula $\mathbf{F}_{C_{1}},\mathbf{F}_{C_{2}},\dots$
+\end_inset
+
+, and therefore separating time and age will be useful.
 \end_layout
 
 \end_inset
 
- A different way to formalize the idea of the high moving cost type 
-\begin_inset Formula $\tau$
-\end_inset
 
- would be to allow for a nested structure of preference shocks, and/or a
- random preference for the current location that creates a home–bias in
- the same way as 
-\begin_inset Formula $\tau$
-\end_inset
-
- does.
- Again, given that each of those represents a particular parametric assumption
- and we cannot use data to tell us which one is more relevant (at least
- in the context of this model), I regard those formulations as close to
- equivalent.
-\end_layout
-
-\begin_layout Subsection
-Timing
 \end_layout
 
 \begin_layout Standard
@@ -3109,7 +3235,7 @@ observe
 \end_inset
 
 , 
-\begin_inset Formula $z_{ij}$
+\begin_inset Formula $s_{it},z_{ij}$
 \end_inset
 
  and
@@ -3233,11 +3359,35 @@ literal "true"
 
 .
  Furthermore, I assume that 
-\begin_inset Formula $\varepsilon\sim$
+\begin_inset Formula $\varepsilon$
 \end_inset
 
- EV Type 1.
- 
+ is distributed according to the Standard Type 1 Extreme Value distribution.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This is also called the Standard Gumbel distribution.
+ Notice that the 
+\emph on
+Standard
+\emph default
+ part implies that location and scale parameters of the Gumbel distribution
+ are chosen such that 
+\begin_inset Formula $E[\varepsilon]=\bar{\gamma}$
+\end_inset
+
+, a constant known as the Euler-Mascheroni number, and that the its standard
+ deviation is fixed at 
+\begin_inset Formula $\sqrt{Var(\varepsilon)=}\frac{\pi}{\sqrt{6}}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3759,6 +3909,13 @@ a_{ij+1} & \geq & -(1-\chi)p_{kt}h_{ij}\label{eq:budget-own-borrow-1}
 
 \begin_layout Section
 Solving and Simulating the Model 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Solving-and-Simulating"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3892,16 +4049,24 @@ Once the solution is obtained, simulation of the model proceeds by using
 \end_inset
 
  to obtain simulated lifecycle data.
- As I will explain in greater detail in the next section, this proceedure
- needs to replicate the time and age structure found in the data, which
- is achieved by simulating different cohorts, starting life in 1967 and
- all successive years up until 2012.
+ As will become clear in the next section, this proceedure needs to replicate
+ the time and age structure found in the data, which is achieved by simulating
+ different cohorts, starting life in 1967 and all successive years up until
+ 2012.
  The model moments are then computed using the empirical age distribution
  found in the estimation sample as sampling weights.
+ 
 \end_layout
 
 \begin_layout Section
-Estimation
+Estimation 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Estimation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3914,17 +4079,7 @@ In this section I explain how the model is estimated to fit some features
  of moments (SMM) approach, whereby given a set of parameters, the model
  is used to compute decision rules of agents, which in turn are used to
  simulate artificial data.
- I decided to choose SMM over maximum likelihood mainly because I need to
- combine several datasets.
- For example, the SIPP does not have information on long-duration moments
- (like number of moves over lifecycle), and the PSID does not have enough
- observations to construct a region by region transition matrix conditional
- on my state vector.
- 
-\end_layout
-
-\begin_layout Standard
-In what follows, I will first discuss estimation of the exogenous stochastic
+ In what follows, I will first discuss estimation of the exogenous stochastic
  processes, and then turn to the estimation of the model preference parameters.
  
 \end_layout
@@ -3973,8 +4128,8 @@ The VAR processes at the aggregate and regional level are estimated using
 value
 \emph default
 ), I compute the average level of house prices found in SIPP data for the
- year 2012 and then apply the FHFA index to construct the house value for
- each year.
+ year 2012 and then apply the FHFA index backwards to construct the house
+ value for each year.
 \begin_inset Foot
 status collapsed
 
@@ -4119,7 +4274,11 @@ The series for
  is constructed as per capita personal income by region, with a measure
  of personal income obtained from the Bureau of Economic Analysis and population
  counts by state from intercensal estimates from the census Bureau.
- The price series by region comes from the same FHFA dataset as used above.
+ The price series by region, 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+, comes from the same FHFA dataset as used above.
 \end_layout
 
 \begin_layout Standard
@@ -4183,7 +4342,21 @@ reference "eq:VAR-process-1"
  I am purely interested in their ability to replicate the observed regional
  prices, when fed the observed aggregate series for the purpose of approximating
  the evolution of the prices state space during simulation.
- In that regard, I find they perform well.
+ In that regard, and by looking at 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mapping-Y-y"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Mapping-P-p"
+
+\end_inset
+
+, I find they perform well.
  
 \end_layout
 
@@ -4196,8 +4369,8 @@ reference "eq:VAR-process-1"
 \end_inset
 
  is that it is unclear a priori how they in fact transform aggregate shocks
- in to regional counterparts, as this of course depends on the value of
- the estimated parameters 
+ into regional counterparts, as this of course depends on the value of the
+ estimated parameters 
 \begin_inset Formula $\mathbf{a}_{d}$
 \end_inset
 
@@ -4206,7 +4379,7 @@ reference "eq:VAR-process-1"
 \begin_inset Formula $\mathbf{F}_{t}$
 \end_inset
 
- at its mean value expect for 
+ at its mean value except for 
 \begin_inset Formula $t=2000$
 \end_inset
 
@@ -4236,28 +4409,7 @@ reference "fig:shock-reg-model-illustrate"
 
  in the appendix and it shows that the model generates considerable variation
  in the size of the resulting local shock.
- In an additional online appendix available at 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://floswald.github.io/research/
-\end_layout
-
-\end_inset
-
- [TODO pdf] I show how the estimated model model reacts to different combination
-s of shocks to 
-\emph on
-regional 
-\emph default
-prices (i.e.
  
-\begin_inset Formula $q_{d},p_{d}$
-\end_inset
-
-).
 \end_layout
 
 \begin_layout Standard
@@ -4298,27 +4450,34 @@ noprefix "false"
 
  measured from each regression, the division index is highly significant
  throughout.
- The full regression output is available in the previously mentioned online
- appendix at 
-\begin_inset Flex URL
-status collapsed
+ The full regression output is the appendix in tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-p"
+plural "false"
+caps "false"
+noprefix "false"
 
-\begin_layout Plain Layout
+\end_inset
 
-https://floswald.github.io/research/
-\end_layout
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-y"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
 .
- [TODO pdf]
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4535,74 +4694,49 @@ reference "eq:budget-labor-income"
  I estimate the linear regression 
 \begin_inset Formula 
 \begin{eqnarray}
-\ln y_{ijdt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+u_{it}\nonumber \\
- & = & \beta_{0}+\left(\gamma_{d}\times\gamma_{q}\right)\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+u_{it}\label{eq:indiv-labor-empirical}
+\ln y_{ijdt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+\beta_{4}\text{college}_{it}+z_{it}\label{eq:indiv-labor-empirical}
 \end{eqnarray}
 
 \end_inset
 
-where the region-specific influence of regional mean productivity 
-\begin_inset Formula $q_{dt}$
+where 
+\begin_inset Formula $\text{college}_{it}=1$
 \end_inset
 
- on individual income is specified as an interaction between a regional
- fixed effect 
-\begin_inset Formula $\gamma_{d}$
+ if 
+\begin_inset Formula $i$
 \end_inset
 
- and the average effect 
-\begin_inset Formula $\gamma_{q}$
+ has a college degree, zero else, and where 
+\begin_inset Formula $z_{it}$
 \end_inset
 
- of regional income.
- The results of this are displayed in table 
+ are the regression residuals.
+ The results of this are shown in the appendix in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Regional-2-indiv-income"
 
 \end_inset
 
- in the appendix.
- Figure 
+ and figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:age-profiles"
 
 \end_inset
 
-, also in the appendix, illustrates predicted age profiles from this model.
+.
+ The estimated parameters are used in the structural model to generate a
+ grid of household income.
 \end_layout
 
 \begin_layout Subsubsection*
 Copula estimates for 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $G_{\text{move}}$
+\begin_inset Formula $z$
 \end_inset
 
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-
+ Transistions 
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:copula-estimates"
@@ -4676,89 +4810,7 @@ literal "true"
 \end_inset
 
  is the same regardless the origin location.
- It would be straightforward to relax this assumption, but data limitations
- forced me to impose this restriction.
- A copula is a multivariate distribution function with marginals that are
- all uniformly distributed on the unit interval.
- For example, if 
-\begin_inset Formula $F$
-\end_inset
-
- is a bi-dimensional CDF, and if 
-\begin_inset Formula $F_{i}$
-\end_inset
-
- is the CDF of the 
-\begin_inset Formula $i$
-\end_inset
-
--th margin, then the copula is given by
-\begin_inset Formula 
-\[
-C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $F_{i}^{-1}$
-\end_inset
-
- is the quantile function.
- There are different families of copulae, I will use a normal copula.
  
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-To estimate the parameters of the copula, I view 
-\begin_inset Formula $z_{it}$
-\end_inset
-
- in equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:income-process"
-
-\end_inset
-
- as the residual from an ordinary least squares regression of log wages
- on time and region effects, as well as person specific demographic variables.
- The question is whether individuals with a particularly high residual 
-\begin_inset Formula $z_{it}$
-\end_inset
-
- are likely to have a high residual 
-\begin_inset Formula $z_{it+1}$
-\end_inset
-
- after their move to region 
-\begin_inset Formula $k$
-\end_inset
-
-.
- In other words, we want to investigate the joint distribution of stayers
- 
-\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d=k$
-\end_inset
-
- and of movers 
-\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
-\end_inset
-
-.
- I describe the full procedure in the appendix.
 \begin_inset Foot
 status collapsed
 
@@ -4775,28 +4827,189 @@ status collapsed
 \uwave off
 \noun off
 \color none
-The proceedure relies crucially on the assumption that individuals have
- to move to the new region before they can discover 
-\begin_inset Formula $z_{t+1}$
-\end_inset
-
-.
- One could account for apotential selection effect on 
-\begin_inset Formula $z_{t}$
-\end_inset
-
- by moving estimation of this part into the structural model and jointly
- estimate behavioural and wage related parameters.
- The model provides a set of exclusion restrictions that would allow to
- do this in theory.
- Identification of a potential selection effect may be difficult, however,
- because the sample of movers is relatively small.
+It would be straightforward to relax this assumption, but data limitations
+ forced me to impose this restriction.
  
 \end_layout
 
 \end_inset
 
+A copula is a multivariate distribution function with marginals that are
+ all uniformly distributed on the unit interval.
+ For example, if 
+\begin_inset Formula $F$
+\end_inset
 
+ is a bi-dimensional CDF, and if 
+\begin_inset Formula $F_{i}$
+\end_inset
+
+ is the CDF of the 
+\begin_inset Formula $i$
+\end_inset
+
+-th margin, then the bivariate copula is given by
+\begin_inset Formula 
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $F_{i}^{-1}$
+\end_inset
+
+ is the quantile function.
+ There are different families of copulae, and I will use a normal copula.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+To estimate the parameters of the copula, I take residuals 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ from equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:indiv-labor-empirical"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and I want to study their joint distribution for movers, i.e.
+ 
+\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
+\end_inset
+
+.
+ This object is informative for the question of whether individuals with
+ a particularly high residual 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ are likely to have a high residual 
+\begin_inset Formula $z_{it+1}$
+\end_inset
+
+ after their move to region 
+\begin_inset Formula $k$
+\end_inset
+
+, or not.
+ In other words, we want to investigate the joint distribution of stayers
+ 
+\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d=k$
+\end_inset
+
+ and of movers 
+\begin_inset Formula $\left(z_{it},z_{it+1}\right)|d\neq k$
+\end_inset
+
+ separately.
+ I obtain an estimate for the copula parameter 
+\begin_inset Formula $\rho_{s}$
+\end_inset
+
+ of 0.58, indicating substantial positive dependence for mover's 
+\begin_inset Formula $z$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\rho_{s}$
+\end_inset
+
+ is also called 
+\family default
+\series default
+\shape default
+\emph on
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+Spearman's rho,
+\emph default
+ and it is related to Pearson's correlation coefficient 
+\begin_inset Formula $\rho_{p}$
+\end_inset
+
+ via 
+\begin_inset Formula $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=2\sin\left(\frac{\pi}{6}0.58\right)=\rho_{p}=0.598$
+\end_inset
+
+ in this case of a gaussian copula.
+ In particular, 
+\begin_inset Formula $\rho_{s}\in[-1,1]$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+ I describe the full procedure in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Copula-Estimation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ The conditional distribution of 
+\begin_inset Formula $z$
+\end_inset
+
+ for non-movers will be parameterized externally as explained next.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5108,7 +5321,7 @@ literal "true"
 status collapsed
 
 \begin_layout Plain Layout
-I've co-authored a software package that implements the proceedure at 
+I maintain a julia package that implements the proceedure at 
 \begin_inset Flex URL
 status open
 
@@ -5133,8 +5346,33 @@ literal "true"
 
 \end_inset
 
-, after accounting for the fact that I do not use the optimal weighting
- matrix.
+.
+ The procedure is similar to the estimator used in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LMR"
+literal "false"
+
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In particular, confidence intervals are constructed in a similar way by
+ showing the 0.025 and 0.975 quantiles of the lowest temperature chain.
+ This avoids having to compute the gradient of the moment function 
+\begin_inset Formula $\hat{m}(\theta)$
+\end_inset
+
+ at great additional computing cost, which would be necessary to construct
+ the traditional GMM standard errors.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5143,7 +5381,8 @@ Estimation Sample
 
 \begin_layout Standard
 My estimation sample is formed mainly out of averages over SIPP data moments
- covering the period 1997–2012.
+ covering the period 1997–2012, conditional on non–college as described
+ above.
  All moments are constructed using SIPP cross-sectional survey weights,
  and all dollar values have been inflated to base year 2012 using the BLS
  CPI for all urban consumers.
@@ -5178,90 +5417,6 @@ t over their lifecycle than a similar 30-year-old in 2012 would have.
  This requires to simulate individuals starting in different calendar years,
  taking into account the actual observed time series for regional house
  prices and incomes.
-\end_layout
-
-\begin_layout Standard
-Additional to SIPP data, the moment vector contains three statistics from
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
-, which relate to the lifetime frequency of moves (
-\begin_inset Quotes eld
-\end_inset
-
-moved never
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-moved once
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-moved more two times or more
-\begin_inset Quotes erd
-\end_inset
-
-).
- The reason for using external data is that I cannot compute such a statistic
- from SIPP, where the maximum panel length is four years.
- 
-\end_layout
-
-\begin_layout Standard
-Finally, it is important to clarify the role of variables which are observed
- in the data, but which are missing in the model's state space.
- In light of the simple probit model from table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:D2D-probit"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, this concerns above all education.
- In that table, the marginal effect of having a college degree on the probabilit
-y of moving is roughly equal in absolute size than the one of being an owner
- – hence, important.
- The statistics in the moment vector do not condition on education, therefore
- the model is representative for an education-weighted average of the population.
- Given that education is contained in SIPP, it would be possible to condition
- the moments in this way – subject to quite strict constraints on cell sizes,
- as mentioned above.
- Furthermore, while endogenizing the education choice would clearly be infeasibl
-e, one could think of running the model separately for different education
- groups, after specifying an appropriate education–dependent income process.
- It is by no means clear, however, that the model would be able to fit different
-ial mobility rates by education very well without additional assumptions
- on the moving cost function (e.g.
- different moving costs by education).
- As it stands, the unobserved moving cost type 
-\begin_inset Formula $\tau$
-\end_inset
-
- accounts for everything affecting an individual's baseline probability
- of moving, which is missing from the model.
- Given observed low moving rates of non-college educated people, I expect
- a high correlation between non college degree and a high moving cost type.
- In this sense, 
-\begin_inset Formula $\tau$
-\end_inset
-
- is a reduced form representation of the impact of education on mobility.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5393,7 +5548,7 @@ The proportion of high moving cost types
 \begin_inset Formula $E[\text{moved twice+}]$
 \end_inset
 
- help to identify all moving cost parameters.
+ are not part of the moment function, hence an out of sample prediction.
 \end_layout
 
 \begin_layout Standard
@@ -5602,6 +5757,7 @@ reference "tab:Parameter-estimates"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5957,7 +6113,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/params-pres.tex}
+Dropbox/model/fit/params.tex}
 \end_layout
 
 \end_inset
@@ -5970,6 +6126,8 @@ Dropbox/model/fit/params-pres.tex}
 
 \begin_layout Plain Layout
 Parameter estimates.
+ The confidence intervals have been obtained as the 0.025 and 0.975 quantiles
+ of the parameter distribution on the coldest MCMC chain.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -5992,14 +6150,22 @@ name "tab:Parameter-estimates"
 
 \begin_layout Section
 Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Results"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 I will now move on to describe the results of this paper.
- I will first investigate the dollar value of moving costs, before answering
- the question of why owners move less through the lens of the model.
- Finally I will present the main set of results pertaining to the value
- of the migration option.
+ In order to fully appreciate the results, I will first discuss the role
+ of moving costs in the model, before answering the question of why owners
+ move less through the lens of the model.
+ Then I will present the main set of results pertaining to the value of
+ the migration option.
 \end_layout
 
 \begin_layout Subsection
@@ -6126,7 +6292,7 @@ reference "tab:MC-money"
 
 \end_inset
 
- where we see moving costs for renters are $147,111 and $547,473 for owners.
+ where we see moving costs for renters are $76,632 and $393,964 for owners.
  These estimates bracket the average cost of $312,000 reported in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -6140,10 +6306,10 @@ literal "true"
  renters.
  A simple calculation reveals that using my estimates and an ownership rate
  of 61% as found in the data, one obtains 
-\begin_inset Formula $147,000\times0.39+547,000\times0.61=391,000$
+\begin_inset Formula $147,000\times0.39+547,000\times0.61=270,204$
 \end_inset
 
- dollars of average moving costs.
+ dollars of average moving costs, reasonably close to their estimate.
 \end_layout
 
 \begin_layout Standard
@@ -6196,33 +6362,274 @@ literal "true"
 
  report an average moving cost of $384,000 for a young and $312,000 for
  an average mover.
- The table does not display moving costs for the stayer type 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- because the resulting value is not very interesting: I implement the 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- type as an individual with 
-\emph on
-very high
-\emph default
- moving cost, i.e.
- a cost so high that they never move.
- The resulting dollar value in this table for the case 
-\begin_inset Formula $\tau=1$
-\end_inset
-
- would therefore vary with 
-\emph on
-how high
-\emph default
- that cost eventually is, so there is nothing to learn (at the current parameter
-ization, the value is $32m, but as I said, this means very little).
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:MC-money"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Elasticities with respect to Regional Shocks
+\end_layout
+
+\begin_layout Standard
+The model can be used to compute elasticities of population size and migratory
+ flows with respect to regional income shocks.
+ Those elasticities are an important precursor to the main result of the
+ paper, because they illustrate the incentives of agents in the event of
+ such a shock.
+ To measure the elasticity of population or migratory inflows, I simulate
+ the economy and apply an unexpected and permanent shock to 
+\begin_inset Formula $q_{d}$
+\end_inset
+
+ in division 
+\begin_inset Formula $d$
+\end_inset
+
+ in the year 2000.
+ The elasticities are computed by comparing population size or migration
+ flows across shocked and baseline scenarios, normalizing the result by
+ the size of the shock.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Notice that given the cohort setup of the simulator, in this and all other
+ experiments that involve some notion of a 
+\begin_inset Quotes eld
+\end_inset
+
+shock
+\begin_inset Quotes erd
+\end_inset
+
+, it is necessary to simluate the model as many times as there are cohorts.
+ This is so because each cohort experiences the shock at a different age,
+ and the 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ are predetermined in the data.
+ Members of the cohort born in 1985 reach the shock year 
+\begin_inset Formula $t^{*}$
+\end_inset
+
+ at a different age than those from the 1984 cohort.
+ The shock is implemented by immediately changing the policy functions when
+ the shock arises, and expectations adapt to the new setting.
+ Hence for cohort 1985, the policy functions look different than for the
+ 1984 cohort, and so on.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The results by region are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ First we observe that the average of population elasticities across regions
+ is a value around 0.54, implying that on average, a 1% permanent increase
+ to regional income will lead to a 0.5% increase of population size of the
+ shocked area.
+ Total inflows into regions increase in the range of approximately 4% to
+ 7%, and in most regions the inflow rate of renters increases more than
+ the one of incoming buyers.
+ Renters are more mobile, as we have seen several times already, hence this
+ is expected.
+ Renters' inflows are not greater everywhere, however, because this depends
+ on many things which vary across regions: for example, the relative ranking
+ of house price levels 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+ and expectations about their future values, as well as the level of amenities.
+ The shock changes the relative attractiveness ranking of regions, and this
+ shift is highly non-linear.
+ The next set of columns looks at the complement to those statistics, i.e.
+ the elasticity of outflows.
+ In the present case of a positive income shock, outflows decline in general
+ as both renters and owners are less likely to move away.
+ As before, renters have larger elasticities.
+ 
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows the corresponding elasticities for the case of a positive regional
+ house price shock.
+ The overall population elasticity is on average 
+\begin_inset Formula $-0.3$
+\end_inset
+
+.
+ Inflow elasticities are unambigously negative for both incoming buyers
+ and renters: both find the region more expensive, hence stay away.
+ Regarding outflows, the picture is more nuanced, because again it relates
+ to the relative ranking of regions.
+ Notice that owners experience a positive wealth shock in this case, which
+ may (or may not) tip the balance towards moving to another region, when
+ previously this was suboptimal.
+ On aggregate, a one percent price increase leads to a once percent increase
+ in renter outflows, much larger than the corresponding 0.2% increase in
+ owner outflows.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/elasticities_q.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Elasticities with respect to an unexpected and permanently positive income
+ shock by region.
+ This table reports elasticities of population (i.e.
+ number of individuals present) and migration 
+\emph on
+inflows
+\emph default
+ and 
+\emph on
+outflows 
+\emph default
+elasticities.
+ For example, the percentage change in renter inflows is defined as 
+\begin_inset Formula $\frac{\#[\text{move to }d\text{ as renter}|\text{shock}]-\#[\text{move to }d\text{ as renter}|\text{no shock}]}{\#[\text{move to }d\text{ as renter}|\text{no shock}]}$
+\end_inset
+
+ in each period, similarly for owners and for outflows.
+ Elasticities are computed as averages over all years after the shock occurs.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:elasticities"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/elasticities_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Elasticities with respect to an unexpected and permanently positive price
+ shock by region.
+ Statistics are computed identically as in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:elasticities-p"
 
 \end_inset
 
@@ -6299,8 +6706,8 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-To investigate those issues in more detail, I sequentially remove owner-specific
- moving costs in table 
+To investigate those issues in more detail, I now sequentially remove owner-spec
+ific moving costs in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Decomposing-owner's-moving"
@@ -6308,8 +6715,16 @@ reference "tab:Decomposing-owner's-moving"
 \end_inset
 
  from the model.
- The aim is to understand the relative importance of both financial transaction
- cost and utility cost.
+ We should imagine an approximation to the partial derivative of the moment
+ function of the model with respect to the parameters 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
  If we see a large reaction of the model–generated moments after setting
  a certain cost component to zero, we can conclude that this component is
  relatively important to explain the data.
@@ -6373,7 +6788,7 @@ The second row shows the same experiment for the overall migration rate.
 \end_layout
 
 \begin_layout Standard
-The bottom panel of the table repeat this exercise while conditioning only
+The bottom panel of the table repeats this exercise while conditioning only
  on the 
 \emph on
 mover 
@@ -6405,6 +6820,19 @@ becomes larger, hence the value decreases.
  Finally, the fact that the increase in migration rate is identical across
  both panels shows that any additional mobility can come only from the subpopula
 tion of mover types.
+\end_layout
+
+\begin_layout Standard
+The conclusion from this exercise is that including utility cost 
+\begin_inset Formula $\alpha_{3}$
+\end_inset
+
+ over and above the assumed financial transaction cost 
+\begin_inset Formula $\phi$
+\end_inset
+
+ (6%) in the model is important in order to fit the data, both in terms
+ of propensity to move and in terms of changes in the ownernship rate.
 \end_layout
 
 \begin_layout Standard
@@ -6480,6 +6908,248 @@ name "tab:Decomposing-owner's-moving"
 \end_layout
 
 \begin_layout Subsection
+Owner Regret
+\end_layout
+
+\begin_layout Standard
+Individuals in the model decide whether to buy a house or rent based on
+ a multi–facetted tradeoff involving the size of available houses, their
+ preference for owned property and their expectations about future moves
+ and prices.
+ Buying a house is consequential for later mobility decisions, as we have
+ seen, because owners face higher moving costs.
+ A pertinent question question in this context is whether owners actually
+ 
+\emph on
+regret 
+\emph default
+having bought their house, if the state of the world changes in an unforeseen
+ way? For example, imagine that expectations about future prices were wrong,
+ in the sense that there is an unexpected shock.
+ Imagine further that that owner finds themselves with a greatly devalued
+ house – how big is the cost of being an owner in this new circumstance?
+ 
+\end_layout
+
+\begin_layout Standard
+We want to assess this cost by looking at how much an owner in the shocked
+ scenario would be willing to pay to become a comparable renter.
+ Establishing comparability is important, because in general owners are
+ of higher networth than renters (by virtue of the downpayment requirement).
+ Therefore the experiment proceeds by establishing an asset level 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+ in the baseline such that, with some abuse of notation, 
+\begin_inset Formula $V^{own}(a^{*})=V^{rent}(0)$
+\end_inset
+
+, in other words where an owner's value is equal to a renter's value with
+ zero assets.
+ 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+ is in general a negative number, proportional to the greater networth of
+ owners and the additional utility derived from owning.
+ Then, we shock either 
+\begin_inset Formula $q$
+\end_inset
+
+ or 
+\begin_inset Formula $p$
+\end_inset
+
+ at a certain age in a given region, and we want to know how much the owner
+ would be willing to pay in order to convert to a renter, measured at the
+ pre-shock reference level 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Note that this experiment measures something different from the value of
+ the option 
+\emph on
+sell 
+\emph default
+of the owner.
+ Since, if it was optimal to become a renter, they would of course make
+ this choice.
+ Here we know that before the shock, the owner is as well-off at 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+ as the zero asset renter, and we want to know how this relationship changes
+ in the shocked economy, again measured at 
+\begin_inset Formula $a^{*}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The results of this exercise are displayed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Owner-WTP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for a permanent and unexpected reduction in the level of either 
+\begin_inset Formula $q$
+\end_inset
+
+ or 
+\begin_inset Formula $p$
+\end_inset
+
+ of 10% in a given Division in year 2000.
+ We observe first that in the column corresponding to the 
+\begin_inset Formula $q$
+\end_inset
+
+ shock, there are relatively small dollar amounts (table is in 1000 of dollars),
+ and some are negative.
+ The negative entries imply that the owner would not be willing to pay anything
+ after income drops by 10%.
+ The intuition here is that in the case of an income shock, the renter is
+ equally affected, hence there is only a small desire to become, or no desire
+ at all to become, a renter with zero assets and a significantly reduced
+ income.
+ This is also the case because owners still have their housing capital to
+ fall back on, which is unaffected from the shock in this scenario.
+ While we saw previsously in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ that renters respond stronger to shocks than owners in terms of increased
+ emigration, for obvious reasons, the expected gains in terms of lifetime
+ value do not seem to compensate an owner to want to switch to that particular
+ type of renter in most regions and take advantage of less costly migration.
+\end_layout
+
+\begin_layout Standard
+Quite different to this is the outcome of a price shock.
+ We see in the first column of table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Owner-WTP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ that owners would be willing to pay amounts ranging from about 15,000 and
+ up to 25,600 dollars in order to be converted to a renter with zero assets
+ after the unexpected price reduction.
+ Crucial to note is here that renters a priori benefit from the reduction
+ in house prices, because rental payments decrease in line with the fall
+ in house prices.
+ The overall impact on renter values is more nuanced, however, because it
+ includes the expected value of owning, and this value has declined.
+ The experiment shares some features of mortgage default (which is not modeled),
+ in that the owner evaluates a 
+\begin_inset Quotes eld
+\end_inset
+
+reset
+\begin_inset Quotes erd
+\end_inset
+
+ option here: the mortgage debt burden is increased substantially by the
+ price drop, so much so that the owner would be willing to pay substantial
+ amounts to get converted to a renter with zero assets.
+ Thus, to give an answer to the initial question of how much owners regret
+ to having bought when things turn out not as expected, or on the contrary,
+ how much they would value being a 
+\begin_inset Quotes eld
+\end_inset
+
+free but asset-poor
+\begin_inset Quotes erd
+\end_inset
+
+ renter again in case of a price shock, one could say that this lies in
+ between 15 and 25 thousand dollars.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/ownersWTP2.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Owners willingness to pay to convert to a comparable renter after an unexpected
+ 10% reduction in price or income arises.
+ In 1000 of dollars.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Owner-WTP"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 The value of Migration
 \begin_inset CommandInset label
 LatexCommand label
@@ -6510,7 +7180,7 @@ literal "false"
 migratory insurance.
 
 \emph default
- Here, I don't infer this from the amount of migration after a local shock
+ Here, I do not infer this from the amount of migration after a local shock
  has occured, ex post, but I consider how much individuals value to have
  the option to migrate ex ante, in case a shock were to occur.
 \end_layout
@@ -6529,10 +7199,30 @@ without
 \emph default
 the migration option, i.e.
  migration is shut down in the entire economy.
- Even though trade is absent from the model, it helps the interpretation
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Even though trade is absent from the model, it helps the interpretation
  to assume that existing trade channels between regions remain intact throughout
  the experiment, i.e.
  we only expect changes from the absence of individuals changing location.
+\end_layout
+
+\end_inset
+
+ The welfare measure in terms of compensating consumption is defined in
+ appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Welfare-Measure"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -6574,7 +7264,7 @@ exogenous
  would change if we were to abolish migration.
  To address this concern at least to some degree, I will present different
  scenarios of this counterfactual, a baseline version with prices unchanged,
- and a set of experiments with changed prices.
+ and a set of experiments with changed prices in the appendix.
  There is no direct empirical guidance on the effects of such a drastic
  experiment on regional house prices and labor income levels, except maybe
  that 
@@ -6618,9 +7308,7 @@ literal "true"
  a given region and hence a reduction in house prices.
  Version three simulates a bust scenario, where incomes decline by 5% and
  house prices by 10%.
- A final version shows results under the assumption that a large increase
- in owner-occupied housing after the shutdown fuels a price increase.
- Summing up, this experiment is available in four versions:
+ Summing up, this experiment is available in three versions:
 \end_layout
 
 \begin_layout Enumerate
@@ -6644,21 +7332,8 @@ Baseline
  prices.
 \end_layout
 
-\begin_layout Enumerate
-No change to 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
-, but house prices 
-\emph on
-increase 
-\emph default
-by +5%: This could arise in case of a strong increase of demand for owner-occupi
-ed housing, while local productivity remains unchanged.
-\end_layout
-
 \begin_layout Standard
-Starting with a scenario where prices are unaffected by the experiment,
+Starting with the scenario where prices are unaffected by the experiment,
  table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6697,13 +7372,13 @@ reference "tab:shutdown-cons-base"
 \end_inset
 
 , the group of young people (with age below half of their lifespan) would
- demand an increase of 7% of optimal per period consumption.
- This amount is lower for old people at 2%, which is intuitive since they
- forgo fewer periods where the migration could have been optimally chosen.
+ demand an increase of 8.6% of optimal per period consumption.
+ This amount is lower for old people at 3.3%, which is intuitive since they
+ forgo fewer periods where migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
- that age demand 4% more consumption, while same aged renters demand more,
+ that age demand 3.3% more consumption, while same aged renters demand more,
  i.e.
- 5%.
+ 5.3%.
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
@@ -6742,8 +7417,8 @@ noprefix "false"
 \end_inset
 
  draw in the new location.) As an average over all individuals treated in
- this experiment (ATE), the corresponding number is 4.6% of consumption compensat
-ion demanded.
+ this experiment (ATE), the corresponding number is 6% of consumption compensati
+on demanded.
  
 \end_layout
 
@@ -6753,7 +7428,7 @@ In the same table we continue with this exercise and split the sample by
  Perhaps not surprisingly, there is a lot of variation in how individuals
  feel about removal of the migration option by region.
  In general, living in a high-income, high-price region like Pacific accentuates
- the difference between young and old even more (7.1% vs -0.3% compensation
+ the difference between young and old even more (17.7% vs 4.6% compensation
  demanded).
  Put simply, this is because high prices are good for owners, who are more
  likely to stay in the region no matter what, but bad for renters who cannot
@@ -6761,26 +7436,31 @@ In the same table we continue with this exercise and split the sample by
  They would prefer to migrate at some point if necessary and therefore suffer
  disproportionately from the removal of the migration option.
  By way of summary of this table, individuals value having the option of
- migration to a large degree and in the range of -2% (young owners in East
- South Central prefer not having the option to move) and up to 13% of per
- period consumption.
+ migration to a large degree and in the range of -6.2% (poor individuals
+ in West North Central prefer not having the option to move) and up to 17%
+ of per period consumption.
  Notice that negative values, i.e.
- a willingness to pay to keep the migration restriction in place, like for
- poor individuals in the Pacific region, mean that they are compensated
- by 
-\begin_inset Formula $q_{\text{Pacific}}$
+ a willingness to pay to keep the migration restriction in place as in the
+ case of low–
+\begin_inset Formula $z$
 \end_inset
 
-, which is high relative to the regional 
-\begin_inset Formula $q$
+ individuales in West North Central, has to do with a relatively low price
+ to income ratio in that region in year 2000, and again the positive correlation
+ estimated for 
+\begin_inset Formula $z$
 \end_inset
 
- of most other regions, hence moving would worsen their utility.
+ draws of movers: Moving for such an individual raises the prospect of another
+ bad 
+\begin_inset Formula $z$
+\end_inset
+
+draw in a region with a higher price to income ratio.
 \end_layout
 
 \begin_layout Standard
-Versions two, three and four of this experiment are described in appendix
- 
+Versions two and three of this experiment are described in appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Migration-Shutdown-with"
@@ -6793,25 +7473,11 @@ noprefix "false"
 , where the general conclusions from this series of results goes through,
  with the qualification that the bigger the price shock after migration
  shutdown, the more individuals value the baseline.
- Interestingly, this is true even for the case when house prices are assumend
- to 
-\emph on
-increase 
-\emph default
-as in version number four.
- As will be highlighted in the next subsection and the relevant appendix,
- this is easy to understand if one knows that the next best option to migrating
- is to buy a better house, in case one is barred from migrating (and in
- case it's affordable).
  This sequence of counterfactuals tells us that the estimates from the baseline
  scenario with observed prices provide a lower bound.
  If in reality a general equilibrium effect would change regional incomes
- downwards, and house prices down 
-\emph on
-or 
-\emph default
-upwards, the valuation of the migration option would be larger than displayed
- in table 
+ and prices downwards, the valuation of the migration option would be larger
+ than displayed in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:shutdown-cons-base"
@@ -6865,8 +7531,8 @@ Consumption compensation demanded after migration shutdown in the baseline
  increased in order for individuals to be indifferent to the baseline.
  Positive values indicate people disapproving the policy, negative values
  indicate the opposite.
- A value of 7.0% as in the first row of the second column means that young
- people would demand an increase of 7.0% of the consumption level which they
+ A value of 8.6% as in the first row of the second column means that young
+ people would demand an increase of 8.6% of the consumption level which they
  had optimally chosen under the policy, in order for them to be indifferent.
 \begin_inset CommandInset label
 LatexCommand label
@@ -6888,7 +7554,7 @@ name "tab:shutdown-cons-base"
 \end_layout
 
 \begin_layout Subsection
-Effects along lifecycle, business cycle, ownership and location
+Effects along the Lifecycle and by Ownership Status
 \end_layout
 
 \begin_layout Standard
@@ -6962,30 +7628,7 @@ all individuals
  profitable to take out a mortgage and buy in the current (constant) location.
  This suggests that absent the option to move to a better region in response
  to shocks, the best thing to do is is to invest in more enjoyable housing
- in the current region in order to, in some sense, 
-\begin_inset Quotes eld
-\end_inset
-
-soften the blow
-\begin_inset Quotes erd
-\end_inset
-
-.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Notice that this increase in ownership can be seen as a simple reallocation
- of previously rented real estate into owned one, i.e.
- one would not have to imagine construction of additional housing units
- (and ensuing price increases) because of this effect.
- The contrary case, i.e.
- prices increasing, is the topic of counterfactual number four in the previous
- section.
-\end_layout
-
-\end_inset
-
+ in the current region.
  The final two panels for 
 \begin_inset Formula $q$
 \end_inset
@@ -7008,7 +7651,7 @@ prices for simulated individuals, exhibit negative deviations from the baseline.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7043,6 +7686,32 @@ along the lifecycle.
  mean of a certain variable of interest and the conditional mean under the
  policy.
  The means are conditional on age.
+ The labels stand for, in order:
+\begin_inset Formula $v$
+\end_inset
+
+ value function, 
+\begin_inset Formula $y$
+\end_inset
+
+ is individual labor income, 
+\begin_inset Formula $a$
+\end_inset
+
+ is asset position, 
+\begin_inset Formula $h$
+\end_inset
+
+ is the ownership status, 
+\begin_inset Formula $q$
+\end_inset
+
+ is the regional income component of income, and 
+\begin_inset Formula $p$
+\end_inset
+
+ is the regional house price level.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-lifecycle"
@@ -7063,8 +7732,7 @@ name "fig:noMove-lifecycle"
 \end_layout
 
 \begin_layout Standard
-There are three additional figures which tell the same story from different
- angles: In figure 
+In figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:noMove-age30"
@@ -7082,24 +7750,36 @@ reference "fig:noMove-age30"
 
 \end_inset
 
- have a smaller utility loss (panel 
+ have a smaller utility loss, as shown in panel 
 \begin_inset Formula $u$
 \end_inset
 
- shows average period payoff) and they have about 0.2% higher income on average
- if they don't have to move.
+ which displays average period payoff.
  This is also reflected in the 
 \begin_inset Formula $q,p$
 \end_inset
 
  panels, indicating that on average they would have moved to lower income
  and price regions.
- This comes from the fact that their baseline moves were motivated by other
- considerations than regional price differences, given their relatively
- well off position in the baseline.
+ This means that their baseline moves were motivated by other considerations
+ than regional price differences, given their relatively well off position
+ in the baseline.
 \end_layout
 
 \begin_layout Standard
+In summary, the results in this section show that moving costs differ greatly
+ by ownership status; that the resulting elasticities of migration with
+ respect to regional shocks differ greatly as well; and finally, that individual
+s place a large consumption value on having the option to migrate across
+ Census Division borders, ranging from negative values (some groups prefer
+ not to have the option) and up to about 13% of per period optimal consumption.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Next in line is figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7130,7 +7810,7 @@ mortgage debt with respect to the baseline, where some houses were instead
  bought in another, more expensive, region.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Finally, figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7159,11 +7839,16 @@ noprefix "false"
  
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7203,7 +7888,31 @@ name "fig:noMove-age30"
 
 \end_inset
 
+The labels stand for, in order:
+\begin_inset Formula $v$
+\end_inset
 
+ value function, 
+\begin_inset Formula $y$
+\end_inset
+
+ is individual labor income, 
+\begin_inset Formula $a$
+\end_inset
+
+ is asset position, 
+\begin_inset Formula $h$
+\end_inset
+
+ is the ownership status, 
+\begin_inset Formula $q$
+\end_inset
+
+ is the regional income component of income, and 
+\begin_inset Formula $p$
+\end_inset
+
+ is the regional house price level.
 \end_layout
 
 \end_inset
@@ -7217,6 +7926,10 @@ name "fig:noMove-age30"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -7275,7 +7988,7 @@ name "fig:noMove-location"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
@@ -7313,6 +8026,11 @@ over entire sample period
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:noMove-businesscycle"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -7622,6 +8340,10 @@ reference "eq:v"
 
 \end_layout
 
+\begin_layout Part*
+Appendix
+\end_layout
+
 \begin_layout Section
 Migration Shutdown with Changing Prices
 \begin_inset CommandInset label
@@ -7667,34 +8389,6 @@ Baseline
 5%/10% shock: Large productivity decline and amplified effect on house prices.
 \end_layout
 
-\begin_layout Enumerate
-No change to 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
-, but house prices 
-\emph on
-increase 
-\emph default
-by 5%.
- This is motivated by the strong increase in ownership illustrated in panel
- 
-\begin_inset Formula $h$
-\end_inset
-
- of figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:noMove-lifecycle"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Standard
 Starting in table 
 \begin_inset CommandInset ref
@@ -7738,37 +8432,7 @@ noprefix "false"
 
  presents the corresponding results for scenario 3, where the trend from
  scenario 2 continues: We see the same pattern, just larger numbers.
- More interesting in this regard is the final version in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shutdown-cons-pos-p"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, where 
-\begin_inset Formula $\{q_{dt}\}_{t=1997}^{2012}$
-\end_inset
-
- is unchanged from the baseline, but prices are assumed to increase.
- As explained in relation to figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:noMove-lifecycle"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, buying a house is the preferred option of many individuals once moving
- is abolished.
- In terms of welfare, higher prices imply that more individuals are below
- the downpayment constraint, and thus suffer more from the abolishment of
- migration: not only can they not move over their entire lifecycle, but
- they also cannot compensate with the purchase of a better house.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7894,6 +8558,10 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -7947,6 +8615,11 @@ noprefix "false"
 \end_inset
 
  for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -8209,11 +8882,11 @@ In a first step I estimate the marginal distributions of
 
  for all movers.
  These are the cross-sectional distributions of residuals 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  from the regression in expression 
@@ -8229,7 +8902,7 @@ reference "eq:copula-margins-1"
 \end_inset
 
 , such that by assumption, 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  is the residual wage in origin location 
@@ -8237,7 +8910,7 @@ reference "eq:copula-margins-1"
 \end_inset
 
 , and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  is the residual wage in the new location 
@@ -8245,6 +8918,23 @@ reference "eq:copula-margins-1"
 \end_inset
 
 .
+ The proceedure relies crucially on the assumption that individuals have
+ to move to the new region before they can discover 
+\begin_inset Formula $z_{t+1}$
+\end_inset
+
+.
+ One could account for apotential selection effect on 
+\begin_inset Formula $z_{t}$
+\end_inset
+
+ by moving estimation of this part into the structural model and jointly
+ estimate behavioural and wage related parameters.
+ The model provides a set of exclusion restrictions that would allow to
+ do this in theory.
+ Identification of a potential selection effect may be difficult, however,
+ because the sample of movers is relatively small.
+ 
 \begin_inset Formula 
 \begin{equation}
 \ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins-1}
@@ -8289,7 +8979,7 @@ noprefix "false"
 
 .
  Estimation itself is based on the respective rank of 
-\begin_inset Formula $u$
+\begin_inset Formula $z$
 \end_inset
 
  in the empirical distributions.
@@ -8316,11 +9006,11 @@ reference "tab:Normal-Copula-estimates"
 
  of 0.59.
  This estimate together with the marginal distibutions of 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  and 
-\begin_inset Formula $u_{it+1}$
+\begin_inset Formula $z_{it+1}$
 \end_inset
 
  are used in the structural model, where I use the current value of 
@@ -8328,7 +9018,7 @@ reference "tab:Normal-Copula-estimates"
 \end_inset
 
 , evaluated in the marginal distribution of 
-\begin_inset Formula $u_{it}$
+\begin_inset Formula $z_{it}$
 \end_inset
 
  for a mover together with the copula estimate 
@@ -8477,7 +9167,7 @@ name "fig:Contours-of-copula"
 \end_layout
 
 \begin_layout Section
-Map
+Census Divisions
 \end_layout
 
 \begin_layout Standard
@@ -8537,8 +9227,220 @@ name "fig:Census-Division-Map"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/own_p2y-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Census Division abbreviations and characteristics.
+ Shows average ownership rates over 1997–2011 and median price to income
+ ratios for the same period.
+ The (unobserved) house price for renters is computed assuming an implied
+ user cost of owning of 5%, i.e.
+ 
+\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SIPP-divisions"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Additional tables and figures
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-p.pdf
+	scale 60
+	scaleBeforeRotation
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-y.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/y_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-q"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8559,7 +9461,217 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/model/fit/copulas.tex}
+Dropbox/data/FHFA/p_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/auto_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+First order partial autocorrelation coefficients of both 
+\begin_inset Formula $q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+ from raw (i.e.
+ not detrended) time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Autocorrs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional House Price indices vs National average.
+ FHFA house price index.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-House-Price-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional per capita personal income 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ from BEA vs the national average index 
+\begin_inset Formula $Q$
+\end_inset
+
+, for which I use real per capital GDP.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-Income-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/copulas-edit.tex}
 \end_layout
 
 \end_inset
@@ -8584,6 +9696,11 @@ Normal Copula estimates for the rank of wage residuals
 \end_inset
 
 .
+ The algorithm was not able to compute a standard error for 
+\begin_inset Formula $\rho$
+\end_inset
+
+ because of a flat hessian.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Normal-Copula-estimates"
@@ -8700,7 +9817,7 @@ name "tab:Aggregate-to-Regional-VAR"
 \begin_layout Standard
 \begin_inset Float table
 wide false
-sideways false
+sideways true
 status collapsed
 
 \begin_layout Plain Layout
@@ -8786,24 +9903,12 @@ status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
 input{
 \backslash
 Dropbox/model/fit/income_profiles.tex}
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../../../Dropbox/research/mobility/output/model/fit/income_profiles.pdf
-	scale 80
 
 \end_inset
 
@@ -8932,6 +10037,102 @@ The panels show the resulting deviation in regional labor productivity
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shock-reg-model-illustrate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p-P-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/q-Q-mods.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-y"
 
 \end_inset
 

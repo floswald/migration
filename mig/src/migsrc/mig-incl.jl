@@ -5,11 +5,15 @@ function post_slack(job)
 	txt = "payload={'text': '$job'}"
 	# println(txt)
 	# println(ENV["MIG_SLACK"])
-	if haskey(ENV,"MIG_SLACK")
-		run(`curl -X POST --data-urlencode $txt $(ENV["MIG_SLACK"])`) 
+	if haskey(ENV,"SLACK_HOOK")
+		run(`curl -X POST --data-urlencode $txt $(ENV["SLACK_HOOK"])`) 
+		return nothing
 	else
-		error("you need a webhook into slack as environment variable MIG_SLACK to post a message")
+		error("you need a webhook into slack as environment variable SLACK_HOOK to post a message")
 	end
+end
+function post_slack()
+	haskey(ENV,"SLACK_HOOK") || error("you need a webhook into slack as environment variable SLACK_HOOK to post a message")
 end
 
 
@@ -73,6 +77,30 @@ function cov2corr(x::Matrix)
 	return y
 end
 
+function objfunc_test(ev::Eval)
+
+	start(ev)
+	Base.info("in objective function")
+	p = Param(2)	# create a default param type
+	MomentOpt.fill(p,ev)      # fill p with current values on eval object
+	println("param = $p")
+	v = Dict{Symbol,Float64}()
+	for (k,mom) in MomentOpt.dataMomentd(ev)
+		# if haskey(dataMomentWd(ev),k)
+		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+		# else
+		# 	v[k] = ((simMoments[k] .- mom) ) .^2
+		# end
+		v[k] = rand()
+		# v[k] = v[k] / 1000
+	end
+	vv = mean(collect(values(v)))
+	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
+	finish(ev)
+
+	return ev
+end
+
 
 # objective function to work with MomentOpt
 function objfunc(ev::Eval)
@@ -93,27 +121,35 @@ function objfunc(ev::Eval)
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 	simMoments,status = mydf2dict(smm["moments"])
-
-	v = Dict{Symbol,Float64}()
-	for (k,mom) in MomentOpt.dataMomentd(ev)
-		# if haskey(dataMomentWd(ev),k)
-		# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
-		# else
-		# 	v[k] = ((simMoments[k] .- mom) ) .^2
-		# end
-		v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
-		# v[k] = v[k] / 1000
-	end
-	vv = mean(collect(values(v)))
-	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
 	setMoment(ev,simMoments)
 
-	status = (ismissing(vv) | !isfinite(vv)) ? -1 : status
+	mm = MomentOpt.check_moments(ev)
+	nm = filter(x->!in(x,[:moment,:data,:data_sd,:simulation,:distance]),names(mm))
+	v = Dict()
+	for k in nm
+		v[k] = mean(mm[k])
+	end
+	value = v[:abs_percent_2]
+
+	# v = Dict{Symbol,Float64}()
+	# for (k,mom) in MomentOpt.dataMomentd(ev)
+	# 	# if haskey(dataMomentWd(ev),k)
+	# 	# 	v[k] = ((simMoments[k] .- mom) ./ dataMomentW(ev,k)) .^2
+	# 	# else
+	# 	# 	v[k] = ((simMoments[k] .- mom) ) .^2
+	# 	# end
+	# 	v[k] = abs(100.0* ((simMoments[k] .- mom) ./ mom) )
+	# 	# println("perc dev of moment $k is $(v[k])")
+	# 	# v[k] = v[k] / 1000
+	# end
+	# vv = mean(collect(values(v)))
+	setValue(ev, (ismissing(value) | !isfinite(value)) ? NaN : value )
+
+	status = (ismissing(value) | !isfinite(value)) ? -1 : status
 
     if get(ev.options,"printm",false) 
-    	mms = MomentOpt.check_moments(ev)
     	d = Dict()
-    	for e in eachrow(mms)
+    	for e in eachrow(mm)
        		d[e[:moment]] = Dict("data"=>e[:data],"model"=>e[:simulation])
        	end
     	# change age brackets
@@ -126,6 +162,7 @@ function objfunc(ev::Eval)
 	end
 
 	ev.status = status
+	println("value = $value")
 
 	finish(ev)
 
@@ -170,6 +207,7 @@ function runSim(;opt=Dict())
 	# # figure()
 	# simplot(s,5)
 	# x=computeMoments(s,p)
+	# MomentOpt.check_moments()
 	# showall(x["moments"])
 	# showall(x["yearly"])
 	return s
@@ -208,6 +246,7 @@ function runObj(printm::Bool=false,subset=true)
 	end
 
 	ev = objfunc(ev)
+	MomentOpt.check_moments(ev)
 	return ev
 end
 function runObj(p::Dict)
@@ -217,8 +256,8 @@ function runObj(p::Dict)
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity"]
-	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance"]
+	# dont_use= ["lm_w_intercept","move_neg_equity"]
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2"]
 	for iw in moms[:name]
 		if contains(iw,"wealth") 
 			push!(dont_use,iw)
@@ -230,6 +269,7 @@ function runObj(p::Dict)
 	# create Eval
 	ev = MomentOpt.Eval(p,moms_use)
 	ev = objfunc(ev)
+	MomentOpt.check_moments(ev)
 	return ev
 end
 
@@ -305,6 +345,7 @@ function setPaths()
 		indir  = joinpath(joinpath(dirname(@__FILE__),"..","..","in"))
 		ind    = joinpath(d,"..","..","in")
 		outdir = joinpath(joinpath(dirname(@__FILE__),"..","..","out"))
+		out    = joinpath(joinpath(dirname(@__FILE__),"..","..","out"))
 		outg   = outdir
 		outbox = "null"
 	end
@@ -425,30 +466,21 @@ end
 #' baseline model. 
 #' 1. whats population growth by year in each region
 #' 2. what are the in and outflows relative to different populations.
-function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
+function getFlowStats(dfs::Dict)
 
 	# s is a simulation output
 	d = Dict()
 
-	if writedisk
-		io = mig.setPaths()
-		fi = readdir(io["outdir"])
-		if !in(pth,fi)
-			mkpath(string(joinpath(io["outdir"],pth)))
-		end
-		opth = string(joinpath(io["outdir"],pth))
-	end
-
 	for (k,v) in dfs
-		v = v[!ismissing(v[:cohort]),:]
+		v = v[.!(ismissing.(v[:cohort])),:]
 		d[k] = Dict()
 
-		for j in 1:9 
+		for j in unique(v[:j]) 
 
 			# population of j over time
 			a = @linq v |>
 				@where((:year.>1997) .& (:j.==j)) |>
-				@by(:year, Owners=sum(:own),Renters=sum(!:own),All=length(:own)) |>
+				@by(:year, Owners=sum(:own),Renters=sum(.!:own),All=length(:own)) |>
 				@transform(popgrowth = [diff(:All);0.0]./:All)
 
 			# movers to j over time
@@ -467,11 +499,6 @@ function getFlowStats(dfs::Dict,writedisk::Bool,pth::String)
 			ma = @transform(ma,Total_in_all=:Total_in./:All,Total_out_all=:Total_out./:All,Rent_in_all=:Renters_in./:All,Rent_in_rent=:Renters_in./:Renters,Own_in_all=:Owners_in./:All,Own_in_own=:Owners_in./:Owners,Rent_out_all=:Renters_out./:All,Rent_out_rent=:Renters_out./:Renters,Own_out_all=:Owners_out./:All,Own_out_own=:Owners_out./:Owners,Net = (:Total_in - :Total_out),Net_own = (:Owners_in - :Owners_out),Net_rent = (:Renters_in - :Renters_out))
 
 			d[k][j] = ma
-
-			if writedisk
-				writetable(joinpath(opth,"$(k)_flows$(j).csv"),ma)
-			end
-
 		end
 	end
 

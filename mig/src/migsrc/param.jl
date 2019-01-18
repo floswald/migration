@@ -3,6 +3,10 @@
 
 # define the struct
 
+# ev = mig.runObj(Dict(:MC0=>3.19,:xi1=>-0.015,:xi2=>0.045,:amenity_ENC=>0.1,:amenity_Pcf=>0.22,:amenity_WNC=>0.03,:amenity_WSC=>0.09))
+
+
+# ev = mig.runObj(Dict(:MC0=>3.19,:xi1=>0.008,:xi2=>0.049))
 
 type Param
 
@@ -162,7 +166,7 @@ type Param
 
 		io = setPaths()
 		popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
-		sort!(popweights,cols=1)
+		sort!(popweights,1)
 
 		# set amenity to popweights initially
 		amenity = convert(Array,popweights[:proportion])
@@ -215,9 +219,14 @@ type Param
 			shockReg = 0
 			shockAge = 100
 			shockYear = 2000
-			shockVal = ones(nt-1)
 			shockVal_y = ones(nt-1)
 			shockVal_p = ones(nt-1)
+			shockVal = zeros(nt-1)
+			# if length(opts) > 0
+			# 	shockVal = ones(nt-1) .* get(opts,"shockVal",1.0)
+			# else
+			# 	shockVal = ones(nt-1) 
+			# end
 		# end
 		# create object
 
@@ -226,7 +235,9 @@ type Param
 		# override defaults
 		if length(opts) > 0
             for (k,v) in opts
-                setfield!(out,Symbol(k),v)
+            	if in(Symbol(k),fieldnames(out))
+                	setfield!(out,Symbol(k),v)
+                end
             end
         end
 
@@ -268,6 +279,21 @@ function print(p::Param,file_est::String,file_set::String)
 	JSON.print(f_set,pset)
 	close(f_estimate)
 	close(f_set)
+end
+
+function printCI()
+	io = setPaths()
+	# read CIs
+	ci = open(joinpath(io["out"],"CI.json")) do f
+		JSON.parse(f)
+	end
+	p = Param(2)
+	for (k,v) in ci
+		prepend!(v,getfield(p,Symbol(k)))
+	end
+	open(joinpath(io["out"],"CI-estims.json"),"w") do f
+		JSON.print(f,ci)
+	end
 end
 
 

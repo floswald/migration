@@ -873,9 +873,13 @@ PlotSippTransitionMatrix <- function(ttable,path="~/Dropbox/mobility/output/data
 
 #' Plot Sipp Migration Rates by Age
 #'
-PlotSippMigrationRates <- function(){
+PlotSippMigrationRates <- function(nocollege=FALSE){
 
 	data(Sipp_age)
+
+	if (nocollege){
+		merged <- merged[college==FALSE]
+	}
 
 	own = merged[age>20&age<51,list(own=mean(own)*100),by=age][order(age)]
 	p0 = ggplot(own,aes(age,y=own)) + geom_ribbon(aes(ymin=0,ymax=own),alpha=0.3,color="blue",fill="blue",size=1) + theme_bw() + scale_y_continuous(name="% own")
@@ -884,14 +888,14 @@ PlotSippMigrationRates <- function(){
 	 m[,type := "Renter"]
 	 m[h==TRUE,type := "Owner"]
 
-	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type,linetype=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
-	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type,linetype=type)) + geom_smooth(formula=y~ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24)) + theme(plot.title=element_text(vjust=1.0,size=21),legend.position="top",legend.key.width=unit(1.0, "cm"))
+	 p1 <- ggplot(m,aes(age,y=moved.S2S*100,color=type,linetype=type)) + geom_smooth(formula=y~splines::ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Sipp Raw Data: Proportion of Cross-State movers by age') + scale_color_manual(values=c("blue","red")) + scale_shape_manual(values=c(21,24))
+	 p2 <- ggplot(m,aes(age,y=moved.D2D*100,color=type,linetype=type)) + geom_smooth(formula=y~splines::ns(x,3),method="rlm",size=1) + geom_point(size=2.5,aes(shape=type),fill="white") + theme_bw() + ggtitle('Proportion of Cross-Division movers by age') + scale_color_manual(values=c("blue","red")) + scale_y_continuous(name="% of sample moved") + scale_shape_manual(values=c(21,24)) + theme(plot.title=element_text(vjust=1.0,size=21),legend.position="top",legend.key.width=unit(1.0, "cm"))
 
 	 # add density of owners on top
 	vplayout <- function(x, y){
 		viewport(layout.pos.row = x, layout.pos.col = y)
 	}
-	pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=7.5,height=6.2)
+	pdf("~/Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2.pdf",width=7.5,height=6.2)
 	 # pdf("~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9)
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(4, 4))) # a 5 by 5 grid
@@ -899,7 +903,7 @@ PlotSippMigrationRates <- function(){
 	print(p0, vp=vplayout(4,1:4)) # the first density plot will occupy the top of the grid
 	dev.off()
 
-	 ggsave(plot=p1,file="~/Dropbox/mobility/output/data/sipp/raw-moversS2S.pdf",width=13,height=9,scale=0.6)
+	 ggsave(plot=p1,file="~/Dropbox/research/mobility/output/data/sipp/raw-moversS2S_v2.pdf",width=13,height=9,scale=0.6)
 	 # ggsave(plot=p2,file="~/Dropbox/mobility/output/data/sipp/raw-moversD2D.pdf",width=13,height=9,scale=0.6)
 
 	 return(list(S2S=p1,D2D=p2))

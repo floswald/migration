@@ -7,12 +7,17 @@
   "moneyMC":{
     "template" : "moneyMC.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/moneyMC/moneyMC.tex",
-    "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/moneyMC2.json"
+    "data"     : "git/migration/mig/out/moneyMC2.json"
   },
-  "copulas":{
-    "template" : "copulas.mus",
-    "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
-    "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
+  "owernsWTP":{
+    "template" : "ownersWTP.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/ownersWTP.tex",
+    "data"     : "git/migration/mig/out/ownersWTP.json"
+  },
+  "owernsWTP2":{
+    "template" : "ownersWTP2.mus",
+    "output"   : "Dropbox/research/mobility/output/model/experiments/ownersWTP2.tex",
+    "data"     : "git/migration/mig/out/ownersWTP2.json"
   },
   "mig_value_utilities":{
     "template" : "mig_value_utilities.mus",
@@ -62,7 +67,7 @@
   "params":{
     "template" : "params.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/params.tex",
-    "data"     : "Dropbox/research/mobility/output/model/fit/params.json"
+    "data"     : "git/migration/mig/out/CI-estims.json"
   },    
   "shockRegions_ps0.95ys0.95":{
     "template" : "shockRegions.mus",
@@ -133,5 +138,20 @@
     "template" : "noMove_region_z_ctax.mus",
     "output"   : "Dropbox/research/mobility/output/model/experiments/noMove_region_ctax_pos_p.tex",
     "data"     : "Dropbox/research/mobility/output/model/data_repo/outbox/noMove_ps_1.05_ys_1.0.json"
+  },   
+  "elasticities_p":{
+    "template" : "elasticities_p.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities_p.tex",
+    "data"     : "git/migration/mig/out/elasticity_p.json"
+  },   
+  "elasticities_q":{
+    "template" : "elasticities_q.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/elasticities_q.tex",
+    "data"     : "git/migration/mig/out/elasticity_q.json"
+  } ,   
+  "copulas":{
+    "template" : "copulas.mus",
+    "output"   : "Dropbox/research/mobility/output/model/fit/copulas.tex",
+    "data"     : "Dropbox/research/mobility/output/model/fit/copulas.json"
   }      
 }

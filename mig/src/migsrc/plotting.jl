@@ -31,6 +31,34 @@ function own_cond_tau()
 
 end
 
+function plotOwnerWTP()
+
+	# load data 
+	io = setPaths()
+	f = open(joinpath(io["out"],"ownersWTP.json"))
+	d = JSON.parse(f)
+	close(f)
+	
+	popweights = DataFrame(FileIO.load(joinpath(io["indir"],"prop.rda"))["prop"])
+	sort!(popweights,:Division)
+
+	# into dataframe
+	df = DataFrame(div=Int[],comp=Float64[])
+	for (k,v) in d
+        push!(df,[v[1]["region"],v[1]["data"]["2"]["4"]["y"]["comp"]])
+  	end
+  	sort!(df,:div)
+
+  	# plot
+  	pl = bar(popweights[:Division],df[:comp],fill=:grey,leg=false,ylabel="1000 Dollars")
+
+	path = joinpath(io["out_graphs"],"ownersWTP")
+	fiend = Plots.backend() == Plots.PGFPlotsBackend() ? ".tex" : ".pdf"
+	savefig(string(path,"age",fiend))
+	return pl
+end
+
+
 
 function plotShockRegion(m::Model;save=true)
 

@@ -1,0 +1,38 @@
+{
+    "h0": {
+        "z4": {
+            "kdollars": 799.9898114307531,
+            "conv": true
+        },
+        "z2": {
+            "kdollars": 336.41495497599203,
+            "conv": true
+        },
+        "z3": {
+            "kdollars": 743.3026639977453,
+            "conv": true
+        },
+        "z1": {
+            "kdollars": 76.63156656525882,
+            "conv": true
+        }
+    },
+    "h1": {
+        "z4": {
+            "kdollars": 799.9898114307531,
+            "conv": true
+        },
+        "z2": {
+            "kdollars": 672.7109412058023,
+            "conv": true
+        },
+        "z3": {
+            "kdollars": 799.9898114307531,
+            "conv": true
+        },
+        "z1": {
+            "kdollars": 393.9638606573785,
+            "conv": true
+        }
+    }
+}

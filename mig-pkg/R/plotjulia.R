@@ -222,8 +222,8 @@ plot_moment_fit <- function(){
 	d[m>1.0 & m < 300 , type := "Wealth Moments"]
 
 	lms = d0[moment %like% "lm_"]
-	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.1,y=-0.0,label="age-ownership",size=3) + mytheme #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
-	plm2 = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)+ mytheme
+	plm = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-1.2,0.08))+scale_x_continuous(name="data",limits=c(-1.2,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() +  mytheme #+ annotate("text",x=-1.0,y=-0.02,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-1.0,y=-0.03,label="_________________________",size=3)  + annotate("text",x=-1.0,y=-0.08,label="data        44%          71%",size=3)+ annotate("text",x=-1.0,y=-0.13,label="model     31%          84%",size=3)
+	plm2 = ggplot(lms,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.025,0.08))+scale_x_continuous(name="data",limits=c(-0.025,0.08)) + geom_abline(intercept=0,slope=1) + ggtitle("Auxiliary Models") + theme_bw() + annotate("text",x=-0.01,y=0.06,label="                 age < 35    age > 35",size=3)  + annotate("text",x=-0.01,y=0.059,label="_________________________",size=3)  + annotate("text",x=-0.01,y=0.055,label="data        44%          71%",size=3)+ annotate("text",x=-0.01,y=0.052,label="model     31%          84%",size=3)+ mytheme
 
 	s = split(d,d$type)
 
@@ -717,7 +717,11 @@ plot.simulation <- function(){
 Export.Julia <- function(writedisk=TRUE,noCollege=TRUE){
 	data(Sipp_age,envir=environment())
 	data(Sipp_age_svy,envir=environment())
-	path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
+	# path <- "~/Dropbox/research/mobility/output/model/data_repo/in_data_jl"
+	path <- "~/git/migration/mig/in"
+
+	# individual income processes by region
+	ind <- Export.IncomeProcess(merged,writedisk,noCollege)
 
 	if (noCollege) {
 		merged <- merged[college==FALSE]
@@ -732,10 +736,8 @@ Export.Julia <- function(writedisk=TRUE,noCollege=TRUE){
 	agedist = data.frame(realage=20:52,density=hi$density)
 
 	# regional processes for p and y
-	reg <- Export.VAR(writedisk=writedisk)
+	reg <- Export.VAR(writedisk=FALSE)   # dont' write because tex output is in one column... fixed by hand.
 
-	# individual income processes by region
-	ind <- Export.IncomeProcess(merged,writedisk)
 	
 	# stayer's copula
 	# commented out because takes some time
@@ -1101,6 +1103,81 @@ Export.VAR <- function(plotpath="~/Dropbox/research/mobility/output/data/sipp",w
 
 }
 
+correlograms <- function(){
+	path = "~/Dropbox/research/mobility/output/data/FHFA"
+    data(BEA_fhfa,envir=environment())
+    py = BEA_fhfa_agg$py
+    setkey(py,year,Division)
+    agg = BEA_fhfa_agg$agg
+    setkey(agg,year)
+    pyagg = agg[py]
+    pp=dcast(pyagg[,list(Division,year,p)],year ~ Division)
+    yy=dcast(pyagg[,list(Division,year,y)],year ~ Division)
+
+	pts = ts(pp[,-1],start=1967,frequency=1)
+	yts = ts(yy[,-1],start=1967,frequency=1)
+	ptrends = apply(pts,function(x) ma(x,order=4,centre=4),MARGIN=2)
+	ytrends = apply(yts,function(x) ma(x,order=4,centre=4),MARGIN=2)
+
+	dtrendp = pts - ptrends
+	dtrendy = yts - ytrends
+
+	pdf(file.path(path,"detrended-y.pdf"),width=14,height=8)
+	plot(as.ts(dtrendy),main="Detrended q Series",nc=3)
+	dev.off()
+
+	pdf(file.path(path,"detrended-p.pdf"),width=14,height=8)
+	plot(as.ts(dtrendp),main="Detrended p Series",nc=3)
+	dev.off()
+
+	# all detrended states in one plot
+	ty = data.table(dtrendy,index(dtrendy))
+	tp = data.table(dtrendp,index(dtrendp))
+	setnames(ty,ncol(ty),"year")
+	setnames(tp,ncol(tp),"year")
+	mdty = melt(ty,id.vars=c("year"))
+	mdtp = melt(tp,id.vars=c("year"))
+	setnames(mdty,"variable","Division")
+	setnames(mdtp,"variable","Division")
+	mdtp[,group := "regional price p"]
+	mdty[,group := "regional income q"]
+
+	mdt = rbind(mdty,mdtp)
+	plots = list()
+	plots$detrended = ggplot(mdt,aes(x=year,y=value,linetype=Division)) + geom_line() + facet_wrap(~group,scales="free_y") + theme_bw() + theme(legend.position="none") + ggtitle("Detrended Time Series 1967-2012 for All Census Divisions")
+	ggsave(plot=plots$detrended,file.path(path,"detrended.pdf"),width= 8,height=4,device="pdf")
+
+
+
+	# correlograms of detrended data
+	pcor = cor(dtrendp[3:44,])
+	ycor = cor(dtrendy[3:44,])
+
+	print(xtable(pcor,digits=2),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"p_corrs.tex"))
+	print(xtable(ycor,digits=2),floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"y_corrs.tex"))
+
+	# autocorrelations in raw data
+	pacor = apply(X=pts,function(x) pacf(x,plot=FALSE)$acf[1],MARGIN=2)
+	yacor = apply(X=yts,function(x) pacf(x,plot=FALSE)$acf[1],MARGIN=2)
+	acordf = data.frame(Division=names(pacor),p=pacor,q = yacor)
+	print(xtable(acordf),include.rownames=FALSE,floating=FALSE,booktabs=TRUE,dcolumn=TRUE,file=file.path(path,"auto_corrs.tex"))
+
+	# plot
+	mp = melt(pcor)
+	mp$type = "regional price p"
+	my = melt(ycor)
+	my$type = "regional income q"
+	names(mp) <- names(my) <- c("Division1","Division2","correlation","type" )
+	m = rbind(mp,my)
+	plots$corrs = ggplot(m,aes(x=Division1,y=Division2,fill=correlation)) + geom_tile() + scale_fill_gradient(low = "white", high = "black") + facet_wrap(.~ type) + scale_y_discrete("Division 2") + scale_x_discrete("Division 1") + ggtitle("Cross Correlations between Time Series") + theme_bw()
+	ggsave(plot=plots$corrs,file.path(path,"correlogram.pdf"),width= 8,height=4,device="pdf")
+
+	pdf(file.path(path,"correlogram-detrended.pdf"),width=8,height=8)
+		multiplot(plots$detrended, plots$corrs,cols=1)
+	dev.off()
+	return(plots)
+}
+
 # plot both price series
 compareVars <- function(){
 
@@ -1406,77 +1483,41 @@ plot.dataP2Y <- function(){
 #' by census division. 
 #'
 #' exports coefficients to julia
-Export.IncomeProcess <- function(dat,writedisk){
+#' notice that the year 2007 has a lot of issues in the SIPP, hence will be excluded.
+Export.IncomeProcess <- function(dat,writedisk,nocollege=FALSE){
 
 	
 	# cd <- dat[HHincome>0,list(upid,timeid,CensusMedinc,MyMedinc,HHincome,age,Division)]
-	cd <- dat[HHincome>0,list(upid,timeid,D2D,year,MyMedinc,HHincome,age,Division)]
+	cd <- dat[HHincome>0 & (year != 2007) & (year != 2012),list(upid,timeid,D2D,year,MyMedinc,HHincome,age,Division,college)]
 	cd <- cd[complete.cases(cd)]
 	setkey(cd,year,Division)
 
 	x = get_BEA_persincome()
 	setkey(x,year,Division)
 	cd = x[cd]
-	setnames(cd,"y","CensusMedinc")
+	setnames(cd,"y","q")
 
 	# get models of individual income
 	setkey(cd,upid,Division)
 	divs = cd[,unique(Division)]
-	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(CensusMedinc) + age + I(age^2) + I(age^3),cd[Division==x]))
+	lmods = lapply(divs,function(x) lm(log(HHincome) ~ log(q) + college + age + I(age^2) + I(age^3),cd[Division==x]))
 	names(lmods) = divs
 
-
-	# TODO change this!!!!
-	lmod = lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3),cd)
-	names = coef(lmod)
-
-
-
 	if (writedisk){
-		texreg(lmod,custom.model.names="$\\log y_{it}$", digits=3, custom.coef.names=c("Intercept","age","$\\text{age}^2$","$\\text{age}^3$","East North Central","East South Central","Middle Atlantic","Mountain","New England","Pacific","South Atlantic","West North Central","West South Central"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
+		texreg(lmods,custom.model.names=names(lmods), digits=3, custom.coef.names=c("Intercept","$q_d$","college","age","$\\text{age}^2$","$\\text{age}^3$"),booktabs=TRUE,dcolumn=TRUE,table=FALSE,sanitize.text.function=function(x){x},file="~/Dropbox/research/mobility/output/model/fit/region_2_indi_y.tex",use.packages=FALSE)
 	}
 
-	newdat = expand.grid(age=20:50,Division=c("ENC","ESC","MdA","Mnt","NwE","Pcf","StA","WNC","WSC"),CensusMedinc=c(30,45,60))
-	newdat2 = expand.grid(age=20:50,CensusMedinc=c(30,45,60))
-	x=cbind(newdat,exp(predict(lmod,newdat)))
-	cbind(exp(predict(lmod,newdat)),exp(predict(lmods$ENC,newdat2)))
-	x2=cbind(newdat2,exp(predict(lmods$ENC,newdat2)))
-	x$meany = paste0("$\\overline{y}_{dt}=",x$CensusMedinc,"$")
-	names(x)[4] = "predict"
+	nd = expand.grid(age=20:50,college=!nocollege,q=c(30,45,60))
+	x <- lapply(lmods, function(x) cbind(nd,exp(predict(x,nd))))
+	x <- lapply(names(x),function(z){cbind(x[[z]],Division=z)})
+
+	predicted_y <- rbindlist(x)
+	setnames(predicted_y,c(3,4),c("$q_d$","predict"))
 
 	tikz("~/Dropbox/research/mobility/output/model/fit/income_profiles.tex",width=6,height=4)
-	p = ggplot(x,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~meany) + ggtitle("Labor Income profiles for different $\\overline{y}_{dt}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	p = ggplot(predicted_y,aes(age,y=predict,color=Division)) + geom_line(size=0.9) + facet_wrap(~`$q_d$`) + ggtitle("Labor Income profiles for different $q_{d}$ levels \n    ") + scale_y_continuous("Dollars (1000s)") + theme_bw()
+	plot(p)
 	dev.off()
-
-	# new version
-	cd2 = copy(cd)
-	cd2[,resid := resid(lm(log(HHincome) ~ Division:log(CensusMedinc) + age + I(age^2)+I(age^3))) ]
-	setkey(cd2,upid,timeid)
-	cd2[, resid_p := cd2[list(upid,timeid+1)][["resid"]] ]
-
-	# standardize into ranks
-	mmat = cd2[,list(p_resid=resid,p_resid1=resid_p)]
-	pmat = pobs(mmat)
-	data = cbind(cd2[,list(upid,timeid,D2D,resid,resid_p)],pmat)
-	d1 = data[D2D==1,list(p_resid,p_resid1)]
-	d1 = d1[complete.cases(d1)]
-
-	normal.cop = normalCopula(0.7,2,"ar1")
-	f1 = fitCopula(normal.cop,as.matrix(d1))
-	sds = cd2[D2D==TRUE,list(sd=sd(resid),sd2=sd(resid_p,na.rm=T))]
-	cop <- mvdc(normalCopula(coef(f1)), c("norm", "norm"), list(list(mean = 0, sd =sds[,sd]), list(mean = 0, sd =sds[,sd])))
-
-	# these are the grid points of z from the rouwenhorst discretization in the model:
-	q1 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
-	q2 = pnorm(c(-0.729,-0.24,0.24,0.729),mean=0,sd=sds[,sd])
-
-	qtl = expand.grid(q1,q2)
-	qtl$p = dMvdc(as.matrix(qtl),cop)
-	Gmove = matrix(qtl$p,4,4)
-	Gmove2 =  Gmove / rowSums(Gmove)
-
-
-
 
 	# add residuals indiv data
 	cd [ ,resid := 0]
@@ -1499,7 +1540,13 @@ Export.IncomeProcess <- function(dat,writedisk){
 
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks
-	bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+	if (nocollege){
+		bounds = ddply(subset(dat,(college==FALSE) & (HHincome>0)),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+
+	} else {
+		bounds = ddply(subset(dat,HHincome>0),"Division", function(x) quantile(x$HHincome,probs=c(0.05,0.95),na.rm=T)) 
+
+	}
 	names(bounds)[-1] <- c("q05","q95")
 
 
@@ -1528,6 +1575,7 @@ Export.IncomeProcess <- function(dat,writedisk){
 
 	return(list(incmods=lmods,rhomods=rhos,ztab=ztab))
 }
+
 
 # TODO exporting for region level processes
 # ytable: div, ylow, yhigh, beta0, betay, betap

@@ -54,7 +54,7 @@ makePSID <- function(path="~/datasets/psid2",geo="Division"){
 	famvars <- rbind(famvars,data.frame(year = 1997, own = "ER10035",hvalue="ER10036",state="ER10004",faminc="ER12079",famweight="ER12084")) # Total 1996 Family Money Income
 	# famvars <- rbind(famvars,data.frame(year = 1999, own = "ER10035",hvalue="ER10036",state="ER10004",faminc="ER12079",famweight="ER12084")) # Total 1996 Family Money Income
 
-	p <- build.panel(datadir="~/datasets/psid2",fam.vars=famvars,design="all",verbose=TRUE,core=TRUE,heads.only=TRUE)
+	p <- build.panel(datadir="~/datasets/psid2",fam.vars=famvars,design="all",verbose=TRUE,heads.only=TRUE)
 	d <- p$data
 	saveRDS(d,file="~/git/migration/mig-pkg/data/psid_unclean.rds")
 	return(p)
