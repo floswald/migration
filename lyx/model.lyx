@@ -169,7 +169,7 @@ florian.oswald@gmail.com
 \begin_inset Newline newline
 \end_inset
 
-Sciences Po
+SciencesPo Paris
 \end_layout
 
 \begin_layout Date
@@ -193,7 +193,7 @@ This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
  The model delivers structural estimates of moving costs by ownership status,
- age and family size that are in line with previous literature.
+ age and family size that complement theprevious literature.
  Using the model I first show that migration elasticities vary substantially
  between renters and owners, and I estimate the consumption value of having
  the option to migrate across regions when there are regional shocks.
@@ -207,7 +207,8 @@ literal "false"
 
 \end_inset
 
- when thinking about how much insurance migration provides to consumers.
+ when thinking about how much insurance is provided to consumers through
+ migration.
 \end_layout
 
 \begin_layout Standard
@@ -2120,8 +2121,8 @@ Every individual in region
 \end_inset
 
  enters the individual wage equation as a level shifter.
- At the individual level uncertainty enters the model through an idiosyncratic
- and persistent component of income risk 
+ At the individual level uncertainty enters the model through a Markovian
+ idiosyncratic component of income risk 
 \begin_inset Formula $z_{ij}$
 \end_inset
 
@@ -2226,7 +2227,7 @@ literal "true"
 \end_inset
 
 .
- I don't expect return migration to be of first order for the questions
+ I do not expect return migration to be of first order for the questions
  adressed here.
 \end_layout
 
@@ -2671,7 +2672,7 @@ One could say that the formulation is missing a shock, e.g.
  Adding such a shock would increase the state space by a factor equal to
  the number of integration nodes to be used for the approximation of the
  resulting integral, which is a big cost.
- I don't expect any major difference in my results.
+ I do not expect any major difference in my results.
  The fit of this approximation is very good, as will be shown further below.
 \end_layout
 
@@ -4273,7 +4274,11 @@ The series for
  is constructed as per capita personal income by region, with a measure
  of personal income obtained from the Bureau of Economic Analysis and population
  counts by state from intercensal estimates from the census Bureau.
- The price series by region comes from the same FHFA dataset as used above.
+ The price series by region, 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+, comes from the same FHFA dataset as used above.
 \end_layout
 
 \begin_layout Standard
@@ -7037,7 +7042,7 @@ noprefix "false"
 
  that renters respond stronger to shocks than owners in terms of increased
  emigration, for obvious reasons, the expected gains in terms of lifetime
- value don't seem to compensate an owner to want to switch to that particular
+ value do not seem to compensate an owner to want to switch to that particular
  type of renter in most regions and take advantage of less costly migration.
 \end_layout
 
@@ -7175,7 +7180,7 @@ literal "false"
 migratory insurance.
 
 \emph default
- Here, I don't infer this from the amount of migration after a local shock
+ Here, I do not infer this from the amount of migration after a local shock
  has occured, ex post, but I consider how much individuals value to have
  the option to migrate ex ante, in case a shock were to occur.
 \end_layout
@@ -7446,7 +7451,7 @@ In the same table we continue with this exercise and split the sample by
 \begin_inset Formula $z$
 \end_inset
 
-draws of movers: Moving for such an individual raises the prospect of another
+ draws of movers: Moving for such an individual raises the prospect of another
  bad 
 \begin_inset Formula $z$
 \end_inset
@@ -7843,7 +7848,7 @@ noprefix "false"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7883,7 +7888,31 @@ name "fig:noMove-age30"
 
 \end_inset
 
+The labels stand for, in order:
+\begin_inset Formula $v$
+\end_inset
 
+ value function, 
+\begin_inset Formula $y$
+\end_inset
+
+ is individual labor income, 
+\begin_inset Formula $a$
+\end_inset
+
+ is asset position, 
+\begin_inset Formula $h$
+\end_inset
+
+ is the ownership status, 
+\begin_inset Formula $q$
+\end_inset
+
+ is the regional income component of income, and 
+\begin_inset Formula $p$
+\end_inset
+
+ is the regional house price level.
 \end_layout
 
 \end_inset
