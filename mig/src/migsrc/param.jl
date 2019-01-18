@@ -17,6 +17,8 @@ type Param
 	gamma   :: Float64			# CRRA
 	mgamma  :: Float64			# (1-CRRA)
 	imgamma :: Float64			# 1/(1-CRRA)
+	eta     :: Float64			# consumption weight in ufun
+	imgamma_eta :: Float64			# 1/(1-CRRA) * eta
 	tau     :: Float64 			# value of tau for high type
 	taudist :: Float64 			# population prob of being high cost type
 	xi1     :: Float64          # utility of housing for HHsize 1
@@ -130,6 +132,8 @@ type Param
 		gamma    = 1.4	
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
+		eta      = 0.2
+		imgamma_eta      = imgamma * eta
 		tau      = 100.0
 		taudist  = 0.65
 		xi1      = 0.008
@@ -230,7 +234,7 @@ type Param
 		# end
 		# create object
 
-		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,eta,imgamma_eta,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,nsim,verbose)
 
 		# override defaults
 		if length(opts) > 0
@@ -257,7 +261,7 @@ end
 
 
 function print(p::Param,file_est::String,file_set::String)
-	est = [:gamma,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
+	est = [:gamma,:eta,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
 	set = [:beta,:phi,:R,:Rm,:chi]
 	f_estimate = open(file_est,"w")
 	f_set      = open(file_set,"w")
@@ -303,6 +307,7 @@ function show(io::IO, p::Param)
 	print(io,"number of max problems=$(p.na*p.nz*p.np*p.ny*p.nh*p.ntau*p.nJ*p.nt*p.ns*p.nh*p.nJ)\n")
 	print(io,"free params:
 	gamma    = $(p.gamma)		
+	eta      = $(p.eta)		
 	tau      = $(p.tau)
 	taudist  = $(p.taudist)
 	xi1      = $(p.xi1)

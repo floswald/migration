@@ -2,7 +2,7 @@
 
 perc_bound(x,p) = [x;x*(1-p);x*(1+p)]
 
-function setup_mprob()
+function setup_mprob(;keep=nothing)
 	# this is loaded only on the master
 	io = mig.setPaths()
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
@@ -25,6 +25,7 @@ function setup_mprob()
 	pb = Dict{String,Array{Float64}}()
 	pb["xi1"]         = [p0.xi1, 0.0,0.02]
 	pb["xi2"]         = [p0.xi2, 0.0,0.1]
+	pb["eta"]         = [p0.eta, 0.0,2.0]
 	pb["omega2"]      = perc_bound(p0.omega2,0.2)
 	pb["MC0"]         = perc_bound(p0.MC0, 0.2)
 	pb["MC1"]         = [p0.MC1, 0.0,0.04]
@@ -42,6 +43,14 @@ function setup_mprob()
 	pb["amenity_WNC"] = [p0.amenity_WNC, 0.01,0.99]
 	pb["amenity_WSC"] = [p0.amenity_WSC, 0.01,0.99]
 
+	if keep!=nothing
+		pb0 = similar(pb)
+		for i in keep
+			pb0[i] = pb[i]
+		end
+		pb = pb0
+	end
+
 	mprob = MomentOpt.MProb() 
 	MomentOpt.addSampledParam!(mprob,pb) 
 	MomentOpt.addMoment!(mprob,moms_use) 
@@ -52,172 +61,98 @@ end
 """
 	Set up cluster and estimate model
 """
-function estimate(maxiter::Int,nworkers::Int)
+function estimate(maxiter::Int,nworkers::Int;method=:BGP,keep=nothing)
 
 	tic()
 
 	# check whether we can post to slack
 	post_slack()
 
-	# if is_apple()
-	# 	if isinteractive()
-	# 		# override maxiter
-	# 		maxiter=20
-	# 	end
-	# else 
-	# 	if length(workers()) == 1
-	# 		if isinteractive()
-	# 		# override maxiter
-	# 			maxiter = 4
-	# 			nworkers = 3
-	# 		end
-	# 		if gethostname() == "hpc-a"
-	# 			addprocs_sge(nworkers)
-	# 		else
-	# 			addprocs(SGEManager(nworkers,""),qsub_env="",res_list="h_vmem=6G,tmem=6G")
-	# 		end
-	# 	else
-	# 		# else we started a cluster with --machinefile
-	# 		# cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt",remove_destination=true)
-	# 	end
-	# end
-
 	dir = dirname(@__FILE__)	# src/migsrc
 
 	# load moments and get initial parameter value in an mprob object
-	mprob = setup_mprob()
+	mprob = setup_mprob(keep=keep)
 	# gradient descent
-	# if length(workers()) > 1
-	# 	s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
-	# else
-	# 	s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"trace_$(Date(now())).jld2"))
-	# end
+	if method==:grad
+		if length(workers()) > 1
+			s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+		else
+			s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+		end
+	elseif method==:BGP
 
-	nchains = length(workers())
+		nchains = length(workers())
 
-	# MOpt options
-	opts = Dict("N"=>nchains,
-        "maxiter"=>maxiter,
-        "maxtemp"=> 2,
-		"user"=> ENV["USER"],
-		"save_frequency"=> maxiter < 10 ? 2 : 100,
-		"filename" => joinpath(dir,string("estim_",Dates.today(),".jld2")),	
-        "smpl_iters"=>1000,
-        "parallel"=>true,
-        "sigma" => 0.01,
-        "sigma_update_steps"=>maxiter+1,  # never adjust variances
-        "maxdists"=>[0.05 for i in 1:nchains],
-        "acc_tuners"=>[1.0 for i in 1:nchains],
-        "animate"=>false)
+		# MOpt options
+		opts = Dict("N"=>nchains,
+	        "maxiter"=>maxiter,
+	        "maxtemp"=> 2,
+			"user"=> ENV["USER"],
+			"save_frequency"=> maxiter < 10 ? 2 : 100,
+			"filename" => joinpath(dir,string("estim_",Dates.today(),".jld2")),	
+	        "smpl_iters"=>1000,
+	        "parallel"=>true,
+	        "sigma" => 0.01,
+	        "sigma_update_steps"=>maxiter+1,  # never adjust variances
+	        "maxdists"=>[0.05 for i in 1:nchains],
+	        "acc_tuners"=>[1.0 for i in 1:nchains],
+	        "animate"=>false)
 
-	MA = MAlgoBGP(mprob,opts)
-	runMOpt!(MA)
+		MA = MAlgoBGP(mprob,opts)
+		runMOpt!(MA)
 
-	took = round(toq() / 3600.0,2)  # hours
+		took = round(toq() / 3600.0,2)  # hours
 
-	# send message to slack channel
-	txt = "[mig] Estimation finished with $maxiter iterations after $took hours on $(gethostname())"
-	post_slack(txt)
+		# send message to slack channel
+		txt = "[mig] Estimation finished with $maxiter iterations after $took hours on $(gethostname())"
+		post_slack(txt)
 
-	# compute point estimates and SD on coldest chain
-	out = Dict(:estimates => MomentOpt.median(MA.chains[1]),
-			   :CI => MomentOpt.CI(MA.chains[1]))
-	println("estimates:")
-	print(json(out,4))
-    io = mig.setPaths()
-    f = open(joinpath(io["out"],"estimates.json"),"w")
-    JSON.print(f,out)
-    close(f)
+		# compute point estimates and SD on coldest chain
+		out = Dict(:estimates => MomentOpt.median(MA.chains[1]),
+				   :CI => MomentOpt.CI(MA.chains[1]))
+		println("estimates:")
+		print(json(out,4))
+	    io = mig.setPaths()
+	    f = open(joinpath(io["out"],"estimates.json"),"w")
+	    JSON.print(f,out)
+	    close(f)
+
+	else
+		warn("only :BGP and :grad implemented")
+	end
 
 	println("quitting cluster")
 	quit()
 
 end
 
-function slices(nworkers::Int)
+"""
+	Set up cluster run slices
+"""
+function slices(npoints::Int,nworkers::Int;keep=nothing)
 
 	tic()
+
 	# check whether we can post to slack
 	post_slack()
 
-	if is_apple()
-		if isinteractive()
-			# override maxiter
-			maxiter=20
-		end
-	else 
-		if length(workers()) == 1
-			if isinteractive()
-			# override maxiter
-				maxiter = 4
-				nworkers = 3
-			end
-			if gethostname() == "hpc-a"
-				addprocs_sge(nworkers)
-			else
-				addprocs(SGEManager(nworkers,""),qsub_env="",res_list="h_vmem=6G,tmem=6G")
-			end
-		else
-			# else we started a cluster with --machinefile
-			# cp("zeppos.txt","/share/apps/econ/acapp/floswald/zeppos.txt",remove_destination=true)
-		end
-	end
-
 	dir = dirname(@__FILE__)	# src/migsrc
 
-	logdir = isdir(joinpath(dir,"../cluster/logs/")) ? joinpath(dir,"../cluster/logs/") : mkdir(joinpath(dir,"../cluster/logs/"))
-
 	# load moments and get initial parameter value in an mprob object
-	mprob = setup_mprob()
+	mprob = setup_mprob(keep=keep)
 
-	# MOpt options
-	opts =Dict(
-		"N"=>length(workers()),
-		"printlevel"=> 3,
-		"filename" => joinpath(logdir,string("estim_",Dates.today(),".h5")),
-		"save_frequency"=> maxiter < 10 ? 2 : 5,
-		"print_level"=> 2,
-		"user"=> ENV["USER"],
-		"maxiter"=> maxiter,
-		"maxtemp"=>10,
-		"min_shock_sd"=>0.1,
-		"max_shock_sd"=>2,
-		"past_iterations"=>30,
-		"min_disttol"=>0.05,	# if other chain is within 10% of my value, i consider jumping
-		"max_disttol"=>0.1,
-		"min_jump_prob"=>0.1,
-		"max_jump_prob"=>0.1)
+	sl = MomentOpt.doSlices(mprob,npoints);
+    io = mig.setPaths()
+	MomentOpt.save(sl,joinpath(io["outdir"],"slices.jld2"))
 
-
-	logfile = string(splitext(basename(opts["filename"]))[1],".log")
-	if isfile(logfile)
-		rm(logfile)
-	end
-
-	if !isinteractive()
-		io = open(logfile,"w")
-		redirect_stdout(io)
-	end
-	sl = MOpt.slices(mprob,length(workers()));
-	MOpt.write(sl,joinpath(io["outdir"],"slices.h5"))
-
-	close(io)
-	
-	took = toq() / 3600.0  # hours
+	took = round(toq() / 3600.0,2)  # hours
 
 	# send message to slack channel
-	txt = "mig Estimation finished with $maxiter iterations after $took hours."
-	post_slack(txt)
+	txt = "[mig] Slices finished after $took hours on $(gethostname())"
 
-	# compute point estimates and SD on coldest chain
-	# p = MOpt.parameters_ID(MA.MChains,MA.MChains[1].i)
-	# means = colwise(mean,mig.@select(mig.@where(p, :id .==1 ), MA.params2s_nms))
-	# sds = colwise(sd,@select(@where(p, :id .==1 ), MA.params2s_nms))
-
-	# out = DataFrame(estimate=means,sd=sds)
-	# println(out)
-
-	println("quitting cluster")
-	quit()
+	# println("quitting cluster")
+	# post_slack(txt)
+	# quit()
+	return sl
 
 end

@@ -148,6 +148,12 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 	acc = Accelerator(0)
 
 
+	# =======
+	# adjust parameters
+	# =======
+	p.imgamma_eta = p.eta * p.imgamma
+
+
 
 	# ===============
 	# policy switches
@@ -888,7 +894,7 @@ function vsavings!(w::Array{Float64,1},a::Array{Float64,1},EV::Array{Float64,1},
 end
 
 function ufun(c::Float64,ev::Float64,p::Param)
-	p.imgamma * myexp2(p.mgamma * mylog2(c) ) + p.beta * ev
+	p.imgamma_eta * myexp2(p.mgamma * mylog2(c) ) + p.beta * ev
 end
 
 # housing payment function

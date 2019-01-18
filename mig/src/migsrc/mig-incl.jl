@@ -121,7 +121,7 @@ function objfunc(ev::Eval)
 	gc()
 	# mms   = simulate_parts(m,p,5)	# simulate and compute moments in 5 pars
 	simMoments,status = mydf2dict(smm["moments"])
-	setMoment(ev,simMoments)
+	setMoments!(ev,simMoments)
 
 	mm = MomentOpt.check_moments(ev)
 	nm = filter(x->!in(x,[:moment,:data,:data_sd,:simulation,:distance]),names(mm))
@@ -143,7 +143,7 @@ function objfunc(ev::Eval)
 	# 	# v[k] = v[k] / 1000
 	# end
 	# vv = mean(collect(values(v)))
-	setValue(ev, (ismissing(value) | !isfinite(value)) ? NaN : value )
+	setValue!(ev, (ismissing(value) | !isfinite(value)) ? NaN : value )
 
 	status = (ismissing(value) | !isfinite(value)) ? -1 : status
 

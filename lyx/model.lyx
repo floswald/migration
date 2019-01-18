@@ -3049,7 +3049,7 @@ Period utility
 
 \begin_inset Formula 
 \begin{equation}
-u\left(c,h,k;x_{it}\right)=\frac{c^{1-\gamma}}{1-\gamma}+\xi(s_{ij})\times h-\mathbf{1}\left[d\neq k\right]\Delta\left(d',x_{it}\right)+A_{k}+\varepsilon_{ikt}\label{eq:utility}
+u\left(c,h,k;x_{it}\right)=\eta\frac{c^{1-\gamma}}{1-\gamma}+\xi(s_{ij})\times h-\mathbf{1}\left[d\neq k\right]\Delta\left(d',x_{it}\right)+A_{k}+\varepsilon_{ikt}\label{eq:utility}
 \end{equation}
 
 \end_inset
