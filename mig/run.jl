@@ -11,7 +11,7 @@ Value of Regional Migration (Oswald, 2018)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|grad|slices) [--nworkers=<nw>] [--maxiter=<maxit>][--points=<npts>]  
+    run.jl estim (bgp|grad|slices) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
