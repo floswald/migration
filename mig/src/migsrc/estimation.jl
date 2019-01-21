@@ -2,7 +2,7 @@
 
 perc_bound(x,p) = [x;x*(1-p);x*(1+p)]
 
-function setup_mprob(;keep=nothing)
+function setup_mprob(;keep=[])
 	# this is loaded only on the master
 	io = mig.setPaths()
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
@@ -43,7 +43,7 @@ function setup_mprob(;keep=nothing)
 	pb["amenity_WNC"] = [p0.amenity_WNC, 0.01,0.99]
 	pb["amenity_WSC"] = [p0.amenity_WSC, 0.01,0.99]
 
-	if keep!=nothing
+	if length(keep) > 0
 		pb0 = similar(pb)
 		for i in keep
 			pb0[i] = pb[i]
@@ -61,7 +61,7 @@ end
 """
 	Set up cluster and estimate model
 """
-function estimate(maxiter::Int,nworkers::Int;method=:BGP,keep=nothing)
+function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 
 	tic()
 
@@ -75,9 +75,9 @@ function estimate(maxiter::Int,nworkers::Int;method=:BGP,keep=nothing)
 	# gradient descent
 	if method==:grad
 		if length(workers()) > 1
-			s = MomentOpt.optSlices(mprob,length(workers()),parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		else
-			s = MomentOpt.optSlices(mprob,10,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		end
 	elseif method==:BGP
 
@@ -85,15 +85,15 @@ function estimate(maxiter::Int,nworkers::Int;method=:BGP,keep=nothing)
 
 		# MOpt options
 		opts = Dict("N"=>nchains,
-	        "maxiter"=>maxiter,
+	        "maxit_npoints"=>maxit_npoints,
 	        "maxtemp"=> 2,
 			"user"=> ENV["USER"],
-			"save_frequency"=> maxiter < 10 ? 2 : 100,
+			"save_frequency"=> maxit_npoints < 10 ? 2 : 100,
 			"filename" => joinpath(dir,string("estim_",Dates.today(),".jld2")),	
 	        "smpl_iters"=>1000,
 	        "parallel"=>true,
 	        "sigma" => 0.01,
-	        "sigma_update_steps"=>maxiter+1,  # never adjust variances
+	        "sigma_update_steps"=>maxit_npoints+1,  # never adjust variances
 	        "maxdists"=>[0.05 for i in 1:nchains],
 	        "acc_tuners"=>[1.0 for i in 1:nchains],
 	        "animate"=>false)
@@ -104,7 +104,7 @@ function estimate(maxiter::Int,nworkers::Int;method=:BGP,keep=nothing)
 		took = round(toq() / 3600.0,2)  # hours
 
 		# send message to slack channel
-		txt = "[mig] Estimation finished with $maxiter iterations after $took hours on $(gethostname())"
+		txt = "[mig] Estimation finished with $maxit_npoints iterations after $took hours on $(gethostname())"
 		post_slack(txt)
 
 		# compute point estimates and SD on coldest chain
@@ -129,7 +129,7 @@ end
 """
 	Set up cluster run slices
 """
-function slices(npoints::Int,nworkers::Int;keep=nothing)
+function slices(npoints::Int,nworkers::Int;keep=[])
 
 	tic()
 

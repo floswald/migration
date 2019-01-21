@@ -11,7 +11,7 @@ Value of Regional Migration (Oswald, 2018)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|grad|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
+    run.jl estim (bgp|grad|slices) [--nworkers=<nw>] [--maxiter=<maxit>][--points=<npts>]  
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
@@ -20,6 +20,7 @@ Usage:
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
+    --npoints=<npts>    number of points to use [default: 10].
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
@@ -37,17 +38,18 @@ args = docopt(doc, version=v"0.9.7")
 if args["estim"]
     info("Running estimation: ")
     nwork = parse(Int,args["--nworkers"])
+    npoints = parse(Int,args["--npoints"])
     maxit = parse(Int,args["--maxiter"])
     if args["bgp"]
         info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
         addprocs(nwork)
         using mig
-        mig.estimate(maxit,nwork)
+        mig.estimate(maxit)
     elseif args["grad"]
         info("      grad descent estimation algorithm on $nwork workers")
         addprocs(nwork)
         using mig
-        mig.estimate(maxit,nwork,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig
