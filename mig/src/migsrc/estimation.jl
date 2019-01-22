@@ -19,9 +19,9 @@ function setup_mprob(;keep=[])
 
 	# initial value
 	p0 = mig.Param(2)
-	setfield!(p0,:MC0, 3.19)
-	setfield!(p0,:xi1, 0.008)
-	setfield!(p0,:xi2, 0.049)
+	# setfield!(p0,:MC0, 3.19)
+	# setfield!(p0,:xi1, 0.008)
+	# setfield!(p0,:xi2, 0.049)
 	pb = Dict{String,Array{Float64}}()
 	pb["xi1"]         = [p0.xi1, 0.0,0.02]
 	pb["xi2"]         = [p0.xi2, 0.0,0.1]
@@ -141,7 +141,7 @@ function slices(npoints::Int,nworkers::Int;keep=[])
 	# load moments and get initial parameter value in an mprob object
 	mprob = setup_mprob(keep=keep)
 
-	sl = MomentOpt.doSlices(mprob,npoints);
+	sl = MomentOpt.doSlices(mprob,npoints,nworkers>1);
     io = mig.setPaths()
 	MomentOpt.save(sl,joinpath(io["outdir"],"slices.jld2"))
 

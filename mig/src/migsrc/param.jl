@@ -135,19 +135,19 @@ type Param
 		eta      = 0.2
 		imgamma_eta      = imgamma * eta
 		tau      = 100.0
-		taudist  = 0.65
-		xi1      = 0.008
-		xi2      = 0.052
+		taudist  = 0.62
+		xi1      = -0.009
+		xi2      = 0.002
 		omega1   = 1.0
 		omega2   = 5.1
 		# omega2   = 3.26721
 		# omega2   = 6.1
 
 		# MC0    = 2.71  	 	# intercept
-		MC0    = 2.77  	 	# intercept
+		MC0    = 3.2  	 	# intercept
 		MC1    = 0.017  	 	# age
 		MC2    = 0.0013 		# age2
-		MC3    = 0.26 		# owmer
+		MC3    = 0.16 		# owmer
 		# MC3    = 0.00      # dist
 		MC4    = 0.36 		# kids
 
@@ -175,13 +175,13 @@ type Param
 		# set amenity to popweights initially
 		amenity = convert(Array,popweights[:proportion])
 
-		# change initial value a bit
+		# change initial values of amenity
 		amenity[1] -= 0.03
 		amenity[3] -= 0.01
 		amenity[4] += 0.04
 		amenity[5] += 0.01
-		amenity[6] += 0.035
-		amenity[7] -= 0.01
+		amenity[6] += 0.06
+		amenity[7] -= 0.02
 		amenity[8] -= 0.01
 
 		# plug into members
