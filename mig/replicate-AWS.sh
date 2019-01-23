@@ -1,5 +1,8 @@
 # script to replicate all results in the paper
 
+# this uses cfncluster scpo9
+# created viv `cfncluster create -t t3_9 scpo9`
+
 julia6 run.jl --help   # show options
 julia6 run.jl --version
 julia6 --color=yes run.jl experiment elasticity --nworkers=9
