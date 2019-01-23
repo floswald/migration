@@ -85,7 +85,7 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 
 		# MOpt options
 		opts = Dict("N"=>nchains,
-	        "maxit"=>maxit,
+	        "maxiter"=>maxit,
 	        "maxtemp"=> 2,
 			"user"=> ENV["USER"],
 			"save_frequency"=> maxit < 10 ? 2 : 100,
