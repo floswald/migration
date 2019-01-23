@@ -152,7 +152,7 @@ type Param
 		MC4    = 0.36 		# kids
 
 
-		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
+		kappa  = Float64[0.01 for i=1:9] # dummy rent to price ratio in each region. to be filled in in model()
 		phi    = 0.06		  # fixed cost of selling
 
 		R      = 1.03 	# gross interest rate savings: 1+r

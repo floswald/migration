@@ -1,6 +1,6 @@
 
 
-perc_bound(x,p) = [x;x*(1-p);x*(1+p)]
+perc_bound(x,p) = [x;x-p*abs(x);x+p*abs(x)]
 
 function setup_mprob(;keep=[])
 	# this is loaded only on the master
@@ -23,25 +23,25 @@ function setup_mprob(;keep=[])
 	# setfield!(p0,:xi1, 0.008)
 	# setfield!(p0,:xi2, 0.049)
 	pb = Dict{String,Array{Float64}}()
-	pb["xi1"]         = [p0.xi1, 0.0,0.02]
-	pb["xi2"]         = [p0.xi2, 0.0,0.1]
+	pb["xi1"]         = perc_bound(p0.xi1,0.2)
+	pb["xi2"]         = [p0.xi2, 0.0,0.01]
 	pb["eta"]         = [p0.eta, 0.0,2.0]
 	pb["omega2"]      = perc_bound(p0.omega2,0.2)
 	pb["MC0"]         = perc_bound(p0.MC0, 0.2)
 	pb["MC1"]         = [p0.MC1, 0.0,0.04]
 	pb["MC2"]         = [p0.MC2, 0.0,0.01]
-	pb["MC3"]         = [p0.MC3, 0.0,1]
+	pb["MC3"]         = [p0.MC3, 0.0,0.4]
 	pb["MC4"]         = [p0.MC4, 0.01,0.9]
 	pb["taudist"]     = [p0.taudist, 0.0,1]
-	pb["amenity_ENC"] = [p0.amenity_ENC, 0.01,0.99]
-	pb["amenity_ESC"] = [p0.amenity_ESC, 0.01,0.99]
-	pb["amenity_MdA"] = [p0.amenity_MdA, 0.01,0.99]
-	pb["amenity_Mnt"] = [p0.amenity_Mnt, 0.01,0.99]
-	pb["amenity_NwE"] = [p0.amenity_NwE, 0.01,0.99]
-	pb["amenity_Pcf"] = [p0.amenity_Pcf, 0.01,0.99]
-	pb["amenity_StA"] = [p0.amenity_StA, 0.01,0.99]
-	pb["amenity_WNC"] = [p0.amenity_WNC, 0.01,0.99]
-	pb["amenity_WSC"] = [p0.amenity_WSC, 0.01,0.99]
+	pb["amenity_ENC"] = perc_bound(p0.amenity_ENC,0.2)
+	pb["amenity_ESC"] = perc_bound(p0.amenity_ESC,0.2)
+	pb["amenity_MdA"] = perc_bound(p0.amenity_MdA,0.2)
+	pb["amenity_Mnt"] = perc_bound(p0.amenity_Mnt,0.2)
+	pb["amenity_NwE"] = perc_bound(p0.amenity_NwE,0.2)
+	pb["amenity_Pcf"] = perc_bound(p0.amenity_Pcf,0.2)
+	pb["amenity_StA"] = perc_bound(p0.amenity_StA,0.2)
+	pb["amenity_WNC"] = perc_bound(p0.amenity_WNC,0.2)
+	pb["amenity_WSC"] = perc_bound(p0.amenity_WSC,0.2)
 
 	if length(keep) > 0
 		pb0 = similar(pb)
