@@ -1,7 +1,7 @@
 doc = """
 
 The Effect of Homeownership on the Option
-Value of Regional Migration (Oswald, 2018)
+Value of Regional Migration (Oswald, 2019)
 
     | Welcome to the run file of my paper. Please
     | see below how to run the code. 
@@ -33,7 +33,7 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"0.9.7")
+args = docopt(doc, version=v"1.0")
 
 if args["estim"]
     info("Running estimation: ")
