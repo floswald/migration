@@ -85,15 +85,15 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 
 		# MOpt options
 		opts = Dict("N"=>nchains,
-	        "maxit_npoints"=>maxit_npoints,
+	        "maxit"=>maxit,
 	        "maxtemp"=> 2,
 			"user"=> ENV["USER"],
-			"save_frequency"=> maxit_npoints < 10 ? 2 : 100,
+			"save_frequency"=> maxit < 10 ? 2 : 100,
 			"filename" => joinpath(dir,string("estim_",Dates.today(),".jld2")),	
 	        "smpl_iters"=>1000,
 	        "parallel"=>true,
 	        "sigma" => 0.01,
-	        "sigma_update_steps"=>maxit_npoints+1,  # never adjust variances
+	        "sigma_update_steps"=>maxit+1,  # never adjust variances
 	        "maxdists"=>[0.05 for i in 1:nchains],
 	        "acc_tuners"=>[1.0 for i in 1:nchains],
 	        "animate"=>false)
@@ -104,7 +104,7 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 		took = round(toq() / 3600.0,2)  # hours
 
 		# send message to slack channel
-		txt = "[mig] Estimation finished with $maxit_npoints iterations after $took hours on $(gethostname())"
+		txt = "[mig] Estimation finished with $maxit iterations after $took hours on $(gethostname())"
 		post_slack(txt)
 
 		# compute point estimates and SD on coldest chain
