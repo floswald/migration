@@ -8,7 +8,7 @@ function setup_mprob(;keep=[])
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity"]
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2","moved1","moved2plus"]
 	for iw in moms[:name]
 		if contains(iw,"wealth") 
 			push!(dont_use,iw)
@@ -16,6 +16,29 @@ function setup_mprob(;keep=[])
 	end
 	use_names = setdiff(moms[:name],dont_use)
 	moms_use = moms[findin(moms[:name],use_names) ,:]
+
+	# manually set weights on each moment 
+	moms_use[:weight] = 1.0
+	weights = Dict(:10 => [:cov_move_h,
+						   :mean_move,
+						   :mean_move_ownFALSE,
+						   :mean_move_ownTRUE],
+		           :1.5 => [:flow_move_to_ENC,
+		                  :flow_move_to_ESC,
+		                  :flow_move_to_MdA,
+		                  :flow_move_to_Mnt,
+		                  :flow_move_to_NwE,
+		                  :flow_move_to_Pcf,
+		                  :flow_move_to_StA,
+		                  :flow_move_to_WNC,
+		                  :flow_move_to_WSC],
+		           :2 => [:lm_mv_intercept,
+                          :cov_own_kids])
+	for (k,v) in weights
+		moms_use[findin(moms_use[:name],String.(v)),:weight] = 1.0 ./ k 
+	end
+
+
 
 	# initial value
 	p0 = mig.Param(2)
@@ -77,7 +100,7 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 		if length(workers()) > 1
 			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		else
-			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+			s = MomentOpt.optSlices(mprob,npoints,parallel=false,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		end
 	elseif method==:BGP
 
@@ -92,10 +115,10 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 			"filename" => joinpath(dir,string("estim_",Dates.today(),".jld2")),	
 	        "smpl_iters"=>1000,
 	        "parallel"=>true,
-	        "sigma" => 0.01,
+	        "sigma" => 0.1,
 	        "sigma_update_steps"=>maxit+1,  # never adjust variances
 	        "maxdists"=>[0.05 for i in 1:nchains],
-	        "acc_tuners"=>[1.0 for i in 1:nchains],
+	        "acc_tuners"=>[2.0 for i in 1:nchains],
 	        "animate"=>false)
 
 		MA = MAlgoBGP(mprob,opts)

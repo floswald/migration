@@ -80,10 +80,13 @@ end
 function objfunc_test(ev::Eval)
 
 	start(ev)
-	Base.info("in objective function")
 	p = Param(2)	# create a default param type
 	MomentOpt.fill(p,ev)      # fill p with current values on eval object
-	println("param = $p")
+	mm = similar(MomentOpt.dataMomentd(ev))
+	for (k,v) in MomentOpt.dataMomentd(ev) 
+		mm[k] = rand()
+	end
+	setMoments!(ev,Dict(mm))
 	v = Dict{Symbol,Float64}()
 	for (k,mom) in MomentOpt.dataMomentd(ev)
 		# if haskey(dataMomentWd(ev),k)
@@ -95,10 +98,68 @@ function objfunc_test(ev::Eval)
 		# v[k] = v[k] / 1000
 	end
 	vv = mean(collect(values(v)))
-	setValue(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
+	setValue!(ev, (ismissing(vv) | !isfinite(vv)) ? NaN : vv )
 	finish(ev)
 
 	return ev
+end
+
+function FD_gradient_g(p::OrderedDict)
+	# for length(p) params, you need length(p) + 1 evaluations
+
+	# get g(p)
+	x = runObj_test(p)
+	gp = collect(values(x.simMoments))
+	D = zeros(length(p),length(gp))
+
+	# optimal step size
+	h = sqrt(eps())
+	h = 
+
+	# compute each partial derivative
+	row = 0
+	@showprogress "Computing..." for (k,v) in p
+		row += 1
+		pp = deepcopy(p)
+		pp[k] = v + h 
+		println("changing $v to $(pp[k])")
+		xx = runObj_test(pp)
+		D[row,:] = (collect(values(xx.simMoments)) .- gp) / h
+	end
+
+	return D
+end
+
+"""
+	objfunc_wrapper(x::Vector{Float64})
+
+Wrap objfunc such that suitable for use with Finite Difference function
+"""
+function objfunc_wrapper(x::Vector{Float64})
+
+	p = OrderedDict(
+		:xi1         => x[1],
+        :xi2         => x[2],
+        :eta         => x[3],
+        :omega2      => x[4],
+        :MC0        =>  x[5],
+        :MC1        =>  x[6],
+        :MC2        =>  x[7],
+        :MC3        =>  x[8],
+        :MC4        =>  x[9],
+        :taudist    =>  x[10],
+        :amenity_ENC => x[11],
+        :amenity_ESC => x[12],
+        :amenity_MdA => x[13],
+        :amenity_Mnt => x[14],
+        :amenity_NwE => x[15],
+        :amenity_Pcf => x[16],
+        :amenity_StA => x[17],
+        :amenity_WNC => x[18],
+        :amenity_WSC => x[19]
+		)
+	e = runObj(p)
+	return e.value
 end
 
 
@@ -129,7 +190,7 @@ function objfunc(ev::Eval)
 	for k in nm
 		v[k] = mean(mm[k])
 	end
-	value = v[:abs_percent_2]
+	value = v[:abs_percent_SD_weighted] 
 
 	# v = Dict{Symbol,Float64}()
 	# for (k,mom) in MomentOpt.dataMomentd(ev)
@@ -249,7 +310,7 @@ function runObj(printm::Bool=false,subset=true)
 	MomentOpt.check_moments(ev)
 	return ev
 end
-function runObj(p::Dict)
+function runObj(p::Union{Dict,OrderedDict})
 	# create MProb
 
 	io = mig.setPaths()
@@ -273,6 +334,28 @@ function runObj(p::Dict)
 	return ev
 end
 
+function runObj_test(p::Union{Dict,OrderedDict})
+	# create MProb
+
+	io = mig.setPaths()
+	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
+	mig.names!(moms,[:name,:value,:weight])
+	# subsetting moments
+	# dont_use= ["lm_w_intercept","move_neg_equity"]
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2"]
+	for iw in moms[:name]
+		if contains(iw,"wealth") 
+			push!(dont_use,iw)
+		end
+	end
+	use_names = setdiff(moms[:name],dont_use)
+	moms_use = moms[findin(moms[:name],use_names) ,:]
+
+	# create Eval
+	ev = MomentOpt.Eval(p,moms_use)
+	ev = objfunc_test(ev)
+	return ev
+end
 
 		
 # asset grid scaling

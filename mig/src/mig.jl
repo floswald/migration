@@ -2,6 +2,7 @@ module mig
 
 using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD2
 using CategoricalArrays: CategoricalArray
+using DataStructures: OrderedDict
 using Missings
 using LaTeXStrings
 using StatsBase

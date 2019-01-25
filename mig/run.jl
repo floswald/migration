@@ -49,7 +49,8 @@ if args["estim"]
         info("      grad descent estimation algorithm on $nwork workers")
         addprocs(nwork)
         using mig
-        mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        mig.estimate(maxit,npoints=npoints,method=:grad)
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig
