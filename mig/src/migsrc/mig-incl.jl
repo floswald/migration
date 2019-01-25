@@ -167,7 +167,6 @@ end
 function objfunc(ev::Eval)
 
 	start(ev)
-	Base.info("in objective function")
 
 	p = Param(2)	# create a default param type
 	MomentOpt.fill(p,ev)      # fill p with current values on eval object
