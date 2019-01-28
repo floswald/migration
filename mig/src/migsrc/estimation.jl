@@ -102,6 +102,12 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 		else
 			s = MomentOpt.optSlices(mprob,npoints,parallel=false,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		end
+		iters = maximum(s[:history][:iter])
+		took = round(toq() / 3600.0,2)  # hours
+
+		# send message to slack channel
+		txt = "[mig] grad Estimation finished after $iters iterations after $took hours on $(gethostname())"
+		post_slack(txt)
 	elseif method==:BGP
 
 		nchains = length(workers())
