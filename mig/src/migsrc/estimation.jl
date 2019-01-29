@@ -155,6 +155,33 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 
 end
 
+
+"""
+	get standard errors from a set of estimates
+"""
+function stdErrors()
+	tic()
+	dir = dirname(@__FILE__)	# src/migsrc
+	outd = joinpath(dir,"..","..","out")
+	f = joinpath(outd,"current_estim.jld2")
+	post_slack()
+	x = MomentOpt.load(f)
+	p = x["dout"][:best][:p]
+	m = setup_mprob()
+	s = MomentOpt.get_stdErrors(m,p,reps=350)
+
+	d = Dict()
+	for (k,v) in p 
+		d[k] = Dict(:estimate=>v, :se => s[k])
+	end
+	open(joinpath(,"estimates.json"),"w") do fi 
+		JSON.print(fi,d)
+	end
+	took = round(toq() / 3600.0,2)  # hours
+	txt = "[mig] standard errors finished after $took hours on $(gethostname())"
+
+end
+
 """
 	Set up cluster run slices
 """

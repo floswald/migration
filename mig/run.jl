@@ -11,7 +11,7 @@ Value of Regional Migration (Oswald, 2019)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|grad|slices) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
+    run.jl estim (bgp|grad|slices|stderrors) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
@@ -51,6 +51,12 @@ if args["estim"]
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.estimate(maxit,npoints=npoints,method=:grad)
+    elseif args["stderrors"]
+        info("      grad descent estimation algorithm on $nwork workers")
+        addprocs(nwork)
+        using mig
+        # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        mig.stdErrors()
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig

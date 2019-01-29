@@ -100,7 +100,9 @@ function simulate(m::Model,p::Param)
 
 	# pdebug("setup Lininterps")
 
-	srand(54321)
+	if p.seed
+		srand(54321)
+	end
 
 	# prepare initial distributions to draw from
 	cumGz = cumsum(m.gridsXD["Gz"],2)

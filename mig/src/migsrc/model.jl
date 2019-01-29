@@ -501,7 +501,9 @@ type Model
 
 		# random generator setup
 		# ======================
-		srand(12345)
+		if p.seed
+			srand(12345)
+		end
 		N = c_breaks[end]	# modified version of p.nsim
 		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*(p.nt-1))
 		sshock = rand(N*(p.nt-1))

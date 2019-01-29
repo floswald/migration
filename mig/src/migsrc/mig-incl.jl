@@ -169,6 +169,11 @@ function objfunc(ev::Eval)
 	start(ev)
 
 	p = Param(2)	# create a default param type
+	if get(ev.options,:noseed,false)
+		p.seed = false
+	else
+		p.seed = true
+	end
 	MomentOpt.fill(p,ev)      # fill p with current values on eval object
 
 	m = Model(p)
