@@ -35,6 +35,8 @@ Options:
 using DocOpt
 args = docopt(doc, version=v"1.0")
 
+addprocs1(n) = n>1 ? addprocs(n) : nothing
+
 if args["estim"]
     info("Running estimation: ")
     nwork = parse(Int,args["--nworkers"])
@@ -42,18 +44,18 @@ if args["estim"]
     maxit = parse(Int,args["--maxiter"])
     if args["bgp"]
         info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         mig.estimate(maxit)
     elseif args["grad"]
         info("      grad descent estimation algorithm on $nwork workers")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.estimate(maxit,npoints=npoints,method=:grad)
     elseif args["stderrors"]
         info("      computing std errors with $nwork workers")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.stdErrors()
@@ -82,7 +84,7 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         info("      noMove experiment, with nosave=$nosave")
@@ -94,7 +96,7 @@ elseif args["experiment"]
         mig.moneyMC(nosave)
     elseif args["ownersWTP"]
         info("      computing owners WTP to become renter again, with nosave=$nosave")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         mig.ownersWTP(nosave)
     elseif args["ownersWTP2"]
@@ -107,13 +109,13 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         mig.ownersWTP2(nosave)
     elseif args["moversWTP"]
         info("      computing movers WTP in region $reg with nosave=$nosave")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         mig.moversWTP(reg,nosave)
     elseif args["elasticity"]
@@ -126,7 +128,7 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         mig.elasticity(shock=shock,nosave=nosave,neg=neg)
