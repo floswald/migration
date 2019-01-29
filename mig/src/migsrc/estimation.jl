@@ -174,7 +174,7 @@ function stdErrors()
 	for (k,v) in p 
 		d[k] = Dict(:estimate=>v, :se => s[k])
 	end
-	open(joinpath(,"estimates.json"),"w") do fi 
+	open(joinpath(outd,"estimates.json"),"w") do fi 
 		JSON.print(fi,d)
 	end
 	took = round(toq() / 3600.0,2)  # hours

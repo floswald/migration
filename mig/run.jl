@@ -52,7 +52,7 @@ if args["estim"]
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.estimate(maxit,npoints=npoints,method=:grad)
     elseif args["stderrors"]
-        info("      grad descent estimation algorithm on $nwork workers")
+        info("      computing std errors with $nwork workers")
         addprocs(nwork)
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
