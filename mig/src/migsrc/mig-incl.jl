@@ -312,22 +312,24 @@ end
 function runObj(p::Union{Dict,OrderedDict})
 	# create MProb
 
-	io = mig.setPaths()
-	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
-	mig.names!(moms,[:name,:value,:weight])
-	# subsetting moments
-	# dont_use= ["lm_w_intercept","move_neg_equity"]
-	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2"]
-	for iw in moms[:name]
-		if contains(iw,"wealth") 
-			push!(dont_use,iw)
-		end
-	end
-	use_names = setdiff(moms[:name],dont_use)
-	moms_use = moms[findin(moms[:name],use_names) ,:]
+	# io = mig.setPaths()
+	# moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
+	# mig.names!(moms,[:name,:value,:weight])
+	# # subsetting moments
+	# # dont_use= ["lm_w_intercept","move_neg_equity"]
+	# dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2"]
+	# for iw in moms[:name]
+	# 	if contains(iw,"wealth") 
+	# 		push!(dont_use,iw)
+	# 	end
+	# end
+	# use_names = setdiff(moms[:name],dont_use)
+	# moms_use = moms[findin(moms[:name],use_names) ,:]
+
+	m = setup_mprob()
 
 	# create Eval
-	ev = MomentOpt.Eval(p,moms_use)
+	ev = MomentOpt.Eval(m,p)
 	ev = objfunc(ev)
 	MomentOpt.check_moments(ev)
 	return ev
