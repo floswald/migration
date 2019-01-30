@@ -179,6 +179,7 @@ function stdErrors()
 	end
 	took = round(toq() / 3600.0,2)  # hours
 	txt = "[mig] standard errors finished after $took hours on $(gethostname())"
+	post_slack(txt)
 
 end
 
