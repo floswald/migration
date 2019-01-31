@@ -8,7 +8,7 @@ function setup_mprob(;keep=[])
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
 	mig.names!(moms,[:name,:value,:weight])
 	# subsetting moments
-	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","lm_h_age2","moved1","moved2plus"]
+	dont_use= ["lm_w_intercept","move_neg_equity","q25_move_distance","q50_move_distance","q75_move_distance","moved1","moved2plus"]
 	for iw in moms[:name]
 		if contains(iw,"wealth") 
 			push!(dont_use,iw)
@@ -22,7 +22,8 @@ function setup_mprob(;keep=[])
 	weights = Dict(:10 => [:cov_move_h,
 						   :mean_move,
 						   :mean_move_ownFALSE,
-						   :mean_move_ownTRUE],
+						   :mean_move_ownTRUE,
+						   :lm_h_age2],
 		           :1.5 => [:flow_move_to_ENC,
 		                  :flow_move_to_ESC,
 		                  :flow_move_to_MdA,
