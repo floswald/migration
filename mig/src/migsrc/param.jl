@@ -94,7 +94,7 @@ type Param
 	verbose :: Int
 
 	# constructor assigning initial values
-	function Param(size::Int;opts::Dict=Dict())
+	function Param(size::Int;opts::Dict=Dict(),startval=false)
 
 		if size==1
 			# super small: use for tests
@@ -130,6 +130,9 @@ type Param
 			seed = true
 
 		end		
+
+		# starting values for parameter in estimation
+		# these are NOT the estimated (i.e. final) values
 
 		beta     = 0.96
 		gamma    = 1.4	
@@ -239,7 +242,20 @@ type Param
 
 		out = new(gamma,mgamma,imgamma,eta,imgamma_eta,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,seed,nsim,verbose)
 
-		# override defaults
+		# overwrite default parameters with estimated values
+		# if you don't want to start estimation on last best estimate...
+		if !startval
+			dir = dirname(@__FILE__)	# src/migsrc
+			outd = joinpath(dir,"..","..","out")
+			f = joinpath(outd,"current_estim.jld2")
+			x = FileIO.load(f)
+			pstar = x["dout"][:best][:p]
+	        for (k,v) in pstar 
+	        	setfield!(out,k,v)
+	        end
+	    end
+
+		# manually override params if desired.
 		if length(opts) > 0
             for (k,v) in opts
             	if in(Symbol(k),fieldnames(out))
