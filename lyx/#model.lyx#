@@ -5290,7 +5290,7 @@ Notice that this proceedure still leads to valid standard errors, since
 
  appears together with the covariance matrix of moments in the sandwich
  formula (see below).
- The weights are given by the values 10 for moments 
+ The weights are given by 10 for moments 
 \family typewriter
 cov_move_h, mean_move, mean_move_ownFALSE, mean_move_ownTRUE
 \family default
@@ -5416,7 +5416,7 @@ the distribution of the parameter estimates
 \begin_inset Formula $\hat{\theta}$
 \end_inset
 
- is given by the standard sandwich formula
+ is given by
 \begin_inset Formula 
 \[
 \sqrt{n}(\hat{\theta}-\theta_{0})\to\mathcal{N}\left(0,\left[dWd'\right]^{-1}dW\Sigma Wd'\left[dWd'\right]^{-1}\right)
@@ -6246,7 +6246,10 @@ Dropbox/model/fit/params.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Parameter estimates and standard errors.
+Parameter estimates.
+ The confidence intervals have been obtained as the 0.025 and 0.975 quantiles
+ of the parameter distribution on the coldest MCMC chain.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Parameter-estimates"

@@ -67,7 +67,7 @@
   "params":{
     "template" : "params.mus",
     "output"   : "Dropbox/research/mobility/output/model/fit/params.tex",
-    "data"     : "git/migration/mig/out/CI-estims.json"
+    "data"     : "git/migration/mig/out/estimates.json"
   },    
   "shockRegions_ps0.95ys0.95":{
     "template" : "shockRegions.mus",

@@ -227,7 +227,7 @@ function objfunc(ev::Eval)
 	end
 
 	ev.status = status
-	println("value = $value")
+	# println("value = $value")
 
 	finish(ev)
 

@@ -179,7 +179,7 @@ sss
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -226,7 +226,7 @@ mmm
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -279,7 +279,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 input{
 \backslash
