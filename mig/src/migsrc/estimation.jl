@@ -34,7 +34,8 @@ function setup_mprob(;keep=[])
 		                  :flow_move_to_WNC,
 		                  :flow_move_to_WSC],
 		           :2 => [:lm_mv_intercept,
-                          :cov_own_kids])
+                          :cov_own_kids],
+                   :1.4 => :moved0)
 	for (k,v) in weights
 		moms_use[findin(moms_use[:name],String.(v)),:weight] = 1.0 ./ k 
 	end
