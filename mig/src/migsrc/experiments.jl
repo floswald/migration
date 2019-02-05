@@ -545,7 +545,7 @@ function exp_shockRegion(opts::Dict;same_ids=false)
 	return (out,sim0,sim1)
 end
 
-function zerodiv(num::Vector{Float64},denom::Vector{Float64})
+function zerodiv(num::Vector,denom::Vector)
 	z = denom .≈ 0.0
 	nz = .!(z)
 	r = zeros(denom)
@@ -560,22 +560,26 @@ function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 
 
 	ela1 = @linq ela |>
-			@transform(d_all = zerodiv.((:All_1 - :All) ,  :All),
-			d_out            = zerodiv.((:Total_out_1 - :Total_out) ,  :Total_out),
-			d_own_out        = zerodiv.((:Owners_out_1 - :Owners_out) ,  :Owners_out),
-			d_rent_out       = zerodiv.((:Renters_out_1 - :Renters_out) ,  :Renters_out),
-			d_own            = zerodiv.((:Owners_1 - :Owners), :Owners),
-			d_rent           = zerodiv.((:Renters_1 - :Renters), :Renters),
-			d_net_own        = zerodiv.((:Net_own_1 - :Net_own),  :Net_own),
-			d_net_rent       = zerodiv.((:Net_rent_1 - :Net_rent),  :Net_rent),
-			d_total_in       = zerodiv.((:Total_in_1 - :Total_in), :in_rent),
-			d_in_rent        = zerodiv.((:in_rent_1 - :in_rent), :in_rent),
-			d_in_buy         = zerodiv.((:in_buy_1 - :in_buy), :in_buy),
-			d_out_rent       = zerodiv.((:out_rent_1 - :out_rent), :out_rent),
-			d_out_buy        = zerodiv.((:out_buy_1 - :out_buy), :out_buy),
+			@transform(d_all = (:All_1 - :All)                 ./ :All        ,
+			d_out            = (:Total_out_1 - :Total_out)     ./ :Total_out  ,
+			d_own_out        = (:Owners_out_1 - :Owners_out)   ./ :Owners_out ,
+			d_rent_out       = (:Renters_out_1 - :Renters_out) ./ :Renters_out ,
+			d_own            = (:Owners_1 - :Owners)           ./ :Owners     ,
+			d_rent           = (:Renters_1 - :Renters)         ./ :Renters    ,
+			d_net_own        = (:Net_own_1 - :Net_own)         ./ :Net_own    ,
+			d_net_rent       = (:Net_rent_1 - :Net_rent)       ./ :Net_rent   ,
+			d_total_in       = (:Total_in_1 - :Total_in)       ./ :in_rent    ,
+			d_in_rent        = (:in_rent_1 - :in_rent)         ./ :in_rent    ,
+			d_in_buy         = (:in_buy_1 - :in_buy)           ./ :in_buy     ,
+			d_out_rent       = (:out_rent_1 - :out_rent)       ./ :out_rent   ,
+			d_out_buy        = (:out_buy_1 - :out_buy)         ./ :out_buy    ,
 			year             = :year, pshock                                    = 1.0, yshock = 0.0)
 
-	
+	# set infinity entries to 0.0
+	dd = colwise(x->.!(isfinite.(x)),ela1)
+	for id in 1:length(dd)
+		ela1[dd[id],id] = 0.0
+	end
 
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 
