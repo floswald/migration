@@ -545,12 +545,12 @@ function exp_shockRegion(opts::Dict;same_ids=false)
 	return (out,sim0,sim1)
 end
 
-function zerodiv(num,denom)
-	if denom ≈ 0.0
-		return 0.0
-	else
-		return num / denom
-	end
+function zerodiv(num::Vector{Float64},denom::Vector{Float64})
+	z = denom .≈ 0.0
+	nz = .!(z)
+	r = zeros(denom)
+	r[nz] = num[nz] ./ denom[nz] 
+	return r
 end
 
 
