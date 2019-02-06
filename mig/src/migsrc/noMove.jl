@@ -443,9 +443,8 @@ end
 
     # plot stuff
     layout := g
-    legend --> :right
+    legend --> :false
     xguide --> get(plotattributes,:xguide,"$pivot")
-    ylabel := L"\% \Delta"
 
     if get(plotattributes,:seriestype, :path) == :bar
 		for i in 1:length(subs)
@@ -461,12 +460,13 @@ end
 
 				yl = (ylow-0.05*ds,yhigh+0.05*ds)
 			    ylims := yl
-				lab = "$(subs[i])"
+			    ylabel := latexstring("\$ \\% \\Delta $(subs[i])\$")
+				# lab = "$(subs[i])"
 				x = df[pivot]
 			    fillcolor --> get(plotattributes,:fillcolor,:grey)
 				subplot := i
-			    label := latexstring("$lab")
-			    ux = unique(x)
+			    # label := latexstring("$lab")
+			    ux = string.(unique(x))
         		xnums = (1:length(ux)) 
         		xticks --> (xnums, ux)
 			    y
@@ -478,12 +478,13 @@ end
 			ys = extrema(y[isfinite.(y)])
 			ds = ys[2] - ys[1]
 			yl = (ys[1]-0.1*ds,ys[2]+0.1*ds)
-			lab = "$(subs[i])"
+			# lab = "$(subs[i])"
 			@series begin
 				subplot := i
 			    linewidth --> get(plotattributes,:linewidth,1.5)
 			    linecolor --> get(plotattributes,:linecolor,:black)
-			    label := latexstring("$lab")
+			    ylabel := latexstring("\$ \\% \\Delta $(subs[i])\$")
+			    # label := latexstring("$lab")
 			    yticks := round.(collect(linspace(ys[1],ys[2],yti)),2)
 			    ylims := yl
 			    df[pivot],y

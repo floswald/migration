@@ -6576,29 +6576,16 @@ noprefix "false"
 
 .
  First we observe that the average of population elasticities across regions
- is a value around 0.54, implying that on average, a 1% permanent increase
- to regional income will lead to a 0.5% increase of population size of the
+ is a value around 0.1, implying that on average, a 1% permanent increase
+ to regional income will lead to a 0.1% increase of population size of the
  shocked area.
- Total inflows into regions increase in the range of approximately 4% to
- 7%, and in most regions the inflow rate of renters increases more than
- the one of incoming buyers.
- Renters are more mobile, as we have seen several times already, hence this
- is expected.
- Renters' inflows are not greater everywhere, however, because this depends
- on many things which vary across regions: for example, the relative ranking
- of house price levels 
-\begin_inset Formula $p_{dt}$
-\end_inset
-
- and expectations about their future values, as well as the level of amenities.
- The shock changes the relative attractiveness ranking of regions, and this
- shift is highly non-linear.
+ Total inflows into regions increase in the range of approximately 0.8% to
+ 1.9%, the inflow rate of renters increases more than the one of incoming
+ buyers throughout.
  The next set of columns looks at the complement to those statistics, i.e.
  the elasticity of outflows.
  In the present case of a positive income shock, outflows decline in general
  as both renters and owners are less likely to move away.
- As before, renters have larger elasticities.
- 
 \end_layout
 
 \begin_layout Standard
@@ -6615,20 +6602,18 @@ noprefix "false"
  shows the corresponding elasticities for the case of a positive regional
  house price shock.
  The overall population elasticity is on average 
-\begin_inset Formula $-0.3$
+\begin_inset Formula $-0.1$
 \end_inset
 
 .
  Inflow elasticities are unambigously negative for both incoming buyers
  and renters: both find the region more expensive, hence stay away.
- Regarding outflows, the picture is more nuanced, because again it relates
- to the relative ranking of regions.
+ Regarding outflows, the picture is more nuanced.
  Notice that owners experience a positive wealth shock in this case, which
  may (or may not) tip the balance towards moving to another region, when
  previously this was suboptimal.
- On aggregate, a one percent price increase leads to a once percent increase
- in renter outflows, much larger than the corresponding 0.2% increase in
- owner outflows.
+ On aggregate, a one percent price increase leads to 1.1% increase in renter
+ outflows, much larger than the corresponding 0.4% increase in owner outflows.
 \end_layout
 
 \begin_layout Standard
@@ -6665,7 +6650,7 @@ Dropbox/model/fit/elasticities_q.tex}
 Elasticities with respect to an unexpected and permanently positive income
  shock by region.
  This table reports elasticities of population (i.e.
- number of individuals present) and migration 
+ the stock of individuals present in each period) and migration 
 \emph on
 inflows
 \emph default
@@ -7176,8 +7161,8 @@ noprefix "false"
 
 \end_inset
 
- that owners would be willing to pay amounts ranging from about 15,000 and
- up to 25,600 dollars in order to be converted to a renter with zero assets
+ that owners would be willing to pay amounts ranging from about 15,600 and
+ up to 25,800 dollars in order to be converted to a renter with zero assets
  after the unexpected price reduction.
  Crucial to note is here that renters a priori benefit from the reduction
  in house prices, because rental payments decrease in line with the fall
@@ -7490,13 +7475,13 @@ reference "tab:shutdown-cons-base"
 \end_inset
 
 , the group of young people (with age below half of their lifespan) would
- demand an increase of 8.6% of optimal per period consumption.
- This amount is lower for old people at 3.3%, which is intuitive since they
+ demand an increase of 30.8% of optimal per period consumption.
+ This amount is lower for old people at 8%, which is intuitive since they
  forgo fewer periods where migration could have been optimally chosen.
  We can look at the same measure by ownership status at age 30: owners at
- that age demand 3.3% more consumption, while same aged renters demand more,
+ that age demand 4.2% more consumption, while same aged renters demand more,
  i.e.
- 5.3%.
+ 21.7%.
  Part of this difference comes from the fact that stayer types know that
  they will not move, hence are more likely to buy, hence suffer less from
  a removal of the migration option.
@@ -7510,8 +7495,8 @@ reference "tab:shutdown-cons-base"
 \begin_inset Formula $z$
 \end_inset
 
- value migration more, which has to do with the shape of the estimated transitio
-n matrix for movers, 
+ value migration more in most regions, which has to do with the shape of
+ the estimated transition matrix for movers, 
 \begin_inset Formula $G_{\text{move}}$
 \end_inset
 
@@ -7535,8 +7520,8 @@ noprefix "false"
 \end_inset
 
  draw in the new location.) As an average over all individuals treated in
- this experiment (ATE), the corresponding number is 6% of consumption compensati
-on demanded.
+ this experiment (ATE), the corresponding number is 19.2% of consumption
+ compensation demanded.
  
 \end_layout
 
@@ -7546,7 +7531,7 @@ In the same table we continue with this exercise and split the sample by
  Perhaps not surprisingly, there is a lot of variation in how individuals
  feel about removal of the migration option by region.
  In general, living in a high-income, high-price region like Pacific accentuates
- the difference between young and old even more (17.7% vs 4.6% compensation
+ the difference between young and old even more (54.7% vs -7.8% compensation
  demanded).
  Put simply, this is because high prices are good for owners, who are more
  likely to stay in the region no matter what, but bad for renters who cannot
@@ -7554,27 +7539,14 @@ In the same table we continue with this exercise and split the sample by
  They would prefer to migrate at some point if necessary and therefore suffer
  disproportionately from the removal of the migration option.
  By way of summary of this table, individuals value having the option of
- migration to a large degree and in the range of -6.2% (poor individuals
- in West North Central prefer not having the option to move) and up to 17%
- of per period consumption.
- Notice that negative values, i.e.
- a willingness to pay to keep the migration restriction in place as in the
- case of low–
-\begin_inset Formula $z$
-\end_inset
-
- individuales in West North Central, has to do with a relatively low price
- to income ratio in that region in year 2000, and again the positive correlation
- estimated for 
-\begin_inset Formula $z$
-\end_inset
-
- draws of movers: Moving for such an individual raises the prospect of another
- bad 
-\begin_inset Formula $z$
-\end_inset
-
-draw in a region with a higher price to income ratio.
+ migration to a large degree and in the range of -11% (owners aged 30 in
+ South Atlantic) and up to 60% of per period consumption.
+ Negative entries imply an 
+\emph on
+un
+\emph default
+willingness to pay for the migration option: this applies to groups who
+ are (young) owners in high-price regions.
 \end_layout
 
 \begin_layout Standard
@@ -8006,11 +7978,15 @@ name "fig:noMove-age30"
 
 \end_inset
 
-The labels stand for, in order:
+The labels stand for, in order: 
 \begin_inset Formula $v$
 \end_inset
 
  value function, 
+\begin_inset Formula $u$
+\end_inset
+
+ period payoff, 
 \begin_inset Formula $y$
 \end_inset
 
@@ -8023,6 +7999,10 @@ The labels stand for, in order:
 \end_inset
 
  is the ownership status, 
+\begin_inset Formula $w$
+\end_inset
+
+ is total wealth, 
 \begin_inset Formula $q$
 \end_inset
 
