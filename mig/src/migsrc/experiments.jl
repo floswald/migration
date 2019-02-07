@@ -1247,7 +1247,7 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[opt["ik"],1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[opt["ik"],1,opt["iz"],opt["iy"],opt["ip"],opt["itau"],opt["asset"],opt["ih"],opt["ij"],opt["it"]]   # comparing values of moving from 2 to 1 in age 1
 	r = p.myNA
 	if w == p.myNA
 	else
@@ -1264,6 +1264,19 @@ end
 function find_xtra_ass(v0::Float64,opts::Dict)
 	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,800.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
 	return ctax
+end
+
+function moneyMC2(nosave=false)
+
+	base = runSim(Dict(:noMC=>true))
+	w0   = @linq base|>
+	   @where((:year.>1996)) |>
+	   @select(v = mean(:maxv),u=mean(:utility))
+
+	valueDiff2(xtra_ass,v0)
+end
+
+
 end
 
 function moneyMC(nosave::Bool=false)
@@ -1292,7 +1305,6 @@ function moneyMC(nosave::Bool=false)
 	# @showprogress for j in [1,3:p.nJ...]
 	j = 1
 		out[Symbol(regs[j])] = Dict()
-		opts["ik"] = j   # moving to
 		for ih in 0:1
 			opts["ih"] = ih+1
 			if ih==0
@@ -1301,15 +1313,26 @@ function moneyMC(nosave::Bool=false)
 				opts["asset"] = whichasset-1 
 			end
 			out[Symbol(regs[j])]["h$ih"] = Dict()
-			for iz in 1:p.nz
-				opts["iz"] = iz  	
-				opts["it"] = 1 	# age 1
-				v0 = m.v[opts["ik"],1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-				res = find_xtra_ass(v0,opts)
-				info("done with MC ih=$ih, iz=$iz")
-				info("moving cost: $(Optim.minimizer(res))")
-				out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
-			end
+			# for ij in 1:p.nJ  # moving from
+			ij = 2
+			ik = 1
+			# for ik in 1:p.nJ  # 
+				opts["ik"] = ik   # moving to
+				opts["ij"] = ij   # moving to
+					iz = 1
+					it = 1
+					opts["iz"] = iz 	
+					opts["iy"] = 2	
+					opts["ip"] = 2 	
+					# for it in 1:4
+						opts["it"] = it	# age 1
+						v0 = m.v[opts["ik"],1,opts["iz"],opts["iy"],opts["ip"],opts["itau"],opts["asset"],opts["ih"],opts["ij"],opts["it"]]	# comparing values of moving from 2 to 1
+						print(mig.json(opts,4))
+						println(mig.valueDiff(3000.0,v0,opts))
+					# res = find_xtra_ass(v0,opts)
+					# info("done with MC ih=$ih, iz=$iz")
+					# info("moving cost: $(Optim.minimizer(res))")
+					# out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
 		end
 	# end
 
