@@ -1257,6 +1257,22 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	return r
 end
 
+function valueDiff2(xtra_ass::Float64,v0::Float64)
+	base = runSim(opt=Dict(:shockVal=>[xtra_ass],:policy=>"moneyMC"))
+	w0   = @linq base|>
+	   @where((:year.>1996) .& (:age .== 1)) |>
+	   @select(v = mean(:maxv),u=mean(:utility))
+
+	 w = w0[:v][1]
+	 println("pol = $w")
+	 println("base = $v0")
+	# r = p.myNA
+	# if w == p.myNA
+	# else
+		r = (w - v0)^2
+	# end
+	return r
+end
 
 
 # find consumption scale ctax such that
@@ -1266,18 +1282,18 @@ function find_xtra_ass(v0::Float64,opts::Dict)
 	return ctax
 end
 
-function moneyMC2(nosave=false)
+function moneyMC2(x)
 
-	base = runSim(Dict(:noMC=>true))
+	base = runSim(opt=Dict(:noMC=>true))
 	w0   = @linq base|>
-	   @where((:year.>1996)) |>
+	   @where((:year.>1996) .& (:age .== 1)) |>
 	   @select(v = mean(:maxv),u=mean(:utility))
 
-	valueDiff2(xtra_ass,v0)
+	v0 = w0[:v][1]
+	valueDiff2(x,v0)
 end
 
 
-end
 
 function moneyMC(nosave::Bool=false)
 
