@@ -1289,7 +1289,8 @@ function moneyMC(nosave::Bool=false)
 	opts["p"] = Dict()
 	opts["p"]["policy"] = "moneyMC"
 	opts["itau"] = 1   # only mover type
-	@showprogress for j in [1,3:p.nJ...]
+	# @showprogress for j in [1,3:p.nJ...]
+	j = 1
 		out[Symbol(regs[j])] = Dict()
 		opts["ik"] = j   # moving to
 		for ih in 0:1
@@ -1310,7 +1311,7 @@ function moneyMC(nosave::Bool=false)
 				out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
 			end
 		end
-	end
+	# end
 
 	io = mig.setPaths()
 
