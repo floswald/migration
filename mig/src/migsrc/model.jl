@@ -770,13 +770,13 @@ function Gyp_indices(p::Param,show=false)
 	return idx
 end
 
-function model(;opt::Dict=Dict())
-	p = Param(2,opts=opt)
+function model(;opt::Dict=Dict(),start=false)
+	p = Param(2,opts=opt,startval=start)
 	m = Model(p)
 	return (m,p)
 end
-function solve(;opt::Dict=Dict())
-	m,p = model(opt=opt)
+function solve(;opt::Dict=Dict(),start=false)
+	m,p = model(opt=opt,start=start)
 	solve!(m,p)
 	return m,p
 end

@@ -1249,6 +1249,8 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	solve!(m,p)
 	w = m.v[opt["ik"],1,opt["iz"],opt["iy"],opt["ip"],opt["itau"],opt["asset"],opt["ih"],opt["ij"],opt["it"]]   # comparing values of moving from 2 to 1 in age 1
 	r = p.myNA
+	println("w = $w")
+	println("v0 = $v0")
 	if w == p.myNA
 	else
 		r = (w - v0)^2
@@ -1316,7 +1318,8 @@ function moneyMC(nosave::Bool=false)
 	out = Dict()
 	opts = Dict()
 	opts["p"] = Dict()
-	opts["p"]["policy"] = "moneyMC"
+	opts["p"][:policy] = "moneyMC"
+	opts["p"][:policy] = "moneyMC"
 	opts["itau"] = 1   # only mover type
 	# @showprogress for j in [1,3:p.nJ...]
 	j = 1
@@ -1344,7 +1347,7 @@ function moneyMC(nosave::Bool=false)
 						opts["it"] = it	# age 1
 						v0 = m.v[opts["ik"],1,opts["iz"],opts["iy"],opts["ip"],opts["itau"],opts["asset"],opts["ih"],opts["ij"],opts["it"]]	# comparing values of moving from 2 to 1
 						print(mig.json(opts,4))
-						println(mig.valueDiff(3000.0,v0,opts))
+						println(mig.valueDiff(300.0,v0,opts))
 					# res = find_xtra_ass(v0,opts)
 					# info("done with MC ih=$ih, iz=$iz")
 					# info("moving cost: $(Optim.minimizer(res))")
@@ -1369,7 +1372,7 @@ function moneyMC(nosave::Bool=false)
 	end
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
+	# post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
 
 	return out
 end
