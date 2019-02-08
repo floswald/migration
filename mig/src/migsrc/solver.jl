@@ -186,7 +186,20 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 		else
 			moneyMC = true
 			# if not, switch cost off as in baseline
+			# setfield!(p,:noMC,true)
+		end
+	end
+	if p.policy=="moneyMC_baseline"
+		if age == p.shockAge
+			moneyMC = false
+			# if now is age where you want to measure MC,
+			# switch cost on
 			setfield!(p,:noMC,true)
+		else
+			moneyMC = false
+			# if not, switch cost off as in baseline
+			setfield!(p,:noMC,false)
+			# setfield!(p,:noMC,true)
 		end
 	end
 
@@ -364,7 +377,7 @@ function solvePeriod!(age::Int,m::Model,p::Param)
 
 										# add p.shockVal[1] money to assets according to policy details
 
-										if (moneyMC && (!p.noMC) && move) || (ownersWTP && (ih==1))
+										if (moneyMC) || (ownersWTP && (ih==1))
 											a = a_0 + p.shockVal[1]
 										else
 											a = a_0
