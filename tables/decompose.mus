@@ -1,5 +1,5 @@
 {% macro showparam(param,dd) %}
-   {{param}} & {{ dd.alpha| prettyNum(3) }}  & {{ dd.phi| prettyNum(3) }}   & {{ dd.alpha_phi| prettyNum(3) }}\\
+   {{param}} & {{ dd.alpha| prettyNum(1) }}  & {{ dd.phi| prettyNum(1) }}   & {{ dd.alpha_phi| prettyNum(1) }}\\
 {%- endmacro %}
 \begin{tabular}{l D{.}{.}{3.5}@{}  D{.}{.}{3.5}@{} D{.}{.}{3.5}@{}}
   \toprule 

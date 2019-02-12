@@ -193,13 +193,13 @@ This paper estimates a lifecycle model of consumption, housing choice and
  migration in the presence of aggregate and regional shocks, using the Survey
  of Income and Program Participation (SIPP).
  The model delivers structural estimates of moving costs by ownership status,
- age and family size that complement theprevious literature.
+ age and family size that complement the previous literature.
  Using the model I first show that migration elasticities vary substantially
  between renters and owners, and I estimate the consumption value of having
  the option to migrate across regions when there are regional shocks.
- This value ranges from 0% up to almost 13% of lifetime consumption depending
- on the type of household considered, and it can be related to previous
- estimates in 
+ This value is 19% of lifetime consumption on average, and it varies substantial
+ly with household type.
+ The measure can be related to previous estimates in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "yagan"
@@ -505,23 +505,14 @@ I estimate the model using a simulated method of moments estimator.
  of interest, which are mobility and ownership patterns over the lifecycle,
  ownership rates by region, migration flows across regions, as well as wealth
  accumulation over the lifecycle and by region.
- After fitting the model to the data, I first quantify the moving cost in
- terms of dollars, and I find that the estimates for renters and owners
- bracket the moving cost obtained in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
-.
- Then the model is used to compute migration elasticities to regional shocks
- by tenure status and current location.
- The main result shows that migration is a low probability event in both
- data and model, but associated with a large option value for consumers.
+ After fitting the model to the data, I first use the model to compute migration
+ elasticities to regional shocks by tenure status and current location.
+ Then I investigate why owners move less than renters in greater detail.
+ The main result of the paper shows that migration is a low probability
+ event in both data and model, but associated with a large option value
+ for consumers.
  Shutting down regional migration in an environment with realistic income
- and price shocks would require a 6% increase in per period consumption
+ and price shocks would require a 19% increase in per period consumption
  to make the average consumer indifferent to the status quo.
  This number varies greatly by household type (age, housing tenure, persistent
  income level) as well as location.
@@ -765,9 +756,7 @@ how much consumption would I forgo today in order to be insured in an adverse
  future state
 \emph default
 , which describes an insurance contract fairly well.
- In a similar vein, the model delivers dollar estimates for average moving
- costs for all types of agents in the model which are in line with the previous
- literature.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5704,7 +5693,26 @@ name "subsec:Parameter-Estimates"
 
 \begin_layout Standard
 The model fits the data moments fairly well overall.
- The moment vector 
+ Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fit1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fit-2"
+
+\end_inset
+
+ provide a quick overview of how the model moments line up with their data
+ counterparts.
+\end_layout
+
+\begin_layout Standard
+The moment vector 
 \begin_inset Formula $m$
 \end_inset
 
@@ -5756,13 +5764,7 @@ reference "tab:fit-model-and-data"
 
  shows moments related to mobility, the lower panel shows moments related
  to homeownership.
- Regarding mobility, the fit is very good.
- The only statistic slightly out of line is the frequency distribution of
- moves per mover.
- There is no mechanism in the model that could generate the observed pattern
- in the data.
- One possibility would be to augment the set of moving cost types with a
- third type that has an even lower moving cost.
+ Regarding mobility, the fit is very good overall.
  The estimates for the auxiliary model defined in 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -5779,8 +5781,7 @@ reference "tab:fit-model-and-data-flows"
 
 \end_inset
 
- we see that the average flows into each region are reasonably close to
- the data.
+ we see that the average flows into each region are very close to the data.
  
 \end_layout
 
@@ -5832,8 +5833,17 @@ reference "eq:auxmod-h"
  threshold is crossed, all agents become owners.
  In other words, the model cannot account for wealthy houeholds who prefer
  not to own.
- One way to improve in this dimension would be to introduce different types
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+One way to improve in this dimension would be to introduce different types
  of housing preferences.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5853,7 +5863,8 @@ reference "tab:fit-model-nontarget"
 
  are not included in the SMM objective function, that is, they are not targeted
  by the estimation algorithm.
- Despite this, they are very close the data counterparts.
+ The model overpredicts total wealth accumulation.
+ This is related to too many homeowners at old age.
  All of this information can also be conveyed in a form which is probably
  more pleasant to look, and I present this in figures 
 \begin_inset CommandInset ref
@@ -5870,7 +5881,11 @@ reference "fig:fit-2"
 \end_inset
 
 .
- The estimated parameters and standard errors are shown in table 
+ 
+\end_layout
+
+\begin_layout Standard
+The estimated parameter vector and standard errors are shown in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Parameter-estimates"
@@ -5878,7 +5893,14 @@ reference "tab:Parameter-estimates"
 \end_inset
 
 .
- 
+ It is not possible to attach a simple interpretation to parameter values
+ in this nonlinear model, however, it is interesting to identification by
+ looking at the standard errors.
+ For most parameters, the gradient of the moment function is non-negligible,
+ and hence, we get precisely estimated coefficients at conventional levels
+ of statistical significance.
+ The age coefficient is the main non statistically significant exeption
+ to this.
 \end_layout
 
 \begin_layout Standard
@@ -6279,225 +6301,11 @@ name "sec:Results"
 
 \begin_layout Standard
 I will now move on to describe the results of this paper.
- In order to fully appreciate the results, I will first discuss the role
- of moving costs in the model, before answering the question of why owners
+ In order to fully appreciate the results, it is useful to first illustrate
+ a set of migration elasticities, before answering the question of why owners
  move less through the lens of the model.
  Then I will present the main set of results pertaining to the value of
  the migration option.
-\end_layout
-
-\begin_layout Subsection
-Quantifying Moving Costs 
-\end_layout
-
-\begin_layout Standard
-Moving costs in the model are measured in terms of utility.
- I convert them to dollar values by finding the amount of compensating assets
- 
-\begin_inset Formula $a^{*}$
-\end_inset
-
- which would make an individual at state 
-\begin_inset Formula $x$
-\end_inset
-
- indifferent between the value of moving with costs 
-\begin_inset Formula $(v)$
-\end_inset
-
- (but extra assets) and without 
-\begin_inset Formula $(\tilde{v})$
-\end_inset
-
-.
- In other words, dollar–valued moving costs are measured by 
-\begin_inset Formula $a^{*}$
-\end_inset
-
- which solves
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-with some abuse of notation: 
-\begin_inset Formula $x+a^{*}$
-\end_inset
-
- means 
-\emph on
-add 
-\begin_inset Formula $a^{*}$
-\end_inset
-
- to 
-\begin_inset Formula $a$
-\end_inset
-
-
-\emph default
- in 
-\begin_inset Formula $x$
-\end_inset
-
-, 
-\emph on
-leaving everything else the same.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{eqnarray*}
-v(x+a^{*},1)-\tilde{v}(x,1) & = & 0\\
-x & = & \left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)\\
- & = & \left(0,\underline{z},0,\overline{\mathbf{F}},h_{ij-1},2,0,1\right)
-\end{eqnarray*}
-
-\end_inset
-
-The measure is taken at a state 
-\begin_inset Formula $x$
-\end_inset
-
- where the individual has zero asset, is at the lowest income shock state
- 
-\begin_inset Formula $\underline{z}$
-\end_inset
-
-, has no children, is not of type 
-\emph on
-stayer
-\emph default
-, lives currently in region 2 at initial age 1 and the aggreagate factors
- 
-\begin_inset Formula $P$
-\end_inset
-
- and 
-\begin_inset Formula $Q$
-\end_inset
-
- are at the midpoint of their respective grids.
- The proposed move is to region 1.
- 
-\end_layout
-
-\begin_layout Standard
-Similarly to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
-, the moving costs are large.
- As they explain, this is because 
-\begin_inset Quotes eld
-\end_inset
-
-[the estimated moving costs] do not refer to the costs of moves that are
- actually made, but rather to the costs of hypothetical moves to arbitrary
- locations.
-\begin_inset Quotes erd
-\end_inset
-
- The results are displayed in table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:MC-money"
-
-\end_inset
-
- where we see moving costs for renters are $76,632 and $393,964 for owners.
- These estimates bracket the average cost of $312,000 reported in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
-.
- This is reassuring, since their model is a weighted average of owners and
- renters.
- A simple calculation reveals that using my estimates and an ownership rate
- of 61% as found in the data, one obtains 
-\begin_inset Formula $147,000\times0.39+547,000\times0.61=270,204$
-\end_inset
-
- dollars of average moving costs, reasonably close to their estimate.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-input{
-\backslash
-Dropbox/model/experiments/moneyMC/moneyMC.tex}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Comparing the moving cost in terms of 1000s of 2012 dollars for owners and
- renters at 
-\begin_inset Formula $a=0,z=\underline{z},Q=\overline{Q},P=\overline{P}$
-\end_inset
-
- in the first period of life (age 20) for the non-stayer type 
-\begin_inset Formula $\tau=0$
-\end_inset
-
-.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "true"
-
-\end_inset
-
- report an average moving cost of $384,000 for a young and $312,000 for
- an average mover.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:MC-money"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -6847,19 +6655,19 @@ reference "tab:Decomposing-owner's-moving"
 \begin_inset Formula $\alpha_{3}=0$
 \end_inset
 
- increases the ownership rate by 1.78%, because this makes owning a more
- attractive option in case of the need to migrate.
+ increases the ownership rate by 5.6%, because this makes owning a more attractiv
+e option in case of the need to migrate.
  Similarly, abolishing the financial transaction cost from selling in column
  
 \begin_inset Formula $\phi=0$
 \end_inset
 
- leads to an even bigger increase of 2.47%.
+ leads to an increase of 2.7%.
  In the final column 
 \begin_inset Formula $\alpha_{3}=\phi=0$
 \end_inset
 
-, combining both changes, we see an increase of 4.4% in ownership.
+, combining both changes, we see an increase of 8.2% in ownership.
  
 \end_layout
 
@@ -6870,24 +6678,22 @@ The second row shows the same experiment for the overall migration rate.
 \end_inset
 
  is larger than removal of the financial transaction cost, and it leads
- to roughly a 7% increase in overall migration.
+ to roughly a 4% increase in overall migration.
  The third row finally conditions on owners in order to emphasize that most
  migratory movement comes from renters to start with, so the previous experiment
  masks a great deal of heterogeneity.
- Here we see large increases in the migratory propensity of owners after
- removing the 
+ Here we see a large increase of 140% in the migratory propensity of owners
+ after removing the 
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
  cost component.
  Overall, the first panel shows that both cost components affect both ownership
- and migration, with the relative importance of each as one would expect:
- owners' utility cost of migration, 
+ and migration simulateneously, and that the impact of removing 
 \begin_inset Formula $\alpha_{3}$
 \end_inset
 
-, is more important in determining migration flows, and vice versa for the
- financial transaction cost and ownership choices.
+ is more important.
 \end_layout
 
 \begin_layout Standard
@@ -7161,7 +6967,7 @@ noprefix "false"
 
 \end_inset
 
- that owners would be willing to pay amounts ranging from about 15,600 and
+ that owners would be willing to pay amounts ranging from about 14,700 and
  up to 25,800 dollars in order to be converted to a renter with zero assets
  after the unexpected price reduction.
  Crucial to note is here that renters a priori benefit from the reduction
@@ -7495,7 +7301,7 @@ reference "tab:shutdown-cons-base"
 \begin_inset Formula $z$
 \end_inset
 
- value migration more in most regions, which has to do with the shape of
+, value migration more in most regions, which has to do with the shape of
  the estimated transition matrix for movers, 
 \begin_inset Formula $G_{\text{move}}$
 \end_inset
@@ -7520,8 +7326,8 @@ noprefix "false"
 \end_inset
 
  draw in the new location.) As an average over all individuals treated in
- this experiment (ATE), the corresponding number is 19.2% of consumption
- compensation demanded.
+ this experiment (column labelled ATE), the corresponding number is 19.2%
+ of consumption compensation demanded.
  
 \end_layout
 
@@ -7584,7 +7390,7 @@ noprefix "false"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -7621,9 +7427,9 @@ Consumption compensation demanded after migration shutdown in the baseline
  increased in order for individuals to be indifferent to the baseline.
  Positive values indicate people disapproving the policy, negative values
  indicate the opposite.
- A value of 8.6% as in the first row of the second column means that young
- people would demand an increase of 8.6% of the consumption level which they
- had optimally chosen under the policy, in order for them to be indifferent.
+ A value of 30.8% as in the first row of the second column means that young
+ people would demand an increase of 30.8% of the consumption level which
+ they had optimally chosen under the policy, in order for them to be indifferent.
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:shutdown-cons-base"
@@ -7667,14 +7473,11 @@ reference "fig:noMove-lifecycle"
 .
  The first panel in the top row in some ways repeats the insights from the
  previous section: younger individuals suffer particularly, experiencing
- a loss as in lifetime utility of almost 15% in the first period of life.
+ a loss as in lifetime utility of almost 4% in the first period of life.
  As time goes by, the losses get smaller until they vanish towards the end
  of the lifecycle.
  We observe in the next panel that removing migration implies a substantial
  drop in average income at all ages.
- It may look like a small effect that income should drop by half a percent
- for 26 to 50 year olds, but bear in mind that this is an average over the
- entire population.
  This implies that some profitable moves in terms of better wage draw could
  not be completed as a result of the policy.
  
@@ -7719,22 +7522,7 @@ all individuals
  This suggests that absent the option to move to a better region in response
  to shocks, the best thing to do is is to invest in more enjoyable housing
  in the current region.
- The final two panels for 
-\begin_inset Formula $q$
-\end_inset
-
- and 
-\begin_inset Formula $p$
-\end_inset
-
- are merely a representation of previous moving decisions, since movers
- at all ages tended to, on average, move towards regions with higher regional
- income, which is correlated with higher regional prices.
- Therefore both panels, which show the average change in 
-\emph on
-realized 
-\emph default
-prices for simulated individuals, exhibit negative deviations from the baseline.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7788,19 +7576,11 @@ along the lifecycle.
 \begin_inset Formula $a$
 \end_inset
 
- is asset position, 
+ is asset position and 
 \begin_inset Formula $h$
 \end_inset
 
- is the ownership status, 
-\begin_inset Formula $q$
-\end_inset
-
- is the regional income component of income, and 
-\begin_inset Formula $p$
-\end_inset
-
- is the regional house price level.
+ is the ownership status.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -7841,19 +7621,26 @@ reference "fig:noMove-age30"
 \end_inset
 
  have a smaller utility loss, as shown in panel 
-\begin_inset Formula $u$
+\begin_inset Formula $v$
 \end_inset
 
- which displays average period payoff.
- This is also reflected in the 
-\begin_inset Formula $q,p$
+ which displays lifetime utility.
+ The second panel again illustrates that it is young renters who miss out
+ on profitable moves in terms of individual income 
+\begin_inset Formula $y$
 \end_inset
 
- panels, indicating that on average they would have moved to lower income
- and price regions.
- This means that their baseline moves were motivated by other considerations
- than regional price differences, given their relatively well off position
- in the baseline.
+.
+ The remaining panels for 
+\begin_inset Formula $a,h$
+\end_inset
+
+ and total wealth 
+\begin_inset Formula $w$
+\end_inset
+
+ all show once more that young renters take on more mortgage debt in order
+ to buy houses in their current (now, permanent) region.
 \end_layout
 
 \begin_layout Standard
@@ -7862,7 +7649,7 @@ In summary, the results in this section show that moving costs differ greatly
  respect to regional shocks differ greatly as well; and finally, that individual
 s place a large consumption value on having the option to migrate across
  Census Division borders, ranging from negative values (some groups prefer
- not to have the option) and up to about 13% of per period optimal consumption.
+ not to have the option) and up to about 19% of per period optimal consumption.
 \end_layout
 
 \begin_layout Standard
@@ -7998,19 +7785,11 @@ The labels stand for, in order:
 \begin_inset Formula $h$
 \end_inset
 
- is the ownership status, 
+ is the ownership status, and 
 \begin_inset Formula $w$
 \end_inset
 
- is total wealth, 
-\begin_inset Formula $q$
-\end_inset
-
- is the regional income component of income, and 
-\begin_inset Formula $p$
-\end_inset
-
- is the regional house price level.
+ is total wealth.
 \end_layout
 
 \end_inset
@@ -8235,7 +8014,7 @@ The main result of this paper is to show that despite average migration
  is large.
  Removing the option to migrate in the model implies an associated reduction
  in per period consumption that ranges from 0% (or even implied increases
- in consumption) up to almost 13% depending on the type of household one
+ in consumption) up to almost 19% depending on the type of household one
  considers.
  Variations in this measure vary widely with age, ownership status, original
  location, and point in the business cycle.
@@ -8278,17 +8057,7 @@ The present model delivers structural estimates for differential moving
  costs between owners and renters, over and above financial transaction
  costs.
  It is shown that this moving cost component is first order in explaining
- differential moving rates between renters and owners, and that the implied
- monetary value of the moving costs for both groups bracket the cost from
- a previous model in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kennan2003effect"
-literal "false"
-
-\end_inset
-
-, which doesn't make the distinction.
+ differential moving rates between renters and owners.
  The results are important for policy makers in terms of both housing and
  labor markets, since they illustrate the implied costs of policies which
  might reduce mobility, such as implicit or explicit subsidies to homeownership,
