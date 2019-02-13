@@ -616,139 +616,44 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 
 
 \section{Value of migration }
-\begin{frame}[plain]{}
 
-\vspace{1cm}
 
-\begin{center}
-\textbf{\textcolor{blue}{\LARGE{}Value of the migration option}}{\LARGE\par}
-\par\end{center}
+\begin{transitionframe}
+   \begin{center}
+     { \Huge \bblue{Results}}
+   \end{center}
+\end{transitionframe}
+
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
 
 \end{frame}
-\begin{frame}{Value of the migration option}
 
-\begin{itemize}
-\item Migration flows are small, regional shocks are big.
-\item Is migration important?
-\item Compare two scenarios:
-
-\begin{enumerate}
-\item Baseline
-\item Cannot move away from West North Central
-\end{enumerate}
-\end{itemize}
-\end{frame}
-\begin{frame}[plain]{}
+\begin{frame}{Why Do Owners Move Less?}
 
 \begin{table}
-\hspace*{-2pt}\makebox[\linewidth][c]{%
-\input{\Dropbox/model/experiments/highMC/mig_value1.tex}
-}
-
-\caption{Value of migration option in WNC.}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
 \end{table}
 
-\end{frame}
-
-\begin{frame}[plain]{}
-
-\begin{table}
-\hspace*{-2pt}\makebox[\linewidth][c]{%
-\input{\Dropbox/model/experiments/highMC/mig_value2.tex}
-}
-
-\caption{Value of migration option in WNC.}
-\end{table}
 
 \end{frame}
 
-\begin{frame}[plain]{}
 
-\begin{table}
-\hspace*{-2pt}\makebox[\linewidth][c]{%
-\input{\Dropbox/model/experiments/highMC/mig_value-edit.tex}
-}
+\begin{frame}{Owner Regret?}
 
-\caption{Value of migration option in WNC.}
-\end{table}
-
-\end{frame}
-\begin{frame}{Value of migration by age}
-
-\hspace*{2pt}\makebox[\linewidth][c]{%
-
-\includegraphics[scale=0.85]{\Dropbox/model/experiments/highMC/values_pres}
-
-}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/ownersWTP2.tex}
+\end{adjustbox}
 \end{frame}
 
-\section{Elasticity Estimates}
-\begin{frame}[plain]{}
+\begin{frame}{The Value of Migration}
 
-\vspace{1cm}
-
-\begin{center}
-\textbf{\textcolor{blue}{\LARGE{}Effects of Permanent Regional Shocks}}{\LARGE\par}
-\par\end{center}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax.tex}\end{adjustbox}
 
 \end{frame}
-%
-\begin{frame}{Permanent Shock in West North Central (WNC)}
-\begin{itemize}
-\item Shocks to regional price and income are correlated.
-\begin{itemize}
-\item Correlation is measured by Cov Matrix of regional VAR models.
-\end{itemize}
-\end{itemize}
 
-\pause{}
-\begin{itemize}
-\item Simulate effects of a permanent $-10\%$ shock to income in $t^{*}=2000$.
-\item In region WNC, this translates into a $-6\%$ shock to $p_{WNC,t},t\geq t^{*}$.
-\item How do population flows react to that shock? 
-\item $-10\%$ is the Kennan and Walker (2011) income shock
-\item What's a comparable elasticity here?
-\end{itemize}
-\end{frame}
-%
-\begin{frame}{West North Central Shock}
 
-\includegraphics[height=0.9\textheight]{/Users/florian.oswald/Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/outflow}
-
-\end{frame}
-%
-\begin{frame}{West North Central Shock}
-\begin{itemize}
-\item 1 \% reduction in regional income $\Rightarrow$ 0.4 \% reduction
-of population
-\item Kennan and Walker (2011) report elasticity of $\approx0.5$
-\item But how do outflows change? Who leaves?
-\end{itemize}
-
-\pause{}
-\begin{center}
-\input{\Dropbox/model/experiments/shockReg8/elasticities.tex}
-\par\end{center}
-
-\end{frame}
-%
-
-\section{Conclusion}
-\begin{frame}{Conclusion}
-
-\begin{itemize}
-\item Constructed a model of migration over the lifecycle capable of dealing
-with aggregate shocks.
-\item The migration option has a large value.
-\item Homeownership: important for internal migration.
-
-\begin{itemize}
-\item Affects probability of moving.
-\item Affects ability to respond to shocks.
-\end{itemize}
-\end{itemize}
-\end{frame}
-%
 \begin{frame}[plain]{}
 
 \vspace{1cm}
