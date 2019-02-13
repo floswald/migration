@@ -264,9 +264,6 @@ type Param
             end
         end
 
-        println("noMC is $(out.noMC)")
-        println("policy is $(out.policy)")
-
         return out
 	end
 end

@@ -517,7 +517,7 @@ function plot_noMove(n::noMoveRes;save=true)
 	path = joinpath(io["out_graphs"],"noMove_$(n.scenario)_")
 	fiend = Plots.backend() == Plots.PGFPlotsBackend() ? ".tex" : ".pdf"
 
-	p_age = plot(n,:age_ate_perc,:realage,drop=[:u,:w],xguide="age")
+	p_age = plot(n,:age_ate_perc,:realage,drop=[:u,:w,:q,:p],xguide="age")
 	if save
 		savefig(string(path,"age",fiend))
 	end
@@ -529,7 +529,7 @@ function plot_noMove(n::noMoveRes;save=true)
 	if save
 		savefig(string(path,"loc",fiend))
 	end
-	p_own30 = bar(n,:own30_perc,:own_30,xguide="own|age=30")
+	p_own30 = bar(n,:own30_perc,:own_30,drop=[:u,:q,:p],xguide="own|age=30")
 	if save
 		savefig(string(path,"own30",fiend))
 	end

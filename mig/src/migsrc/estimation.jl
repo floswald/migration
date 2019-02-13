@@ -100,7 +100,8 @@ function estimate(maxit::Int;npoints=nothing,method=:BGP,keep=[])
 	# gradient descent
 	if method==:grad
 		if length(workers()) > 1
-			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
+			# s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"),update=0.4)   # updates param ranges
+			s = MomentOpt.optSlices(mprob,npoints,parallel=true,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))   # does not update param ranges
 		else
 			s = MomentOpt.optSlices(mprob,npoints,parallel=false,tol=0.01,filename=joinpath(dir,"grad_$(Dates.today()).jld2"))
 		end
