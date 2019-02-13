@@ -1,0 +1,87 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Kennan and Walker(2011)]{kennan2003effect}
+J.~Kennan and J.R. Walker.
+\newblock {The effect of expected income on individual migration decisions}.
+\newblock \emph{Econometrica}, 79\penalty0 (1):\penalty0 211--251, January
+  2011.
+
+\bibitem[Yagan(2013)]{yagan}
+Danny Yagan.
+\newblock Moving to opportunity? migratory insurance over the great recession.
+\newblock \emph{Harvard Job Market Paper}, 2013.
+\newblock URL \url{https://eml.berkeley.edu/~yagan/MigratoryInsurance.pdf}.
+
+\bibitem[Yagan(2018)]{yagan2017employment}
+Danny Yagan.
+\newblock Employment hysteresis from the great recession.
+\newblock \emph{forthcoming JPE}, 2018.
+
+\bibitem[Baum-Snow and Pavan(2012)]{baum2012understanding}
+Nathaniel Baum-Snow and Ronni Pavan.
+\newblock Understanding the city size wage gap.
+\newblock \emph{The Review of economic studies}, 79\penalty0 (1):\penalty0
+  88--127, 2012.
+
+\bibitem[Gemici(2007)]{gemici2007family}
+A.~Gemici.
+\newblock \emph{Family migration and labor market outcomes}.
+\newblock PhD thesis, University of Pennsylvania, 2007.
+
+\bibitem[Winkler(2010)]{winkler2010effect}
+Hernan Winkler.
+\newblock The effect of homeownership on geographic mobility and labor market
+  outcomes.
+\newblock \emph{SSRN eLibrary}, 2010.
+
+\bibitem[Notowidigdo(2011)]{notowidigdo2011incidence}
+Matthew~J Notowidigdo.
+\newblock The incidence of local labor demand shocks.
+\newblock Technical report, National Bureau of Economic Research, 2011.
+
+\bibitem[Moretti(2011)]{Moretti:2011fk}
+Enrico Moretti.
+\newblock Chapter 14 - local labor markets.
+\newblock volume 4, Part B of \emph{Handbook of Labor Economics}, pages 1237 --
+  1313. Elsevier, 2011.
+\newblock \doi{10.1016/S0169-7218(11)02412-9}.
+\newblock URL
+  \url{http://www.sciencedirect.com/science/article/pii/S0169721811024129}.
+
+\bibitem[Diamond(2016)]{diamond2016determinants}
+Rebecca Diamond.
+\newblock The determinants and welfare implications of us workers' diverging
+  location choices by skill: 1980--2000.
+\newblock \emph{The American Economic Review}, 106\penalty0 (3):\penalty0
+  479--524, 2016.
+
+\bibitem[Piyapromdee(2019)]{piypromdee}
+Suphanit Piyapromdee.
+\newblock "the impact of immigration on wages, internal migration and welfare".
+\newblock \emph{working paper},
+  https://sites.google.com/site/suphanitpiyapromdee/research, 2019.
+
+\bibitem[Monras(2018)]{monras2018economic}
+Joan Monras.
+\newblock Economic shocks and internal migration.
+\newblock 2018.
+
+\bibitem[Blanchard and Katz(1992)]{blanchard1992regional}
+Olivier~Jean Blanchard and Lawrence~F Katz.
+\newblock Regional evolutions.
+\newblock In Olivier~Jean Blanchard, Lawrence~F Katz, Robert~E Hall, and Barry
+  Eichengreen, editors, \emph{Brookings Papers on Economic Activity 2}, volume
+  1992, pages 1--75. Brookings Institution Press, 1992.
+
+\bibitem[Molloy et~al.(2011)Molloy, Smith, and Wozniak]{molloy2011internal}
+Raven Molloy, Christopher~L Smith, and Abigail Wozniak.
+\newblock Internal migration in the united states.
+\newblock \emph{The Journal of Economic Perspectives}, 25\penalty0
+  (3):\penalty0 173--96, 2011.
+
+\end{thebibliography}

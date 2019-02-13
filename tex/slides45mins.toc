@@ -1,0 +1,7 @@
+\beamer@sectionintoc {1}{Literature}{17}{0}{1}
+\beamer@sectionintoc {2}{Empirical Facts}{19}{0}{2}
+\beamer@sectionintoc {3}{Model}{35}{0}{3}
+\beamer@sectionintoc {4}{Estimation}{46}{0}{4}
+\beamer@sectionintoc {5}{Value of migration }{57}{0}{5}
+\beamer@sectionintoc {6}{Elasticity Estimates}{63}{0}{6}
+\beamer@sectionintoc {7}{Conclusion}{69}{0}{7}

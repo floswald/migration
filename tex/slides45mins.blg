@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: slides45mins.aux
+The style file: unsrtnat.bst
+Database file #1: ../lyx/references.bib
+Warning--empty booktitle in Moretti:2011fk
+Warning--empty journal in monras2018economic
+Warning--can't use both volume and number fields in blanchard1992regional
+You've used 13 entries,
+            2481 wiz_defined-function locations,
+            636 strings with 6539 characters,
+and the built_in function-call counts, 4471 in all, are:
+= -- 412
+> -- 143
+< -- 16
++ -- 66
+- -- 40
+* -- 286
+:= -- 706
+add.period$ -- 44
+call.type$ -- 13
+change.case$ -- 26
+chr.to.int$ -- 13
+cite$ -- 16
+duplicate$ -- 259
+empty$ -- 435
+format.name$ -- 59
+if$ -- 963
+int.to.chr$ -- 1
+int.to.str$ -- 14
+missing$ -- 11
+newline$ -- 76
+num.names$ -- 41
+pop$ -- 104
+preamble$ -- 1
+purify$ -- 13
+quote$ -- 0
+skip$ -- 166
+stack$ -- 0
+substring$ -- 183
+swap$ -- 46
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 91
+warning$ -- 3
+while$ -- 40
+width$ -- 0
+write$ -- 180
+(There were 3 warnings)
