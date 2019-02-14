@@ -348,9 +348,8 @@ The main counterfactual will be used to shed light on the option value of
  it reports the compensating consumption stream which would make individuals
  indifferent between this regime, and the status quo, that is, a world with
  migration.
- The results of this exercise differ greatly by type of household considered,
- and they range from small valuations for older homeowners to very large
- valuations (13% of period consumption) for young renter households.
+ The results of this exercise differ greatly by type of household considered
+ and their respective current locations.
 \end_layout
 
 \begin_layout Standard
@@ -5213,7 +5212,11 @@ The parameter vector to be estimated by SMM contains the parameters of the
 \end_inset
 
 .
- We denote the parameter vector 
+ We denote the parameter vector of length 
+\begin_inset Formula $K$
+\end_inset
+
+ as 
 \begin_inset Formula $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\eta,\xi_{1},\xi_{2}\right\} $
 \end_inset
 
@@ -5259,17 +5262,17 @@ y optimal weighting matrix
 \end_inset
 
 , because a range of economically important moments vanish in the objective
- function.
+ function because they enter at different scales.
  This is equally true if I use the common strategy of assigning the inverse
  of the variances of the data moments.
- To solve this, I prespecify a 
+ To solve this probem, I prespecify a 
 \begin_inset Formula $W$
 \end_inset
 
  as the identity matrix, but I modify the diagonal entries for some moments
  so that the corresponding derivative of the moment function is not negligible.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Notice that this proceedure still leads to valid standard errors, since
@@ -5298,6 +5301,17 @@ flow_move_to_j
  and
 \family typewriter
  cov_own_kids.
+ 
+\family default
+This adjustment is similar to what is done in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lamadon2014productivity"
+literal "false"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -5342,21 +5356,18 @@ This proceedure is repeated until
 
  has converged.
  Convergence was not affected by different starting values and occured in
- all cases after five iterations over the above scheme for a tolerance level
- of 1e-5 on the 
-\begin_inset Formula $L_{2}$
-\end_inset
-
- norm of distances in 
-\begin_inset Formula $\theta$
-\end_inset
-
-.
+ all cases after less than 10 iterations over the above scheme.
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-The optimization used the function 
+This optimization takes around 16 hours on a 10-instance cluster on AWS
+ of type 
+\family typewriter
+t3.xlarge.
+
+\family default
+ The procedure uses the function 
 \family typewriter
 optSlices
 \family default
@@ -5384,7 +5395,11 @@ Denoting
 \begin_inset Formula $\theta_{0}$
 \end_inset
 
- the true parameter vector and 
+ the true parameter vector, by 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ the optimizer of the above program and 
 \begin_inset Formula $\Sigma$
 \end_inset
 
@@ -5863,25 +5878,8 @@ reference "tab:fit-model-nontarget"
 
  are not included in the SMM objective function, that is, they are not targeted
  by the estimation algorithm.
- The model overpredicts total wealth accumulation.
- This is related to too many homeowners at old age.
- All of this information can also be conveyed in a form which is probably
- more pleasant to look, and I present this in figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:fit1"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:fit-2"
-
-\end_inset
-
-.
- 
+ The model overpredicts total wealth accumulation, related to the above
+ mentioned slight overprediction of owners at old age.
 \end_layout
 
 \begin_layout Standard
@@ -5899,8 +5897,11 @@ reference "tab:Parameter-estimates"
  For most parameters, the gradient of the moment function is non-negligible,
  and hence, we get precisely estimated coefficients at conventional levels
  of statistical significance.
- The age coefficient is the main non statistically significant exeption
- to this.
+ The age coefficient in the cost function, 
+\begin_inset Formula $\alpha_{1}$
+\end_inset
+
+, is the main non statistically significant exception to this.
 \end_layout
 
 \begin_layout Standard
@@ -6844,7 +6845,8 @@ having bought their house, if the state of the world changes in an unforeseen
 We want to assess this cost by looking at how much an owner in the shocked
  scenario would be willing to pay to become a comparable renter.
  Establishing comparability is important, because in general owners are
- of higher networth than renters (by virtue of the downpayment requirement).
+ of higher networth than renters (by virtue of the downpayment requirement
+ and subsequent capital gains).
  Therefore the experiment proceeds by establishing an asset level 
 \begin_inset Formula $a^{*}$
 \end_inset
@@ -6886,8 +6888,8 @@ Note that this experiment measures something different from the value of
 sell 
 \emph default
 of the owner.
- Since, if it was optimal to become a renter, they would of course make
- this choice.
+ Since, if it was optimal to become a renter by selling, they would of course
+ make this choice.
  Here we know that before the shock, the owner is as well-off at 
 \begin_inset Formula $a^{*}$
 \end_inset
@@ -6970,13 +6972,8 @@ noprefix "false"
  that owners would be willing to pay amounts ranging from about 14,700 and
  up to 25,800 dollars in order to be converted to a renter with zero assets
  after the unexpected price reduction.
- Crucial to note is here that renters a priori benefit from the reduction
- in house prices, because rental payments decrease in line with the fall
- in house prices.
- The overall impact on renter values is more nuanced, however, because it
- includes the expected value of owning, and this value has declined.
- The experiment shares some features of mortgage default (which is not modeled),
- in that the owner evaluates a 
+ This experiment shares some features of mortgage default (which is not
+ modeled), in that the owner evaluates a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -10253,7 +10250,8 @@ newpage
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "~/Dropbox/mybib"
+btprint "btPrintCited"
+bibfiles "references"
 options "ecta"
 
 \end_inset

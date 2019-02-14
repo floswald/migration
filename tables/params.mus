@@ -13,7 +13,7 @@
       \multicolumn{4}{l}{Moving Cost Function}\\
   {{  showmom("\\hspace{6mm}Intercept","$\\alpha_0$"  ,MC0,                    3, 2 ) }}
   {{  showmom("\\hspace{6mm}Age","$\\alpha_1$"  ,MC1,                          3, 4 ) }}
-  {{  showmom("\\hspace{6mm}$Age^2$","$\\alpha_2$"  ,MC2,                      4, 2 ) }}
+  {{  showmom("\\hspace{6mm}$Age^2$","$\\alpha_2$"  ,MC2,                      4, 4 ) }}
   {{  showmom("\\hspace{6mm}Owner","$\\alpha_3$"  ,MC3,                        3, 2 ) }}
   {{  showmom("\\hspace{6mm}Household Size","$\\alpha_4$"  ,MC4,               3, 4 ) }}
   {{  showmom("\\hspace{6mm}Proportion of high type","$\\pi_\\tau$"  ,taudist, 3, 2 ) }}
