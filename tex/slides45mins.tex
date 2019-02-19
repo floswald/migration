@@ -297,6 +297,7 @@ In each period, household $i$ decides
 \item Whether to own or rent, and
 \item Where to live.
 \end{midi}
+\vspace{0.5cm}
 These choices are subject to
 \begin{midi}
 \item Budget constraints, and
@@ -313,6 +314,7 @@ In each period, household $i$ decides
 \item Where to live: choose region $d\in D$, with house price $p_{dt}$
 and labor productivity index $q_{dt}$.
 \end{midi}
+\vspace{0.5cm}
 These choices are subject to
 \begin{midi}
 \item Budget constraints: $\left(a_{it},z_{it},h_{it-1},q_{dt},p_{dt}\right)$.
@@ -364,7 +366,128 @@ s.t. &  & \text{budget constraints}
 \end{frame}
 
 \begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
 
+\begin{itemize}
+\item consumption $(\red{c})$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{\red{c_{it}}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(\red{s})$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times \red{h_{it}}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}\red{s_{it}}
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(\red{h}\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times \red{h_{it}}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}\red{s_{it}}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\red{\mathbf{1}\left[d\neq d'\right]}\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\red{\mathbf{1}\left[d\neq d'\right]}\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\red{\Delta(x)}=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($\red{A_{d'}}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+\red{A_{d'}}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
 \begin{itemize}
 \item The within-period payoff depends on 
 
@@ -374,10 +497,10 @@ s.t. &  & \text{budget constraints}
 \item housing status $(h\in\{0,1\})$, 
 \item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
 \item amenities ($A_{d'}$)
-\item idiosyncratic location shock $\left(\varepsilon\right)$
+\item idiosyncratic location shock $\left(\red{\varepsilon}\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\red{\varepsilon_{id't}}
 \]
 
 \item Moving Costs:
@@ -535,13 +658,14 @@ of $\mathbf{F}_{t}$ and $\mathbf{a}_{d}$:
 \par\end{center}
 
 \end{frame}
-\begin{frame}{Step 2: Preset Parameters}
 
-\hspace*{-2pt}\makebox[\linewidth][c]{
-\renewcommand{\arraystretch}{1.2}  
-\input{\Dropbox/model/fit/preset.tex}
-}
-\end{frame}
+% \begin{frame}{Step 2: Preset Parameters}
+
+% \hspace*{-2pt}\makebox[\linewidth][c]{
+% \renewcommand{\arraystretch}{1.2}  
+% \input{\Dropbox/model/fit/preset.tex}
+% }
+% \end{frame}
 
 \begin{frame}{Step 2: Key Moment Relationships}
 
@@ -570,12 +694,12 @@ $\xi_{1},\xi_{2}$ & utility from owning & ownership profile\tabularnewline
 
 \begin{itemize}
 \item Moments relating to mobility:
+\begin{itemize}
 
 \item $E[\text{move}]$, $E\left[\text{move to }d'\right]$, $E[\text{move}|T]$,
 $E[\text{move}|\text{kids}]$, $E[\text{move}|h]$, $Cov(\text{move},\text{kids})$,
 $Cov(\text{move},h)$, $E[\text{moved never}]$, $E[\text{moved once}]$,
 $E[\text{moved twice+}]$, 
-\begin{itemize}
 \item Auxiliary model
 \[
 \text{move}_{it}=\beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{it}
@@ -636,6 +760,80 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 
 \begin{frame}{Elasticity of Migration wrt Income Shock}
 
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+\pause
+\vspace{0.5cm}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q1.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
+
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+
+\vspace{0.5cm}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q2.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
+
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+
+\vspace{0.5cm}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q0.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Who Do Owners Move Less?}
+
+\begin{midi}
+\item Owners have additional moving costs $\alpha_3$.
+\item There are fixed selling costs $\phi$.
+\pause
+\item What's the importance of each of those components?
+\item Investigate quantitative implications of removing each of them.
+\pause
+\item (This kind of approximates $\frac{\partial m}{\partial \alpha_3},\frac{\partial m}{\partial \phi}$, $m$ the moment function.)
+\end{midi}
+
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC0.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC1.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC2.tex}
+\end{table}
 \end{frame}
 
 \begin{frame}{Why Do Owners Move Less?}
@@ -643,135 +841,97 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \begin{table}
 \centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
 \end{table}
-
-
 \end{frame}
 
+\begin{frame}{Owner Regret?}
+\begin{midi}
+\item Buying a house is partly based on expectations. Model agents expect \red{aggregate} shocks to be transmitted via $\mathbf{a}_j$ to their region $j$.
+\item \onslide+<2-> What if things turn out \bblue{not} as expected?
+\item \onslide+<3-> Suppose that $\mathbf{a}_j$ unexpectedly changes to $\mathbf{a'}_j$.
+\item \onslide+<4-> How much would owner in this \bluebox{broken promise} scenario pay to \bred{reset} to a zero networth renter? 
+\end{midi}
+
+\end{frame}
 
 \begin{frame}{Owner Regret?}
 
+
+\begin{table}
 \begin{adjustbox}{center}
 \input{\Dropbox/model/experiments/ownersWTP2.tex}
 \end{adjustbox}
+\caption{In 1000 of Dollars.}
+\end{table}
 \end{frame}
 
-\begin{frame}{The Value of Migration}
+
+\begin{frame}{The Option Value of Migration}{How much consumption would you forgo to be able to migrate?}
+
+\begin{midi}
+\item \cite{yagan} talks about \blue{migratory insurance} in 2006 US recession: ex-post, how many workers moved from worst-affected areas? 7\%.
+\item \onslide+<2-> Here: \cyanbox{Ex-ante}, given you expect shocks, how much would you pay for an insurance policy that allows you to leave whenever you want.
+\item \onslide+<3-> Compare two model versions: baseline and complete migration shutdown scenario.
+\end{midi}
+
+\end{frame}
+
+\begin{frame}{The Option Value of Migration}
 
 \begin{adjustbox}{center}
-\input{\Dropbox/model/experiments/noMove_region_z_ctax.tex}\end{adjustbox}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax1.tex}
+\end{adjustbox}
 
 \end{frame}
 
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax2.tex}
+\end{adjustbox}
+
+\end{frame}
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax3.tex}
+\end{adjustbox}
+
+\end{frame}
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax4.tex}
+\end{adjustbox}
+
+\end{frame}
+
+
+\begin{frame}{Conclusion}
+
+\begin{widee}
+\item People greatly value regional migration: 19\% of period consumption.
+\item \bblue{Owner}/\bred{Renter} margin is first order: Moving Elasticities are orders of magnitude apart
+\item This has important implications for housing and labor market policies alike.
+\end{widee}
+
+\end{frame}
 
 \begin{frame}[plain]{}
 
 \vspace{1cm}
 
 \begin{center}
-\textbf{\textcolor{blue}{\LARGE{}Appendix}}{\LARGE\par}
+\textbf{\textcolor{blue}{\LARGE{}Thanks for listening!}}{\LARGE\par}
 \par\end{center}
 
 \end{frame}
 
-\begin{frame}{Properties: Moving Costs}
-
-\hypertarget{PropMovingCosts}{}
-
-\begin{center}
-\begin{table}
-\centering{}\input{\Dropbox/model/experiments/moneyMC/moneyMC2.tex}
-\end{table}
-\par\end{center}
-\begin{itemize}
-\item Moving cost for young mover in Kennan and Walker (2011): \$384,000
-
-\hyperlink{Properties}{\beamergotobutton{back}}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Properties: Decomposing moving costs for owners}
-
-\hypertarget{PropDecomp}{}
-
-\begin{itemize}
-\item Why do owners move less?
-
-\begin{itemize}
-\item because of utility cost ($\alpha_{3}$)?
-\item or because of transaction costs $(\phi)$?
-\end{itemize}
-\begin{table}
-\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
-\end{table}
-
-\begin{itemize}
-\item Transaction cost $\phi$ is important as well (not only utility cost
-$\alpha_{3}$).
-\end{itemize}
-\hyperlink{Properties}{\beamergotobutton{back}}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Solving the Model}
-
-\begin{itemize}
-\item for each location $d=1,\dots,9$, 
-
-\begin{itemize}
-\item compute the value of moving to $d'=1,\dots,9$ 
-\item becoming either \textcolor{blue}{owner} or \textcolor{red}{renter}
-in $d'$:
-\begin{eqnarray*}
-{\color{blue}v_{d}^{\text{own}}\left(x_{it},d'\right)} & = & \max_{c}u(c,{\color{blue}1},d,d')+\beta E\overline{v}\left(x_{it+1}\right)\\
-{\color{red}v_{d}^{\text{rent}}\left(x_{it},d'\right)} & = & \max_{c}u(c,{\color{red}0},d,d')+\beta E\overline{v}\left(x_{it+1}\right)
-\end{eqnarray*}
-\item \onslide+<2->\textbf{\textcolor{black}{unconditional value}} of moving
-from $d$ to $d'$\textbf{\textcolor{black}{
-\begin{eqnarray*}
-{\color{black}{\color{green}{\color{black}v_{d}\left(x_{it},d'\right)}}} & = & \max\left({\color{blue}v_{d}^{\text{own}}\left(x_{it},d'\right)},{\color{red}v_{d}^{\text{rent}}\left(x_{it},d'\right)}\right)
-\end{eqnarray*}
-}}
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Solving the Model}
-
-\[
-\text{for all }d=1,\dots,9:\,\,\,\begin{cases}
-{\color{green}{\color{black}v_{d}\left(x_{it},1\right)}}=\max & \begin{cases}
-{\color{blue}v_{1}^{\text{own}}\left(x_{it},d'\right)}\\
-{\color{red}v_{1}^{\text{rent}}\left(x_{it},d'\right)}
-\end{cases}\\
-{\color{green}{\color{black}v_{d}\left(x_{it},2\right)}}=\max & \begin{cases}
-{\color{blue}v_{2}^{\text{own}}\left(x_{it},d'\right)}\\
-{\color{red}v_{2}^{\text{rent}}\left(x_{it},d'\right)}
-\end{cases}\\
-\vdots & \vdots\\
-{\color{green}{\color{black}v_{d}\left(x_{it},9\right)}}=\max & \begin{cases}
-{\color{blue}v_{9}^{\text{own}}\left(x_{it},d'\right)}\\
-{\color{red}v_{9}^{\text{rent}}\left(x_{it},d'\right)}
-\end{cases}
-\end{cases}
-\]
-
-\[
-V\left(x_{it},\varepsilon\right)=\max_{d'\in D}\left\{ {\color{green}{\color{black}v\left(x_{it},d'\right)}}+\varepsilon_{id'}\right\} 
-\]
-
-\begin{itemize}
-\item \onslide+<2->there are 1,410,000 points in the state space $x$
-\item \onslide+<2->there are 18 optimization problems at point $x_{it}$:
-Solving the model once requires solving 25,380,000 maximization problems.
-\end{itemize}
-\end{frame}
 
 \begin{frame}{Parameter estimates}
 
 \begin{center}
 \hypertarget{param-estimates}{}
-\input{\Dropbox/model/fit/params-pres.tex}\par
-\hyperlink{moments}{\beamergotobutton{back}}
+\input{\Dropbox/model/fit/params.tex}\par
 \par\end{center}
 
 \end{frame}
@@ -798,17 +958,6 @@ points to compute one solution. This is currently infeasible.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Reasons for Moving: SIPP Data\hypertarget{ProbitReasons}{} \hyperlink{SummaryEmpirical}{\beamergotobutton{back}}}
-
-\begin{table}
-\begin{centering}
-\input{\Dropbox/data/sipp/D2D-probit-edit-slides.tex}
-\par\end{centering}
-\caption{Probit model, regressing binary moving indicator on household characteristics.
-Baseline probability of moving is 1.32\%. Income in \$100,000. }
-\end{table}
-
-\end{frame}
 %
 \begin{frame}{Budget Constraint: Renters who decide to stay\hypertarget{BudgetConstraints}{}
 \hyperlink{Budgets-origin}{\beamergotobutton{back}}}
