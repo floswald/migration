@@ -230,10 +230,11 @@ plot_moment_fit <- function(){
 	s$`Mobility Rates`$lab = s$`Mobility Rates`$moment
 	# s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved twice+"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved1"]$lab = "moved once"
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved 2+"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "cov_own_kids"]$lab = "Cov(own,s)"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "flow_move_to_Mnt"]$lab = "move to Mountain"
 
-	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.17))+ scale_x_continuous(name="data",limits=c(-0.01,0.17)) + theme_bw() + geom_abline(intercept=0,slope=1)  + ggtitle("Mobility and Covariances") + mytheme + geom_text(data=subset(s$`Mobility Rates` ,lab %in% c("moved once","Cov(own,s)","move to Mountain")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
+	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.17))+ scale_x_continuous(name="data",limits=c(-0.01,0.17)) + theme_bw() + geom_abline(intercept=0,slope=1)  + ggtitle("Mobility and Covariances") + mytheme + geom_text(data=subset(s$`Mobility Rates` ,lab %in% c("moved once","moved 2+","Cov(own,s)","move to Mountain")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
 
 
 	s$`Ownership Rates`$lab = s$`Ownership Rates`$moment
