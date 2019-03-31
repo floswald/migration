@@ -1,5 +1,5 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 508
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -36,6 +36,8 @@
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -65,6 +67,7 @@
 \suppress_date false
 \justification true
 \use_refstyle 0
+\use_minted 0
 \boxbgcolor #dbdbdb
 \branch 90mins
 \selected 1
@@ -96,7 +99,10 @@
 \tocdepth 3
 \paragraph_separation skip
 \defskip smallskip
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -1614,6 +1620,7 @@ Moves within a region are not counted as migration.
 \noindent
 \align right
 \begin_inset Branch 25min
+inverted 0
 status collapsed
 
 \begin_layout Standard
@@ -1992,6 +1999,7 @@ CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
  Median distance moved is 
 \begin_inset Branch europe
+inverted 0
 status open
 
 \begin_layout Standard
@@ -2002,6 +2010,7 @@ status open
 
  
 \begin_inset Branch US
+inverted 0
 status collapsed
 
 \begin_layout Standard
@@ -2060,6 +2069,7 @@ status open
 \noindent
 \align center
 \begin_inset Branch europe
+inverted 0
 status open
 
 \begin_layout Standard
@@ -2091,6 +2101,7 @@ Dropbox/data/CPS/main-reason-presKM.tex}
 \noindent
 \align center
 \begin_inset Branch US
+inverted 0
 status collapsed
 
 \begin_layout Standard
@@ -2126,6 +2137,7 @@ CPS 2013 data on main motivation of moving, conditional on a cross Division
  move.
  Median distance moved is 
 \begin_inset Branch europe
+inverted 0
 status open
 
 \begin_layout Standard
@@ -2136,6 +2148,7 @@ status open
 
  
 \begin_inset Branch US
+inverted 0
 status collapsed
 
 \begin_layout Standard
@@ -3618,10 +3631,6 @@ Estimation
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -3639,12 +3648,12 @@ Identification
 
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 I use observed variation in regional prices and productivity levels to identify
  the model.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Identifying assumptions: 
 \begin_inset Separator latexpar
@@ -3698,11 +3707,6 @@ I implicitly assume that
 
 \end_deeper
 \end_deeper
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Separator parbreak
 \end_inset

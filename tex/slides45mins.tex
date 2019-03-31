@@ -6,7 +6,7 @@
 \include{preamble}
 
 \author{Florian Oswald, SciencesPo}
-\date{NYUAD 2019}
+\date{CREST 2019}
 
 \begin{document}
 
@@ -110,11 +110,14 @@ with migration.
 \item Static spatial equilibrium models of migration, and local labor markets:
 {\footnotesize{}\cite{notowidigdo2011incidence}, \cite{Moretti:2011fk}, \cite{diamond2016determinants},
 \cite{piypromdee}, \cite{monras2018economic}\vspace{3mm}}
-\item Regional Fluctuations: {\footnotesize{}\cite{blanchard1992regional}}{\footnotesize\par}
+\item Regional Fluctuations and Unemployment: {\footnotesize{}\cite{blanchard1992regional}, \cite{schmutz}}
 \item  \cite{yagan,yagan2017employment}: Moving to Opportunity?
 \end{widei}
 \end{frame}
 
+
+
+\begin{longv}
 \begin{frame}{Related literature }
 
 \begin{itemize}
@@ -139,7 +142,7 @@ Li, Meghir and Oswald (2014)\vspace{3mm}}{\footnotesize\par}
 {\footnotesize{}}{\footnotesize\par}
 \end{itemize}
 \end{frame}
-
+\end{longv}
 \section{Empirical Facts}
 
 \begin{frame}[plain]{}
@@ -366,6 +369,8 @@ s.t. &  & \text{budget constraints}
 \end{frame}
 
 \begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\tikzstyle{na} = [baseline=-.5ex]
+
 \begin{itemize}
 \item The within-period payoff depends on 
 
@@ -378,7 +383,10 @@ s.t. &  & \text{budget constraints}
 \item idiosyncratic location shock $\left(\varepsilon\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{\red{c_{it}}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \frac{c_{it}^{1-\gamma}}{1-\gamma} $};
+        } +\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
 \]
 
 \item Moving Costs:
@@ -403,12 +411,20 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{\red{c_{it}}^{1-\gamma}}{1-\gamma}+\
 \item idiosyncratic location shock $\left(\varepsilon\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times \red{h_{it}}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \xi(s_{it}) $};
+        } \times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
 \]
 
 \item Moving Costs:
 \[
-\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}\red{s_{it}}
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ s_{it}$};
+            }
 \]
 
 \end{itemize}
@@ -427,12 +443,20 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{
 \item idiosyncratic location shock $\left(\varepsilon\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times \red{h_{it}}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ h_{it}$};
+        } -\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
 \]
 
 \item Moving Costs:
 \[
-\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}\red{s_{it}}
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ h_{it-1}$};
+            }+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
 \]
 
 \end{itemize}
@@ -452,12 +476,57 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{
 \item idiosyncratic location shock $\left(\varepsilon\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\red{\mathbf{1}\left[d\neq d'\right]}\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) $};
+        } +A_{d'}+\varepsilon_{id't}
 \]
 
 \item Moving Costs:
 \[
-\red{\Delta(x)}=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ \Delta(x)$};
+            } = \alpha_{0,\tau} 
++\alpha_{1} h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\red{\mathbf{1}\left[d\neq d'\right]}\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) $};
+        } +A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ \Delta(x)$};
+            } = 
+\tikz[baseline]{
+            \node[fill=blue!20,anchor=base] (t3)
+            {$ \alpha_{0,\tau}$};
+            }  
++\alpha_{1} h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
 \]
 
 \end{itemize}
@@ -477,7 +546,12 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{
 \item idiosyncratic location shock $\left(\varepsilon\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+\red{A_{d'}}+\varepsilon_{id't}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) + 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ A_{d'} $};
+        } + \varepsilon_{id't}
 \]
 
 \item Moving Costs:
@@ -500,7 +574,12 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{
 \item idiosyncratic location shock $\left(\red{\varepsilon}\right)$
 \end{itemize}
 \[
-u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\red{\varepsilon_{id't}}
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) + A_{d'}  +
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$\varepsilon_{id't} $};
+        } 
 \]
 
 \item Moving Costs:
@@ -510,6 +589,21 @@ u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma}+\xi(s_{
 
 \end{itemize}
 \end{frame}
+
+
+\begin{longv}
+\begin{frame}{Housing Choice}{Rent or Own?}
+
+\begin{midi}
+\item $h_{t}=1$ indicates ownership in current period.
+\item Owners may borrow with house as collateral, s.t. 
+\[a_{t+1}\geq-(1-\chi)p_{dt}h_{t},\forall t\]
+\item Terminal net wealth condition: $a_{T}+p_{dT}h_{T-1}\geq0$
+\item No explicit repayment schedule.
+\item Proportional cost of selling the house: $\phi$.
+\end{midi}
+\end{frame}
+\end{longv}
 
 \begin{frame}{Labor Income}
 
@@ -626,6 +720,29 @@ integration problem. \hyperlink{CurseDimDetail}{\beamergotobutton{details}}
 \end{enumerate}
 \end{frame}
 
+\begin{longv}
+\begin{frame}{Identification}
+
+\begin{midi}
+\item I use observed variation in regional prices, productivity levels, migration rates, ownership patterns and migration flows to identify the model.
+\item Identifying assumptions: 
+\begin{enumerate}
+\item Individual housing demand is not subject to aggregate shocks.
+\item Preferences are identical across regions (net of the regional fixed effect).
+\end{enumerate}
+\pause
+\item Implications:
+\begin{enumerate}
+\item For estimation purposes, I can take $p_{dt},q_{dt}$ as exogenous to individual decisions: household $i$ responds to changes in $p_{dt},q_{dt}$ across regions and time.
+\item I implicitly assume that $p_{dt},q_{dt}$ are shifted by aggregate shocks only.
+\end{enumerate}
+\end{midi}
+
+\end{frame}
+
+
+\end{longv}
+
 \begin{frame}{Step 1: Factor Model of Aggregate and Regional Prices }
 
 \begin{midi}
@@ -667,6 +784,19 @@ of $\mathbf{F}_{t}$ and $\mathbf{a}_{d}$:
 % }
 % \end{frame}
 
+\begin{longv}
+\begin{frame}{Step 2: SMM}
+\begin{midi}
+\item We work with parameter vector \[\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\eta,\xi_{1},\xi_{2}\right\} \]
+\item I use an SMM objective function
+    \[L(\theta)=\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]\]
+\item Optimized using a cyclic coordinate search algorithm.
+\item $\mapsto$ Check it out! \texttt{optSlices()} in \url{https://github.com/floswald/MomentOpt.jl}
+\end{midi}
+\end{frame}
+\end{longv}
+
+
 \begin{frame}{Step 2: Key Moment Relationships}
 
 \hspace*{-2pt}\makebox[\linewidth][c]{%
@@ -689,6 +819,9 @@ $\xi_{1},\xi_{2}$ & utility from owning & ownership profile\tabularnewline
 
 }
 \end{frame}
+
+\begin{longv}
+
 
 \begin{frame}{Step 2: Full List of Moments}
 
@@ -722,6 +855,8 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 
 \end{itemize}
 \end{frame}
+\end{longv}
+
 
 \begin{frame}{Model Fit}
 
@@ -758,6 +893,7 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \end{frame}
 
 
+\begin{longv}
 \begin{frame}{Elasticity of Migration wrt Income Shock}
 
 \begin{midi}
@@ -882,6 +1018,7 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \end{adjustbox}
 
 \end{frame}
+\end{longv}
 
 \begin{frame}{The Option Value of Migration}
 
