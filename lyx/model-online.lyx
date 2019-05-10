@@ -23,8 +23,19 @@
 \usepackage{tikz}
 \usepackage{adjustbox}
 \usepackage{pgfplots}
+\usepackage{makecell}
+\usepackage{xr}
+\externaldocument[M-]{model}
+
+%% definitions
+\def\thesection{\Alph{section}}
 \end_preamble
 \use_default_options true
+\begin_modules
+figs-within-sections
+tabs-within-sections
+eqs-within-sections
+\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -168,7 +179,8 @@ today
 \end_layout
 
 \begin_layout Abstract
-This is the online appendix with additional material to my paper.
+This is the online appendix with additional material to the version appearing
+ in Quantitative Economics.
 \end_layout
 
 \begin_layout Standard
@@ -179,7 +191,47 @@ JEL-Codes:
 J6, R23, R21
 \end_layout
 
+\begin_layout Section
+Introduction and Notation
+\end_layout
+
 \begin_layout Standard
+This is the only appendix for 
+\emph on
+The Effect of Homeownership on the Option Value of Regional Migration 
+\emph default
+available at 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://floswald.github.io/pdf/homeownership.pdf
+\end_layout
+
+\end_inset
+
+.
+ In this document I number sections alphabetically (A, B, ...) and equations
+ with roman numbers (I, II, ...).
+ Standard latin numbering (1, 2, ...) refers to the main text.
+\end_layout
+
+\begin_layout Section
+Dimensionality Reduction: Factor Model
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:DimReduce"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This section is concerned with the dimensionality reduction of regional
+ house prices and income time series, as undertaken in the main text in
+ section 
 \begin_inset ERT
 status open
 
@@ -187,14 +239,990 @@ status open
 
 
 \backslash
-vfill
+ref{M-subsec:DimReduce}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Overview and Data Description
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:DimReduce-Data"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here we present detailed results for the regional house price and income
+ data.
+ This part is related to section 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-subsec:Income-not-IID}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-p.pdf
+	scale 60
+	scaleBeforeRotation
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-y.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detrended-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/y_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $q$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-q"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross-correlations between detrended 
+\begin_inset Formula $p$
+\end_inset
+
+ series
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Cross-corr-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/auto_corrs.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+First order partial autocorrelation coefficients of both 
+\begin_inset Formula $q$
+\end_inset
+
+ and 
+\begin_inset Formula $p$
+\end_inset
+
+ from raw (i.e.
+ not detrended) time series.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Autocorrs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional House Price indices vs National average.
+ FHFA house price index.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-House-Price-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional per capita personal income 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ from BEA vs the national average index 
+\begin_inset Formula $Q$
+\end_inset
+
+, for which I use real per capital GDP.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Regional-Income-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Factor Model
+\end_layout
+
+\begin_layout Standard
+Remember that the factor model relating aggregate factors 
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+ to regional prices is 
+\begin_inset Formula 
+\begin{eqnarray}
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\nonumber \\
+\nu_{t} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma\right)\label{eq:VAR-process-agg}\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
+P_{t}
+\end{bmatrix}\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+and that the mapping into regions 
+\begin_inset Formula $d$
+\end_inset
+
+ is deterministally given assumed to be
+\begin_inset Formula 
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}.\label{eq:VAR-reg-determ}
+\end{eqnarray}
+
+\end_inset
+
+The empirical implementation estimates 
+\begin_inset Formula $\mathbf{a}_{d}$
+\end_inset
+
+ in a SUR model:
+\begin_inset Formula 
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}+\eta_{dt}\nonumber \\
+\eta_{dt} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Model Estimates and Performance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+This figure shows the observed and predicted time series for mean income
+ by Census Division.
+ The prediction is obtained from the VAR model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+, which relates the aggreate series 
+\begin_inset Formula $\left\{ Q_{t},P_{t}\right\} _{t=1968}^{2012}$
+\end_inset
+
+ to mean labor productivity 
+\begin_inset Formula $\left\{ q_{dt}\right\} _{t=1968}^{2012}$
+\end_inset
+
+ for each region 
+\begin_inset Formula $d$
+\end_inset
+
+
+\emph on
+.
+ 
+\emph default
+Agents use this prediction in the model, i.e.
+ from observing an aggregate value 
+\begin_inset Formula $\mathbf{F}_{t}=\left(P_{t},Q_{t}\right)$
+\end_inset
+
+ they infer a value for 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+
+\emph on
+ 
+\emph default
+for each region above.
+ 
+\emph on
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mapping-P-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR1-edit.tex}
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-newpage
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/sipp/VAR2-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Aggregate to Regional price mappings.
+ This table shows the estimated coefficients from equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-reg-determ"
+
+\end_inset
+
+, which relates the aggregate factors 
+\begin_inset Formula $\left(Q_{t},P_{t}\right)$
+\end_inset
+
+ to regional income and house price 
+\begin_inset Formula $\left(q_{dt},p_{dt}\right)$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Aggregate-to-Regional-VAR"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Transformation of Aggregate to Regional Shocks
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Transformation-of-Aggregate"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To investigate how aggregate shocks are translated into regional shocks,
+ I fix 
+\begin_inset Formula $\mathbf{F}_{t}$
+\end_inset
+
+ at its mean value except for 
+\begin_inset Formula $t=2000$
+\end_inset
+
+ when I shock component 
+\begin_inset Formula $Q_{t}$
+\end_inset
+
+ by 
+\begin_inset Formula $-10\%$
+\end_inset
+
+ (
+\begin_inset Formula $P_{t}=\overline{P}$
+\end_inset
+
+ throughout this exercise).
+ The transformation of this into regional deviations of 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ are displayed in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:shock-reg-model-illustrate"
+
+\end_inset
+
+.
+ This shows that the model generates considerable variation in the size
+ of the resulting local shock, which is a desirable feature.
+ A similar size regional shock in all regions would not seem very realistic.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{adjustbox}{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename /Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/impulse_y.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{adjustbox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Illustrating the transformation of aggregate shocks into regional counterparts.
+ This exercise keeps the aggregate 
+\begin_inset Formula $\mathbf{F}_{t}$
+\end_inset
+
+ constant at its mean level except for period 
+\begin_inset Formula $t=2000$
+\end_inset
+
+ where the 
+\begin_inset Formula $Y_{t}$
+\end_inset
+
+ component (only) is reduced by 10% relative to its mean.
+
+\emph on
+ 
+\emph default
+The panels show the resulting deviation in regional labor productivity 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+
+\emph on
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:shock-reg-model-illustrate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+State level vs Division level
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:State-Division"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-p"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:state-vs-region-y"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ show the results from regressions of the form
+\begin_inset Formula 
+\begin{align*}
+q_{st} & =\beta_{0}+\beta_{1}q_{dt}+u_{st},s\in d,t=1967,\dots,2012\\
+p_{st} & =\alpha_{0}+\alpha_{1}p_{dt}+u_{st},s\in d,t=1967,\dots,2012
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The aim of those regressions is to measure how much state level variation
+ is captured by the corresponding Divison level indices 
+\begin_inset Formula $q_{dt}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{dt}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/rsquareds.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ from pooled OLS regression of state level indices 
+\begin_inset Formula $p_{st},q_{st}$
+\end_inset
+
+ on corresponding Division level indices 
+\begin_inset Formula $p_{dt},q_{dt}$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:-region-state-rsquared"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/p-P-mods-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/data/FHFA/q-Q-mods-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+state vs region level price indices.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:state-vs-region-y"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -203,6 +1231,1019 @@ newpage
 \end_layout
 
 \begin_layout Section
+Individual Income Process
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/region_2_indi_y-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Regional Mean Income to Individual level income mapping.
+ This is the empirical implementation of equation 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+eqref{M-eq:indiv-labor-empirical}
+\end_layout
+
+\end_inset
+
+ in the main text, as explained in section 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-subsec:Individual-Income-Process}
+\end_layout
+
+\end_inset
+
+.
+ The estimated equation is 
+\begin_inset Formula $\log y_{idt}=\beta_{0}+\eta_{d}\log\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}$
+\end_inset
+
+ and the coefficients 
+\begin_inset Formula $\eta$
+\end_inset
+
+ are denoted with the Division names.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Regional-2-indiv-income"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/income_profiles.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Age profiles as predicted by the empirical implementation of individual
+ labor income, equation 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+eqref{M-eq:indiv-labor-empirical}
+\end_layout
+
+\end_inset
+
+, for three different levels of regional mean productivity 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ Notice that in the model as well as in the data it is never the case that
+ all regions have the same level of average income.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:age-profiles"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Estimation of 
+\begin_inset Formula $G_{move}$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Copula-Estimation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+In a first step I estimate the marginal distributions of 
+\begin_inset Formula $z_{idt}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{ikt+1}$
+\end_inset
+
+ for all movers.
+ These are the cross-sectional distributions of residuals 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{it+1}$
+\end_inset
+
+ from the regression in expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:copula-margins-1"
+
+\end_inset
+
+, which is estimated for all movers.
+ The move takes place in period 
+\begin_inset Formula $t$
+\end_inset
+
+, such that by assumption, 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ is the residual wage in origin location 
+\begin_inset Formula $d$
+\end_inset
+
+, and 
+\begin_inset Formula $z_{it+1}$
+\end_inset
+
+ is the residual wage in the new location 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The proceedure relies crucially on the assumption that individuals have
+ to move to the new region before they can discover 
+\begin_inset Formula $z_{t+1}$
+\end_inset
+
+.
+ One could account for apotential selection effect on 
+\begin_inset Formula $z_{t}$
+\end_inset
+
+ by moving estimation of this part into the structural model and jointly
+ estimate behavioural and wage related parameters.
+ The model provides a set of exclusion restrictions that would allow to
+ do this in theory.
+ Identification of a potential selection effect may be difficult, however,
+ because the sample of movers is relatively small.
+ 
+\begin_inset Formula 
+\begin{equation}
+\ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins-1}
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $p(\text{age})$
+\end_inset
+
+ is a third order polynomial in age, metro is an indicator for metropolitan
+ status and 
+\begin_inset Formula $\gamma_{d}$
+\end_inset
+
+ is a Division fixed effect.
+ Remember that the copula is given as 
+\begin_inset Formula 
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+
+\end_inset
+
+so that it is necessary to specify 1) the copula family and 2) both margins
+ 
+\begin_inset Formula $F_{1},F_{2}$
+\end_inset
+
+.
+ Visual inspection of the margins lead me to assume normal margins, see
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Densities-of-wage-z"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Estimation itself is based on the respective rank of 
+\begin_inset Formula $z$
+\end_inset
+
+ in the empirical distributions.
+ Denoting the standardized values by 
+\begin_inset Formula $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$
+\end_inset
+
+, the next step involves fitting the a normal copula via maximum likelihood
+ to this data.
+ The results are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Normal-Copula-estimates"
+
+\end_inset
+
+, and they indicate a correlation between 
+\begin_inset Formula $\hat{u}_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{u}_{it+1}$
+\end_inset
+
+ of 0.59.
+ This estimate together with the marginal distibutions of 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $z_{it+1}$
+\end_inset
+
+ are used in the structural model, where I use the current value of 
+\begin_inset Formula $z$
+\end_inset
+
+, evaluated in the marginal distribution of 
+\begin_inset Formula $z_{it}$
+\end_inset
+
+ for a mover together with the copula estimate 
+\begin_inset Formula $\hat{G}_{\text{move}}$
+\end_inset
+
+ to draw the next value of 
+\begin_inset Formula $z'$
+\end_inset
+
+.
+ The contours of the corresponding density function of copula 
+\begin_inset Formula $C$
+\end_inset
+
+ are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contours-of-copula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/copulas-edit.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Normal Copula estimates for the rank of wage residuals 
+\begin_inset Formula $u_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{it+1}$
+\end_inset
+
+ for individuals who move in period 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ The algorithm was not able to compute a standard error for 
+\begin_inset Formula $\rho$
+\end_inset
+
+ because of a flat hessian.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Normal-Copula-estimates"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/data/sipp/z_margins.pdf
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Densities of wage residual 
+\begin_inset Formula $u$
+\end_inset
+
+in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:copula-margins-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ of movers today 
+\begin_inset Formula $(u)$
+\end_inset
+
+ and tomorrow (u_plus1).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Densities-of-wage-z"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/mover-copula.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Contours of copula density which is the estimate of the transition matrix
+ of movers' 
+\begin_inset Formula $z$
+\end_inset
+
+, denoted 
+\begin_inset Formula $G_{\text{move}}$
+\end_inset
+
+ in the text.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contours-of-copula"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Structural Model Fit
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Structural-Model-Fit"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The fit is displayed in tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data-flows"
+
+\end_inset
+
+.
+ The upper panel of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data"
+
+\end_inset
+
+ shows moments related to mobility, the lower panel shows moments related
+ to homeownership.
+ Regarding mobility, the fit is very good overall.
+ The estimates for the auxiliary model defined in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-move"
+
+\end_inset
+
+ representing the age profile in ownership also provide a good fit to the
+ data.
+ Looking at table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-and-data-flows"
+
+\end_inset
+
+ we see that the average flows into each region are very close to the data.
+ 
+\end_layout
+
+\begin_layout Standard
+Moving on to moments related to ownership, we see that the unconditional
+ mean of ownership is identical to the data moment.
+ Condition by region provides a more varied picture, with some regions overestim
+ated and others underestimated.
+ The reason for this is that there is heterogeneity in ownership rates by
+ region which is not easily accounted for by the fundamentals of regional
+ house price and mean income alone.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+There is large degree of house price heterogeneity at the local level with
+ is not in the model but which contributes to the average ownership rate
+ at the regional level.
+ Local building regulations, rent control or certain topographical features
+ all influence the actual house price that the local level; The price index
+ used in the model incurs some unavoidable aggregation error in this respect,
+ and the same holds for my estimate of the average rent to price ratio.
+\end_layout
+
+\end_inset
+
+ Remember that by taking prices and incomes as given, the model is restricted
+ to only few levers that affect the homeownership rate.
+ The main parameters in this respect are the utility premia 
+\begin_inset Formula $\xi_{1},\xi_{2}$
+\end_inset
+
+ and the weight in the final period utility 
+\begin_inset Formula $\omega$
+\end_inset
+
+.
+ The model at the moment overpredicts ownership in later periods of life.
+ This is visible from the intercept of the auxiliary model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:auxmod-h"
+
+\end_inset
+
+, which relates the ownership rate to an age profile.
+ The reason for this is that in a model where age and wealth are the main
+ dimensions of variation across households, as soon as a certain wealth
+ threshold is crossed, all agents become owners.
+ In other words, the model cannot account for wealthy houeholds who prefer
+ not to own.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+One way to improve in this dimension would be to introduce different types
+ of housing preferences.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given that the CRRA coefficient 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ is taken as fixed in the current implementation of the model, the moments
+ relating to wealth resulting from the model can be viewed as some form
+ of model validation.
+ The model moments in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit-model-nontarget"
+
+\end_inset
+
+ are not included in the SMM objective function, that is, they are not targeted
+ by the estimation algorithm.
+ The model overpredicts total wealth accumulation, related to the above
+ mentioned slight overprediction of owners at old age.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Empirical targets and corresponding model moments.
+ The auxiliary models reference equations in the main text.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit-model-and-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms-flows.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Empirical targets and corresponding model moments for population flows.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit-model-and-data-flows"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/moms-nontarget.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Non-targeted model and data moments.
+ This set of moments does not enter the SMM objective function and can thus
+ be seen as a form of external validation of the model.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit-model-nontarget"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Auxiliary models and out of sample predition
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{adjustbox}{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_auxmods2.pdf
+	scale 70
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/output/model/fit/fit_wealth.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{adjustbox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Left panel: Parameters of the auxiliary models and table with resulting
+ implications for the model generated ownership rate (inset).
+ Right panel: out of sample predictions about average wealth conditional
+ on age and region.
+ Wealth moments are not included in the SMM objective function.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:fit-2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Additional Results
+\end_layout
+
+\begin_layout Subsection
+Elasticity of Migration wrt positive price shock
+\end_layout
+
+\begin_layout Standard
+The overall population elasticity is on average 
+\begin_inset Formula $-0.1$
+\end_inset
+
+.
+ Inflow elasticities are unambigously negative for both incoming buyers
+ and renters: both find the region more expensive, hence stay away.
+ Regarding outflows, the picture is more nuanced.
+ Notice that owners experience a positive wealth shock in this case, which
+ may (or may not) tip the balance towards moving to another region, when
+ previously this was suboptimal.
+ On aggregate, a one percent price increase leads to 1.1% increase in renter
+ outflows, much larger than the corresponding 0.4% increase in owner outflows.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/fit/elasticities_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Elasticities with respect to an unexpected and permanently positive price
+ shock by region.
+ Statistics are computed identically as in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:elasticities"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:elasticities-p"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Comparative Statics of a Regional Price Shock
 \end_layout
 
@@ -286,7 +2327,7 @@ noprefix "false"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -789,37 +2830,11 @@ name "tab:shocks-by-region_105_105"
 
 \end_layout
 
-\begin_layout Section
-State level vs Division level 
-\end_layout
-
-\begin_layout Standard
-Tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:state-vs-region-p"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:state-vs-region-y"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
- show the results from regressions of the form
-\begin_inset Formula 
-\begin{align*}
-q_{st} & =\beta_{0}+\beta_{1}q_{dt}+u_{st},s\in d,t=1967,\dots,2012\\
-p_{st} & =\alpha_{0}+\alpha_{1}p_{dt}+u_{st},s\in d,t=1967,\dots,2012
-\end{align*}
+\begin_layout Subsection
+Migration Shutdown with Changing Prices
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Migration-Shutdown"
 
 \end_inset
 
@@ -827,25 +2842,100 @@ p_{st} & =\alpha_{0}+\alpha_{1}p_{dt}+u_{st},s\in d,t=1967,\dots,2012
 \end_layout
 
 \begin_layout Standard
-The aim of those regressions is to measure how much state level variation
- is captured by the corresponding Divison level indices 
-\begin_inset Formula $q_{dt}$
+This section presents the results from the experiment in section 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-sec:The-value-of}
+\end_layout
+
 \end_inset
 
- and 
-\begin_inset Formula $p_{dt}$
+ in the main text under scenarios 2 and 3:
+\end_layout
+
+\begin_layout Enumerate
+Baseline 
+\begin_inset Formula $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+: Loss of migrants has negligible impact on regional prices.
+\end_layout
+
+\begin_layout Enumerate
+1% shock to 
+\begin_inset Formula $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$
+\end_inset
+
+: Local productivity suffers a small loss.
+\end_layout
+
+\begin_layout Enumerate
+5%/10% shock: Large productivity decline and amplified effect on house prices.
+\end_layout
+
+\begin_layout Standard
+Starting in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-small"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ with scenario 2, we see the general pattern from the baseline experiment
+ without changing prices going through: Individuals dislike the counterfactual
+ world, with strong differences across regions and betwen age groups, and
+ between renters and owners at young age.
+ With the 1% shock on regional income and house price, the compensation
+ demanded is slightly higher everywhere as compared to the baseline in table
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-tab:shutdown-cons-base}
+\end_layout
+
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-big"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ presents the corresponding results for scenario 3, where the trend from
+ scenario 2 continues: We see the same pattern, just larger numbers.
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset ERT
 status open
 
@@ -855,7 +2945,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/FHFA/p-P-mods.tex}
+Dropbox/model/experiments/noMove_region_ctax_small.tex}
 \end_layout
 
 \end_inset
@@ -867,10 +2957,430 @@ Dropbox/data/FHFA/p-P-mods.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-state vs region level price indices.
+Consumption compensation demanded after migration shutdown in scenario 2,
+ i.e.
+ regional prices decrease both by 1% as a result of the shutdown of migration.
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:state-vs-region-p"
+name "tab:shutdown-cons-small"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_big.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 3,
+ i.e.
+ regional prices and incomes decrease by 10% and 5% respectively as a result
+ of the shutdown of migration.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-big"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/noMove_region_ctax_pos_p.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Consumption compensation demanded after migration shutdown in scenario 4
+ where regional prices and incomes increase by 5% as a result of the shutdown
+ of migration, while the income series 
+\begin_inset Formula $q$
+\end_inset
+
+ is unchanged.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:shutdown-cons-pos-p"
+
+\end_inset
+
+ See table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:shutdown-cons-base"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for the baseline experiment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Welfare Measure
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Welfare-Measure"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Denoting the lifetime utility from the baseline and policy regimes under
+ consumption tax 
+\begin_inset Formula $\Delta c$
+\end_inset
+
+ by 
+\begin_inset Formula $V$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{V}(\Delta c)$
+\end_inset
+
+ respectively, the equalizing consumption tax 
+\begin_inset Formula $\Delta c^{*}$
+\end_inset
+
+ solves
+\begin_inset Formula 
+\begin{eqnarray*}
+V-\hat{V}(\Delta c) & = & 0\\
+V & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}\max_{k\in D}\left\{ v\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \\
+ & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}u(c_{it}^{*},h_{it}^{*},k_{it}^{*};x_{it})+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(x_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]\\
+\hat{V}(\left(\Delta c\right)) & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}u(\left(\Delta c\right)\hat{c}_{it},\hat{h}_{it},\hat{k}_{it};\hat{x}_{it})+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(\hat{x}_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of simulated individuals and 
+\begin_inset Formula $y^{*}$
+\end_inset
+
+ indicates the optimal choice of variable 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ In other words, the welfare measure is the average of over realized value
+ functions 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:V"
+
+\end_inset
+
+ in a given simulation.
+ Notice that the policy functions and resulting lifecycle profiles 
+\begin_inset Formula $\hat{x}_{it}$
+\end_inset
+
+ are different under the policy, for example 
+\begin_inset Formula $\hat{c}\neq c$
+\end_inset
+
+.
+ Then, a value 
+\begin_inset Formula $\left(\Delta c\right)^{*}>1$
+\end_inset
+
+ implies that agents would be indifferent between any proposed policy change
+ if consumption were scaled up in every period, i.e.
+ they would demand a subsidy.
+ In the opposite case of 
+\begin_inset Formula $\left(\Delta c\right)^{*}<1$
+\end_inset
+
+ they would be happy to give up a fixed proportion 
+\begin_inset Formula $\left(\Delta c\right)^{*}$
+\end_inset
+
+ of period consumption if they were given the opportunity to participate
+ in the policy.
+ 
+\end_layout
+
+\begin_layout Section
+Initial Conditions and Cohort Setup
+\end_layout
+
+\begin_layout Standard
+The SIPP estimation sample runs from 1998 through 2012.
+ The data moments the model is supposed to replicate are weighted averages
+ over this period, where the weights are the SIPP sampling weights.
+ When reconstructing an artificial sample from the model simulation, care
+ must be taken to replicate the shocks experienced by each cohort in the
+ data leading up to the point where they are observed.
+ 
+\end_layout
+
+\begin_layout Standard
+The data is subset to the ages allowed for in the model, i.e.
+ 20–50.
+ I compute data moments, for example the average homeownership rate in region
+ 
+\begin_inset Formula $d$
+\end_inset
+
+, or the average total wealth of age group 40–45 in 
+\begin_inset Formula $d$
+\end_inset
+
+, as averages over the entire sample period:
+\begin_inset Formula 
+\begin{eqnarray*}
+\text{mean\_own\_data}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt}}\sum_{i\in d,t}^{N_{dt}}\omega_{it}\mathbf{1}\left[h_{it}=1\right]\right)\\
+\text{mean\_wealth\_data\_40\_45}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt,j\in[40,45]}}\sum_{i\in d,t,j\in[40,45]}^{N_{dt,j\in[40,45]}}\omega_{it}w_{ijt}\right)
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $N_{dt}$
+\end_inset
+
+ is the number of people in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+, and 
+\begin_inset Formula $\omega_{it}$
+\end_inset
+
+ is a person's crossectional weight, and 
+\begin_inset Formula $i\in d,t$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Similarly, 
+\begin_inset Formula $i\in d,t,j\in[40,45]$
+\end_inset
+
+ stands for 
+\begin_inset Formula $i$
+\end_inset
+
+ is in 
+\begin_inset Formula $d$
+\end_inset
+
+ at date 
+\begin_inset Formula $t$
+\end_inset
+
+ and age 
+\begin_inset Formula $j$
+\end_inset
+
+ in [40,45].
+\end_layout
+
+\begin_layout Standard
+This means that for the second data moment, for example, 40 year-olds from
+ 1998 contributed as well as 40 year-olds from the 2012 cohort.
+ Needless to say, those cohorts faced a different sequence of house price
+ shocks leading up the point of observation.
+ For individuals 
+\begin_inset Quotes eld
+\end_inset
+
+born
+\begin_inset Quotes erd
+\end_inset
+
+ before the first data period, i.e.
+ 1998, I construct regional house price and regional income series going
+ back until 1968.
+ Simulating individuals from the 1968 cohort for a full lifetime of J=30
+ years until the reach age 50 brings them into the year 1998, where they
+ form the group of 50 year-olds in that particular year.
+ This sort of staggered simulation is carried out until the final cohort
+ is born in 2012 at age 20.
+ No simulation needs to take place for any individual alive at years after
+ 2012.
+ 
+\end_layout
+
+\begin_layout Section
+Census Divisions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../../Dropbox/research/mobility/papers/us_divisions.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Census Division Map, taken from 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://www.census.gov/geo/maps-data/maps/pdfs/reference/us_regdiv.pdf
+\end_layout
+
+\end_inset
+
+.
+ The Divisions are from left to right Pacific, Moutain, West North Central,
+ West South Central, East North Central, East South Central, New England,
+ Middle Atlantic and South Atlantic.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Census-Division-Map"
 
 \end_inset
 
@@ -889,11 +3399,14 @@ name "tab:state-vs-region-p"
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset ERT
 status open
 
@@ -903,7 +3416,7 @@ status open
 \backslash
 input{
 \backslash
-Dropbox/data/FHFA/q-Q-mods.tex}
+Dropbox/data/sipp/own_p2y-edit.tex}
 \end_layout
 
 \end_inset
@@ -915,10 +3428,20 @@ Dropbox/data/FHFA/q-Q-mods.tex}
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-state vs region level price indices.
+Census Division abbreviations and characteristics.
+ Shows average ownership rates over 1997–2011 and median price to income
+ ratios for the same period.
+ The (unobserved) house price for renters is computed assuming an implied
+ user cost of owning of 5%, i.e.
+ 
+\begin_inset Formula $p_{rent}=\frac{rent}{0.05}$
+\end_inset
+
+.
+ 
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:state-vs-region-y"
+name "tab:SIPP-divisions"
 
 \end_inset
 
@@ -928,6 +3451,131 @@ name "tab:state-vs-region-y"
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Section
+\start_of_appendix
+computational details
+\end_layout
+
+\begin_layout Subsection
+Solution
+\end_layout
+
+\begin_layout Plain Layout
+The problem is fully discretized on a grid of points, however, the savings
+ decision is allowed to be continuous.
+ Linear interpolation is used to evaluate the value function between grid
+ points.
+ To compute the conditional expectation of the future value function in
+ each period, I use the method proposed by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kopecky2010701"
+literal "true"
+
+\end_inset
+
+ to discretize the continuous variable 
+\begin_inset Formula $z$
+\end_inset
+
+.
+ The expectation with respect to household size is a simple matrix operation,
+ using the age-dependent transition matrices 
+\begin_inset Formula $\Gamma_{s,t}$
+\end_inset
+
+.
+ In order to compute the expectation with respect to the aggregate VAR(1)
+ process, I define a grid for both 
+\begin_inset Formula $Y$
+\end_inset
+
+ and 
+\begin_inset Formula $P$
+\end_inset
+
+ that spans all observed values in the data and compute the transition matrix
+ from each combination of grid points in the current period 
+\begin_inset Formula $\mathbf{P}_{t}^{(ij)}\equiv\left(Y_{i},P_{j}\right)$
+\end_inset
+
+ to the set of all grid points in the next period 
+\begin_inset Formula $\mathbf{P}_{t+1}^{(mk)}\equiv\left(Y_{m},P_{k}\right)$
+\end_inset
+
+.
+ The VAR(1) model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VAR-process-1"
+
+\end_inset
+
+ implies that given 
+\begin_inset Formula $\mathbf{P}_{t}^{(ij)}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{P}_{t+1}^{(mk)}\sim N\left(A\mathbf{P}_{t}^{(ij)},\sigma_{\nu}^{2}\right)$
+\end_inset
+
+.
+ The transition matrix is then constructed by evaluating all grid points
+ 
+\begin_inset Formula $\mathbf{P}^{(mk)}$
+\end_inset
+
+ in the pdf of this distribution, and by normalizing over rows.
+\end_layout
+
+\begin_layout Subsection
+Simulation
+\end_layout
+
+\begin_layout Plain Layout
+[tbd]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The cohort structure of the estimation sample described in section for individua
+ls starting life in 1967 and living up to 1997
+\end_layout
+
+\begin_layout Plain Layout
+involves the following steps.
+ First, random intial conditions are drawn for several state variables:
+\end_layout
+
+\begin_layout Plain Layout
+the simulator takes three solution objects to simulate the economy: The
+ conditional value function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:v"
+
+\end_inset
+
+ (necessary to compute the
 \end_layout
 
 \end_inset
