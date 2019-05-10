@@ -239,7 +239,7 @@ status open
 
 
 \backslash
-ref{M-subsec:DimReduce}
+ref{M-subsec:Dim-Reduce}
 \end_layout
 
 \end_inset
@@ -1810,9 +1810,15 @@ reference "tab:fit-model-and-data"
  to homeownership.
  Regarding mobility, the fit is very good overall.
  The estimates for the auxiliary model defined in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:auxmod-move"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+eqref{M-eq:auxmod-move}
+\end_layout
 
 \end_inset
 
@@ -1832,8 +1838,8 @@ reference "tab:fit-model-and-data-flows"
 \begin_layout Standard
 Moving on to moments related to ownership, we see that the unconditional
  mean of ownership is identical to the data moment.
- Condition by region provides a more varied picture, with some regions overestim
-ated and others underestimated.
+ Conditioning by region provides a more varied picture, with some regions
+ overestimated and others underestimated.
  The reason for this is that there is heterogeneity in ownership rates by
  region which is not easily accounted for by the fundamentals of regional
  house price and mean income alone.
@@ -1865,9 +1871,15 @@ There is large degree of house price heterogeneity at the local level with
 .
  The model at the moment overpredicts ownership in later periods of life.
  This is visible from the intercept of the auxiliary model 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:auxmod-h"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+eqref{M-eq:auxmod-h}
+\end_layout
 
 \end_inset
 
@@ -2850,7 +2862,7 @@ status open
 
 
 \backslash
-ref{M-sec:The-value-of}
+ref{M-subsec:The-value-of}
 \end_layout
 
 \end_inset
@@ -2967,16 +2979,19 @@ name "tab:shutdown-cons-small"
 \end_inset
 
  See table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shutdown-cons-base"
-plural "false"
-caps "false"
-noprefix "false"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-tab:shutdown-cons-base}
+\end_layout
 
 \end_inset
 
- for the baseline experiment.
+ in the main text for the baseline experiment.
 \end_layout
 
 \end_inset
@@ -3027,16 +3042,19 @@ name "tab:shutdown-cons-big"
 \end_inset
 
  See table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:shutdown-cons-base"
-plural "false"
-caps "false"
-noprefix "false"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{M-tab:shutdown-cons-base}
+\end_layout
 
 \end_inset
 
- for the baseline experiment.
+ in the main text for the baseline experiment.
 \end_layout
 
 \end_inset

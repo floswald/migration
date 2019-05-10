@@ -1,0 +1,692 @@
+%% LyX 2.3.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,lmargin=2cm,rmargin=2cm}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{color}
+\usepackage{babel}
+\usepackage{float}
+\usepackage{rotfloat}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\numberwithin{equation}{section}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{longtable}
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.8,0.15,0.15}
+\definecolor{dark-blue}{rgb}{0.15,0.15,0.8}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\hypersetup{
+    colorlinks, linkcolor={dark-red},
+    citecolor={dark-blue}, urlcolor={medium-blue}
+}
+\newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
+\usepackage{tikz}
+\usepackage{adjustbox}
+\usepackage{pgfplots}
+\usepackage{makecell}
+\usepackage{xr}
+\externaldocument[M-]{model}
+
+%% definitions
+\def\thesection{\Alph{section}}
+
+\makeatother
+
+\begin{document}
+\title{Online Appendix to \\
+The Effect of Homeownership on the Option Value of Regional Migration}
+\author{Florian Oswald\thanks{email: \protect\url{florian.oswald@gmail.com}. }\\
+Sciences Po}
+\date{\today}
+\maketitle
+\begin{abstract}
+This is the online appendix with additional material to the version
+appearing in Quantitative Economics.
+\end{abstract}
+\textbf{JEL-Codes: }J6, R23, R21
+
+\section{Introduction and Notation}
+
+This is the online appendix for \emph{The Effect of Homeownership on
+the Option Value of Regional Migration }available on my website at \url{https://floswald.github.io/pdf/homeownership-appendix.pdf} as well as on the dedicated website of Quantitative Economics \url{http://qeconomics.org/}.
+In this document I number sections alphabetically (A, B, ...) and
+equations with roman numbers (I, II, ...). Standard latin numbering
+(1, 2, ...) refers to the main text.
+
+\section{Dimensionality Reduction: Factor Model\label{sec:DimReduce}}
+
+This section is concerned with the dimensionality reduction of regional
+house prices and income time series, as undertaken in the main text
+in section \ref{M-subsec:Dim-Reduce}.
+
+\subsection{Data Description and Problem Outline\label{subsec:DimReduce-Data}}
+
+Here we present detailed results for the regional house price and
+income data. This part is related to section \ref{M-subsec:Income-not-IID} in the main text. The main issue we face can easily be illustrated with a series of figures which show the time series of regional prices and incomes. Starting with figures \ref{fig:Regional-House-Price-data} we see the relationship between a national house price index with it's regional counterparts. Figure \ref{fig:Regional-Income-data} shows the same for the regional income data. What is noteworthy in both cases is that each regional series seems strongly correlated with the national series, however, each region in a different kind of way.
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{/Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_p}
+\par\end{centering}
+\caption{Regional House Price indices vs National average. FHFA house price
+index.\label{fig:Regional-House-Price-data}}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{/Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/agg_reg_y}
+\par\end{centering}
+\caption{Regional per capita personal income $q_{dt}$ from BEA vs the national
+average index $Q$, for which I use real per capital GDP.\label{fig:Regional-Income-data}}
+\end{figure}
+
+% \begin{sidewaysfigure}
+% \includegraphics[scale=0.6]{/Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-p}
+
+% \caption{Detrended $p$ time series.\label{fig:Detrended-p}}
+% \end{sidewaysfigure}
+
+% \begin{sidewaysfigure}
+% \includegraphics[scale=0.6]{/Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/detrended-y}
+
+% \caption{Detrended $q$ time series.\label{fig:Detrended-y}}
+% \end{sidewaysfigure}
+
+Tables \ref{tab:Cross-corr-q} and \ref{tab:Cross-corr-p} give the cross-correlation of the detrended series from the preceding plots. We observe that those are large throughout. Finally, table \ref{tab:Autocorrs} shows that each series independently is very persistent by measuring their first order partial autocorrelation coefficients.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/FHFA/y_corrs.tex}
+\par\end{centering}
+\caption{Cross-correlations between detrended $q$ series\label{tab:Cross-corr-q}}
+\end{table}
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/FHFA/p_corrs.tex}
+\par\end{centering}
+\caption{Cross-correlations between detrended $p$ series\label{tab:Cross-corr-p}}
+\end{table}
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/FHFA/auto_corrs.tex}
+\par\end{centering}
+\caption{First order partial autocorrelation coefficients of both $q$ and
+$p$ from raw (i.e. not detrended) time series.\label{tab:Autocorrs}}
+\end{table}
+
+
+
+
+\subsection{Factor Model}
+
+Remember that the factor model relating aggregate factors $\mathbf{F}$
+to regional prices is 
+\begin{eqnarray}
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\nonumber \\
+\nu_{t} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma\right)\label{eq:VAR-process-agg}\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
+P_{t}
+\end{bmatrix}\nonumber 
+\end{eqnarray}
+and that the mapping into regions $d$ is deterministally given assumed
+to be
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}.\label{eq:VAR-reg-determ}
+\end{eqnarray}
+The empirical implementation estimates $\mathbf{a}_{d}$ in a SUR
+model:
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}+\eta_{dt}\nonumber \\
+\eta_{dt} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}
+\end{eqnarray}
+
+
+\subsection{Model Estimates and Performance}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p}
+\par\end{centering}
+\caption{This figure shows the observed and predicted time series for mean
+income by Census Division. The prediction is obtained from the VAR
+model in \eqref{eq:VAR-reg-determ}, which relates the aggreate series
+$\left\{ Q_{t},P_{t}\right\} _{t=1968}^{2012}$ to mean labor productivity
+$\left\{ q_{dt}\right\} _{t=1968}^{2012}$ for each region $d$\emph{.
+}Agents use this prediction in the model, i.e. from observing an aggregate
+value $\mathbf{F}_{t}=\left(P_{t},Q_{t}\right)$ they infer a value
+for $q_{dt}$\emph{ }for each region above. \emph{\label{fig:mapping-P-p}}}
+\end{figure}
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/sipp/VAR1-edit.tex}
+\vspace{1cm}
+\par\end{centering}
+\begin{centering}
+\input{\Dropbox/data/sipp/VAR2-edit.tex}
+\par\end{centering}
+\caption{Aggregate to Regional price mappings. This table shows the estimated
+coefficients from equation \eqref{eq:VAR-reg-determ}, which relates
+the aggregate factors $\left(Q_{t},P_{t}\right)$ to regional income
+and house price $\left(q_{dt},p_{dt}\right)$. \label{tab:Aggregate-to-Regional-VAR}}
+\end{table}
+
+
+\subsection{Transformation of Aggregate to Regional Shocks\label{subsec:Transformation-of-Aggregate}}
+
+To investigate how aggregate shocks are translated into regional shocks,
+I fix $\mathbf{F}_{t}$ at its mean value except for $t=2000$ when
+I shock component $Q_{t}$ by $-10\%$ ($P_{t}=\overline{P}$ throughout
+this exercise). The transformation of this into regional deviations
+of $q_{dt}$ are displayed in figure \ref{fig:shock-reg-model-illustrate}.
+This shows that the model generates considerable variation in the
+size of the resulting local shock, which is a desirable feature. A
+similar size regional shock in all regions would not seem very realistic.
+
+\begin{figure}
+\begin{adjustbox}{center}
+
+\includegraphics[scale=0.8]{/Users/florian.oswald/Dropbox/research/mobility/output/data/sipp/impulse_y}
+
+\end{adjustbox}
+
+\caption{Illustrating the transformation of aggregate shocks into regional
+counterparts. This exercise keeps the aggregate $\mathbf{F}_{t}$
+constant at its mean level except for period $t=2000$ where the $Y_{t}$
+component (only) is reduced by 10\% relative to its mean.\emph{ }The
+panels show the resulting deviation in regional labor productivity
+$q_{dt}$\emph{. \label{fig:shock-reg-model-illustrate}}}
+\end{figure}
+
+
+\subsection{State level vs Division level\label{subsec:State-Division}}
+
+Tables \ref{tab:state-vs-region-p} and \ref{tab:state-vs-region-y}
+show the results from regressions of the form
+\begin{align*}
+q_{st} & =\beta_{0}+\beta_{1}q_{dt}+u_{st},s\in d,t=1967,\dots,2012\\
+p_{st} & =\alpha_{0}+\alpha_{1}p_{dt}+u_{st},s\in d,t=1967,\dots,2012
+\end{align*}
+
+The aim of those regressions is to measure how much state level variation
+is captured by the corresponding Divison level indices $q_{dt}$ and
+$p_{dt}$.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/FHFA/rsquareds.tex}
+\par\end{centering}
+\caption{$R^{2}$ from pooled OLS regression of state level indices $p_{st},q_{st}$
+on corresponding Division level indices $p_{dt},q_{dt}$.\label{tab:-region-state-rsquared}}
+\end{table}
+
+\begin{sidewaystable}
+\input{\Dropbox/data/FHFA/p-P-mods-edit.tex}
+
+\caption{state vs region level price indices.\label{tab:state-vs-region-p}}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+\input{\Dropbox/data/FHFA/q-Q-mods-edit.tex}
+
+\caption{state vs region level price indices.\label{tab:state-vs-region-y}}
+\end{sidewaystable}
+
+
+\section{Individual Income Process}
+
+\begin{sidewaystable}
+\begin{centering}
+\input{\Dropbox/model/fit/region_2_indi_y-edit.tex}
+\par\end{centering}
+\caption{Regional Mean Income to Individual level income mapping. This is the
+empirical implementation of equation \eqref{M-eq:indiv-labor-empirical}
+in the main text, as explained in section \ref{M-subsec:Individual-Income-Process}.
+The estimated equation is $\log y_{idt}=\beta_{0}+\eta_{d}\log\overline{y}_{dt}+\beta_{1}\text{age}_{it}+\beta_{2}\text{age}_{it}^{2}+\beta_{3}\text{age}_{it}^{3}+u_{it}$
+and the coefficients $\eta$ are denoted with the Division names.
+\label{tab:Regional-2-indiv-income}}
+\end{sidewaystable}
+
+\begin{figure}
+\begin{centering}
+\input{\Dropbox/model/fit/income_profiles.tex}
+\par\end{centering}
+\caption{Age profiles as predicted by the empirical implementation of individual
+labor income, equation \eqref{M-eq:indiv-labor-empirical}, for three
+different levels of regional mean productivity $q$. Notice that in
+the model as well as in the data it is never the case that all regions
+have the same level of average income.\label{fig:age-profiles}}
+\end{figure}
+
+
+\subsection{Estimation of $G_{move}$\label{sec:Copula-Estimation}}
+
+In a first step I estimate the marginal distributions of $z_{idt}$
+and $z_{ikt+1}$ for all movers. These are the cross-sectional distributions
+of residuals $z_{it}$ and $z_{it+1}$ from the regression in expression
+\eqref{eq:copula-margins-1}, which is estimated for all movers. The
+move takes place in period $t$, such that by assumption, $z_{it}$
+is the residual wage in origin location $d$, and $z_{it+1}$ is the
+residual wage in the new location $k$. The proceedure relies crucially
+on the assumption that individuals have to move to the new region
+before they can discover $z_{t+1}$. One could account for apotential
+selection effect on $z_{t}$ by moving estimation of this part into
+the structural model and jointly estimate behavioural and wage related
+parameters. The model provides a set of exclusion restrictions that
+would allow to do this in theory. Identification of a potential selection
+effect may be difficult, however, because the sample of movers is
+relatively small. 
+\begin{equation}
+\ln y_{idt}=\beta_{0}+\beta_{1}\text{college}_{it}+\delta p(\text{age}_{it})+\beta_{2}\text{numkids}_{it}+\beta_{3}\text{sex}_{it}+\beta_{4}\text{metro}_{it}+\gamma_{d}+u_{it}\label{eq:copula-margins-1}
+\end{equation}
+Here $p(\text{age})$ is a third order polynomial in age, metro is
+an indicator for metropolitan status and $\gamma_{d}$ is a Division
+fixed effect. Remember that the copula is given as 
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+so that it is necessary to specify 1) the copula family and 2) both
+margins $F_{1},F_{2}$. Visual inspection of the margins lead me to
+assume normal margins, see figure \ref{fig:Densities-of-wage-z}.
+Estimation itself is based on the respective rank of $z$ in the empirical
+distributions. Denoting the standardized values by $\left(\hat{u}_{it},\hat{u}_{it+1}\right)$,
+the next step involves fitting the a normal copula via maximum likelihood
+to this data. The results are shown in table \ref{tab:Normal-Copula-estimates},
+and they indicate a correlation between $\hat{u}_{it}$ and $\hat{u}_{it+1}$
+of 0.59. This estimate together with the marginal distibutions of
+$z_{it}$ and $z_{it+1}$ are used in the structural model, where
+I use the current value of $z$, evaluated in the marginal distribution
+of $z_{it}$ for a mover together with the copula estimate $\hat{G}_{\text{move}}$
+to draw the next value of $z'$. The contours of the corresponding
+density function of copula $C$ are shown in figure \ref{fig:Contours-of-copula}.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/fit/copulas-edit.tex}
+\par\end{centering}
+\caption{Normal Copula estimates for the rank of wage residuals $u_{it}$ and
+$u_{it+1}$ for individuals who move in period $t$. The algorithm
+was not able to compute a standard error for $\rho$ because of a
+flat hessian.\label{tab:Normal-Copula-estimates}}
+\end{table}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.75]{../../../Dropbox/research/mobility/output/data/sipp/z_margins}
+\par\end{centering}
+\caption{Densities of wage residual $u$in equation \eqref{eq:copula-margins-1}
+of movers today $(u)$ and tomorrow (u\_plus1).\label{fig:Densities-of-wage-z}}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/model/data_repo/out_graphs_jl/mover-copula}
+\par\end{centering}
+\caption{Contours of copula density which is the estimate of the transition
+matrix of movers' $z$, denoted $G_{\text{move}}$ in the text.\label{fig:Contours-of-copula}}
+\end{figure}
+
+
+\section{Structural Model Fit\label{sec:Structural-Model-Fit}}
+
+The fit is displayed in tables \ref{tab:fit-model-and-data} and \ref{tab:fit-model-and-data-flows}.
+The upper panel of \ref{tab:fit-model-and-data} shows moments related
+to mobility, the lower panel shows moments related to homeownership.
+Regarding mobility, the fit is very good overall. The estimates for
+the auxiliary model defined in \eqref{M-eq:auxmod-move} representing
+the age profile in ownership also provide a good fit to the data.
+Looking at table \ref{tab:fit-model-and-data-flows} we see that the
+average flows into each region are very close to the data. 
+
+Moving on to moments related to ownership, we see that the unconditional
+mean of ownership is identical to the data moment. Conditioning by
+region provides a more varied picture, with some regions overestimated
+and others underestimated. The reason for this is that there is heterogeneity
+in ownership rates by region which is not easily accounted for by
+the fundamentals of regional house price and mean income alone.\footnote{There is large degree of house price heterogeneity at the local level
+with is not in the model but which contributes to the average ownership
+rate at the regional level. Local building regulations, rent control
+or certain topographical features all influence the actual house price
+that the local level; The price index used in the model incurs some
+unavoidable aggregation error in this respect, and the same holds
+for my estimate of the average rent to price ratio.} Remember that by taking prices and incomes as given, the model is
+restricted to only few levers that affect the homeownership rate.
+The main parameters in this respect are the utility premia $\xi_{1},\xi_{2}$
+and the weight in the final period utility $\omega$. The model at
+the moment overpredicts ownership in later periods of life. This is
+visible from the intercept of the auxiliary model \eqref{M-eq:auxmod-h},
+which relates the ownership rate to an age profile. The reason for
+this is that in a model where age and wealth are the main dimensions
+of variation across households, as soon as a certain wealth threshold
+is crossed, all agents become owners. In other words, the model cannot
+account for wealthy houeholds who prefer not to own.\footnote{One way to improve in this dimension would be to introduce different
+types of housing preferences.}
+
+Given that the CRRA coefficient $\gamma$ is taken as fixed in the
+current implementation of the model, the moments relating to wealth
+resulting from the model can be viewed as some form of model validation.
+The model moments in table \ref{tab:fit-model-nontarget} are not
+included in the SMM objective function, that is, they are not targeted
+by the estimation algorithm. The model overpredicts total wealth accumulation,
+related to the above mentioned slight overprediction of owners at
+old age.
+
+\begin{table}[p]
+\begin{centering}
+\input{\Dropbox/model/fit/moms.tex}
+\par\end{centering}
+\caption{Empirical targets and corresponding model moments. The auxiliary models
+reference equations in the main text.\label{tab:fit-model-and-data}}
+\end{table}
+
+\begin{table}[p]
+\begin{centering}
+\input{\Dropbox/model/fit/moms-flows.tex}
+\par\end{centering}
+\caption{Empirical targets and corresponding model moments for population flows.\label{tab:fit-model-and-data-flows}}
+\end{table}
+
+\begin{table}[p]
+\begin{centering}
+\input{\Dropbox/model/fit/moms-nontarget.tex}
+\par\end{centering}
+\caption{Non-targeted model and data moments. This set of moments does not
+enter the SMM objective function and can thus be seen as a form of
+external validation of the model.\label{tab:fit-model-nontarget}}
+\end{table}
+
+Auxiliary models and out of sample predition
+
+\begin{figure}
+\begin{adjustbox}{center}
+
+\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_auxmods2}\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_wealth}
+
+\end{adjustbox}
+
+\caption{Left panel: Parameters of the auxiliary models and table with resulting
+implications for the model generated ownership rate (inset). Right
+panel: out of sample predictions about average wealth conditional
+on age and region. Wealth moments are not included in the SMM objective
+function.\label{fig:fit-2}}
+\end{figure}
+
+
+\section{Additional Results}
+
+\subsection{Elasticity of Migration wrt positive price shock}
+
+The overall population elasticity is on average $-0.1$. Inflow elasticities
+are unambigously negative for both incoming buyers and renters: both
+find the region more expensive, hence stay away. Regarding outflows,
+the picture is more nuanced. Notice that owners experience a positive
+wealth shock in this case, which may (or may not) tip the balance
+towards moving to another region, when previously this was suboptimal.
+On aggregate, a one percent price increase leads to 1.1\% increase
+in renter outflows, much larger than the corresponding 0.4\% increase
+in owner outflows.
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/model/fit/elasticities_p.tex}
+\par\end{centering}
+\caption{Elasticities with respect to an unexpected and permanently positive
+price shock by region. Statistics are computed identically as in table
+\ref{tab:elasticities}. \label{tab:elasticities-p}}
+\end{table}
+
+
+\subsection{Comparative Statics of a Regional Price Shock}
+
+The aim of this section is to illustrate how the model reacts to regional
+price shocks in a comparative statics sense. This means that I will
+shock one region at a time with a regional house price and income
+shock, which deviates the observed price and income series to an unexpectedly
+lower level in the year 2000. All other regions are kept constant
+at baseline, observed, prices. The purpose of this exercise is to
+show how regions differ in response to a given shock. It is important
+to understand that the same sized shock can have very different results
+in different regions.
+
+The exercise is set up in partial equilibrium, as is indeed the model.
+In the present context where we are interested in a ceteris paribus
+effect of shocking one region only at each time, this seems to be
+only a small limitation. We proceed thus in the folling fashion: Every
+region is taken through different combinations of counterfactual regional
+price and income shocks. For each region $d$, both $p_{dt}$ and
+$q_{dt}$ may deviate in the year $t=2000$ by $\pm5\%$ with respect
+to their observed (and expected) level, by surprise, and proceed at
+this deviated level for ever after. The results from this are collected
+in tables \ref{tab:shocks-by-region_95_95} through \ref{tab:shocks-by-region_105_105}.
+Figure \ref{fig:Comparative-Statics} provides an illustration of
+a prototypical regional shock.
+
+\begin{figure}
+\begin{centering}
+\input{\Dropbox/model/data_repo/out_data_jl/shockregPaths.tex}
+\par\end{centering}
+\caption{Comparative Statics of Regional Shock. Dashed line is the shocked
+series for a given region. This picture applies a 10\% shock to $Q$
+and a 6\% shock to $P$. Both $y$-axis are in thousands of dollars.
+\label{fig:Comparative-Statics}}
+\end{figure}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_0.95_qs_0.95.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_95_95}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.0_qs_0.95.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_1_95}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.05_qs_0.95.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_105_95}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_0.95_qs_1.0.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_95_1}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.0_qs_1.0.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_1_1}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.05_qs_1.0.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_105_1}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_0.95_qs_1.05.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_95_105}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.0_qs_1.05.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_1_105}}
+\end{table}
+
+\begin{table}[p]
+\input{\Dropbox/model/experiments/shockRegions_ps_1.05_qs_1.05.tex}
+
+\caption{shocks by region\label{tab:shocks-by-region_105_105}}
+\end{table}
+
+
+\subsection{Migration Shutdown with Changing Prices\label{subsec:Migration-Shutdown}}
+
+This section presents the results from the experiment in section \ref{M-subsec:The-value-of}
+in the main text under scenarios 2 and 3:
+\begin{enumerate}
+\item Baseline $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$: Loss of migrants has
+negligible impact on regional prices.
+\item 1\% shock to $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$: Local productivity
+suffers a small loss.
+\item 5\%/10\% shock: Large productivity decline and amplified effect on
+house prices.
+\end{enumerate}
+Starting in table \ref{tab:shutdown-cons-small} with scenario 2,
+we see the general pattern from the baseline experiment without changing
+prices going through: Individuals dislike the counterfactual world,
+with strong differences across regions and betwen age groups, and
+between renters and owners at young age. With the 1\% shock on regional
+income and house price, the compensation demanded is slightly higher
+everywhere as compared to the baseline in table \ref{M-tab:shutdown-cons-base}.
+
+Table \ref{tab:shutdown-cons-big} presents the corresponding results
+for scenario 3, where the trend from scenario 2 continues: We see
+the same pattern, just larger numbers.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/experiments/noMove_region_ctax_small.tex}
+\par\end{centering}
+\caption{Consumption compensation demanded after migration shutdown in scenario
+2, i.e. regional prices decrease both by 1\% as a result of the shutdown
+of migration.\label{tab:shutdown-cons-small} See table \ref{M-tab:shutdown-cons-base}
+in the main text for the baseline experiment.}
+\end{table}
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/experiments/noMove_region_ctax_big.tex}
+\par\end{centering}
+\caption{Consumption compensation demanded after migration shutdown in scenario
+3, i.e. regional prices and incomes decrease by 10\% and 5\% respectively
+as a result of the shutdown of migration.\label{tab:shutdown-cons-big}
+See table \ref{M-tab:shutdown-cons-base} in the main text for the
+baseline experiment.}
+\end{table}
+
+
+\section{Welfare Measure\label{sec:Welfare-Measure}}
+
+Denoting the lifetime utility from the baseline and policy regimes
+under consumption tax $\Delta c$ by $V$ and $\hat{V}(\Delta c)$
+respectively, the equalizing consumption tax $\Delta c^{*}$ solves
+\begin{eqnarray*}
+V-\hat{V}(\Delta c) & = & 0\\
+V & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}\max_{k\in D}\left\{ v\left(x_{it},k\right)+\varepsilon_{ikt}\right\} \\
+ & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}u(c_{it}^{*},h_{it}^{*},k_{it}^{*};x_{it})+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(x_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]\\
+\hat{V}(\left(\Delta c\right)) & = & \frac{1}{JN}\sum_{i=1}^{N}\sum_{t=1}^{J}u(\left(\Delta c\right)\hat{c}_{it},\hat{h}_{it},\hat{k}_{it};\hat{x}_{it})+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(\hat{x}_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]
+\end{eqnarray*}
+
+where $N$ is the number of simulated individuals and $y^{*}$ indicates
+the optimal choice of variable $y$. In other words, the welfare measure
+is the average of over realized value functions \eqref{eq:V} in a
+given simulation. Notice that the policy functions and resulting lifecycle
+profiles $\hat{x}_{it}$ are different under the policy, for example
+$\hat{c}\neq c$. Then, a value $\left(\Delta c\right)^{*}>1$ implies
+that agents would be indifferent between any proposed policy change
+if consumption were scaled up in every period, i.e. they would demand
+a subsidy. In the opposite case of $\left(\Delta c\right)^{*}<1$
+they would be happy to give up a fixed proportion $\left(\Delta c\right)^{*}$
+of period consumption if they were given the opportunity to participate
+in the policy. 
+
+\section{Initial Conditions and Cohort Setup}
+
+The SIPP estimation sample runs from 1998 through 2012. The data moments
+the model is supposed to replicate are weighted averages over this
+period, where the weights are the SIPP sampling weights. When reconstructing
+an artificial sample from the model simulation, care must be taken
+to replicate the shocks experienced by each cohort in the data leading
+up to the point where they are observed. 
+
+The data is subset to the ages allowed for in the model, i.e. 20\textendash 50.
+I compute data moments, for example the average homeownership rate
+in region $d$, or the average total wealth of age group 40\textendash 45
+in $d$, as averages over the entire sample period:
+\begin{eqnarray*}
+\text{mean\_own\_data}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt}}\sum_{i\in d,t}^{N_{dt}}\omega_{it}\mathbf{1}\left[h_{it}=1\right]\right)\\
+\text{mean\_wealth\_data\_40\_45}_{d} & = & \frac{1}{15}\sum_{t=1998}^{2012}\left(\frac{1}{N_{dt,j\in[40,45]}}\sum_{i\in d,t,j\in[40,45]}^{N_{dt,j\in[40,45]}}\omega_{it}w_{ijt}\right)
+\end{eqnarray*}
+where $N_{dt}$ is the number of people in $d$ at date $t$, and
+$\omega_{it}$ is a person's crossectional weight, and $i\in d,t$
+stands for $i$ is in $d$ at date $t$. Similarly, $i\in d,t,j\in[40,45]$
+stands for $i$ is in $d$ at date $t$ and age $j$ in {[}40,45{]}.
+
+This means that for the second data moment, for example, 40 year-olds
+from 1998 contributed as well as 40 year-olds from the 2012 cohort.
+Needless to say, those cohorts faced a different sequence of house
+price shocks leading up the point of observation. For individuals
+``born'' before the first data period, i.e. 1998, I construct regional
+house price and regional income series going back until 1968. Simulating
+individuals from the 1968 cohort for a full lifetime of J=30 years
+until the reach age 50 brings them into the year 1998, where they
+form the group of 50 year-olds in that particular year. This sort
+of staggered simulation is carried out until the final cohort is born
+in 2012 at age 20. No simulation needs to take place for any individual
+alive at years after 2012. 
+
+\section{Census Divisions}
+
+\begin{figure}[H]
+\begin{centering}
+\includegraphics[scale=0.6]{../../../Dropbox/research/mobility/papers/us_divisions}
+\par\end{centering}
+\caption{Census Division Map, taken from \protect\url{https://www.census.gov/geo/maps-data/maps/pdfs/reference/us_regdiv.pdf}.
+The Divisions are from left to right Pacific, Moutain, West North
+Central, West South Central, East North Central, East South Central,
+New England, Middle Atlantic and South Atlantic.\label{fig:Census-Division-Map}}
+\end{figure}
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/data/sipp/own_p2y-edit.tex}
+\par\end{centering}
+\caption{Census Division abbreviations and characteristics. Shows average ownership
+rates over 1997\textendash 2011 and median price to income ratios
+for the same period. The (unobserved) house price for renters is computed
+assuming an implied user cost of owning of 5\%, i.e. $p_{rent}=\frac{rent}{0.05}$.
+\label{tab:SIPP-divisions}}
+\end{table}
+
+
+\end{document}

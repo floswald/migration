@@ -1215,25 +1215,33 @@ The model presented below contains 25.4 million different points in the state
 
  I will demonstrate below what the choice of Divisions implies for the captured
  state–level variation.
- Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Census-Division-Map"
+ In the online appendix figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{R-fig:Census-Division-Map}
+\end_layout
 
 \end_inset
 
  presents a map, and table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:SIPP-divisions"
-plural "false"
-caps "false"
-noprefix "false"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{R-tab:SIPP-divisions}
+\end_layout
 
 \end_inset
 
  lists Division abbreviations and the member States.
- 
 \end_layout
 
 \begin_layout Subsection
@@ -1574,7 +1582,7 @@ https://github.com/floswald/EconData
 \begin_inset Formula $q$
 \end_inset
 
-, respectively (for details see table 
+, respectively (for details see online appendix table 
 \begin_inset ERT
 status open
 
@@ -1593,7 +1601,7 @@ ref{R-tab:Autocorrs}
  Therefore the model introduced below will take both correlation and persistence
  in regional prices seriously and will propose a method to solve and estimate
  the resulting high-dimensional problem.
- Appendix 
+ Online appendix 
 \begin_inset ERT
 status open
 
@@ -1953,7 +1961,7 @@ name "fig:SIPP-sample-proportion-1"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -2036,23 +2044,29 @@ The time series for regional incomes
 \end_inset
 
  for East North Central (ENC) and West South Central (WSC) is around 0.75
- (raw numbers in tables 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Cross-corr-q"
-plural "false"
-caps "false"
-noprefix "false"
+ (raw numbers in appendix tables 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{R-tab:Cross-corr-q}
+\end_layout
 
 \end_inset
 
  and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Cross-corr-p"
-plural "false"
-caps "false"
-noprefix "false"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{R-tab:Cross-corr-p}
+\end_layout
 
 \end_inset
 
@@ -2758,7 +2772,7 @@ One could say that the formulation is missing a shock, e.g.
 \begin_inset Formula $Q$
 \end_inset
 
- and/or 
+ and 
 \begin_inset Formula $P$
 \end_inset
 
@@ -4475,7 +4489,7 @@ status open
 
 
 \backslash
-ref{R-subsec:subsec:Transformation-of-Aggregate}
+ref{R-subsec:Transformation-of-Aggregate}
 \end_layout
 
 \end_inset
@@ -5820,7 +5834,7 @@ reference "tab:Parameter-estimates"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -5893,7 +5907,21 @@ name "fig:fit1"
 
 \end_inset
 
+ A detailed listing and additional plots are available in online appendix
+ 
+\begin_inset ERT
+status open
 
+\begin_layout Plain Layout
+
+
+\backslash
+ref{R-sec:Structural-Model-Fit}
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
