@@ -42,14 +42,6 @@
 \newboolean{longv}
 \newboolean{shortv}
 % \setboolean{shortv}{true}
-\setboolean{longv}{true}
-\ifthenelse{\boolean{longv}}{%
-  \includeversion{longv}
-  \excludeversion{shortv}
-}{%
-  \excludeversion{longv}
-  \includeversion{shortv}
-}
 
 % define the path to dropbox
 \newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
@@ -154,3 +146,26 @@
   \begin{frame}}{
     \end{frame}
 }
+
+
+
+%%% TIKZ STUFF
+\tikzset{   
+        every picture/.style={remember picture,baseline},
+        every node/.style={anchor=base,align=center,outer sep=1.5pt},
+        every path/.style={thick},
+        }
+\newcommand\marktopleft[1]{%
+    \tikz[overlay,remember picture] 
+        \node (marker-#1-a) at (-.3em,.3em) {};%
+}
+\newcommand\markbottomright[1]{%
+    \tikz[overlay,remember picture] 
+        \node (marker-#1-b) at (.1em,.3em) {};%
+    % \tikz[overlay,remember picture,inner sep=3pt]
+        % \node[draw=red,rounded corners,fit=(marker-#1-a.north west) (marker-#1-b.south east)] {};%
+}
+\tikzstyle{every picture}+=[remember picture] 
+\tikzstyle{mybox} =[draw=black, very thick, rectangle, inner sep=10pt, inner ysep=20pt]
+\tikzstyle{fancytitle} =[draw=black,fill=red, text=white]
+%%%% END TIKZ STUFF

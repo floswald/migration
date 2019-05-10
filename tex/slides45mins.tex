@@ -1,33 +1,22 @@
-%% LyX 2.3.2 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
 \documentclass[12pt,english, aspectratio=169]{beamer}
-
 
 \include{preamble}
 
+% set length of presentation
+\setboolean{longv}{false}
+\ifthenelse{\boolean{longv}}{%
+  \includeversion{longv}
+  % \excludeversion{shortv}
+}{%
+  \excludeversion{longv}
+  % \includeversion{shortv}
+}
+
 \author{Florian Oswald, SciencesPo}
-\date{CREST 2019}
+\date{OECD 2019}
 
 \begin{document}
 
-%%% TIKZ STUFF
-\tikzset{   
-        every picture/.style={remember picture,baseline},
-        every node/.style={anchor=base,align=center,outer sep=1.5pt},
-        every path/.style={thick},
-        }
-\newcommand\marktopleft[1]{%
-    \tikz[overlay,remember picture] 
-        \node (marker-#1-a) at (-.3em,.3em) {};%
-}
-\newcommand\markbottomright[2]{%
-    \tikz[overlay,remember picture] 
-        \node (marker-#1-b) at (0em,.3em) {};%
-}
-\tikzstyle{every picture}+=[remember picture] 
-\tikzstyle{mybox} =[draw=black, very thick, rectangle, inner sep=10pt, inner ysep=20pt]
-\tikzstyle{fancytitle} =[draw=black,fill=red, text=white]
-%%%% END TIKZ STUFF
 
 \title{
 The Effect of Homeownership on the Option Value of Regional Migration
@@ -75,8 +64,6 @@ In this paper, I build a lifecycle model that allows for
 \begin{itemize}
 \item \onslide+<2->Estimate the preference parameters of the model using
 both micro and macro data.
-\item \onslide+<2->Analyse empirically how assets and housing choice interact
-with migration.
 \item \onslide+<2->Develop a measure of the option value of migration.
 
 \end{itemize}
@@ -88,12 +75,12 @@ with migration.
 \item Adds to \cite{kennan2003effect}: 
 
 \begin{itemize}
-\item regional shocks,
-\item assets and 
-\item housing choices.
+\onslide+<2->\item regional shocks,
+\onslide+<2->\item assets and 
+\onslide+<2->\item housing choices.
 \end{itemize} 
-\item \onslide+<2->Takes regional house price and income risk seriously (Shocks are not IID!).
-\item \onslide+<3->Provides a fully structural implementation of \cite{yagan,yagan2017employment}: \emph{Migratory Insurance}. 
+\item \onslide+<3->Takes regional house price and income risk seriously (Shocks are not IID!).
+\item \onslide+<4->Provides a fully structural implementation of \cite{yagan,yagan2017employment}: \emph{Migratory Insurance}. 
 \end{widee}
 \end{frame}
 
@@ -106,7 +93,7 @@ with migration.
 \begin{frame}{Related literature}
 
 \begin{widei}
-\item Dynamic models of migration over lifecycle: {\footnotesize{}\cite{baum2012understanding}, \cite{kennan2003effect}, \cite{gemici2007family}, \cite{winkler2010effect}\vspace{3mm}}
+\item Dynamic models of migration over lifecycle: {\footnotesize{}\cite{baum2012understanding}, \cite{kennan2003effect}, \cite{gemici2007family}, \cite{ransom2018labor}\vspace{3mm}}
 \item Static spatial equilibrium models of migration, and local labor markets:
 {\footnotesize{}\cite{notowidigdo2011incidence}, \cite{Moretti:2011fk}, \cite{diamond2016determinants},
 \cite{piypromdee}, \cite{monras2018economic}\vspace{3mm}}
@@ -333,7 +320,7 @@ V_{t}\left(x_{it}\right) & = & \max_{d'\in D}\left\{ v_{t}\left(x_{it},d'\right)
 \end{eqnarray*}
 
 
-\pause{}
+\uncover<2->{
 \begin{center}
 \begin{tabular}{cc}
 \textrm{$x_{it}$}: State vector $ $ & Meaning\tabularnewline
@@ -344,12 +331,40 @@ $s_{it}$ & household size: children present?\tabularnewline
 \textcolor{red}{$p_{dt},q_{dt},\forall d$} & \textcolor{red}{regional prices}\tabularnewline
 \textcolor{red}{$h_{it-1}$} & \textcolor{red}{housing status when entering period}\tabularnewline
 $d$ & current region out of 9 in total\tabularnewline
-$\tau$ & moving cost type\tabularnewline
+\marktopleft{t1} $\tau$ & moving cost type \markbottomright{t1} \\
 $t$ & age\tabularnewline
 \hline 
 \end{tabular}
 \par\end{center}
+}
 
+\uncover<3->{\tikz[overlay,remember picture,inner sep=1pt]
+\node[draw=red,ultra thick, rounded corners,fit=(marker-t1-a.north west) (marker-t1-b.south east)]{};
+}
+
+\end{frame}
+
+\begin{frame}{Evidence on Moving Cost Types}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+
+\includegraphics[scale=0.35]{\Dropbox/pictures/transom-tweet}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{midi}
+\item NYFed Consumer Survey
+\item Subjects assign probabilities to hypothetical moves
+\item Can compute WTP for types of moves.
+\item \url{https://tyleransom.github.io/research/SCE_migration.pdf}
+\end{midi}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Evidence on Moving Cost Types}
+\begin{adjustbox}{center}
+\includegraphics[scale=0.55]{\Dropbox/pictures/transom-cite}
+\end{adjustbox}
 \end{frame}
 
 \begin{frame}{Housing and Savings Problem}
@@ -893,7 +908,6 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \end{frame}
 
 
-\begin{longv}
 \begin{frame}{Elasticity of Migration wrt Income Shock}
 
 \begin{midi}
@@ -1018,7 +1032,6 @@ h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
 \end{adjustbox}
 
 \end{frame}
-\end{longv}
 
 \begin{frame}{The Option Value of Migration}
 
