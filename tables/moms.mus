@@ -19,7 +19,7 @@
   {{  showmom("$E[\\text{moved once}]$", moved1, 2)  }}
   {{  showmom("$E[\\text{moved twice+}]$", moved2plus,2 ) }}
   \midrule
-  \multicolumn{3}{c}{Auxiliary model \eqref{eq:auxmod-move}: $\text{move}_{it} = \beta_{0,m} + \beta_{1,m} t_{it} + \beta_{2,m} t_{it}^2 +u_{it}$ } \\[6pt]
+  \multicolumn{3}{c}{Auxiliary model \eqref{M-eq:auxmod-move}: $\text{move}_{it} = \beta_{0,m} + \beta_{1,m} t_{it} + \beta_{2,m} t_{it}^2 +u_{it}$ } \\[6pt]
   {{  showmom("$\\beta_{0,m}$", lm_mv_Intercept, 2) }}
   {{  showmom("$\\beta_{1,m}$", lm_mv_age, 3) }}
   {{  showmom("$\\beta_{2,m}$", lm_mv_age2, 5) }}
@@ -41,7 +41,7 @@
   {{  showmom("$E[h_{t-1}=1,h_{t}=0 | T]$", mean_sell_50 ,2 ) }}
   {{  showmom("$Cov(h_{t-1},s)$", cov_own_kids,2 ) }}
   \midrule
-  \multicolumn{3}{c}{Auxiliary model \eqref{eq:auxmod-h}: $h_{it-1} = \beta_{0,h} + \beta_{1,h} t_{it} + \beta_{2,h} t_{it}^2 +u_{it}$ } \\[6pt]
+  \multicolumn{3}{c}{Auxiliary model \eqref{M-eq:auxmod-h}: $h_{it-1} = \beta_{0,h} + \beta_{1,h} t_{it} + \beta_{2,h} t_{it}^2 +u_{it}$ } \\[6pt]
   {{  showmom("$\\beta_{0,h}$", lm_h_Intercept, 3) }}
   {{  showmom("$\\beta_{1,h}$", lm_h_age, 3) }}
   {{  showmom("$\\beta_{2,h}$", lm_h_age2, 4) }}
