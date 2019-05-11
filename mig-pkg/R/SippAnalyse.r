@@ -449,16 +449,12 @@ Sipp.movers_wage_residual_plots <- function(path="~/Dropbox/mobility/output/data
 	return(p)
 }
 
-Sipp.wage_residual_copulas <- function(){
-
-	library(copula)
+Sipp.wage_residual_copulas <- function(path="~/Dropbox/research/mobility/output/data/sipp"){
 
 	data(Sipp_age,envir=environment())
 
-
-
 	dat <- merged[HHincome > 0]
-	dat[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids +metro))]
+	dat[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college))]
 	setkey(dat,upid,timeid)
 	dat[,u_plus1 := dat[list(upid,timeid+1)][["u"]]]
 	dat[,u_minus1 := dat[list(upid,timeid-1)][["u"]]]
@@ -470,6 +466,12 @@ Sipp.wage_residual_copulas <- function(){
 	lines(density(dat[D2D==TRUE & (!is.na(u_plus1)),u_plus1]),col="red",lw=2)
 	par(mfrow=c(1,1))
 
+	# same plot with ggplot
+	pl <- list()
+	md = melt(dat[D2D==TRUE,list(z=u,z_1=u_plus1)])
+	pl$margins <- ggplot(subset(md,value>-3),aes(x=value)) + geom_density() + facet_wrap(~variable) + theme_bw() + ggtitle("Kernel Density Estimate of Movers' z Distribution") + labs(subtitle = "z is before, z_1 is after move")
+	ggsave(plot=pl$margins,filename=file.path(path,"z_margins.pdf"))
+
 	margins=dat[D2D==TRUE,list(m=mean(u),s=sd(u),m1=mean(u_plus1,na.rm=T),s1=sd(u_plus1,na.rm=T))]
 
 	# standardize into ranks
@@ -478,6 +480,7 @@ Sipp.wage_residual_copulas <- function(){
 
 	data = cbind(dat[,list(upid,timeid,D2D,u,u_plus1,u_minus1)],pmat)
 
+	# movers only
 	d1 = data[D2D==1,list(p_u,p_u_plus1)]
 	d1 = d1[complete.cases(d1)]
 	normal.cop = normalCopula(0.7,2,"ar1")
@@ -486,6 +489,7 @@ Sipp.wage_residual_copulas <- function(){
 
 	# save this object to disk
 	save(cop,file="~/git/migration/mig/in/copula.RData")
+
 
 	d2 = data[D2D==1,list(p_u_minus1,p_u)]
 	d2 = d2[complete.cases(d2)]
@@ -500,71 +504,70 @@ Sipp.wage_residual_copulas <- function(){
 }
 
 
-Sipp.movers_empstat <- function(nocollege=FALSE)
+# never used
+
+# Sipp.movers_wage_residual_copula_and_empstat <- function(path="~/Dropbox/mobility/output/data/sipp"){
+
+# 	library(copula)
+
+# 	data(Sipp_aggby_NULL,envir=environment())
+
+# 	# get movers
+# 	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
+# 	setkey(mv,upid)
+# 	setkey(merged,upid,timeid)
+# 	mvs <- merged[mv]
 
 
-Sipp.movers_wage_residual_copula_and_empstat <- function(path="~/Dropbox/mobility/output/data/sipp"){
+# 	mvs <- copy(mvs[HHincome > 0])
 
-	library(copula)
+# 	# log wage = beta0 + state +  beta1  *age + beta2*college + u
 
-	data(Sipp_aggby_NULL,envir=environment())
+# 	# get wage residual
+# 	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
 
-	# get movers
-	mv <- merged[D2D==TRUE,list(upid=unique(upid))]
-	setkey(mv,upid)
-	setkey(merged,upid,timeid)
-	mvs <- merged[mv]
+# 	# aim: get cor( u(t), u(t+1) ) when move happened in t
+# 	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
+# 	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
+# 	dat = mvs[D2D==TRUE,list(u,u_plus1)]
+# 	dat = dat[complete.cases(dat)]
 
+# 	# look at densities
+# 	pl <- list()
+# 	md = melt(dat)
+# 	pl$margins <- ggplot(subset(md,value>-3),aes(x=value)) + geom_density() + facet_wrap(~variable) + theme_bw() + ggtitle("Cross section distribution of residuals before and after move")
 
-	mvs <- copy(mvs[HHincome > 0])
-
-	# log wage = beta0 + state +  beta1  *age + beta2*college + u
-
-	# get wage residual
-	mvs[,u := resid(lm(log(HHincome) ~ factor(Division) + poly(age,degree=3,raw=T) + college + numkids + sex + tmetro))]
-
-	# aim: get cor( u(t), u(t+1) ) when move happened in t
-	mvs[,u_plus1 := mvs[list(upid,timeid+1)][["u"]] ]
-	mvs[,u_minus1 := mvs[list(upid,timeid-1)][["u"]] ]
-	dat = mvs[D2D==TRUE,list(u,u_plus1)]
-	dat = dat[complete.cases(dat)]
-
-	# look at densities
-	pl <- list()
-	md = melt(dat)
-	pl$margins <- ggplot(subset(md,value>-3),aes(x=value)) + geom_density() + facet_wrap(~variable) + theme_bw() + ggtitle("Cross section distribution of residuals before and after move")
-
-	ggsave(plot=pl$margins,filename=file.path(path,"z_margins.pdf"))
+# 	ggsave(plot=pl$margins,filename=file.path(path,"z_margins.pdf"))
 
 
-	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
-	mat = as.matrix(dat)
-	fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
-	coefs = coef(fit)
-	myc = mvdc(copula=ellipCopula(family="normal",param=coefs["rho.1"]),margins=c("norm","norm"),paramMargins=list(list(mean=coefs["m1.mean"],sd=coefs["m1.sd"]),list(mean=coefs["m2.mean"],sd=coefs["m2.sd"])))
+# 	myMvd = mvdc(copula=ellipCopula(family="normal",param=0.5),margins=c("norm","norm"),paramMargins=list(list(mean=0,sd=1.12),list(mean=0,sd=1.12)))
+# 	mat = as.matrix(dat)
+# 	fit=fitMvdc(mat,myMvd,start=c(2, 1, 3, 2, 0.5))
+# 	coefs = coef(fit)
+# 	myc = mvdc(copula=ellipCopula(family="normal",param=coefs["rho.1"]),margins=c("norm","norm"),paramMargins=list(list(mean=coefs["m1.mean"],sd=coefs["m1.sd"]),list(mean=coefs["m2.mean"],sd=coefs["m2.sd"])))
 
-	pdf(file=file.path(path,"z_cop_contour.pdf"))
-	contour(myc,dMvdc,xlim=c(-3,3),ylim=c(-3,3));
-	dev.off()
+# 	pdf(file=file.path(path,"z_cop_contour.pdf"))
+# 	contour(myc,dMvdc,xlim=c(-3,3),ylim=c(-3,3));
+# 	dev.off()
 
-	n = 40
-	mat <- matrix(0,n,n)
-	uvec = seq(-3,3,le=n)
-	for (i in 1:n){
-		for (j in 1:n){
-			mat[i,j] <- dMvdc(c(uvec[i],uvec[j]),myc)
-		}
-	}
+# 	n = 40
+# 	mat <- matrix(0,n,n)
+# 	uvec = seq(-3,3,le=n)
+# 	for (i in 1:n){
+# 		for (j in 1:n){
+# 			mat[i,j] <- dMvdc(c(uvec[i],uvec[j]),myc)
+# 		}
+# 	}
 
-	surf <- lattice:::wireframe(mat,drape=TRUE,scales=list(arrows=FALSE),xlab="z(t)",ylab="z(t+1)",zlab="density")
+# 	surf <- lattice:::wireframe(mat,drape=TRUE,scales=list(arrows=FALSE),xlab="z(t)",ylab="z(t+1)",zlab="density")
 
 
-	pdf(file=file.path(path,"z_cop_surf.pdf"))
-	print(surf)
-	dev.off()
+# 	pdf(file=file.path(path,"z_cop_surf.pdf"))
+# 	print(surf)
+# 	dev.off()
 
-	return(list(plots=surf,copula=fit))
-}
+# 	return(list(plots=surf,copula=fit))
+# }
 
 ownership_rates_macro_data <- function(){
 	data(Sipp_age,envir=environment())

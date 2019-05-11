@@ -1536,9 +1536,6 @@ Export.IncomeProcess <- function(dat,writedisk,nocollege=FALSE){
 	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
 	names(rhos) = divs
 
-	# why are those rhos so low?????
-	# use 0.97 as in french 2005 for now.
-
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks
 	if (nocollege){

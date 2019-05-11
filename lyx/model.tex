@@ -42,7 +42,7 @@
 \usepackage{pgfplots}
 \usepackage{makecell}
 \usepackage{xr}
-\externaldocument[R-]{model-online}[https://floswald.github.io/pdf/homeownership-appendix.pdf]
+\externaldocument[R-]{model-online}
 
 \makeatother
 
@@ -50,17 +50,10 @@
 \title{The Effect of Homeownership on the Option Value of Regional Migration\thanks{I would like to thank Costas Meghir, Lars Nesheim and Mariacristina
 De Nardi for their continued support and advice throughout this project.
 I also thank Uta Schönberg, Jeremy Lise, Marco Bassetto, Suphanit
-Piyapromdee, Richard Blundell, Jose-Victor Rios Rull, Morten Ravn,
-Fabien Postel-Vinay and seminar participants at UCL, IFS, Royal Holloway,
-Chicago Fed, Boston College, Stockholm School of Economics, DIW Berlin,
-Cambridge, Toulouse, Sciences Po, the Bank of England and two anonymous
-referees and the Editor for helpful comments and suggestions. I would
+Piyapromdee, Richard Blundell, Jose-Victor Rios Rull, Morten Ravn and
+Fabien Postel-Vinay for helpful comments and suggestions. The Editor and three referees have helped to greatly improve the paper. I would
 like to acknowledge financial support from cemmap under ESRC grant
-ES/I034021/1 and ESRC transformative grant ES/M000486/1. I also acknowledge
-that the work presented here made use of the IRIDIS High Performance
-Computing Facility provided by the Science \& Engineering South (SES)
-Centre for Innovation. The Centre is formed by the universities of
-Oxford, Southampton, Bristol and University College London.}}
+ES/I034021/1 and ESRC transformative grant ES/M000486/1.}}
 \author{Florian Oswald\thanks{email: \protect\url{florian.oswald@gmail.com}. }\\
 SciencesPo Paris}
 \date{\today}
@@ -270,9 +263,9 @@ that I can measure a value of the migration option in terms of consumption.
 In this sense, the present paper offers a more direct answer to the
 question of \emph{how much consumption would I forgo today in order
 to be insured in an adverse future state}, which describes an insurance
-contract fairly well. Finally, \cite{bartik2018moving} is a recent
+contract fairly well. \cite{bartik2018moving} is a recent
 paper which extends \cite{yagan} to consider the influence of the
-China trade shock as well as the Fracking boom.
+China trade shock as well as the Fracking boom, abstracting from a detailed model of housing.
 
 Another related literature considers the effects of the 2007 housing
 bust on labor market mobility. In terms of empirical contributions,
@@ -371,7 +364,7 @@ while the latter cannot.} I will demonstrate below what the choice of Divisions 
 the captured state\textendash level variation. In the online appendix
 figure \ref{R-fig:Census-Division-Map} presents a map, and table
 \ref{R-tab:SIPP-divisions} lists Division abbreviations and the member
-States.
+States.\footnote{The online appendix is available at \url{http://qeconomics.org} and \url{https://floswald.github.io/pdf/homeownership-appendix.pdf}}
 
 \subsection{The Main Reasons to Move are: Work, Housing and Family}
 
@@ -1069,7 +1062,7 @@ Once the solution is obtained, simulation of the model proceeds by
 using the model implied decision rules and the observed aggreate prices
 series $\mathbf{F}_{t}$ as well as their regional dependants $\left(q_{dt},p_{dt}\right)$
 to obtain simulated lifecycle data. As will become clear in the next
-section, this proceedure needs to replicate the time and age structure
+section, this procedure needs to replicate the time and age structure
 found in the data, which is achieved by simulating different cohorts,
 starting life in 1967 and all successive years up until 2012. The
 model moments are then computed using the empirical age distribution
@@ -1103,7 +1096,7 @@ found in SIPP data for the year 2012 and then apply the FHFA index
 backwards to construct the house value for each year.\footnote{The GDP series is as provided by the Bureau of Economic Analysis through
 the FRED database. All non-SIPP data used in this paper are provided
 in an R package at \url{https://github.com/floswald/EconData}, documenting
-all sources and data-cleaning proceedures.} 
+all sources and data-cleaning procedures.} 
 
 I reproduce equation \eqref{eq:VAR-process-agg} here for ease of
 reading:
@@ -1149,8 +1142,8 @@ p_{dt}
 \end{eqnarray}
 
 The performance of this model in terms of delivered predictions from
-the aggregate state can be gauged visually in figures \ref{fig:mapping-Y-y}
-and \ref{R-fig:mapping-P-p}
+the aggregate state can be gauged visually in figures \ref{fig:mapping-P-p}
+and \ref{R-fig:mapping-Y-y}
 in the online appendix \ref{R-sec:DimReduce}, which also contains
 the respective parameters estimates in table \ref{R-tab:Aggregate-to-Regional-VAR}.
 It is important to understand the purpose of models \eqref{eq:VAR-process-agg}
@@ -1160,7 +1153,7 @@ may be ill-suited for, given the nature of the data. I am purely interested
 in their ability to replicate the observed regional prices, when fed
 the observed aggregate series for the purpose of approximating the
 evolution of the prices state space during simulation. In that regard,
-and by looking at \ref{fig:mapping-Y-y} and \ref{R-fig:mapping-P-p},
+and by looking at \ref{fig:mapping-P-p} and \ref{R-fig:mapping-Y-y},
 I find they perform well.
 
 A different concern that might arise from looking at the models in
@@ -1189,9 +1182,10 @@ explains a very large fraction of state-level variation throughout. The full reg
 on corresponding Division level indices $p_{dt},q_{dt}$.\label{tab:-region-state-rsquared}}
 \end{table}
 
+
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_y}
+\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p}
 \par\end{centering}
 \caption{This figure shows the observed and predicted time series for mean
 income by Census Division. The prediction is obtained from the VAR
@@ -1200,9 +1194,8 @@ $\left\{ Q_{t},P_{t}\right\} _{t=1968}^{2012}$ to mean labor productivity
 $\left\{ q_{dt}\right\} _{t=1968}^{2012}$ for each region $d$\emph{.
 }Agents use this prediction in the model, i.e. from observing an aggregate
 value $\mathbf{F}_{t}=\left(P_{t},Q_{t}\right)$ they infer a value
-for $q_{dt}$\emph{ }for each region above. \emph{\label{fig:mapping-Y-y}}}
+for $q_{dt}$\emph{ }for each region above. \emph{\label{fig:mapping-P-p}}}
 \end{figure}
-
 
 \subsubsection*{Individual Income Process\label{subsec:Individual-Income-Process}}
 
@@ -1250,7 +1243,7 @@ and of movers $\left(z_{it},z_{it+1}\right)|d\neq k$ separately.
 I obtain an estimate for the copula parameter $\rho_{s}$ of 0.58,
 indicating substantial positive dependence for mover's $z$\footnote{$\rho_{s}$ is also called \emph{Spearman's rho,} and it is related
 to Pearson's correlation coefficient $\rho_{p}$ via $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=2\sin\left(\frac{\pi}{6}0.58\right)=\rho_{p}=0.598$
-in this case of a gaussian copula. In particular, $\rho_{s}\in[-1,1]$.}. I report estimates and describe the full procedure in appendix \ref{R-sec:Copula-Estimation}.
+in this case of a gaussian copula. In particular, $\rho_{s}\in[-1,1]$.}. I report estimates and describe the full procedure in online appendix \ref{R-sec:Copula-Estimation}.
 The conditional distribution of $z$ for non-movers will be parameterized
 externally as explained next.
 
@@ -1301,7 +1294,7 @@ We denote the parameter vector of length $K$ as $\theta=\left\{ \alpha_{0},\alph
 
 Given $\theta$, the model generates a set of $M$ model moments $\hat{m}(\theta)\in\mathbb{R}^{M}$.
 After obtaining the same set of moments $m$ from the data, the SMM
-proceedure seeks to minimize the criterion function 
+procedure seeks to minimize the criterion function 
 \begin{equation}
 L(\theta)=\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],\label{eq:objfunc}
 \end{equation}
@@ -1313,7 +1306,7 @@ at different scales. This is equally true if I use the common strategy
 of assigning the inverse of the variances of the data moments. To
 solve this probem, I prespecify a $W$ as the identity matrix, but
 I modify the diagonal entries for some moments so that the corresponding
-derivative of the moment function is not negligible.\footnote{Notice that this proceedure still leads to valid standard errors,
+derivative of the moment function is not negligible.\footnote{Notice that this procedure still leads to valid standard errors,
 since $W$ appears together with the covariance matrix of moments
 in the sandwich formula (see below). The weights are given by the
 values 10 for moments \texttt{cov\_move\_h, mean\_move, mean\_move\_ownFALSE,
@@ -1332,7 +1325,7 @@ parameters are defined by
 \theta^{(K)} & =\arg\min_{\theta_{K}}L(\theta_{1}^{(K-1)},\theta_{2}^{(K-1)},\dots,,\theta_{K}).
 \end{align*}
 
-This proceedure is repeated until $\theta$ has converged. Convergence
+This procedure is repeated until $\theta$ has converged. Convergence
 was not affected by different starting values and occured in all cases
 after less than 10 iterations over the above scheme.\footnote{This optimization takes around 16 hours on a 10-instance cluster on
 AWS of type \texttt{t3.xlarge.} The procedure uses the function \texttt{optSlices}
@@ -1444,7 +1437,7 @@ h_{it} & = & \beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{h,it}\label{
 \text{move}_{it} & = & \beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{m,it}\label{eq:auxmod-move}
 \end{eqnarray}
 Several tables constrasting model and data values as well as a detailed
-discussion of the fit this provides has been relegated to the online
+discussion of the fit this provides has been relegated to online
 appendix \ref{R-sec:Structural-Model-Fit}.
 
 The estimated parameter vector and standard errors are shown in table
