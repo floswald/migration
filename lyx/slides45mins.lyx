@@ -116,7 +116,7 @@
 \begin_body
 
 \begin_layout Title
-Regional Shocks, Migration and Homeownership
+The Effect of Homeownership on the Option Value of Regional Migration
 \end_layout
 
 \begin_layout Author
@@ -141,7 +141,7 @@ Sciences Po
 \end_layout
 
 \begin_layout Date
-Barcelona GSE Summer Forum 2017
+NYUAD 2019
 \end_layout
 
 \begin_layout Frame
@@ -149,13 +149,9 @@ Barcelona GSE Summer Forum 2017
 status open
 
 \begin_layout Plain Layout
-Housing and Mobility
+How Important Is Migration?
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -163,105 +159,26 @@ Housing and Mobility
 
 \begin_deeper
 \begin_layout Itemize
-Regional migration is a key adjustment mechanism in housing and labor markets.
+US Regional migration rates are relatively low.
 \end_layout
 
 \begin_layout Itemize
-Housing and human capital are the biggest items on a consumer's balance
- sheet.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide+<2->
+\end_layout
+
+\end_inset
+
+Does that mean migration does not matter?
 \end_layout
 
 \begin_layout Itemize
-Shocks to house price and labor productivity have large welfare implications.
-\end_layout
-
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Box Doublebox
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-Research Questions:
-\end_layout
-
-\begin_layout Enumerate
-\noindent
-
-\series bold
-How do migration, housing choices and lifecycle savings interact?
-\end_layout
-
-\begin_layout Enumerate
-\noindent
-
-\series bold
-What is the value of migration when there are regional and aggregate price
- shocks?
-\end_layout
-
-\begin_layout Enumerate
-
-\series bold
-How does internal migration react to price and income shocks?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Separator parbreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Frame
-\begin_inset Argument 4
-status open
-
-\begin_layout Plain Layout
-Detroit, Michigan
-\end_layout
-
-\end_inset
-
-
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -269,165 +186,19 @@ status open
 
 
 \backslash
-begin{columns}[t]
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{Fisher Body Plant}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth,height=0.4
-\backslash
-textheight]{
-\backslash
-Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}%
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-column{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{House in Delray, Detroit}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth,height=0.4
-\backslash
-textheight]{
-\backslash
-Dropbox/../pictures/AbandonedHouseDelray.jpg}%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{columns}
+onslide+<3->
 \end_layout
 
 \end_inset
 
-
+Here we want to measure 
+\emph on
+how much 
+\emph default
+migration matters.
 \end_layout
 
-\end_deeper
-\begin_layout Plain Layout
-\begin_inset Separator parbreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Frame
-\begin_inset Argument 4
-status open
-
-\begin_layout Plain Layout
-Detroit, Michigan
-\end_layout
-
-\end_inset
-
-
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Plain Layout
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -435,393 +206,12 @@ status open
 
 
 \backslash
-begin{columns}[t]
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{Fisher Body Plant}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth,height=0.4
-\backslash
-textheight]{
-\backslash
-Dropbox/../pictures/1200px-Fisher_Body_plant_21_-_Detroit_Michigan}%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-Constructed: 1921 
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-GM left: 1984 
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-closed: 1994
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-column{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{House in Delray, Detroit}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth,height=0.4
-\backslash
-textheight]{
-\backslash
-Dropbox/../pictures/AbandonedHouseDelray.jpg}%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-Delray population count: 
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-1933: 23,000 
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-2010:  2,300
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{columns}
+onslide+<4->
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\end_deeper
-\begin_layout Plain Layout
-\begin_inset Separator parbreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Frame
-\begin_inset Argument 4
-status open
-
-\begin_layout Plain Layout
-Palo Alto, California
-\end_layout
-
-\end_inset
-
-
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{columns}[t]
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{Google Offices}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth]{
-\backslash
-Dropbox/../pictures/google_Palo_Alto}% 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-Palo Alto population count:
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-2000: 58,598
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-2010: 64,403
-\backslash
-newline
-\end_layout
-
-\begin_layout Plain Layout
-
-10.3
-\backslash
-% increase
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{column}[t]{0.49
-\backslash
-textwidth}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-textbf{Napa Valley Mansion}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=0.99
-\backslash
-textwidth]{
-\backslash
-Dropbox/../pictures/napa_valley.png}%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-newline 
-\end_layout
-
-\begin_layout Plain Layout
-
-On sale for 28 million Dollars.
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{centering}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{column}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{columns}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Plain Layout
-\begin_inset Separator parbreak
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Optimal housing and labor market policies depend on this.
 \end_layout
 
 \end_deeper
@@ -834,7 +224,7 @@ end{columns}
 status open
 
 \begin_layout Plain Layout
-Regional Shocks: large, and varied.
+Who Is Likely To Move
 \end_layout
 
 \end_inset
@@ -3631,6 +3021,10 @@ Estimation
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Frame
 \begin_inset Argument 4
 status open
@@ -3648,12 +3042,12 @@ Identification
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 I use observed variation in regional prices and productivity levels to identify
  the model.
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 Identifying assumptions: 
 \begin_inset Separator latexpar
@@ -3707,6 +3101,11 @@ I implicitly assume that
 
 \end_deeper
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Separator parbreak
 \end_inset

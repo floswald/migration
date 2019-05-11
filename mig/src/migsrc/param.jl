@@ -17,6 +17,8 @@ type Param
 	gamma   :: Float64			# CRRA
 	mgamma  :: Float64			# (1-CRRA)
 	imgamma :: Float64			# 1/(1-CRRA)
+	eta     :: Float64			# consumption weight in ufun
+	imgamma_eta :: Float64			# 1/(1-CRRA) * eta
 	tau     :: Float64 			# value of tau for high type
 	taudist :: Float64 			# population prob of being high cost type
 	xi1     :: Float64          # utility of housing for HHsize 1
@@ -84,6 +86,7 @@ type Param
 	ny    :: Int # number of income levels by location
 	ns    :: Int # number of HHsizes
 	ncop  :: Int # number of bins to approximate the copula
+	seed  :: Bool # seed random generators yes or no
 
 	# used in simulations
 	nsim::Int # number of individuals. this will be changed by cohort setup in model
@@ -91,7 +94,7 @@ type Param
 	verbose :: Int
 
 	# constructor assigning initial values
-	function Param(size::Int;opts::Dict=Dict())
+	function Param(size::Int;opts::Dict=Dict(),startval=false)
 
 		if size==1
 			# super small: use for tests
@@ -107,6 +110,7 @@ type Param
 			ns    = 2
 			nsim  = 100
 			ncop = 50
+			seed = true
 
 		elseif size==2
 			# na    = 21
@@ -123,32 +127,38 @@ type Param
 			ns    = 2
 			nsim  = 50000
 			ncop = 100
+			seed = true
 
 		end		
+
+		# starting values for parameter in estimation
+		# these are NOT the estimated (i.e. final) values
 
 		beta     = 0.96
 		gamma    = 1.4	
 		mgamma   = 1.0-gamma
 		imgamma  = 1.0/mgamma
+		eta      = 0.2
+		imgamma_eta      = imgamma * eta
 		tau      = 100.0
-		taudist  = 0.65
-		xi1      = 0.008
-		xi2      = 0.052
+		taudist  = 0.62
+		xi1      = -0.009
+		xi2      = 0.002
 		omega1   = 1.0
 		omega2   = 5.1
 		# omega2   = 3.26721
 		# omega2   = 6.1
 
 		# MC0    = 2.71  	 	# intercept
-		MC0    = 2.77  	 	# intercept
+		MC0    = 3.2  	 	# intercept
 		MC1    = 0.017  	 	# age
 		MC2    = 0.0013 		# age2
-		MC3    = 0.26 		# owmer
+		MC3    = 0.16 		# owmer
 		# MC3    = 0.00      # dist
 		MC4    = 0.36 		# kids
 
 
-		kappa  = Float64[0.01 for i=1:9] # rent to price ratio in each region
+		kappa  = Float64[0.01 for i=1:9] # dummy rent to price ratio in each region. to be filled in in model()
 		phi    = 0.06		  # fixed cost of selling
 
 		R      = 1.03 	# gross interest rate savings: 1+r
@@ -171,13 +181,13 @@ type Param
 		# set amenity to popweights initially
 		amenity = convert(Array,popweights[:proportion])
 
-		# change initial value a bit
+		# change initial values of amenity
 		amenity[1] -= 0.03
 		amenity[3] -= 0.01
 		amenity[4] += 0.04
 		amenity[5] += 0.01
-		amenity[6] += 0.035
-		amenity[7] -= 0.01
+		amenity[6] += 0.06
+		amenity[7] -= 0.02
 		amenity[8] -= 0.01
 
 		# plug into members
@@ -230,9 +240,22 @@ type Param
 		# end
 		# create object
 
-		out = new(gamma,mgamma,imgamma,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,eta,imgamma_eta,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,seed,nsim,verbose)
 
-		# override defaults
+		# overwrite default parameters with estimated values
+		# if you don't want to start estimation on last best estimate...
+		if !startval
+			dir = dirname(@__FILE__)	# src/migsrc
+			outd = joinpath(dir,"..","..","out")
+			f = joinpath(outd,"current_estim.jld2")
+			x = FileIO.load(f)
+			pstar = x["dout"][:best][:p]
+	        for (k,v) in pstar 
+	        	setfield!(out,k,v)
+	        end
+	    end
+
+		# manually override params if desired.
 		if length(opts) > 0
             for (k,v) in opts
             	if in(Symbol(k),fieldnames(out))
@@ -257,7 +280,7 @@ end
 
 
 function print(p::Param,file_est::String,file_set::String)
-	est = [:gamma,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
+	est = [:gamma,:eta,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
 	set = [:beta,:phi,:R,:Rm,:chi]
 	f_estimate = open(file_est,"w")
 	f_set      = open(file_set,"w")
@@ -303,6 +326,7 @@ function show(io::IO, p::Param)
 	print(io,"number of max problems=$(p.na*p.nz*p.np*p.ny*p.nh*p.ntau*p.nJ*p.nt*p.ns*p.nh*p.nJ)\n")
 	print(io,"free params:
 	gamma    = $(p.gamma)		
+	eta      = $(p.eta)		
 	tau      = $(p.tau)
 	taudist  = $(p.taudist)
 	xi1      = $(p.xi1)

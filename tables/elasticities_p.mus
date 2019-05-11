@@ -1,5 +1,5 @@
 {% macro show(name,dd,dec) %}
-    {{name}} &  {{ dd.all_p | prettyNum(dec) }} &  & {{ dd.d_total_in_p | prettyNum(dec) }} & {{ dd.d_in_buy_p | prettyNum(dec) }} &  {{ dd.d_in_rent_p | prettyNum(dec) }} &  & {{ dd.d_total_out_p | prettyNum(dec) }}& {{ dd.d_own_out_p | prettyNum(dec)}} & {{ dd.d_rent_out_p | prettyNum(dec)}}  \\
+    {{name}} &  {{ dd.all_p | prettyNum2(dec) }} &  & {{ dd.d_total_in_p | prettyNum2(dec) }} & {{ dd.d_in_buy_p | prettyNum2(dec) }} &  {{ dd.d_in_rent_p | prettyNum2(dec) }} &  & {{ dd.d_total_out_p | prettyNum2(dec) }}& {{ dd.d_own_out_p | prettyNum2(dec)}} & {{ dd.d_rent_out_p | prettyNum2(dec)}}  \\
 {%- endmacro %}
 \begin{tabular}{l D{.}{.}{3.4}@{} c D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{}  c D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} D{.}{.}{3.4}@{} }
   \toprule 

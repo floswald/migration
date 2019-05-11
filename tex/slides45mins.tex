@@ -1,0 +1,1195 @@
+\documentclass[12pt,english, aspectratio=169]{beamer}
+
+\include{preamble}
+
+% set length of presentation
+\setboolean{longv}{false}
+\ifthenelse{\boolean{longv}}{%
+  \includeversion{longv}
+  % \excludeversion{shortv}
+}{%
+  \excludeversion{longv}
+  % \includeversion{shortv}
+}
+
+\author{Florian Oswald, SciencesPo}
+\date{OECD 2019}
+
+\begin{document}
+
+
+\title{
+The Effect of Homeownership on the Option Value of Regional Migration
+}
+
+\frame{\titlepage}
+
+\begin{frame}{How Important Is Migration?}
+\begin{midi}
+\item US Regional migration rates are relatively low.
+\item \onslide+<2->Does that mean migration does not matter?
+\item \onslide+<3->\bred{Question}: What is the option value of being able to migrate, and how does this interact with homeownership?
+\item \onslide+<4->Optimal housing and labor market policies depend on
+this.
+\end{midi}
+\end{frame}
+
+\begin{frame}{Who Is Likely To Move?}{And Why Does it Matter?}
+
+\begin{midi}
+ \item \redbox{Renters} move much more than \bluebox{owners}.
+ \item \onslide+<2->Ownership status is endogenous.
+ 	\begin{itemize}
+		 \item \onslide+<3->$\Rightarrow$ Model housing and migration jointly!
+		 \item \onslide+<4->$\Rightarrow$ Over the lifecycle!
+		 \item \onslide+<5->$\Rightarrow$ With relatistic uncertainty in prices and mortgage financing!
+ 	\end{itemize}
+ 	\item \onslide+<6->Heterogeneous migration elasticites, heterogenous WTP for migration.
+ \end{midi} 
+
+\end{frame}
+
+\begin{frame}{Outline}
+
+In this paper, I build a lifecycle model that allows for
+
+\begin{itemize}
+\item Regional risk in house prices and labor income,
+\item Migration, 
+\item Saving in assets,
+\item The choice to buy or rent a home.
+\end{itemize}
+\medskip{}
+
+\begin{itemize}
+\item \onslide+<2->Estimate the preference parameters of the model using
+both micro and macro data.
+\item \onslide+<2->Develop a measure of the option value of migration.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Contributions}
+
+\begin{widee}
+\item Adds to \cite{kennan2003effect}: 
+
+\begin{itemize}
+\onslide+<2->\item regional shocks,
+\onslide+<2->\item assets and 
+\onslide+<2->\item housing choices.
+\end{itemize} 
+\item \onslide+<3->Takes regional house price and income risk seriously (Shocks are not IID!).
+\item \onslide+<4->Provides a fully structural implementation of \cite{yagan,yagan2017employment}: \emph{Migratory Insurance}. 
+\end{widee}
+\end{frame}
+
+% \begin{frame}{Roadmap}
+
+% \tableofcontents{}
+% \end{frame}
+
+\section{Literature}
+\begin{frame}{Related literature}
+
+\begin{widei}
+\item Dynamic models of migration over lifecycle: {\footnotesize{}\cite{baum2012understanding}, \cite{kennan2003effect}, \cite{gemici2007family}, \cite{ransom2018labor}\vspace{3mm}}
+\item Static spatial equilibrium models of migration, and local labor markets:
+{\footnotesize{}\cite{notowidigdo2011incidence}, \cite{Moretti:2011fk}, \cite{diamond2016determinants},
+\cite{piypromdee}, \cite{monras2018economic}\vspace{3mm}}
+\item Regional Fluctuations and Unemployment: {\footnotesize{}\cite{blanchard1992regional}, \cite{schmutz}}
+\item  \cite{yagan,yagan2017employment}: Moving to Opportunity?
+\end{widei}
+\end{frame}
+
+
+
+\begin{longv}
+\begin{frame}{Related literature }
+
+\begin{itemize}
+\item On the effects of 2007 housing bust on unemployment and mobility,
+and mismatch: 
+
+\begin{itemize}
+\item {\footnotesize{}empirical: Ferreira et al. (2010), Schulhofer-Wohl
+(2011), Demyanyk et al. (2013)}{\footnotesize\par}
+\item {\footnotesize{}theoretical: Shimer (2005), Nenov (2012), Song et
+al. (2014) and Karahan and Rhee (2011)\vspace{3mm}}{\footnotesize\par}
+\end{itemize}
+\item Housing and Labor reallocation: 
+
+\begin{itemize}
+\item {\footnotesize{}Davis, Fisher and Veracierto (2010, 2013)}{\footnotesize\par}
+\item {\footnotesize{}Wasmer (2009)\vspace{3mm}}{\footnotesize\par}
+\end{itemize}
+\item Housing demand over the lifecycle and mortgage default:{\footnotesize{}
+Li, Meghir and Oswald (2014)\vspace{3mm}}{\footnotesize\par}
+
+{\footnotesize{}}{\footnotesize\par}
+\end{itemize}
+\end{frame}
+\end{longv}
+\section{Empirical Facts}
+
+\begin{frame}[plain]{}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{\textcolor{blue}{\LARGE{}Facts}}{\LARGE\par}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Definition of \emph{Region}: Census Division\hypertarget{Divisions}{}}
+
+\begin{widei}
+\item I assume regions correspond to Census Divisions (9 in total).
+\item Each region is a market with uniform house price and average level
+of labor productivity, but individual specific shocks to income.
+\item Moves within a region are not counted as migration.
+\item 70\% of interstate moves are cross Division moves.
+
+\end{widei}
+%
+\end{frame}
+\begin{frame}[plain]{}
+\begin{adjustbox}{center}
+\includegraphics[height=1.1\paperheight]{\Dropbox/maps/divisions}\end{adjustbox}
+\end{frame}
+
+% \begin{frame}[plain]{}
+
+% \includegraphics[height=0.95\paperheight]{\Dropbox/data/sipp/agg_reg_p}
+% \end{frame}
+
+% \begin{frame}[plain]{}
+
+% \includegraphics[height=0.95\paperheight]{\Dropbox/data/sipp/agg_reg_y}
+% \end{frame}
+
+
+\begin{frame}{Annual Migration Rates}
+
+\vspace{1cm}
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/Molloy/molloy.tex}
+\par\end{centering}
+\caption{\cite{molloy2011internal}}
+\end{table}
+\end{frame}
+
+\begin{frame}{Reasons for Moving: CPS Data}
+
+\begin{table}[p]
+\begin{centering}
+\input{\Dropbox/data/CPS/main-reason-pres1.tex}
+\par\end{centering}
+\caption{CPS 2013 variable \texttt{NX1RES}: \emph{What was your main reason for moving to this house (apartment)?} Median distance moved is 1347 KM. }
+\end{table}
+
+\end{frame}
+
+% \begin{frame}{Reasons for Moving: CPS Data}
+
+% \begin{table}[p]
+% \begin{centering}
+% \begin{center}
+% \input{\Dropbox/data/CPS/main-reason-presKM.tex}
+% \par\end{center}
+% \par\end{centering}
+% \begin{centering}
+% \par\end{centering}
+% \caption{CPS 2013 data on main motivation of moving, conditional on a cross--Division move. Median distance moved is 1347 KM. }
+% \end{table}
+
+% \end{frame}
+
+\begin{frame}{Main Predictors of Migration: Ownership and College}
+\begin{equation*}	
+\Pr\left(\text{Move across Divisions}|x_{it}\right) = \Phi\left(x_{it}\beta\right)
+\end{equation*}	
+
+\uncover<2->{
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/sipp/D2D-probit-edit-slides.tex}\end{centering}
+\caption{SIPP. Additional Controls: $\text{Age}^2$, Wealth, Price/Income.}
+\end{table}
+}
+\uncover<3->{\tikz[overlay,remember picture,inner sep=1pt]
+\node[draw=blue,rounded corners,fit=(marker-a1-a.north west) (marker-a1-b.south east)]{};
+\tikz[overlay,remember picture,inner sep=1pt]
+\node[draw=green,rounded corners,fit=(marker-a2-a.north west) (marker-a2-b.south east)]{};
+}
+\end{frame}
+
+
+\begin{frame}{Migration Rates in \bgreen{Non-College Sample}}
+
+\begin{table}
+\input{\Dropbox/data/sipp/move_rates.tex}
+\caption{SIPP subset to non-college degree household heads.}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}[plain]{}
+
+\begin{adjustbox}{center}
+\includegraphics[height=1\paperheight]{\Dropbox/data/sipp/raw-moversD2D_v2}
+\end{adjustbox}
+\end{frame}
+
+
+\begin{frame}{Regional Prices are \textbf{not} IID}
+
+\begin{adjustbox}{center}
+\includegraphics[width=1\linewidth]{\Dropbox/data/FHFA/detrended.pdf}\end{adjustbox}
+
+\end{frame}
+
+
+\begin{frame}{Summary of Facts}
+
+
+\begin{widee}
+\item Main Reasons to Move: Work, Housing and Family
+\item \onslide+<2->Homeownership and College are important predictors. 
+	\begin{itemize}
+	\item $\Rightarrow$ Subset to \bgreen{non-college}!
+	\end{itemize}
+\item \onslide+<3->Unconditional migration cross Division migration rate: 0.99\%.
+\item \onslide+<4->\red{Renters} move at twice the rate of \blue{owners}, at all ages.
+\item \onslide+<5->Regional income and house price risk is \emph{not} IID.
+\end{widee}
+
+\end{frame}
+
+\section{Model}
+\begin{frame}[plain]{}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{\textcolor{blue}{\LARGE{}Model}}{\LARGE\par}
+\par\end{center}
+
+\end{frame}
+\begin{frame}{Decision Process}
+
+In each period, household $i$ decides 
+\begin{midi}
+\item How much to save,
+\item Whether to own or rent, and
+\item Where to live.
+\end{midi}
+\vspace{0.5cm}
+These choices are subject to
+\begin{midi}
+\item Budget constraints, and
+\item Beliefs about the future.
+\end{midi}
+\end{frame}
+
+\begin{frame}{Decision Process}
+
+In each period, household $i$ decides 
+\begin{midi}
+\item How much to save: $a_{it+1}$, and
+\item Whether to own or rent: $h_{it}\in\{0,1\}$, and
+\item Where to live: choose region $d\in D$, with house price $p_{dt}$
+and labor productivity index $q_{dt}$.
+\end{midi}
+\vspace{0.5cm}
+These choices are subject to
+\begin{midi}
+\item Budget constraints: $\left(a_{it},z_{it},h_{it-1},q_{dt},p_{dt}\right)$.
+\item Beliefs about the future: $\left(p_{dt+1},q_{dt+1},z_{it+1},s_{it+1}\right)$.
+\end{midi}
+\end{frame}
+
+\begin{frame}{Location Choice Problem}
+
+\begin{eqnarray*}
+V_{t}\left(x_{it}\right) & = & \max_{d'\in D}\left\{ v_{t}\left(x_{it},d'\right)+\varepsilon_{id't}\right\} \\
+\varepsilon & \sim & \text{EV type 1, iid}
+\end{eqnarray*}
+
+
+\uncover<2->{
+\begin{center}
+\begin{tabular}{cc}
+\textrm{$x_{it}$}: State vector $ $ & Meaning\tabularnewline
+\hline 
+\textcolor{red}{$a_{it}$} & \textcolor{red}{financial assets}\tabularnewline
+$z_{it}$ & idiosyncratic income shock\tabularnewline
+$s_{it}$ & household size: children present?\tabularnewline
+\textcolor{red}{$p_{dt},q_{dt},\forall d$} & \textcolor{red}{regional prices}\tabularnewline
+\textcolor{red}{$h_{it-1}$} & \textcolor{red}{housing status when entering period}\tabularnewline
+$d$ & current region out of 9 in total\tabularnewline
+\marktopleft{t1} $\tau$ & moving cost type \markbottomright{t1} \\
+$t$ & age\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+}
+
+\uncover<3->{\tikz[overlay,remember picture,inner sep=1pt]
+\node[draw=red,ultra thick, rounded corners,fit=(marker-t1-a.north west) (marker-t1-b.south east)]{};
+}
+
+\end{frame}
+
+\begin{frame}{Evidence on Moving Cost Types}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+
+\includegraphics[scale=0.35]{\Dropbox/pictures/transom-tweet}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{midi}
+\item NYFed Consumer Survey
+\item Subjects assign probabilities to hypothetical moves
+\item Can compute WTP for types of moves.
+\item \url{https://tyleransom.github.io/research/SCE_migration.pdf}
+\end{midi}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Evidence on Moving Cost Types}
+\begin{adjustbox}{center}
+\includegraphics[scale=0.55]{\Dropbox/pictures/transom-cite}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Housing and Savings Problem}
+
+The housing and savings problem is defined as:
+\begin{eqnarray*}
+v_{t}\left(x_{it},d'\right) & = & \max_{c_{it}>0,h_{it}\in\left\{ 0,1\right\} }u(c_{it},h_{it},d_{it},d')\\
+ & + & \beta\mathbb{E}_{z,s,\mathbf{q}_{t+1},\mathbf{p}_{t+1}}\left[\overline{v}_{t+1}\left(x_{it+1}\right)|z_{it},s_{it},\mathbf{q}_{t},\mathbf{p}_{t}\right]\\
+s.t. &  & \text{budget constraints}
+\end{eqnarray*}
+
+\textrm{
+\[
+\overline{v}_{t+1}\left(x_{it+1}\right)=E_{\varepsilon}V_{t+1}\left(x_{it+1}\right)
+\]
+}
+\end{frame}
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\tikzstyle{na} = [baseline=-.5ex]
+
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(\red{c})$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \frac{c_{it}^{1-\gamma}}{1-\gamma} $};
+        } +\xi(s_{it})\times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(\red{s})$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \xi(s_{it}) $};
+        } \times h_{it}-\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ s_{it}$};
+            }
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(\red{h}\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ h_{it}$};
+        } -\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right)+A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ h_{it-1}$};
+            }+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\red{\mathbf{1}\left[d\neq d'\right]}\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) $};
+        } +A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ \Delta(x)$};
+            } = \alpha_{0,\tau} 
++\alpha_{1} h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\red{\mathbf{1}\left[d\neq d'\right]}\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ \mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) $};
+        } +A_{d'}+\varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t2)
+            {$ \Delta(x)$};
+            } = 
+\tikz[baseline]{
+            \node[fill=blue!20,anchor=base] (t3)
+            {$ \alpha_{0,\tau}$};
+            }  
++\alpha_{1} h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($\red{A_{d'}}$)
+\item idiosyncratic location shock $\left(\varepsilon\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) + 
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$ A_{d'} $};
+        } + \varepsilon_{id't}
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+\begin{frame}{Preferences: $u(c_{it},h_{it},d_{it},d')$}
+\begin{itemize}
+\item The within-period payoff depends on 
+
+\begin{itemize}
+\item consumption $(c)$, 
+\item children present $(s)$, 
+\item housing status $(h\in\{0,1\})$, 
+\item whether move is made \textrm{$\left(\mathbf{1}\left[d\neq d'\right]\right)$,}
+\item amenities ($A_{d'}$)
+\item idiosyncratic location shock $\left(\red{\varepsilon}\right)$
+\end{itemize}
+\[
+u\left(c_{it},h_{it},d,d'\right)=\eta \frac{c_{it}^{1-\gamma}}{1-\gamma} + \xi(s_{it})\times h_{it} - 
+\mathbf{1}\left[d\neq d'\right]\Delta\left(x_{it}\right) + A_{d'}  +
+\tikz[baseline]{
+            \node[fill=red!20,anchor=base] (t1)
+            {$\varepsilon_{id't} $};
+        } 
+\]
+
+\item Moving Costs:
+\[
+\Delta(x)=\alpha_{0,\tau}+\alpha_{1}h_{it-1}+\alpha_{2}t_{it}+\alpha_{3}t_{it}^{2}+\alpha_{4}s_{it}
+\]
+
+\end{itemize}
+\end{frame}
+
+
+\begin{longv}
+\begin{frame}{Housing Choice}{Rent or Own?}
+
+\begin{midi}
+\item $h_{t}=1$ indicates ownership in current period.
+\item Owners may borrow with house as collateral, s.t. 
+\[a_{t+1}\geq-(1-\chi)p_{dt}h_{t},\forall t\]
+\item Terminal net wealth condition: $a_{T}+p_{dT}h_{T-1}\geq0$
+\item No explicit repayment schedule.
+\item Proportional cost of selling the house: $\phi$.
+\end{midi}
+\end{frame}
+\end{longv}
+
+\begin{frame}{Labor Income}
+
+\begin{itemize}
+\item $q_{dt}$ is an index of regional labor productivity.
+\item Individual income is defined by:
+
+\begin{eqnarray*}
+\ln y_{idt} & = & \eta_{d}\ln q_{dt}+f(t)+z_{it}\\
+z_{it} & = & \rho z_{it-1}+e_{it-1}\\
+e & \sim & N(0,\sigma^{2})
+\end{eqnarray*}
+
+\item $f(t)$ is a deterministic age profile.
+\item $z_{it}$ is an idiosyncratic productivity shock (AR1).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Job Search: Labor income of movers}
+
+\begin{midi}
+\item People have to move to $d'$ before they discover the exact value
+of new income: experience good.
+\item Expectations over idiosyncratic $z$\textrm{ }differ for movers:\textrm{
+\begin{eqnarray*}
+ & E[z_{t+1}|z_{t},\text{stay}]\\
+ & \neq\\
+ & E[z_{t+1}|z_{t},\text{move}]
+\end{eqnarray*}
+}
+\item Movers get a new draw $z_{t+1}$, correlated with their previous $z_{t}$,
+according to the conditional distribution $G\left(z_{it+1}|z_{it}\right)$.
+\item Rules out selection on offers.
+
+\end{midi}
+\end{frame}
+%
+\begin{frame}{Budget Constraints}
+
+\begin{enumerate}
+\item Choose to remain renters: pay rent $\kappa_{d}p_{dt}$
+\begin{eqnarray*}
+a_{it+1} & = & (1+r)\left(a_{it}+y_{idt}-c_{it}-\kappa_{d}p_{dt}\right)\\
+a_{it+1} & \geq & 0
+\end{eqnarray*}
+\item \onslide+<2->Choose to buy:
+
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-p_{dt}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
+r(a_{it}) & = & \begin{cases}
+r & \text{if }a_{it}\geq0\\
+r^{m} & \text{if }a_{it}<0
+\end{cases},r^{m}>r\\
+p_{T}h_{iT-1}+a_{iT} & \geq & 0
+\end{eqnarray*}
+
+\item \onslide+<2->Skip rest in interest of time. \hyperlink{BudgetConstraints}{\beamergotobutton{No!}}\hypertarget{Budgets-origin}{}
+\end{enumerate}
+\end{frame}
+
+\section{Estimation}
+\begin{frame}[plain]{}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{\textcolor{blue}{\LARGE{}Estimation}}{\LARGE\par}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Data: Micro (SIPP) and Macro (BEA, FHFA)}
+
+\begin{itemize}
+\item Micro data:
+
+\begin{itemize}
+\item Use the 1996, 2001, 2004 and 2008 SIPP panels.
+\begin{itemize}
+\item 102,529 unique individuals, 2684 cross-Division moves.
+\item construct moments as averages over 1997\textendash 2012 to obtain
+reasonable sample size in conditioning cells.
+\item Use a cohort estimator: accounts for fact that different cohorts faced
+different aggregate shocks. 
+\end{itemize}
+\end{itemize}
+\item Macro data:
+
+\begin{itemize}
+\item BEA personal income by state to get regional GDP/capita.
+\item FHFA for regional house price indeces.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Estimation Outline\hypertarget{CurseDim}{}}
+
+Estimation proceeds in two steps:
+\begin{enumerate}
+\item Reduce dimensionality of stochastic processes: 
+
+\begin{itemize}
+\item An unrestricted model suffers from the curse of dimensionality: 20-dimensional
+integration problem. \hyperlink{CurseDimDetail}{\beamergotobutton{details}}
+\item I will employ a low-dimensional factor model to approximate this space.
+\end{itemize}
+\item Estimate the decision model:
+
+\begin{itemize}
+\item I will fix some parameters, and
+\item Estimate the remaining behavioural parameters with SMM.
+\end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{longv}
+\begin{frame}{Identification}
+
+\begin{midi}
+\item I use observed variation in regional prices, productivity levels, migration rates, ownership patterns and migration flows to identify the model.
+\item Identifying assumptions: 
+\begin{enumerate}
+\item Individual housing demand is not subject to aggregate shocks.
+\item Preferences are identical across regions (net of the regional fixed effect).
+\end{enumerate}
+\pause
+\item Implications:
+\begin{enumerate}
+\item For estimation purposes, I can take $p_{dt},q_{dt}$ as exogenous to individual decisions: household $i$ responds to changes in $p_{dt},q_{dt}$ across regions and time.
+\item I implicitly assume that $p_{dt},q_{dt}$ are shifted by aggregate shocks only.
+\end{enumerate}
+\end{midi}
+
+\end{frame}
+
+
+\end{longv}
+
+\begin{frame}{Step 1: Factor Model of Aggregate and Regional Prices }
+
+\begin{midi}
+\item I assume that agents use a 2-dimensional factor model to forecast
+prices.
+\item An aggregate factor $\mathbf{F}_{t}\equiv\left[Q_{t},P_{t}\right]$
+follows a stationary VAR(1).
+\item $\mathbf{a}_{d}$ is a known matrix of factor loadings.
+\item Regional state variables $q_{dt}$ and $p_{dt}$ are known functions
+of $\mathbf{F}_{t}$ and $\mathbf{a}_{d}$:
+\[
+\left[q_{dt},p_{dt}\right]=g\left(\mathbf{F}_{t},\mathbf{a}_{d}\right)
+\]
+\item This is similar to \cite{krusell_smith}.
+\end{midi}
+
+\end{frame}
+\begin{frame}[plain]{}
+
+\begin{center}
+\includegraphics[height=0.91\paperheight]{\Dropbox/data/sipp/VAR_reg_p}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}[plain]{}
+
+\begin{center}
+\includegraphics[height=0.91\paperheight]{\Dropbox/data/sipp/VAR_reg_y}
+\par\end{center}
+
+\end{frame}
+
+% \begin{frame}{Step 2: Preset Parameters}
+
+% \hspace*{-2pt}\makebox[\linewidth][c]{
+% \renewcommand{\arraystretch}{1.2}  
+% \input{\Dropbox/model/fit/preset.tex}
+% }
+% \end{frame}
+
+\begin{longv}
+\begin{frame}{Step 2: SMM}
+\begin{midi}
+\item We work with parameter vector \[\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\eta,\xi_{1},\xi_{2}\right\} \]
+\item I use an SMM objective function
+    \[L(\theta)=\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right]\]
+\item Optimized using a cyclic coordinate search algorithm.
+\item $\mapsto$ Check it out! \texttt{optSlices()} in \url{https://github.com/floswald/MomentOpt.jl}
+\end{midi}
+\end{frame}
+\end{longv}
+
+
+\begin{frame}{Step 2: Key Moment Relationships}
+
+\hspace*{-2pt}\makebox[\linewidth][c]{%
+\renewcommand{\arraystretch}{1.2}  
+
+\begin{tabular}{ccc}
+Parameter & Description & Moment\tabularnewline
+\hline 
+$\alpha_{0}$ & Moving Cost & Average mobility\tabularnewline
+$\alpha_{1}$ & Moving Cost Owners & Owner mobility\tabularnewline
+$\alpha_{2}$ & Moving Cost age & age profile of mobility\tabularnewline
+$\alpha_{3}$ & Moving Cost age & age profile of mobility\tabularnewline
+$\alpha_{4}$ & Moving Cost kids & mobility cond. on kids\tabularnewline
+$A_{d'}$ & Amenity in $d'$ & Proportion of flows to $d'$\tabularnewline
+$\omega$ & Continuation value & fraction of owners who sell age 50\tabularnewline
+$\pi_{\tau}$ & proportion of high cost & proportion who never move\tabularnewline
+$\xi_{1},\xi_{2}$ & utility from owning & ownership profile\tabularnewline
+\hline 
+\end{tabular}
+
+}
+\end{frame}
+
+\begin{longv}
+
+
+\begin{frame}{Step 2: Full List of Moments}
+
+\begin{itemize}
+\item Moments relating to mobility:
+\begin{itemize}
+
+\item $E[\text{move}]$, $E\left[\text{move to }d'\right]$, $E[\text{move}|T]$,
+$E[\text{move}|\text{kids}]$, $E[\text{move}|h]$, $Cov(\text{move},\text{kids})$,
+$Cov(\text{move},h)$, $E[\text{moved never}]$, $E[\text{moved once}]$,
+$E[\text{moved twice+}]$, 
+\item Auxiliary model
+\[
+\text{move}_{it}=\beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{it}
+\]
+\end{itemize}
+\item Moments relating to homeownership:
+
+\begin{itemize}
+\item $E[h]$, $E[h|d]$, $E[h|\text{kids}]$, $E[h_{t-1}=1,h_{t}=0|T]$,
+$Cov(h,\text{kids})$
+\item Auxiliary model
+\[
+h_{it-1}=\beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{it}
+\]
+\end{itemize}
+\hypertarget{moments}{}
+\begin{flushright}
+\hyperlink{param-estimates}{\beamergotobutton{Details.}}\par
+\end{flushright}
+
+\end{itemize}
+\end{frame}
+\end{longv}
+
+
+\begin{frame}{Model Fit}
+
+\hspace*{-2pt}\makebox[\linewidth][c]{%
+
+\includegraphics[scale=0.5]{\Dropbox/model/fit/fit_mobility}\includegraphics[scale=0.5]{\Dropbox/model/fit/fit_ownership}
+
+}
+
+\end{frame}
+
+\begin{frame}{Model Fit }
+
+\hspace*{-2pt}\makebox[\linewidth][c]{%
+
+\includegraphics[scale=0.5]{\Dropbox/model/fit/fit_auxmods2}\includegraphics[scale=0.5]{\Dropbox/model/fit/fit_wealth}
+
+}
+\end{frame}
+
+
+\section{Value of migration }
+
+
+
+\begin{frame}[plain]{}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{\textcolor{blue}{\LARGE{}Results}}{\LARGE\par}
+\par\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
+
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+\pause
+\vspace{0.5cm}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q1.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
+
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+
+\vspace{0.5cm}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q2.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Elasticity of Migration wrt Income Shock}
+
+\begin{midi}
+\item Region $j$ gets unexpected and permanent $+1\%$ shock to $q_j$.
+\item What's the percentage change in stocks and flows of population?
+\item By region in paper, here I report average across regions.
+\end{midi}
+
+\vspace{0.5cm}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/fit/elasticities_q0.tex}
+\end{adjustbox}
+\end{frame}
+
+\begin{frame}{Who Do Owners Move Less?}
+
+\begin{midi}
+\item Owners have additional moving costs $\alpha_3$.
+\item There are fixed selling costs $\phi$.
+\pause
+\item What's the importance of each of those components?
+\item Investigate quantitative implications of removing each of them.
+\pause
+\item (This kind of approximates $\frac{\partial m}{\partial \alpha_3},\frac{\partial m}{\partial \phi}$, $m$ the moment function.)
+\end{midi}
+
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC0.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC1.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC2.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Why Do Owners Move Less?}
+
+\begin{table}
+\centering{}\input{\Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
+\end{table}
+\end{frame}
+
+\begin{frame}{Owner Regret?}
+\begin{midi}
+\item Buying a house is partly based on expectations. Model agents expect \red{aggregate} shocks to be transmitted via $\mathbf{a}_j$ to their region $j$.
+\item \onslide+<2-> What if things turn out \bblue{not} as expected?
+\item \onslide+<3-> Suppose that $\mathbf{a}_j$ unexpectedly changes to $\mathbf{a'}_j$.
+\item \onslide+<4-> How much would owner in this \bluebox{broken promise} scenario pay to \bred{reset} to a zero networth renter? 
+\end{midi}
+
+\end{frame}
+
+\begin{frame}{Owner Regret?}
+
+
+\begin{table}
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/ownersWTP2.tex}
+\end{adjustbox}
+\caption{In 1000 of Dollars.}
+\end{table}
+\end{frame}
+
+
+\begin{frame}{The Option Value of Migration}{How much consumption would you forgo to be able to migrate?}
+
+\begin{midi}
+\item \cite{yagan} talks about \blue{migratory insurance} in 2006 US recession: ex-post, how many workers moved from worst-affected areas? 7\%.
+\item \onslide+<2-> Here: \cyanbox{Ex-ante}, given you expect shocks, how much would you pay for an insurance policy that allows you to leave whenever you want.
+\item \onslide+<3-> Compare two model versions: baseline and complete migration shutdown scenario.
+\end{midi}
+
+\end{frame}
+
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax1.tex}
+\end{adjustbox}
+
+\end{frame}
+
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax2.tex}
+\end{adjustbox}
+
+\end{frame}
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax3.tex}
+\end{adjustbox}
+
+\end{frame}
+\begin{frame}{The Option Value of Migration}
+
+\begin{adjustbox}{center}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax4.tex}
+\end{adjustbox}
+
+\end{frame}
+
+
+\begin{frame}{Conclusion}
+
+\begin{widee}
+\item People greatly value regional migration: 19\% of period consumption.
+\item \bblue{Owner}/\bred{Renter} margin is first order: Moving Elasticities are orders of magnitude apart
+\item This has important implications for housing and labor market policies alike.
+\end{widee}
+
+\end{frame}
+
+\begin{frame}[plain]{}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{\textcolor{blue}{\LARGE{}Thanks for listening!}}{\LARGE\par}
+\par\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Parameter estimates}
+
+\begin{center}
+\hypertarget{param-estimates}{}
+\input{\Dropbox/model/fit/params.tex}\par
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{The Curse of Dimensionality: Regional Prices.\hypertarget{CurseDimDetail}{}}
+
+\begin{itemize}
+\item If $q_{dt}$ and $p_{dt}$ are unrestricted Markovian processes, computing
+the expectation of $\overline{v}(x)$ is a 20-dimensional integration
+problem (integrate over $z,s,\mathbf{q},\mathbf{p}$).
+\begin{itemize}
+\item Assuming 3 points for each grid $q_{d}$ and $p_{d}$, this implies
+$3^{18}$ points for $\mathbf{q},\mathbf{p}$ alone.
+\item If there are $N$ other states, we have $N\times3^{18}$ points in
+the state space
+\item In current version of the model, $N=156.672$, thus we would have
+
+\[
+60.697.942.852.608
+\]
+points to compute one solution. This is currently infeasible.
+\end{itemize}
+\hyperlink{CurseDim}{\beamergotobutton{back}}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Budget Constraint: Renters who decide to stay\hypertarget{BudgetConstraints}{}
+\hyperlink{Budgets-origin}{\beamergotobutton{back}}}
+\begin{enumerate}
+\item Choose to remain renters: pay rent $\kappa_{d}p_{dt}$
+\begin{eqnarray*}
+a_{it+1} & = & (1+r)\left(a_{it}+y_{idt}-c_{it}-\kappa_{d}p_{dt}\right)\\
+a_{it+1} & \geq & 0
+\end{eqnarray*}
+\item \onslide+<2->Choose to buy:
+\end{enumerate}
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-p_{dt}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}h_{it}\\
+r(a_{it}) & = & \begin{cases}
+r & \text{if }a_{it}\geq0\\
+r^{m} & \text{if }a_{it}<0
+\end{cases},r^{m}>r\\
+p_{T}h_{iT-1}+a_{iT} & \geq & 0
+\end{eqnarray*}
+
+\end{frame}
+%
+\begin{frame}{Budget Constraint: Owners who decide to stay}
+
+\begin{itemize}
+\item No fixed mortgage payment: implied schedule.
+\item Continue as owners:
+
+\end{itemize}
+\begin{eqnarray*}
+a_{it+1} & = & (1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}\right)\\
+a_{it+1} & \geq & -(1-\chi)p_{dt}\\
+p_{T}h_{iT-1}+a_{iT} & \geq & 0
+\end{eqnarray*}
+
+\begin{itemize}
+\item \onslide+<2->Owners can choose to sell, incurring proportional fixed
+cost $\phi$:
+
+\end{itemize}
+\begin{eqnarray*}
+a_{it+1} & = & (1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d}p_{dt}\right)\\
+a_{it+1} & \geq & 0
+\end{eqnarray*}
+
+\end{frame}
+
+\begin{frame}{Budget Constraint: Movers}
+
+\begin{itemize}
+\item When moving from $d$ to $d'$, households can either rent or buy
+in the new location $d'$.
+\begin{itemize}
+\item Renters in $d$:
+
+\begin{itemize}
+\item rent in $d'$: $a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}-\kappa_{d'}p_{d't}\right)$
+\item \onslide+<2->buy in $d'$: $a_{it+1}=(1+r(a_{it}))\left(a_{it}+y_{idt}-c_{it}-p_{d't}\right)$
+\end{itemize}
+\item \onslide+<3->Owners in $d$:
+
+\begin{itemize}
+\item rent in $d'$: 
+\[
+a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-\kappa_{d'}p_{d't}\right)
+\]
+\item \onslide+<4->buy in $d'$: 
+\[
+a_{it+1}=(1+r)\left(a_{it}+y_{idt}-c_{it}+(1-\phi)p_{dt}-p_{d't}\right)
+\]
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[allowframebreaks]{References}
+        % \frametitle{References}
+		\bibliographystyle{unsrtnat}
+		\bibliography{../lyx/references.bib}
+\end{frame}
+
+\end{document}

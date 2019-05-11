@@ -1,31 +1,32 @@
-{% macro showmom(name,sym,dd,dec) %}
-    {{name}} & {{sym}} & {{ dd[0] | prettyNum(dec) }} & $[{{ dd[1] | prettyNum(dec) }}, {{ dd[2] | prettyNum(dec) }}]$ \\
+{% macro showmom(name,sym,dd,dec,dec2) %}
+    {{name}} & {{sym}} & {{ dd.estimate | prettyNum(dec) }} & {{ dd.se | prettyNum(dec2) }} \\
 {%- endmacro %}
-\begin{tabular}{l l D{.}{.}{4.5}@{} c}
+\begin{tabular}{l l D{.}{.}{2.5}@{} D{.}{.}{2.5}@{}}
   \toprule 
-      &  & \multicolumn{1}{c}{Estimate} & \multicolumn{1}{c}{Conf. Interval}\\ 
+      &  & \multicolumn{1}{c}{Estimate} & \multicolumn{1}{c}{Std. Error}\\ 
   \midrule
       \multicolumn{4}{l}{Utility Function}\\
-  {{  showmom("\\hspace{6mm}Owner premium size 1","$\\xi_1$"  ,xi1, 3 ) }}
-  {{  showmom("\\hspace{6mm}Owner premium size 2","$\\xi_2$"  ,xi2, 3 ) }}
-  {{  showmom("\\hspace{6mm}Continuation Value","$\\omega$"  ,omega2, 3 ) }}
+  {{  showmom("\\hspace{6mm}Owner premium size 1","$\\xi_1$"  ,xi1,            3, 2 ) }}
+  {{  showmom("\\hspace{6mm}Owner premium size 2","$\\xi_2$"  ,xi2,            3, 2 ) }}
+  {{  showmom("\\hspace{6mm}Scale of $c$","$\\eta$"  ,eta,                     3, 4 ) }}
+  {{  showmom("\\hspace{6mm}Continuation Value","$\\omega$"  ,omega2,          3, 2 ) }}
       \multicolumn{4}{l}{Moving Cost Function}\\
-  {{  showmom("\\hspace{6mm}Intercept","$\\alpha_0$"  ,MC0, 3 ) }}
-  {{  showmom("\\hspace{6mm}Age","$\\alpha_1$"  ,MC1, 3 ) }}
-  {{  showmom("\\hspace{6mm}$Age^2$","$\\alpha_2$"  ,MC2, 4 ) }}
-  {{  showmom("\\hspace{6mm}Owner","$\\alpha_3$"  ,MC3, 3 ) }}
-  {{  showmom("\\hspace{6mm}Household Size","$\\alpha_4$"  ,MC4, 3 ) }}
-  {{  showmom("\\hspace{6mm}Proportion of high type","$\\pi_\\tau$"  ,taudist, 3 ) }}
+  {{  showmom("\\hspace{6mm}Intercept","$\\alpha_0$"  ,MC0,                    3, 2 ) }}
+  {{  showmom("\\hspace{6mm}Age","$\\alpha_1$"  ,MC1,                          3, 4 ) }}
+  {{  showmom("\\hspace{6mm}$Age^2$","$\\alpha_2$"  ,MC2,                      4, 4 ) }}
+  {{  showmom("\\hspace{6mm}Owner","$\\alpha_3$"  ,MC3,                        3, 2 ) }}
+  {{  showmom("\\hspace{6mm}Household Size","$\\alpha_4$"  ,MC4,               3, 4 ) }}
+  {{  showmom("\\hspace{6mm}Proportion of high type","$\\pi_\\tau$"  ,taudist, 3, 2 ) }}
       \multicolumn{4}{l}{Amenities}\\
-  {{  showmom("\\hspace{6mm}New England","$A_{NwE}$"  ,amenity_NwE, 3 ) }}
-  {{  showmom("\\hspace{6mm}Middle Atlantic","$A_{MdA}$"  ,amenity_MdA, 3 ) }}
-  {{  showmom("\\hspace{6mm}Middle Atlantic","$A_{StA}$"  ,amenity_StA, 3 ) }}
-  {{  showmom("\\hspace{6mm}West North Central","$A_{WNC}$"  ,amenity_WNC, 3 ) }}
-  {{  showmom("\\hspace{6mm}West South Central","$A_{WSC}$"  ,amenity_WSC, 3 ) }}
-  {{  showmom("\\hspace{6mm}East North Central","$A_{ENC}$"  ,amenity_ENC, 3 ) }}
-  {{  showmom("\\hspace{6mm}East South Central","$A_{ESC}$"  ,amenity_ESC, 3 ) }}
-  {{  showmom("\\hspace{6mm}Pacific","$A_{Pcf}$"  ,amenity_Pcf, 3 ) }}
-  {{  showmom("\\hspace{6mm}Mountain","$A_{Mnt}$"  ,amenity_Mnt, 3 ) }}
+  {{  showmom("\\hspace{6mm}New England","$A_{NwE}$"  ,amenity_NwE,            3, 5) }}
+  {{  showmom("\\hspace{6mm}Middle Atlantic","$A_{MdA}$"  ,amenity_MdA,        3, 5) }}
+  {{  showmom("\\hspace{6mm}Middle Atlantic","$A_{StA}$"  ,amenity_StA,        3, 2) }}
+  {{  showmom("\\hspace{6mm}West North Central","$A_{WNC}$"  ,amenity_WNC,     3, 2) }}
+  {{  showmom("\\hspace{6mm}West South Central","$A_{WSC}$"  ,amenity_WSC,     3, 2) }}
+  {{  showmom("\\hspace{6mm}East North Central","$A_{ENC}$"  ,amenity_ENC,     3, 4) }}
+  {{  showmom("\\hspace{6mm}East South Central","$A_{ESC}$"  ,amenity_ESC,     3, 4) }}
+  {{  showmom("\\hspace{6mm}Pacific","$A_{Pcf}$"  ,amenity_Pcf,                3, 4) }}
+  {{  showmom("\\hspace{6mm}Mountain","$A_{Mnt}$"  ,amenity_Mnt,               3, 2) }}
   \bottomrule
 \end{tabular}
 

@@ -1,7 +1,7 @@
 doc = """
 
 The Effect of Homeownership on the Option
-Value of Regional Migration (Oswald, 2018)
+Value of Regional Migration (Oswald, 2019)
 
     | Welcome to the run file of my paper. Please
     | see below how to run the code. 
@@ -11,7 +11,7 @@ Value of Regional Migration (Oswald, 2018)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|slices) [--nworkers=<nw>] [--maxiter=<maxit>] 
+    run.jl estim (bgp|grad|slices|stderrors) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
@@ -20,6 +20,7 @@ Usage:
 Options:
     -h --help           Show this screen.
     --nworkers=<nw>     use <nw> of workers for task. [default: 1]
+    --npoints=<npts>    number of points to use [default: 10].
     --maxiter=<maxit>   max number of iterations in estimation [default: 500].
     --region=<reg>      in which region to run experiment [default: 1].
     --nosave            don't save experiment output. If you set it, it doesn't save. 
@@ -32,17 +33,32 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"0.9.7")
+args = docopt(doc, version=v"1.0")
+
+addprocs1(n) = n>1 ? addprocs(n) : nothing
 
 if args["estim"]
     info("Running estimation: ")
     nwork = parse(Int,args["--nworkers"])
+    npoints = parse(Int,args["--npoints"])
     maxit = parse(Int,args["--maxiter"])
     if args["bgp"]
         info("      BGP estimation algorithm on $nwork workers and for $maxit iterations.")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
-        mig.estimate(maxit,nwork)
+        mig.estimate(maxit)
+    elseif args["grad"]
+        info("      grad descent estimation algorithm on $nwork workers")
+        addprocs1(nwork)
+        using mig
+        # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        mig.estimate(maxit,npoints=npoints,method=:grad)
+    elseif args["stderrors"]
+        info("      computing std errors with $nwork workers")
+        addprocs1(nwork)
+        using mig
+        # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        mig.stdErrors()
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig
@@ -68,7 +84,7 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         info("      noMove experiment, with nosave=$nosave")
@@ -80,7 +96,7 @@ elseif args["experiment"]
         mig.moneyMC(nosave)
     elseif args["ownersWTP"]
         info("      computing owners WTP to become renter again, with nosave=$nosave")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         mig.ownersWTP(nosave)
     elseif args["ownersWTP2"]
@@ -93,13 +109,13 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         mig.ownersWTP2(nosave)
     elseif args["moversWTP"]
         info("      computing movers WTP in region $reg with nosave=$nosave")
-        addprocs(nwork)
+        addprocs1(nwork)
         using mig
         mig.moversWTP(reg,nosave)
     elseif args["elasticity"]
@@ -112,7 +128,7 @@ elseif args["experiment"]
             mach_spec = [(i,1) for i in machine_ip]
             addprocs(mach_spec)
         else
-            addprocs(nwork)
+            addprocs1(nwork)
         end
         using mig
         mig.elasticity(shock=shock,nosave=nosave,neg=neg)

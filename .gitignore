@@ -3,7 +3,6 @@
 *.fls
 *.fdb
 *.fdb_latexmk
-*.aux
 .RData
 mig-pkg/data
 mig-pkg/.Rproj.user

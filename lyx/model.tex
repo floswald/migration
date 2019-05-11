@@ -1,0 +1,1971 @@
+%% LyX 2.3.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,lmargin=2cm,rmargin=2cm}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{color}
+\usepackage{babel}
+\usepackage{float}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{longtable}
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.8,0.15,0.15}
+\definecolor{dark-blue}{rgb}{0.15,0.15,0.8}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\hypersetup{
+    colorlinks, linkcolor={dark-red},
+    citecolor={dark-blue}, urlcolor={medium-blue}
+}
+\newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
+\usepackage{tikz}
+\usepackage{adjustbox}
+\usepackage{pgfplots}
+\usepackage{makecell}
+\usepackage{xr}
+\externaldocument[R-]{model-online}
+
+\makeatother
+
+\begin{document}
+\title{The Effect of Homeownership on the Option Value of Regional Migration\thanks{I would like to thank Costas Meghir, Lars Nesheim and Mariacristina
+De Nardi for their continued support and advice throughout this project.
+I also thank Uta Schönberg, Jeremy Lise, Marco Bassetto, Suphanit
+Piyapromdee, Richard Blundell, Jose-Victor Rios Rull, Morten Ravn and
+Fabien Postel-Vinay for helpful comments and suggestions. The Editor and three referees have helped to greatly improve the paper. I would
+like to acknowledge financial support from cemmap under ESRC grant
+ES/I034021/1 and ESRC transformative grant ES/M000486/1.}}
+\author{Florian Oswald\thanks{email: \protect\url{florian.oswald@gmail.com}. }\\
+SciencesPo Paris}
+\date{\today}
+\maketitle
+\begin{abstract}
+This paper estimates a lifecycle model of consumption, housing choice
+and migration in the presence of aggregate and regional shocks, using
+the Survey of Income and Program Participation (SIPP). The model delivers
+structural estimates of moving costs by ownership status, age and
+family size that complement the previous literature. Using the model
+I first show that migration elasticities vary substantially between
+renters and owners, and I estimate the consumption value of having
+the option to migrate across regions when there are regional shocks.
+This value is 19\% of lifetime consumption on average, and it varies
+substantially with household type.
+\end{abstract}
+\textbf{JEL-Codes: }J6, R23, R21
+
+\vfill
+
+
+\section{Introduction}
+
+Regional migration rates in the USA are relatively low despite the
+presence of large regional shocks. However, it would be a mistake
+to conclude from this observation that the option to migrate across
+regions has a small value to consumers. The goal of this paper is
+to provide a measure of having the option to migrate in the face of
+regional income and house price uncertainty, and I show that the value
+is large. The paper provides a structural interpretation of the insurance
+value of migration against regional shocks, as proposed first in \cite{yagan}.
+It shows that considering homeowners and renters separately is of
+first order importance for this issue, since both have vastly different
+elasticities of migration with respect to regional shocks. This insight
+is relevant for labor market and housing policy alike.
+
+Migration probabilities are heterogeneous in the population. Which
+type a of household is likely to move in a regional downturn? In this
+paper, which is among the first to consider homeownership and migration
+in an empirical lifecycle model, I provide structural estimates of
+crucial objects related to this question, for example, moving costs
+by ownership status, age and other observables. Modelling homeownership
+realistically requires modelling asset accumulation and mortgages,
+and it requires a proper treatment of expectations about house prices,
+both of which are computationally demanding to integrate in a dynamic
+model of location choice.
+
+Homeownership and geographical mobility of households are tightly
+connected: Renters are more mobile than owners. What complicates the
+analysis, however, is that renters may choose to be renters precisely
+\emph{because} they\emph{ }are more mobile, in the sense that they
+might assess their own likelihood of moving to be relatively high.
+What is more, often the econometrician cannot observe the relevant
+state variables which would be informative about those considerations,
+hence, there is unobserved heterogeneity at play. The model introduced
+below allows to resolve the joint determination of housing tenure
+status, consumption, savings and mobility decisions, such that it
+can be used to structurally estimate deep parameters and to investigate
+counterfactual policies.
+
+The main counterfactual will be used to shed light on the option value
+of regional migration under regional price and income risk. How much
+would households want to pay for a hypothetical migration insurance
+policy, in other words, what is the value of the option to move? In
+order to address this, the experiment shuts down migration in the
+economy, and it reports the compensating consumption stream which
+would make individuals indifferent between this regime, and the status
+quo, that is, a world with migration. The results of this exercise
+differ greatly by type of household considered and their respective
+current locations.
+
+In 2013, 63\% of occupied housing units in the US were owned, while
+37\% were rented.\footnote{see American Community Survey 2013, table DP04.}
+At the same time, roughly 1.3\% of the population migrate across US
+Census Division boundaries per year. Conditional on ownership, this
+implies that 1.9\% of renters and 0.67\% owners move. A natural question
+is then to ask why do we observe owners moving less? All else equal,
+owners face higher moving costs, both in terms of financial as well
+as time and effort costs. Financial costs occur because of transaction
+costs in the housing market upon sale of the house (e.g. agency fees
+or transaction taxes), while costs of effort arise from owners having
+to spend time finding a suitable buyer, meet with agents and lawyers
+etc. A comparable renter is subject to those costs only to a lesser
+degree. Buying a house means to make a highly local financial investment,
+which is subject to shocks as discussed above, is relatively illiquid,
+and in addition may have a location specific flow of utility. Consumers
+may have preferences for locations. Finally, as already mentioned,
+there is selection into homeownership based on unobservable moving
+costs: Individuals with a particular distaste for moving will be more
+likely to select into homeownership, because they anticipate that
+they are unlikely to ever move in the future. All of these factors
+interact to shape the joint decision of housing tenure, location choice,
+and mortgage borrowing. What is more, they all interact to influence
+the decision to move in response to a shock.
+
+In the model I develop, there are several mechanisms which affect
+the home ownership choice of individuals. A downpayment requirement
+for implies means that only individuals with sufficient cash on hand
+are able to buy a house at the current price. The model assumes a
+preference for owner-occupied accomodation, a local amenity and a
+partially unobserved cost of moving, which influence the buying decision
+in addition to age, the probability of moving, and beliefs about future
+shocks. 
+
+In terms of the decision to migrate to another region, the model predicts
+that the likelihood of migration is increasing in the difference of
+discounted expected lifetime utilities between any two regions. Those
+relative utilities, in turn, depend among other things on the average
+regional income level and the level of regional house prices, both
+of which vary over time. Allowing regional characteristics to vary
+is a significant contribution to the literature on dynamic migration
+models such as for example \cite{kennan2003effect}, since it provides
+a fundamental reason for agents to move in response to a change in
+their economic environment, rather than as a result of idiosyncratic
+preference shocks alone. Including time-varying location characteristics,
+however, increases computational demands substantially. To keep those
+demands tractable, the model employs a factor structure which allows
+aggregate shocks to affect regions differently.
+
+I estimate the model using a simulated method of moments estimator.
+I find that the model fits the data very well along the main dimensions
+of interest, which are mobility and ownership patterns over the lifecycle,
+ownership rates by region, migration flows across regions, as well
+as wealth accumulation over the lifecycle and by region. After fitting
+the model to the data, I first use the model to compute migration
+elasticities to regional shocks by tenure status and current location.
+Then I investigate why owners move less than renters in greater detail.
+The main result of the paper shows that migration is a low probability
+event in both data and model, but associated with a large option value
+for consumers. Shutting down regional migration in an environment
+with realistic income and price shocks would require a 19\% increase
+in per period consumption to make the average consumer indifferent
+to the status quo. This number varies greatly by household type (age,
+housing tenure, persistent income level) as well as location.
+
+\paragraph{Literature. }
+
+My paper builds on \cite{kennan2003effect}, who are the first to
+develop a model of migration with multiple location choices over the
+lifecycle. Their main finding is that expected income is an important
+determinant of migration decisions, and their framework requires large
+moving costs to match observed migration decisions. The model features
+location-specific match effects in wages and amenity which are uncertain
+ex-ante, so the consumer has to move to a location in order to discover
+their values. The distributions of those match effects in each location
+are stationary. After having learned the value of the current location,
+the only reason for a move is a favourable realization of an i.i.d.
+preference shock which might occur in some future period. There is
+no change in economic fundamentals which might encourage a move, like
+a shock to wages, for example. Relaxing this feature as well as adding
+housing and savings decisions are my main contributions to their paper.
+I am able to let regions experience differential income and price
+shocks over time, thereby providing an additional reason to move over
+and above idiosyncratic shocks. 
+
+\cite{gemici2007family} focuses on migration decisions of couples
+with two working spouses and finds that, for this subgroup, family
+ties can significantly hinder migration decisions and wage growth.
+\cite{winkler2010effect} is similar to \cite{gemici2007family} but
+with housing choices. The main differences to \cite{winkler2010effect}
+are the way I model regional price and income dynamics and the assumption
+about how job search takes place. Regarding regional dynamics, I am
+able to allow for shocks which are correlated across regions and with
+an aggregate component that is persistent, while they are assumed
+to be independent in \cite{winkler2010effect}. The i.i.d. assumption
+for regional shocks is clearly rejected in the data, as will become
+clear in the next section. Also, \cite{winkler2010effect} assumes
+that job offers arrive in the current location from a random alternative
+location. My assumption implies firstly that individuals consider
+all potential locations in each period, and decide to move based on
+their expectations about how they will fare in each. Secondly it allows
+for reasons other than job offers to trigger a move, which is also
+a feature of the data, as I will show below. \cite{ransom2018labor}
+is another related paper using the \cite{kennan2003effect} setup
+which allows for shocks to wages and local unemployment rates at the
+CBSA level, but without considering housing. Finally, \cite{Bishop:2008fk}
+computes a dynamic migration model using the conditional choice probability
+setup as proposed by \cite{arcidiacono2008ccp} in order to recover
+willingness to pay for environmental amenities.
+
+By considering regional shocks, the present paper is related to the
+seminal contribution of \cite{blanchard1992regional}. In light of
+state-specific shocks to labor demand, the authors find that after
+an adverse shock, the relocation of workers is one of the main mechanisms
+to restore unemployment and participation rates back to trend in an
+affected region. \cite{lkhagvasuren2012big} is a more recent paper
+on the topic, proposing a frictional version of the \cite{lucas1974equilibrium}
+island model. Relative to those papers, here we show how the underlying
+decision maker reacts to regional shocks \textendash{} in particular,
+how owners and renters react differently and what this implies for
+their valuation of the migration option. Related to this, \cite{notowidigdo2011incidence}
+analyses the incidence of local labor demand shocks on low-skilled
+workers in a static spatial equilibrium model and finds that they
+are more likely to stay in a declining city than high-skilled workers
+to take advantage of cheaper housing.\footnote{See \cite{Moretti:2011fk} for a comprehensive overview of this literature
+going back to \cite{Roback:1982uq} and \cite{rosen1979wage}, and
+\cite{diamond2016determinants} and \cite{piypromdee} for recent
+applications.} The same mechanism operates in my model. Furthermore, the dynamic
+nature of my model allows me to evaluate the response of migration
+to shocks over time. The present paper can be seen as a complement
+to the exercise proposed in \cite{yagan}, or \cite{yagan2017employment},
+where the question is how much insurance against local labor market
+shocks is offered by migration. The author finds migration insures
+against 7\% of an average local labor demand shock. I implement a
+fully structural analysis of the same question, with the added benefit
+that I can measure a value of the migration option in terms of consumption.
+In this sense, the present paper offers a more direct answer to the
+question of \emph{how much consumption would I forgo today in order
+to be insured in an adverse future state}, which describes an insurance
+contract fairly well. \cite{bartik2018moving} is a recent
+paper which extends \cite{yagan} to consider the influence of the
+China trade shock as well as the Fracking boom, abstracting from a detailed model of housing.
+
+Another related literature considers the effects of the 2007 housing
+bust on labor market mobility. In terms of empirical contributions,
+\cite{Ferreira201034}, \cite{schulhofer2011negative} and \cite{demyanyk2013moving}
+look at whether negative equity in the home reduces the mobility of
+owners and report mixed findings. The first paper finds an effect,
+whereas the next two do not, with the difference arising from different
+datasets and definitions of long-distance moves. More theoretical
+papers like \cite{head2012housing}, \cite{nenov2012regional}, \cite{csahin2014mismatch}
+and \cite{karahan2011housing} use search models of labor and housing
+markets to look at geographical mismatch in order to understand how
+a fall in house prices affects unemployment and migration rates. The
+last paper, in particular, formalizes the negative equity lock-in
+notion in a model with two locations and finds only a moderate effect
+of lock\textendash in on the increase in unemployment. The present
+paper differs from this group of contributions by assuming multiple
+locations and by adopting a life-cycle framework.\footnote{In general, the relationship between homeownership and labor market
+mobility or unemployment has been discussed in many other places,
+and an incomplete list might include \cite{oswald1996conjecture,blanchflower2013does},
+\cite{coulson2002tenure}, \cite{guler2011homeownership}, \cite{battu2008housing}
+or \cite{halket2014saving}.}
+
+In the remainder of this papers I will first present a set of facts
+from aggregate and micro data about regional migration in the US in
+section \ref{sec:Facts} before introducing a structural model which
+can speak to those fact in section \ref{sec:Model}. I will then discuss
+solution and estimation of the model in sections \ref{sec:Solving-and-Simulating}
+and \ref{sec:Estimation} in order to finally present the results
+regarding the option value of migration in section \ref{sec:Results}.
+
+\section{Facts \label{sec:Facts}}
+
+According to \cite{molloy2011internal}, who use three publicly available
+datasets (American Community Survey (ACS), the Annual Social and Economic
+Supplement to the CPS (March CPS), and Internal Revenue Service (IRS)
+data), each year roughly 5\% of the population moves between counties
+each year, which amounts to roughly one-third of the annual flows
+into and out of employment according to the measure in \cite{fallick2004employer}.
+The cross State figure is 2\%, and the cross Census Division rate
+is estimated at 1.5\% of the population, per year (see table \ref{tab:Migration-rates-Molloy}).
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/Molloy/molloy.tex}
+\par\end{centering}
+\caption{Percent of US population migrating across different geographic boundaries
+over different time spells. Taken from \cite{molloy2011internal},
+computed from ACS, March CPS and IRS data.\label{tab:Migration-rates-Molloy}}
+\end{table}
+
+It is somewhat unfortunate that none of the datasets employed by \cite{molloy2011internal}
+are well suited for the purpose of analysing migration and ownership.
+None of them tracks movers, so it is impossible to know the circumstances
+of an individual at the moment they decided to move, which is ultimately
+of interest in this paper.\footnote{It is possible to construct a panel dataset from the CPS, but only
+with postal address as unit identifier. If an individual moves out,
+this can be inferred from the data, however, the destination of the
+move cannot \textendash{} in particular it is unknown whether they
+relocated withing the city, or somewhere else.} I therefore use the Survey of Income and Program Participation (SIPP)
+in this paper, a longitudinal and nationally representative dataset.\footnote{The PSID is a natural competitor to the SIPP for this kind of study,
+with the PSID's main advantage being the fact it's a long panel. I
+found that cell sizes got extremely small, however, after conditioning
+on the most important covariates in the PSID. Even unconditionally
+there are only 1560 unique cross-Division moves in the PSID 1994\textendash 2011,
+and four cells in the region-by-region transition matrix have no observations
+for this entire period. I have 2512 unique cross-Division moves in
+SIPP 1996\textendash 2012 and the corresponding transition matrix
+is dense.} 
+
+Before presenting statistics from SIPP data, I will explain the geographic
+concept I will be using in this paper, which is a US Census Division.
+Census Divisions are nine relatively large regions which separate
+the United States into groups of states ``for the presentation of
+census data\emph{''}\footnote{See the Census bureau's website at \url{https://www.census.gov/geo/reference/gtc/gtc_census_divreg.html}. }\emph{.
+}To a first approximation, those regions represent areas with a common
+housing and labor market. In the model, a move within any region is
+not considered as migration and therefore does not contribute to the
+overall migration rate. This implies that there is a proportion of
+moves across markets that do happen in the data, but which are not
+picked up by my geographic definition of a market. 
+
+The aggregation of states into this particular grouping is but one
+of many possibilities, and I adopt this particular partition based
+on computational constraints. In many respects the ideal concept of
+a region is what economists would refer to as a local labor market,
+and metropolitan statistical areas (MSA) or commuting zones (CZ) come
+close to this. Unfortunately, for the purpose of the model in this
+paper, the so\textendash defined number of regions would be far too
+large to be computationally feasible. Hence the choice of census divisions.\footnote{The model presented below contains 25.4 million different points in
+the state space at which to solve a savings problem. Increasing the
+number of regions to 51 (to represent US states) increases this to
+815 million points in the state space. Given that estimation requires
+evaluation of the model solution many times over, the former state
+space can be handled with code that is highly optimized for speed,
+while the latter cannot.} I will demonstrate below what the choice of Divisions implies for
+the captured state\textendash level variation. In the online appendix
+figure \ref{R-fig:Census-Division-Map} presents a map, and table
+\ref{R-tab:SIPP-divisions} lists Division abbreviations and the member
+States.\footnote{The online appendix is available at \url{http://qeconomics.org} and \url{https://floswald.github.io/pdf/homeownership-appendix.pdf}}
+
+\subsection{The Main Reasons to Move are: Work, Housing and Family}
+
+The March Supplement to the Current Population Survey (CPS) contains
+several questions relevant for the study of migration. Here I analyse
+answers to the 2013 edition of the CPS to the question ``What was
+the main reason for moving'' where respondents are offered 19 options
+to choose from. The results are displayed in table \ref{tab:CPS-reason-move}.
+It is striking to note that even though we are conditioning on moves
+across Division boundaries (and thus think of long-range moves), the
+percentage of people citing category ``housing'' as their main motivation
+is roughly 24\% of the total population of movers. The table also
+disagreggates the response to the question by the distance between
+origin and destination State, and we can see that the proportion of
+respondents does vary with distance moved, but not to an extent that
+would suggest that housing becomes irrelevant as a motivation with
+increasing distance. Summing up in the bottom row of the table, we
+see that 55\% say work was the main reason, 24\% refer to housing
+and the remaining 21\% is split between family and other reasons.
+The model to be presented below addresses each of these categories:
+Individuals can move out of work-related concerns (regional and individual
+level income fluctuations), because of housing considerations (regional
+house price fluctuation), for family reasons (stochastic age-dependent
+arrival of children) as well reasons classified as ``other'', which
+are accounted for by an idiosyncratic preference shock.
+
+\subsection{Homeownership and College Education are Important Predictors for
+Migration}
+
+Putting somewhat more structure onto this, I next present estimates
+from a statistical analysis of the determinants of cross division
+moves from household\textendash level SIPP data. I combine four panels
+of SIPP data (1996, 2001, 2004 and 2008) into a database with 102,529
+household heads that I can follow over time and space. This will be
+the central estimation sample in main analsis below. Table \ref{tab:D2D-probit}
+shows the results.\footnote{It's worth emphasizing that at this point I am abstracting away from
+the severe endogeneity issues which the structural model below will
+account for.} I regress a binary indicator for whether or not a cross division
+move took place in a given year on a set of explanatory variables,
+which relate to the household in question in a probit regression.
+The table shows marginal effects computed at the sample mean of each
+variable, as well as the ratio of marginal effects to the baseline
+unconditional probability of moving (1.32\%). The results indicate
+that there is a pronounced age effect, with each additional year of
+age implying a reduction that is equal to 6\% of the baseline probability.
+The same effect is found for whether or not children are present in
+the household. The effect of being a homeowner is very large and equivalent
+to a reduction in the propensity to move of 51\% of the baseline probability.
+Increasing household income by \$100,000 is equivalent to a 5\% baseline
+increase. Finally, having a college degree has an effect of equal
+magnitude than being a homeowner, but in the opposite direction: a
+college degree amounts to an increase of the baseline of 49\%. According
+to this model, the effect of being a homeowner on the baseline moving
+probability is equal to an age increase of 8.3 years, thus taking
+a 30-year old to age 38; also, a household which owns the house would
+have to experience an increase in household income of \$1m in order
+to make up for the implied loss in the probability of moving across
+divisions from being an owner. The house price to income ratio and
+total household wealth are not statistically significant in this specification.
+
+\paragraph{Sample Selection: Non\textendash College Degree }
+
+Even though the estimates in table \ref{tab:D2D-probit} only measure
+statistical associations, they highlight an important feature of the
+data: moving and having a college degree are strongly correlated.
+While this paper specifically aims to investigate the other strong
+correlation in that table, i.e. between ownership status and mobility,
+a full treatment which endogenizes education choices is too ambitious.
+A pragmatic solution to this problem is to condition the data on a
+certain education group and disregard education choices, as is done
+in the previous literature (e.g. \cite{Bishop:2008fk,ransom2018labor,bartik2018moving,kennan2003effect}
+all impose this restriction). In what follows, therefore, all SIPP
+data will refer to household heads without a college degree, which
+selects 62\% of the original sample, resulting in 65,482 unique household
+heads.
+
+\subsection{Renters Move at Twice the Rate of Owners at all Ages}
+
+In order to give a sense of the magnitude of migration rates by ownership
+status in this selected sample, table \ref{tab:Annual-moving-rate}
+presents summary annual moving rates for both State and Census Division
+level migration. The overall unconditional migration rate is 1.51\%
+and 0.99\% of households per year for cross State and cross Division,
+respectively. The cross State figure differs from the 2\% in table
+\ref{tab:Migration-rates-Molloy} because I set up the SIPP data in
+terms of household heads, thereby missing some moves of non\textendash reference
+persons, and because I condition on non\textendash college. It is
+quite clear from table \ref{tab:Annual-moving-rate} that there is
+a marked distinction in the likelihood of moving across State as well
+as Division boundaries between renters and owners, with 2.07\% (1.49\%)
+of renters versus 0.82\% (0.64\%) of owners moving across State (Division)
+boundaries on average per year. In total I observe 1259 cross Division
+moves made by 1069 unique individuals in my non-college sample, implying
+multiple moves for some movers.\footnote{By way of comparison, the estimation sample in \cite{kennan2003effect}
+is drawn from the geo-coded version of NLSY79 and contains 124 interstate
+moves. The disadvantage of SIPP is I can track an individual for at
+most four years.} 
+
+Reconsidering homeowership and migration by age gives rise to figure
+\ref{fig:SIPP-sample-proportion-1}. It is clear that renters are
+more likely to move at all ages, with a strongly declining age effect
+\textendash{} younger individuals move more. At the same time, homeownership
+is increasing with age. These are highly salient features of the data,
+and they are among the key dimensions along which this model's performance
+is going to be evaluated. 
+
+\subsection{Regional Income and House Price Risk are not IID\label{subsec:Income-not-IID}}
+
+The time series of regional disposable income and regional house prices
+are each strongly correlated across Divisions. Additionally, they
+exhibit high degress of autocorrelation, i.e. shocks to regional incomes
+and prices are persistent. To illustrate the degree of cross correlation
+of both prices and incomes consider figure \ref{fig:TS-correlogram}.
+The top panels show the detrended version of each time series, by
+region, while the bottom panels show the pairwise correlation of those
+detrended time series across regions. The figure highlights that deviations
+from trend are highly correlated between Divisions, for both average
+regional incomes $(q)$ and regional prices $(p)$.\footnote{Data for $q$ comes from the BEA series ``Personal Income by State'',
+$p$ is the FHFA house price index by Census Division. Both sets of
+series are a direct input to the structural model to be introduced
+below. Data are available via \url{https://github.com/floswald/EconData}.} Regarding persistence of those time series, the average autorcorrelation
+coefficients are 0.91 for $p$ and 0.92 for $q$, respectively (for
+details see online appendix table \ref{R-tab:Autocorrs}) over the
+considered time period. Modelling regional risk as an IID process
+seems like an unjustifiably strong assumptions given those high degrees
+of cross correlation and persistence. Therefore the model introduced
+below will take both correlation and persistence in regional prices
+seriously and will propose a method to solve and estimate the resulting
+high-dimensional problem. Online appendix \ref{R-subsec:DimReduce-Data}
+contains detailed descriptions of the raw data.
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/data/cps/main-reason.tex}
+\par\end{centering}
+\caption{\label{tab:CPS-reason-move}CPS 2013 data on main motivation of moving,
+conditional on a cross Division move. The purpose of this table is
+to show that the distribution of responses is stable conditional on
+quartiles of \emph{distance moved.} This selects a sample of 20-50
+year-olds and aggregates the response to the question ``What was
+the main reason for moving'' (variable NXTRES) as follows. Work =
+\{new job/transfer, look for job, closer to work, retired\}, Housing
+= \{estab. own household, want to own, better house, better neighborhood,
+cheaper housing, foreclosure, other housing\}, family = \{change marstat,
+other fam reason\}, other = \{attend/leave college, climate change,
+health, natural disaster, other\}. The distance of a move is computed
+as the distance between geographic center of the \emph{state} of origin
+(not Division) and the center of the destination state. The rows of
+the table categorize the distance measure into its quartiles.}
+\end{table}
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/data/sipp/move_rates.tex}
+\par\end{centering}
+\caption{Annual moving rate in percent of the population. Households are categorized
+into ``Renter'' or ``Owner'' based on their homeownership status
+at the beginning of the period in which they move. SIPP data subset
+to non-college degree holders. \label{tab:Annual-moving-rate}}
+\end{table}
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/data/sipp/D2D-probit-edit.tex}
+\par\end{centering}
+\caption{Determinants of cross census division moves in SIPP data. Household
+income and wealth are measured in 100,000 USD. This regresses a binary
+indicator for whether a cross division move takes place at age $t$
+on a set of variables relevant at that date. The first column shows
+marginal effects, the second column shows the marginal effects relative
+to the unconditional baseline mobility rate of 0.0132. The interpretation
+of this column is for example that the effect of being a homeowner
+is equivalent to reducing the baseline probability of migration by
+51\%.\label{tab:D2D-probit}}
+\end{table}
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.85]{../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2}
+\par\end{centering}
+\caption{SIPP sample proportion moving across Census Division boundaries by
+age (upper panel) and proportion of owners by age (lower panel). Conditions
+on individuals without a college degree.\label{fig:SIPP-sample-proportion-1}}
+\end{figure}
+
+\begin{figure}
+\begin{adjustbox}{center}
+\begin{centering}
+\includegraphics[scale=0.9]{/Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram-detrended}
+\par\end{centering}
+\end{adjustbox}
+
+\caption{The time series for regional incomes $\{q_{dt}\}_{t=1967}^{2012}$
+and house prices $\{p_{dt}\}_{t=1967}^{2012}$ are strongly correlated
+across Divisions $d$. The top panels of this figure show the detrended
+series for all Divisions for both $q$ and $p$. The bottom panel
+further emphasizes that the cross-correlations across states between
+regional trend deviations are substantial. For instance in the bottom
+left panel, the top left tile indicates that the correlation between
+the time series of $q$ for East North Central (ENC) and West South
+Central (WSC) is around 0.75 (raw numbers in appendix tables \ref{R-tab:Cross-corr-q}
+and \ref{R-tab:Cross-corr-p}). Detrended with fourth-order moving
+average.\label{fig:TS-correlogram}}
+
+\end{figure}
+
+\newpage
+
+\section{Model\label{sec:Model}}
+
+In the model I view households as a single unit, and I'll use the
+terms \emph{household }and \emph{individual} interchangeably. Individuals
+are assumed to live in census Division (or \emph{region}) $d\in D$
+in any given period at date $t$, and we let $j\in\left\{ 1,\dots,J\right\} $
+index age. At each age $j$, individual $i$ has to decide whether
+to move to a different region $k$, whether to own or rent, and how
+much of his labor income to save. Individuals derive utility from
+consumption $c$, from owning a house $h$ and from local amenity
+$A_{d}$.
+
+Every individual in region $d$ faces an identical level of house
+price $p_{dt}$ and mean labor productivity $q_{dt}$ at time $t$,
+where $q_{dt}$ enters the individual wage equation as a level shifter.
+At the individual level uncertainty enters the model through a Markovian
+idiosyncratic component of income risk $z_{ij}$, a Markovian process
+that models changes in household size over the lifecycle $s_{ij}$,
+and a location\textendash specific preference shock $\varepsilon_{idt}$,
+which is assumed identically and independently distributed across
+agents, regions and time. In short, region $d$ is characterized by
+a tuple $(q_{dt},p_{dt},A_{d})$, households can move to a different
+region subject to a moving cost, and they hold expectations about
+the evolution of regional prices $\left(q_{dt+1},p_{dt+1}\right),\forall d$
+in such a way that is compatible with the evidence from figure \ref{fig:TS-correlogram}
+(i.e. correlated shocks across region and high persistence) and is
+at the same time computationally feasible, as detailed below.\footnote{Let it suffice for now to state that taking into account 9 different
+house price and labour income processes would not be feasible, and
+therefore the solution will seek to reduce the number of relevant
+dimensions of these series, similar to what a principal component
+analysis would try to do.}
+
+The job search process is modeled as in \cite{kennan2003effect}.
+Individuals do not know the exact wage they will earn in the new location.
+The new wage is composed of a deterministic, and thus predictable,
+part and a component that is random. Over and above an expectation
+about some prevailing average level of wages the mover can expect
+in any given region at time $t$, it is impossible to be certain about
+the exact match quality of the new job ex ante. The new job can be
+viewed as an experience good where quality is revealed only after
+an initial period. This setup gives rise to income risk associated
+with moving. I do not attempt to explain return migrations, which
+\cite{kennan2003effect} achieve with a region-person specific match
+effect and by including this match effect from the last location in
+the state space. \footnote{Adding this feature would increase the computational burden of the
+model to make it infeasible, even with the limited memory assumption
+employed in \cite{kennan2003effect}. I do not expect return migration
+to be of first order for the questions adressed here.} 
+
+The model describes the partial equilibrium response of workers to
+regional wage and price shocks, as well as idiosyncratic income and
+family size shocks. The fairly detailed description of the consumer's
+decision problem rules out a full equilibrium analysis where house
+prices and wages clear local markets for computational feasibility
+reasons, hence, $(q_{dt},p_{dt})$ are exogenous to the model.
+
+\subsection{Individual Labor Income\label{subsec:Individual-Labor-Income}}
+
+The logarithm of labor income of individual $i$ depends on age $j$,
+time $t$, and current region $d$ and is defined as in equation \eqref{eq:income-process}.
+\begin{eqnarray}
+\ln y_{ijdt} & = & \eta_{d}\ln q_{dt}+f(j)+z_{it}\nonumber \\
+z_{it} & = & \rho z_{it-1}+e_{it-1}\nonumber \\
+e & \sim & N(0,\sigma^{2})\label{eq:income-process}
+\end{eqnarray}
+Here $q_{dt}$ stands for the region specific price of human capital,
+$f(j)$ is a deterministic age effect modeled as a nonlinear function
+and $z_{it}$ is an individual specific persistent idiosyncratic shock.
+The coefficient $\eta_{d}$ allows for differential transmission of
+regional shocks into individual income by region $d$. The log price
+of human capital $q_{dt}$ is allowed to differ by region to reflect
+different industry compositions by region, which are taken as given.\footnote{ Underlying this is an assumption about non\textendash equalizing
+factor prices across regions. It is plausible to think that within
+a single country, wages should tend to converge to a common level,
+particularly in the presence of large migratory flows from one region
+to the next. In assuming no relative factor price equalization across
+US regions I rely on a host of evidence showing that relative wages
+vary considerably across regions over a long time horizon (see for
+example \cite{redding}). }
+
+When moving from region $d$ to region $k$ at date $t$, I assume
+that the timing is such that current period income is earned in the
+origin location $d$. The individual's next period income is then
+composed of the corresponding mean income at that date in the new
+region $k$, $q_{kt+1}$, the deterministic age $j+1$ effect, $f(j+1)$,
+and a new draw for $z_{it+1}$ conditional on their current shock
+$z_{it}$. For a mover, this individual\textendash specific idiosyncratic
+component is drawn from a different conditional distribution than
+for non-movers. Let us denote the different conditional distributions
+of $z_{it+1}$ given $z_{it}$ for stayers and movers by $G_{\text{stay}}$
+and $G_{\text{move}}$, respectively. This setup allows for some uncertainty
+related to the quality of the match with a job in the new region $k$,
+as mentioned above. In the model I use $G_{\text{stay}}$ and $G_{\text{move}}$
+as transition matrices from state $z$ today to state $z'$ tomorrow
+for stayers and movers, respectively. 
+
+\subsection{Dimensionality Reduction: National factors $P$ and $Q$\label{subsec:Dim-Reduce}}
+
+As stated above, allowing $\left(q_{dt+1},p_{dt+1}\right),\forall d$
+to vary in an unrestricted fashion would make computation of this
+model infeasible. To solve this problem, I assume that agents use
+a 2-dimensional factor model to infer regional prices.\footnote{The method of \cite{krusell_smith} is conceptually similar to what
+I'm doing. Instead of mean and variance of a distribution, consumers
+here track the value of two aggregate state variables.} To this end I define aggregate state variables $Q$ and $P$, which
+evolve according to a stationary vector autoregression of order one.
+At date $t$, all individuals observe the price vector $\mathbf{F}_{t}$
+containing both $P_{t}$ and $Q_{t}$. The process is formally defined
+in equation \eqref{eq:VAR-process-agg}, where $A$ is a matrix of
+coefficients and $\Sigma$ is the variance-covariance matrix of the
+bivariate normal innovation $\nu$. Agents in the model have rational
+expectations concerning this process.
+\begin{eqnarray}
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\nonumber \\
+\nu_{t} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma\right)\label{eq:VAR-process-agg}\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
+P_{t}
+\end{bmatrix}\nonumber 
+\end{eqnarray}
+
+
+\subsubsection{Mapping aggregate factors to regional prices}
+
+I assume that there is a deterministic mapping from the aggregate
+state $\mathbf{F}_{t}$ into the price and income level of any region
+$d$ which is known by all agents in the model. This means that once
+the aggregate state is known, agents know the price $p_{dt}$ and
+income level $q_{dt}$ in each region with certainty. The mapping
+is defined in terms of a function that depends on both aggregate states
+$Q,P$ and where the coefficients are region dependent, as shown in
+expression \eqref{eq:VAR-reg-determ}. Similarly to the aggregate
+case in \eqref{eq:VAR-process-agg}, $\mathbf{a}_{d}$ is a 2x2 matrix
+of coefficients specific to region $d$.
+
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}\label{eq:VAR-reg-determ}
+\end{eqnarray}
+
+Notice that the great virtue of this formulation is that the relevant
+price and income related state variables in each region are subsumed
+in $\mathbf{F}_{t}$, given the assumption that $\mathbf{a}_{d}$
+is known for all $d$. To be completely clear, equation \eqref{eq:VAR-reg-determ}
+shuts down any uncertainty at the regional level once $\mathbf{F}_{t}$
+and $\mathbf{a}_{d}$ are known.\footnote{One could say that the formulation is missing a shock, e.g. $\mathbf{a}_{d}\mathbf{F}_{t}+\epsilon_{dt},\epsilon_{dt}\sim N(0,\sigma^{2})$.
+Adding such a shock would increase the state space by a factor equal
+to the number of integration nodes to be used for the approximation
+of the resulting integral, which is a big cost. I do not expect any
+major difference in my results. The fit of this approximation is very
+good, as will be shown further below.} Shocks materialize in region $d$ as a transformation of aggregate
+shocks to $Q$ and $P$. The implications of this will be discussed
+in greater detail in section \ref{subsec:Aggregate-to-regional} when
+I describe estimation of this part of the model and where I also provide
+some illustration regarding the fit of this model to the data.
+
+\subsection{Home Ownership Choice\label{subsec:Home-Ownership-Choice}}
+
+Ownership choice is discrete, $h_{j}\in\left\{ 0,1\right\} $, and
+there is no quantity choice of housing. While renting, i.e. whenever
+$h_{j}=0$, individuals must pay rent which amounts to a constant
+fraction $\kappa_{d}$ of the current region-$d$ house price $p_{d}$.
+Similar to the setup in \cite{Attanasio20121}, I denote total financial
+(i.e. non-housing) wealth at age $j$ as assets $a_{j}$, which
+include liquid savings and mortgage debt. There is a terminal condition
+for net wealth to be non-negative by the last period of life, i.e.
+$a_{J}+p_{dt}h_{J-1}\geq0,\forall t$, which translates into an implicit
+borrowing limit for owners. Additional to that, in order to buy, a
+proportion $\chi p_{dt}$ of the house value needs to be paid up front
+as a downpayment, while the remainder $(1-\chi)p_{dt}$ is financed
+by a standard fixed rate mortgage with exogenous interest rate $r^{m}$.
+The mortgage interest rate is assumed at a constant markup $\hat{r}>0$
+above the risk free interest rate $r$, such that $r^{m}=r+\hat{r}$.
+The markup captures default risk incurred by a mortgage lender. 
+
+The equity constraint must be satisfied in each period, i.e. $a_{ij+1}\geq-(1-\chi)p_{dt}h_{j},\forall t$.
+This means that only owners are allowed to borrow, with their house
+as a collateral. Selling the house incurs proportional transaction
+cost $\phi$, such that given current house price $p_{t}$, upon sale
+the owner receives $(1-\phi)p_{t}$.
+
+This setup implies that owners will choose a savings path contingent
+on the current price, their income and debt level, the mortgage interest
+rate, and their current age $j$, such that they can satisfy the final
+period constraint. Subsections \ref{subsec:Budget-stayers} and \ref{subsec:Budget-movers}
+below describe the budget constraints in greater detail.
+
+\subsection{Moving\label{subsec:Moving}}
+
+\paragraph{Moving Costs.}
+
+Moving is costly both in monetary terms (see the budget constraints
+below in \ref{subsec:Recursive-Formulation}) and in terms of utility.
+Denote $\Delta(d,x)$ the utility costs of moving from $d$ at a current
+value of the state vector $x$ (defined below). Moving costs differ
+between renters and owners. Moving for an owner requires to sell the
+house, which in turn requires some effort and time costs. This is
+in addition to any other utility costs incurred from moving regions
+which are common between renters and owners. I specify the moving
+cost function as linear in parameters $\alpha$:
+\begin{equation}
+\Delta(d,x)=\alpha_{0,\tau}+\alpha_{1}j+\alpha_{2}j^{2}+\alpha_{3}h_{ij-1}+\alpha_{4}s_{ij}\label{eq:moving-cost}
+\end{equation}
+In expression \eqref{eq:moving-cost}, $\alpha_{0,\tau}$ is an intercept
+that varies by unobserved moving cost type $\tau$, $\alpha_{1}$
+and $\alpha_{2}$ are age effects, $\alpha_{3}$ measures the additional
+moving cost for owners, and $\alpha_{4}$ measures moving cost differential
+arising from family size $s_{ij}$.
+
+The unobserved moving cost type $\tau\in\{0,1\}$, where $\tau=1$
+indexes the high\textendash cost type, is a parsimonious way to account
+for the fact that in the data, some individuals never move. This is
+of particular relevance when thinking about owners, who may self\textendash select
+into ownership because they know they are unlikely to ever move. In
+the model this selection mechanism, together with any other factor
+that implies a high unobservable location preference, is collapsed
+into a type of person that has prohibitively high moving costs ($\alpha_{0,\tau=1}$
+is large) and thus is unlikely to move. Providing some real-world
+context for this setup, \cite{kocsar2019understanding} use consumer
+expectations data to find that for close to 50\% of the population,
+non-pecuniary moving costs approach Infinity.
+
+\paragraph{Restrictions.}
+
+I rule out the possibility of owning a home in region $d$ while residing
+in region $k$. This would apply for example for households who keep
+their home in $d$, rent it out on the rental market, and purchase
+housing services either in rental or owner\textendash occupied sector
+in the new region $k$. In my sample I observe less than 1\% of movers
+for which this is the case. Most likely this is a result of high
+managment fees or a binding liquidity constraint that forces households
+to sell the house to be able to afford the downpayment in the new
+region.\footnote{SIPP allows me to verify whether individuals possess any real estate
+other than their current home at any point in time. Fewer than 1\%
+of movers provide an affirmative answer to this.} 
+
+\subsection{Preferences}
+
+Period utility $u$ depends on the choice of region $k$,
+and whether this is different from the current region $d$. A move
+takes place in the former case, and the household stays in $d$ in
+the latter case. 
+\begin{equation}
+u\left(c,h,k;x_{it}\right)=\eta\frac{c^{1-\gamma}}{1-\gamma}+\xi(s_{ij})\times h-\mathbf{1}\left[d\neq k\right]\Delta\left(d',x_{it}\right)+A_{k}+\varepsilon_{ikt}\label{eq:utility}
+\end{equation}
+Notice that $\left(c,h,k\right)$ are \emph{current }period choices
+of consumption, housing status and location that affect utility. Those
+choices interact with the value of the state vector $x_{it}$, hence
+they depend on household sizes $s_{ij}$, and an additively seperable
+idiosyncratic preference shock for the chosen region $k$, $\varepsilon_{ikt}$.
+Parameter $\eta$ measures the scale at which consumption enters utility,
+while $\xi$ measures the importance of ownership at various household
+sizes $s$. Household size $s$ at age $j$ is a binary random variable,
+$s\in\left\{ 0,1\right\} $, relating to whether or not children are
+present in the household. It evolves from one period to the next in
+an age-dependent way as described in section \ref{subsec:Recursive-Formulation}.
+Moving costs $\Delta\left(k,x_{it}\right)$ are only incurred if in
+fact a move takes place. Finally, amenities in region $k$ are given
+by the fixed effect $A_{k}$.
+
+\subsection{Timing and State Vector}
+
+The state vector of individual $i$ at date $t$ when they are of
+age $j$ is given by 
+\[
+x_{it}=\left(a_{ij},z_{ij},s_{ij},\mathbf{F}_{t},h_{ij-1},d,\tau,j\right)
+\]
+where the variables stand for, in order, assets, individual income
+shock, household size, aggregate price vector, housing status coming
+into the current period, current region index, moving cost type and
+age.\footnote{A word of caution regarding the two time indices $j$ and $t$: For
+large parts of the exposition this distinction is irrelevant, i.e.
+saying $a_{ij}$ or $a_{it}$ is equivalent. However, in the estimation
+I will allow different cohorts $C_{1},\dots,C_{N}$ to experience
+different sequences of prices $\mathbf{F}_{C_{1}},\mathbf{F}_{C_{2}},\dots$,
+and therefore separating time and age will become necessary.}
+
+Timing within the period is assumed to proceed in two sub-periods:
+in the first part, stochastic states are realized and observed by
+the agent, and labor income is earned; in the second part the agent
+makes optimal decisions regarding consumption, housing and location.
+The chronological order within a period is thus as follows:
+\begin{enumerate}
+\item observe $\mathbf{F}_{t}$, $s_{it},z_{ij}$ and $\varepsilon_{it}=\left(\varepsilon_{i1t},\varepsilon_{i2t},\dots,\varepsilon_{iDt}\right)$,
+iid location taste shock 
+\item earn labor income in current region $d$, as a function of $q_{dt}$
+and $z_{ij}$
+\item given the state, compute optimal behaviour in all $D$ regions, i.e.
+\begin{enumerate}
+\item choose optimal consumption $c_{h}^{*}$ conditional on housing choice
+$h\in\{0,1\}$ in all regions $k$
+\item choose optimal housing $h_{d}^{*}(c_{h}^{*})$
+\item choose optimal location, based on the value of optimal housing in
+each location
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Recursive Formulation\label{subsec:Recursive-Formulation}}
+
+It is now possible to formulate the problem recursively. Following
+\cite{rust-bus}, I have assumed additive separability between utility
+and idiosyncratic location shock $\varepsilon$ as well as independence
+of the transition of $\varepsilon$ conditional on $x$. Furthermore,
+I assume that $\varepsilon$ is distributed according to the Standard
+Type 1 Extreme Value distribution.\footnote{This is also called the Standard Gumbel distribution. Notice that
+the \emph{Standard} part implies that location and scale parameters
+of the Gumbel distribution are chosen such that $E[\varepsilon]=\bar{\gamma}$,
+a constant known as the Euler-Mascheroni number, and that the its
+standard deviation is fixed at $\sqrt{Var(\varepsilon)=}\frac{\pi}{\sqrt{6}}$.}
+
+The consumer faces a nested optimization problem in each period. At
+the lower level, optimal savings and housing decision must be taken
+conditional on any discrete location choice, and at the upper level
+the discrete location choice with the maximal value is chosen, see
+\eqref{eq:V}. It is useful to define the conditional value function
+$v\left(x,k\right)$, which represents the optimal value after making
+housing and consumption choices at state $x$, while moving to location
+$k$, net of idiosyncratic location shock $\varepsilon$, in \eqref{eq:v}.
+Equation \eqref{eq:vbar} is a result of the distributional assumption
+on $\varepsilon$, which admits a closed form expression of the expected
+value function (also known as the \emph{Emax }function in this model
+class), whereby $\bar{\gamma}\approx0.577$ is Euler's constant. 
+
+\begin{eqnarray}
+V\left(x_{it}\right) & = & \max_{k\in D}\left\{ v\left(x_{it},k\right)\right\} \label{eq:V}\\
+v\left(x_{it},k\right) & = & \max_{c>0,h\in\left\{ 0,1\right\} }u\left(c,h,k;x_{it}\right)+\varepsilon_{ikt}+\beta\mathbb{E}_{z,s,\mathbf{F}}\left[\overline{v}\left(x_{it+1}\right)|z_{ij},s_{ij},\mathbf{F}_{t}\right]\label{eq:v}\\
+x_{it+1} & = & \left(a_{ij+1},z_{ij+1},s_{ij+1},\mathbf{F}_{t+1},h,k,j+1\right)\nonumber \\
+\overline{v}\left(x_{it+1}\right) & = & E_{\varepsilon}V\left(x_{it+1}\right)\nonumber \\
+ & = & \overline{\gamma}+\ln\left(\sum_{k=1}^{D}\exp\left(v\left(x_{it+1},k\right)\right)\right)\label{eq:vbar}
+\end{eqnarray}
+
+The final period models a terminal value that depends on net wealth
+and a term that captures future utility from the house after age $J$,
+as shown in equation \eqref{eq:final-period-value}.
+\begin{equation}
+V_{J}(a,h_{J-1},d)=\frac{\left(a_{J}+h_{J-1}p_{dt}\right)^{1-\gamma}}{1-\gamma}+\omega h_{J-1},\forall t\label{eq:final-period-value}
+\end{equation}
+The maximization problem in equation \eqref{eq:v} is subject to several
+constraints, which vary by housing status and location choice. It
+is convenient to lay them out here case by case.
+
+\subsubsection{Budget constraint for stayers, i.e. $d=k$\label{subsec:Budget-stayers}}
+
+Starting with the case for stayers, the relevant state variables in
+the budget constraint refer only to the current region $d$. In particular,
+given $(p_{dt},q_{dt})$, renters may choose to become owners, and
+owners may choose to remain owners or sell the house and rent.
+
+\paragraph{Renters.}
+
+The period budget constraint for renters (i.e. individuals who enter
+the period with $h_{ij-1}=0$) depends on their housing choice, as
+shown in equation \eqref{eq:budget-renter-stay}. In case they buy
+at date $t$, i.e. $h_{ij}=1$, they need to pay the date $t$ house
+price in region $d$, $p_{dt}$, otherwise they need to pay the current
+local rent, $\kappa_{d}p_{dt}$. Labor income is defined in equation
+\eqref{eq:budget-labor-income} and depends on the regional mean labor
+productivity level $q_{dt}$ as introduced in section \ref{subsec:Individual-Labor-Income}.
+Buyers can borrow against the value of their house and are required
+to make a proportional downpayment amounting to a fraction $\chi$
+of the value at purchase, while renters cannot borrow at all. This
+is embedded in constraint \eqref{eq:budget-rent-downpay}, which states
+that if a renter chooses to buy, their next period assets must be
+greater or equal to the fraction of the purchase price that was financed
+via the mortgage, or non-negative otherwise. Constraint number \eqref{eq:budget-interest}
+defines the interest rate function, which simply states that there
+is a different interest applicable to savings as opposed to borrowing,
+both of which are taken as exogenous parameters in the model. $\hat{r}$
+stands for the exogenous risk premium of mortages charged over the
+risk free rate. The terminal condition constraint is in expression
+\eqref{eq:terminal-condition}.
+
+\begin{eqnarray}
+a_{ij+1} & = & (1+r(a_{ij}))\left(a_{ij}+y_{ijdt}-c_{ij}-(1-h_{ij})\kappa_{d}p_{dt}-h_{ij}p_{dt}\right)\label{eq:budget-renter-stay}\\
+\ln y_{ijdt} & = & \eta_{d}\ln(q_{dt})+f(j)+z_{ij}\label{eq:budget-labor-income}\\
+a_{ij+1} & \geq & -(1-\chi)p_{dt}h_{ij}\label{eq:budget-rent-downpay}\\
+r(a_{ij}) & = & \begin{cases}
+r & \text{if }a_{ij}\geq0\\
+r^{m} & \text{if }a_{ij}<0
+\end{cases},r^{m}=r+\hat{r}\label{eq:budget-interest}\\
+a_{iJ}+p_{t}h_{iJ-1} & \geq & 0,\forall t\label{eq:terminal-condition}
+\end{eqnarray}
+
+
+\paragraph{Owners.}
+
+For individuals entering the period as owners $\left(h_{ij-1}=1\right)$,
+the budget constraint is similar except for two differences which
+relate to the borrowing constraint and transfers in case they sell
+the house. Owners are not required to make a scheduled mortgage payment
+\textendash{} a gradual reduction of debt, i.e. an increase in $a$,
+arises naturally from the terminal condition $a_{iJ}+p_{t}h_{iJ-1}\geq0,\forall t$,
+as mentioned above. Therefore the budget of the owner is only affected
+by the house price in case they decide to sell the house, i.e. if
+$h_{ij}=0$. In this case, they obtain the house price net of the
+proportional selling cost $\phi$, plus they have to pay rent in region
+$d$. Apart from this, the same interest rate function \eqref{eq:budget-interest},
+labor income equation \eqref{eq:budget-labor-income} and terminal
+condition \eqref{eq:terminal-condition} apply. 
+\begin{eqnarray}
+a_{ij+1} & = & (1+r(a_{ij}))\left(a_{ij}+y_{ijdt}-c_{ij}+(1-h_{ij})(1-\phi-\kappa_{d})p_{dt}\right)\label{eq:budget-own}\\
+a_{ij+1} & \geq & -(1-\chi)p_{dt}\label{eq:budget-own-borrow}
+\end{eqnarray}
+
+
+\subsubsection{Budget constraint for movers, i.e. $d\protect\neq k$\label{subsec:Budget-movers}}
+
+\paragraph{Renters.}
+
+For moving renters the budget constraint is close to identical, with
+the exception that \eqref{eq:budget-renter-stay} needs to be slightly
+altered to reflect that labor income is obtained in the current period
+in region $d$ before the move to $k$ is undertaken. 
+\begin{equation}
+a_{ij+1}=(1+r(a_{ij}))\left(a_{ij}+y_{ijdt}-c_{ij}-(1-h_{ij})\kappa_{k}p_{jt}-h_{ij}p_{kt}\right)\label{eq:budget-rent-move}
+\end{equation}
+
+
+\paragraph{Owners.}
+
+The budget constraint for moving owners depends on the house price
+in both current and destination regions $d$ and $k$ since the house
+in the current region must be sold by assumption. The expression $(1-\phi)p_{dt}$
+in \eqref{eq:budget-own-1} relates to proceeds from sale of the house
+in region $d$, whereas the square brackets describe expenditures
+in region $k$. Notice also that the borrowing constraint \eqref{eq:budget-own-borrow-1}
+now is a function of the value of the new house in $k$. It is important
+to note that this formulation precludes moving with negative equity
+if labor income is not enough to cover it. This is exacerbated in
+cases where the mover wants to buy immediately in the new region,
+since in that case the downpayment needs to be made as well, i.e.
+if $y_{ijdt}<a_{ij}+(1-\phi)p_{dt}-\chi h_{ij}p_{kt}$ then the budget
+set is empty and moving and buying is infeasible.\footnote{In my sample I observe 29 owners who move with negative equity (amounting
+to 3.4\% of moving owners). 78\% of those do buy in the new location,
+the rest rent. I do not observe whether or not an owner defaults on
+the mortgage. Accounting for this subset of the population would require
+to 1) assume that they actually defaulted and 2) it would substantially
+increase the computational burden. For those reasons the model cannot
+account for this subset of the mover population at the moment.} 
+
+\begin{eqnarray}
+a_{ij+1} & = & (1+r(a_{ij}))\left(a_{ij}+y_{ijdt}-c_{ij}+(1-\phi)p_{dt}-\left[(1-h_{ij})\kappa_{k}+h_{ij}\right]p_{kt}\right)\label{eq:budget-own-1}\\
+a_{ij+1} & \geq & -(1-\chi)p_{kt}h_{ij}\label{eq:budget-own-borrow-1}
+\end{eqnarray}
+
+
+\section{Solving and Simulating the Model \label{sec:Solving-and-Simulating}}
+
+The model described above is a typical application of a mixed discrete\textendash continuous
+choice problem. In the next section I will introduce a nested fixed
+point estimator, which requires repeated evaluation of the model solution
+at each parameter guess, thus placing a binding time-contraint on
+time each solution may take.
+
+The consumption/savings problem to be solved at each state, and its
+combination with multiple discrete choices and borrowing constraints,
+introduces several non-differentiabilities in the asset dimension
+of the value function. This makes using fast first order condition\textendash based
+approaches to solve the consumption problem more difficult.\footnote{There has recently been a lot of progress on this front. \cite{clausenenvelope}
+provide an envolope theorem for the current case, and the endogenous
+grid point method developed by \cite{carroll2006method}, further
+extended to accomodate (multiple) discrete choice as in \cite{fella2011generalized}
+and \cite{iskhakov2017endogenous} are promising avenues. I did not
+further pursue conditional choice probability (CCP) methods as in
+\cite{arcidiacono2008ccp} or \cite{IERE:IERE12001}, for example,
+because of data limitations. I experimented in particular with the
+latter paper's approach but soon had to give up because of too many
+empty cells in the empirical choice probability matrix (e.g. an entry
+like $\Pr(\text{own},\text{save}=s,\text{move}|X)$ would be empty
+for many values of $X$; in general, my problem was to recover the
+first stage decision rules form the data in a satisfactory kind of
+way).} 
+
+I solve the model in a backward-recursive way, starting at maximal
+age 50 and going back until initial age 20. In the final period the
+known value is computed at all relevant states. From period $J-1$
+onwards, the algorithm in each period iterates over all state variables
+and computes a solution to the savings problem at each combination
+of state and discrete choices variables (including housing and location
+choices). Notice that this state space spans all values for $\mathbf{F}_{t}$
+observed over the sample period. After this solution is obtained at
+a certain state, the discrete housing choice is computed, after which
+each conditional value function \eqref{eq:v} is known. 
+
+Once the solution is obtained, simulation of the model proceeds by
+using the model implied decision rules and the observed aggreate prices
+series $\mathbf{F}_{t}$ as well as their regional dependants $\left(q_{dt},p_{dt}\right)$
+to obtain simulated lifecycle data. As will become clear in the next
+section, this procedure needs to replicate the time and age structure
+found in the data, which is achieved by simulating different cohorts,
+starting life in 1967 and all successive years up until 2012. The
+model moments are then computed using the empirical age distribution
+found in the estimation sample as sampling weights. 
+
+\section{Estimation \label{sec:Estimation}}
+
+In this section I explain how the model is estimated to fit some features
+of the data. There is a set of preset model parameters, the values
+of which I either take from other papers in the literature or I estimate
+them outside of the structural model and treat them as inputs. The
+remaining set of parameters are estimated using the simulated method
+of moments (SMM) approach, whereby given a set of parameters, the
+model is used to compute decision rules of agents, which in turn are
+used to simulate artificial data. In what follows, I will first discuss
+estimation of the exogenous stochastic processes, and then turn to
+the estimation of the model preference parameters. 
+
+\subsection{Estimation of Exogenous Processes}
+
+\subsubsection*{VAR process for aggregates $Q_{t}$ and $P_{t}$}
+
+The VAR processes at the aggregate and regional level are estimated
+using a seemingly unrelated regression with two equations, one for
+each factor $Q_{t}$ and $P_{t},t=1967,\dots,2012$. I use real GDP
+per capita as a measure for $Q_{t}$, and the Federal Housing and
+Finance Association (FHFA) US house price index for $P_{t}$. Given
+that I am interested in the level of house prices (i.e. a measure
+of house \emph{value}), I compute the average level of house prices
+found in SIPP data for the year 2012 and then apply the FHFA index
+backwards to construct the house value for each year.\footnote{The GDP series is as provided by the Bureau of Economic Analysis through
+the FRED database. All non-SIPP data used in this paper are provided
+in an R package at \url{https://github.com/floswald/EconData}, documenting
+all sources and data-cleaning procedures.} 
+
+I reproduce equation \eqref{eq:VAR-process-agg} here for ease of
+reading:
+\begin{eqnarray*}
+\mathbf{F}_{t} & = & A\mathbf{F}_{t-1}+\nu_{t-1}\\
+\nu_{t} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Sigma\right)\\
+\mathbf{F}_{t} & = & \begin{bmatrix}Q_{t}\\
+P_{t}
+\end{bmatrix}
+\end{eqnarray*}
+
+The estimates from this equation are given in table \ref{tab:Estimates-VAR-agg} and are used by agents in the model to predict $\mathbf{F}_{t+1}$ given $\mathbf{F}_{t}$.
+
+\begin{table}
+\begin{centering}
+\begin{centering}
+\input{\Dropbox/data/sipp/VAR_agg-edit.tex}
+\end{centering}
+\par\end{centering}
+\caption{Estimates for Aggregate VAR process. $\{P_{t},Q_{t}\}_{t=1967}^{2012}$
+are time series for FHFA national house prices, and real GDP per capita,
+respectively.\label{tab:Estimates-VAR-agg}}
+\end{table}
+
+
+\subsubsection*{Aggregate to regional price mappings\label{subsec:Aggregate-to-regional}}
+
+The series for $q_{dt}$ is constructed as per capita personal income
+by region, with a measure of personal income obtained from the Bureau
+of Economic Analysis and population counts by state from intercensal
+estimates from the census Bureau. The price series by region, $p_{dt}$,
+comes from the same FHFA dataset as used above.
+
+\begin{eqnarray}
+\begin{bmatrix}q_{dt}\\
+p_{dt}
+\end{bmatrix} & = & \mathbf{a}_{d}\mathbf{F}_{t}+\eta_{dt}\nonumber \\
+\eta_{dt} & \sim & N\left(\begin{bmatrix}0\\
+0
+\end{bmatrix},\Omega_{d}\right)\label{eq:VAR-process-1}
+\end{eqnarray}
+
+The performance of this model in terms of delivered predictions from
+the aggregate state can be gauged visually in figures \ref{fig:mapping-P-p}
+and \ref{R-fig:mapping-Y-y}
+in the online appendix \ref{R-sec:DimReduce}, which also contains
+the respective parameters estimates in table \ref{R-tab:Aggregate-to-Regional-VAR}.
+It is important to understand the purpose of models \eqref{eq:VAR-process-agg}
+and \eqref{eq:VAR-process-1}: I do not want to make statistical inference
+based on the estimates from those models, which is something they
+may be ill-suited for, given the nature of the data. I am purely interested
+in their ability to replicate the observed regional prices, when fed
+the observed aggregate series for the purpose of approximating the
+evolution of the prices state space during simulation. In that regard,
+and by looking at \ref{fig:mapping-P-p} and \ref{R-fig:mapping-Y-y},
+I find they perform well.
+
+A different concern that might arise from looking at the models in
+\eqref{eq:VAR-process-1} is that it is unclear a priori how they
+in fact transform aggregate shocks into regional counterparts, as
+this of course depends on the value of the estimated parameters $\mathbf{a}_{d}$.
+An illustration of this translation of shocks is shown in appendix
+\ref{R-subsec:Transformation-of-Aggregate}.
+
+Finally, a reasonable concern is how good an approximation of a more
+fine-grained geography such as state\textendash level this setup based
+on Divisions is. In order to shed some light on this, I run pooled
+OLS on my entire prices dataset, where on the left hand side I have
+the price index for state $s$ in period $t$, $p_{st}$, and as explanatory
+variable the corresponding Census Division level index, $p_{dt}$.
+In table \ref{tab:-region-state-rsquared} we see the $R^{2}$
+measured from each regression, implying that the division index is
+explains a very large fraction of state-level variation throughout. The full regression output is in appendix
+\ref{R-subsec:State-Division}.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/data/FHFA/rsquareds.tex}
+\par\end{centering}
+\caption{$R^{2}$ from pooled OLS regression of state level indices $p_{st},q_{st}$
+on corresponding Division level indices $p_{dt},q_{dt}$.\label{tab:-region-state-rsquared}}
+\end{table}
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p}
+\par\end{centering}
+\caption{This figure shows the observed and predicted time series for mean
+income by Census Division. The prediction is obtained from the VAR
+model in \eqref{eq:VAR-reg-determ}, which relates the aggreate series
+$\left\{ Q_{t},P_{t}\right\} _{t=1968}^{2012}$ to mean labor productivity
+$\left\{ q_{dt}\right\} _{t=1968}^{2012}$ for each region $d$\emph{.
+}Agents use this prediction in the model, i.e. from observing an aggregate
+value $\mathbf{F}_{t}=\left(P_{t},Q_{t}\right)$ they infer a value
+for $q_{dt}$\emph{ }for each region above. \emph{\label{fig:mapping-P-p}}}
+\end{figure}
+
+\subsubsection*{Individual Income Process\label{subsec:Individual-Income-Process}}
+
+This part deals with the empirical implementation of equation \eqref{eq:budget-labor-income},
+which models log labor income at the individual level. I estimate
+the linear regression 
+\begin{eqnarray}
+\ln y_{ijdt} & = & \beta_{0}+\eta_{d}\ln q_{dt}+\beta_{1}j_{it}+\beta_{2}j_{it}^{2}+\beta_{3}j_{it}^{3}+\beta_{4}\text{college}_{it}+z_{it}\label{eq:indiv-labor-empirical}
+\end{eqnarray}
+where $\text{college}_{it}=1$ if $i$ has a college degree, zero
+else, and where $z_{it}$ are the regression residuals. The results
+of this are shown in the appendix in table \ref{R-tab:Regional-2-indiv-income}
+and figure \ref{R-fig:age-profiles}. The estimated residuals are
+used together with parameters $\beta$ to generate an income grid
+for individuals without college degree.
+
+\subsubsection*{Copula estimates for $z$ Transistions \label{subsec:copula-estimates}}
+
+The conditional distribution of $z$ for movers is specified as the
+density of a bivariate normal copula $G_{\text{move}}$, which is
+invariant to date and region.\footnote{A copula is a multivariate probability distribution function which
+connects univariate margins by taking into account the underlying
+dependence structure. For example, a finite state Markov transition
+matrix is a nonparametric approximation to a bivariate copula, and
+they converge as the number of states goes to infinity, see \cite{bonhomme2006modeling}.} This means I assume that the conditional probability of drawing $z'$
+in new region $k$ is the same regardless the origin location.\footnote{It would be straightforward to relax this assumption, but data limitations
+forced me to impose this restriction. }A copula is a multivariate distribution function with marginals that
+are all uniformly distributed on the unit interval. For example, if
+$F$ is a bi-dimensional CDF, and if $F_{i}$ is the CDF of the $i$-th
+margin, then the bivariate copula is given by
+\[
+C(u_{1},u_{2})=F\left(F_{1}^{-1}(u_{1}),F_{2}^{-1}(u_{2})\right)
+\]
+where $F_{i}^{-1}$ is the quantile function. There are different
+families of copulae, and I will use a normal copula. 
+
+To estimate the parameters of the copula, I take residuals $z_{it}$
+from equation \eqref{eq:indiv-labor-empirical} and I want to study
+their joint distribution for movers, i.e. $\left(z_{it},z_{it+1}\right)|d\neq k$.
+This object is informative for the question of whether individuals
+with a particularly high residual $z_{it}$ are likely to have a high
+residual $z_{it+1}$ after their move to region $k$, or not. In other
+words, we want to investigate the joint distribution of stayers $\left(z_{it},z_{it+1}\right)|d=k$
+and of movers $\left(z_{it},z_{it+1}\right)|d\neq k$ separately.
+I obtain an estimate for the copula parameter $\rho_{s}$ of 0.58,
+indicating substantial positive dependence for mover's $z$\footnote{$\rho_{s}$ is also called \emph{Spearman's rho,} and it is related
+to Pearson's correlation coefficient $\rho_{p}$ via $2\sin\left(\frac{\pi}{6}\rho_{s}\right)=2\sin\left(\frac{\pi}{6}0.58\right)=\rho_{p}=0.598$
+in this case of a gaussian copula. In particular, $\rho_{s}\in[-1,1]$.}. I report estimates and describe the full procedure in online appendix \ref{R-sec:Copula-Estimation}.
+The conditional distribution of $z$ for non-movers will be parameterized
+externally as explained next.
+
+\subsubsection*{Values for preset parameters}
+
+I take several parameters for the model from the literature, as shown
+in table \ref{tab:Preset-parameter-values}. The estimates for the
+components of the idiosyncratic income shock process for non-movers,
+i.e. the autocorrelation $\rho=0.96$ and standard deviation of the
+innovation $\sigma=0.118$ are taken from \cite{french_2005}. I set
+the financial transaction cost of selling a house, $\phi$, to 6\%
+in line with \cite{Li} and conventionally charged brokerage fees.
+The time discount factor $\beta$ is set to 0.96 which lies within
+the range of values commonly assumed in dynamic discrete choice models
+(e.g. \cite{rust-bus}). The downpayment fraction $\chi$ is set to
+20\%, which is a standard value on fixed rate mortgages and used throughout
+the literature. The coefficient of relative risk aversion could be
+estimated, but is in this version of the model fixed to 1.43 as in
+\cite{attanasio_weber}.
+
+To calibrate the interest rate for savings and for mortage debt, I
+follow \cite{sommer2013implications}, who use the constant maturity
+Federal Funds rate, adjusted by headline inflation as mesured by the
+year on year change in the CPI. They obtain an average value of 4\%
+for the period of 1977\textendash 2008, and I thus set $r=0.04$.
+For the markup $q$ of mortgage interest over the risk-free rate they
+use the average spread between nominal interest on a thirty year constant
+maturity Treasury bond and the average nominal interest rate on 30
+year mortgages. This spread equals 1.5\% over 1977\textendash 2008,
+therefore $\hat{r}=0.015$, and $r^{m}=0.055$.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/fit/preset.tex}
+\par\end{centering}
+\caption{Preset parameter values\label{tab:Preset-parameter-values}}
+\end{table}
+
+
+\subsection{Estimation of Preference Parameters\label{subsec:Estimation-of-Preference}}
+
+The parameter vector to be estimated by SMM contains the parameters
+of the moving cost function ($\alpha$), the parameter in the final
+period value function $\omega$, the population proportion of high
+moving cost types $(\pi_{\tau})$, the scale of consumption $\eta$,
+and the utility derived from housing for both household sizes, $\left(\xi_{1},\xi_{2}\right)$.
+We denote the parameter vector of length $K$ as $\theta=\left\{ \alpha_{0},\alpha_{1},\alpha_{2},\alpha_{3},\alpha_{4},\omega,\pi_{\tau},\eta,\xi_{1},\xi_{2}\right\} $. 
+
+Given $\theta$, the model generates a set of $M$ model moments $\hat{m}(\theta)\in\mathbb{R}^{M}$.
+After obtaining the same set of moments $m$ from the data, the SMM
+procedure seeks to minimize the criterion function 
+\begin{equation}
+L(\theta)=\left[m-\hat{m}(\theta)\right]^{T}W\left[m-\hat{m}(\theta)\right],\label{eq:objfunc}
+\end{equation}
+which delivers point estimate $\hat{\theta}=\arg\min_{\theta}L(\theta)$.
+Given that this is a tightly parameterized model, I cannot use the
+theoretically optimal weighting matrix $W$, because a range of economically
+important moments vanish in the objective function because they enter
+at different scales. This is equally true if I use the common strategy
+of assigning the inverse of the variances of the data moments. To
+solve this probem, I prespecify a $W$ as the identity matrix, but
+I modify the diagonal entries for some moments so that the corresponding
+derivative of the moment function is not negligible.\footnote{Notice that this procedure still leads to valid standard errors,
+since $W$ appears together with the covariance matrix of moments
+in the sandwich formula (see below). The weights are given by the
+values 10 for moments \texttt{cov\_move\_h, mean\_move, mean\_move\_ownFALSE,
+mean\_move\_ownTRUE} and \texttt{lm\_h\_age2}, 1.5 for all migratory
+flow moments \texttt{flow\_move\_to\_j}, and finally by 2 for\texttt{
+lm\_mv\_intercept} and\texttt{ cov\_own\_kids. }This adjustment is
+similar to what is done in \cite{lamadon2014productivity}.}
+
+The maximization of the objective in \eqref{eq:objfunc} is performed
+with a cyclic coordinate search algorithm, where cycles over the $K$
+parameters are defined by
+\begin{align*}
+\theta^{(2)} & =\arg\min_{\theta_{1}}L(\theta_{1},\theta_{2}^{(1)},\dots,,\theta_{K}^{(1)})\\
+\theta^{(3)} & =\arg\min_{\theta_{2}}L(\theta_{1}^{(2)},\theta_{2},\dots,,\theta_{K}^{(2)})\\
+ & \vdots\\
+\theta^{(K)} & =\arg\min_{\theta_{K}}L(\theta_{1}^{(K-1)},\theta_{2}^{(K-1)},\dots,,\theta_{K}).
+\end{align*}
+
+This procedure is repeated until $\theta$ has converged. Convergence
+was not affected by different starting values and occured in all cases
+after less than 10 iterations over the above scheme.\footnote{This optimization takes around 16 hours on a 10-instance cluster on
+AWS of type \texttt{t3.xlarge.} The procedure uses the function \texttt{optSlices}
+in julia package \url{https://github.com/floswald/MomentOpt.jl}.}
+
+Denoting $\theta_{0}$ the true parameter vector, by $\theta^{*}$
+the optimizer of the above program and $\Sigma$ the variance-covariance
+matrix of the asymptotic distribution of moment function errors as
+in 
+\[
+\sqrt{n}(m-\hat{m}(\theta^{*}))\to\mathcal{N}(0,\Sigma),
+\]
+
+the distribution of the parameter estimates $\hat{\theta}$ is given
+by the standard sandwich formula
+\[
+\sqrt{n}(\hat{\theta}-\theta_{0})\to\mathcal{N}\left(0,\left[dWd'\right]^{-1}dW\Sigma Wd'\left[dWd'\right]^{-1}\right)
+\]
+where $d\equiv\frac{\partial m(\theta)}{\partial\theta}$ is the derivative
+of the moment function, given as a $K\times M$ matrix in this case.
+The derivative is approximated via finite differences, and $\Sigma$
+is obtained by obtaining 400 draws from the moment function.\footnote{See function \texttt{get\_stdErrors} in the same julia package \url{https://github.com/floswald/MomentOpt.jl}.}
+
+\subsubsection*{Estimation Sample}
+
+My estimation sample is formed mainly out of averages over SIPP data
+moments covering the period 1997\textendash 2012, conditional on non\textendash college
+as described above. All moments are constructed using SIPP cross-sectional
+survey weights, and all dollar values have been inflated to base year
+2012 using the BLS CPI for all urban consumers.\footnote{\url{http://research.stlouisfed.org/fred2/series/CPIAUCSL}}
+Averaging over years was necessary to preserve a reasonable sample
+size in all conditioning cells. However, it also introduces an initial
+conditions and cohort effects problem, since, for example, a 30-year-old
+in 1997 faced a different economic environment over their lifecycle
+than a similar 30-year-old in 2012 would have. The challenge is to
+construct an artificial dataset from simulated data, which has the
+same time and age structure as the sample taken from the data \textendash{}
+in particular, agents in the model should have faced the same sequence
+of aggregate shocks as their data counterparts from the estimation
+sample. This requires to simulate individuals starting in different
+calendar years, taking into account the actual observed time series
+for regional house prices and incomes.
+
+\subsubsection*{Identification}
+
+Identification is achieved by comparing household behaviour under
+different price regimes. The variation comes from using the observed
+house price and labor productivity series in estimation, which vary
+over time and by region. The identifying assumption is that, conditional
+on all other model features, households must be statistically identical
+across those differing price regimes. In particular, this requires
+that household preferences be stable over time and do not vary by
+region.
+
+The structural parameters in $\theta$ are related to the moment vector
+$m(\theta)$ in a highly non-linear fashion. In general, all moments
+in $m(\theta)$ respond to a change in $\theta$. However it is possible
+to use graphical analysis to show how some moments relate more strongly
+to certain parameters than others.
+
+Regarding parameters of the moving cost function, parameters $\alpha_{0,\tau=0},\alpha_{3},\alpha_{4}$
+represent the intercept for low moving cost types, the coefficent
+on ownership and the effect of household size on moving costs, respectivley.
+They are related to, in order, the average moving rate $E[\text{move}]$,
+the moving rate conditional on owning $E[\text{move}|h_{t}=1]$, and
+the moving rate conditional on household size $E[\text{move}|s_{t}=1]$.
+The age effects $\alpha_{1},\alpha_{2}$ are related to the age\textendash coefficients
+of the auxiliary model for moving, defined in expression \eqref{eq:auxmod-move},
+as well as the the average proportion of movers in the last period
+of life $E[\text{move}|T]$. The relationship between mobility and
+ownership, as well as mobility and household size are also captured
+by the covariances $Cov(\text{move},h)$ and $Cov(\text{move},s)$,
+both of which are again related to the moving cost parameters $\alpha_{3}$
+and $\alpha_{4}$.
+
+The proportion of high moving cost types $\pi_{\tau}$ is related
+to the data moments concering the number of moves per person, and
+in particular the fraction of individuals who never moved, $E[\text{moved never}]$.
+The other two moments on the frequency of moves, $E[\text{moved once}]$
+and $E[\text{moved twice+}]$ are not part of the moment function,
+hence provide out of sample tests.
+
+Given that the house price processes in each region are exogenous
+to the model, the parameters measuring utility from ownership, $\xi_{1},\xi_{2}$
+are related to a relatively large number of moments: ownership rates
+by region and by household size, the covariance of owning with household
+size, and the age\textendash profile parameters from the auxiliary
+model of ownership in \eqref{eq:auxmod-h}. A crucial parameter in
+the model is $\eta$, which measures the scale of consumption in utility:
+It informs us how changes in consumption and therefore changes in
+income induced by migration, affect payoffs. $\eta$ is nonparametrically
+identified from differences in regional mean wages and moving probabilities,
+as demonstrated in \cite{kennan2003effect} section 5.4.2.\footnote{Thanks to a referee and the editor for pointing this out to me.}
+
+\subsection{Parameter Estimates and Moments \label{subsec:Parameter-Estimates}}
+
+The model fits the data moments fairly well overall. Figures \ref{fig:fit1}
+and \ref{R-fig:fit-2} in the online appendix provide a quick overview
+of how the model moments line up with their data counterparts.
+
+The moment vector $m$ contains conditional means and covariances,
+which are largely self-explanatory. I introduce two auxiliary models
+inluded in $m$ which relate to the age profiles of both migration
+and ownership. Both are linear probability models, where the dependent
+variable is either ownership status at the beginning of the period,
+$h_{it-1}$, or whether a move took place, denoted by $\text{move}_{it}=\mathbf{1}\left[d_{it}\neq d'_{it}\right]$:
+\begin{eqnarray}
+h_{it} & = & \beta_{0,h}+\beta_{1,h}t_{it}+\beta_{2,h}t_{it}^{2}+u_{h,it}\label{eq:auxmod-h}\\
+\text{move}_{it} & = & \beta_{0,m}+\beta_{1,m}t_{it}+\beta_{2,m}t_{it}^{2}+u_{m,it}\label{eq:auxmod-move}
+\end{eqnarray}
+Several tables constrasting model and data values as well as a detailed
+discussion of the fit this provides has been relegated to online
+appendix \ref{R-sec:Structural-Model-Fit}.
+
+The estimated parameter vector and standard errors are shown in table
+\ref{tab:Parameter-estimates}. It is not possible to attach a simple
+interpretation to parameter values in this nonlinear model, however,
+it is interesting to identification by looking at the standard errors.
+For most parameters, the gradient of the moment function is non-negligible,
+and hence, we get precisely estimated coefficients at conventional
+levels of statistical significance. The age coefficient in the cost
+function, $\alpha_{1}$, is the main non statistically significant
+exception to this.
+
+\begin{figure}
+\begin{adjustbox}{center}
+
+\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_mobility}\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_ownership}
+
+\end{adjustbox}
+
+\caption{Graphical device to show model fit. These plots show how moments from
+data ($x$ axis) line up with moments from simulated data ($y$ axis).
+Ideally, all points would lie on the 45 degree line. \label{fig:fit1}
+A detailed listing and additional plots are available in online appendix
+\ref{R-sec:Structural-Model-Fit}.}
+
+\end{figure}
+
+\begin{table}[p]
+\begin{centering}
+\input{\Dropbox/model/fit/params.tex}
+\par\end{centering}
+\caption{Parameter estimates and standard errors.\label{tab:Parameter-estimates}}
+\end{table}
+
+
+\section{Results\label{sec:Results}}
+
+I will now move on to describe the results of this paper. In order
+to fully appreciate the results, it is useful to first illustrate
+a set of migration elasticities, before answering the question of
+why owners move less through the lens of the model. Then I will present
+the main set of results pertaining to the value of the migration option.
+
+\subsection{Elasticities with respect to Regional Shocks}
+
+The model can be used to compute elasticities of population size and
+migratory flows with respect to regional income shocks. Those elasticities
+are an important precursor to the main result of the paper, because
+they illustrate the incentives of agents in the event of such a shock.
+To measure the elasticity of population or migratory inflows, I simulate
+the economy and apply an unexpected and permanent shock to $q_{d}$
+in division $d$ in the year 2000. The elasticities are computed by
+comparing population size or migration flows across shocked and baseline
+scenarios, normalizing the result by the size of the shock.\footnote{Notice that given the cohort setup of the simulator, in this and all
+other experiments that involve some notion of a ``shock'', it is
+necessary to simluate the model as many times as there are cohorts.
+This is so because each cohort experiences the shock at a different
+age, and the $p_{dt}$ and $q_{dt}$ are predetermined in the data.
+Members of the cohort born in 1985 reach the shock year $t^{*}$ at
+a different age than those from the 1984 cohort. The shock is implemented
+by immediately changing the policy functions when the shock arises,
+and expectations adapt to the new setting. Hence for cohort 1985,
+the policy functions look different than for the 1984 cohort, and
+so on.}
+
+The results by region are shown in table \ref{tab:elasticities}.
+First we observe that the average of population elasticities across
+regions is a value around 0.1, implying that on average, a 1\% permanent
+increase to regional income will lead to a 0.1\% increase of population
+size of the shocked area. Total inflows into regions increase in the
+range of approximately 0.8\% to 1.9\%, the inflow rate of renters
+increases more than the one of incoming buyers throughout. The next
+set of columns looks at the complement to those statistics, i.e. the
+elasticity of outflows. In the present case of a positive income shock,
+outflows decline in general as both renters and owners are less likely
+to move away. Table \ref{R-tab:elasticities-p} in the online appendix
+shows the corresponding elasticities for the case of a positive regional
+house price shock.
+
+\begin{table}[H]
+\begin{centering}
+\input{\Dropbox/model/fit/elasticities_q.tex}
+\par\end{centering}
+\caption{Elasticities with respect to an unexpected and permanently positive
+income shock by region. This table reports elasticities of population
+(i.e. the stock of individuals present in each period) and migration
+\emph{inflows} and \emph{outflows }elasticities. For example, the
+percentage change in renter inflows is defined as $\frac{\#[\text{move to }d\text{ as renter}|\text{shock}]-\#[\text{move to }d\text{ as renter}|\text{no shock}]}{\#[\text{move to }d\text{ as renter}|\text{no shock}]}$
+in each period, similarly for owners and for outflows. Elasticities
+are computed as averages over all years after the shock occurs. \label{tab:elasticities}}
+\end{table}
+
+
+\subsection{Why Do Owners Move Less?}
+
+There are several reasons for why owners move less than renters. First,
+they have higher moving costs as implied by a positive estimate for
+parameter $\alpha_{3}$. Second, owners pay a transaction cost each
+time they sell the house (proportional cost $\phi$), so any (expected)
+gains from migration need to be traded off against this financial
+cost. Third, owners have to comply with the downpayment constraint
+if they wish to buy in the new region, which puts restrictions on
+the consumption paths of movers. Most owners will indeed return to
+ownership status in the new region, given the utility benefits, and
+given that in principle they are above the downpayment constraint.
+Fourth, ownership is correlated with larger household size $(s=1)$,
+which itself carries a higher moving cost $(\alpha_{4})$. Last but
+certainly not least, a large proportion of owners is of the stayer
+type because they self-select into ownership as was discussed in section
+\ref{subsec:Moving}. The ownership rate conditional only on moving
+cost type is 0.59 for movers $(\tau=0)$ vs 0.64 for stayers $(\tau=1)$.
+
+To investigate those issues in more detail, I now sequentially remove
+owner-specific moving costs in table \ref{tab:Decomposing-owner's-moving}
+from the model. We should imagine an approximation to the partial
+derivative of the moment function of the model with respect to the
+parameters $\alpha_{3}$ and $\phi$. If we see a large reaction of
+the model\textendash generated moments after setting a certain cost
+component to zero, we can conclude that this component is relatively
+important to explain the data. Starting therefore in the top panel
+of table \ref{tab:Decomposing-owner's-moving}, we see changes in
+three key moments when considering first all types of households.
+The first row shows the percentage change in the aggregate ownership
+rate for different configurations of the model parameters. Setting
+the utility cost of moving for owners to zero in the column labelled
+$\alpha_{3}=0$ increases the ownership rate by 5.6\%, because this
+makes owning a more attractive option in case of the need to migrate.
+Similarly, abolishing the financial transaction cost from selling
+in column $\phi=0$ leads to an increase of 2.7\%. In the final column
+$\alpha_{3}=\phi=0$, combining both changes, we see an increase of
+8.2\% in ownership. 
+
+The second row shows the same experiment for the overall migration
+rate. Here the direct impact of $\alpha_{3}=0$ is larger than removal
+of the financial transaction cost, and it leads to roughly a 4\% increase
+in overall migration. The third row finally conditions on owners in
+order to emphasize that most migratory movement comes from renters
+to start with, so the previous experiment masks a great deal of heterogeneity.
+Here we see a large increase of 140\% in the migratory propensity
+of owners after removing the $\alpha_{3}$ cost component. Overall,
+the first panel shows that both cost components affect both ownership
+and migration simulateneously, and that the impact of removing $\alpha_{3}$
+is more important.
+
+The bottom panel of the table repeats this exercise while conditioning
+only on the \emph{mover }population, i.e. types $\tau=0$. This helps
+to further clarify the top panel, where the results are from a mixture
+of stayers and movers. It is interesting to note that among the movers,
+the impacts on ownership rate are greater than for the population
+at large, whereas those on migration of owners are smaller throughout.
+The former is a consequence of \emph{stayers }being overrepresented
+in the group of owners already, hence we see a smaller increase in
+ownership in the top panel. The latter effect has to do with this
+change in composition of renters versus owners: given that in the
+mover population we register a larger increase in ownership, the denominator
+in \emph{Migration | Own }becomes larger, hence the value decreases.
+Finally, the fact that the increase in migration rate is identical
+across both panels shows that any additional mobility can come only
+from the subpopulation of mover types.
+
+The conclusion from this exercise is that including utility cost $\alpha_{3}$
+over and above the assumed financial transaction cost $\phi$ (6\%)
+in the model is important in order to fit the data, both in terms
+of propensity to move and in terms of changes in the ownernship rate.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/experiments/decompose_MC/decompose_MC.tex}
+\par\end{centering}
+\caption{Decomposing owners' moving costs. This table shows the percentage
+increase in three key model moments related to ownership and migration
+as we successively remove moving costs for owners. Compares baseline
+statistics to scenarios with no additional moving cost for owners
+($\alpha_{3}=0$), no financial transaction costs from selling the
+house $(\phi=0)$, and neither of the two $(\alpha_{3}=\phi=0)$.
+The top panel is for the entire population, the bottom panel conditions
+on mover types $(\tau=0)$ only.\label{tab:Decomposing-owner's-moving}}
+\end{table}
+
+
+\subsection{Owner Regret}
+
+Individuals in the model decide whether to buy a house or rent based
+on a multi\textendash facetted tradeoff involving the size of available
+houses, their preference for owned property and their expectations
+about future moves and prices. Buying a house is consequential for
+later mobility decisions, as we have seen, because owners face higher
+moving costs. A pertinent question question in this context is whether
+owners actually \emph{regret }having bought their house, if the state
+of the world changes in an unforeseen way? For example, imagine that
+expectations about future prices were wrong, in the sense that there
+is an unexpected shock. Imagine further that that owner finds themselves
+with a greatly devalued house \textendash{} how big is the cost of
+being an owner in this new circumstance? 
+
+We want to assess this cost by looking at how much an owner in the
+shocked scenario would be willing to pay to become a comparable renter.
+Establishing comparability is important, because in general owners
+are of higher networth than renters (by virtue of the downpayment
+requirement and subsequent capital gains). Therefore the experiment
+proceeds by establishing an asset level $a^{*}$ in the baseline such
+that, with some abuse of notation, $V^{own}(a^{*})=V^{rent}(0)$,
+in other words where an owner's value is equal to a renter's value
+with zero assets. $a^{*}$ is in general a negative number, proportional
+to the greater networth of owners and the additional utility derived
+from owning. Then, we shock either $q$ or $p$ at a certain age in
+a given region, and we want to know how much the owner would be willing
+to pay in order to convert to a renter, measured at the pre-shock
+reference level $a^{*}$.\footnote{Note that this experiment measures something different from the value
+of the option \emph{sell }of the owner. Since, if it was optimal to
+become a renter by selling, they would of course make this choice.
+Here we know that before the shock, the owner is as well-off at $a^{*}$
+as the zero asset renter, and we want to know how this relationship
+changes in the shocked economy, again measured at $a^{*}$.} 
+
+The results of this exercise are displayed in table \ref{tab:Owner-WTP}
+for a permanent and unexpected reduction in the level of either $q$
+or $p$ of 10\% in a given Division in year 2000. We observe first
+that in the column corresponding to the $q$ shock, there are relatively
+small dollar amounts (table is in 1000 of dollars), and some are negative.
+The negative entries imply that the owner would not be willing to
+pay anything after income drops by 10\%. The intuition here is that
+in the case of an income shock, the renter is equally affected, hence
+there is only a small desire to become, or no desire at all to become,
+a renter with zero assets and a significantly reduced income. This
+is also the case because owners still have their housing capital to
+fall back on, which is unaffected from the shock in this scenario.
+While we saw previsously in table \ref{tab:elasticities} that renters
+respond stronger to shocks than owners in terms of increased emigration,
+for obvious reasons, the expected gains in terms of lifetime value
+do not seem to compensate an owner to want to switch to that particular
+type of renter in most regions and take advantage of less costly migration.
+
+Quite different to this is the outcome of a price shock. We see in
+the first column of table \ref{tab:Owner-WTP} that owners would be
+willing to pay amounts ranging from about 14,700 and up to 25,800
+dollars in order to be converted to a renter with zero assets after
+the unexpected price reduction. This experiment shares some features
+of mortgage default (which is not modeled), in that the owner evaluates
+a ``reset'' option here: the mortgage debt burden is increased substantially
+by the price drop, so much so that the owner would be willing to pay
+substantial amounts to get converted to a renter with zero assets.
+Thus, to give an answer to the initial question of how much owners
+regret to having bought when things turn out not as expected, or on
+the contrary, how much they would value being a ``free but asset-poor''
+renter again in case of a price shock, one could say that this lies
+in between 15 and 25 thousand dollars. 
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/experiments/ownersWTP2.tex}
+\par\end{centering}
+\caption{Owners willingness to pay to convert to a comparable renter after
+an unexpected 10\% reduction in price or income arises. In 1000 of
+dollars.\label{tab:Owner-WTP}}
+
+\end{table}
+
+
+\subsection{The value of Migration\label{subsec:The-value-of}}
+
+This section presents a measure of how much individuals care about
+having the option to migrate across regions. The question is motivated
+by relatively low migratory flows across regions, 1.32\% of households
+per year, as initially stated. Do low flows imply low value? And how
+does this valuation depend on age, location, ownership status, and
+current state of the business cycle? This value is related to what
+in \cite{yagan} is called \emph{migratory insurance.} Here, I do
+not infer this from the amount of migration after a local shock has
+occured, ex post, but I consider how much individuals value to have
+the option to migrate ex ante, in case a shock were to occur.
+
+I will attempt to answer this question by first simulating the model
+in the baseline equilibrium, i.e. at observed regional prices and
+incomes and importantly, \emph{with migration} as an option. Subsequently
+I will compare this to a counterfactual equilibrium \emph{without
+}the migration option, i.e. migration is shut down in the entire economy.\footnote{Even though trade is absent from the model, it helps the interpretation
+to assume that existing trade channels between regions remain intact
+throughout the experiment, i.e. we only expect changes from the absence
+of individuals changing location.} The welfare measure in terms of compensating consumption is defined
+in appendix \ref{R-sec:Welfare-Measure}.
+
+Before delving into the results it is paramount to clarify the role
+of the partial equilibrium assumption in this counterfactual.\footnote{Thanks to an anonymous referee for helping me to clarify this point.}
+Assuming that the model is well-specified, the structural parameters
+are such that given prices and incomes, the resulting decision rules
+of agents in the model are correct. This mapping from model to data
+was shown to be satisfactory in section \ref{subsec:Parameter-Estimates}.
+What this model cannot deliver is a prediction of how the \emph{exogenous}
+series for $q$ and $p$ would change if we were to abolish migration.
+To address this concern at least to some degree, I will present different
+scenarios of this counterfactual, a baseline version with prices unchanged,
+and a set of experiments with changed prices in the appendix. There
+is no direct empirical guidance on the effects of such a drastic experiment
+on regional house prices and labor income levels, except maybe that
+\emph{in general, }wage effects of immigration are \emph{small}.\footnote{I take this insight from the literature that assesses the impact of
+immigrants on native wages, exemplified by, for example, \cite{dustmann2008labour,dustmann2013effect,card2012comment},
+which finds negligible negative impacts of immigrants on wages of
+low-skilled workers, and slightly positive ones elsewhere along the
+income distribution. Needless to say that the current model is a much
+simplified version of those studies in terms of skill composition
+of the labor force and indeed wage determination \textendash{} it
+abstracts from immigrants (i.e. different skills groups and wage determination)
+altogether, hence it is probably too remote in order to directly use
+their results.} Absent such empirial evidence, I try to cover the most relevant cases.
+Version two thus decreases both regional incomes and prices by 1\%
+relative to their observed trajectories after the shutdown of migration.
+This could arise as a result of decreased firm productivity from the
+lack of suitable (migrant) skills, which leads to lower disposable
+income in a given region and hence a reduction in house prices. Version
+three simulates a bust scenario, where incomes decline by 5\% and
+house prices by 10\%. Summing up, this experiment is available in
+three versions:
+\begin{enumerate}
+\item Baseline $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$: Loss of migrants has
+negligible impact on regional prices.
+\item -1\% shock to $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$: Local productivity
+suffers a small loss.
+\item -5\%/-10\% shock: Large productivity decline and amplified effect
+on house prices.
+\end{enumerate}
+Starting with the scenario where prices are unaffected by the experiment,
+table \ref{tab:shutdown-cons-base} provides the main results of the
+paper. In the first row the consumption compensation demanded in the
+entire economy, for different subsets of the population, including
+young, old, owners at age 30, renters at age 30, individuals whose
+average $z$ history is lower than the 20-th percentile of the distribution
+of $z$ histories (i.e. \emph{poor }individuals), same for people
+above thee 80-th percentile, and finally the entire population. The
+values in the table stand for the per period increase in consumption
+that would make individuals indifferent between baseline and migration
+shutdown, as a percentage of what they had optimally chosen to consume
+in the policy environment. Hence it is a measure for their willingness
+to pay to maintain migration. For example, in the first row of table
+\ref{tab:shutdown-cons-base}, the group of young people (with age
+below half of their lifespan) would demand an increase of 30.8\% of
+optimal per period consumption. This amount is lower for old people
+at 8\%, which is intuitive since they forgo fewer periods where migration
+could have been optimally chosen. We can look at the same measure
+by ownership status at age 30: owners at that age demand 4.2\% more
+consumption, while same aged renters demand more, i.e. 21.7\%. Part
+of this difference comes from the fact that stayer types know that
+they will not move, hence are more likely to buy, hence suffer less
+from a removal of the migration option. The next two columns condition
+the measure on position in the distribution of realized $z$ draws.
+It is evident that people who have relatively favourable draws of
+$z$, value migration more in most regions, which has to do with the
+shape of the estimated transition matrix for movers, $G_{\text{move}}$
+as illustrated in appendix \ref{R-sec:Copula-Estimation}. (High $z$
+movers can expect another high $z$ draw in the new location.) As
+an average over all individuals treated in this experiment (column
+labelled ATE), the corresponding number is 19.2\% of consumption compensation
+demanded. 
+
+In the same table we continue with this exercise and split the sample
+by region to understand how heterogeneous those valuations are distributed.
+Perhaps not surprisingly, there is a lot of variation in how individuals
+feel about removal of the migration option by region. In general,
+living in a high-income, high-price region like Pacific accentuates
+the difference between young and old even more (54.7\% vs -7.8\% compensation
+demanded). Put simply, this is because high prices are good for owners,
+who are more likely to stay in the region no matter what, but bad
+for renters who cannot afford to buy a house. They would prefer to
+migrate at some point if necessary and therefore suffer disproportionately
+from the removal of the migration option. By way of summary of this
+table, individuals value having the option of migration to a large
+degree and in the range of -11\% (owners aged 30 in South Atlantic)
+and up to 60\% of per period consumption. Negative entries imply an
+\emph{un}willingness to pay for the migration option: this applies
+to groups who are (young) owners in high-price regions.
+
+Versions two and three of this experiment are described in appendix
+\ref{R-subsec:Migration-Shutdown}, where the general conclusions
+from this series of results goes through, with the qualification that
+the bigger the price shock after migration shutdown, the more individuals
+value the baseline. This sequence of counterfactuals tells us that
+the estimates from the baseline scenario with observed prices provide
+a lower bound. If in reality a general equilibrium effect would change
+regional incomes and prices downwards, the valuation of the migration
+option would be larger than displayed in table \ref{tab:shutdown-cons-base}.
+
+\begin{table}
+\begin{centering}
+\input{\Dropbox/model/experiments/noMove_region_z_ctax.tex}
+\par\end{centering}
+\caption{Consumption compensation demanded after migration shutdown in the
+baseline scenario (regional prices are unaffected by the shutdown
+of migration). The numbers in this table represent the required percentage
+scaling factor $\Delta c$ by which optimal consumption under the
+shutdown policy would have to be increased in order for individuals
+to be indifferent to the baseline. Positive values indicate people
+disapproving the policy, negative values indicate the opposite. The
+columns are, in order, \emph{Young }(population below half of total
+lifetime $J$), \emph{Old }(complement to \emph{Young})\emph{, own,30
+}(population who owns at age 30), \emph{rent,30 }(population who rents
+at age 30), $z_{q}$\emph{ }(population below/above the $q$-quantile
+of the lifetime idiosyncratic income shock distribution). \emph{A}
+value of 30.8\% as in the first row of the second column means that
+young people would demand an increase of 30.8\% of the consumption
+level which they had optimally chosen under the policy, in order for
+them to be indifferent.\label{tab:shutdown-cons-base}}
+\end{table}
+
+
+\subsection{Effects along the Lifecycle and by Ownership Status}
+
+We have shown that lifetime utility changes dramatically with the
+removal of migration. We now go further and investigate where those
+changes come from, i.e. how do the state variables of individuals
+in the model change? In the following, we focus only on the main counterfactual
+with constant prices.
+
+Starting out with the lifecycle considerations, the results are presented
+in figure \ref{fig:noMove-lifecycle}. The first panel in the top
+row in some ways repeats the insights from the previous section: younger
+individuals suffer particularly, experiencing a loss as in lifetime
+utility of almost 4\% in the first period of life. As time goes by,
+the losses get smaller until they vanish towards the end of the lifecycle.
+We observe in the next panel that removing migration implies a substantial
+drop in average income at all ages. This implies that some profitable
+moves in terms of better wage draw could not be completed as a result
+of the policy. 
+
+The next two panels for $a$ and $h$ are best viewed in conjunction,
+as they are tightly connected: After migration is abolished, the aggregate
+homeownership rate increases strongly for 30 year-olds, and with it
+the outstanding mortgage balance as measured by negative net assets
+$a$. In light of the fixed regional price series $\{q_{dt},p_{dt}\}_{t=1997}^{2012}$
+this result may be somewhat surprising. We observe that after migration
+is abolished, homeownership rises by about 39\% at age 30. Notice
+that this increase implies that far more than only the previous migrants
+now choose to buy, as this was relatively small group of people. The
+increase in ownership comes from the fact that potential future moves\emph{
+}of \emph{all individuals} have been ruled out, and therefore a much
+larger number of them finds it profitable to take out a mortgage and
+buy in the current (constant) location. This suggests that absent
+the option to move to a better region in response to shocks, the best
+thing to do is is to invest in more enjoyable housing in the current
+region. In particular, this implies that the aggregate mortgage balance
+increases dramatically, hence the $\%\Delta a$ panel shows negative
+percentage changes for most ages. The non-monotonicity in that figure
+occurs because around age 37 the group of mortgage holders is considerably
+poorer than in the baseline, where the asset balance starts to turn
+positive for individuals with high labor incomes of that age.
+
+\begin{figure}
+\begin{centering}
+\input{\Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_age.tex}
+\par\end{centering}
+\caption{Impact of \emph{migration shutdown }along the lifecycle. Each line
+shows the percentage difference between baseline conditional mean
+of a certain variable of interest and the conditional mean under the
+policy. The means are conditional on age. The labels stand for, in
+order:$v$ value function, $y$ is individual labor income, $a$ is
+asset position and $h$ is the ownership status. \label{fig:noMove-lifecycle}}
+\end{figure}
+
+In figure \ref{fig:noMove-age30} I look at the experiment by measuring
+the effects for individuals who did and did not own their house by
+the age of 30. It shows that the bulk of the previous lifecyle results
+must be driven by young renters, as opposed to owners. Young owners
+in figure \ref{fig:noMove-age30} have a smaller utility loss, as
+shown in panel $v$ which displays lifetime utility. The second panel
+again illustrates that it is young renters who miss out on profitable
+moves in terms of individual income $y$. The remaining panels for
+$a,h$ and total wealth $w$ all show once more that young renters
+take on more mortgage debt in order to buy houses in their current
+(now, permanent) region.
+
+In summary, the results in this section show that moving costs differ
+greatly by ownership status; that the resulting elasticities of migration
+with respect to regional shocks differ greatly as well; and finally,
+that individuals place a large consumption value on having the option
+to migrate across Census Division borders, ranging from negative values
+(some groups prefer not to have the option) and up to about 19\% of
+per period optimal consumption.
+
+\begin{figure}
+\begin{centering}
+\input{\Dropbox/model/data_repo/out_graphs_jl/noMove_ps_1.0_ys_1.0_own30.tex}
+\par\end{centering}
+\caption{Impact of \emph{migration shutdown }by ownership status at age 30.
+Bars show the percentage difference between the conditional mean of
+the respective variable conditional on owernship status at age 30
+in the baseline, and the shutdown policy.\label{fig:noMove-age30}The
+labels stand for, in order: $v$ value function, $u$ period payoff,
+$y$ is individual labor income, $a$ is asset position, $h$ is the
+ownership status, and $w$ is total wealth.}
+\end{figure}
+
+\newpage
+
+\section{Conclusion}
+
+The main result of this paper is to show that despite average migration
+rates being low, the option value associated with the possibility
+to leave a location in a world with regional shocks to house prices
+and labor income is large. Removing the option to migrate in the model
+implies an associated reduction in per period consumption that ranges
+from 0\% (or even implied increases in consumption) up to 19\%
+depending on the type of household one considers. Variations in this
+measure vary widely with age, ownership status, original location,
+and point in the business cycle. To arrive at this result, I construct
+a lifecycle model which includes homeownership as a choice variable
+next to savings and location choices, which I then fit to SIPP data
+and use to make counterfactual experiments. Considering homeownership
+is motivated by the fact that well over 60\% of the US population
+are owners, and the observation that owners exhibit vastly different
+migratory behaviour than renters. The model places particular emphasis
+on a close representation of the observed house price and income series,
+both of which exhibit strong correlation of regional shocks. These
+results resonate with the findings in \cite{yagan} in the sense that
+both papers provide an estimate of \emph{migratory insurance}. Here
+I provide a well-defined value in terms of consumption, whereas the
+unit of measurement is more abstract in \cite{yagan}.
+
+The present model delivers structural estimates for differential moving
+costs between owners and renters, over and above financial transaction
+costs. It is shown that this moving cost component is first order
+in explaining differential moving rates between renters and owners.
+The results are important for policy makers in terms of both housing
+and labor markets, since they illustrate the implied costs of policies
+which might reduce mobility, such as implicit or explicit subsidies
+to homeownership, for example.
+
+\newpage
+
+\bibliographystyle{ecta}
+\bibliography{references}
+
+\end{document}

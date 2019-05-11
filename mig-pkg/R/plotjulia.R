@@ -218,7 +218,7 @@ plot_moment_fit <- function(){
 	d0 = data.table(d)
 	d = d0[(!(moment %like% "lm_") & !(moment %like% "move_distance") & !(moment %like% "neg_equity"))]
 	d[m>-0.5 & m<0.3, type := "Mobility Rates"]
-	d[m>0.3 & m<1.0, type := "Ownership Rates"]
+	d[m>0.3 & m<0.7, type := "Ownership Rates"]
 	d[m>1.0 & m < 300 , type := "Wealth Moments"]
 
 	lms = d0[moment %like% "lm_"]
@@ -228,20 +228,21 @@ plot_moment_fit <- function(){
 	s = split(d,d$type)
 
 	s$`Mobility Rates`$lab = s$`Mobility Rates`$moment
-	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved twice+"
+	# s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved twice+"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved1"]$lab = "moved once"
+	s$`Mobility Rates`[s$`Mobility Rates`$moment == "moved2plus"]$lab = "moved 2+"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "cov_own_kids"]$lab = "Cov(own,s)"
 	s$`Mobility Rates`[s$`Mobility Rates`$moment == "flow_move_to_Mnt"]$lab = "move to Mountain"
 
-	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.17))+ scale_x_continuous(name="data",limits=c(-0.01,0.17)) + theme_bw() + geom_abline(intercept=0,slope=1)  + ggtitle("Mobility and Covariances") + mytheme + geom_text(data=subset(s$`Mobility Rates` ,lab %in% c("moved once","moved twice+","Cov(own,s)","move to Mountain")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
+	p1 = ggplot(s$`Mobility Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(-0.01,0.17))+ scale_x_continuous(name="data",limits=c(-0.01,0.17)) + theme_bw() + geom_abline(intercept=0,slope=1)  + ggtitle("Mobility and Covariances") + mytheme + geom_text(data=subset(s$`Mobility Rates` ,lab %in% c("moved once","moved 2+","Cov(own,s)","move to Mountain")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
 
 
 	s$`Ownership Rates`$lab = s$`Ownership Rates`$moment
-	s$`Ownership Rates`[s$`Ownership Rates`$moment == "moved0"]$lab = "moved never"
+	# s$`Ownership Rates`[s$`Ownership Rates`$moment == "moved0"]$lab = "moved never"
 	s$`Ownership Rates`[s$`Ownership Rates`$moment == "mean_own_NwE"]$lab = "E[own|NwE]"
 	s$`Ownership Rates`[s$`Ownership Rates`$moment == "mean_own_WSC"]$lab = "E[own|WSC]"
 
-	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(0.5,1))+ scale_x_continuous(name="data",limits=c(0.5,1)) + theme_bw() + geom_abline(intercept=0,slope=1) + ggtitle("Homeownership Rates and Non-movers")+ mytheme + geom_text(data=subset(s$`Ownership Rates` ,lab %in% c("moved never","E[own|NwE]","E[own|WSC]")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
+	p2 = ggplot(s$`Ownership Rates`,aes(x=m,y=mod)) + geom_point() + scale_y_continuous(name="model",limits=c(0.4,0.65))+ scale_x_continuous(name="data",limits=c(0.4,0.65)) + theme_bw() + geom_abline(intercept=0,slope=1) + ggtitle("Homeownership Rates")+ mytheme + geom_text(data=subset(s$`Ownership Rates` ,lab %in% c("E[own|NwE]","E[own|WSC]")),aes(x=m,y=mod,label=lab),hjust=0.5,vjust=-0.5,size=3)
 
 
 	s$`Wealth Moments`$lab = s$`Wealth Moments`$moment
@@ -256,7 +257,7 @@ plot_moment_fit <- function(){
 	ggsave(p1,width=5,height=5,file="~/Dropbox/research/mobility/output/model/fit/fit_mobility.pdf")
 
 
-	return(list(p1=p1,p2=p2))
+	return(TRUE)
 
 }
 
@@ -1534,9 +1535,6 @@ Export.IncomeProcess <- function(dat,writedisk,nocollege=FALSE){
 	# this is not what you want!
 	rhos = lapply(divs,function(x) lm(resid ~ -1 + Lresid,cd[Division==x]))
 	names(rhos) = divs
-
-	# why are those rhos so low?????
-	# use 0.97 as in french 2005 for now.
 
 	# add the 0.2 and 0.95 percentiles of income in each region 
 	# to scale the shocks

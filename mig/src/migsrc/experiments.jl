@@ -545,28 +545,41 @@ function exp_shockRegion(opts::Dict;same_ids=false)
 	return (out,sim0,sim1)
 end
 
+function zerodiv(num::Vector,denom::Vector)
+	z = denom .≈ 0.0
+	nz = .!(z)
+	r = zeros(denom)
+	r[nz] = num[nz] ./ denom[nz] 
+	return r
+end
+
+
 function get_elas(df1::Dict,df2::Dict,opts::Dict,j::Int)
 
 	ela = join(df1[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],df2[j][[:All,:Owners,:Renters,:Net,:Total_in,:Total_out,:Net_own,:Own_in_all,:Own_out_all,:Net_rent,:Rent_in_all,:Rent_out_all,:out_rent,:out_buy,:in_rent,:in_buy,:Renters_out,:Owners_out,:year]],on=:year,makeunique=true)
 
 
 	ela1 = @linq ela |>
-			@transform(d_all = (:All_1 - :All) ./ :All, 
-				d_out = (:Total_out_1 - :Total_out) ./ :Total_out,
-				d_own_out = (:Owners_out_1 - :Owners_out) ./ :Owners_out,
-				d_rent_out = (:Renters_out_1 - :Renters_out) ./ :Renters_out,
-				d_own = (:Owners_1 - :Owners)./:Owners, 
-				d_rent = (:Renters_1 - :Renters)./:Renters,
-				d_net_own=(:Net_own_1 - :Net_own)./ :Net_own,
-				d_net_rent=(:Net_rent_1 - :Net_rent)./ :Net_rent,
-				d_total_in = (:Total_in_1 - :Total_in)./:in_rent,
-				d_in_rent = (:in_rent_1 - :in_rent)./:in_rent,
-				d_in_buy = (:in_buy_1 - :in_buy)./:in_buy,
-				d_out_rent = (:out_rent_1 - :out_rent)./:out_rent,
-				d_out_buy = (:out_buy_1 - :out_buy)./:out_buy,
-				year=:year, pshock = 1.0, yshock = 0.0) 
+			@transform(d_all = (:All_1 - :All)                 ./ :All        ,
+			d_out            = (:Total_out_1 - :Total_out)     ./ :Total_out  ,
+			d_own_out        = (:Owners_out_1 - :Owners_out)   ./ :Owners_out ,
+			d_rent_out       = (:Renters_out_1 - :Renters_out) ./ :Renters_out ,
+			d_own            = (:Owners_1 - :Owners)           ./ :Owners     ,
+			d_rent           = (:Renters_1 - :Renters)         ./ :Renters    ,
+			d_net_own        = (:Net_own_1 - :Net_own)         ./ :Net_own    ,
+			d_net_rent       = (:Net_rent_1 - :Net_rent)       ./ :Net_rent   ,
+			d_total_in       = (:Total_in_1 - :Total_in)       ./ :in_rent    ,
+			d_in_rent        = (:in_rent_1 - :in_rent)         ./ :in_rent    ,
+			d_in_buy         = (:in_buy_1 - :in_buy)           ./ :in_buy     ,
+			d_out_rent       = (:out_rent_1 - :out_rent)       ./ :out_rent   ,
+			d_out_buy        = (:out_buy_1 - :out_buy)         ./ :out_buy    ,
+			year             = :year, pshock                                    = 1.0, yshock = 0.0)
 
-	
+	# set infinity entries to 0.0
+	dd = colwise(x->.!(isfinite.(x)),ela1)
+	for id in 1:length(dd)
+		ela1[dd[id],id] = 0.0
+	end
 
 	shockyrs = sum(ela1[:year] .>= opts["shockYear"])
 
@@ -1234,8 +1247,10 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	setfield!(p,:shockAge,opt["it"])
 	m = Model(p)
 	solve!(m,p)
-	w = m.v[opt["ik"],1,opt["iz"],2,2,opt["itau"],opt["asset"],opt["ih"],2,opt["it"]]   # comparing values of moving from 2 to 1 in age 1
+	w = m.v[opt["ik"],1,opt["iz"],opt["iy"],opt["ip"],opt["itau"],opt["asset"],opt["ih"],opt["ij"],opt["it"]]   # comparing values of moving from 2 to 1 in age 1
 	r = p.myNA
+	println("w = $w")
+	println("v0 = $v0")
 	if w == p.myNA
 	else
 		r = (w - v0)^2
@@ -1244,6 +1259,22 @@ function valueDiff(xtra_ass::Float64,v0::Float64,opt::Dict)
 	return r
 end
 
+function valueDiff2(xtra_ass::Float64,v0::Float64)
+	base = runSim(opt=Dict(:shockVal=>[xtra_ass],:policy=>"moneyMC"))
+	w0   = @linq base|>
+	   @where((:year.>1996) .& (:age .== 1)) |>
+	   @select(v = mean(:maxv),u=mean(:utility))
+
+	 w = w0[:v][1]
+	 println("pol = $w")
+	 println("base = $v0")
+	# r = p.myNA
+	# if w == p.myNA
+	# else
+		r = (w - v0)^2
+	# end
+	return r
+end
 
 
 # find consumption scale ctax such that
@@ -1252,6 +1283,19 @@ function find_xtra_ass(v0::Float64,opts::Dict)
 	ctax = optimize((x)->valueDiff(x,v0,opts),0.0,800.0,show_trace=true,method=Brent(),iterations=40,abs_tol=1e-2)
 	return ctax
 end
+
+function moneyMC2(x)
+
+	base = runSim(opt=Dict(:noMC=>true))
+	w0   = @linq base|>
+	   @where((:year.>1996) .& (:age .== 1)) |>
+	   @select(v = mean(:maxv),u=mean(:utility))
+
+	v0 = w0[:v][1]
+	valueDiff2(x,v0)
+end
+
+
 
 function moneyMC(nosave::Bool=false)
 
@@ -1274,11 +1318,12 @@ function moneyMC(nosave::Bool=false)
 	out = Dict()
 	opts = Dict()
 	opts["p"] = Dict()
-	opts["p"]["policy"] = "moneyMC"
+	opts["p"][:policy] = "moneyMC"
+	opts["p"][:policy] = "moneyMC"
 	opts["itau"] = 1   # only mover type
-	@showprogress for j in [1,3:p.nJ...]
+	# @showprogress for j in [1,3:p.nJ...]
+	j = 1
 		out[Symbol(regs[j])] = Dict()
-		opts["ik"] = j   # moving to
 		for ih in 0:1
 			opts["ih"] = ih+1
 			if ih==0
@@ -1287,17 +1332,28 @@ function moneyMC(nosave::Bool=false)
 				opts["asset"] = whichasset-1 
 			end
 			out[Symbol(regs[j])]["h$ih"] = Dict()
-			for iz in 1:p.nz
-				opts["iz"] = iz  	
-				opts["it"] = 1 	# age 1
-				v0 = m.v[opts["ik"],1,opts["iz"],2,2,opts["itau"],opts["asset"],opts["ih"],2,opts["it"]]	# comparing values of moving from 2 to 1
-				res = find_xtra_ass(v0,opts)
-				info("done with MC ih=$ih, iz=$iz")
-				info("moving cost: $(Optim.minimizer(res))")
-				out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
-			end
+			# for ij in 1:p.nJ  # moving from
+			ij = 2
+			ik = 1
+			# for ik in 1:p.nJ  # 
+				opts["ik"] = ik   # moving to
+				opts["ij"] = ij   # moving to
+					iz = 1
+					it = 1
+					opts["iz"] = iz 	
+					opts["iy"] = 2	
+					opts["ip"] = 2 	
+					# for it in 1:4
+						opts["it"] = it	# age 1
+						v0 = m.v[opts["ik"],1,opts["iz"],opts["iy"],opts["ip"],opts["itau"],opts["asset"],opts["ih"],opts["ij"],opts["it"]]	# comparing values of moving from 2 to 1
+						print(mig.json(opts,4))
+						println(mig.valueDiff(300.0,v0,opts))
+					# res = find_xtra_ass(v0,opts)
+					# info("done with MC ih=$ih, iz=$iz")
+					# info("moving cost: $(Optim.minimizer(res))")
+					# out[Symbol(regs[j])]["h$ih"]["z$iz"] = Dict(:kdollars => Optim.minimizer(res), :conv =>  Optim.converged(res))
 		end
-	end
+	# end
 
 	io = mig.setPaths()
 
@@ -1316,7 +1372,7 @@ function moneyMC(nosave::Bool=false)
 	end
 
 	took = round(toc() / 3600.0,2)  # hours
-	post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
+	# post_slack("[MIG] MoneyMC $took hours on $(gethostname())")
 
 	return out
 end

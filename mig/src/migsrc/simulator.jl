@@ -100,7 +100,9 @@ function simulate(m::Model,p::Param)
 
 	# pdebug("setup Lininterps")
 
-	srand(54321)
+	if p.seed
+		srand(54321)
+	end
 
 	# prepare initial distributions to draw from
 	cumGz = cumsum(m.gridsXD["Gz"],2)
@@ -214,6 +216,7 @@ function simulate(m::Model,p::Param)
 	mortgageSub  = false
 	noBuying     = false
 	highMC       = false
+	moneyMC      = false
 
 	if p.policy == "mortgageSubsidy" || p.policy == "mortgageSubsidy_padjust"
 		mortgageSub  = true
@@ -243,6 +246,9 @@ function simulate(m::Model,p::Param)
 	if p.policy == "noMove"
 		highMC = true
 		nomove_yshock = pshock = true
+	end
+	if p.policy == "moneyMC"
+		moneyMC = true
 	end
 
 
@@ -342,6 +348,10 @@ function simulate(m::Model,p::Param)
 					# println("shockval = $(p.shockVal[1])")
 					# println("")
 				end
+
+				# if moneyMC && (age == 1)
+				# 	a += p.shockVal[1]
+				# end
 
 				azYP      = [a,z,Y,P]
 				price_j   = m.pred_p[m.coh_idx[coh][age],ij]

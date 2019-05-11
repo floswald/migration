@@ -501,7 +501,9 @@ type Model
 
 		# random generator setup
 		# ======================
-		srand(12345)
+		if p.seed
+			srand(12345)
+		end
 		N = c_breaks[end]	# modified version of p.nsim
 		zshock = rand(Normal(0.0,inc_coefs[1,:sigma_resid]),N*(p.nt-1))
 		sshock = rand(N*(p.nt-1))
@@ -768,13 +770,13 @@ function Gyp_indices(p::Param,show=false)
 	return idx
 end
 
-function model(;opt::Dict=Dict())
-	p = Param(2,opts=opt)
+function model(;opt::Dict=Dict(),start=false)
+	p = Param(2,opts=opt,startval=start)
 	m = Model(p)
 	return (m,p)
 end
-function solve(;opt::Dict=Dict())
-	m,p = model(opt=opt)
+function solve(;opt::Dict=Dict(),start=false)
+	m,p = model(opt=opt,start=start)
 	solve!(m,p)
 	return m,p
 end

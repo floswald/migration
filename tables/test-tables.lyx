@@ -91,7 +91,7 @@
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -179,7 +179,7 @@ sss
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -280,6 +280,58 @@ status open
 \begin_layout Plain Layout
 
 
+\backslash
+input{
+\backslash
+Dropbox/model/experiments/ownersWTP2.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Owners willingness to pay to convert to a comparable renter after an unexpected
+ 10% reduction in price or income arises.
+ In 1000 of dollars.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Owner-WTP"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
 \backslash
 input{
 \backslash
