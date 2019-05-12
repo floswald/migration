@@ -7,5 +7,7 @@ else
 	run(`ln -s $loc $(Pkg.dir())`)  # symlink this into julia package dir
 end
 
-println("will now precompile the package. hold tight.")
+info("Package installation and linking into v0.6 dir done.")
+info("will now precompile the package. hold tight.")
 using mig
+info("done.")

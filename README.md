@@ -1,12 +1,20 @@
 
 # migration
 
-[![Build status](https://badge.buildkite.com/087d2bb0abb0513511e10e9cd735b0a9a86d7d6ba6cacdd5cc.svg)](https://buildkite.com/sciencespoecon/migration)
+[![Build Status](https://travis-ci.com/floswald/migration.svg?token=yCXmyQ4r4F8RyxxzHZFG&branch=master)](https://travis-ci.com/floswald/migration)
 
-## Run Code
+This is the replication kit for *The Effect of Homeownership on the Option Value of Regional Migration*.
 
-* install latest stable julia version
-* install this package [HOW]
+## Requirements for Replication
+
+1. julia version [0.6.x (*not* the latest version of julia)](https://julialang.org/downloads/oldreleases.html) is needed to replicate all results in the paper.
+2. R if you want to rebuild the data inputs to the julia package.
+
+## Installation and Usage
+
+### Julia Package `mig.jl`
+
+
 
 ## experiments
 
