@@ -1,6 +1,6 @@
 module mig
 
-using GLM, MomentOpt, PDMats, Distributions, DataFrames, DataFramesMeta, ApproXD, Optim, JLD2
+using GLM, PDMats, Distributions, DataFrames, DataFramesMeta, Optim, JLD2
 using CategoricalArrays: CategoricalArray
 using DataStructures: OrderedDict
 using Missings
@@ -16,6 +16,27 @@ using ClusterManagers
 using Interpolations
 using Roots
 # using RCall  # dont use this as impossible to install on cluster.
+
+
+# to install my non-registered packages
+function install_floswald(name::String,tag = "v0.6")
+	if !isdir(Pkg.dir(name))
+		pd = pwd()
+		url = "https://github.com/floswald/$name.jl"
+		info("Installing non-registered $url")
+		Pkg.clone(url)
+		info("Checking out correct tag")
+		cd(Pkg.dir(name))
+		run(`git fetch '&&' git fetch --tags`)
+		run(`git checkout $tag`)
+		cd(pd)
+	end
+end
+
+install_floswald("ApproXD")
+install_floswald("MomentOpt")
+
+using ApproXD, MomentOpt
 
 export Param, Model, runObj, runSim, simulate, solve!, runExperiment
 

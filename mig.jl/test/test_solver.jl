@@ -139,7 +139,7 @@ gc()
 		c = rand()
 		ev = rand()
 
-		u = (1/(1-p.gamma)) * c^(1-p.gamma) + p.beta * ev
+		u = (p.eta /(1-p.gamma)) * c^(1-p.gamma) + p.beta * ev
 
 		@test isapprox(u , mig.ufun(c,ev,p) ,atol=1e-8)
 

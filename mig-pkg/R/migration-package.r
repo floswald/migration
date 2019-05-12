@@ -10,5 +10,4 @@
 #' @docType package
 #' @name migration
 #' @author Florian Oswald <Florian.oswald@@gmail.com> 
-
 NULL

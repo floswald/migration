@@ -134,33 +134,28 @@ type Param
 		# starting values for parameter in estimation
 		# these are NOT the estimated (i.e. final) values
 
-		beta     = 0.96
-		gamma    = 1.4	
-		mgamma   = 1.0-gamma
-		imgamma  = 1.0/mgamma
-		eta      = 0.2
-		imgamma_eta      = imgamma * eta
-		tau      = 100.0
-		taudist  = 0.62
-		xi1      = -0.009
-		xi2      = 0.002
-		omega1   = 1.0
-		omega2   = 5.1
-		# omega2   = 3.26721
-		# omega2   = 6.1
+		beta        = 0.96
+		gamma       = 1.4	
+		mgamma      = 1.0-gamma
+		imgamma     = 1.0/mgamma
+		eta         = 0.2
+		imgamma_eta = eta / mgamma
+		tau         = 100.0
+		taudist     = 0.62
+		xi1         = -0.009
+		xi2         = 0.002
+		omega1      = 1.0
+		omega2      = 5.1
 
-		# MC0    = 2.71  	 	# intercept
 		MC0    = 3.2  	 	# intercept
 		MC1    = 0.017  	 	# age
 		MC2    = 0.0013 		# age2
 		MC3    = 0.16 		# owmer
-		# MC3    = 0.00      # dist
 		MC4    = 0.36 		# kids
 
 
 		kappa  = Float64[0.01 for i=1:9] # dummy rent to price ratio in each region. to be filled in in model()
 		phi    = 0.06		  # fixed cost of selling
-
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.055 	# gross interest rate mortgage: 1+rm   sommer + sullivan. 
 		chi    = 0.2   # downpayment ratio
@@ -263,6 +258,9 @@ type Param
                 end
             end
         end
+
+        # recompute transformed params
+        out.imgamma_eta = out.eta / (1-out.gamma)
 
         return out
 	end
