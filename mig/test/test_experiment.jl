@@ -129,8 +129,7 @@
 
 
 	@testset "z shock sequences are identical in baseline and shocked versions" begin
-		
-		if !(get(ENV,"TRAVIS",false))
+		if !(haskey(ENV,"TRAVIS"))
 			p = Param(2)
 			m = Model(p)
 			solve!(m,p)

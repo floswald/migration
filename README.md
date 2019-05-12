@@ -12,10 +12,31 @@ This is the replication kit for *The Effect of Homeownership on the Option Value
 
 ## Installation and Usage
 
-### Julia Package `mig.jl`
+In order to use the code, you should clone this repository to your computer by typing in your terminal
+
+```bash
+git clone https://github.com/floswald/migration.git
+```
+
+or by clicking on the green button top right (clone or download) to download. Once you have the code on your computer, you need to build the `julia` package to use it.
+
+### Installing `julia` Package `mig`
+
+All results from the structural model are produce with the package `mig`, which is a sub-folder of this repository. Here is how to build the package:
+
+1. Go to where you cloned the package to, e.g. `~/migration`.
+2. Calling `julia6` the julia v0.6.x executable, run
+    ```
+    julia6 mig/install.jl
+    ```
+    to download all dependencies and precompile the package.
+3. Run `julia6 -e 'Pkg.test("mig")';` to run the unit tests on your computer.
+4. Observe that the badge on top of the repo indicates that the same tests run on MacOS and Linux on [Travis-CI](https://travis-ci.com/floswald/migration).
+
+### Installing `R` package `mig-pkg`
 
 
-
+ 
 ## experiments
 
 ```bash
