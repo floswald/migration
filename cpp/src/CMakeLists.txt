@@ -1,1 +1,0 @@
-add_library(migration_library Cmig.cpp)

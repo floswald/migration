@@ -13,7 +13,7 @@
 		@test p.verbose == 0
 		@test p.shockReg == 0
 		@test p.shockAge == 100
-		@test p.shockVal == ones(p.nt-1)
+		@test p.shockVal == zeros(p.nt-1)
 
 		lumpSum1 = [rand()]
 		opts = Dict("policy" => "mortgageSubsidy","redistribute" => lumpSum1)
@@ -25,7 +25,7 @@
 		@test p.ctax == 1.0
 		@test p.shockReg == 0
 		@test p.shockAge == 100
-		@test p.shockVal == ones(p.nt-1)
+		@test p.shockVal == zeros(p.nt-1)
 
 
 		p0 = mig.Param(1,opts=opts);
@@ -39,7 +39,7 @@
 		@test p.ctax == 1.0
 		@test p.shockReg == 0
 		@test p.shockAge == 100
-		@test p.shockVal == ones(p.nt-1)
+		@test p.shockVal == zeros(p.nt-1)
 
 	end
 
@@ -129,8 +129,7 @@
 
 
 	@testset "z shock sequences are identical in baseline and shocked versions" begin
-		
-		if is_apple()
+		if !(haskey(ENV,"TRAVIS"))
 			p = Param(2)
 			m = Model(p)
 			solve!(m,p)

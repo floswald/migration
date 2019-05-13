@@ -419,7 +419,7 @@ function setPaths()
 	d = dirname(@__FILE__)
 	ind = out = ""
 	if is_apple()
-		indir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/in_data_jl")
+		indir  = joinpath(joinpath(dirname(@__FILE__),"..","..","in"))
 		outdir = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/out_data_jl")
 		outbox = joinpath(ENV["HOME"],"Dropbox/research/mobility/output/model/data_repo/outbox")
 		out    = joinpath(d,"..","..","out")
