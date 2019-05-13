@@ -33,11 +33,19 @@ All results from the structural model are produce with the package `mig`, which 
 3. Run `julia6 -e 'Pkg.test("mig")';` to run the unit tests on your computer.
 4. Observe that the badge on top of the repo indicates that the same tests run on MacOS and Linux on [Travis-CI](https://travis-ci.com/floswald/migration).
 
-### Installing `R` package `mig-pkg`
+### Installing `R` package `migration`
+
+* You only need this package if you want to replicate all data work that transforms raw SIPP and other data into inputs to be used in `mig` above.
+* `mig-pkg/data` is a (400MB) which contains all the final products of the data cleaning stage. In particular, it contains a cleaned SIPP dataset. 
+* If you want to replicate the very first step starting with data acquisition on the SIPP website, you need to follow [instructions as in this code repository](https://github.com/floswald/asdfree/blob/master/Survey%20of%20Income%20and%20Program%20Participation/1996%20panel%20-%20download%20and%20create%20database.R) to download the raw data into a database on your computer. You will need roughly 40GB of disk space.
+* The functions in file `mig-pkg/R/SippPrepare.r` are responsible to read from that database, and do the data cleaning which ends up in `mig-pkg/data`.
 
 
  
-## experiments
+## Estimation
+
+
+## Counterfactuals
 
 ```bash
 # go to root of this package
