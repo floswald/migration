@@ -1,9 +1,0 @@
-
-GSL_CFLAGS = -I/usr/local/Cellar/gsl/1.15/include
-GSL_LIBS   = -L/usr/local/Cellar/gsl/1.15/lib -lgsl -lgslcblas
-RCPP_LDFLAGS = /Library/Frameworks/R.framework/Versions/3.0/Resources/library/Rcpp/lib/libRcpp.a
-
-# combine with standard arguments for R
-PKG_CPPFLAGS = -W $(GSL_CFLAGS) -I../inst/include
-PKG_LIBS += $(GSL_LIBS) $(RCPP_LDFLAGS)
-
