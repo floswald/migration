@@ -51,12 +51,10 @@ The easiest way to deal with dependencies is to directly install from github wit
 
 ```R
 library(devtools)  # install `devtools` if not installed.
-install_github("floswald/migration",subdir = "migR")
+install_github("floswald/migR")
 ```
 
-Alternatively, you can install the package using `RStudio`, but you need to make sure yourself that all dependencies are installed:
-
-In `RStudio`, using the project navigator top right, say *open project*, and navigate to `MIGDIR/migR` where you can select `migR.Rproj`. In the *build* tab, click on *install and restart*.
+Alternatively, you can install the package using `RStudio`, but you need to make sure yourself that all dependencies are installed. Download the [migR_1.0.tar.gz package](https://github.com/floswald/migR/releases/tag/1.0) and install as described.
 
 
 
