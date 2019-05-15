@@ -253,7 +253,7 @@ julia6 run.jl experiment scenarios --nworkers=9
 
 ## Level 2 Replication
 
-This level is taking as given the input data in folder `MIGDIR/migR/data`. All results are produced with above R package [`migR`](#installing-r-package-migr). The package help manual with function reference is available as a pdf at the root of the package at `MIGDIR/migR/migR_1.0.pdf` or online as a [searchable website](https://floswald.github.io/migration). The website has documentation for each function that is linked to the source code. 
+This level is taking as given the input data in folder `MIGDIR/migR/data`. All results are produced with above R package [`migR`](#installing-r-package-migr). The package help manual with function reference is available as a pdf at the root of the package at `MIGDIR/migR/migR_1.0.pdf` or online as a [searchable website](https://floswald.github.io/migration). 
 
 ### Chapter 2 Tables and Figures
 
