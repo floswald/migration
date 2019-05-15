@@ -16,6 +16,7 @@ Usage:
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
     run.jl experiment noMove [--yshock=<ys>] [--pshock=<ps>] [--nosave] [--nworkers=<nw>] 
+    run.jl experiment scenarios [--nworkers=<nw>] [--nosave] 
 
 Options:
     -h --help           Show this screen.
@@ -136,6 +137,20 @@ elseif args["experiment"]
         info("      decompose the moving costs, with nosave=$nosave")
         using mig
         mig.decompose_MC_owners(nosave)
+    elseif args["scenarios"]
+        if gethostname()=="magi3"
+            using ParallelTest
+            wrkers = ParallelTest.machines()  # does addprocs
+        elseif contains(gethostname(),"ip-")  # on aws
+            machine_ip = readlines(`qconf -sel`)
+            mach_spec = [(i,1) for i in machine_ip]
+            addprocs(mach_spec)
+        else
+            addprocs1(nwork)
+        end
+        using mig
+        info("      running shockRegions_scenarios nosave=$nosave")
+        mig.shockRegions_scenarios(save=!(nosave),qrange=0.05,prange=0.05)
     end
 
 end

@@ -36,6 +36,7 @@ end
 
 install_floswald("ApproXD")
 install_floswald("MomentOpt")
+install_floswald("ParallelTest")
 
 using ApproXD, MomentOpt
 
