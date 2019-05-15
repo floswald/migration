@@ -280,7 +280,7 @@ end
 
 
 # single test run of objective
-function runObj(printm::Bool=false,subset=true)
+function runObj(;printm::Bool=false,subset=true)
 	# create MProb
 
 	io = mig.setPaths()

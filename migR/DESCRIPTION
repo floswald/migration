@@ -1,0 +1,50 @@
+Package: migR
+Type: Package
+Title: Migration and Homeowernship Dataprocessing (Oswald 2019)
+Version: 1.0
+Date: 2019-05-14
+Authors@R: c(
+    person("Florian", "Oswald", email = "florian.oswald@gmail.com", role = c("aut","cre")))
+Depends: R (>= 3.5.0)
+Description: This R package serves two purposes: First, to process raw data 
+    and summarise it so that it can be use as input to the structural model 
+    presented in Oswald (2019). Second, the package produces a set of stylized
+    facts from the same raw data which are used to motivate the entire
+    exercise. The package can be used as is, in the sense that I ship the
+    final data products. Users interested in replicating the data acquisition
+    and cleaning steps, need to follow further instructions to obtain SIPP
+    raw data. This step is documented within the package.
+License: MIT + file LICENSE
+URL: https://github.com/floswald/migration/migR
+Imports:
+    splines,
+    zoo,
+    copula,
+    grid,
+    quantmod,
+    stringr,
+    Hmisc,
+    xts,
+    survey,
+    texreg,
+    DBI,
+    data.table,
+    reshape2,
+    rjson,
+    xtable,
+    devtools,
+    ggplot2,
+    plyr,
+    MASS,
+    erer,
+    tikzDevice,
+    MultinomialCI
+Collate:
+    'migR-package.r'    
+    'plots.r'
+    'CPS.r'
+    'plotjulia.R'
+    'RegionalPrices.r'
+    'SippAnalyse.r'
+    'SippPrepare.r'
+RoxygenNote: 6.1.0
