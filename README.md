@@ -59,6 +59,7 @@ Alternatively, you can install the package using `RStudio`, but you need to make
 In `RStudio`, using the project navigator top right, say *open project*, and navigate to `MIGDIR/migR` where you can select `migR.Rproj`. In the *build* tab, click on *install and restart*.
 
 
+
 \newpage
 
 
