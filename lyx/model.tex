@@ -1316,14 +1316,13 @@ lm\_mv\_intercept} and\texttt{ cov\_own\_kids. }This adjustment is
 similar to what is done in \cite{lamadon2014productivity}.}
 
 The maximization of the objective in \eqref{eq:objfunc} is performed
-with a cyclic coordinate search algorithm, where cycle $n$ over the $K$
-parameters is defined by
+with a cyclic coordinate search algorithm, where cycle $n+1$ is defined as follows:
 \begin{align*}
-\theta^{(n)}_1 & =\arg\min_{\theta_{1}} L(\theta_{1},\theta_{2}^{(n-1)},\dots,,\theta_{K}^{(n-1)})\\
-\theta^{(n)}_2 & =\arg\min_{\theta_{2}} L(\theta_{1}^{(n)},\theta_{2},\theta_{3}^{(n-1)},\dots,\theta_{K}^{(n-1)})\\
-\theta^{(n)}_3 & =\arg\min_{\theta_{3}} L(\theta_{1}^{(n)},\theta_{2}^{(n)},\theta_{3},\theta_{4}^{(n-1)},\dots,\theta_{K}^{(n-1)})\\
+\theta^{(n+1)}_1 & =\arg\min_{\theta_{1}} L(\theta_{1},\theta_{2}^{(n)},\dots,,\theta_{K}^{(n)})\\
+\theta^{(n+1)}_2 & =\arg\min_{\theta_{2}} L(\theta_{1}^{(n)},\theta_{2},\theta_{3}^{(n)},\dots,\theta_{K}^{(n)})\\
+\theta^{(n+1)}_3 & =\arg\min_{\theta_{3}} L(\theta_{1}^{(n)},\theta_{2}^{(n)},\theta_{3},\theta_{4}^{(n)},\dots,\theta_{K}^{(n)})\\
  & \vdots\\
-\theta^{(n)}_K & =\arg\min_{\theta_{K}} L(\theta_{1}^{(n)},\theta_{2}^{(n)},\dots,\theta_{K}).
+\theta^{(n+1)}_K & =\arg\min_{\theta_{K}} L(\theta_{1}^{(n)},\theta_{2}^{(n)},\dots,\theta_{K}).
 \end{align*}
 
 This procedure is repeated until $\theta$ has converged. Convergence
