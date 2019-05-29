@@ -194,6 +194,45 @@ function stdErrors()
 
 end
 
+
+"""
+get Gradient of moment function at theta and gamma.
+This produces objects G and D required by Thomas.
+"""
+function gradMoments()
+	tic()
+	dir = dirname(@__FILE__)	# src/migsrc
+	outd = joinpath(dir,"..","..","out")
+	f = joinpath(outd,"current_estim.jld2")
+	post_slack()
+	x = MomentOpt.load(f)
+	thetas = x["dout"][:best][:p]
+
+	gammas = OrderedDict(
+				  zip(gamma(), 
+		              map(x -> getfield(Param(2),x), gamma() )
+		          ) 
+			 )
+
+	p = merge(thetas,gammas)
+
+	m = setup_mprob()
+	s = MomentOpt.FD_gradient(m,p)  # a (K+L, M) matrix, K = length(thetas), L = length(gammas), M = length(moments)
+
+	open(joinpath(outd,"thomas_G"),"w") do fi 
+		writedlm(fi,s[1:length(thetas), : ]')
+	end
+
+	open(joinpath(outd,"thomas_D"),"w") do fi 
+		writedlm(fi,s[(length(thetas)+1) : end, : ]')
+	end
+
+	took = round(toq() / 3600.0,2)  # hours
+	txt = "[mig] G and D export finished after $took hours on $(gethostname())"
+	post_slack(txt)
+
+end
+
 """
 	Set up cluster run slices
 """

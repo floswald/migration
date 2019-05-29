@@ -322,6 +322,8 @@ function show(io::IO, p::Param)
 	policy   = $(p.policy)")
 end
 
+gamma() = [:gamma,:beta,:rho,:sigma,:phi,:chi,:R,:Rm]
+
 
 
 
