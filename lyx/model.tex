@@ -36,7 +36,8 @@
     colorlinks, linkcolor={dark-red},
     citecolor={dark-blue}, urlcolor={medium-blue}
 }
-\newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
+% \newcommand{\Dropbox}{${HOME}/Dropbox/research/mobility/output}
+\newcommand{\Dropbox}{repl-box/output}
 \usepackage{tikz}
 \usepackage{adjustbox}
 \usepackage{pgfplots}
@@ -50,8 +51,8 @@
 \title{The Effect of Homeownership on the Option Value of Regional Migration\thanks{I would like to thank Costas Meghir, Lars Nesheim and Mariacristina
 De Nardi for their continued support and advice throughout this project.
 I also thank Uta Schönberg, Jeremy Lise, Marco Bassetto, Suphanit
-Piyapromdee, Richard Blundell, Jose-Victor Rios Rull, Morten Ravn and
-Fabien Postel-Vinay for helpful comments and suggestions. The Editor and three referees have helped to greatly improve the paper. I would
+Piyapromdee, Richard Blundell, Jose-Victor Rios Rull, Morten Ravn, 
+Fabien Postel-Vinay, Emeric Henry as well as three anonymous referees for helpful comments and suggestions. I would
 like to acknowledge financial support from cemmap under ESRC grant
 ES/I034021/1 and ESRC transformative grant ES/M000486/1.}}
 \author{Florian Oswald\thanks{email: \protect\url{florian.oswald@gmail.com}. }\\
@@ -543,7 +544,7 @@ is equivalent to reducing the baseline probability of migration by
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.85]{../../../Dropbox/research/mobility/output/data/sipp/raw-moversD2D_v2}
+\includegraphics[scale=0.85]{\Dropbox/data/sipp/raw-moversD2D_v2}
 \par\end{centering}
 \caption{SIPP sample proportion moving across Census Division boundaries by
 age (upper panel) and proportion of owners by age (lower panel). Conditions
@@ -553,7 +554,7 @@ on individuals without a college degree.\label{fig:SIPP-sample-proportion-1}}
 \begin{figure}
 \begin{adjustbox}{center}
 \begin{centering}
-\includegraphics[scale=0.9]{/Users/florian.oswald/Dropbox/research/mobility/output/data/FHFA/correlogram-detrended}
+\includegraphics[scale=0.9]{\Dropbox/data/FHFA/correlogram-detrended}
 \par\end{centering}
 \end{adjustbox}
 
@@ -1185,7 +1186,7 @@ on corresponding Division level indices $p_{dt},q_{dt}$.\label{tab:-region-state
 
 \begin{figure}
 \begin{centering}
-\includegraphics[scale=0.8]{../../../Dropbox/research/mobility/output/data/sipp/VAR_reg_p}
+\includegraphics[scale=0.8]{\Dropbox/data/sipp/VAR_reg_p}
 \par\end{centering}
 \caption{This figure shows the observed and predicted time series for mean
 income by Census Division. The prediction is obtained from the VAR
@@ -1453,7 +1454,7 @@ exception to this.
 \begin{figure}
 \begin{adjustbox}{center}
 
-\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_mobility}\includegraphics[scale=0.7]{../../../Dropbox/research/mobility/output/model/fit/fit_ownership}
+\includegraphics[scale=0.7]{\Dropbox/model/fit/fit_mobility}\includegraphics[scale=0.7]{\Dropbox/model/fit/fit_ownership}
 
 \end{adjustbox}
 
