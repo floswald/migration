@@ -2,7 +2,7 @@
 
 perc_bound(x,p) = [x;x-p*abs(x);x+p*abs(x)]
 
-function setup_mprob(;keep=[])
+function setup_mprob(;keep=[],gamma=false)
 	# this is loaded only on the master
 	io = mig.setPaths()
 	moms = mig.DataFrame(mig.FileIO.load(joinpath(io["indir"],"moments.rda"))["m"])
@@ -43,10 +43,7 @@ function setup_mprob(;keep=[])
 
 
 	# initial value
-	p0 = mig.Param(2)
-	# setfield!(p0,:MC0, 3.19)
-	# setfield!(p0,:xi1, 0.008)
-	# setfield!(p0,:xi2, 0.049)
+	p0 = mig.Param(2)  # by default `starval=false` initializes at current best guess.
 	pb = Dict{String,Array{Float64}}()
 	pb["xi1"]         = perc_bound(p0.xi1,0.2)
 	pb["xi2"]         = [p0.xi2, 0.0,0.01]
@@ -67,6 +64,17 @@ function setup_mprob(;keep=[])
 	pb["amenity_StA"] = perc_bound(p0.amenity_StA,0.2)
 	pb["amenity_WNC"] = perc_bound(p0.amenity_WNC,0.2)
 	pb["amenity_WSC"] = perc_bound(p0.amenity_WSC,0.2)
+
+	if gamma
+		pb["gamma"] = perc_bound(p0.gamma,0.1)
+		pb["beta"]  = perc_bound(p0.beta,0.1)
+		pb["rho"]   = perc_bound(p0.rho,0.1)
+		pb["sigma"] = perc_bound(p0.sigma,0.1)
+		pb["phi"]   = perc_bound(p0.phi,0.1)
+		pb["chi"]   = perc_bound(p0.chi,0.1)
+		pb["R"]     = perc_bound(p0.R,0.1)
+		pb["Rm"]    = perc_bound(p0.Rm,0.1)
+	end
 
 	if length(keep) > 0
 		pb0 = similar(pb)

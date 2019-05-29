@@ -48,6 +48,8 @@ type Param
 	beta   :: Float64			# discount factor
 	kappa  :: Array{Float64,1} # rent to price ratio in each region
 	phi    :: Float64		  # fixed cost of selling
+	rho    :: Float64         # z-income process AR1 persistence
+	sigma  :: Float64         # z-income process AR1 shock std dev
 
 	R      :: Float64 	# gross interest rate savings: 1+r
 	Rm     :: Float64 	# gross interest rate mortgage: 1+rm
@@ -156,6 +158,9 @@ type Param
 
 		kappa  = Float64[0.01 for i=1:9] # dummy rent to price ratio in each region. to be filled in in model()
 		phi    = 0.06		  # fixed cost of selling
+		# using numbers from french(2005)
+		rho    = 0.96
+		sigma  = 0.118
 		R      = 1.03 	# gross interest rate savings: 1+r
 		Rm     = 1.055 	# gross interest rate mortgage: 1+rm   sommer + sullivan. 
 		chi    = 0.2   # downpayment ratio
@@ -235,10 +240,10 @@ type Param
 		# end
 		# create object
 
-		out = new(gamma,mgamma,imgamma,eta,imgamma_eta,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,seed,nsim,verbose)
+		out = new(gamma,mgamma,imgamma,eta,imgamma_eta,tau,taudist,xi1,xi2,omega1,omega2,amenity_ENC,amenity_ESC,amenity_MdA,amenity_Mnt,amenity_NwE,amenity_Pcf,amenity_StA,amenity_WNC,amenity_WSC,MC0,MC1,MC2,MC3,MC4,beta,kappa,phi,rho,sigma,R,Rm,chi,myNA,maxAge,minAge,ages,euler,[1.0;sscale],pname,lumpsum,ctax,shockReg,shockAge,shockYear,shockVal,shockVal_y,shockVal_p,noMC,na,namax,nz,nh,nt,ntau,nJ,np,ny,ns,ncop,seed,nsim,verbose)
 
 		# overwrite default parameters with estimated values
-		# if you don't want to start estimation on last best estimate...
+		# if you don't want to start estimation on last best estimate, you set startval=true
 		if !startval
 			dir = dirname(@__FILE__)	# src/migsrc
 			outd = joinpath(dir,"..","..","out")
@@ -276,31 +281,6 @@ function update!(p::Param,pd::Dict)
 	end
 end
 
-
-function print(p::Param,file_est::String,file_set::String)
-	est = [:gamma,:eta,:tau,:taudist,:xi1,:xi2,:omega1,:omega2,:MC0,:MC1,:MC2,:MC3,:MC4]
-	set = [:beta,:phi,:R,:Rm,:chi]
-	f_estimate = open(file_est,"w")
-	f_set      = open(file_set,"w")
-
-	pest = Dict{String,Float64}()
-	for i in est
-		pest[string(i)] = getfield(p,i)
-	end
-
-	pset = Dict{String,Float64}()
-	for i in set
-		pset[string(i)] = getfield(p,i)
-	end
-	# add manually 
-	pset["rho"] = 0.96
-	pset["std_u"] = 0.118
-
-	JSON.print(f_estimate,pest)
-	JSON.print(f_set,pset)
-	close(f_estimate)
-	close(f_set)
-end
 
 function printCI()
 	io = setPaths()

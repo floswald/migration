@@ -52,6 +52,26 @@
 		end
 
 	end
+
+
+
+	@testset "Transition arrays sum to 1 over dimension 2 with changed rho/sigma" begin
+		p = mig.Param(2,opts=Dict(:rho=>0.5,:sigma => 0.1))
+		m = mig.Model(p)
+
+		# @test sum(m.grids2D["GP"],2)[:] .-1.0 => roughly(zeros(p.nP)[:],atol=0.00001)
+		# @test sum(m.grids2D["GY"],2)[:] .-1.0 => roughly(zeros(p.nY)[:],atol=0.00001)
+		mz = size(m.gridsXD["Gz"],2)
+		ms = size(m.gridsXD["Gs"],2)
+		my = size(m.gridsXD["Gyp"],2)
+
+		println(size(sum(m.gridsXD["Gs"],2)[:]))
+		println(size(ones(ms)))
+
+		@test isapprox(sum(m.gridsXD["Gz"],2)[:] ,ones(mz)  ,atol=0.00001)
+		@test all(abs.(sum(m.gridsXD["Gs"],2)[:] - 1.0) .< 0.00001)
+		@test isapprox(sum(m.gridsXD["Gyp"],2)[:], ones(my) ,atol=0.00001)
+ 	end
 end
 
 

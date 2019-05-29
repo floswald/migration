@@ -17,6 +17,11 @@
 		p = mig.Param(2);
 		@test p.omega2 != 0
 
+		@test p.rho == 0.96
+
+		p = mig.Param(2,opts=Dict(:rho=>0.5))
+		@test p.rho == 0.5
+
 	end
 
 
