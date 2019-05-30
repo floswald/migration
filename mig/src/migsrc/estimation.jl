@@ -277,6 +277,12 @@ function gradMoments()
 	m = setup_mprob(gamma=true)
 	s = MomentOpt.FD_gradient(m,p)  # a (K+L, M) matrix, K = length(thetas), L = length(gammas), M = length(moments)
 
+
+	open(joinpath(outd,"thomas_W.txt"),"w") do fi 
+		writedlm(fi,Diagonal([v[:weight] for (k,v) in m.moments]))
+	end
+
+
 	open(joinpath(outd,"thomas_G.txt"),"w") do fi 
 		writedlm(fi,s[1:length(thetas), : ]')
 	end

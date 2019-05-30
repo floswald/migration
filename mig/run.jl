@@ -61,11 +61,13 @@ if args["estim"]
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.stdErrors()
     elseif args["thomas"]
-        info("      computing gradients with $nwork workers")
+        info("      computing mom func gradients with $nwork workers")
         addprocs1(nwork)
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.gradMoments()
+        info("      computing ATE gradients with $nwork workers")
+        mig.gradNoMoveATE()
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig
