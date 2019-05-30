@@ -278,25 +278,22 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 	# create a type for easier plotting
 	n = noMoveRes(d,Symbol(scenario))
-	@save path n
+	if save
+		@save path n
+		# but also print to JSON to build tables
+		rm(joinpath(io["outdir"],jstr),force=true)
+		open(joinpath(io["outdir"],jstr),"w") do f
+			JSON.print(f,d)
+		end
 
-	# but also print to JSON to build tables
-	rm(joinpath(io["outdir"],jstr),force=true)
-	open(joinpath(io["outdir"],jstr),"w") do f
-		JSON.print(f,d)
+		# sync output to dropbox
+		for fi in (jstr,ostr)
+			ficmd = `dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`
+			out,proc = open(ficmd)
+		end
+	else
+		warn("not saving to disk.")
 	end
-
-	# sync output to dropbox
-	for fi in (jstr,ostr)
-		ficmd = `dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`
-		out,proc = open(ficmd)
-	end
-
-	# make tables
-    # cd(joinpath(dirname(@__FILE__),"..","..","..","tables"))
-    # out,proc = open(run(`zsh -c "make"`))
-
-
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] noMove experiment finished after $took hours on $(gethostname())")
