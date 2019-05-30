@@ -206,7 +206,7 @@ end
 # end
 
 function ctaxxer(opt::Dict,var::Symbol,sel_func; p0::Union{Dict,OrderedDict}=Dict())
-	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
+	# println("finding consumption tax for $(opt[:policy]) policy. subsetting $var")
 	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim(opt = p0) # baseline
 	val = @linq s |>
@@ -227,7 +227,7 @@ function ctaxxer(opt::Dict,var::Symbol,sel_func; p0::Union{Dict,OrderedDict}=Dic
 	return ctax
 end
 function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2; p0::Union{Dict,OrderedDict}=Dict())
-	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2")
+	# println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2")
 	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim(opt = p0)  # baseline
 	val = @linq s |>
@@ -249,7 +249,7 @@ function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2; p0::Un
 end
 
 function ctaxxer(opt::Dict,var1::Symbol,sel_func1,var2::Symbol,sel_func2,var3::Symbol,sel_func3; p0::Union{Dict,OrderedDict}=Dict())
-	println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2 and $var3")
+	# println("finding consumption tax for $(opt[:policy]) policy. subsetting $var1 and $var2 and $var3")
 	info("pshock = $(opt[:shockVal_p][1]), yshock = $(opt[:shockVal_y][1])")
 	s = runSim(opt = p0)  # baseline
 	val = @linq s |>

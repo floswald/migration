@@ -325,7 +325,7 @@ function gradNoMoveATE()
 		catch err
 			txt = "[mig] error: $err"
 			post_slack(txt)
-			return 0
+			throw(err)
 		end
 
 	open(joinpath(outd,"thomas_B.txt"),"w") do fi 
@@ -346,8 +346,7 @@ function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 
 	# get g(p)
 	x = exp_Nomove(save = false,do_ctax = true)
-	gp = x.data[:ctax][1][:data][:ate]   # scalar
-	       data[:ctax][1][:data][:ate]
+	gp = x.data[:ctax][1][:data][:ate]   # scalar. index [1] is for aggregate
 
 	D = zeros(length(p))
 
