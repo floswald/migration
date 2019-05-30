@@ -34,7 +34,7 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"1.0")
+args = docopt(doc, version=v"1.1")
 
 addprocs1(n) = n>1 ? addprocs(n) : nothing
 
