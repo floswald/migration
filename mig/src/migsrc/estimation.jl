@@ -216,7 +216,7 @@ function gradMoments()
 
 	p = merge(thetas,gammas)
 
-	m = setup_mprob()
+	m = setup_mprob(gamma=true)
 	s = MomentOpt.FD_gradient(m,p)  # a (K+L, M) matrix, K = length(thetas), L = length(gammas), M = length(moments)
 
 	open(joinpath(outd,"thomas_G"),"w") do fi 
