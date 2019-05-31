@@ -327,7 +327,7 @@ function gradNoMoveATE()
 			post_slack(txt)
 			throw(err)
 		end
-	@save s "thomas.jld2"
+	@save "thomas.jld2" s
 
 	open(joinpath(outd,"thomas_B.txt"),"w") do fi 
 		writedlm(fi,s[1:length(thetas), : ]')
@@ -346,7 +346,8 @@ end
 function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 
 	# get g(p)
-	x = exp_Nomove(save = false,do_ctax = true)
+	# i.e. get baseline ATE in region 0 (i.e. aggregate)
+	x = exp_Nomove(save = false,do_ctax = true, js = [0], agg_only=true)
 	gp = x.data[:ctax][1][:data][:ate]   # scalar. index [1] is for aggregate
 
 	D = zeros(length(p))
@@ -354,17 +355,17 @@ function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 	# optimal step size depends on range of param bounds
 	rs = MomentOpt.range_length(m)
 
-	# compute each partial derivative
-	rows = map( [(k,v) for (k,v) in p ] ) do ip 
+	# compute each partial derivatives in parallel
+	rows = pmap( [(k,v) for (k,v) in p ] ) do ip 
 		k = ip[1]
 		v = ip[2]
 		h = rs[k] * step_perc
 		pp = deepcopy(p)
 		pp[k] = v + h 
-		info("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
-		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true)
+		println("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
+		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true, js = [0], agg_only=true)
 		ret = Dict(:p => k, :smm => (xx.data[:ctax][1][:data][:ate] - gp) / h)
-		@save ret "thomas_bkup_$k.jld2"
+		@save "thomas_bkup_$k.jld2" s
 		ret
 	end
 	d = Dict()

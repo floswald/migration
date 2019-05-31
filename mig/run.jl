@@ -65,7 +65,7 @@ if args["estim"]
         addprocs1(nwork)
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
-        mig.gradMoments()
+        # mig.gradMoments()
         info("      computing ATE gradients with $nwork workers")
         mig.gradNoMoveATE()
     elseif args["slices"]
