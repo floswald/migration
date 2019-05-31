@@ -327,6 +327,7 @@ function gradNoMoveATE()
 			post_slack(txt)
 			throw(err)
 		end
+	@save s "thomas.jld2"
 
 	open(joinpath(outd,"thomas_B.txt"),"w") do fi 
 		writedlm(fi,s[1:length(thetas), : ]')
@@ -362,7 +363,9 @@ function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 		pp[k] = v + h 
 		info("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
 		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true)
-		Dict(:p => k, :smm => (xx.data[:ctax][1][:data][:ate] - gp) / h)
+		ret = Dict(:p => k, :smm => (xx.data[:ctax][1][:data][:ate] - gp) / h)
+		@save ret "thomas_bkup_$k.jld2"
+		ret
 	end
 	d = Dict()
 	for e in rows
