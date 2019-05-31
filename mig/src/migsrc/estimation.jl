@@ -351,7 +351,7 @@ function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 	D = zeros(length(p))
 
 	# optimal step size depends on range of param bounds
-	rs = range_length(m)
+	rs = MomentOpt.range_length(m)
 
 	# compute each partial derivative
 	rows = map( [(k,v) for (k,v) in p ] ) do ip 
