@@ -96,7 +96,7 @@ type Param
 	verbose :: Int
 
 	# constructor assigning initial values
-	function Param(size::Int;opts::Dict=Dict(),startval=false)
+	function Param(size::Int;opts::Union{Dict,OrderedDict}=Dict(),startval=false)
 
 		if size==1
 			# super small: use for tests
