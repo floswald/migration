@@ -342,28 +342,36 @@ function gradNoMoveATE()
 
 end
 
-function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
+function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.001)
 
 	# get g(p)
 	# i.e. get baseline ATE in region 0 (i.e. aggregate)
-	x = exp_Nomove(save = false,do_ctax = true, js = [0], agg_only=true)
-	gp = x.data[:ctax][1][:data][:ate]   # scalar. index [1] is for aggregate
+	# x = exp_Nomove(save = false,do_ctax = true, js = [0], agg_only=true)
+	# gp = x.data[:ctax][1][:data][:ate]   # scalar. index [1] is for aggregate
 
 	D = zeros(length(p))
 
 	# optimal step size depends on range of param bounds
-	rs = MomentOpt.range_length(m)
+	# rs = MomentOpt.range_length(m)
 
 	# compute each partial derivatives in parallel
 	rows = pmap( [(k,v) for (k,v) in p ] ) do ip 
 		k = ip[1]
 		v = ip[2]
-		h = rs[k] * step_perc
+		# h = rs[k] * step_perc
+		h = v * step_perc
 		pp = deepcopy(p)
-		pp[k] = v + h 
-		println("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
+		pp[k] = v + 0.5 * h 
+		# println("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
 		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true, js = [0], agg_only=true)
-		ret = Dict(:p => k, :smm => (xx.data[:ctax][1][:data][:ate] - gp) / h)
+		fw = xx.data[:ctax][1][:data][:ate]
+
+		pp[k] = v - 0.5 * h 
+		# println("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
+		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true, js = [0], agg_only=true)
+		bw = xx.data[:ctax][1][:data][:ate]
+
+		ret = Dict(:p => k, :smm => (fw - bw) / h)
 		ret
 	end
 	d = Dict()
