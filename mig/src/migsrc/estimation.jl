@@ -275,7 +275,7 @@ function gradMoments()
 	p = merge(thetas,gammas)
 
 	m = setup_mprob(gamma=true)
-	s = MomentOpt.FD_gradient(m,p)  # a (K+L, M) matrix, K = length(thetas), L = length(gammas), M = length(moments)
+	s = MomentOpt.FD_gradient(m,p,use_range=false,diff_method = :central)  # a (K+L, M) matrix, K = length(thetas), L = length(gammas), M = length(moments)
 
 
 	open(joinpath(outd,"thomas_W.txt"),"w") do fi 
