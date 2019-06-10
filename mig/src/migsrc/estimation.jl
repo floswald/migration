@@ -365,7 +365,6 @@ function gradNoMoveATE_impl(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01)
 		println("running exp_Nomove but changing $k from $v to $(pp[k]) by step $h")
 		xx = exp_Nomove(p0 = pp, save = false, do_ctax = true, js = [0], agg_only=true)
 		ret = Dict(:p => k, :smm => (xx.data[:ctax][1][:data][:ate] - gp) / h)
-		@save "thomas_bkup_$k.jld2" ret
 		ret
 	end
 	d = Dict()
