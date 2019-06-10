@@ -327,7 +327,6 @@ function gradNoMoveATE()
 			post_slack(txt)
 			throw(err)
 		end
-	@save "thomas.jld2" s
 
 	open(joinpath(outd,"thomas_B.txt"),"w") do fi 
 		writedlm(fi,s[1:length(thetas), : ]')
