@@ -241,8 +241,8 @@ type Model
 
 		# manually override AR1 coefs
 		# using numbers from french(2005)
-		inc_coefs[:,:Lresid] = 0.96
-		inc_coefs[:,:sigma_resid] = 0.118
+		inc_coefs[:,:Lresid] = p.rho
+		inc_coefs[:,:sigma_resid] = p.sigma
 
 		# kids transition matrix
 		ktrans = DataFrame(FileIO.load(joinpath(io["indir"],"kidstrans.rda"))["kids_trans"])

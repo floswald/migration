@@ -35,7 +35,7 @@ function install_floswald(name::String,tag = "v0.6")
 end
 
 install_floswald("ApproXD")
-install_floswald("MomentOpt")
+install_floswald("MomentOpt","v0.6.1")
 install_floswald("ParallelTest")
 
 using ApproXD, MomentOpt

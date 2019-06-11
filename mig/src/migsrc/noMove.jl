@@ -16,13 +16,13 @@ compares baseline with noMove scenario: shut down moving in all regions. returns
 * `ys`: multiplicative *yshock* to be applied to the counterfactual
 * `ps`: multiplicative *pshock* to be applied to the counterfactual
 """
-function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0)
+function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Float64=1.0,p0::Union{Dict,OrderedDict}=Dict(),js::Vector{Int}=Int[],agg_only::Bool=false)
 
 	tic()
 	# look at results after full cohorts available
 	cutyr = 1997 - 1
 
-	bp = shutdownMoving(yshock=ys,pshock=ps)
+	bp = shutdownMoving(yshock=ys,pshock=ps,p0=p0)
 	base = @where(bp[:base],:year .> cutyr)
 	pol = @where(bp[:pol],:year .> cutyr )
 	p = Param(2)
@@ -173,64 +173,73 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	end
 
 
-	function ctaxxers(ij::Int;ys::Float64=1.0,ps::Float64=1.0)
+	function ctaxxers(ij::Int;ys::Float64=1.0,ps::Float64=1.0,p0::Union{Dict,OrderedDict}=Dict(),agg_only::Bool=false)
 		println("doing ctax for region $ij")
 		ctax = Dict()
 		ctax[:region] = ij
 		ctax[:data] = Dict()
 		opt_dict = Dict(:policy=>"noMove",:ctax=>1.0,:shockVal_p => [ps for i in 1:p.nt-1],:shockVal_y => [ys for i in 1:p.nt-1])
+
+		# add "different" baseline param vector to opt_dict
+		if length(p0) > 0
+			opt_dict = merge(opt_dict,p0)
+		end
 		if ij==0
 			# don't subset to any region: compute aggregate impact
 			# all
-			x=mig.ctaxxer(opt_dict,:realage,t->t.==t)
+			x=mig.ctaxxer(opt_dict,:realage,t->t.==t,p0 = p0)
 			ctax[:data][:ate] = Optim.minimizer(x)
-			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.<31)
-			ctax[:data][:young]=Optim.minimizer(x)
-			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.>30)
-			ctax[:data][:old]=Optim.minimizer(x)
-			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:rent_30,t->t)
-			ctax[:data][:rent_30]=Optim.minimizer(x)
-			# for those who did own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:own_30,t->t)
-			ctax[:data][:own_30]=Optim.minimizer(x)
-			# lowest z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20")
-			ctax[:data][:z20]=Optim.minimizer(x)
-			# 80 z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80")
-			ctax[:data][:z80]=Optim.minimizer(x)
-			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
-			# ctax[:data][:tau1_z20]=Optim.minimizer(x)
-			# # stayer types at lowest z quantile
-			# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80")
-			# ctax[:data][:tau1_z80]=Optim.minimizer(x)
+			if !agg_only
+				# young
+				x=mig.ctaxxer(opt_dict,:realage,t->t.<31,p0 = p0)
+				ctax[:data][:young]=Optim.minimizer(x)
+				# young
+				x=mig.ctaxxer(opt_dict,:realage,t->t.>30,p0 = p0)
+				ctax[:data][:old]=Optim.minimizer(x)
+				# for those who did not own a house when age == 30
+				x=mig.ctaxxer(opt_dict,:rent_30,t->t,p0 = p0)
+				ctax[:data][:rent_30]=Optim.minimizer(x)
+				# for those who did own a house when age == 30
+				x=mig.ctaxxer(opt_dict,:own_30,t->t,p0 = p0)
+				ctax[:data][:own_30]=Optim.minimizer(x)
+				# lowest z quantile
+				x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",p0 = p0)
+				ctax[:data][:z20]=Optim.minimizer(x)
+				# 80 z quantile
+				x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",p0 = p0)
+				ctax[:data][:z80]=Optim.minimizer(x)
+				# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="20")
+				# ctax[:data][:tau1_z20]=Optim.minimizer(x)
+				# # stayer types at lowest z quantile
+				# x=mig.ctaxxer(opt_dict,:tau,t->t.==1,:mean_zcat,t->t.=="80")
+				# ctax[:data][:tau1_z80]=Optim.minimizer(x)
+			end
 			gc()
 		else
 			# do subset to region j
 			# all
-			x=mig.ctaxxer(opt_dict,:j,t->t.==ij)
+			x=mig.ctaxxer(opt_dict,:j,t->t.==ij,p0 = p0)
 			ctax[:data][:ate] = Optim.minimizer(x)
-			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.<31,:j,t->t.==ij)
-			ctax[:data][:young]=Optim.minimizer(x)
-			# young
-			x=mig.ctaxxer(opt_dict,:realage,t->t.>30,:j,t->t.==ij)
-			ctax[:data][:old]=Optim.minimizer(x)
-			# for those who did not own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:rent_30,t->t,:j,t->t.==ij)
-			ctax[:data][:rent_30]=Optim.minimizer(x)
-			# for those who did own a house when age == 30
-			x=mig.ctaxxer(opt_dict,:own_30,t->t,:j,t->t.==ij)
-			ctax[:data][:own_30]=Optim.minimizer(x)
-			# mover types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",:j,t->t.==ij)
-			ctax[:data][:z20]=Optim.minimizer(x)
-			# stayer types at lowest z quantile
-			x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",:j,t->t.==ij)
-			ctax[:data][:z80]=Optim.minimizer(x)
+			if !agg_only
+				# young
+				x=mig.ctaxxer(opt_dict,:realage,t->t.<31,:j,t->t.==ij,p0 = p0)
+				ctax[:data][:young]=Optim.minimizer(x)
+				# young
+				x=mig.ctaxxer(opt_dict,:realage,t->t.>30,:j,t->t.==ij,p0 = p0)
+				ctax[:data][:old]=Optim.minimizer(x)
+				# for those who did not own a house when age == 30
+				x=mig.ctaxxer(opt_dict,:rent_30,t->t,:j,t->t.==ij,p0 = p0)
+				ctax[:data][:rent_30]=Optim.minimizer(x)
+				# for those who did own a house when age == 30
+				x=mig.ctaxxer(opt_dict,:own_30,t->t,:j,t->t.==ij,p0 = p0)
+				ctax[:data][:own_30]=Optim.minimizer(x)
+				# mover types at lowest z quantile
+				x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="20",:j,t->t.==ij,p0 = p0)
+				ctax[:data][:z20]=Optim.minimizer(x)
+				# stayer types at lowest z quantile
+				x=mig.ctaxxer(opt_dict,:mean_zcat,t->t.=="80",:j,t->t.==ij,p0 = p0)
+				ctax[:data][:z80]=Optim.minimizer(x)
+			end
 			gc()
 		end
 		return ctax
@@ -243,9 +252,17 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 	ostr = string("noMove_",scenario,".jld2")
 	jstr = string("noMove_",scenario,".json")
 	path = joinpath(io["outdir"],ostr)
-	js = 0:p.nJ
+
+	# if no set of regions has been given
+	if length(js) == 0
+		js = collect(0:p.nJ)
+	end
 	if do_ctax 
-		ctax = pmap(x->ctaxxers(x,ys=ys,ps=ps),js)
+		if length(js) > 1
+			ctax = pmap(x->ctaxxers(x,ys=ys,ps=ps,p0=p0,agg_only=agg_only),js)
+		else
+			ctax = [ctaxxers(js[1],ys=ys,ps=ps,p0=p0,agg_only=agg_only)]
+		end
 	else
 		# read from file
 		ctax = 0
@@ -278,25 +295,22 @@ function exp_Nomove(;do_ctax::Bool=false,save::Bool=false,ys::Float64=1.0,ps::Fl
 
 	# create a type for easier plotting
 	n = noMoveRes(d,Symbol(scenario))
-	@save path n
+	if save
+		@save path n
+		# but also print to JSON to build tables
+		rm(joinpath(io["outdir"],jstr),force=true)
+		open(joinpath(io["outdir"],jstr),"w") do f
+			JSON.print(f,d)
+		end
 
-	# but also print to JSON to build tables
-	rm(joinpath(io["outdir"],jstr),force=true)
-	open(joinpath(io["outdir"],jstr),"w") do f
-		JSON.print(f,d)
+		# sync output to dropbox
+		for fi in (jstr,ostr)
+			ficmd = `dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`
+			out,proc = open(ficmd)
+		end
+	else
+		warn("not saving to disk.")
 	end
-
-	# sync output to dropbox
-	for fi in (jstr,ostr)
-		ficmd = `dbxcli put $(joinpath(io["outdir"],fi)) research/mobility/output/model/data_repo/outbox/$fi`
-		out,proc = open(ficmd)
-	end
-
-	# make tables
-    # cd(joinpath(dirname(@__FILE__),"..","..","..","tables"))
-    # out,proc = open(run(`zsh -c "make"`))
-
-
 
 	took = round(toc() / 3600.0,2)  # hours
 	post_slack("[MIG] noMove experiment finished after $took hours on $(gethostname())")
@@ -305,11 +319,11 @@ end
 
 
 # helper function for exp_Nomove
-function shutdownMoving(;pshock=1.0,yshock=1.0)
+function shutdownMoving(;pshock=1.0,yshock=1.0,p0::Union{Dict,OrderedDict}=Dict())
 
 	# baseline model
 
-	p = Param(2)
+	p = Param(2,opts=p0)
 
 	m = Model(p)
 	solve!(m,p)
@@ -330,6 +344,16 @@ function shutdownMoving(;pshock=1.0,yshock=1.0)
 		opts = Dict("policy" => "noMove", "shockVal_p" => [pshock for i in 1:p.nt-1],"shockVal_y" => [yshock for i in 1:p.nt-1])
 
 	end
+
+	# convert symbol keys to strings
+	if length(p0) > 0
+		pp0 = Dict()
+		for (k,v) in p0
+			pp0[String(k)] = v
+		end
+		opts = merge(opts,pp0)
+	end
+
 	p2 = Param(2,opts=opts)
 	m2 = Model(p2)
 	solve!(m2,p2)

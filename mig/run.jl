@@ -11,7 +11,7 @@ Value of Regional Migration (Oswald, 2019)
 Usage:
     run.jl -h | --help
     run.jl --version
-    run.jl estim (bgp|grad|slices|stderrors) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
+    run.jl estim (bgp|grad|slices|stderrors|thomas) [--nworkers=<nw>] [--maxiter=<maxit>][--npoints=<npts>]  
     run.jl test 
     run.jl experiment (elasticity|ownersWTP|ownersWTP2|moneyMC|decomp) [--nworkers=<nw>] [--shock=<sh>] [--nosave]  [--neg]
     run.jl experiment moversWTP [--nworkers=<nw>] [--nosave] [--region=<reg>] 
@@ -34,7 +34,7 @@ Options:
 """
 
 using DocOpt
-args = docopt(doc, version=v"1.0")
+args = docopt(doc, version=v"1.1")
 
 addprocs1(n) = n>1 ? addprocs(n) : nothing
 
@@ -60,6 +60,14 @@ if args["estim"]
         using mig
         # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
         mig.stdErrors()
+    elseif args["thomas"]
+        info("      computing mom func gradients with $nwork workers")
+        addprocs1(nwork)
+        using mig
+        # mig.estimate(maxit,npoints=npoints,method=:grad,keep=["eta","MC0","xi1","xi2"])
+        # mig.gradMoments()
+        info("      computing ATE gradients with $nwork workers")
+        mig.gradNoMoveATE()
     elseif args["slices"]
         info("      compute slices on $nwork workers.")
         using mig
